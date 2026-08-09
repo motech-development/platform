@@ -51,12 +51,14 @@ export function CompanySetupForm({
   onCancel,
   onDirty,
   onSubmit,
+  submitDisabled = false,
 }: Readonly<{
   initialValues: CompanySetupDraftValues;
   onBack: (value: CompanySetupDraftValues) => void;
   onCancel: () => void;
   onDirty: () => void;
   onSubmit: (value: CompanySetupValues) => Promise<void>;
+  submitDisabled?: boolean;
 }>) {
   const { i18n, t } = useTranslation('companies');
   const months = monthNames(i18n.resolvedLanguage ?? i18n.language);
@@ -327,7 +329,7 @@ export function CompanySetupForm({
             divided
             primary={
               <Button
-                disabled={!canSubmit || isSubmitting}
+                disabled={!canSubmit || isSubmitting || submitDisabled}
                 loading={isSubmitting}
                 type="submit"
               >

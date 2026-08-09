@@ -27,9 +27,11 @@ export function CompanyEnrolmentPage({ owner }: Readonly<{ owner: string }>) {
   const toast = useToast();
   const initialValues = useRef(companyEnrolmentDefaults());
   const allowNavigation = useRef(false);
+  const creationComplete = useRef(false);
   const [step, setStep] = useState<1 | 2>(1);
   const [dirty, setDirty] = useState(false);
   const [discardOpen, setDiscardOpen] = useState(false);
+  const [companyCreated, setCompanyCreated] = useState(false);
   const [company, setCompany] = useState<NormalisedCompanyDetails>(
     initialValues.current.company,
   );
@@ -114,7 +116,11 @@ export function CompanyEnrolmentPage({ owner }: Readonly<{ owner: string }>) {
               onCancel={requestClose}
               onDirty={() => setDirty(true)}
               onSubmit={async (value) => {
+                if (creationComplete.current) return;
+
                 setSetup(value);
+
+                let created;
 
                 try {
                   const input = companyEnrolmentSchema.parse({
@@ -133,23 +139,9 @@ export function CompanyEnrolmentPage({ owner }: Readonly<{ owner: string }>) {
                     },
                     variables: { input },
                   });
-                  const created = result.data?.createCompany;
+                  created = result.data?.createCompany;
 
                   if (!created) throw new Error('No company returned');
-
-                  allowNavigation.current = true;
-                  setDirty(false);
-                  toast.show({
-                    description: t('{{name}} is ready to use.', {
-                      name: created.name,
-                    }),
-                    title: t('Company added'),
-                    variant: 'success',
-                  });
-                  await navigate({
-                    params: { companyId: created.id },
-                    to: '/my-companies/dashboard/$companyId',
-                  });
                 } catch {
                   toast.show({
                     description: t(
@@ -158,8 +150,34 @@ export function CompanyEnrolmentPage({ owner }: Readonly<{ owner: string }>) {
                     title: t('Company could not be added'),
                     variant: 'danger',
                   });
+
+                  return;
+                }
+
+                creationComplete.current = true;
+                setCompanyCreated(true);
+                allowNavigation.current = true;
+                setDirty(false);
+                toast.show({
+                  description: t('{{name}} is ready to use.', {
+                    name: created.name,
+                  }),
+                  title: t('Company added'),
+                  variant: 'success',
+                });
+
+                try {
+                  await navigate({
+                    params: { companyId: created.id },
+                    to: '/my-companies/dashboard/$companyId',
+                  });
+                } catch {
+                  await navigate({ to: '/my-companies' }).catch(
+                    () => undefined,
+                  );
                 }
               }}
+              submitDisabled={companyCreated}
             />
           )}
         </Drawer.Content>

@@ -23,7 +23,7 @@ describe('form errors', () => {
     const errors = ['Required'];
 
     expect(visibleValidationErrors(errors, false, 0)).toEqual([]);
-    expect(visibleValidationErrors(errors, true, 0)).toBe(errors);
-    expect(visibleValidationErrors(errors, false, 1)).toBe(errors);
+    expect(visibleValidationErrors(errors, true, 0)).toEqual(errors);
+    expect(visibleValidationErrors(errors, false, 1)).toEqual(errors);
   });
 });

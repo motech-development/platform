@@ -7,6 +7,7 @@ import {
   normaliseCompanyDetails,
   settingsSchema,
   sortCompaniesByName,
+  vatSettingsSchema,
 } from './company';
 
 const validCompany = {
@@ -49,6 +50,20 @@ describe('company details', () => {
 });
 
 describe('company enrolment and settings', () => {
+  it.each(['GGB123456789', 'BG123456789'])(
+    'rejects the malformed VAT registration prefix %s',
+    (registration) => {
+      expect(
+        vatSettingsSchema.safeParse({
+          charge: 20,
+          pay: 20,
+          registration,
+          scheme: 'standard',
+        }).success,
+      ).toBe(false);
+    },
+  );
+
   it('starts with established VAT, balance, and current year-end defaults', () => {
     expect(
       companyEnrolmentDefaults(new Date('2026-08-08T10:00:00Z')),

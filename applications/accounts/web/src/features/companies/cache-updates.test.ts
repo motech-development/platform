@@ -81,8 +81,11 @@ describe('company collection reconciliation', () => {
       __typename: 'Company',
       companyNumber: '00000003',
       id: 'charlie',
-      name: 'Able Limited',
+      name: 'bravo limited',
     });
+
+    expect(companyIds(cache)).toEqual(['bravo', 'charlie']);
+
     removeCompanyFromCache(cache, 'owner-id', 'bravo');
 
     expect(companyIds(cache)).toEqual(['charlie']);

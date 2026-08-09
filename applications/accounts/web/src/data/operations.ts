@@ -5,20 +5,8 @@ export const GET_COMPANIES = graphql(`
     getCompanies(id: $owner) {
       id
       items {
-        address {
-          line1
-          line2
-          line3
-          line4
-          line5
-        }
-        bank {
-          accountNumber
-          sortCode
-        }
         contact {
           email
-          telephone
         }
         id
         name
