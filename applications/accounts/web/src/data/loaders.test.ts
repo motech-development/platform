@@ -116,6 +116,24 @@ describe('company route priming', () => {
     ).rejects.toThrow('Not found');
     expect(notFound).toHaveBeenCalledWith({ throw: true });
   });
+
+  it.each([
+    ['details', primeCompanyDetails],
+    ['settings', primeCompanySettings],
+  ] as const)(
+    'leaves an owned company %s query failure to the page recovery state',
+    async (_, prime) => {
+      const query = vi
+        .fn()
+        .mockResolvedValueOnce({
+          data: { getCompanies: { items: [{ id: companyId }] } },
+        })
+        .mockRejectedValueOnce(new Error('Unavailable'));
+
+      await expect(prime(context(query), companyId)).resolves.toBeUndefined();
+      expect(query).toHaveBeenCalledTimes(2);
+    },
+  );
 });
 
 describe('primeTransaction', () => {

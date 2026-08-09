@@ -65,17 +65,24 @@ describe('company details', () => {
     ).toBe(true);
   });
 
-  it.each(['+33 1 23 45 67 89', '1234567890', '020 7946 invalid'])(
-    'rejects the non-UK telephone format %s',
-    (telephone) => {
-      expect(
-        companyDetailsSchema.safeParse({
-          ...validCompany,
-          contact: { ...validCompany.contact, telephone },
-        }).success,
-      ).toBe(false);
-    },
-  );
+  it.each([
+    '+33 1 23 45 67 89',
+    '1234567890',
+    '020 7946 invalid',
+    '0-7-7-1-2-3-4-5-6-7-8',
+    '((((07712345678',
+    '0(20)(7946)(0958)',
+    '0207 9460 958',
+    '020 79460 958',
+    '020-79 46-0958',
+  ])('rejects the non-UK telephone format %s', (telephone) => {
+    expect(
+      companyDetailsSchema.safeParse({
+        ...validCompany,
+        contact: { ...validCompany.contact, telephone },
+      }).success,
+    ).toBe(false);
+  });
 });
 
 describe('company enrolment and settings', () => {
@@ -93,6 +100,20 @@ describe('company enrolment and settings', () => {
           charge: 20,
           pay: 20,
           registration,
+          scheme: 'standard',
+        }).success,
+      ).toBe(false);
+    },
+  );
+
+  it.each(['GGB123456789', 'BG123456789'])(
+    'does not normalise the malformed VAT registration prefix %s into a valid value',
+    (registration) => {
+      expect(
+        vatSettingsSchema.safeParse({
+          charge: 20,
+          pay: 20,
+          registration: formatVatRegistration(registration),
           scheme: 'standard',
         }).success,
       ).toBe(false);

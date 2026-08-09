@@ -58,30 +58,44 @@ async function verifyOwnedCompany(context: RouterContext, companyId: string) {
   }
 }
 
-export async function primeCompanyDetails(
+async function primeOwnedCompanyResource(
   context: RouterContext,
   companyId: string,
+  primeResource: () => Promise<unknown>,
 ) {
   if (!context.authenticatedOwner) return;
 
   await verifyOwnedCompany(context, companyId);
-  await context.apolloClient.query({
-    query: GET_COMPANY_DETAILS,
-    variables: { id: companyId },
-  });
+
+  try {
+    await primeResource();
+  } catch {
+    // The page query owns its contextual, recoverable error state.
+  }
+}
+
+export async function primeCompanyDetails(
+  context: RouterContext,
+  companyId: string,
+) {
+  await primeOwnedCompanyResource(context, companyId, () =>
+    context.apolloClient.query({
+      query: GET_COMPANY_DETAILS,
+      variables: { id: companyId },
+    }),
+  );
 }
 
 export async function primeCompanySettings(
   context: RouterContext,
   companyId: string,
 ) {
-  if (!context.authenticatedOwner) return;
-
-  await verifyOwnedCompany(context, companyId);
-  await context.apolloClient.query({
-    query: GET_COMPANY_SETTINGS,
-    variables: { id: companyId },
-  });
+  await primeOwnedCompanyResource(context, companyId, () =>
+    context.apolloClient.query({
+      query: GET_COMPANY_SETTINGS,
+      variables: { id: companyId },
+    }),
+  );
 }
 
 export async function primeDashboard(

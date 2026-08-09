@@ -7,10 +7,25 @@ import {
   Table,
   VisuallyHidden,
 } from '@motech-development/breeze-ui';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { companiesTableClassName } from '../companies/tableLayout';
 import { FinancialSummarySkeleton } from '../transactions/FinancialSummary';
 import { TransactionLedgerSkeleton } from '../transactions/TransactionLedger';
+
+export function FormSkeletonRegion({
+  children,
+  loadingLabel,
+}: Readonly<{ children: ReactNode; loadingLabel: string }>) {
+  return (
+    <section aria-busy="true" aria-label={loadingLabel} role="status">
+      <VisuallyHidden>{loadingLabel}</VisuallyHidden>
+      <div aria-hidden="true" inert>
+        {children}
+      </div>
+    </section>
+  );
+}
 
 export function CompaniesTableSkeleton() {
   const { t } = useTranslation(['companies', 'routing']);

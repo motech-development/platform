@@ -19,6 +19,10 @@ import { useTranslation } from 'react-i18next';
 import { GET_COMPANY_SETTINGS, UPDATE_SETTINGS } from '../../data/operations';
 import { validationMessage, visibleValidationErrors } from '../form-errors';
 import {
+  FormSkeletonRegion,
+  SettingsFormSkeleton,
+} from '../loading/AccountsPageSkeletons';
+import {
   type CompanySettings,
   formatVatRegistration,
   settingsSchema,
@@ -465,28 +469,41 @@ export function SettingsPage({ companyId }: Readonly<{ companyId: string }>) {
     nextFetchPolicy: 'cache-first',
     variables: { id: companyId },
   });
+  const pageHeader = (
+    <PageHeader
+      description={t('VAT, financial year, and transaction category defaults.')}
+      title={t('Settings')}
+    />
+  );
 
-  if (loading && !data)
-    return <p aria-live="polite">{t('Loading settings')}</p>;
+  if (loading && !data) {
+    return (
+      <div className="min-w-0">
+        {pageHeader}
+        <FormSkeletonRegion loadingLabel={t('Loading settings')}>
+          <SettingsFormSkeleton />
+        </FormSkeletonRegion>
+      </div>
+    );
+  }
+
   if (!data?.getSettings) {
     return (
-      <QueryFailureState
-        onRetry={() => {
-          refetch().catch(() => undefined);
-        }}
-        title={t('Settings could not be loaded')}
-      />
+      <div className="min-w-0">
+        {pageHeader}
+        <QueryFailureState
+          onRetry={() => {
+            refetch().catch(() => undefined);
+          }}
+          title={t('Settings could not be loaded')}
+        />
+      </div>
     );
   }
 
   return (
     <div className="min-w-0">
-      <PageHeader
-        description={t(
-          'VAT, financial year, and transaction category defaults.',
-        )}
-        title={t('Settings')}
-      />
+      {pageHeader}
       {error ? (
         <QueryRefreshAlert
           onRetry={() => {

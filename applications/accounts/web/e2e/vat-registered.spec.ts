@@ -23,6 +23,31 @@ async function selectOption(
   await page.getByRole('option', { exact: true, name: option }).click();
 }
 
+async function removeCompany(
+  page: Page,
+  baseURL: string | undefined,
+  companyName: string,
+): Promise<void> {
+  await gotoAuthenticatedPage({
+    baseURL,
+    content: page.getByRole('heading', { name: 'My companies' }),
+    page,
+    path: '/my-companies',
+  });
+  const company = page.getByTestId(companyName);
+
+  if (!(await company.isVisible())) return;
+
+  await company.click();
+  await page.getByRole('link', { name: /Manage company details/ }).click();
+  await page.getByRole('button', { name: 'Delete company' }).click();
+  await page.getByLabel(`Type ${companyName} to confirm`).fill(companyName);
+  await page
+    .getByRole('button', { name: 'Permanently delete company' })
+    .click();
+  await expect(page.getByTestId(companyName)).toHaveCount(0);
+}
+
 test.describe('VAT registered Accounts', () => {
   test.skip(
     process.env.ACCOUNTS_WEB_HOSTED_SMOKE !== 'true',
@@ -152,30 +177,6 @@ test.describe('VAT registered Accounts', () => {
       await page.getByLabel(`VAT rate for ${name}`).fill(vatRate);
     }
 
-    async function removeTestCompany(
-      page: Page,
-      baseURL: string | undefined,
-    ): Promise<void> {
-      await gotoAuthenticatedPage({
-        baseURL,
-        content: page.getByRole('heading', { name: 'My companies' }),
-        page,
-        path: '/my-companies',
-      });
-      const company = page.getByTestId(companyName);
-
-      if (!(await company.isVisible())) return;
-
-      await company.click();
-      await page.getByRole('link', { name: /Manage company details/ }).click();
-      await page.getByRole('button', { name: 'Delete company' }).click();
-      await page.getByLabel(`Type ${companyName} to confirm`).fill(companyName);
-      await page
-        .getByRole('button', { name: 'Permanently delete company' })
-        .click();
-      await expect(page.getByTestId(companyName)).toHaveCount(0);
-    }
-
     test.afterAll(async ({ baseURL, browser }) => {
       const page = await browser.newPage({
         baseURL,
@@ -183,7 +184,7 @@ test.describe('VAT registered Accounts', () => {
       });
 
       try {
-        await removeTestCompany(page, baseURL).catch(() => undefined);
+        await removeCompany(page, baseURL, companyName).catch(() => undefined);
       } finally {
         await page.close();
       }
@@ -326,6 +327,90 @@ test.describe('VAT registered Accounts', () => {
         page.getByRole('heading', { name: 'My companies' }),
       ).toBeVisible();
       await expect(page.getByTestId(companyName)).toHaveCount(0);
+    });
+  });
+
+  test.describe.serial('original non-VAT company-management journeys', () => {
+    const suffix = Date.now().toString().slice(-8);
+    const companyName = `Accounts non-VAT ${suffix}`;
+
+    async function openSettings(page: Page): Promise<void> {
+      await page.getByTestId(companyName).click();
+      await page.getByRole('link', { name: /Manage settings/ }).click();
+      await expect(
+        page.getByRole('heading', { exact: true, name: 'Settings' }),
+      ).toBeVisible();
+    }
+
+    test.afterAll(async ({ baseURL, browser }) => {
+      const page = await browser.newPage({
+        baseURL,
+        storageState: test.info().project.use.storageState,
+      });
+
+      try {
+        await removeCompany(page, baseURL, companyName).catch(() => undefined);
+      } finally {
+        await page.close();
+      }
+    });
+
+    test('should create a non-VAT company with the established defaults', async ({
+      page,
+    }) => {
+      await page
+        .getByRole('button', { name: 'Add a new company' })
+        .first()
+        .click();
+      await page.getByLabel('Company name').fill(companyName);
+      await page.getByLabel('Company number').fill(suffix);
+      await page.getByLabel('Account number').fill('62057264');
+      await page.getByLabel('Sort code').fill('308639');
+      await page.getByLabel('Address line 1').fill('Unit 2');
+      await page.getByLabel('Town or city').fill('London');
+      await page.getByLabel('Postcode').fill('SW21 1NA');
+      await page.getByLabel('Email address').fill('non-vat@example.com');
+      await page.getByLabel('Telephone number').fill('02083895728');
+      await page.getByRole('button', { name: 'Continue to settings' }).click();
+
+      await page.getByLabel('None').press('Space');
+      await expect(page.getByLabel('VAT registration')).toHaveValue('');
+      await expect(page.getByLabel('Charge rate')).toHaveValue('20%');
+      await expect(page.getByLabel('Pay rate')).toHaveValue('20%');
+      await page.getByRole('button', { name: 'Save company' }).click();
+
+      await expect(
+        page.getByRole('heading', { level: 1, name: companyName }),
+      ).toBeVisible();
+    });
+
+    test('should preserve and update non-VAT settings', async ({ page }) => {
+      await openSettings(page);
+      await expect(page.getByLabel('None')).toBeChecked();
+      await expect(page.getByLabel('Registration number')).toHaveValue('');
+      await expect(page.getByLabel('Charge rate')).toHaveValue('20%');
+      await expect(page.getByLabel('Pay rate')).toHaveValue('20%');
+
+      await selectOption(page, 'Day', '1');
+      await selectOption(page, 'Month', 'January');
+      await page.getByRole('button', { name: 'Save settings' }).click();
+      await expect(
+        page.getByRole('heading', { level: 1, name: companyName }),
+      ).toBeVisible();
+
+      await page.getByRole('link', { name: /Manage settings/ }).click();
+      await expect(page.getByLabel('Day')).toHaveText('1');
+      await expect(page.getByLabel('Month')).toHaveText('January');
+    });
+
+    test('should remove the non-VAT company', async ({ baseURL, page }) => {
+      await gotoAuthenticatedPage({
+        baseURL,
+        content: page.getByRole('heading', { name: 'My companies' }),
+        page,
+        path: '/my-companies',
+      });
+      await removeCompany(page, baseURL, companyName);
     });
   });
 

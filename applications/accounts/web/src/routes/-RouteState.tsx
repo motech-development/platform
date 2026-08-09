@@ -5,7 +5,6 @@ import {
   PageHeader,
   Skeleton,
   StatePanel,
-  VisuallyHidden,
 } from '@motech-development/breeze-ui';
 import type { ErrorComponentProps } from '@tanstack/react-router';
 import { useLocation } from '@tanstack/react-router';
@@ -16,6 +15,7 @@ import {
   CompaniesTableSkeleton,
   CompanyDetailsFormSkeleton,
   CompanyEnrolmentDrawerSkeleton,
+  FormSkeletonRegion,
   OverviewContentSkeleton,
   RecordTransactionDrawerSkeleton,
   SettingsFormSkeleton,
@@ -38,12 +38,9 @@ function CompanyFormPending({
   return (
     <div className="min-w-0">
       <PageHeader description={description} title={title} />
-      <section aria-busy="true" aria-label={loadingLabel} role="status">
-        <VisuallyHidden>{loadingLabel}</VisuallyHidden>
-        <div aria-hidden="true" inert>
-          {children}
-        </div>
-      </section>
+      <FormSkeletonRegion loadingLabel={loadingLabel}>
+        {children}
+      </FormSkeletonRegion>
     </div>
   );
 }

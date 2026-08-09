@@ -19,6 +19,7 @@ import { useAccountsOwnerId } from '../../auth/owner';
 import { GET_COMPANIES } from '../../data/operations';
 import { CompaniesTableSkeleton } from '../loading/AccountsPageSkeletons';
 import { sortCompaniesByName } from './company';
+import { QueryRefreshAlert } from './QueryRefreshAlert';
 import { companiesTableClassName } from './tableLayout';
 
 export function CompaniesPageContent() {
@@ -31,8 +32,11 @@ export function CompaniesPageContent() {
     variables: { owner: ownerId },
   });
   const initiallyLoading = loading && !data;
+  const hasQueryData = data?.getCompanies !== undefined;
+  const fatalError = Boolean(error && !hasQueryData);
+  const refreshError = Boolean(error && hasQueryData);
   const companies = sortCompaniesByName(data?.getCompanies.items ?? []);
-  const empty = !error && !initiallyLoading && companies.length === 0;
+  const empty = !fatalError && !initiallyLoading && companies.length === 0;
   const addCompany = () => {
     navigate({ to: '/my-companies/add-company' }).catch(() => undefined);
   };
@@ -41,7 +45,7 @@ export function CompaniesPageContent() {
     <div className="min-w-0">
       <PageHeader
         actions={
-          empty ? undefined : (
+          empty || fatalError ? undefined : (
             <Button aria-label={t('Add a new company')} onAction={addCompany}>
               <AddIcon />
               {t('Add company')}
@@ -51,7 +55,19 @@ export function CompaniesPageContent() {
         description={t('Select a company or add another business.')}
         title={t('My companies')}
       />
-      {error ? (
+      {refreshError ? (
+        <QueryRefreshAlert
+          onRetry={() => {
+            refetch().catch(() => undefined);
+          }}
+          retryLabel={t('Try again', { ns: 'routing' })}
+        >
+          {t(
+            'Companies could not be refreshed. Check your connection, then try again.',
+          )}
+        </QueryRefreshAlert>
+      ) : null}
+      {fatalError ? (
         <StatePanel
           action={
             <Button

@@ -97,10 +97,10 @@ describe('SettingsPage', () => {
       </BreezeProvider>,
     );
 
-    expect(screen.getByText('Loading settings')).toHaveAttribute(
-      'aria-live',
-      'polite',
-    );
+    expect(screen.getByRole('heading', { name: 'Settings' })).toBeVisible();
+    expect(
+      screen.getByRole('status', { name: 'Loading settings' }),
+    ).toBeVisible();
   });
 
   it('offers retry when settings are unavailable', async () => {
@@ -117,6 +117,7 @@ describe('SettingsPage', () => {
     );
 
     expect(screen.getByText('Settings could not be loaded')).toBeVisible();
+    expect(screen.getByRole('heading', { name: 'Settings' })).toBeVisible();
     await user.click(screen.getByRole('button', { name: 'Try again' }));
     expect(mocks.query.refetch).toHaveBeenCalledOnce();
   });
