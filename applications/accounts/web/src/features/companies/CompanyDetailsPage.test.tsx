@@ -1,5 +1,5 @@
 import { BreezeProvider } from '@motech-development/breeze-ui';
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { CompanyDetailsPage } from './CompanyDetailsPage';
@@ -28,6 +28,7 @@ const mocks = vi.hoisted(() => ({
     loading: false,
     refetch: vi.fn(),
   },
+  shouldBlockFn: undefined as undefined | (() => boolean),
   toast: { show: vi.fn() },
   updateCompany: vi.fn(),
 }));
@@ -59,13 +60,22 @@ vi.mock('@motech-development/breeze-ui', async (importOriginal) => ({
 
 vi.mock('@tanstack/react-router', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@tanstack/react-router')>()),
-  useBlocker: () => ({ proceed: vi.fn(), reset: vi.fn(), status: 'idle' }),
+  useBlocker: (options: { shouldBlockFn: () => boolean }) => {
+    mocks.shouldBlockFn = options.shouldBlockFn;
+
+    return { proceed: vi.fn(), reset: vi.fn(), status: 'idle' };
+  },
   useNavigate: () => mocks.navigate,
 }));
 
 describe('CompanyDetailsPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mocks.query.data.getCompany = {
+      ...mocks.query.data.getCompany,
+      contact: { email: 'owner@example.com', telephone: '020 7946 0958' },
+    };
+    mocks.shouldBlockFn = undefined;
   });
 
   it('requires the exact case-sensitive name before deleting a company', async () => {
@@ -128,5 +138,88 @@ describe('CompanyDetailsPage', () => {
         to: '/my-companies/dashboard/$companyId',
       }),
     );
+  });
+
+  it('refreshes untouched details without replacing dirty input', async () => {
+    const { rerender } = render(
+      <BreezeProvider locale="en-GB">
+        <CompanyDetailsPage companyId="company-id" owner="owner-id" />
+      </BreezeProvider>,
+    );
+
+    mocks.query.data.getCompany = {
+      ...mocks.query.data.getCompany,
+      contact: {
+        ...mocks.query.data.getCompany.contact,
+        email: 'network@example.com',
+      },
+    };
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <CompanyDetailsPage companyId="company-id" owner="owner-id" />
+      </BreezeProvider>,
+    );
+
+    await waitFor(() =>
+      expect(screen.getByLabelText('Email address')).toHaveValue(
+        'network@example.com',
+      ),
+    );
+
+    fireEvent.change(screen.getByLabelText('Email address'), {
+      target: { value: 'local@example.com' },
+    });
+    mocks.query.data.getCompany = {
+      ...mocks.query.data.getCompany,
+      contact: {
+        ...mocks.query.data.getCompany.contact,
+        email: 'newer-network@example.com',
+      },
+    };
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <CompanyDetailsPage companyId="company-id" owner="owner-id" />
+      </BreezeProvider>,
+    );
+
+    expect(screen.getByLabelText('Email address')).toHaveValue(
+      'local@example.com',
+    );
+  });
+
+  it('keeps later edits protected when navigation fails after saving', async () => {
+    const user = userEvent.setup();
+    mocks.updateCompany.mockResolvedValue({
+      data: { updateCompany: mocks.query.data.getCompany },
+    });
+    mocks.navigate.mockRejectedValue(new Error('Dashboard unavailable'));
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <CompanyDetailsPage companyId="company-id" owner="owner-id" />
+      </BreezeProvider>,
+    );
+
+    fireEvent.change(screen.getByLabelText('Email address'), {
+      target: { value: 'saved@example.com' },
+    });
+    await user.click(screen.getByRole('button', { name: 'Save changes' }));
+
+    await waitFor(() =>
+      expect(mocks.toast.show).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Company details saved' }),
+      ),
+    );
+    expect(mocks.toast.show).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: 'Company details could not be saved',
+      }),
+    );
+
+    fireEvent.change(screen.getByLabelText('Email address'), {
+      target: { value: 'later@example.com' },
+    });
+
+    await waitFor(() => expect(mocks.shouldBlockFn?.()).toBe(true));
   });
 });

@@ -89,11 +89,24 @@ describe('SettingsPage', () => {
     await user.click(
       screen.getByRole('button', { name: 'Add a new category' }),
     );
+    await user.click(
+      screen.getByRole('button', { name: 'Add a new category' }),
+    );
 
-    expect(screen.getByLabelText('New category name')).toHaveValue('');
-    expect(screen.getByLabelText('VAT rate for new category')).toHaveValue(
+    expect(screen.getByLabelText('New category name 3')).toHaveValue('');
+    expect(screen.getByLabelText('New category name 4')).toHaveValue('');
+    expect(screen.getByLabelText('VAT rate for new category 3')).toHaveValue(
       '20%',
     );
+    expect(screen.getByLabelText('VAT rate for new category 4')).toHaveValue(
+      '20%',
+    );
+    expect(
+      screen.getByRole('button', { name: 'Remove new category 3' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Remove new category 4' }),
+    ).toBeInTheDocument();
   });
 
   it('returns to the company dashboard after saving settings', async () => {
@@ -164,8 +177,11 @@ describe('SettingsPage', () => {
     await user.click(screen.getByRole('button', { name: 'Save settings' }));
     await waitFor(() =>
       expect(mocks.toast.show).toHaveBeenCalledWith(
-        expect.objectContaining({ title: 'Settings could not be saved' }),
+        expect.objectContaining({ title: 'Settings saved' }),
       ),
+    );
+    expect(mocks.toast.show).not.toHaveBeenCalledWith(
+      expect.objectContaining({ title: 'Settings could not be saved' }),
     );
 
     fireEvent.change(screen.getByLabelText('Marketing name'), {
@@ -173,5 +189,58 @@ describe('SettingsPage', () => {
     });
 
     await waitFor(() => expect(mocks.shouldBlockFn?.()).toBe(true));
+  });
+
+  it('refreshes untouched settings without replacing dirty input', async () => {
+    const { rerender } = render(
+      <BreezeProvider locale="en-GB">
+        <SettingsPage companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    mocks.query.data = {
+      ...mocks.query.data,
+      getSettings: {
+        ...mocks.query.data.getSettings,
+        categories: mocks.query.data.getSettings.categories.map((category) =>
+          category.name === 'Advertising'
+            ? { ...category, name: 'Marketing' }
+            : category,
+        ),
+      },
+    };
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <SettingsPage companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    await waitFor(() =>
+      expect(screen.getByLabelText('Marketing name')).toHaveValue('Marketing'),
+    );
+
+    fireEvent.change(screen.getByLabelText('Marketing name'), {
+      target: { value: 'Local category' },
+    });
+    mocks.query.data = {
+      ...mocks.query.data,
+      getSettings: {
+        ...mocks.query.data.getSettings,
+        categories: mocks.query.data.getSettings.categories.map((category) =>
+          category.name === 'Marketing'
+            ? { ...category, name: 'Campaigns' }
+            : category,
+        ),
+      },
+    };
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <SettingsPage companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    expect(screen.getByLabelText('Local category name')).toHaveValue(
+      'Local category',
+    );
   });
 });

@@ -185,6 +185,43 @@ test.describe('VAT registered Accounts', () => {
       await page.getByLabel(`VAT rate for ${name}`).fill(vatRate);
     }
 
+    async function removeTestCompany(
+      page: Page,
+      baseURL: string | undefined,
+    ): Promise<void> {
+      await gotoAuthenticatedPage({
+        baseURL,
+        content: page.getByRole('heading', { name: 'My companies' }),
+        page,
+        path: '/my-companies',
+      });
+      const company = page.getByTestId(companyName);
+
+      if (!(await company.isVisible())) return;
+
+      await company.click();
+      await page.getByRole('link', { name: /Manage company details/ }).click();
+      await page.getByRole('button', { name: 'Delete company' }).click();
+      await page.getByLabel(`Type ${companyName} to confirm`).fill(companyName);
+      await page
+        .getByRole('button', { name: 'Permanently delete company' })
+        .click();
+      await expect(page.getByTestId(companyName)).toHaveCount(0);
+    }
+
+    test.afterAll(async ({ baseURL, browser }) => {
+      const page = await browser.newPage({
+        baseURL,
+        storageState: test.info().project.use.storageState,
+      });
+
+      try {
+        await removeTestCompany(page, baseURL).catch(() => undefined);
+      } finally {
+        await page.close();
+      }
+    });
+
     test('should create a company', async ({ page }) => {
       await expectNoA11yViolations(page);
       await page
