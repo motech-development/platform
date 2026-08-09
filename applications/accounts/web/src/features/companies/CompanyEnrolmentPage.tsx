@@ -29,6 +29,7 @@ export function CompanyEnrolmentPage({ owner }: Readonly<{ owner: string }>) {
   const [dirty, setDirty] = useState(false);
   const [discardOpen, setDiscardOpen] = useState(false);
   const [companyCreated, setCompanyCreated] = useState(false);
+  const [creationPending, setCreationPending] = useState(false);
   const [company, setCompany] = useState<NormalisedCompanyDetails>(
     initialValues.current.company,
   );
@@ -60,6 +61,8 @@ export function CompanyEnrolmentPage({ owner }: Readonly<{ owner: string }>) {
     navigate({ to: '/my-companies' }).catch(() => undefined);
   };
   const requestClose = () => {
+    if (creationPending) return;
+
     if (dirty) {
       setDiscardOpen(true);
     } else {
@@ -68,10 +71,10 @@ export function CompanyEnrolmentPage({ owner }: Readonly<{ owner: string }>) {
   };
 
   useEffect(() => {
-    if (blocker.status === 'blocked') {
+    if (blocker.status === 'blocked' && !creationPending) {
       setDiscardOpen(true);
     }
-  }, [blocker.status]);
+  }, [blocker.status, creationPending]);
 
   return (
     <>
@@ -84,6 +87,8 @@ export function CompanyEnrolmentPage({ owner }: Readonly<{ owner: string }>) {
         triggerless
       >
         <Drawer.Content
+          dismissible={!creationPending}
+          keyboardDismissDisabled={creationPending}
           placement={{ base: 'bottom', md: 'end' }}
           scrollResetKey={step}
           size="wide"
@@ -119,6 +124,7 @@ export function CompanyEnrolmentPage({ owner }: Readonly<{ owner: string }>) {
                 if (creationComplete.current) return;
 
                 setSetup(value);
+                setCreationPending(true);
 
                 let created;
 
@@ -143,6 +149,7 @@ export function CompanyEnrolmentPage({ owner }: Readonly<{ owner: string }>) {
 
                   if (!created) throw new Error('No company returned');
                 } catch {
+                  setCreationPending(false);
                   toast.show({
                     description: t(
                       'Your company details are still here. Check them and try again.',
@@ -172,9 +179,9 @@ export function CompanyEnrolmentPage({ owner }: Readonly<{ owner: string }>) {
                     to: '/my-companies/dashboard/$companyId',
                   });
                 } catch {
-                  await navigate({ to: '/my-companies' }).catch(
-                    () => undefined,
-                  );
+                  await navigate({ to: '/my-companies' }).catch(() => {
+                    setCreationPending(false);
+                  });
                 }
               }}
               submitDisabled={companyCreated}
@@ -189,6 +196,8 @@ export function CompanyEnrolmentPage({ owner }: Readonly<{ owner: string }>) {
           'The company details entered in this drawer will be lost.',
         )}
         onDiscard={() => {
+          if (creationPending) return;
+
           discardChanges();
           if (blocker.status !== 'blocked') {
             navigate({ to: '/my-companies' }).catch(() => undefined);

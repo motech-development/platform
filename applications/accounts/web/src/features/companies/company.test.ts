@@ -57,11 +57,10 @@ describe('company details', () => {
     '0044 20 7946 0958',
     '01144 20 7946 0958',
     '020 7946 0958 ext. 123',
-    '020 7946 0958 - ext. 123',
-    '020 7946 0958 - ext. 1234',
+    '020 7946 0958-ext. 1234',
     '+44 (0)20 7946 0958 ext. 1234',
     '020 7946 0958 x123',
-    '020 7946 0958 # 123',
+    '020 7946 0958 #123',
     '0800 1111',
   ])('accepts the established UK telephone format %s', (telephone) => {
     expect(
@@ -82,6 +81,10 @@ describe('company details', () => {
     '0207 9460 958',
     '020 79460 958',
     '020-79 46-0958',
+    '020 7946 0958 - ext. 123',
+    '020 7946 0958 ext.  123',
+    '020 7946 0958 x 123',
+    '020 7946 0958 # 123',
   ])('rejects the non-UK telephone format %s', (telephone) => {
     expect(
       companyDetailsSchema.safeParse({
