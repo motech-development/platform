@@ -56,6 +56,9 @@ describe('company details', () => {
     '0044 20 7946 0958',
     '01144 20 7946 0958',
     '020 7946 0958 ext. 123',
+    '020 7946 0958 - ext. 123',
+    '020 7946 0958 x123',
+    '020 7946 0958 # 123',
     '0800 1111',
   ])('accepts the established UK telephone format %s', (telephone) => {
     expect(
