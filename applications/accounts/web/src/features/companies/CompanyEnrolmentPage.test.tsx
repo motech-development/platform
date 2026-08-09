@@ -1,7 +1,7 @@
 import { BreezeProvider } from '@motech-development/breeze-ui';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { companyEnrolmentSchema } from './company';
 import { CompanyEnrolmentPage } from './CompanyEnrolmentPage';
 
@@ -47,7 +47,29 @@ vi.mock('./CompaniesPageContent', () => ({
   CompaniesPageContent: () => <main>My companies</main>,
 }));
 
+function fillCompanyDetails() {
+  const values = {
+    'Account number': '12345678',
+    'Address line 1': '1 Example Street',
+    'Company name': 'Example Company',
+    'Company number': '12345678',
+    'Email address': 'owner@example.com',
+    Postcode: 'sw1a 1aa',
+    'Sort code': '12-34-56',
+    'Telephone number': '020 7946 0958',
+    'Town or city': 'London',
+  };
+
+  Object.entries(values).forEach(([label, value]) => {
+    fireEvent.change(screen.getByLabelText(label), { target: { value } });
+  });
+}
+
 describe('CompanyEnrolmentPage', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it('preserves the two-step enrolment defaults and normalises the postcode', async () => {
     const user = userEvent.setup();
 
@@ -73,33 +95,7 @@ describe('CompanyEnrolmentPage', () => {
       screen.getByRole('button', { name: 'Continue to settings' }),
     ).toBeDisabled();
 
-    fireEvent.change(screen.getByLabelText('Company name'), {
-      target: { value: 'Example Company' },
-    });
-    fireEvent.change(screen.getByLabelText('Company number'), {
-      target: { value: '12345678' },
-    });
-    fireEvent.change(screen.getByLabelText('Account number'), {
-      target: { value: '12345678' },
-    });
-    fireEvent.change(screen.getByLabelText('Sort code'), {
-      target: { value: '12-34-56' },
-    });
-    fireEvent.change(screen.getByLabelText('Address line 1'), {
-      target: { value: '1 Example Street' },
-    });
-    fireEvent.change(screen.getByLabelText('Town or city'), {
-      target: { value: 'London' },
-    });
-    fireEvent.change(screen.getByLabelText('Postcode'), {
-      target: { value: 'sw1a 1aa' },
-    });
-    fireEvent.change(screen.getByLabelText('Email address'), {
-      target: { value: 'owner@example.com' },
-    });
-    fireEvent.change(screen.getByLabelText('Telephone number'), {
-      target: { value: '020 7946 0958' },
-    });
+    fillCompanyDetails();
     await user.click(
       screen.getByRole('button', { name: 'Continue to settings' }),
     );
@@ -138,5 +134,50 @@ describe('CompanyEnrolmentPage', () => {
       },
       vat: { charge: 20, pay: 20, scheme: 'standard' },
     });
+  });
+
+  it('recovers safely when dashboard navigation fails after creation', async () => {
+    const user = userEvent.setup();
+
+    mocks.createCompany.mockResolvedValue({
+      data: {
+        createCompany: {
+          companyNumber: '12345678',
+          id: 'company-id',
+          name: 'Example Company',
+          owner: 'owner-id',
+        },
+      },
+    });
+    mocks.navigate
+      .mockRejectedValueOnce(new Error('Dashboard unavailable'))
+      .mockResolvedValueOnce(undefined);
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <CompanyEnrolmentPage owner="owner-id" />
+      </BreezeProvider>,
+    );
+
+    fillCompanyDetails();
+    await user.click(
+      screen.getByRole('button', { name: 'Continue to settings' }),
+    );
+    await user.click(screen.getByLabelText('Standard'));
+    const saveButton = screen.getByRole('button', { name: 'Save company' });
+
+    fireEvent.submit(saveButton);
+
+    await waitFor(() =>
+      expect(mocks.navigate).toHaveBeenNthCalledWith(2, {
+        to: '/my-companies',
+      }),
+    );
+    expect(saveButton).toBeDisabled();
+    fireEvent.submit(saveButton);
+    expect(mocks.createCompany).toHaveBeenCalledOnce();
+    expect(mocks.toast.show).not.toHaveBeenCalledWith(
+      expect.objectContaining({ title: 'Company could not be added' }),
+    );
   });
 });

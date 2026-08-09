@@ -1,5 +1,5 @@
 import { BreezeProvider } from '@motech-development/breeze-ui';
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { SettingsPage } from './SettingsPage';
@@ -29,6 +29,7 @@ const mocks = vi.hoisted(() => ({
     loading: false,
     refetch: vi.fn(),
   },
+  shouldBlockFn: undefined as undefined | (() => boolean),
   toast: { show: vi.fn() },
 }));
 
@@ -51,13 +52,18 @@ vi.mock('@motech-development/breeze-ui/icons', () => ({
 
 vi.mock('@tanstack/react-router', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@tanstack/react-router')>()),
-  useBlocker: () => ({ proceed: vi.fn(), reset: vi.fn(), status: 'idle' }),
+  useBlocker: (options: { shouldBlockFn: () => boolean }) => {
+    mocks.shouldBlockFn = options.shouldBlockFn;
+
+    return { proceed: vi.fn(), reset: vi.fn(), status: 'idle' };
+  },
   useNavigate: () => mocks.navigate,
 }));
 
 describe('SettingsPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mocks.shouldBlockFn = undefined;
   });
 
   it('keeps protected categories read-only and defaults new categories to 20% VAT', async () => {
@@ -137,5 +143,35 @@ describe('SettingsPage', () => {
         to: '/my-companies/dashboard/$companyId',
       }),
     );
+  });
+
+  it('restores dirty-form blocking when navigation fails after saving', async () => {
+    const user = userEvent.setup();
+    mocks.mutation.mockResolvedValue({
+      data: { updateSettings: mocks.query.data.getSettings },
+    });
+    mocks.navigate.mockRejectedValue(new Error('Dashboard unavailable'));
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <SettingsPage companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    fireEvent.change(screen.getByLabelText('Advertising name'), {
+      target: { value: 'Marketing' },
+    });
+    await user.click(screen.getByRole('button', { name: 'Save settings' }));
+    await waitFor(() =>
+      expect(mocks.toast.show).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Settings could not be saved' }),
+      ),
+    );
+
+    fireEvent.change(screen.getByLabelText('Marketing name'), {
+      target: { value: 'Campaigns' },
+    });
+
+    await waitFor(() => expect(mocks.shouldBlockFn?.()).toBe(true));
   });
 });

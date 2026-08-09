@@ -48,6 +48,8 @@ export function upsertCompanyInCache(
         return next.sort((left, right) =>
           (readField<string>('name', left) ?? '').localeCompare(
             readField<string>('name', right) ?? '',
+            'en-GB',
+            { sensitivity: 'base' },
           ),
         );
       },

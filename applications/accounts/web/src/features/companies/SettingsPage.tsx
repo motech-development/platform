@@ -87,6 +87,7 @@ function SettingsForm({
           to: '/my-companies/dashboard/$companyId',
         });
       } catch {
+        allowNavigation.current = false;
         toast.show({
           description: t(
             'Your changes are still here. Check them and try again.',
