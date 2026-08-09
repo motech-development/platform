@@ -4,7 +4,7 @@ import {
   companyEnrolmentDefaults,
   exactCompanyNameSchema,
   formatSortCode,
-  normaliseCompanyDetails,
+  formatVatRegistration,
   settingsSchema,
   sortCompaniesByName,
   vatSettingsSchema,
@@ -31,7 +31,7 @@ describe('company details', () => {
   });
 
   it('normalises a postcode to uppercase before mutation', () => {
-    expect(normaliseCompanyDetails(validCompany).address.line5).toBe(
+    expect(companyDetailsSchema.parse(validCompany).address.line5).toBe(
       'SW1A 1AA',
     );
   });
@@ -50,6 +50,12 @@ describe('company details', () => {
 });
 
 describe('company enrolment and settings', () => {
+  it('formats VAT registration digits using the established GB prefix', () => {
+    expect(formatVatRegistration('216506516')).toBe('GB216506516');
+    expect(formatVatRegistration('gb 216 506 516')).toBe('GB216506516');
+    expect(formatVatRegistration('')).toBe('');
+  });
+
   it.each(['GGB123456789', 'BG123456789'])(
     'rejects the malformed VAT registration prefix %s',
     (registration) => {

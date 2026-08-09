@@ -25,8 +25,13 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GET_COMPANY_SETTINGS, UPDATE_SETTINGS } from '../../data/operations';
 import { validationMessage, visibleValidationErrors } from '../form-errors';
-import { type CompanySettings, settingsSchema } from './company';
+import {
+  type CompanySettings,
+  formatVatRegistration,
+  settingsSchema,
+} from './company';
 import { monthNames } from './month-names';
+import { QueryRefreshAlert } from './QueryRefreshAlert';
 
 type SettingsDraft = Omit<CompanySettings, 'categories' | 'vat'> & {
   categories: Array<
@@ -414,7 +419,7 @@ function SettingsForm({
                 <TextField.Root
                   invalid={errors.length > 0}
                   onChange={(value) => {
-                    field.handleChange(value.toUpperCase().replace(/\s/gu, ''));
+                    field.handleChange(formatVatRegistration(value));
                     markDirty();
                   }}
                   value={field.state.value}
@@ -531,7 +536,7 @@ export function SettingsPage({ companyId }: Readonly<{ companyId: string }>) {
 
   if (loading && !data)
     return <p aria-live="polite">{t('Loading settings')}</p>;
-  if (error || !data?.getSettings) {
+  if (!data?.getSettings) {
     return (
       <StatePanel
         action={
@@ -561,15 +566,30 @@ export function SettingsPage({ companyId }: Readonly<{ companyId: string }>) {
         )}
         title={t('Settings')}
       />
+      {error ? (
+        <QueryRefreshAlert
+          onRetry={() => {
+            refetch().catch(() => undefined);
+          }}
+          retryLabel={t('Try again', { ns: 'routing' })}
+        >
+          {t(
+            'Settings could not be refreshed. Check your connection, then try again.',
+          )}
+        </QueryRefreshAlert>
+      ) : null}
       <SettingsForm
         companyId={companyId}
         initialValues={{
           ...data.getSettings,
           vat: {
             ...data.getSettings.vat,
-            registration: data.getSettings.vat.registration ?? '',
+            registration: formatVatRegistration(
+              data.getSettings.vat.registration ?? '',
+            ),
           },
         }}
+        key={companyId}
       />
     </div>
   );

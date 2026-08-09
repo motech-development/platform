@@ -14,7 +14,7 @@ describe('Accounts pending view', () => {
     ['/my-companies/dashboard/company-1', 'dashboard'],
     ['/my-companies/update-details/company-1', 'company-details'],
     ['/my-companies/settings/company-1', 'settings'],
-    ['/my-companies/add-company', 'companies'],
+    ['/my-companies/add-company', 'add-company'],
     ['/my-companies', 'companies'],
     ['/', 'authentication'],
   ] as const)('maps %s to %s', (pathname, view) => {

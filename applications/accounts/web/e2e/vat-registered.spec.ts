@@ -1,45 +1,8 @@
 import AxeBuilder from '@axe-core/playwright';
-import type { Locator, Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
 import { gotoAuthenticatedPage } from './auth';
+import focusWithKeyboard from './keyboard';
 import { expect, test } from './test';
-
-async function focusWithKeyboard(page: Page, target: Locator): Promise<void> {
-  await page.evaluate(() => {
-    if (document.activeElement instanceof HTMLElement) {
-      document.activeElement.blur();
-    }
-  });
-  await page.keyboard.press('Tab');
-  const firstFocusedElement = await page.evaluateHandle(
-    () => document.activeElement,
-  );
-
-  async function advanceUntilTarget(): Promise<void> {
-    if (
-      await target.evaluate((element) => element === document.activeElement)
-    ) {
-      return;
-    }
-
-    await page.keyboard.press('Tab');
-
-    if (
-      await firstFocusedElement.evaluate(
-        (firstElement) => firstElement === document.activeElement,
-      )
-    ) {
-      throw new Error('Add company was not reachable by keyboard');
-    }
-
-    await advanceUntilTarget();
-  }
-
-  try {
-    await advanceUntilTarget();
-  } finally {
-    await firstFocusedElement.dispose();
-  }
-}
 
 async function expectNoA11yViolations(page: Page): Promise<void> {
   // Drawer motion lasts 180ms; sample the settled colors rather than a blend.
@@ -129,7 +92,11 @@ test.describe('VAT registered Accounts', () => {
       .getByRole('button', { name: 'Add a new company' })
       .first();
 
-    await focusWithKeyboard(page, addCompany);
+    await focusWithKeyboard(
+      page,
+      addCompany,
+      'Add company was not reachable by keyboard',
+    );
     await expect(addCompany).toBeFocused();
     await page.keyboard.press('Enter');
     await expect(page.getByText('Step 1 of 2')).toBeVisible();
@@ -250,6 +217,9 @@ test.describe('VAT registered Accounts', () => {
       await page.getByRole('button', { name: 'Continue to settings' }).click();
 
       await page.getByLabel('VAT registration').fill('216506516');
+      await expect(page.getByLabel('VAT registration')).toHaveValue(
+        'GB216506516',
+      );
       await page.getByLabel('Standard').press('Space');
       await expect(page.getByLabel('Standard')).toBeChecked();
       await selectOption(page, 'Day', '5');

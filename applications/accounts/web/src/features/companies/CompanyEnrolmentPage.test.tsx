@@ -109,8 +109,11 @@ describe('CompanyEnrolmentPage', () => {
     expect(screen.getByLabelText('VAT paid')).toHaveValue('£0.00');
 
     fireEvent.change(screen.getByLabelText('VAT registration'), {
-      target: { value: 'GB123456789' },
+      target: { value: '123456789' },
     });
+    expect(screen.getByLabelText('VAT registration')).toHaveValue(
+      'GB123456789',
+    );
     await user.click(screen.getByRole('button', { name: 'Back' }));
     await user.click(
       screen.getByRole('button', { name: 'Continue to settings' }),

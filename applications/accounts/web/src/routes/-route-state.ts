@@ -1,4 +1,5 @@
 export type AccountsPendingView =
+  | 'add-company'
   | 'authentication'
   | 'companies'
   | 'company-details'
@@ -28,10 +29,11 @@ export function accountsPendingView(pathname: string): AccountsPendingView {
     return 'settings';
   }
 
-  if (
-    pathname === '/my-companies' ||
-    pathname.startsWith('/my-companies/add-company')
-  ) {
+  if (pathname.startsWith('/my-companies/add-company')) {
+    return 'add-company';
+  }
+
+  if (pathname === '/my-companies') {
     return 'companies';
   }
 

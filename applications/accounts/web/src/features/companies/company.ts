@@ -143,10 +143,10 @@ export function formatSortCode(value: string): string {
     .replace(/^(\d{2}-\d{2})(\d)/u, '$1-$2');
 }
 
-export function normaliseCompanyDetails(
-  company: CompanyDetails,
-): NormalisedCompanyDetails {
-  return companyDetailsSchema.parse(company);
+export function formatVatRegistration(value: string): string {
+  const digits = value.toUpperCase().replace(/^GB/u, '').replace(/\D/gu, '');
+
+  return digits ? `GB${digits}` : '';
 }
 
 export function exactCompanyNameSchema(companyName: string) {

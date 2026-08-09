@@ -86,6 +86,148 @@ export function CompaniesTableSkeleton() {
   );
 }
 
+function FieldSkeletons({ count }: Readonly<{ count: number }>) {
+  return (
+    <div className="grid gap-5 sm:grid-cols-2">
+      {Array.from({ length: count }, (_, index) => (
+        <Skeleton className="h-17" key={index} />
+      ))}
+    </div>
+  );
+}
+
+export function CompanyDetailsFormSkeleton({
+  layout = 'split',
+}: Readonly<{ layout?: 'split' | 'stacked' }>) {
+  const { t } = useTranslation('companies');
+  const headingLevel = layout === 'stacked' ? 3 : 2;
+  const bankSection = (
+    <FormSection
+      description={t('Used to match transactions.')}
+      divided
+      headingLevel={headingLevel}
+      layout={layout}
+      title={t('Bank account')}
+    >
+      <FieldSkeletons count={2} />
+    </FormSection>
+  );
+
+  return (
+    <div className="grid min-w-0 gap-6">
+      <FormSection
+        description={t('The registered company identity.')}
+        divided
+        headingLevel={headingLevel}
+        layout={layout}
+        title={t(layout === 'stacked' ? 'Company details' : 'Identity')}
+      >
+        <FieldSkeletons count={2} />
+      </FormSection>
+      {layout === 'stacked' ? bankSection : null}
+      <FormSection
+        description={t('The registered company address.')}
+        divided
+        headingLevel={headingLevel}
+        layout={layout}
+        title={t('Address')}
+      >
+        <FieldSkeletons count={5} />
+      </FormSection>
+      <FormSection
+        description={t('Primary company contact details.')}
+        divided
+        headingLevel={headingLevel}
+        layout={layout}
+        title={t('Contact details')}
+      >
+        <FieldSkeletons count={2} />
+      </FormSection>
+      {layout === 'split' ? bankSection : null}
+      <div className="flex flex-col gap-3 sm:flex-row sm:justify-between">
+        {layout === 'split' ? <Skeleton className="h-11 w-36" /> : null}
+        <div className="flex justify-end gap-3">
+          {layout === 'stacked' ? <Skeleton className="h-11 w-24" /> : null}
+          <Skeleton className="h-11 w-36" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function SettingsFormSkeleton() {
+  const { t } = useTranslation('companies');
+
+  return (
+    <div className="grid min-w-0 gap-6">
+      <FormSection
+        action={<Skeleton className="h-11 w-36" />}
+        description={t('Applied when purchases are recorded.')}
+        divided
+        title={t('Expense categories')}
+      >
+        <div className="grid gap-3">
+          {[0, 1, 2].map((index) => (
+            <div
+              className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(10rem,13rem)_auto]"
+              key={index}
+            >
+              <Skeleton className="h-17" />
+              <Skeleton className="h-17" />
+              <Skeleton className="size-11 self-end" />
+            </div>
+          ))}
+        </div>
+      </FormSection>
+      <FormSection
+        description={t('Used when creating annual reports.')}
+        divided
+        title={t('Financial year end')}
+      >
+        <FieldSkeletons count={2} />
+      </FormSection>
+      <FormSection
+        description={t('Rates applied to sales and purchases.')}
+        divided
+        title={t('VAT settings')}
+      >
+        <div className="grid gap-5">
+          <Skeleton className="h-17" />
+          <FieldSkeletons count={3} />
+        </div>
+      </FormSection>
+      <div className="flex justify-end">
+        <Skeleton className="h-11 w-36" />
+      </div>
+    </div>
+  );
+}
+
+export function CompanyEnrolmentDrawerSkeleton() {
+  const { t } = useTranslation(['companies', 'routing']);
+
+  return (
+    <Drawer.Root onOpenChange={() => undefined} open triggerless>
+      <Drawer.Content placement={{ base: 'bottom', md: 'end' }} size="wide">
+        <Drawer.Description>
+          {t('Step {{step}} of 2', { ns: 'companies', step: 1 })}
+        </Drawer.Description>
+        <Drawer.Title>{t('Add company', { ns: 'companies' })}</Drawer.Title>
+        <section
+          aria-busy="true"
+          aria-label={t('Loading company details', { ns: 'companies' })}
+          role="status"
+        >
+          <VisuallyHidden>{t('Loading', { ns: 'routing' })}</VisuallyHidden>
+          <div aria-hidden="true" inert>
+            <CompanyDetailsFormSkeleton layout="stacked" />
+          </div>
+        </section>
+      </Drawer.Content>
+    </Drawer.Root>
+  );
+}
+
 export function OverviewContentSkeleton() {
   const { t } = useTranslation(['overview', 'routing']);
 

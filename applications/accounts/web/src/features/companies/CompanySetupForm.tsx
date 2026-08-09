@@ -15,6 +15,7 @@ import { validationMessage, visibleValidationErrors } from '../form-errors';
 import {
   type CompanyEnrolment,
   type CompanyEnrolmentDraft,
+  formatVatRegistration,
   vatSettingsSchema,
   yearEndSchema,
 } from './company';
@@ -209,7 +210,7 @@ export function CompanySetupForm({
                 <TextField.Root
                   invalid={errors.length > 0}
                   onChange={(value) => {
-                    field.handleChange(value.toUpperCase().replace(/\s/gu, ''));
+                    field.handleChange(formatVatRegistration(value));
                     onDirty();
                   }}
                   value={field.state.value}
