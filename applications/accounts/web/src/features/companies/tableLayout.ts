@@ -1,2 +1,15 @@
-export const companiesTableClassName =
-  'max-[681px]:!block max-[681px]:[&>thead]:!hidden max-[681px]:[&>tbody]:!block max-[681px]:[&>tbody>tr]:!grid max-[681px]:[&>tbody>tr]:grid-cols-[2.25rem_minmax(0,1fr)_2.25rem] max-[681px]:[&>tbody>tr]:!items-center max-[681px]:[&>tbody>tr]:!gap-x-3 max-[681px]:[&>tbody>tr]:!gap-y-2 max-[681px]:[&>tbody>tr]:px-4 max-[681px]:[&>tbody>tr]:py-4 max-[681px]:[&>tbody>tr>td]:!border-0 max-[681px]:[&>tbody>tr>td]:!p-0 max-[681px]:[&>tbody>tr>td[data-label]]:before:!inline-block max-[681px]:[&>tbody>tr>td[data-breeze-cell-column=avatar]]:col-start-1 max-[681px]:[&>tbody>tr>td[data-breeze-cell-column=avatar]]:row-start-1 max-[681px]:[&>tbody>tr>td[data-breeze-cell-column=avatar]]:!flex max-[681px]:[&>tbody>tr>td[data-breeze-cell-column=company]]:col-start-2 max-[681px]:[&>tbody>tr>td[data-breeze-cell-column=company]]:row-start-1 max-[681px]:[&>tbody>tr>td[data-breeze-cell-column=company]]:!flex max-[681px]:[&>tbody>tr>td[data-breeze-cell-column=number]]:col-span-3 max-[681px]:[&>tbody>tr>td[data-breeze-cell-column=number]]:row-start-2 max-[681px]:[&>tbody>tr>td[data-breeze-cell-column=number]]:!block max-[681px]:[&>tbody>tr>td[data-breeze-cell-column=contact]]:col-span-3 max-[681px]:[&>tbody>tr>td[data-breeze-cell-column=contact]]:row-start-3 max-[681px]:[&>tbody>tr>td[data-breeze-cell-column=contact]]:!block max-[681px]:[&>tbody>tr>td[data-breeze-cell-column=actions]]:col-start-3 max-[681px]:[&>tbody>tr>td[data-breeze-cell-column=actions]]:row-start-1 max-[681px]:[&>tbody>tr>td[data-breeze-cell-column=actions]]:!flex max-[681px]:[&>tbody>tr>td[data-breeze-cell-column=actions]]:justify-end';
+const compactCellClassName = 'max-[681px]:!border-0 max-[681px]:!p-0';
+
+export const companiesTableClassNames = {
+  body: 'max-[681px]:!block',
+  cells: {
+    actions: `${compactCellClassName} max-[681px]:col-start-3 max-[681px]:row-start-1 max-[681px]:!flex max-[681px]:justify-end`,
+    avatar: `${compactCellClassName} max-[681px]:col-start-1 max-[681px]:row-start-1 max-[681px]:!flex`,
+    company: `${compactCellClassName} max-[681px]:col-start-2 max-[681px]:row-start-1 max-[681px]:!flex`,
+    contact: `${compactCellClassName} max-[681px]:col-span-3 max-[681px]:row-start-3 max-[681px]:!block max-[681px]:before:!inline-block`,
+    number: `${compactCellClassName} max-[681px]:col-span-3 max-[681px]:row-start-2 max-[681px]:!block max-[681px]:before:!inline-block`,
+  },
+  header: 'max-[681px]:!hidden',
+  root: 'max-[681px]:!block',
+  row: 'max-[681px]:!grid max-[681px]:grid-cols-[2.25rem_minmax(0,1fr)_2.25rem] max-[681px]:!items-center max-[681px]:!gap-x-3 max-[681px]:!gap-y-2 max-[681px]:px-4 max-[681px]:py-4',
+} as const;

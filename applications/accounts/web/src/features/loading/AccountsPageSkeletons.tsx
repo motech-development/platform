@@ -9,7 +9,7 @@ import {
 } from '@motech-development/breeze-ui';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { companiesTableClassName } from '../companies/tableLayout';
+import { companiesTableClassNames } from '../companies/tableLayout';
 import { FinancialSummarySkeleton } from '../transactions/FinancialSummary';
 import { TransactionLedgerSkeleton } from '../transactions/TransactionLedger';
 
@@ -37,12 +37,12 @@ export function CompaniesTableSkeleton() {
         <Table.Root
           aria-label={t('Loading companies table')}
           boundary="strong"
-          className={companiesTableClassName}
+          className={companiesTableClassNames.root}
           desktopColumns="mediaDetailsAction"
           layout="responsiveGrid"
           tabIndex={-1}
         >
-          <Table.Header>
+          <Table.Header className={companiesTableClassNames.header}>
             <Table.Column
               compactLabel={false}
               id="avatar"
@@ -68,28 +68,44 @@ export function CompaniesTableSkeleton() {
               <VisuallyHidden>{t('Action')}</VisuallyHidden>
             </Table.Column>
           </Table.Header>
-          <Table.Body>
+          <Table.Body className={companiesTableClassNames.body}>
             {[0, 1, 2].map((index) => (
               <Table.Row
                 id={`loading-company-${index}`}
+                className={companiesTableClassNames.row}
                 key={index}
                 textValue={t('Loading company row {{count}}', {
                   count: index + 1,
                 })}
               >
-                <Table.Cell column="avatar">
+                <Table.Cell
+                  className={companiesTableClassNames.cells.avatar}
+                  column="avatar"
+                >
                   <Skeleton className="size-9 shrink-0 rounded-none" />
                 </Table.Cell>
-                <Table.Cell column="company">
+                <Table.Cell
+                  className={companiesTableClassNames.cells.company}
+                  column="company"
+                >
                   <Skeleton className="h-4 w-3/4 max-w-44" />
                 </Table.Cell>
-                <Table.Cell column="number">
+                <Table.Cell
+                  className={companiesTableClassNames.cells.number}
+                  column="number"
+                >
                   <Skeleton className="h-4 w-3/4 max-w-64" />
                 </Table.Cell>
-                <Table.Cell column="contact">
+                <Table.Cell
+                  className={companiesTableClassNames.cells.contact}
+                  column="contact"
+                >
                   <Skeleton className="h-4 w-3/4 max-w-64" />
                 </Table.Cell>
-                <Table.Cell column="actions">
+                <Table.Cell
+                  className={companiesTableClassNames.cells.actions}
+                  column="actions"
+                >
                   <Skeleton className="h-4 w-3" />
                 </Table.Cell>
               </Table.Row>
