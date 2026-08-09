@@ -25,7 +25,7 @@ describe('form errors', () => {
     );
   });
 
-  it('shows errors after touch or submission', () => {
+  it('shows errors after blur or submission', () => {
     const errors = ['Required'];
 
     expect(visibleValidationErrors(errors, false, 0)).toEqual([]);

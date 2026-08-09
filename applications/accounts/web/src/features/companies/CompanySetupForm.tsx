@@ -92,7 +92,7 @@ export function CompanySetupForm({
       {(field) => {
         const errors = visibleValidationErrors(
           schemaFieldErrors(setupSchema, form.state.values, name),
-          field.state.meta.isTouched,
+          field.state.meta.isBlurred,
           form.state.submissionAttempts,
         );
 
@@ -120,7 +120,7 @@ export function CompanySetupForm({
       {(field) => {
         const errors = visibleValidationErrors(
           schemaFieldErrors(setupSchema, form.state.values, name),
-          field.state.meta.isTouched,
+          field.state.meta.isBlurred,
           form.state.submissionAttempts,
         );
 
@@ -168,7 +168,7 @@ export function CompanySetupForm({
           {(field) => {
             const errors = visibleValidationErrors(
               schemaFieldErrors(setupSchema, form.state.values, 'vat.scheme'),
-              field.state.meta.isTouched,
+              field.state.meta.isBlurred,
               form.state.submissionAttempts,
             );
 
@@ -196,7 +196,7 @@ export function CompanySetupForm({
                   form.state.values,
                   'vat.registration',
                 ),
-                field.state.meta.isTouched,
+                field.state.meta.isBlurred,
                 form.state.submissionAttempts,
               );
 
@@ -236,7 +236,7 @@ export function CompanySetupForm({
                     form.state.values,
                     'yearEnd.day',
                   ),
-                  dayField.state.meta.isTouched,
+                  dayField.state.meta.isBlurred,
                   form.state.submissionAttempts,
                 );
 

@@ -107,7 +107,7 @@ export function CompanyDetailsForm({
       {(formField) => {
         const errors = visibleValidationErrors(
           schemaFieldErrors(companyDetailsSchema, form.state.values, name),
-          formField.state.meta.isTouched,
+          formField.state.meta.isBlurred,
           form.state.submissionAttempts,
         );
 
