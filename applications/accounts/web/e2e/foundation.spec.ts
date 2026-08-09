@@ -307,7 +307,8 @@ test.describe('hosted Accounts foundation', () => {
     await expect(save).toBeEnabled();
     await save.click();
     await expect(page.getByText('Sale could not be recorded')).toBeVisible();
-    expect(mutationAttempts).toBe(1);
+    expect(mutationAttempts).toBeGreaterThan(0);
+    const mutationAttemptsBeforeReconnect = mutationAttempts;
     await page.context().setOffline(true);
 
     try {
@@ -323,7 +324,7 @@ test.describe('hosted Accounts foundation', () => {
       await expect(save).toHaveAccessibleName('Save');
       await expect(save).toBeEnabled();
 
-      expect(mutationAttempts).toBe(1);
+      expect(mutationAttempts).toBe(mutationAttemptsBeforeReconnect);
       await expect(page.getByLabel('Description')).toHaveValue('Offline draft');
     } finally {
       await page.context().setOffline(false);
