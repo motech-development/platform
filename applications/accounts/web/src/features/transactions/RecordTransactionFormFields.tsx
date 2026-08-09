@@ -53,18 +53,18 @@ export function RecordTransactionFormFields({
   vatRate: number;
 }>) {
   const { t } = useTranslation('transactions');
-  const revalidateVisibleErrors = (touched: boolean) => {
-    if (touched || form.state.submissionAttempts > 0) {
+  const revalidateVisibleErrors = (blurred: boolean) => {
+    if (blurred || form.state.submissionAttempts > 0) {
       Promise.resolve(form.validate('blur')).catch(() => undefined);
     }
   };
   const changeStringField = (
     handleChange: (value: string) => void,
     value: string,
-    touched: boolean,
+    blurred: boolean,
   ) => {
     handleChange(value);
-    revalidateVisibleErrors(touched);
+    revalidateVisibleErrors(blurred);
     markDirty();
   };
 
@@ -92,7 +92,7 @@ export function RecordTransactionFormFields({
           {(field) => {
             const errors = visibleValidationErrors(
               field.state.meta.errors,
-              field.state.meta.isTouched,
+              field.state.meta.isBlurred,
               form.state.submissionAttempts,
             );
 
@@ -106,7 +106,7 @@ export function RecordTransactionFormFields({
                   changeStringField(
                     field.handleChange,
                     client?.name ?? '',
-                    field.state.meta.isTouched,
+                    field.state.meta.isBlurred,
                   );
                 }}
                 placeholder={t('Select client')}
@@ -144,7 +144,7 @@ export function RecordTransactionFormFields({
           {(field) => {
             const errors = visibleValidationErrors(
               field.state.meta.errors,
-              field.state.meta.isTouched,
+              field.state.meta.isBlurred,
               form.state.submissionAttempts,
             );
 
@@ -155,7 +155,7 @@ export function RecordTransactionFormFields({
                   changeStringField(
                     field.handleChange,
                     value,
-                    field.state.meta.isTouched,
+                    field.state.meta.isBlurred,
                   );
                 }}
                 required
@@ -177,7 +177,7 @@ export function RecordTransactionFormFields({
           {(field) => {
             const errors = visibleValidationErrors(
               field.state.meta.errors,
-              field.state.meta.isTouched,
+              field.state.meta.isBlurred,
               form.state.submissionAttempts,
             );
 
@@ -189,7 +189,7 @@ export function RecordTransactionFormFields({
                   changeStringField(
                     field.handleChange,
                     value ?? '',
-                    field.state.meta.isTouched,
+                    field.state.meta.isBlurred,
                   );
                 }}
                 required
@@ -236,7 +236,7 @@ export function RecordTransactionFormFields({
             {(field) => {
               const errors = visibleValidationErrors(
                 field.state.meta.errors,
-                field.state.meta.isTouched,
+                field.state.meta.isBlurred,
                 form.state.submissionAttempts,
               );
               const numericValue = field.state.value
@@ -317,7 +317,7 @@ export function RecordTransactionFormFields({
             {(field) => {
               const errors = visibleValidationErrors(
                 field.state.meta.errors,
-                field.state.meta.isTouched,
+                field.state.meta.isBlurred,
                 form.state.submissionAttempts,
               );
 
@@ -330,7 +330,7 @@ export function RecordTransactionFormFields({
                     changeStringField(
                       field.handleChange,
                       value?.toString() ?? '',
-                      field.state.meta.isTouched,
+                      field.state.meta.isBlurred,
                     );
                   }}
                   required

@@ -196,7 +196,7 @@ function SettingsForm({
                             form.state.values,
                             `categories[${index}].name`,
                           ),
-                          field.state.meta.isTouched,
+                          field.state.meta.isBlurred,
                           form.state.submissionAttempts,
                         );
 
@@ -243,7 +243,7 @@ function SettingsForm({
                             form.state.values,
                             `categories[${index}].vatRate`,
                           ),
-                          field.state.meta.isTouched,
+                          field.state.meta.isBlurred,
                           form.state.submissionAttempts,
                         );
                         const label = t('VAT rate for {{name}}', {
@@ -342,7 +342,7 @@ function SettingsForm({
                     form.state.values,
                     'yearEnd.day',
                   ),
-                  dayField.state.meta.isTouched,
+                  dayField.state.meta.isBlurred,
                   form.state.submissionAttempts,
                 );
 
@@ -399,7 +399,7 @@ function SettingsForm({
                   form.state.values,
                   'vat.registration',
                 ),
-                field.state.meta.isTouched,
+                field.state.meta.isBlurred,
                 form.state.submissionAttempts,
               );
 
@@ -427,7 +427,7 @@ function SettingsForm({
                     form.state.values,
                     `vat.${name}`,
                   ),
-                  field.state.meta.isTouched,
+                  field.state.meta.isBlurred,
                   form.state.submissionAttempts,
                 );
 

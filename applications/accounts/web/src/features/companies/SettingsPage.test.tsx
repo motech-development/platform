@@ -231,7 +231,7 @@ describe('SettingsPage', () => {
     ).toBeDisabled();
   });
 
-  it('clears a corrected error and enables saving without a blur', async () => {
+  it('waits for blur before showing an error and clears it while editing', async () => {
     const user = userEvent.setup();
 
     render(
@@ -242,6 +242,10 @@ describe('SettingsPage', () => {
 
     const categoryName = screen.getByLabelText('Advertising name');
     await user.clear(categoryName);
+
+    expect(categoryName).not.toHaveAttribute('aria-invalid', 'true');
+
+    await user.tab();
 
     expect(categoryName).toHaveAttribute('aria-invalid', 'true');
 

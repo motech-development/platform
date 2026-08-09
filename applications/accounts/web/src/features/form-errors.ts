@@ -71,8 +71,8 @@ export function validationMessage(
 
 export function visibleValidationErrors(
   errors: readonly unknown[],
-  touched: boolean,
+  blurred: boolean,
   submissionAttempts: number,
 ): readonly unknown[] {
-  return touched || submissionAttempts > 0 ? errors : [];
+  return blurred || submissionAttempts > 0 ? errors : [];
 }
