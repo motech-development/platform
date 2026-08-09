@@ -102,9 +102,8 @@ describe('CompanyEnrolmentPage', () => {
     expect(
       screen.getByRole('button', { name: 'Continue to settings' }),
     ).toBeDisabled();
-    expect(screen.getByLabelText('Telephone number')).toHaveAttribute(
+    expect(screen.getByLabelText('Telephone number')).not.toHaveAttribute(
       'maxlength',
-      '24',
     );
 
     fillCompanyDetails();
