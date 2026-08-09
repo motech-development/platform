@@ -32,22 +32,21 @@ export function CompaniesPageContent() {
   });
   const initiallyLoading = loading && !data;
   const companies = sortCompaniesByName(data?.getCompanies.items ?? []);
+  const empty = !error && !initiallyLoading && companies.length === 0;
+  const addCompany = () => {
+    navigate({ to: '/my-companies/add-company' }).catch(() => undefined);
+  };
 
   return (
     <div className="min-w-0">
       <PageHeader
         actions={
-          <Button
-            aria-label={t('Add a new company')}
-            onAction={() => {
-              navigate({ to: '/my-companies/add-company' }).catch(
-                () => undefined,
-              );
-            }}
-          >
-            <AddIcon />
-            {t('Add company')}
-          </Button>
+          empty ? undefined : (
+            <Button aria-label={t('Add a new company')} onAction={addCompany}>
+              <AddIcon />
+              {t('Add company')}
+            </Button>
+          )
         }
         description={t('Select a company or add another business.')}
         title={t('My companies')}
@@ -145,17 +144,10 @@ export function CompaniesPageContent() {
           </Table.Body>
         </Table.Root>
       ) : null}
-      {!error && !initiallyLoading && companies.length === 0 ? (
+      {empty ? (
         <StatePanel
           action={
-            <Button
-              aria-label={t('Add a new company')}
-              onAction={() => {
-                navigate({ to: '/my-companies/add-company' }).catch(
-                  () => undefined,
-                );
-              }}
-            >
+            <Button aria-label={t('Add a new company')} onAction={addCompany}>
               {t('Add company')}
             </Button>
           }
