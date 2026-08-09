@@ -188,7 +188,12 @@ export function CompanyEnrolmentPage({ owner }: Readonly<{ owner: string }>) {
         description={t(
           'The company details entered in this drawer will be lost.',
         )}
-        onDiscard={discardChanges}
+        onDiscard={() => {
+          discardChanges();
+          if (blocker.status !== 'blocked') {
+            navigate({ to: '/my-companies' }).catch(() => undefined);
+          }
+        }}
         onOpenChange={setDiscardOpen}
         open={discardOpen}
         title={t('Discard this company?')}

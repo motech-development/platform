@@ -7,7 +7,7 @@ import {
   StatePanel,
 } from '@motech-development/breeze-ui';
 import type { ErrorComponentProps } from '@tanstack/react-router';
-import { useLocation } from '@tanstack/react-router';
+import { useLocation, useNavigate } from '@tanstack/react-router';
 import { type ReactNode, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AuthenticationPanel } from '../auth/AuthenticationPanel';
@@ -48,6 +48,7 @@ function CompanyFormPending({
 export function AccountsPending() {
   const { t } = useTranslation(['routing', 'companies', 'shell']);
   const location = useLocation();
+  const navigate = useNavigate();
   const pendingView = accountsPendingView(location.pathname);
 
   if (pendingView === 'record-transaction') {
@@ -133,7 +134,11 @@ export function AccountsPending() {
           <CompaniesTableSkeleton />
         </div>
         {pendingView === 'add-company' ? (
-          <CompanyEnrolmentDrawerSkeleton />
+          <CompanyEnrolmentDrawerSkeleton
+            onClose={() => {
+              navigate({ to: '/my-companies' }).catch(() => undefined);
+            }}
+          />
         ) : null}
       </>
     );

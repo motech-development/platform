@@ -314,6 +314,25 @@ describe('CompanyEnrolmentPage', () => {
     expect(mocks.navigate).not.toHaveBeenCalled();
   });
 
+  it('leaves after directly discarding dirty enrolment input', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <CompanyEnrolmentPage owner="owner-id" />
+      </BreezeProvider>,
+    );
+
+    fireEvent.change(screen.getByLabelText('Company name'), {
+      target: { value: 'Draft Company' },
+    });
+    await user.click(screen.getByRole('button', { name: 'Close' }));
+    await user.click(screen.getByRole('button', { name: 'Discard changes' }));
+
+    expect(mocks.navigate).toHaveBeenCalledWith({ to: '/my-companies' });
+    expect(mocks.blocker.proceed).not.toHaveBeenCalled();
+  });
+
   it('proceeds with blocked navigation after discard is confirmed', async () => {
     const user = userEvent.setup();
     mocks.blocker.status = 'blocked';
