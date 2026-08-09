@@ -79,13 +79,6 @@ function SettingsForm({
 
         if (!result.data?.updateSettings)
           throw new Error('No settings returned');
-        allowNavigation.current = true;
-        setDirty(false);
-        toast.show({ title: t('Settings saved'), variant: 'success' });
-        await navigate({
-          params: { companyId },
-          to: '/my-companies/dashboard/$companyId',
-        });
       } catch {
         allowNavigation.current = false;
         toast.show({
@@ -95,7 +88,19 @@ function SettingsForm({
           title: t('Settings could not be saved'),
           variant: 'danger',
         });
+
+        return;
       }
+
+      allowNavigation.current = true;
+      setDirty(false);
+      toast.show({ title: t('Settings saved'), variant: 'success' });
+      await navigate({
+        params: { companyId },
+        to: '/my-companies/dashboard/$companyId',
+      }).catch(() => {
+        allowNavigation.current = false;
+      });
     },
     validators: {
       onBlur: settingsSchema,
@@ -147,7 +152,10 @@ function SettingsForm({
           {(categories) => (
             <div className="grid gap-3">
               {categories.map((category, index) => {
-                const categoryLabel = category.name || t('new category');
+                const categoryNumber = index + 1;
+                const categoryLabel =
+                  category.name ||
+                  t('new category {{number}}', { number: categoryNumber });
 
                 return (
                   <div
@@ -185,7 +193,9 @@ function SettingsForm({
                             <TextField.Label>
                               {category.name
                                 ? t('{{name}} name', { name: category.name })
-                                : t('New category name')}
+                                : t('New category name {{number}}', {
+                                    number: categoryNumber,
+                                  })}
                             </TextField.Label>
                             <TextField.Input onBlur={field.handleBlur} />
                             <TextField.Error>

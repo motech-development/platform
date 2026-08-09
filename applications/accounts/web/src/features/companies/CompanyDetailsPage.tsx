@@ -197,16 +197,6 @@ export function CompanyDetailsPage({
 
             if (!result.data?.updateCompany)
               throw new Error('No company returned');
-            allowNavigation.current = true;
-            setDirty(false);
-            toast.show({
-              title: t('Company details saved'),
-              variant: 'success',
-            });
-            await navigate({
-              params: { companyId },
-              to: '/my-companies/dashboard/$companyId',
-            });
           } catch {
             toast.show({
               description: t(
@@ -215,7 +205,22 @@ export function CompanyDetailsPage({
               title: t('Company details could not be saved'),
               variant: 'danger',
             });
+
+            return;
           }
+
+          allowNavigation.current = true;
+          setDirty(false);
+          toast.show({
+            title: t('Company details saved'),
+            variant: 'success',
+          });
+          await navigate({
+            params: { companyId },
+            to: '/my-companies/dashboard/$companyId',
+          }).catch(() => {
+            allowNavigation.current = false;
+          });
         }}
         submitLabel={t('Save changes')}
       />

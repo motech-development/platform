@@ -48,6 +48,18 @@ describe('AccountsPending', () => {
       screen.getByRole('heading', { level: 1, name: title }),
     ).toBeInTheDocument();
   });
+
+  it.each([
+    ['/my-companies/update-details/company-id', 'Loading company details'],
+    ['/my-companies/settings/company-id', 'Loading settings'],
+  ])('labels the %s form skeleton while loading', (pathname, label) => {
+    renderPending(pathname);
+
+    expect(screen.getByRole('status', { name: label })).toHaveAttribute(
+      'aria-busy',
+      'true',
+    );
+  });
 });
 
 describe('PublicRouteNotFound', () => {

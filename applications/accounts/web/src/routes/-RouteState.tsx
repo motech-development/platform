@@ -5,6 +5,7 @@ import {
   PageHeader,
   Skeleton,
   StatePanel,
+  VisuallyHidden,
 } from '@motech-development/breeze-ui';
 import type { ErrorComponentProps } from '@tanstack/react-router';
 import { useLocation } from '@tanstack/react-router';
@@ -122,7 +123,18 @@ export function AccountsPending() {
           )}
           title={t('Company details', { ns: 'companies' })}
         />
-        <Skeleton className="block h-96 w-full" />
+        <section
+          aria-busy="true"
+          aria-label={t('Loading company details', { ns: 'companies' })}
+          role="status"
+        >
+          <VisuallyHidden>
+            {t('Loading company details', { ns: 'companies' })}
+          </VisuallyHidden>
+          <div aria-hidden="true" inert>
+            <Skeleton className="block h-96 w-full" />
+          </div>
+        </section>
       </div>
     );
   }
@@ -137,7 +149,18 @@ export function AccountsPending() {
           )}
           title={t('Settings', { ns: 'companies' })}
         />
-        <Skeleton className="block h-96 w-full" />
+        <section
+          aria-busy="true"
+          aria-label={t('Loading settings', { ns: 'companies' })}
+          role="status"
+        >
+          <VisuallyHidden>
+            {t('Loading settings', { ns: 'companies' })}
+          </VisuallyHidden>
+          <div aria-hidden="true" inert>
+            <Skeleton className="block h-96 w-full" />
+          </div>
+        </section>
       </div>
     );
   }
