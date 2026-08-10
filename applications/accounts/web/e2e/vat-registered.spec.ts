@@ -446,6 +446,7 @@ test.describe('VAT registered Accounts', () => {
       await expect(
         page.getByRole('heading', { level: 1, name: 'Clients' }),
       ).toBeVisible();
+      await expect(page.getByTestId(client.name)).toBeVisible();
     });
 
     test('should add client 3', async ({ page }) => {
@@ -465,6 +466,7 @@ test.describe('VAT registered Accounts', () => {
       await expect(
         page.getByRole('heading', { level: 1, name: 'Clients' }),
       ).toBeVisible();
+      await expect(page.getByTestId(client.name)).toBeVisible();
     });
 
     test('should update client 2', async ({ page }) => {
@@ -500,6 +502,7 @@ test.describe('VAT registered Accounts', () => {
       await expect(
         page.getByRole('heading', { level: 1, name: 'Clients' }),
       ).toBeVisible();
+      await expect(page.getByTestId(updated.name)).toBeVisible();
     });
 
     test('should delete client 3', async ({ page }) => {
@@ -516,6 +519,7 @@ test.describe('VAT registered Accounts', () => {
       await expect(
         page.getByRole('heading', { level: 1, name: 'Clients' }),
       ).toBeVisible();
+      await expect(page.getByTestId(client.name)).toHaveCount(0);
     });
 
     test('should remove company', async ({ page }) => {
