@@ -36,7 +36,7 @@ describe('Drawer', () => {
     expect(drawer).toHaveClass('h-dvh');
     expect(drawer).toHaveClass('overflow-clip');
     expect(drawer).toHaveClass(
-      'w-[min(var(--breeze-drawer-width),100vw)]',
+      'w-[min(var(--breeze-drawer-width),var(--breeze-drawer-visual-viewport-width,100vw))]',
       'max-w-[var(--breeze-drawer-width)]',
     );
     expect(drawer.parentElement?.parentElement).toHaveStyle(
@@ -99,9 +99,12 @@ describe('Drawer', () => {
   it('tracks visual viewport size and offset changes', async () => {
     const visualViewport = Object.assign(new EventTarget(), {
       height: 500,
+      offsetLeft: 24,
       offsetTop: 40,
+      width: 700,
     });
 
+    vi.stubGlobal('innerWidth', 1000);
     vi.stubGlobal('visualViewport', visualViewport);
 
     renderBreeze(
@@ -119,17 +122,61 @@ describe('Drawer', () => {
     expect(drawer).toHaveClass('breeze-drawer-visual-viewport');
     await waitFor(() =>
       expect(drawer).toHaveStyle(
-        '--breeze-drawer-visual-viewport-height: 500px; --breeze-drawer-visual-viewport-offset-top: 40px',
+        '--breeze-drawer-visual-viewport-height: 500px; --breeze-drawer-visual-viewport-width: 700px; --breeze-drawer-visual-viewport-offset-top: 40px; --breeze-drawer-visual-viewport-offset-left: 24px; --breeze-drawer-visual-viewport-offset-right: 276px; --breeze-drawer-visual-viewport-offset-inline-start: 24px; --breeze-drawer-visual-viewport-offset-inline-end: 276px',
       ),
     );
 
     visualViewport.height = 320;
+    visualViewport.offsetLeft = 32;
     visualViewport.offsetTop = 72;
+    visualViewport.width = 640;
     await act(() => visualViewport.dispatchEvent(new Event('resize')));
 
     await waitFor(() =>
       expect(drawer).toHaveStyle(
-        '--breeze-drawer-visual-viewport-height: 320px; --breeze-drawer-visual-viewport-offset-top: 72px',
+        '--breeze-drawer-visual-viewport-height: 320px; --breeze-drawer-visual-viewport-width: 640px; --breeze-drawer-visual-viewport-offset-top: 72px; --breeze-drawer-visual-viewport-offset-left: 32px; --breeze-drawer-visual-viewport-offset-right: 328px; --breeze-drawer-visual-viewport-offset-inline-start: 32px; --breeze-drawer-visual-viewport-offset-inline-end: 328px',
+      ),
+    );
+
+    visualViewport.height = 280;
+    visualViewport.offsetLeft = 80;
+    visualViewport.offsetTop = 96;
+    visualViewport.width = 600;
+    await act(() => visualViewport.dispatchEvent(new Event('scroll')));
+
+    await waitFor(() =>
+      expect(drawer).toHaveStyle(
+        '--breeze-drawer-visual-viewport-height: 280px; --breeze-drawer-visual-viewport-width: 600px; --breeze-drawer-visual-viewport-offset-top: 96px; --breeze-drawer-visual-viewport-offset-left: 80px; --breeze-drawer-visual-viewport-offset-right: 320px; --breeze-drawer-visual-viewport-offset-inline-start: 80px; --breeze-drawer-visual-viewport-offset-inline-end: 320px',
+      ),
+    );
+  });
+
+  it('maps visual viewport offsets to logical edges in right-to-left layouts', async () => {
+    const visualViewport = Object.assign(new EventTarget(), {
+      height: 500,
+      offsetLeft: 24,
+      offsetTop: 40,
+      width: 700,
+    });
+
+    vi.stubGlobal('innerWidth', 1000);
+    vi.stubGlobal('visualViewport', visualViewport);
+
+    renderBreeze(
+      <Drawer.Root readOnly open>
+        <Drawer.Content placement="end">
+          <Drawer.Title>Drawer details</Drawer.Title>
+          <Drawer.Description>Review the details.</Drawer.Description>
+        </Drawer.Content>
+      </Drawer.Root>,
+      { direction: 'rtl' },
+    );
+
+    await waitFor(() =>
+      expect(
+        screen.getByRole('dialog', { name: 'Drawer details' }),
+      ).toHaveStyle(
+        '--breeze-drawer-visual-viewport-offset-inline-start: 276px; --breeze-drawer-visual-viewport-offset-inline-end: 24px',
       ),
     );
   });
