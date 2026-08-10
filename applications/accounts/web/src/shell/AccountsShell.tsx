@@ -26,7 +26,7 @@ import { useTranslation } from 'react-i18next';
 import { AuthenticationTransition } from '../auth/AuthenticationLoading';
 import type { AccountsOwnerId } from '../auth/owner';
 import { GET_COMPANIES } from '../data/operations';
-import { sortCompaniesByName } from '../features/companies/company';
+import { sortNamedEntities } from '../features/entity-details';
 import { setObservabilityCompany } from '../observability';
 import { companyDestination, companyFromPath } from './navigation';
 
@@ -99,7 +99,7 @@ export function AccountsShell({
     variables: { owner: protectedOwner ?? '' },
   });
   const companies = protectedOwner
-    ? sortCompaniesByName(data?.getCompanies.items ?? []).map(
+    ? sortNamedEntities(data?.getCompanies.items ?? []).map(
         ({ companyNumber, id, name }, index) => ({
           description: companyNumber,
           icon: (

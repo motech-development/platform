@@ -5,41 +5,26 @@ export function EntityCollectionPage({
   action,
   children,
   description,
-  empty,
-  emptyState,
-  error,
-  errorState,
-  loading,
-  loadingState,
   refreshState,
+  state,
   title,
 }: Readonly<{
   action: ReactNode;
   children: ReactNode;
   description: string;
-  empty: boolean;
-  emptyState: ReactNode;
-  error: boolean;
-  errorState: ReactNode;
-  loading: boolean;
-  loadingState: ReactNode;
   refreshState?: ReactNode;
+  state: 'empty' | 'error' | 'loading' | 'populated';
   title: string;
 }>) {
-  const populated = !empty && !error && !loading;
-
   return (
     <div className="min-w-0">
       <PageHeader
-        actions={populated ? action : undefined}
+        actions={state === 'populated' ? action : undefined}
         description={description}
         title={title}
       />
       {refreshState}
-      {error ? errorState : null}
-      {loading ? loadingState : null}
-      {populated ? children : null}
-      {empty ? emptyState : null}
+      {children}
     </div>
   );
 }

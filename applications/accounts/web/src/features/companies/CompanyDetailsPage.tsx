@@ -15,9 +15,10 @@ import {
   GET_COMPANY_DETAILS,
   UPDATE_COMPANY,
 } from '../../data/operations';
+import { exactEntityNameSchema } from '../entity-details';
 import { CompanyDetailsFormSkeleton } from '../loading/AccountsPageSkeletons';
 import { removeCompanyFromCache, upsertCompanyInCache } from './cache-updates';
-import { exactCompanyNameSchema, formatSortCode } from './company';
+import { formatSortCode } from './company';
 import { CompanyDetailsForm } from './CompanyDetailsForm';
 import {
   CompanyFormFailureState,
@@ -56,7 +57,7 @@ export function CompanyDetailsPage({
   });
   const company = data?.getCompany;
   const confirmationValid = company
-    ? exactCompanyNameSchema(company.name).safeParse(confirmation).success
+    ? exactEntityNameSchema(company.name).safeParse(confirmation).success
     : false;
   const pageHeader = (
     <PageHeader

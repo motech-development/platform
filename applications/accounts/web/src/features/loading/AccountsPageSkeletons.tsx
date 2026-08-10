@@ -53,7 +53,7 @@ export function CompaniesTableSkeleton() {
   );
 }
 
-function FieldSkeletons({ count }: Readonly<{ count: number }>) {
+export function FormFieldSkeletons({ count }: Readonly<{ count: number }>) {
   return (
     <div className="grid gap-5 sm:grid-cols-2">
       {Array.from({ length: count }, (_, index) => (
@@ -76,7 +76,7 @@ export function CompanyDetailsFormSkeleton({
       layout={layout}
       title={t('Bank account')}
     >
-      <FieldSkeletons count={2} />
+      <FormFieldSkeletons count={2} />
     </FormSection>
   );
 
@@ -89,7 +89,7 @@ export function CompanyDetailsFormSkeleton({
         layout={layout}
         title={t('Company details')}
       >
-        <FieldSkeletons count={2} />
+        <FormFieldSkeletons count={2} />
       </FormSection>
       {layout === 'stacked' ? bankSection : null}
       <FormSection
@@ -99,7 +99,7 @@ export function CompanyDetailsFormSkeleton({
         layout={layout}
         title={t('Address')}
       >
-        <FieldSkeletons count={5} />
+        <FormFieldSkeletons count={5} />
       </FormSection>
       <FormSection
         description={t('Primary company contact details.')}
@@ -108,7 +108,7 @@ export function CompanyDetailsFormSkeleton({
         layout={layout}
         title={t('Contact details')}
       >
-        <FieldSkeletons count={2} />
+        <FormFieldSkeletons count={2} />
       </FormSection>
       {layout === 'split' ? bankSection : null}
       <div className="flex flex-col gap-3 sm:flex-row sm:justify-between">
@@ -148,7 +148,7 @@ export function SettingsFormSkeleton() {
         divided
         title={t('Financial year end')}
       >
-        <FieldSkeletons count={2} />
+        <FormFieldSkeletons count={2} />
       </FormSection>
       <FormSection
         description={t('Rates applied to sales and purchases.')}
@@ -157,7 +157,7 @@ export function SettingsFormSkeleton() {
       >
         <div className="grid gap-5">
           <Skeleton className="h-17" />
-          <FieldSkeletons count={3} />
+          <FormFieldSkeletons count={3} />
         </div>
       </FormSection>
       <div className="flex justify-end">
