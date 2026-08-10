@@ -241,8 +241,15 @@ async function playResponsiveNestedDrawer(
       '--breeze-drawer-visual-viewport-offset-inline-end',
       '24px',
     );
+    nestedOverlay.style.setProperty(
+      '--breeze-drawer-visual-viewport-offset-inline-end',
+      '24px',
+    );
 
     await expect(getComputedStyle(nestedDrawer).insetInlineEnd).toBe('24px');
+    await expect(
+      getComputedStyle(nestedOverlay, '::after').insetInlineEnd,
+    ).toBe('24px');
     await expect(nestedDrawer.getBoundingClientRect().right).toBeCloseTo(
       outerBounds.left - 24,
       1,
