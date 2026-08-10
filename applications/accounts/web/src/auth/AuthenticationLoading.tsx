@@ -13,7 +13,10 @@ export function AuthenticationTransition({
   label,
 }: Readonly<{ label: string }>) {
   return (
-    <main className="grid min-h-dvh place-items-center bg-[var(--breeze-shell)] px-6 py-16 text-[var(--breeze-surface)]">
+    <main
+      className="grid min-h-dvh place-items-center bg-[var(--breeze-shell)] px-6 py-16 text-[var(--breeze-surface)]"
+      data-document-background="shell"
+    >
       <Stack align="center" gap="xl">
         <Inline gap="sm" justify="center" wrap={false}>
           <Logo size="lg" />

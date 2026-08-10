@@ -112,6 +112,10 @@ describe('AuthBoundary', () => {
     expect(
       screen.getByRole('heading', { level: 1, name: 'Welcome back' }),
     ).toBeInTheDocument();
+    expect(screen.getByRole('main')).toHaveAttribute(
+      'data-document-background',
+      'shell',
+    );
     expect(screen.queryByTestId('protected-shell')).not.toBeInTheDocument();
   });
 
