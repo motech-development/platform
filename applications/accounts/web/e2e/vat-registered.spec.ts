@@ -503,6 +503,7 @@ test.describe('VAT registered Accounts', () => {
         page.getByRole('heading', { level: 1, name: 'Clients' }),
       ).toBeVisible();
       await expect(page.getByTestId(updated.name)).toBeVisible();
+      await expect(page.getByTestId(client.name)).toHaveCount(0);
     });
 
     test('should delete client 3', async ({ page }) => {

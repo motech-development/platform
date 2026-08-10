@@ -5,7 +5,10 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ClientsPageContent } from './ClientsPageContent';
 
 interface ClientQueryData {
-  getClients: { items: Array<Record<string, unknown>> };
+  getClients: {
+    items: Array<Record<string, unknown>>;
+    nextToken?: string | null;
+  };
 }
 
 const mocks = vi.hoisted(() => ({
@@ -13,7 +16,9 @@ const mocks = vi.hoisted(() => ({
   query: {
     data: undefined as ClientQueryData | undefined,
     error: undefined as Error | undefined,
+    fetchMore: vi.fn(),
     loading: false,
+    networkStatus: 7,
     refetch: vi.fn(),
   },
 }));
@@ -43,7 +48,9 @@ describe('ClientsPageContent', () => {
     mocks.navigate.mockResolvedValue(undefined);
     mocks.query.data = { getClients: { items: [] } };
     mocks.query.error = undefined;
+    mocks.query.fetchMore.mockResolvedValue(undefined);
     mocks.query.loading = false;
+    mocks.query.networkStatus = 7;
     mocks.query.refetch.mockResolvedValue(undefined);
   });
 
@@ -110,6 +117,40 @@ describe('ClientsPageContent', () => {
       params: { clientId: 'alpha-id', companyId: 'company-id' },
       to: '/my-companies/clients/$companyId/update-details/$clientId',
     });
+  });
+
+  it('loads the next page of clients', async () => {
+    const user = userEvent.setup();
+    mocks.query.data = {
+      getClients: {
+        items: [
+          {
+            contact: {
+              email: 'alpha@example.com',
+              telephone: '020 7946 0001',
+            },
+            id: 'alpha-id',
+            name: 'Alpha Limited',
+          },
+        ],
+        nextToken: 'next-page',
+      },
+    };
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <ClientsPageContent companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Load more' }));
+    expect(mocks.query.fetchMore).toHaveBeenCalledOnce();
+    const request = mocks.query.fetchMore.mock.calls[0]?.[0] as {
+      updateQuery?: unknown;
+      variables?: unknown;
+    };
+    expect(request.variables).toEqual({ nextToken: 'next-page' });
+    expect(request.updateQuery).toBeTypeOf('function');
   });
 
   it('renders the complete loading composition while the first query runs', () => {

@@ -15,12 +15,14 @@ setup('authenticate through Auth0', async ({ baseURL, page }) => {
   await page.getByLabel('Password').fill(process.env.E2E_PASSWORD!);
   await page.getByRole('button', { name: 'Log in' }).click();
   await page.waitForURL((url) => url.pathname === '/my-companies');
-  await expect(page.getByRole('heading', { name: /companies/i })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { level: 1, name: 'My companies' }),
+  ).toBeVisible();
 
   if (!isLocalBaseUrl(baseURL)) {
     await page.reload();
     await expect(
-      page.getByRole('heading', { name: /companies/i }),
+      page.getByRole('heading', { level: 1, name: 'My companies' }),
     ).toBeVisible();
   }
   await expect

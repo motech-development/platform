@@ -80,7 +80,7 @@ describe('company route priming', () => {
   );
 
   it.each([
-    [primeClients, GET_CLIENTS, { id: companyId }],
+    [primeClients, GET_CLIENTS, { count: 100, id: companyId }],
     [primeCompanyDetails, GET_COMPANY_DETAILS, { id: companyId }],
     [primeCompanySettings, GET_COMPANY_SETTINGS, { id: companyId }],
     [
@@ -161,8 +161,9 @@ describe('primeTransaction', () => {
 });
 
 describe('primeClient', () => {
+  const clientId = '3456df4a-51f8-49af-a52e-c1a21b8ff087';
+
   it('rejects a client from another company boundary', async () => {
-    const clientId = '3456df4a-51f8-49af-a52e-c1a21b8ff087';
     const query = vi
       .fn()
       .mockResolvedValueOnce({
@@ -184,5 +185,47 @@ describe('primeClient', () => {
       query: GET_CLIENT,
       variables: { id: clientId },
     });
+  });
+
+  it('leaves a client query failure to the page recovery state', async () => {
+    const query = vi
+      .fn()
+      .mockResolvedValueOnce({
+        data: { getCompanies: { items: [{ id: companyId }] } },
+      })
+      .mockRejectedValueOnce(new Error('Unavailable'));
+
+    await expect(
+      primeClient(context(query), companyId, clientId),
+    ).resolves.toBeUndefined();
+    expect(notFound).not.toHaveBeenCalled();
+  });
+
+  it('accepts a client from the requested company boundary', async () => {
+    const query = vi
+      .fn()
+      .mockResolvedValueOnce({
+        data: { getCompanies: { items: [{ id: companyId }] } },
+      })
+      .mockResolvedValueOnce({ data: { getClient: { companyId } } });
+
+    await expect(
+      primeClient(context(query), companyId, clientId),
+    ).resolves.toBeUndefined();
+    expect(notFound).not.toHaveBeenCalled();
+  });
+
+  it('rejects a client query without data', async () => {
+    const query = vi
+      .fn()
+      .mockResolvedValueOnce({
+        data: { getCompanies: { items: [{ id: companyId }] } },
+      })
+      .mockResolvedValueOnce({ data: undefined });
+
+    await expect(
+      primeClient(context(query), companyId, clientId),
+    ).rejects.toThrow('Not found');
+    expect(notFound).toHaveBeenCalledWith({ throw: true });
   });
 });
