@@ -201,14 +201,19 @@ export const CompactNavigation: Story = {
   globals: { viewport: { value: 'mobile1' } },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const accountMenu = within(canvas.getByRole('banner')).getByRole('button', {
+    const header = canvas.getByRole('banner');
+    const accountMenu = within(header).getByRole('button', {
       name: 'User menu, Unread notifications',
     });
     const avatar = within(accountMenu).getByRole('img', {
       name: 'Taylor Reed',
     });
 
+    const headerStyle = getComputedStyle(header);
+
     await expect(within(document.body).queryByRole('dialog')).toBeNull();
+    await expect(headerStyle.position).toBe('sticky');
+    await expect(headerStyle.top).toBe('0px');
     await expect(avatar.getBoundingClientRect().right).toBeLessThanOrEqual(
       window.innerWidth,
     );
