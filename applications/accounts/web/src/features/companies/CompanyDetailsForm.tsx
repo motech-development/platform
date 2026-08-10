@@ -18,7 +18,7 @@ import {
   ContactDetailsFormSection,
   type DetailsFieldOptions,
   type EntityDetailsFieldName,
-} from '../forms/ContactDetailsFormSections';
+} from '../forms/EntityDetailsFormSections';
 import {
   type CompanyDetails,
   companyDetailsSchema,

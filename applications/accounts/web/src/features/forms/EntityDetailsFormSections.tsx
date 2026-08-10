@@ -65,7 +65,7 @@ export function BoundDetailsTextField({
   );
 }
 
-interface SectionProps {
+interface EntityDetailsSectionProps {
   description: string;
   field: DetailsFieldRenderer;
   headingLevel: 2 | 3;
@@ -79,7 +79,7 @@ export function AddressDetailsFormSection({
   headingLevel,
   layout,
   namespace,
-}: Readonly<SectionProps>) {
+}: Readonly<EntityDetailsSectionProps>) {
   const { t } = useTranslation(namespace);
 
   return (
@@ -110,7 +110,7 @@ export function ContactDetailsFormSection({
   headingLevel,
   layout,
   namespace,
-}: Readonly<SectionProps>) {
+}: Readonly<EntityDetailsSectionProps>) {
   const { t } = useTranslation(namespace);
 
   return (
