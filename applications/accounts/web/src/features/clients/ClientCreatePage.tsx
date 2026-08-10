@@ -81,7 +81,7 @@ export function ClientCreatePage({
           dismissible={!creationPending}
           keyboardDismissDisabled={creationPending}
           placement={{ base: 'bottom', md: 'end' }}
-          size="wide"
+          size="medium"
         >
           <Drawer.Description>
             {t('Create a client for sales transactions.')}

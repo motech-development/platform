@@ -16,18 +16,11 @@ import {
   BoundDetailsTextField,
   ContactDetailsFormSection,
   type DetailsFieldOptions,
+  type EntityDetailsFieldName,
 } from '../forms/ContactDetailsFormSections';
 import { type ClientDetails, clientDetailsSchema } from './client';
 
-type ClientFieldName =
-  | 'address.line1'
-  | 'address.line2'
-  | 'address.line3'
-  | 'address.line4'
-  | 'address.line5'
-  | 'contact.email'
-  | 'contact.telephone'
-  | 'name';
+type ClientFieldName = EntityDetailsFieldName | 'name';
 
 export function ClientDetailsForm({
   danger,
