@@ -314,7 +314,6 @@ export function CompanySetupForm({
                       {t('Cancel')}
                     </Button>
                   }
-                  divided
                   primary={
                     <Button
                       disabled={!valuesValid || isSubmitting || submitDisabled}

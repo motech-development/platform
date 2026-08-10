@@ -116,8 +116,11 @@ async function playResponsiveNestedDrawer(
   });
   const expectedAxis = compact ? 'bottom' : 'inlineEnd';
 
-  if (!(outerHeader instanceof HTMLElement)) {
-    throw new Error('Outer drawer header is missing.');
+  if (
+    !(outerHeader instanceof HTMLElement) ||
+    !(outerOverlay instanceof HTMLElement)
+  ) {
+    throw new Error('Outer drawer anatomy is missing.');
   }
 
   await expect(outerHeaderClose).toHaveFocus();
@@ -139,6 +142,16 @@ async function playResponsiveNestedDrawer(
   ).toBe(compact ? '100%' : '0%');
 
   if (compact) {
+    outerOverlay.style.setProperty(
+      '--breeze-drawer-visual-viewport-offset-bottom',
+      '1px',
+    );
+    const keyboardFill = getComputedStyle(outerOverlay, '::before');
+
+    await expect(outerOverlay).toHaveClass('breeze-drawer-overlay');
+    await expect(keyboardFill.backgroundColor).toBe('rgb(255, 255, 255)');
+    await expect(keyboardFill.height).toBe('1px');
+    await expect(keyboardFill.width).toBe(`${outerBounds.width}px`);
     await expect(outerBounds.left).toBeCloseTo(0, 1);
     await expect(outerBounds.top).toBeCloseTo(0, 1);
     await expect(outerBounds.width).toBeCloseTo(documentElement.clientWidth, 1);
@@ -179,7 +192,6 @@ async function playResponsiveNestedDrawer(
   });
 
   if (
-    !(outerOverlay instanceof HTMLElement) ||
     !(nestedOverlay instanceof HTMLElement) ||
     !(nestedHeader instanceof HTMLElement)
   ) {

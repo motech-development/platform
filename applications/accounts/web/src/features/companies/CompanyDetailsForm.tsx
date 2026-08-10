@@ -241,7 +241,7 @@ export function CompanyDetailsForm({
                     ) : undefined
                   }
                   danger={danger}
-                  divided
+                  divided={layout === 'split'}
                   primary={
                     <Button
                       disabled={!valuesValid || isSubmitting}
