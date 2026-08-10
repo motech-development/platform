@@ -236,6 +236,17 @@ async function playResponsiveNestedDrawer(
     await expect(nestedBounds.width).toBeLessThan(outerBounds.width);
     await expect(nestedBounds.right).toBeCloseTo(outerBounds.left, 1);
     await expect(nestedBounds.left).toBeGreaterThanOrEqual(0);
+
+    nestedDrawer.style.setProperty(
+      '--breeze-drawer-visual-viewport-offset-inline-end',
+      '24px',
+    );
+
+    await expect(getComputedStyle(nestedDrawer).insetInlineEnd).toBe('24px');
+    await expect(nestedDrawer.getBoundingClientRect().right).toBeCloseTo(
+      outerBounds.left - 24,
+      1,
+    );
   }
 
   await expectMotionAlongAxis(

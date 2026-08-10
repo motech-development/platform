@@ -207,7 +207,10 @@
       position: absolute;
       inset-block-start: var(--breeze-drawer-visual-viewport-offset-top, 0px);
       inset-block-end: auto;
-      inset-inline-end: 0;
+      inset-inline-end: var(
+        --breeze-drawer-visual-viewport-offset-inline-end,
+        0px
+      );
       --breeze-drawer-x: 28px;
       --breeze-drawer-y: 0%;
     }
