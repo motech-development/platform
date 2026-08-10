@@ -103,8 +103,8 @@ export const DELETE_COMPANY = graphql(`
 `);
 
 export const GET_CLIENTS = graphql(`
-  query AccountsWebClients($count: Int, $id: ID!, $nextToken: String) {
-    getClients(id: $id, count: $count, nextToken: $nextToken) {
+  query AccountsWebClients($id: ID!, $nextToken: String) {
+    getClients(id: $id, nextToken: $nextToken) {
       id
       items {
         address {

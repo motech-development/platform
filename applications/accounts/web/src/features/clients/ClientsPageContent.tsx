@@ -36,7 +36,7 @@ export function ClientsPageContent({
       fetchPolicy: 'cache-and-network',
       nextFetchPolicy: 'cache-first',
       notifyOnNetworkStatusChange: true,
-      variables: { count: 100, id: companyId },
+      variables: { id: companyId },
     },
   );
   const clients = sortNamedEntities(data?.getClients.items ?? []);
