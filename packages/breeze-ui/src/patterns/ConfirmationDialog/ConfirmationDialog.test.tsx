@@ -165,6 +165,36 @@ describe('ConfirmationDialog', () => {
     expect(screen.getByRole('alertdialog')).toBeVisible();
   });
 
+  it('supports additional confirmation details while controlled work is pending', async () => {
+    const user = userEvent.setup();
+    const onConfirm = vi.fn();
+
+    renderBreeze(
+      <ConfirmationDialog
+        cancelLabel="Cancel"
+        closeLabel="Close confirmation"
+        confirmLabel="Delete item"
+        defaultOpen
+        description="This cannot be undone."
+        details={<p>Type the item name</p>}
+        onConfirm={onConfirm}
+        persistOnConfirm
+        title="Delete this item?"
+        trigger="Delete item"
+      />,
+    );
+
+    expect(screen.getByText('Type the item name')).toBeVisible();
+    await user.click(
+      within(screen.getByRole('alertdialog')).getByRole('button', {
+        name: 'Delete item',
+      }),
+    );
+
+    expect(onConfirm).toHaveBeenCalledOnce();
+    expect(screen.getByRole('alertdialog')).toBeVisible();
+  });
+
   it('reuses the existing backdrop when nested in another modal layer', () => {
     renderBreeze(
       <ConfirmationDialog

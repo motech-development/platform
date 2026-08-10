@@ -1,5 +1,11 @@
 import { BreezeProvider } from '@motech-development/breeze-ui';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { clientDetailsSchema } from './client';
@@ -152,6 +158,55 @@ describe('ClientCreatePage', () => {
     await user.click(screen.getByRole('button', { name: 'Discard changes' }));
 
     expect(mocks.blocker.proceed).toHaveBeenCalledOnce();
+    expect(mocks.navigate).not.toHaveBeenCalled();
+  });
+
+  it('finishes a blocked company switch after pending creation succeeds', async () => {
+    const user = userEvent.setup();
+    let resolveCreation!: (value: {
+      data: {
+        createClient: {
+          companyId: string;
+          id: string;
+          name: string;
+        };
+      };
+    }) => void;
+    mocks.createClient.mockReturnValueOnce(
+      new Promise((resolve) => {
+        resolveCreation = resolve;
+      }),
+    );
+    const view = render(
+      <BreezeProvider locale="en-GB">
+        <ClientCreatePage companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    fillRequiredClientDetails();
+    await user.click(screen.getByRole('button', { name: 'Save client' }));
+    await waitFor(() => expect(mocks.createClient).toHaveBeenCalledOnce());
+
+    mocks.blocker.status = 'blocked';
+    view.rerender(
+      <BreezeProvider locale="en-GB">
+        <ClientCreatePage companyId="company-id" />
+      </BreezeProvider>,
+    );
+    act(() => {
+      resolveCreation({
+        data: {
+          createClient: {
+            companyId: 'company-id',
+            id: 'client-id',
+            name: 'Northstar Studio',
+          },
+        },
+      });
+    });
+
+    await waitFor(() => expect(mocks.blocker.proceed).toHaveBeenCalledOnce());
+    expect(mocks.blocker.reset).not.toHaveBeenCalled();
     expect(mocks.navigate).not.toHaveBeenCalled();
   });
 });

@@ -18,9 +18,9 @@ import { useTranslation } from 'react-i18next';
 import { useAccountsOwnerId } from '../../auth/owner';
 import { GET_COMPANIES } from '../../data/operations';
 import { CompaniesTableSkeleton } from '../loading/AccountsPageSkeletons';
+import { responsiveEntityTableClassNames } from '../tableLayout';
 import { sortCompaniesByName } from './company';
 import { QueryRefreshAlert } from './QueryRefreshAlert';
-import { companiesTableClassNames } from './tableLayout';
 
 export function CompaniesPageContent() {
   const { t } = useTranslation(['companies', 'routing']);
@@ -91,11 +91,11 @@ export function CompaniesPageContent() {
         <Table.Root
           aria-label={t('Companies')}
           boundary="strong"
-          className={companiesTableClassNames.root}
+          className={responsiveEntityTableClassNames.root}
           desktopColumns="mediaDetailsAction"
           layout="responsiveGrid"
         >
-          <Table.Header className={companiesTableClassNames.header}>
+          <Table.Header className={responsiveEntityTableClassNames.header}>
             <Table.Column
               compactLabel={false}
               id="avatar"
@@ -117,11 +117,11 @@ export function CompaniesPageContent() {
               <VisuallyHidden>{t('Action')}</VisuallyHidden>
             </Table.Column>
           </Table.Header>
-          <Table.Body className={companiesTableClassNames.body}>
+          <Table.Body className={responsiveEntityTableClassNames.body}>
             {companies.map((company, index) => (
               <Table.Row
                 data-testid={company.name}
-                className={companiesTableClassNames.row}
+                className={responsiveEntityTableClassNames.row}
                 id={company.id}
                 key={company.id}
                 onAction={() => {
@@ -140,7 +140,7 @@ export function CompaniesPageContent() {
                 )}
               >
                 <Table.Cell
-                  className={companiesTableClassNames.cells.avatar}
+                  className={responsiveEntityTableClassNames.cells.identity}
                   column="avatar"
                   textValue={company.name}
                 >
@@ -153,25 +153,25 @@ export function CompaniesPageContent() {
                   />
                 </Table.Cell>
                 <Table.Cell
-                  className={companiesTableClassNames.cells.company}
+                  className={responsiveEntityTableClassNames.cells.primary}
                   column="company"
                 >
                   <Typography as="strong">{company.name}</Typography>
                 </Table.Cell>
                 <Table.Cell
-                  className={companiesTableClassNames.cells.number}
+                  className={responsiveEntityTableClassNames.cells.secondary}
                   column="number"
                 >
                   {company.companyNumber}
                 </Table.Cell>
                 <Table.Cell
-                  className={companiesTableClassNames.cells.contact}
+                  className={responsiveEntityTableClassNames.cells.tertiary}
                   column="contact"
                 >
                   {company.contact.email}
                 </Table.Cell>
                 <Table.Disclosure
-                  className={companiesTableClassNames.cells.actions}
+                  className={responsiveEntityTableClassNames.cells.actions}
                   column="actions"
                   position="flow"
                 />

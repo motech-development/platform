@@ -17,7 +17,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import { GET_CLIENTS } from '../../data/operations';
 import { QueryRefreshAlert } from '../companies/QueryRefreshAlert';
-import { companiesTableClassNames } from '../companies/tableLayout';
+import { responsiveEntityTableClassNames } from '../tableLayout';
 import { sortClientsByName } from './client';
 import { ClientsTableSkeleton } from './ClientsTableSkeleton';
 
@@ -104,11 +104,11 @@ export function ClientsPageContent({
         <Table.Root
           aria-label={t('Clients')}
           boundary="strong"
-          className={companiesTableClassNames.root}
+          className={responsiveEntityTableClassNames.root}
           desktopColumns="mediaDetailsAction"
           layout="responsiveGrid"
         >
-          <Table.Header className={companiesTableClassNames.header}>
+          <Table.Header className={responsiveEntityTableClassNames.header}>
             <Table.Column
               compactLabel={false}
               id="avatar"
@@ -130,10 +130,10 @@ export function ClientsPageContent({
               <VisuallyHidden>{t('Action')}</VisuallyHidden>
             </Table.Column>
           </Table.Header>
-          <Table.Body className={companiesTableClassNames.body}>
+          <Table.Body className={responsiveEntityTableClassNames.body}>
             {clients.map((client, index) => (
               <Table.Row
-                className={companiesTableClassNames.row}
+                className={responsiveEntityTableClassNames.row}
                 data-testid={client.name}
                 id={client.id}
                 key={client.id}
@@ -150,7 +150,7 @@ export function ClientsPageContent({
                 })}
               >
                 <Table.Cell
-                  className={companiesTableClassNames.cells.avatar}
+                  className={responsiveEntityTableClassNames.cells.identity}
                   column="avatar"
                   textValue={client.name}
                 >
@@ -163,25 +163,25 @@ export function ClientsPageContent({
                   />
                 </Table.Cell>
                 <Table.Cell
-                  className={companiesTableClassNames.cells.company}
+                  className={responsiveEntityTableClassNames.cells.primary}
                   column="client"
                 >
                   <Typography as="strong">{client.name}</Typography>
                 </Table.Cell>
                 <Table.Cell
-                  className={companiesTableClassNames.cells.number}
+                  className={responsiveEntityTableClassNames.cells.secondary}
                   column="email"
                 >
                   {client.contact.email}
                 </Table.Cell>
                 <Table.Cell
-                  className={companiesTableClassNames.cells.contact}
+                  className={responsiveEntityTableClassNames.cells.tertiary}
                   column="telephone"
                 >
                   {client.contact.telephone}
                 </Table.Cell>
                 <Table.Disclosure
-                  className={companiesTableClassNames.cells.actions}
+                  className={responsiveEntityTableClassNames.cells.actions}
                   column="actions"
                   position="flow"
                 />

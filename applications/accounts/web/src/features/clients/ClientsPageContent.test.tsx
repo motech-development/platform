@@ -23,7 +23,10 @@ vi.mock('@apollo/client/react', async (importOriginal) => ({
   useQuery: () => mocks.query,
 }));
 
-vi.mock('@motech-development/breeze-ui/icons', () => ({
+vi.mock('@motech-development/breeze-ui/icons', async (importOriginal) => ({
+  ...(await importOriginal<
+    typeof import('@motech-development/breeze-ui/icons')
+  >()),
   AddIcon: () => <span aria-hidden="true">+</span>,
   UsersIcon: () => <span aria-hidden="true">clients</span>,
   WarningIcon: () => <span aria-hidden="true">warning</span>,
