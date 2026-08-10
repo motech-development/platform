@@ -173,6 +173,17 @@
 }
 
 @layer utilities {
+  .breeze-drawer-overlay::before {
+    position: fixed;
+    bottom: 0;
+    left: var(--breeze-drawer-visual-viewport-surface-left, 0px);
+    width: var(--breeze-drawer-visual-viewport-surface-width, 0px);
+    height: var(--breeze-drawer-visual-viewport-offset-bottom, 0px);
+    background: var(--breeze-surface);
+    content: '';
+    pointer-events: none;
+  }
+
   .breeze-drawer-visual-viewport {
     inset-block-start: var(--breeze-drawer-visual-viewport-offset-top, 0px);
     inset-block-end: auto;

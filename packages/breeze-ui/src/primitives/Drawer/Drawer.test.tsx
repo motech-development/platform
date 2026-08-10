@@ -104,6 +104,7 @@ describe('Drawer', () => {
       width: 700,
     });
 
+    vi.stubGlobal('innerHeight', 900);
     vi.stubGlobal('innerWidth', 1000);
     vi.stubGlobal('visualViewport', visualViewport);
 
@@ -142,6 +143,9 @@ describe('Drawer', () => {
     visualViewport.offsetLeft = 80;
     visualViewport.offsetTop = 96;
     visualViewport.width = 600;
+    vi.spyOn(drawer, 'getBoundingClientRect').mockReturnValue(
+      DOMRect.fromRect({ height: 280, width: 600, x: 80, y: 96 }),
+    );
     await act(() => visualViewport.dispatchEvent(new Event('scroll')));
 
     await waitFor(() =>
@@ -149,8 +153,14 @@ describe('Drawer', () => {
         '--breeze-drawer-visual-viewport-height: 280px; --breeze-drawer-visual-viewport-width: 600px; --breeze-drawer-visual-viewport-offset-top: 96px; --breeze-drawer-visual-viewport-offset-left: 80px; --breeze-drawer-visual-viewport-offset-right: 320px; --breeze-drawer-visual-viewport-offset-inline-start: 80px; --breeze-drawer-visual-viewport-offset-inline-end: 320px',
       ),
     );
-    expect(drawer.parentElement?.parentElement).toHaveStyle(
+    const overlay = drawer.parentElement?.parentElement;
+
+    expect(overlay).toHaveClass('breeze-drawer-overlay');
+    expect(overlay).toHaveStyle(
       '--breeze-drawer-visual-viewport-offset-inline-end: 320px',
+    );
+    expect(overlay).toHaveStyle(
+      '--breeze-drawer-visual-viewport-offset-bottom: 524px; --breeze-drawer-visual-viewport-surface-left: 80px; --breeze-drawer-visual-viewport-surface-width: 600px',
     );
   });
 

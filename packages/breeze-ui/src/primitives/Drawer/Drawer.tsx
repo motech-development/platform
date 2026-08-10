@@ -96,6 +96,10 @@ function updateVisualViewportSurface(
     direction === 'rtl' ? offsetRight : viewport.offsetLeft;
   const offsetInlineEnd =
     direction === 'rtl' ? viewport.offsetLeft : offsetRight;
+  const offsetBottom = Math.max(
+    0,
+    window.innerHeight - viewport.offsetTop - viewport.height,
+  );
 
   surface.style.setProperty(
     '--breeze-drawer-visual-viewport-height',
@@ -125,12 +129,25 @@ function updateVisualViewportSurface(
     '--breeze-drawer-visual-viewport-offset-inline-end',
     `${offsetInlineEnd}px`,
   );
-  surface
-    .closest<HTMLElement>('.breeze-modal-overlay')
-    ?.style.setProperty(
-      '--breeze-drawer-visual-viewport-offset-inline-end',
-      `${offsetInlineEnd}px`,
-    );
+  const overlay = surface.closest<HTMLElement>('.breeze-modal-overlay');
+  const surfaceBounds = surface.getBoundingClientRect();
+
+  overlay?.style.setProperty(
+    '--breeze-drawer-visual-viewport-offset-inline-end',
+    `${offsetInlineEnd}px`,
+  );
+  overlay?.style.setProperty(
+    '--breeze-drawer-visual-viewport-offset-bottom',
+    `${offsetBottom}px`,
+  );
+  overlay?.style.setProperty(
+    '--breeze-drawer-visual-viewport-surface-left',
+    `${surfaceBounds.left}px`,
+  );
+  overlay?.style.setProperty(
+    '--breeze-drawer-visual-viewport-surface-width',
+    `${surfaceBounds.width}px`,
+  );
 }
 
 function updateVisualViewportSurfaces(): void {
@@ -414,7 +431,7 @@ export function Content({
       ...props,
       modalClassName: `breeze-drawer-motion ${adjacent === undefined ? '' : 'breeze-drawer-adjacent-motion'}`,
       modalState,
-      overlayClassName: `items-stretch justify-stretch overflow-hidden p-0 sm:p-0 ${adjacent === undefined ? '' : 'breeze-drawer-adjacent-overlay'}`,
+      overlayClassName: `breeze-drawer-overlay items-stretch justify-stretch overflow-hidden p-0 sm:p-0 ${adjacent === undefined ? '' : 'breeze-drawer-adjacent-overlay'}`,
       overlayStyle,
       ref: surfaceRef,
       surfaceClassName: `breeze-drawer-surface breeze-drawer-visual-viewport flex max-h-none flex-col overflow-clip border-0 p-0 shadow-xl ${adjacent === undefined ? '' : 'breeze-drawer-adjacent-surface'} ${resolveResponsiveClasses(placement, placementClasses)} ${resolveResponsiveClasses(placement, placementMotionClasses)}`,
