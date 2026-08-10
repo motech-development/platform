@@ -20,7 +20,7 @@ export function AuthenticationPanel({
   const { t } = useTranslation(['authentication', 'shell']);
 
   return (
-    <main>
+    <main data-document-background="shell">
       <Surface
         as="section"
         border="none"

@@ -59,6 +59,10 @@ describe('AuthenticationLoading', () => {
     expect(
       screen.getByRole('status', { name: 'Loading Accounts' }),
     ).toBeInTheDocument();
+    expect(screen.getByRole('main')).toHaveAttribute(
+      'data-document-background',
+      'shell',
+    );
     expect(screen.queryByText('Resolved route')).not.toBeInTheDocument();
 
     mocks.routeLoading = true;
