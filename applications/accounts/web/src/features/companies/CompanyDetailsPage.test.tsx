@@ -11,6 +11,7 @@ const mocks = vi.hoisted(() => ({
     status: 'idle',
   },
   deleteCompany: vi.fn(),
+  deleteLoading: false,
   navigate: vi.fn(),
   query: {
     data: {
@@ -52,7 +53,9 @@ vi.mock('@apollo/client/react', async (importOriginal) => ({
       name === 'AccountsWebDeleteCompany'
         ? mocks.deleteCompany
         : mocks.updateCompany,
-      { loading: false },
+      {
+        loading: name === 'AccountsWebDeleteCompany' && mocks.deleteLoading,
+      },
     ];
   },
   useQuery: () => mocks.query,
@@ -72,7 +75,7 @@ vi.mock('@tanstack/react-router', async (importOriginal) => ({
   useBlocker: (options: { shouldBlockFn: () => boolean }) => {
     mocks.shouldBlockFn = options.shouldBlockFn;
 
-    return mocks.blocker;
+    return { ...mocks.blocker };
   },
   useNavigate: () => mocks.navigate,
 }));
@@ -82,6 +85,7 @@ describe('CompanyDetailsPage', () => {
     vi.clearAllMocks();
     mocks.navigate.mockResolvedValue(undefined);
     mocks.blocker.status = 'idle';
+    mocks.deleteLoading = false;
     mocks.query.error = undefined;
     mocks.query.loading = false;
     mocks.query.refetch.mockResolvedValue(undefined);
@@ -415,6 +419,59 @@ describe('CompanyDetailsPage', () => {
       screen.getByRole('button', { name: 'Permanently delete company' }),
     ).toBeEnabled();
     expect(mocks.navigate).not.toHaveBeenCalled();
+  });
+
+  it('prevents cancellation and navigation while deletion is pending', async () => {
+    const user = userEvent.setup();
+    let resolveDelete: (result: unknown) => void = () => undefined;
+
+    mocks.deleteCompany.mockReturnValue(
+      new Promise((resolve) => {
+        resolveDelete = resolve;
+      }),
+    );
+
+    const { rerender } = render(
+      <BreezeProvider locale="en-GB">
+        <CompanyDetailsPage companyId="company-id" owner="owner-id" />
+      </BreezeProvider>,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Delete company' }));
+    await user.type(
+      screen.getByLabelText('Type Example Company to confirm'),
+      'Example Company',
+    );
+    await user.click(
+      screen.getByRole('button', { name: 'Permanently delete company' }),
+    );
+    await waitFor(() => expect(mocks.deleteCompany).toHaveBeenCalledOnce());
+
+    mocks.deleteLoading = true;
+    mocks.blocker.status = 'blocked';
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <CompanyDetailsPage companyId="company-id" owner="owner-id" />
+      </BreezeProvider>,
+    );
+
+    expect(screen.getByRole('button', { name: 'Cancel' })).toBeDisabled();
+    expect(mocks.shouldBlockFn?.()).toBe(true);
+    await user.keyboard('{Escape}');
+    expect(screen.getByRole('alertdialog')).toBeVisible();
+
+    mocks.deleteLoading = false;
+    resolveDelete({
+      data: {
+        deleteCompany: {
+          id: 'company-id',
+          name: 'Example Company',
+          owner: 'owner-id',
+        },
+      },
+    });
+    await waitFor(() => expect(mocks.blocker.reset).toHaveBeenCalledOnce());
+    await waitFor(() => expect(mocks.navigate).toHaveBeenCalledOnce());
   });
 
   it('refreshes untouched details without replacing dirty input', async () => {
