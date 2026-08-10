@@ -162,91 +162,99 @@ export function CompanyDetailsForm({
         form.handleSubmit().catch(() => undefined);
       }}
     >
-      <FormSection
-        description={t('The registered company identity.')}
-        divided
-        headingLevel={layout === 'stacked' ? 3 : 2}
-        layout={layout}
-        title={t(layout === 'stacked' ? 'Company details' : 'Identity')}
-      >
-        <Grid columns={{ base: 1, sm: 2 }}>
-          {field('name', t('Company name'), { required: true })}
-          {field('companyNumber', t('Company number'), {
-            inputMode: 'numeric',
-            normalise: (value) => value.replace(/\D/gu, '').slice(0, 8),
-            required: true,
-          })}
-        </Grid>
-      </FormSection>
-      {layout === 'stacked' ? bankSection : null}
-      <FormSection
-        description={t('The registered company address.')}
-        divided
-        headingLevel={layout === 'stacked' ? 3 : 2}
-        layout={layout}
-        title={t('Address')}
-      >
-        <Grid columns={{ base: 1, sm: 2 }}>
-          {field('address.line1', t('Address line 1'), { required: true })}
-          {field('address.line2', t('Address line 2'))}
-          {field('address.line3', t('Town or city'), { required: true })}
-          {field('address.line4', t('County'))}
-          {field('address.line5', t('Postcode'), {
-            normalise: (value) => value.toUpperCase(),
-            required: true,
-          })}
-        </Grid>
-      </FormSection>
-      <FormSection
-        description={t('Primary company contact details.')}
-        divided
-        headingLevel={layout === 'stacked' ? 3 : 2}
-        layout={layout}
-        title={t('Contact details')}
-      >
-        <Grid columns={{ base: 1, sm: 2 }}>
-          {field('contact.email', t('Email address'), {
-            inputMode: 'email',
-            required: true,
-            type: 'email',
-          })}
-          {field('contact.telephone', t('Telephone number'), {
-            inputMode: 'tel',
-            required: true,
-            type: 'tel',
-          })}
-        </Grid>
-      </FormSection>
-      {layout === 'split' ? bankSection : null}
-      <form.Subscribe
-        selector={(state) =>
-          [
-            schemaValuesValid(companyDetailsSchema, state.values),
-            state.isSubmitting,
-          ] as const
-        }
-      >
-        {([valuesValid, isSubmitting]) => (
-          <FormActions
-            cancel={
-              onCancel ? (
-                <Button appearance="outline" onAction={onCancel}>
-                  {t('Cancel')}
-                </Button>
-              ) : undefined
-            }
-            danger={danger}
-            divided
-            primary={
-              <Button
-                disabled={!valuesValid || isSubmitting}
-                loading={isSubmitting}
-                type="submit"
-              >
-                {submitLabel}
-              </Button>
-            }
-          />
+      <form.Subscribe selector={(state) => state.isSubmitting}>
+        {(submissionPending) => (
+          <fieldset className="contents" disabled={submissionPending}>
+            <FormSection
+              description={t('The registered company identity.')}
+              divided
+              headingLevel={layout === 'stacked' ? 3 : 2}
+              layout={layout}
+              title={t(layout === 'stacked' ? 'Company details' : 'Identity')}
+            >
+              <Grid columns={{ base: 1, sm: 2 }}>
+                {field('name', t('Company name'), { required: true })}
+                {field('companyNumber', t('Company number'), {
+                  inputMode: 'numeric',
+                  normalise: (value) => value.replace(/\D/gu, '').slice(0, 8),
+                  required: true,
+                })}
+              </Grid>
+            </FormSection>
+            {layout === 'stacked' ? bankSection : null}
+            <FormSection
+              description={t('The registered company address.')}
+              divided
+              headingLevel={layout === 'stacked' ? 3 : 2}
+              layout={layout}
+              title={t('Address')}
+            >
+              <Grid columns={{ base: 1, sm: 2 }}>
+                {field('address.line1', t('Address line 1'), {
+                  required: true,
+                })}
+                {field('address.line2', t('Address line 2'))}
+                {field('address.line3', t('Town or city'), { required: true })}
+                {field('address.line4', t('County'))}
+                {field('address.line5', t('Postcode'), {
+                  normalise: (value) => value.toUpperCase(),
+                  required: true,
+                })}
+              </Grid>
+            </FormSection>
+            <FormSection
+              description={t('Primary company contact details.')}
+              divided
+              headingLevel={layout === 'stacked' ? 3 : 2}
+              layout={layout}
+              title={t('Contact details')}
+            >
+              <Grid columns={{ base: 1, sm: 2 }}>
+                {field('contact.email', t('Email address'), {
+                  inputMode: 'email',
+                  required: true,
+                  type: 'email',
+                })}
+                {field('contact.telephone', t('Telephone number'), {
+                  inputMode: 'tel',
+                  required: true,
+                  type: 'tel',
+                })}
+              </Grid>
+            </FormSection>
+            {layout === 'split' ? bankSection : null}
+            <form.Subscribe
+              selector={(state) =>
+                [
+                  schemaValuesValid(companyDetailsSchema, state.values),
+                  state.isSubmitting,
+                ] as const
+              }
+            >
+              {([valuesValid, isSubmitting]) => (
+                <FormActions
+                  cancel={
+                    onCancel ? (
+                      <Button appearance="outline" onAction={onCancel}>
+                        {t('Cancel')}
+                      </Button>
+                    ) : undefined
+                  }
+                  danger={danger}
+                  divided
+                  primary={
+                    <Button
+                      disabled={!valuesValid || isSubmitting}
+                      loading={isSubmitting}
+                      type="submit"
+                    >
+                      {submitLabel}
+                    </Button>
+                  }
+                />
+              )}
+            </form.Subscribe>
+          </fieldset>
         )}
       </form.Subscribe>
     </form>
