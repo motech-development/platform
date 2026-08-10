@@ -307,6 +307,44 @@ describe('SettingsPage', () => {
     );
   });
 
+  it('freezes settings while saving', async () => {
+    const user = userEvent.setup();
+    let resolveUpdate: (result: unknown) => void = () => undefined;
+
+    mocks.mutation.mockReturnValue(
+      new Promise((resolve) => {
+        resolveUpdate = resolve;
+      }),
+    );
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <SettingsPage companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    const categoryName = screen.getByLabelText('Advertising name');
+    await user.clear(categoryName);
+    await user.type(categoryName, 'Marketing');
+    await user.click(screen.getByRole('button', { name: 'Save settings' }));
+
+    await waitFor(() => expect(mocks.mutation).toHaveBeenCalledOnce());
+    expect(screen.getByLabelText('Marketing name')).toBeDisabled();
+    expect(screen.getByLabelText('Pay rate')).toBeDisabled();
+    expect(
+      screen.getByRole('button', { name: 'Add a new category' }),
+    ).toBeDisabled();
+    expect(
+      screen.getByRole('button', { name: 'Remove Marketing' }),
+    ).toBeDisabled();
+
+    resolveUpdate({
+      data: { updateSettings: mocks.query.data.getSettings },
+    });
+
+    await waitFor(() => expect(mocks.navigate).toHaveBeenCalledOnce());
+  });
+
   it('restores dirty-form blocking when navigation fails after saving', async () => {
     const user = userEvent.setup();
     mocks.mutation.mockResolvedValue({
@@ -363,7 +401,44 @@ describe('SettingsPage', () => {
     expect(screen.getByLabelText('Local draft name')).toHaveValue(
       'Local draft',
     );
+    expect(screen.getByLabelText('Local draft name')).toBeEnabled();
     expect(mocks.navigate).not.toHaveBeenCalled();
+  });
+
+  it('preserves category row identity when untouched settings refresh', async () => {
+    const { rerender } = render(
+      <BreezeProvider locale="en-GB">
+        <SettingsPage companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    const advertisingName = screen.getByLabelText('Advertising name');
+    mocks.query.data = {
+      ...mocks.query.data,
+      getSettings: {
+        ...mocks.query.data.getSettings,
+        categories: [
+          { name: 'Sales', protect: true, vatRate: 20 },
+          { name: 'Advertising', protect: false, vatRate: 20 },
+          { name: 'Operations', protect: false, vatRate: 20 },
+        ],
+      },
+    };
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <SettingsPage companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    await waitFor(() =>
+      expect(screen.getByLabelText('Advertising name')).toBe(advertisingName),
+    );
+    advertisingName.focus();
+    fireEvent.click(screen.getByRole('button', { name: 'Remove Operations' }));
+
+    expect(screen.getByLabelText('Advertising name')).toBe(advertisingName);
+    expect(advertisingName).toHaveFocus();
+    expect(screen.queryByLabelText('Operations name')).not.toBeInTheDocument();
   });
 
   it('refreshes untouched settings without replacing dirty input', async () => {

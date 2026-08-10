@@ -258,6 +258,41 @@ describe('CompanyDetailsPage', () => {
     );
   });
 
+  it('freezes company details while saving', async () => {
+    const user = userEvent.setup();
+    let resolveUpdate: (result: unknown) => void = () => undefined;
+
+    mocks.updateCompany.mockReturnValue(
+      new Promise((resolve) => {
+        resolveUpdate = resolve;
+      }),
+    );
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <CompanyDetailsPage companyId="company-id" owner="owner-id" />
+      </BreezeProvider>,
+    );
+
+    await user.clear(screen.getByLabelText('Email address'));
+    await user.type(screen.getByLabelText('Email address'), 'new@example.com');
+    await user.click(screen.getByRole('button', { name: 'Save changes' }));
+
+    await waitFor(() => expect(mocks.updateCompany).toHaveBeenCalledOnce());
+    expect(screen.getByLabelText('Company name')).toBeDisabled();
+    expect(screen.getByLabelText('Email address')).toBeDisabled();
+    expect(screen.getByLabelText('Telephone number')).toBeDisabled();
+    expect(
+      screen.getByRole('button', { name: 'Delete company' }),
+    ).toBeDisabled();
+
+    resolveUpdate({
+      data: { updateCompany: mocks.query.data.getCompany },
+    });
+
+    await waitFor(() => expect(mocks.navigate).toHaveBeenCalledOnce());
+  });
+
   it('preserves edited details when the save mutation fails', async () => {
     const user = userEvent.setup();
     mocks.updateCompany.mockRejectedValue(new Error('Save unavailable'));
@@ -285,6 +320,7 @@ describe('CompanyDetailsPage', () => {
     expect(screen.getByLabelText('Email address')).toHaveValue(
       'draft@example.com',
     );
+    expect(screen.getByLabelText('Email address')).toBeEnabled();
     expect(mocks.navigate).not.toHaveBeenCalled();
   });
 

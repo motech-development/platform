@@ -4,74 +4,15 @@ const postcodePattern =
   /^([A-PR-UWYZ0-9][A-HK-Y0-9][AEHMNPRTVXY0-9]?[ABEHMNPRVWXY0-9]? {1,2}\d[ABD-HJLN-UW-Z]{2}|GIR 0AA)$/;
 const vatRegistrationPattern = /^(?:GB)?(?:[1-9]\d{8}|[1-9]\d{11})$/;
 export const vatRegistrationMaxLength = 14;
-const telephoneExtensionPattern = /(?:x\d+|ext\.?\s?\d+|#\d+)$/i;
-const internationalTelephonePrefixes = [
-  /^\+44[\s-]?(?:\(0\)[\s-]?)?/,
-  /^0044[\s-]?(?:\(0\)[\s-]?)?/,
-  /^01144[\s-]?(?:\(0\)[\s-]?)?/,
-  /^\(\+44\)[\s-]?(?:\(0\)[\s-]?)?/,
-  /^\(0044\)[\s-]?(?:\(0\)[\s-]?)?/,
-  /^\(01144\)[\s-]?(?:\(0\)[\s-]?)?/,
-] as const;
-const standardUkTelephonePatterns = [
-  /^0\d{2}[\s-]?\d{4}[\s-]?\d{4}$/,
-  /^0\d{3}[\s-]?\d{3}[\s-]?\d{3,4}$/,
-  /^0\d{4}[\s-]?(?:\d{5}|\d{3}[\s-]?\d{3})$/,
-  /^0\d{5}[\s-]?\d{4,5}$/,
-] as const;
-const specialUkTelephonePatterns = [
-  /^0800[\s-]?11[\s-]?11$/,
-  /^0845[\s-]?46[\s-]?4\d$/,
-] as const;
+// Keep this identical to the AppSync validator in
+// applications/accounts/api/mapping-templates/shared/telephone/Pipeline.telephone.req.vtl.
+const telephonePattern =
+  /^\(?(?:(?:0(?:0|11)\)?[\s-]?\(?|\+)44\)?[\s-]?\(?(?:0\)?[\s-]?\(?)?|0)(?:\d{2}\)?[\s-]?\d{4}[\s-]?\d{4}|\d{3}\)?[\s-]?\d{3}[\s-]?\d{3,4}|\d{4}\)?[\s-]?(?:\d{5}|\d{3}[\s-]?\d{3})|\d{5}\)?[\s-]?\d{4,5}|8(?:00[\s-]?11[\s-]?11|45[\s-]?46[\s-]?4\d))(?:(?:[\s-]?(?:x|ext\.?\s?|#)\d+)?)$/;
 
 const required = (message: string) => z.string().trim().min(1, message);
 
-function telephoneWithoutExtension(value: string): string {
-  const extension = telephoneExtensionPattern.exec(value);
-
-  if (!extension) return value;
-
-  const telephone = value.slice(0, extension.index);
-  const separator = telephone.at(-1);
-
-  return separator === '-' || separator?.trim() === ''
-    ? telephone.slice(0, -1)
-    : telephone;
-}
-
-function nationalTelephone(value: string): string | undefined {
-  let telephone = value;
-  const internationalPrefix = internationalTelephonePrefixes.find((prefix) =>
-    prefix.test(telephone),
-  );
-
-  if (internationalPrefix) {
-    telephone = `0${telephone.replace(internationalPrefix, '')}`;
-  }
-
-  const parenthesisedNationalArea = /^\((0\d{2,5})\)(.*)$/.exec(telephone);
-  const parenthesisedArea = /^0\((\d{2,5})\)(.*)$/.exec(telephone);
-
-  if (parenthesisedNationalArea) {
-    telephone = `${parenthesisedNationalArea[1]}${parenthesisedNationalArea[2]}`;
-  } else if (parenthesisedArea) {
-    telephone = `0${parenthesisedArea[1]}${parenthesisedArea[2]}`;
-  }
-
-  return /[()]/.test(telephone) ? undefined : telephone;
-}
-
 function isValidUkTelephone(value: string) {
-  const trimmed = value.trim();
-  const telephone = telephoneWithoutExtension(trimmed);
-  const national = nationalTelephone(telephone);
-
-  return Boolean(
-    national &&
-      [...standardUkTelephonePatterns, ...specialUkTelephonePatterns].some(
-        (pattern) => pattern.test(national),
-      ),
-  );
+  return telephonePattern.test(value.trim());
 }
 
 export const companyDetailsSchema = z.object({

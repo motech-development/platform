@@ -286,6 +286,10 @@ describe('CompanyEnrolmentPage', () => {
       expect(screen.getByRole('button', { name: 'Cancel' })).toBeDisabled(),
     );
     expect(screen.getByRole('button', { name: 'Back' })).toBeDisabled();
+    expect(screen.getByLabelText('Standard')).toBeDisabled();
+    expect(screen.getByLabelText('VAT registration')).toBeDisabled();
+    expect(screen.getByLabelText('Charge rate')).toBeDisabled();
+    expect(screen.getByLabelText('Opening balance')).toBeDisabled();
 
     await user.click(screen.getByRole('button', { name: 'Close' }));
 
@@ -336,6 +340,7 @@ describe('CompanyEnrolmentPage', () => {
       ),
     );
     expect(screen.getByLabelText('VAT scheme')).toBeInTheDocument();
+    expect(screen.getByLabelText('Standard')).toBeEnabled();
     expect(screen.getByRole('button', { name: 'Save company' })).toBeEnabled();
     expect(mocks.navigate).not.toHaveBeenCalled();
   });
