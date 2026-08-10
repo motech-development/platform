@@ -43,6 +43,9 @@ export function CompanyEnrolmentPage({ owner }: Readonly<{ owner: string }>) {
     shouldBlockFn: () => dirty && !allowNavigation.current,
     withResolver: true,
   });
+  const blockerRef = useRef(blocker);
+
+  blockerRef.current = blocker;
   const [createCompany] = useMutation(CREATE_COMPANY);
 
   const discardChanges = () => {
@@ -161,6 +164,9 @@ export function CompanyEnrolmentPage({ owner }: Readonly<{ owner: string }>) {
                   return;
                 }
 
+                const activeBlocker = blockerRef.current;
+
+                if (activeBlocker.status === 'blocked') activeBlocker.reset?.();
                 creationComplete.current = true;
                 setCompanyCreated(true);
                 allowNavigation.current = true;

@@ -88,7 +88,8 @@ describe('AccountsPending', () => {
   it('uses a form-shaped company-details loading state', () => {
     renderPending('/my-companies/update-details/company-id');
 
-    expect(screen.getByText('Identity')).toBeInTheDocument();
+    expect(screen.getAllByText('Company details')).toHaveLength(2);
+    expect(screen.queryByText('Identity')).not.toBeInTheDocument();
     expect(screen.getByText('Address')).toBeInTheDocument();
     expect(screen.getByText('Contact details')).toBeInTheDocument();
     expect(screen.getByText('Bank account')).toBeInTheDocument();
