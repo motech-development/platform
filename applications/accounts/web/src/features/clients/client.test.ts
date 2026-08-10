@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { clientDetailsSchema, exactClientNameSchema } from './client';
+import { exactEntityNameSchema } from '../entity-details';
+import { clientDetailsSchema } from './client';
 
 const validClient = {
   address: {
@@ -27,7 +28,7 @@ describe('client details', () => {
   });
 
   it('requires the exact case-sensitive client name for deletion', () => {
-    const schema = exactClientNameSchema('Northstar Studio');
+    const schema = exactEntityNameSchema('Northstar Studio');
 
     expect(schema.safeParse('Northstar Studio').success).toBe(true);
     expect(schema.safeParse('northstar studio').success).toBe(false);

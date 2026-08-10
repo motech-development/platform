@@ -1,10 +1,8 @@
 import { z } from 'zod';
 import {
   contactDetailsSchema,
-  exactEntityNameSchema,
   postalAddressSchema,
   requiredTextSchema,
-  sortNamedEntities,
 } from '../entity-details';
 
 const vatRegistrationPattern = /^(?:GB)?(?:[1-9]\d{8}|[1-9]\d{11})$/;
@@ -128,12 +126,6 @@ export function companyEnrolmentDefaults(
   };
 }
 
-export function sortCompaniesByName<T extends { name: string }>(
-  companies: readonly T[],
-): T[] {
-  return sortNamedEntities(companies);
-}
-
 export function formatSortCode(value: string): string {
   return value
     .replace(/\D/gu, '')
@@ -153,8 +145,4 @@ export function formatVatRegistration(value: string): string {
 
 export function formatVatRegistrationInput(value: string): string {
   return formatVatRegistration(value).slice(0, vatRegistrationMaxLength);
-}
-
-export function exactCompanyNameSchema(companyName: string) {
-  return exactEntityNameSchema(companyName);
 }

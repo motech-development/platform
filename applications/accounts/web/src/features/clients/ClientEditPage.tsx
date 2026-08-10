@@ -10,9 +10,9 @@ import {
 import { DiscardChangesDialog } from '../companies/DiscardChangesDialog';
 import { QueryFailureState } from '../companies/QueryFailureState';
 import { QueryRefreshAlert } from '../companies/QueryRefreshAlert';
+import { exactEntityNameSchema } from '../entity-details';
 import { FormSkeletonRegion } from '../loading/AccountsPageSkeletons';
 import { removeClientFromCache, upsertClientInCache } from './cache-updates';
-import { exactClientNameSchema } from './client';
 import { ClientDeleteDialog } from './ClientDeleteDialog';
 import { ClientDetailsForm } from './ClientDetailsForm';
 import { ClientDetailsFormSkeleton } from './ClientDetailsFormSkeleton';
@@ -42,7 +42,7 @@ export function ClientEditPage({
   const client =
     data?.getClient.companyId === companyId ? data.getClient : undefined;
   const confirmationValid = client
-    ? exactClientNameSchema(client.name).safeParse(confirmation).success
+    ? exactEntityNameSchema(client.name).safeParse(confirmation).success
     : false;
   const deleteCurrentClient = async () => {
     try {

@@ -1,10 +1,8 @@
 import { z } from 'zod';
 import {
   contactDetailsSchema,
-  exactEntityNameSchema,
   postalAddressSchema,
   requiredTextSchema,
-  sortNamedEntities,
 } from '../entity-details';
 
 export const clientDetailsSchema = z.object({
@@ -16,13 +14,3 @@ export const clientDetailsSchema = z.object({
 });
 
 export type ClientDetails = z.output<typeof clientDetailsSchema>;
-
-export function sortClientsByName<T extends { name: string }>(
-  clients: readonly T[],
-): T[] {
-  return sortNamedEntities(clients);
-}
-
-export function exactClientNameSchema(clientName: string) {
-  return exactEntityNameSchema(clientName);
-}

@@ -1,13 +1,12 @@
 import { describe, expect, it } from 'vitest';
+import { exactEntityNameSchema, sortNamedEntities } from '../entity-details';
 import {
   companyDetailsSchema,
   companyEnrolmentDefaults,
-  exactCompanyNameSchema,
   formatSortCode,
   formatVatRegistration,
   formatVatRegistrationInput,
   settingsSchema,
-  sortCompaniesByName,
   vatSettingsSchema,
   yearEndSchema,
 } from './company';
@@ -39,7 +38,7 @@ describe('company details', () => {
   });
 
   it('requires the exact case-sensitive company name for deletion', () => {
-    const schema = exactCompanyNameSchema('Example Company');
+    const schema = exactEntityNameSchema('Example Company');
 
     expect(schema.safeParse('Example Company').success).toBe(true);
     expect(schema.safeParse('example company').success).toBe(false);
@@ -153,7 +152,7 @@ describe('company enrolment and settings', () => {
       { id: 'a', name: 'Alpha Ltd' },
     ];
 
-    expect(sortCompaniesByName(companies).map(({ id }) => id)).toEqual([
+    expect(sortNamedEntities(companies).map(({ id }) => id)).toEqual([
       'a',
       'z',
     ]);

@@ -16,10 +16,10 @@ import { useNavigate } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import { useAccountsOwnerId } from '../../auth/owner';
 import { GET_COMPANIES } from '../../data/operations';
+import { sortNamedEntities } from '../entity-details';
 import { EntityCollectionPage } from '../EntityCollectionPage';
 import { CompaniesTableSkeleton } from '../loading/AccountsPageSkeletons';
 import { responsiveEntityTableClassNames } from '../tableLayout';
-import { sortCompaniesByName } from './company';
 import { QueryRefreshAlert } from './QueryRefreshAlert';
 
 export function CompaniesPageContent() {
@@ -35,8 +35,13 @@ export function CompaniesPageContent() {
   const hasQueryData = data?.getCompanies !== undefined;
   const fatalError = Boolean(error && !hasQueryData);
   const refreshError = Boolean(error && hasQueryData);
-  const companies = sortCompaniesByName(data?.getCompanies.items ?? []);
+  const companies = sortNamedEntities(data?.getCompanies.items ?? []);
   const empty = !fatalError && !initiallyLoading && companies.length === 0;
+  let collectionState: 'empty' | 'error' | 'loading' | 'populated' =
+    'populated';
+  if (fatalError) collectionState = 'error';
+  else if (initiallyLoading) collectionState = 'loading';
+  else if (empty) collectionState = 'empty';
   const addCompany = () => {
     navigate({ to: '/my-companies/add-company' }).catch(() => undefined);
   };
@@ -50,21 +55,24 @@ export function CompaniesPageContent() {
         </Button>
       }
       description={t('Select a company or add another business.')}
-      empty={empty}
-      emptyState={
-        <StatePanel
-          action={
-            <Button aria-label={t('Add a new company')} onAction={addCompany}>
-              {t('Add company')}
-            </Button>
-          }
-          description={t('Add your first company to start using Accounts.')}
-          icon={<BuildingIcon />}
-          title={t('No companies yet')}
-        />
+      refreshState={
+        refreshError ? (
+          <QueryRefreshAlert
+            onRetry={() => {
+              refetch().catch(() => undefined);
+            }}
+            retryLabel={t('Try again', { ns: 'routing' })}
+          >
+            {t(
+              'Companies could not be refreshed. Check your connection, then try again.',
+            )}
+          </QueryRefreshAlert>
+        ) : undefined
       }
-      error={fatalError}
-      errorState={
+      state={collectionState}
+      title={t('My companies')}
+    >
+      {collectionState === 'error' && (
         <StatePanel
           action={
             <Button
@@ -82,26 +90,21 @@ export function CompaniesPageContent() {
           title={t('We could not load companies')}
           variant="danger"
         />
-      }
-      loading={initiallyLoading}
-      loadingState={<CompaniesTableSkeleton />}
-      refreshState={
-        refreshError ? (
-          <QueryRefreshAlert
-            onRetry={() => {
-              refetch().catch(() => undefined);
-            }}
-            retryLabel={t('Try again', { ns: 'routing' })}
-          >
-            {t(
-              'Companies could not be refreshed. Check your connection, then try again.',
-            )}
-          </QueryRefreshAlert>
-        ) : undefined
-      }
-      title={t('My companies')}
-    >
-      {companies.length ? (
+      )}
+      {collectionState === 'loading' && <CompaniesTableSkeleton />}
+      {collectionState === 'empty' && (
+        <StatePanel
+          action={
+            <Button aria-label={t('Add a new company')} onAction={addCompany}>
+              {t('Add company')}
+            </Button>
+          }
+          description={t('Add your first company to start using Accounts.')}
+          icon={<BuildingIcon />}
+          title={t('No companies yet')}
+        />
+      )}
+      {collectionState === 'populated' && (
         <Table.Root
           aria-label={t('Companies')}
           boundary="strong"
@@ -193,7 +196,7 @@ export function CompaniesPageContent() {
             ))}
           </Table.Body>
         </Table.Root>
-      ) : null}
+      )}
     </EntityCollectionPage>
   );
 }

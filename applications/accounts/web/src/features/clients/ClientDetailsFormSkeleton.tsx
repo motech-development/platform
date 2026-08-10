@@ -4,16 +4,7 @@ import {
   Skeleton,
 } from '@motech-development/breeze-ui';
 import { useTranslation } from 'react-i18next';
-
-function FieldSkeletons({ count }: Readonly<{ count: number }>) {
-  return (
-    <div className="grid gap-5 sm:grid-cols-2">
-      {Array.from({ length: count }, (_, index) => (
-        <Skeleton className="h-17" key={index} />
-      ))}
-    </div>
-  );
-}
+import { FormFieldSkeletons } from '../loading/AccountsPageSkeletons';
 
 export function ClientDetailsFormSkeleton({
   danger = false,
@@ -29,7 +20,7 @@ export function ClientDetailsFormSkeleton({
         layout="stacked"
         title={t('Client details')}
       >
-        <FieldSkeletons count={1} />
+        <FormFieldSkeletons count={1} />
       </FormSection>
       <FormSection
         description={t('How to contact this client.')}
@@ -38,7 +29,7 @@ export function ClientDetailsFormSkeleton({
         layout="stacked"
         title={t('Contact details')}
       >
-        <FieldSkeletons count={2} />
+        <FormFieldSkeletons count={2} />
       </FormSection>
       <FormSection
         description={t('The client’s postal address.')}
@@ -47,7 +38,7 @@ export function ClientDetailsFormSkeleton({
         layout="stacked"
         title={t('Address')}
       >
-        <FieldSkeletons count={5} />
+        <FormFieldSkeletons count={5} />
       </FormSection>
       <FormActions
         cancel={<Skeleton className="h-11 w-20" />}

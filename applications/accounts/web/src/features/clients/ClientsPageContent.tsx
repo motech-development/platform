@@ -16,9 +16,9 @@ import { useNavigate } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import { GET_CLIENTS } from '../../data/operations';
 import { QueryRefreshAlert } from '../companies/QueryRefreshAlert';
+import { sortNamedEntities } from '../entity-details';
 import { EntityCollectionPage } from '../EntityCollectionPage';
 import { responsiveEntityTableClassNames } from '../tableLayout';
-import { sortClientsByName } from './client';
 import { ClientsTableSkeleton } from './ClientsTableSkeleton';
 
 function clientInitials(name: string) {
@@ -39,12 +39,17 @@ export function ClientsPageContent({
     nextFetchPolicy: 'cache-first',
     variables: { id: companyId },
   });
-  const clients = sortClientsByName(data?.getClients.items ?? []);
+  const clients = sortNamedEntities(data?.getClients.items ?? []);
   const initiallyLoading = loading && !data;
   const hasQueryData = data?.getClients !== undefined;
   const fatalError = Boolean(error && !hasQueryData);
   const refreshError = Boolean(error && hasQueryData);
   const empty = !fatalError && !initiallyLoading && clients.length === 0;
+  let collectionState: 'empty' | 'error' | 'loading' | 'populated' =
+    'populated';
+  if (fatalError) collectionState = 'error';
+  else if (initiallyLoading) collectionState = 'loading';
+  else if (empty) collectionState = 'empty';
   const addClient = () => {
     navigate({
       params: { companyId },
@@ -61,21 +66,24 @@ export function ClientsPageContent({
         </Button>
       }
       description={t('People and organisations linked to sales transactions.')}
-      empty={empty}
-      emptyState={
-        <StatePanel
-          action={
-            <Button aria-label={t('Add a new client')} onAction={addClient}>
-              {t('Add client')}
-            </Button>
-          }
-          description={t('Add a client to use them on sales transactions.')}
-          icon={<UsersIcon />}
-          title={t('No clients yet')}
-        />
+      refreshState={
+        refreshError ? (
+          <QueryRefreshAlert
+            onRetry={() => {
+              refetch().catch(() => undefined);
+            }}
+            retryLabel={t('Try again', { ns: 'routing' })}
+          >
+            {t(
+              'Clients could not be refreshed. Check your connection, then try again.',
+            )}
+          </QueryRefreshAlert>
+        ) : undefined
       }
-      error={fatalError}
-      errorState={
+      state={collectionState}
+      title={t('Clients')}
+    >
+      {collectionState === 'error' && (
         <StatePanel
           action={
             <Button
@@ -93,26 +101,21 @@ export function ClientsPageContent({
           title={t('We could not load clients')}
           variant="danger"
         />
-      }
-      loading={initiallyLoading}
-      loadingState={<ClientsTableSkeleton />}
-      refreshState={
-        refreshError ? (
-          <QueryRefreshAlert
-            onRetry={() => {
-              refetch().catch(() => undefined);
-            }}
-            retryLabel={t('Try again', { ns: 'routing' })}
-          >
-            {t(
-              'Clients could not be refreshed. Check your connection, then try again.',
-            )}
-          </QueryRefreshAlert>
-        ) : undefined
-      }
-      title={t('Clients')}
-    >
-      {clients.length ? (
+      )}
+      {collectionState === 'loading' && <ClientsTableSkeleton />}
+      {collectionState === 'empty' && (
+        <StatePanel
+          action={
+            <Button aria-label={t('Add a new client')} onAction={addClient}>
+              {t('Add client')}
+            </Button>
+          }
+          description={t('Add a client to use them on sales transactions.')}
+          icon={<UsersIcon />}
+          title={t('No clients yet')}
+        />
+      )}
+      {collectionState === 'populated' && (
         <Table.Root
           aria-label={t('Clients')}
           boundary="strong"
@@ -201,7 +204,7 @@ export function ClientsPageContent({
             ))}
           </Table.Body>
         </Table.Root>
-      ) : null}
+      )}
     </EntityCollectionPage>
   );
 }
