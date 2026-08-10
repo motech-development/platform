@@ -164,4 +164,24 @@ describe('ConfirmationDialog', () => {
     expect(onConfirm).not.toHaveBeenCalled();
     expect(screen.getByRole('alertdialog')).toBeVisible();
   });
+
+  it('reuses the existing backdrop when nested in another modal layer', () => {
+    renderBreeze(
+      <ConfirmationDialog
+        cancelLabel="Keep editing"
+        closeLabel="Close confirmation"
+        confirmLabel="Discard changes"
+        defaultOpen
+        description="Unsaved changes will be lost."
+        nested
+        onConfirm={() => undefined}
+        title="Discard changes?"
+        trigger="Discard changes"
+      />,
+    );
+
+    expect(
+      screen.getByRole('alertdialog').closest('.breeze-modal-overlay'),
+    ).toHaveClass('bg-transparent', 'forced-colors:bg-transparent');
+  });
 });
