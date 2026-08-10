@@ -1,6 +1,9 @@
 export type AccountsPendingView =
   | 'add-company'
+  | 'add-client'
   | 'authentication'
+  | 'client-details'
+  | 'clients'
   | 'companies'
   | 'company-details'
   | 'dashboard'
@@ -11,6 +14,12 @@ export type AccountsPendingView =
 export function accountsPendingView(pathname: string): AccountsPendingView {
   if (pathname.includes('/record-transaction')) {
     return 'record-transaction';
+  }
+
+  if (pathname.includes('/my-companies/clients/')) {
+    if (pathname.includes('/add-client')) return 'add-client';
+    if (pathname.includes('/update-details/')) return 'client-details';
+    return 'clients';
   }
 
   if (pathname.includes('/my-companies/accounts/')) {

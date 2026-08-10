@@ -3,6 +3,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AccountsOwnerId } from '../auth/owner';
 import type { AuthenticatedAccountsRouterContext } from '../auth/router';
 import {
+  primeClient,
+  primeClients,
   primeCompanies,
   primeCompanyDetails,
   primeCompanySettings,
@@ -12,6 +14,8 @@ import {
   verifyRecordTransactionRoute,
 } from './loaders';
 import {
+  GET_CLIENT,
+  GET_CLIENTS,
   GET_COMPANIES,
   GET_COMPANY_DASHBOARD,
   GET_COMPANY_DETAILS,
@@ -57,6 +61,7 @@ describe('company route priming', () => {
   });
 
   it.each([
+    ['clients', primeClients],
     ['details', primeCompanyDetails],
     ['settings', primeCompanySettings],
     ['dashboard', primeDashboard],
@@ -75,6 +80,7 @@ describe('company route priming', () => {
   );
 
   it.each([
+    [primeClients, GET_CLIENTS, { id: companyId }],
     [primeCompanyDetails, GET_COMPANY_DETAILS, { id: companyId }],
     [primeCompanySettings, GET_COMPANY_SETTINGS, { id: companyId }],
     [
@@ -151,5 +157,32 @@ describe('primeTransaction', () => {
       primeTransaction(context(query), companyId, transactionId),
     ).rejects.toThrow('Not found');
     expect(notFound).toHaveBeenCalledWith({ throw: true });
+  });
+});
+
+describe('primeClient', () => {
+  it('rejects a client from another company boundary', async () => {
+    const clientId = '3456df4a-51f8-49af-a52e-c1a21b8ff087';
+    const query = vi
+      .fn()
+      .mockResolvedValueOnce({
+        data: { getCompanies: { items: [{ id: companyId }] } },
+      })
+      .mockResolvedValueOnce({
+        data: {
+          getClient: {
+            companyId: 'ff6c908e-8e7e-44cf-996b-ac0401b2176d',
+          },
+        },
+      });
+
+    await expect(
+      primeClient(context(query), companyId, clientId),
+    ).rejects.toThrow('Not found');
+    expect(notFound).toHaveBeenCalledWith({ throw: true });
+    expect(query).toHaveBeenNthCalledWith(2, {
+      query: GET_CLIENT,
+      variables: { id: clientId },
+    });
   });
 });

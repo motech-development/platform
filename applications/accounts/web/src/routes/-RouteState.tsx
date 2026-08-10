@@ -1,6 +1,7 @@
 import { CombinedGraphQLErrors } from '@apollo/client/errors';
 import {
   Button,
+  Drawer,
   LinkButton,
   PageHeader,
   Skeleton,
@@ -11,6 +12,8 @@ import { useLocation, useNavigate } from '@tanstack/react-router';
 import { type ReactNode, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AuthenticationPanel } from '../auth/AuthenticationPanel';
+import { ClientDetailsFormSkeleton } from '../features/clients/ClientDetailsFormSkeleton';
+import { ClientsTableSkeleton } from '../features/clients/ClientsTableSkeleton';
 import {
   CompaniesTableSkeleton,
   CompanyDetailsFormSkeleton,
@@ -46,10 +49,60 @@ function CompanyFormPending({
 }
 
 export function AccountsPending() {
-  const { t } = useTranslation(['routing', 'companies', 'shell']);
+  const { t } = useTranslation(['routing', 'clients', 'companies', 'shell']);
   const location = useLocation();
   const navigate = useNavigate();
   const pendingView = accountsPendingView(location.pathname);
+
+  if (
+    pendingView === 'clients' ||
+    pendingView === 'add-client' ||
+    pendingView === 'client-details'
+  ) {
+    const drawerTitle =
+      pendingView === 'add-client'
+        ? t('Add client', { ns: 'clients' })
+        : t('Edit client', { ns: 'clients' });
+
+    return (
+      <>
+        <div className="min-w-0">
+          <PageHeader
+            description={t(
+              'People and organisations linked to sales transactions.',
+              { ns: 'clients' },
+            )}
+            title={t('Clients', { ns: 'clients' })}
+          />
+          <ClientsTableSkeleton />
+        </div>
+        {pendingView !== 'clients' ? (
+          <Drawer.Root onOpenChange={() => undefined} open triggerless>
+            <Drawer.Content
+              placement={{ base: 'bottom', md: 'end' }}
+              size="wide"
+            >
+              <Drawer.Description>
+                {pendingView === 'add-client'
+                  ? t('Create a client for sales transactions.', {
+                      ns: 'clients',
+                    })
+                  : t('Update this client or remove them.', {
+                      ns: 'clients',
+                    })}
+              </Drawer.Description>
+              <Drawer.Title>{drawerTitle}</Drawer.Title>
+              <FormSkeletonRegion
+                loadingLabel={t('Loading client details', { ns: 'clients' })}
+              >
+                <ClientDetailsFormSkeleton />
+              </FormSkeletonRegion>
+            </Drawer.Content>
+          </Drawer.Root>
+        ) : null}
+      </>
+    );
+  }
 
   if (pendingView === 'record-transaction') {
     const openedFromDashboard = location.pathname.includes(

@@ -16,12 +16,15 @@ import { Route as AuthenticatedMyCompaniesIndexRouteImport } from './routes/_aut
 import { Route as AuthenticatedMyCompaniesAccountsCompanyIdRouteRouteImport } from './routes/_authenticated/my-companies/accounts/$companyId/route';
 import { Route as AuthenticatedMyCompaniesAddCompanyIndexRouteImport } from './routes/_authenticated/my-companies/add-company/index';
 import { Route as AuthenticatedMyCompaniesAccountsCompanyIdIndexRouteImport } from './routes/_authenticated/my-companies/accounts/$companyId/index';
+import { Route as AuthenticatedMyCompaniesClientsCompanyIdIndexRouteImport } from './routes/_authenticated/my-companies/clients/$companyId/index';
 import { Route as AuthenticatedMyCompaniesDashboardCompanyIdIndexRouteImport } from './routes/_authenticated/my-companies/dashboard/$companyId/index';
 import { Route as AuthenticatedMyCompaniesSettingsCompanyIdIndexRouteImport } from './routes/_authenticated/my-companies/settings/$companyId/index';
 import { Route as AuthenticatedMyCompaniesUpdateDetailsCompanyIdIndexRouteImport } from './routes/_authenticated/my-companies/update-details/$companyId/index';
 import { Route as AuthenticatedMyCompaniesAccountsCompanyIdRecordTransactionIndexRouteImport } from './routes/_authenticated/my-companies/accounts/$companyId/record-transaction/index';
+import { Route as AuthenticatedMyCompaniesClientsCompanyIdAddClientIndexRouteImport } from './routes/_authenticated/my-companies/clients/$companyId/add-client/index';
 import { Route as AuthenticatedMyCompaniesDashboardCompanyIdRecordTransactionIndexRouteImport } from './routes/_authenticated/my-companies/dashboard/$companyId/record-transaction/index';
 import { Route as AuthenticatedMyCompaniesAccountsCompanyIdViewTransactionTransactionIdIndexRouteImport } from './routes/_authenticated/my-companies/accounts/$companyId/view-transaction/$transactionId/index';
+import { Route as AuthenticatedMyCompaniesClientsCompanyIdUpdateDetailsClientIdIndexRouteImport } from './routes/_authenticated/my-companies/clients/$companyId/update-details/$clientId/index';
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -62,6 +65,12 @@ const AuthenticatedMyCompaniesAccountsCompanyIdIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedMyCompaniesAccountsCompanyIdRouteRoute,
   } as any);
+const AuthenticatedMyCompaniesClientsCompanyIdIndexRoute =
+  AuthenticatedMyCompaniesClientsCompanyIdIndexRouteImport.update({
+    id: '/clients/$companyId/',
+    path: '/clients/$companyId/',
+    getParentRoute: () => AuthenticatedMyCompaniesRouteRoute,
+  } as any);
 const AuthenticatedMyCompaniesDashboardCompanyIdIndexRoute =
   AuthenticatedMyCompaniesDashboardCompanyIdIndexRouteImport.update({
     id: '/dashboard/$companyId/',
@@ -88,6 +97,12 @@ const AuthenticatedMyCompaniesAccountsCompanyIdRecordTransactionIndexRoute =
       getParentRoute: () => AuthenticatedMyCompaniesAccountsCompanyIdRouteRoute,
     } as any,
   );
+const AuthenticatedMyCompaniesClientsCompanyIdAddClientIndexRoute =
+  AuthenticatedMyCompaniesClientsCompanyIdAddClientIndexRouteImport.update({
+    id: '/clients/$companyId/add-client/',
+    path: '/clients/$companyId/add-client/',
+    getParentRoute: () => AuthenticatedMyCompaniesRouteRoute,
+  } as any);
 const AuthenticatedMyCompaniesDashboardCompanyIdRecordTransactionIndexRoute =
   AuthenticatedMyCompaniesDashboardCompanyIdRecordTransactionIndexRouteImport.update(
     {
@@ -104,6 +119,14 @@ const AuthenticatedMyCompaniesAccountsCompanyIdViewTransactionTransactionIdIndex
       getParentRoute: () => AuthenticatedMyCompaniesAccountsCompanyIdRouteRoute,
     } as any,
   );
+const AuthenticatedMyCompaniesClientsCompanyIdUpdateDetailsClientIdIndexRoute =
+  AuthenticatedMyCompaniesClientsCompanyIdUpdateDetailsClientIdIndexRouteImport.update(
+    {
+      id: '/clients/$companyId/update-details/$clientId/',
+      path: '/clients/$companyId/update-details/$clientId/',
+      getParentRoute: () => AuthenticatedMyCompaniesRouteRoute,
+    } as any,
+  );
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute;
@@ -112,24 +135,30 @@ export interface FileRoutesByFullPath {
   '/my-companies/accounts/$companyId': typeof AuthenticatedMyCompaniesAccountsCompanyIdRouteRouteWithChildren;
   '/my-companies/add-company/': typeof AuthenticatedMyCompaniesAddCompanyIndexRoute;
   '/my-companies/accounts/$companyId/': typeof AuthenticatedMyCompaniesAccountsCompanyIdIndexRoute;
+  '/my-companies/clients/$companyId/': typeof AuthenticatedMyCompaniesClientsCompanyIdIndexRoute;
   '/my-companies/dashboard/$companyId/': typeof AuthenticatedMyCompaniesDashboardCompanyIdIndexRoute;
   '/my-companies/settings/$companyId/': typeof AuthenticatedMyCompaniesSettingsCompanyIdIndexRoute;
   '/my-companies/update-details/$companyId/': typeof AuthenticatedMyCompaniesUpdateDetailsCompanyIdIndexRoute;
   '/my-companies/accounts/$companyId/record-transaction/': typeof AuthenticatedMyCompaniesAccountsCompanyIdRecordTransactionIndexRoute;
+  '/my-companies/clients/$companyId/add-client/': typeof AuthenticatedMyCompaniesClientsCompanyIdAddClientIndexRoute;
   '/my-companies/dashboard/$companyId/record-transaction/': typeof AuthenticatedMyCompaniesDashboardCompanyIdRecordTransactionIndexRoute;
   '/my-companies/accounts/$companyId/view-transaction/$transactionId/': typeof AuthenticatedMyCompaniesAccountsCompanyIdViewTransactionTransactionIdIndexRoute;
+  '/my-companies/clients/$companyId/update-details/$clientId/': typeof AuthenticatedMyCompaniesClientsCompanyIdUpdateDetailsClientIdIndexRoute;
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute;
   '/my-companies': typeof AuthenticatedMyCompaniesIndexRoute;
   '/my-companies/add-company': typeof AuthenticatedMyCompaniesAddCompanyIndexRoute;
   '/my-companies/accounts/$companyId': typeof AuthenticatedMyCompaniesAccountsCompanyIdIndexRoute;
+  '/my-companies/clients/$companyId': typeof AuthenticatedMyCompaniesClientsCompanyIdIndexRoute;
   '/my-companies/dashboard/$companyId': typeof AuthenticatedMyCompaniesDashboardCompanyIdIndexRoute;
   '/my-companies/settings/$companyId': typeof AuthenticatedMyCompaniesSettingsCompanyIdIndexRoute;
   '/my-companies/update-details/$companyId': typeof AuthenticatedMyCompaniesUpdateDetailsCompanyIdIndexRoute;
   '/my-companies/accounts/$companyId/record-transaction': typeof AuthenticatedMyCompaniesAccountsCompanyIdRecordTransactionIndexRoute;
+  '/my-companies/clients/$companyId/add-client': typeof AuthenticatedMyCompaniesClientsCompanyIdAddClientIndexRoute;
   '/my-companies/dashboard/$companyId/record-transaction': typeof AuthenticatedMyCompaniesDashboardCompanyIdRecordTransactionIndexRoute;
   '/my-companies/accounts/$companyId/view-transaction/$transactionId': typeof AuthenticatedMyCompaniesAccountsCompanyIdViewTransactionTransactionIdIndexRoute;
+  '/my-companies/clients/$companyId/update-details/$clientId': typeof AuthenticatedMyCompaniesClientsCompanyIdUpdateDetailsClientIdIndexRoute;
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport;
@@ -140,12 +169,15 @@ export interface FileRoutesById {
   '/_authenticated/my-companies/accounts/$companyId': typeof AuthenticatedMyCompaniesAccountsCompanyIdRouteRouteWithChildren;
   '/_authenticated/my-companies/add-company/': typeof AuthenticatedMyCompaniesAddCompanyIndexRoute;
   '/_authenticated/my-companies/accounts/$companyId/': typeof AuthenticatedMyCompaniesAccountsCompanyIdIndexRoute;
+  '/_authenticated/my-companies/clients/$companyId/': typeof AuthenticatedMyCompaniesClientsCompanyIdIndexRoute;
   '/_authenticated/my-companies/dashboard/$companyId/': typeof AuthenticatedMyCompaniesDashboardCompanyIdIndexRoute;
   '/_authenticated/my-companies/settings/$companyId/': typeof AuthenticatedMyCompaniesSettingsCompanyIdIndexRoute;
   '/_authenticated/my-companies/update-details/$companyId/': typeof AuthenticatedMyCompaniesUpdateDetailsCompanyIdIndexRoute;
   '/_authenticated/my-companies/accounts/$companyId/record-transaction/': typeof AuthenticatedMyCompaniesAccountsCompanyIdRecordTransactionIndexRoute;
+  '/_authenticated/my-companies/clients/$companyId/add-client/': typeof AuthenticatedMyCompaniesClientsCompanyIdAddClientIndexRoute;
   '/_authenticated/my-companies/dashboard/$companyId/record-transaction/': typeof AuthenticatedMyCompaniesDashboardCompanyIdRecordTransactionIndexRoute;
   '/_authenticated/my-companies/accounts/$companyId/view-transaction/$transactionId/': typeof AuthenticatedMyCompaniesAccountsCompanyIdViewTransactionTransactionIdIndexRoute;
+  '/_authenticated/my-companies/clients/$companyId/update-details/$clientId/': typeof AuthenticatedMyCompaniesClientsCompanyIdUpdateDetailsClientIdIndexRoute;
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath;
@@ -156,24 +188,30 @@ export interface FileRouteTypes {
     | '/my-companies/accounts/$companyId'
     | '/my-companies/add-company/'
     | '/my-companies/accounts/$companyId/'
+    | '/my-companies/clients/$companyId/'
     | '/my-companies/dashboard/$companyId/'
     | '/my-companies/settings/$companyId/'
     | '/my-companies/update-details/$companyId/'
     | '/my-companies/accounts/$companyId/record-transaction/'
+    | '/my-companies/clients/$companyId/add-client/'
     | '/my-companies/dashboard/$companyId/record-transaction/'
-    | '/my-companies/accounts/$companyId/view-transaction/$transactionId/';
+    | '/my-companies/accounts/$companyId/view-transaction/$transactionId/'
+    | '/my-companies/clients/$companyId/update-details/$clientId/';
   fileRoutesByTo: FileRoutesByTo;
   to:
     | '/'
     | '/my-companies'
     | '/my-companies/add-company'
     | '/my-companies/accounts/$companyId'
+    | '/my-companies/clients/$companyId'
     | '/my-companies/dashboard/$companyId'
     | '/my-companies/settings/$companyId'
     | '/my-companies/update-details/$companyId'
     | '/my-companies/accounts/$companyId/record-transaction'
+    | '/my-companies/clients/$companyId/add-client'
     | '/my-companies/dashboard/$companyId/record-transaction'
-    | '/my-companies/accounts/$companyId/view-transaction/$transactionId';
+    | '/my-companies/accounts/$companyId/view-transaction/$transactionId'
+    | '/my-companies/clients/$companyId/update-details/$clientId';
   id:
     | '__root__'
     | '/'
@@ -183,12 +221,15 @@ export interface FileRouteTypes {
     | '/_authenticated/my-companies/accounts/$companyId'
     | '/_authenticated/my-companies/add-company/'
     | '/_authenticated/my-companies/accounts/$companyId/'
+    | '/_authenticated/my-companies/clients/$companyId/'
     | '/_authenticated/my-companies/dashboard/$companyId/'
     | '/_authenticated/my-companies/settings/$companyId/'
     | '/_authenticated/my-companies/update-details/$companyId/'
     | '/_authenticated/my-companies/accounts/$companyId/record-transaction/'
+    | '/_authenticated/my-companies/clients/$companyId/add-client/'
     | '/_authenticated/my-companies/dashboard/$companyId/record-transaction/'
-    | '/_authenticated/my-companies/accounts/$companyId/view-transaction/$transactionId/';
+    | '/_authenticated/my-companies/accounts/$companyId/view-transaction/$transactionId/'
+    | '/_authenticated/my-companies/clients/$companyId/update-details/$clientId/';
   fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
@@ -247,6 +288,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMyCompaniesAccountsCompanyIdIndexRouteImport;
       parentRoute: typeof AuthenticatedMyCompaniesAccountsCompanyIdRouteRoute;
     };
+    '/_authenticated/my-companies/clients/$companyId/': {
+      id: '/_authenticated/my-companies/clients/$companyId/';
+      path: '/clients/$companyId';
+      fullPath: '/my-companies/clients/$companyId/';
+      preLoaderRoute: typeof AuthenticatedMyCompaniesClientsCompanyIdIndexRouteImport;
+      parentRoute: typeof AuthenticatedMyCompaniesRouteRoute;
+    };
     '/_authenticated/my-companies/dashboard/$companyId/': {
       id: '/_authenticated/my-companies/dashboard/$companyId/';
       path: '/dashboard/$companyId';
@@ -275,6 +323,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMyCompaniesAccountsCompanyIdRecordTransactionIndexRouteImport;
       parentRoute: typeof AuthenticatedMyCompaniesAccountsCompanyIdRouteRoute;
     };
+    '/_authenticated/my-companies/clients/$companyId/add-client/': {
+      id: '/_authenticated/my-companies/clients/$companyId/add-client/';
+      path: '/clients/$companyId/add-client';
+      fullPath: '/my-companies/clients/$companyId/add-client/';
+      preLoaderRoute: typeof AuthenticatedMyCompaniesClientsCompanyIdAddClientIndexRouteImport;
+      parentRoute: typeof AuthenticatedMyCompaniesRouteRoute;
+    };
     '/_authenticated/my-companies/dashboard/$companyId/record-transaction/': {
       id: '/_authenticated/my-companies/dashboard/$companyId/record-transaction/';
       path: '/dashboard/$companyId/record-transaction';
@@ -288,6 +343,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/my-companies/accounts/$companyId/view-transaction/$transactionId/';
       preLoaderRoute: typeof AuthenticatedMyCompaniesAccountsCompanyIdViewTransactionTransactionIdIndexRouteImport;
       parentRoute: typeof AuthenticatedMyCompaniesAccountsCompanyIdRouteRoute;
+    };
+    '/_authenticated/my-companies/clients/$companyId/update-details/$clientId/': {
+      id: '/_authenticated/my-companies/clients/$companyId/update-details/$clientId/';
+      path: '/clients/$companyId/update-details/$clientId';
+      fullPath: '/my-companies/clients/$companyId/update-details/$clientId/';
+      preLoaderRoute: typeof AuthenticatedMyCompaniesClientsCompanyIdUpdateDetailsClientIdIndexRouteImport;
+      parentRoute: typeof AuthenticatedMyCompaniesRouteRoute;
     };
   }
 }
@@ -317,10 +379,13 @@ interface AuthenticatedMyCompaniesRouteRouteChildren {
   AuthenticatedMyCompaniesIndexRoute: typeof AuthenticatedMyCompaniesIndexRoute;
   AuthenticatedMyCompaniesAccountsCompanyIdRouteRoute: typeof AuthenticatedMyCompaniesAccountsCompanyIdRouteRouteWithChildren;
   AuthenticatedMyCompaniesAddCompanyIndexRoute: typeof AuthenticatedMyCompaniesAddCompanyIndexRoute;
+  AuthenticatedMyCompaniesClientsCompanyIdIndexRoute: typeof AuthenticatedMyCompaniesClientsCompanyIdIndexRoute;
   AuthenticatedMyCompaniesDashboardCompanyIdIndexRoute: typeof AuthenticatedMyCompaniesDashboardCompanyIdIndexRoute;
   AuthenticatedMyCompaniesSettingsCompanyIdIndexRoute: typeof AuthenticatedMyCompaniesSettingsCompanyIdIndexRoute;
   AuthenticatedMyCompaniesUpdateDetailsCompanyIdIndexRoute: typeof AuthenticatedMyCompaniesUpdateDetailsCompanyIdIndexRoute;
+  AuthenticatedMyCompaniesClientsCompanyIdAddClientIndexRoute: typeof AuthenticatedMyCompaniesClientsCompanyIdAddClientIndexRoute;
   AuthenticatedMyCompaniesDashboardCompanyIdRecordTransactionIndexRoute: typeof AuthenticatedMyCompaniesDashboardCompanyIdRecordTransactionIndexRoute;
+  AuthenticatedMyCompaniesClientsCompanyIdUpdateDetailsClientIdIndexRoute: typeof AuthenticatedMyCompaniesClientsCompanyIdUpdateDetailsClientIdIndexRoute;
 }
 
 const AuthenticatedMyCompaniesRouteRouteChildren: AuthenticatedMyCompaniesRouteRouteChildren =
@@ -330,14 +395,20 @@ const AuthenticatedMyCompaniesRouteRouteChildren: AuthenticatedMyCompaniesRouteR
       AuthenticatedMyCompaniesAccountsCompanyIdRouteRouteWithChildren,
     AuthenticatedMyCompaniesAddCompanyIndexRoute:
       AuthenticatedMyCompaniesAddCompanyIndexRoute,
+    AuthenticatedMyCompaniesClientsCompanyIdIndexRoute:
+      AuthenticatedMyCompaniesClientsCompanyIdIndexRoute,
     AuthenticatedMyCompaniesDashboardCompanyIdIndexRoute:
       AuthenticatedMyCompaniesDashboardCompanyIdIndexRoute,
     AuthenticatedMyCompaniesSettingsCompanyIdIndexRoute:
       AuthenticatedMyCompaniesSettingsCompanyIdIndexRoute,
     AuthenticatedMyCompaniesUpdateDetailsCompanyIdIndexRoute:
       AuthenticatedMyCompaniesUpdateDetailsCompanyIdIndexRoute,
+    AuthenticatedMyCompaniesClientsCompanyIdAddClientIndexRoute:
+      AuthenticatedMyCompaniesClientsCompanyIdAddClientIndexRoute,
     AuthenticatedMyCompaniesDashboardCompanyIdRecordTransactionIndexRoute:
       AuthenticatedMyCompaniesDashboardCompanyIdRecordTransactionIndexRoute,
+    AuthenticatedMyCompaniesClientsCompanyIdUpdateDetailsClientIdIndexRoute:
+      AuthenticatedMyCompaniesClientsCompanyIdUpdateDetailsClientIdIndexRoute,
   };
 
 const AuthenticatedMyCompaniesRouteRouteWithChildren =

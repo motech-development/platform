@@ -2,6 +2,8 @@ import { notFound } from '@tanstack/react-router';
 import { z } from 'zod';
 import type { AuthenticatedAccountsRouterContext } from '../auth/router';
 import {
+  GET_CLIENT,
+  GET_CLIENTS,
   GET_COMPANIES,
   GET_COMPANY_DASHBOARD,
   GET_COMPANY_DETAILS,
@@ -84,6 +86,41 @@ export async function primeCompanyDetails(
       variables: { id: companyId },
     }),
   );
+}
+
+export async function primeClients(context: RouterContext, companyId: string) {
+  await primeOwnedCompanyResource(context, companyId, () =>
+    context.apolloClient.query({
+      query: GET_CLIENTS,
+      variables: { id: companyId },
+    }),
+  );
+}
+
+export async function primeClient(
+  context: RouterContext,
+  companyId: string,
+  clientId: string,
+) {
+  if (!context.authenticatedOwner) return;
+
+  await verifyOwnedCompany(context, companyId);
+  requireResourceId(clientId);
+
+  let result;
+
+  try {
+    result = await context.apolloClient.query({
+      query: GET_CLIENT,
+      variables: { id: clientId },
+    });
+  } catch {
+    return;
+  }
+
+  if (!result.data || result.data.getClient.companyId !== companyId) {
+    notFound({ throw: true });
+  }
 }
 
 export async function primeCompanySettings(

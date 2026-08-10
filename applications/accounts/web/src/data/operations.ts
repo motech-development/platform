@@ -102,6 +102,103 @@ export const DELETE_COMPANY = graphql(`
   }
 `);
 
+export const GET_CLIENTS = graphql(`
+  query AccountsWebClients($id: ID!) {
+    getClients(id: $id) {
+      id
+      items {
+        address {
+          line1
+          line2
+          line3
+          line4
+          line5
+        }
+        companyId
+        contact {
+          email
+          telephone
+        }
+        id
+        name
+      }
+    }
+  }
+`);
+
+export const GET_CLIENT = graphql(`
+  query AccountsWebClient($id: ID!) {
+    getClient(id: $id) {
+      address {
+        line1
+        line2
+        line3
+        line4
+        line5
+      }
+      companyId
+      contact {
+        email
+        telephone
+      }
+      id
+      name
+    }
+  }
+`);
+
+export const CREATE_CLIENT = graphql(`
+  mutation AccountsWebCreateClient($input: ClientInput!) {
+    createClient(input: $input) {
+      address {
+        line1
+        line2
+        line3
+        line4
+        line5
+      }
+      companyId
+      contact {
+        email
+        telephone
+      }
+      id
+      name
+    }
+  }
+`);
+
+export const UPDATE_CLIENT = graphql(`
+  mutation AccountsWebUpdateClient($input: ClientInput!) {
+    updateClient(input: $input) {
+      address {
+        line1
+        line2
+        line3
+        line4
+        line5
+      }
+      companyId
+      contact {
+        email
+        telephone
+      }
+      id
+      name
+    }
+  }
+`);
+
+export const DELETE_CLIENT = graphql(`
+  mutation AccountsWebDeleteClient($id: ID!) {
+    deleteClient(id: $id) {
+      companyId
+      id
+      name
+    }
+  }
+`);
+
 export const GET_COMPANY_SETTINGS = graphql(`
   query AccountsWebCompanySettings($id: ID!) {
     getCompany(id: $id) {
