@@ -29,7 +29,10 @@ import {
   resolveResponsiveClasses,
   type ResponsiveValue,
 } from '../../internal/styling/responsive';
-import { useBreezeContext } from '../../provider/BreezeContext';
+import {
+  type BreezeDirection,
+  useBreezeContext,
+} from '../../provider/BreezeContext';
 
 /** Supported physical modes expressed with logical inline placement. */
 export type DrawerPlacement = 'start' | 'end' | 'bottom';
@@ -42,31 +45,32 @@ export interface DrawerAdjacentLayer {
 }
 const placementClasses = {
   base: {
-    bottom: 'fixed inset-0 h-dvh w-full max-h-none max-w-none',
-    end: 'fixed inset-y-0 end-0 h-dvh w-[min(var(--breeze-drawer-width),100vw)] max-h-none max-w-[var(--breeze-drawer-width)]',
+    bottom:
+      'fixed inset-y-0 start-[var(--breeze-drawer-visual-viewport-offset-inline-start,0px)] end-auto h-dvh w-[var(--breeze-drawer-visual-viewport-width,100vw)] max-h-none max-w-none',
+    end: 'fixed inset-y-0 end-[var(--breeze-drawer-visual-viewport-offset-inline-end,0px)] h-dvh w-[min(var(--breeze-drawer-width),var(--breeze-drawer-visual-viewport-width,100vw))] max-h-none max-w-[var(--breeze-drawer-width)]',
     start:
-      'fixed inset-y-0 start-0 h-dvh w-[min(var(--breeze-drawer-width),100vw)] max-h-none max-w-[var(--breeze-drawer-width)]',
+      'fixed inset-y-0 start-[var(--breeze-drawer-visual-viewport-offset-inline-start,0px)] h-dvh w-[min(var(--breeze-drawer-width),var(--breeze-drawer-visual-viewport-width,100vw))] max-h-none max-w-[var(--breeze-drawer-width)]',
   },
   lg: {
     bottom:
-      'lg:fixed lg:inset-x-0 lg:bottom-0 lg:top-auto lg:h-dvh lg:w-full lg:max-w-none',
-    end: 'lg:fixed lg:inset-y-0 lg:end-0 lg:start-auto lg:bottom-auto lg:h-dvh lg:w-[min(var(--breeze-drawer-width),100vw)] lg:max-h-none lg:max-w-[var(--breeze-drawer-width)]',
+      'lg:fixed lg:inset-y-0 lg:start-[var(--breeze-drawer-visual-viewport-offset-inline-start,0px)] lg:end-auto lg:h-dvh lg:w-[var(--breeze-drawer-visual-viewport-width,100vw)] lg:max-w-none',
+    end: 'lg:fixed lg:inset-y-0 lg:end-[var(--breeze-drawer-visual-viewport-offset-inline-end,0px)] lg:start-auto lg:h-dvh lg:w-[min(var(--breeze-drawer-width),var(--breeze-drawer-visual-viewport-width,100vw))] lg:max-h-none lg:max-w-[var(--breeze-drawer-width)]',
     start:
-      'lg:fixed lg:inset-y-0 lg:start-0 lg:end-auto lg:bottom-auto lg:h-dvh lg:w-[min(var(--breeze-drawer-width),100vw)] lg:max-h-none lg:max-w-[var(--breeze-drawer-width)]',
+      'lg:fixed lg:inset-y-0 lg:start-[var(--breeze-drawer-visual-viewport-offset-inline-start,0px)] lg:end-auto lg:h-dvh lg:w-[min(var(--breeze-drawer-width),var(--breeze-drawer-visual-viewport-width,100vw))] lg:max-h-none lg:max-w-[var(--breeze-drawer-width)]',
   },
   md: {
     bottom:
-      'md:fixed md:inset-x-0 md:bottom-0 md:top-auto md:h-dvh md:w-full md:max-w-none',
-    end: 'md:fixed md:inset-y-0 md:end-0 md:start-auto md:bottom-auto md:h-dvh md:w-[min(var(--breeze-drawer-width),100vw)] md:max-h-none md:max-w-[var(--breeze-drawer-width)]',
+      'md:fixed md:inset-y-0 md:start-[var(--breeze-drawer-visual-viewport-offset-inline-start,0px)] md:end-auto md:h-dvh md:w-[var(--breeze-drawer-visual-viewport-width,100vw)] md:max-w-none',
+    end: 'md:fixed md:inset-y-0 md:end-[var(--breeze-drawer-visual-viewport-offset-inline-end,0px)] md:start-auto md:h-dvh md:w-[min(var(--breeze-drawer-width),var(--breeze-drawer-visual-viewport-width,100vw))] md:max-h-none md:max-w-[var(--breeze-drawer-width)]',
     start:
-      'md:fixed md:inset-y-0 md:start-0 md:end-auto md:bottom-auto md:h-dvh md:w-[min(var(--breeze-drawer-width),100vw)] md:max-h-none md:max-w-[var(--breeze-drawer-width)]',
+      'md:fixed md:inset-y-0 md:start-[var(--breeze-drawer-visual-viewport-offset-inline-start,0px)] md:end-auto md:h-dvh md:w-[min(var(--breeze-drawer-width),var(--breeze-drawer-visual-viewport-width,100vw))] md:max-h-none md:max-w-[var(--breeze-drawer-width)]',
   },
   sm: {
     bottom:
-      'sm:fixed sm:inset-x-0 sm:bottom-0 sm:top-auto sm:h-dvh sm:w-full sm:max-w-none',
-    end: 'sm:fixed sm:inset-y-0 sm:end-0 sm:start-auto sm:bottom-auto sm:h-dvh sm:w-[min(var(--breeze-drawer-width),100vw)] sm:max-h-none sm:max-w-[var(--breeze-drawer-width)]',
+      'sm:fixed sm:inset-y-0 sm:start-[var(--breeze-drawer-visual-viewport-offset-inline-start,0px)] sm:end-auto sm:h-dvh sm:w-[var(--breeze-drawer-visual-viewport-width,100vw)] sm:max-w-none',
+    end: 'sm:fixed sm:inset-y-0 sm:end-[var(--breeze-drawer-visual-viewport-offset-inline-end,0px)] sm:start-auto sm:h-dvh sm:w-[min(var(--breeze-drawer-width),var(--breeze-drawer-visual-viewport-width,100vw))] sm:max-h-none sm:max-w-[var(--breeze-drawer-width)]',
     start:
-      'sm:fixed sm:inset-y-0 sm:start-0 sm:end-auto sm:bottom-auto sm:h-dvh sm:w-[min(var(--breeze-drawer-width),100vw)] sm:max-h-none sm:max-w-[var(--breeze-drawer-width)]',
+      'sm:fixed sm:inset-y-0 sm:start-[var(--breeze-drawer-visual-viewport-offset-inline-start,0px)] sm:end-auto sm:h-dvh sm:w-[min(var(--breeze-drawer-width),var(--breeze-drawer-visual-viewport-width,100vw))] sm:max-h-none sm:max-w-[var(--breeze-drawer-width)]',
   },
 };
 
@@ -76,20 +80,50 @@ const drawerWidths: Record<DrawerSize, string> = {
   wide: '48rem',
 };
 const adjacentDrawerWidth = '38rem';
-const visualViewportSurfaces = new Set<HTMLElement>();
+const visualViewportSurfaces = new Map<HTMLElement, BreezeDirection>();
 let removeVisualViewportListeners: (() => void) | undefined;
 
 function updateVisualViewportSurface(
   surface: HTMLElement,
   viewport: VisualViewport,
+  direction: BreezeDirection,
 ): void {
+  const offsetRight = Math.max(
+    0,
+    window.innerWidth - viewport.offsetLeft - viewport.width,
+  );
+  const offsetInlineStart =
+    direction === 'rtl' ? offsetRight : viewport.offsetLeft;
+  const offsetInlineEnd =
+    direction === 'rtl' ? viewport.offsetLeft : offsetRight;
+
   surface.style.setProperty(
     '--breeze-drawer-visual-viewport-height',
     `${viewport.height}px`,
   );
   surface.style.setProperty(
+    '--breeze-drawer-visual-viewport-width',
+    `${viewport.width}px`,
+  );
+  surface.style.setProperty(
     '--breeze-drawer-visual-viewport-offset-top',
     `${viewport.offsetTop}px`,
+  );
+  surface.style.setProperty(
+    '--breeze-drawer-visual-viewport-offset-left',
+    `${viewport.offsetLeft}px`,
+  );
+  surface.style.setProperty(
+    '--breeze-drawer-visual-viewport-offset-right',
+    `${offsetRight}px`,
+  );
+  surface.style.setProperty(
+    '--breeze-drawer-visual-viewport-offset-inline-start',
+    `${offsetInlineStart}px`,
+  );
+  surface.style.setProperty(
+    '--breeze-drawer-visual-viewport-offset-inline-end',
+    `${offsetInlineEnd}px`,
   );
 }
 
@@ -98,18 +132,21 @@ function updateVisualViewportSurfaces(): void {
 
   if (viewport === null) return;
 
-  visualViewportSurfaces.forEach((surface) => {
-    updateVisualViewportSurface(surface, viewport);
+  visualViewportSurfaces.forEach((direction, surface) => {
+    updateVisualViewportSurface(surface, viewport, direction);
   });
 }
 
-function registerVisualViewportSurface(surface: HTMLElement): () => void {
+function registerVisualViewportSurface(
+  surface: HTMLElement,
+  direction: BreezeDirection,
+): () => void {
   const viewport = window.visualViewport ?? null;
 
   if (viewport === null) return () => undefined;
 
-  visualViewportSurfaces.add(surface);
-  updateVisualViewportSurface(surface, viewport);
+  visualViewportSurfaces.set(surface, direction);
+  updateVisualViewportSurface(surface, viewport, direction);
 
   if (removeVisualViewportListeners === undefined) {
     viewport.addEventListener('resize', updateVisualViewportSurfaces);
@@ -279,7 +316,7 @@ export function Content({
   size = 'default',
   ...props
 }: Readonly<DrawerContentProps>): ReactElement {
-  const { messages } = useBreezeContext();
+  const { direction, messages } = useBreezeContext();
   const modalState = useContext(DrawerModalStateContext);
   const bodyRef = useRef<HTMLDivElement>(null);
   const visualViewportCleanupRef = useRef<(() => void) | undefined>(undefined);
@@ -288,10 +325,12 @@ export function Content({
     (surface: HTMLElement | null) => {
       visualViewportCleanupRef.current?.();
       visualViewportCleanupRef.current =
-        surface === null ? undefined : registerVisualViewportSurface(surface);
+        surface === null
+          ? undefined
+          : registerVisualViewportSurface(surface, direction);
       forwardedRef(surface);
     },
-    [forwardedRef],
+    [direction, forwardedRef],
   );
   const childElements = Children.toArray(children);
   const titleElement = childElements.find(

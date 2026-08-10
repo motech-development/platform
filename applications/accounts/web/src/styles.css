@@ -6,6 +6,7 @@
 @source './**/*.{ts,tsx}';
 
 @layer base {
+  /* Breeze tokens are scoped below the document root, so overscroll needs the literal shell value. */
   html:has([data-document-background='shell']) {
     background: #151c2b;
   }

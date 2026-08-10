@@ -205,7 +205,8 @@
 
     .breeze-drawer-adjacent-motion > .breeze-drawer-adjacent-surface {
       position: absolute;
-      inset-block: 0;
+      inset-block-start: var(--breeze-drawer-visual-viewport-offset-top, 0px);
+      inset-block-end: auto;
       inset-inline-end: 0;
       --breeze-drawer-x: 28px;
       --breeze-drawer-y: 0%;
