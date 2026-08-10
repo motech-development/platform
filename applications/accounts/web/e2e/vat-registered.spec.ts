@@ -156,7 +156,8 @@ test.describe('VAT registered Accounts', () => {
     await expect(page).toHaveURL(/\/my-companies$/);
   });
 
-  test.describe.serial('original company-management journeys', () => {
+  test.describe
+    .serial('original company and client-management journeys', () => {
     const suffix = Date.now().toString().slice(-8);
     const companyName = `Accounts web ${suffix}`;
     const clients = [
