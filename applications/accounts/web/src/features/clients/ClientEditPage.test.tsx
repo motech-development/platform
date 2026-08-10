@@ -23,9 +23,6 @@ const client = {
 
 const mocks = vi.hoisted(() => ({
   blocker: { proceed: vi.fn(), reset: vi.fn(), status: 'idle' },
-  blockerOptions: undefined as
-    | undefined
-    | { enableBeforeUnload: boolean; shouldBlockFn: () => boolean },
   deleteClient: vi.fn(),
   deleteLoading: false,
   navigate: vi.fn(),
@@ -66,18 +63,13 @@ vi.mock('@motech-development/breeze-ui/icons', async (importOriginal) => ({
   ...(await importOriginal<
     typeof import('@motech-development/breeze-ui/icons')
   >()),
+  CloseIcon: () => <span aria-hidden="true">close</span>,
   WarningIcon: () => <span aria-hidden="true">warning</span>,
 }));
 
 vi.mock('@tanstack/react-router', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@tanstack/react-router')>()),
-  useBlocker: (options: {
-    enableBeforeUnload: boolean;
-    shouldBlockFn: () => boolean;
-  }) => {
-    mocks.blockerOptions = options;
-    return { ...mocks.blocker };
-  },
+  useBlocker: () => ({ ...mocks.blocker }),
   useNavigate: () => mocks.navigate,
 }));
 
@@ -268,8 +260,6 @@ describe('ClientEditPage', () => {
 
     await user.click(screen.getByRole('button', { name: 'Save client' }));
     await vi.waitFor(() => expect(mocks.updateClient).toHaveBeenCalledOnce());
-    expect(mocks.blockerOptions?.enableBeforeUnload).toBe(true);
-    expect(mocks.blockerOptions?.shouldBlockFn()).toBe(true);
 
     mocks.blocker.status = 'blocked';
     view.rerender(

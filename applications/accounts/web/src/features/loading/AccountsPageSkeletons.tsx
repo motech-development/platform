@@ -4,13 +4,12 @@ import {
   SectionHeader,
   Skeleton,
   Surface,
-  Table,
   VisuallyHidden,
 } from '@motech-development/breeze-ui';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { expenseCategoryRowClassName } from '../companies/expense-category-layout';
-import { responsiveEntityTableClassNames } from '../tableLayout';
+import { EntityTableSkeleton } from '../EntityTableSkeleton';
 import { FinancialSummarySkeleton } from '../transactions/FinancialSummary';
 import { TransactionLedgerSkeleton } from '../transactions/TransactionLedger';
 
@@ -32,89 +31,25 @@ export function CompaniesTableSkeleton() {
   const { t } = useTranslation(['companies', 'routing']);
 
   return (
-    <section aria-label={t('Loading companies')} role="status">
-      <VisuallyHidden>{t('Loading', { ns: 'routing' })}</VisuallyHidden>
-      <div aria-hidden="true" inert>
-        <Table.Root
-          aria-label={t('Loading companies table')}
-          boundary="strong"
-          className={responsiveEntityTableClassNames.root}
-          desktopColumns="mediaDetailsAction"
-          layout="responsiveGrid"
-          tabIndex={-1}
-        >
-          <Table.Header className={responsiveEntityTableClassNames.header}>
-            <Table.Column
-              compactLabel={false}
-              id="avatar"
-              textValue={t('Company')}
-            >
-              <VisuallyHidden>{t('Company')}</VisuallyHidden>
-            </Table.Column>
-            <Table.Column compactLabel={false} id="company" rowHeader>
-              <Skeleton className="h-4 w-3/4 max-w-44" />
-            </Table.Column>
-            <Table.Column compactLabel={false} id="number">
-              <Skeleton className="h-4 w-4/5 max-w-64" />
-            </Table.Column>
-            <Table.Column compactLabel={false} id="contact">
-              <Skeleton className="h-4 w-4/5 max-w-64" />
-            </Table.Column>
-            <Table.Column
-              compactLabel={false}
-              id="actions"
-              textValue={t('Action')}
-              width="1.25rem"
-            >
-              <VisuallyHidden>{t('Action')}</VisuallyHidden>
-            </Table.Column>
-          </Table.Header>
-          <Table.Body className={responsiveEntityTableClassNames.body}>
-            {[0, 1, 2].map((index) => (
-              <Table.Row
-                id={`loading-company-${index}`}
-                className={responsiveEntityTableClassNames.row}
-                key={index}
-                textValue={t('Loading company row {{count}}', {
-                  count: index + 1,
-                })}
-              >
-                <Table.Cell
-                  className={responsiveEntityTableClassNames.cells.identity}
-                  column="avatar"
-                >
-                  <Skeleton className="size-9 shrink-0 rounded-none" />
-                </Table.Cell>
-                <Table.Cell
-                  className={responsiveEntityTableClassNames.cells.primary}
-                  column="company"
-                >
-                  <Skeleton className="h-4 w-3/4 max-w-44" />
-                </Table.Cell>
-                <Table.Cell
-                  className={responsiveEntityTableClassNames.cells.secondary}
-                  column="number"
-                >
-                  <Skeleton className="h-4 w-3/4 max-w-64" />
-                </Table.Cell>
-                <Table.Cell
-                  className={responsiveEntityTableClassNames.cells.tertiary}
-                  column="contact"
-                >
-                  <Skeleton className="h-4 w-3/4 max-w-64" />
-                </Table.Cell>
-                <Table.Cell
-                  className={responsiveEntityTableClassNames.cells.actions}
-                  column="actions"
-                >
-                  <Skeleton className="h-4 w-3" />
-                </Table.Cell>
-              </Table.Row>
-            ))}
-          </Table.Body>
-        </Table.Root>
-      </div>
-    </section>
+    <EntityTableSkeleton
+      actionLabel={t('Action')}
+      columns={{
+        actions: 'actions',
+        identity: 'avatar',
+        primary: 'company',
+        secondary: 'number',
+        tertiary: 'contact',
+      }}
+      identityLabel={t('Company')}
+      identityShape="square"
+      loadingLabel={t('Loading companies')}
+      loadingText={t('Loading', { ns: 'routing' })}
+      rowCount={3}
+      rowText={(index) =>
+        t('Loading company row {{count}}', { count: index + 1 })
+      }
+      tableLabel={t('Loading companies table')}
+    />
   );
 }
 

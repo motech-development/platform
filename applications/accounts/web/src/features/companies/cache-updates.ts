@@ -1,4 +1,8 @@
-import { type ApolloCache, gql, type Reference } from '@apollo/client';
+import { type ApolloCache, gql } from '@apollo/client';
+import {
+  removeEntityFromCache,
+  upsertNamedEntityInCache,
+} from '../collection-cache';
 
 export interface CompanyCacheValue {
   readonly __typename?: 'Company';
@@ -15,46 +19,18 @@ const companyFragment = gql`
   }
 `;
 
-function companiesCacheId(cache: ApolloCache, owner: string) {
-  return cache.identify({ __typename: 'Companies', id: owner });
-}
-
 export function upsertCompanyInCache(
   cache: ApolloCache,
   owner: string,
   company: CompanyCacheValue,
 ) {
-  const companyReference = cache.writeFragment({
-    data: { ...company, __typename: 'Company' },
-    fragment: companyFragment,
-  });
-  const collectionId = companiesCacheId(cache, owner);
-
-  if (!companyReference || !collectionId) {
-    return;
-  }
-
-  cache.modify({
-    fields: {
-      items(existing: readonly Reference[] | undefined, { readField }) {
-        const current = existing ?? [];
-        const next = [
-          ...current.filter(
-            (reference) => readField<string>('id', reference) !== company.id,
-          ),
-          companyReference,
-        ];
-
-        return next.sort((left, right) =>
-          (readField<string>('name', left) ?? '').localeCompare(
-            readField<string>('name', right) ?? '',
-            'en-GB',
-            { sensitivity: 'base' },
-          ),
-        );
-      },
-    },
-    id: collectionId,
+  upsertNamedEntityInCache({
+    cache,
+    collectionId: owner,
+    collectionTypeName: 'Companies',
+    entity: company,
+    entityFragment: companyFragment,
+    entityTypeName: 'Company',
   });
 }
 
@@ -63,21 +39,11 @@ export function removeCompanyFromCache(
   owner: string,
   companyId: string,
 ) {
-  const collectionId = companiesCacheId(cache, owner);
-
-  if (collectionId) {
-    cache.modify({
-      fields: {
-        items(existing: readonly Reference[] | undefined, { readField }) {
-          return (existing ?? []).filter(
-            (reference) => readField<string>('id', reference) !== companyId,
-          );
-        },
-      },
-      id: collectionId,
-    });
-  }
-
-  cache.evict({ id: cache.identify({ __typename: 'Company', id: companyId }) });
-  cache.gc();
+  removeEntityFromCache({
+    cache,
+    collectionId: owner,
+    collectionTypeName: 'Companies',
+    entityId: companyId,
+    entityTypeName: 'Company',
+  });
 }

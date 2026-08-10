@@ -1,10 +1,5 @@
 import { useMutation, useQuery } from '@apollo/client/react';
-import {
-  ConfirmationDialog,
-  Drawer,
-  TextField,
-  useToast,
-} from '@motech-development/breeze-ui';
+import { Drawer, useToast } from '@motech-development/breeze-ui';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -18,6 +13,7 @@ import { QueryRefreshAlert } from '../companies/QueryRefreshAlert';
 import { FormSkeletonRegion } from '../loading/AccountsPageSkeletons';
 import { removeClientFromCache, upsertClientInCache } from './cache-updates';
 import { exactClientNameSchema } from './client';
+import { ClientDeleteDialog } from './ClientDeleteDialog';
 import { ClientDetailsForm } from './ClientDetailsForm';
 import { ClientDetailsFormSkeleton } from './ClientDetailsFormSkeleton';
 import { ClientsPageContent } from './ClientsPageContent';
@@ -135,48 +131,21 @@ export function ClientEditPage({
           {client ? (
             <ClientDetailsForm
               danger={
-                <ConfirmationDialog
-                  cancelLabel={t('Cancel')}
-                  closeLabel={t('Close delete confirmation')}
-                  confirmLabel={t('Permanently delete client')}
-                  description={t(
-                    'The client will be removed. Existing transactions will remain.',
-                  )}
-                  details={
-                    <TextField.Root
-                      invalid={confirmation.length > 0 && !confirmationValid}
-                      onChange={setConfirmation}
-                      value={confirmation}
-                    >
-                      <TextField.Label>
-                        {t('Type {{name}} to confirm', {
-                          name: client.name,
-                        })}
-                      </TextField.Label>
-                      <TextField.Input autoComplete="off" />
-                      <TextField.Error>
-                        {t('The client name must match exactly.')}
-                      </TextField.Error>
-                    </TextField.Root>
-                  }
-                  disabled={!confirmationValid || deleting}
-                  dismissDisabled={deleting}
-                  loading={deleting}
-                  nested
+                <ClientDeleteDialog
+                  clientName={client.name}
+                  confirmation={confirmation}
+                  confirmationValid={confirmationValid}
+                  deleting={deleting}
+                  onConfirmationChange={setConfirmation}
+                  onDelete={() => {
+                    deleteCurrentClient().catch(() => undefined);
+                  }}
                   onOpenChange={(open) => {
                     if (!open && deleting) return;
                     setDeleteOpen(open);
                     if (!open) setConfirmation('');
                   }}
-                  onConfirm={() => {
-                    deleteCurrentClient().catch(() => undefined);
-                  }}
                   open={deleteOpen}
-                  persistOnConfirm
-                  title={t('Delete {{name}}?', { name: client.name })}
-                  trigger={t('Delete client')}
-                  triggerAppearance="solid"
-                  variant="danger"
                 />
               }
               initialValues={{
