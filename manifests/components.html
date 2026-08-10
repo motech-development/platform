@@ -594,7 +594,7 @@
 <main>
   <div class="wrap">
     <div class="note ok" style="margin-bottom: 16px;">
-              Using <code>react-docgen-typescript</code>. Generation took <strong>5.0s</strong>.
+              Using <code>react-docgen-typescript</code>. Generation took <strong>5.6s</strong>.
             </div>
     <h2 class="section-title">Components</h2>
     <div class="grid" role="list">
@@ -3155,7 +3155,7 @@ Use `StatePanel` for a standard empty/error composition, `Spinner` for announced
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> ConfirmationDialog</h2>
       <div class="badges">
-        <label for="c-9-patterns-actions-confirmationdialog-props" class="badge ok as-toggle">14 prop types</label>
+        <label for="c-9-patterns-actions-confirmationdialog-props" class="badge ok as-toggle">15 prop types</label>
         
         <label for="c-9-patterns-actions-confirmationdialog-stories" class="badge ok as-toggle">4 stories</label>
         <label for="c-9-patterns-actions-confirmationdialog-docs" class="badge ok as-toggle">1 doc</label>
@@ -3184,7 +3184,7 @@ Use `StatePanel` for a standard empty/error composition, `Spinner` for announced
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
-              <span class="badge ok">14 prop types</span>
+              <span class="badge ok">15 prop types</span>
             </div>
             <pre><code>Component: src/patterns/ConfirmationDialog/ConfirmationDialog.tsx::ConfirmationDialog</code></pre>
             <pre><code>Props:</code></pre>
@@ -3217,6 +3217,11 @@ description: ReactNode
  * Prevents the confirming action. Defaults to `false`.
  */
 disabled?: boolean = false
+
+/**
+ * Uses the backdrop supplied by an existing modal layer. Defaults to `false`.
+ */
+nested?: boolean = false
 
 /**
  * Reports the explicit confirming decision.
@@ -3409,6 +3414,8 @@ The icon is supplementary; meaning must be present in the title, description and
 `variant` accepts `&#39;danger&#39;`, `&#39;warning&#39;` or `&#39;primary&#39;` and defaults to `&#39;danger&#39;`. It colours the trigger, icon and confirming action. `triggerAppearance` accepts `&#39;solid&#39;`, `&#39;subtle&#39;`, `&#39;outline&#39;` or `&#39;ghost&#39;` and defaults to the trigger Button’s solid appearance.
 
 `disabled` disables only the confirming action. Cancel, the header close action and Escape remain available. The pattern has no loading prop: keep asynchronous state application-owned, prevent duplicate confirmation through `disabled` when needed, and present progress or failure outside this fixed composition or use `AlertDialog` for a richer workflow.
+
+Set `nested` only when the confirmation opens above an existing modal layer, such as a dirty-form confirmation above a drawer. The existing modal supplies the visible backdrop while the confirmation retains its own focus scope and alert-dialog semantics. Do not use `nested` for a standalone confirmation.
 
 ## Open state and callbacks
 
