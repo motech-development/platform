@@ -1,4 +1,8 @@
-import { FormSection, Skeleton } from '@motech-development/breeze-ui';
+import {
+  FormActions,
+  FormSection,
+  Skeleton,
+} from '@motech-development/breeze-ui';
 import { useTranslation } from 'react-i18next';
 
 function FieldSkeletons({ count }: Readonly<{ count: number }>) {
@@ -11,7 +15,9 @@ function FieldSkeletons({ count }: Readonly<{ count: number }>) {
   );
 }
 
-export function ClientDetailsFormSkeleton() {
+export function ClientDetailsFormSkeleton({
+  danger = false,
+}: Readonly<{ danger?: boolean }>) {
   const { t } = useTranslation('clients');
 
   return (
@@ -43,10 +49,11 @@ export function ClientDetailsFormSkeleton() {
       >
         <FieldSkeletons count={5} />
       </FormSection>
-      <div className="flex justify-end gap-3">
-        <Skeleton className="h-11 w-20" />
-        <Skeleton className="h-11 w-32" />
-      </div>
+      <FormActions
+        cancel={<Skeleton className="h-11 w-20" />}
+        danger={danger ? <Skeleton className="h-11 w-32" /> : undefined}
+        primary={<Skeleton className="h-11 w-32" />}
+      />
     </div>
   );
 }

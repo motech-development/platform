@@ -17,6 +17,7 @@ import {
   BoundDetailsTextField,
   ContactDetailsFormSection,
   type DetailsFieldOptions,
+  type EntityDetailsFieldName,
 } from '../forms/ContactDetailsFormSections';
 import {
   type CompanyDetails,
@@ -26,16 +27,10 @@ import {
 } from './company';
 
 type CompanyDetailsFieldName =
-  | 'address.line1'
-  | 'address.line2'
-  | 'address.line3'
-  | 'address.line4'
-  | 'address.line5'
+  | EntityDetailsFieldName
   | 'bank.accountNumber'
   | 'bank.sortCode'
   | 'companyNumber'
-  | 'contact.email'
-  | 'contact.telephone'
   | 'name';
 
 export function CompanyDetailsForm({

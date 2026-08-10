@@ -510,9 +510,6 @@ test.describe('VAT registered Accounts', () => {
       await page.getByTestId(updated.name).click();
       const previousClientId = new URL(page.url()).pathname.split('/').at(-1);
 
-      await page.getByRole('button', { name: 'Cancel' }).click();
-      await expect(page).toHaveURL(/my-companies\/clients\/[0-9a-f-]+$/);
-      expect(new URL(page.url()).pathname).not.toContain(previousClientId);
       await page.getByRole('button', { name: 'Switch company' }).click();
       const otherCompany = page
         .getByRole('option')
@@ -525,6 +522,9 @@ test.describe('VAT registered Accounts', () => {
         expect(new URL(page.url()).pathname).not.toContain(previousClientId);
       } else {
         await page.keyboard.press('Escape');
+        await page.getByRole('button', { name: 'Cancel' }).click();
+        await expect(page).toHaveURL(/my-companies\/clients\/[0-9a-f-]+$/);
+        expect(new URL(page.url()).pathname).not.toContain(previousClientId);
       }
     });
 

@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { validationMessage } from '../form-errors';
 
-export type ContactDetailsFieldName =
+export type EntityDetailsFieldName =
   | 'address.line1'
   | 'address.line2'
   | 'address.line3'
@@ -20,7 +20,7 @@ export interface DetailsFieldOptions {
 }
 
 export type DetailsFieldRenderer = (
-  name: ContactDetailsFieldName,
+  name: EntityDetailsFieldName,
   label: string,
   options?: DetailsFieldOptions,
 ) => ReactNode;

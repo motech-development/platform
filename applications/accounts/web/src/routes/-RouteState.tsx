@@ -80,7 +80,7 @@ export function AccountsPending() {
           <Drawer.Root onOpenChange={() => undefined} open triggerless>
             <Drawer.Content
               placement={{ base: 'bottom', md: 'end' }}
-              size="wide"
+              size="medium"
             >
               <Drawer.Description>
                 {pendingView === 'add-client'
@@ -95,7 +95,9 @@ export function AccountsPending() {
               <FormSkeletonRegion
                 loadingLabel={t('Loading client details', { ns: 'clients' })}
               >
-                <ClientDetailsFormSkeleton />
+                <ClientDetailsFormSkeleton
+                  danger={pendingView === 'client-details'}
+                />
               </FormSkeletonRegion>
             </Drawer.Content>
           </Drawer.Root>

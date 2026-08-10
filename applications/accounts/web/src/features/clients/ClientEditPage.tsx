@@ -46,8 +46,9 @@ export function ClientEditPage({
   const [updateClient] = useMutation(UPDATE_CLIENT);
   const [deleteClient, { loading: deleting }] = useMutation(DELETE_CLIENT);
   const blocker = useBlocker({
-    enableBeforeUnload: dirty || deleting,
-    shouldBlockFn: () => (dirty || deleting) && !allowNavigation.current,
+    enableBeforeUnload: dirty || savePending || deleting,
+    shouldBlockFn: () =>
+      (dirty || savePending || deleting) && !allowNavigation.current,
     withResolver: true,
   });
   const blockerRef = useRef(blocker);
@@ -145,7 +146,7 @@ export function ClientEditPage({
           dismissible={!savePending && !deleting}
           keyboardDismissDisabled={savePending || deleting}
           placement={{ base: 'bottom', md: 'end' }}
-          size="wide"
+          size="medium"
         >
           <Drawer.Description>
             {client
@@ -169,7 +170,7 @@ export function ClientEditPage({
           ) : null}
           {loading && !data ? (
             <FormSkeletonRegion loadingLabel={t('Loading client details')}>
-              <ClientDetailsFormSkeleton />
+              <ClientDetailsFormSkeleton danger />
             </FormSkeletonRegion>
           ) : null}
           {!loading && !client ? (
@@ -280,19 +281,27 @@ export function ClientEditPage({
                       title: t('Client details could not be saved'),
                       variant: 'danger',
                     });
+                    const activeBlocker = blockerRef.current;
+                    if (activeBlocker.status === 'blocked' && !dirty) {
+                      allowNavigation.current = true;
+                      activeBlocker.proceed();
+                    }
                     return;
                   }
 
-                  const activeBlocker = blockerRef.current;
-                  if (activeBlocker.status === 'blocked') {
-                    activeBlocker.reset?.();
-                  }
-                  allowNavigation.current = true;
-                  setDirty(false);
                   toast.show({
                     title: t('Client details saved'),
                     variant: 'success',
                   });
+                  const activeBlocker = blockerRef.current;
+                  if (activeBlocker.status === 'blocked') {
+                    allowNavigation.current = true;
+                    setDirty(false);
+                    activeBlocker.proceed();
+                    return;
+                  }
+                  allowNavigation.current = true;
+                  setDirty(false);
                   await navigate({
                     params: { companyId },
                     to: '/my-companies/clients/$companyId',

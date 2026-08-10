@@ -1,5 +1,5 @@
 import { BreezeProvider } from '@motech-development/breeze-ui';
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ClientEditPage } from './ClientEditPage';
@@ -23,6 +23,9 @@ const client = {
 
 const mocks = vi.hoisted(() => ({
   blocker: { proceed: vi.fn(), reset: vi.fn(), status: 'idle' },
+  blockerOptions: undefined as
+    | undefined
+    | { enableBeforeUnload: boolean; shouldBlockFn: () => boolean },
   deleteClient: vi.fn(),
   deleteLoading: false,
   navigate: vi.fn(),
@@ -65,7 +68,13 @@ vi.mock('@motech-development/breeze-ui/icons', () => ({
 
 vi.mock('@tanstack/react-router', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@tanstack/react-router')>()),
-  useBlocker: () => ({ ...mocks.blocker }),
+  useBlocker: (options: {
+    enableBeforeUnload: boolean;
+    shouldBlockFn: () => boolean;
+  }) => {
+    mocks.blockerOptions = options;
+    return { ...mocks.blocker };
+  },
   useNavigate: () => mocks.navigate,
 }));
 
@@ -233,6 +242,47 @@ describe('ClientEditPage', () => {
 
     await vi.waitFor(() => expect(mocks.updateClient).toHaveBeenCalledTimes(2));
     expect(mocks.navigate).toHaveBeenCalledOnce();
+  });
+
+  it('finishes blocked company navigation after an unchanged save', async () => {
+    const user = userEvent.setup();
+    let resolveUpdate!: (value: {
+      data: { updateClient: typeof client };
+    }) => void;
+    mocks.updateClient.mockReturnValueOnce(
+      new Promise((resolve) => {
+        resolveUpdate = resolve;
+      }),
+    );
+    const view = render(
+      <BreezeProvider locale="en-GB">
+        <ClientEditPage clientId="client-id" companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Save client' }));
+    await vi.waitFor(() => expect(mocks.updateClient).toHaveBeenCalledOnce());
+    expect(mocks.blockerOptions?.enableBeforeUnload).toBe(true);
+    expect(mocks.blockerOptions?.shouldBlockFn()).toBe(true);
+
+    mocks.blocker.status = 'blocked';
+    view.rerender(
+      <BreezeProvider locale="en-GB">
+        <ClientEditPage clientId="client-id" companyId="company-id" />
+      </BreezeProvider>,
+    );
+    act(() => {
+      resolveUpdate({ data: { updateClient: client } });
+    });
+
+    await vi.waitFor(() =>
+      expect(mocks.blocker.proceed).toHaveBeenCalledOnce(),
+    );
+    expect(mocks.navigate).not.toHaveBeenCalled();
+    expect(mocks.toast.show).toHaveBeenCalledWith({
+      title: 'Client details saved',
+      variant: 'success',
+    });
   });
 
   it('keeps delete confirmation open after failure and allows retry', async () => {
