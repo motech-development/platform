@@ -14,6 +14,7 @@ import {
   validationMessage,
   visibleValidationErrors,
 } from '../form-errors';
+import { SubmittingForm } from '../forms/SubmittingForm';
 import {
   type CompanyEnrolment,
   type CompanyEnrolmentDraft,
@@ -148,187 +149,181 @@ export function CompanySetupForm({
   );
 
   return (
-    <form
-      className="grid min-h-full gap-6"
-      noValidate
-      onSubmit={(event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        form.handleSubmit().catch(() => undefined);
-      }}
-    >
-      <form.Subscribe selector={(state) => state.isSubmitting}>
-        {(submissionPending) => (
-          <fieldset className="contents" disabled={submissionPending}>
-            <FormSection
-              description={t('How VAT is applied to transactions.')}
-              divided
-              headingLevel={3}
-              layout="stacked"
-              title={t('VAT settings')}
-            >
-              <form.Field name="vat.scheme">
+    <form.Subscribe selector={(state) => state.isSubmitting}>
+      {(submissionPending) => (
+        <SubmittingForm
+          className="grid min-h-full gap-6"
+          onSubmit={() => form.handleSubmit()}
+          submissionPending={submissionPending}
+        >
+          <FormSection
+            description={t('How VAT is applied to transactions.')}
+            divided
+            headingLevel={3}
+            layout="stacked"
+            title={t('VAT settings')}
+          >
+            <form.Field name="vat.scheme">
+              {(field) => {
+                const errors = visibleValidationErrors(
+                  schemaFieldErrors(
+                    setupSchema,
+                    form.state.values,
+                    'vat.scheme',
+                  ),
+                  field.state.meta.isBlurred,
+                  form.state.submissionAttempts,
+                );
+
+                return (
+                  <VatSchemeField
+                    error={validationMessage(errors)}
+                    invalid={errors.length > 0}
+                    label={t('VAT scheme')}
+                    labels={schemeLabels}
+                    onChange={(value) => {
+                      field.handleChange(value);
+                      onDirty();
+                    }}
+                    selection={field.state.value}
+                  />
+                );
+              }}
+            </form.Field>
+            <Grid columns={{ base: 1, sm: 2 }}>
+              <form.Field name="vat.registration">
                 {(field) => {
                   const errors = visibleValidationErrors(
                     schemaFieldErrors(
                       setupSchema,
                       form.state.values,
-                      'vat.scheme',
+                      'vat.registration',
                     ),
                     field.state.meta.isBlurred,
                     form.state.submissionAttempts,
                   );
 
                   return (
-                    <VatSchemeField
+                    <VatRegistrationField
                       error={validationMessage(errors)}
                       invalid={errors.length > 0}
-                      label={t('VAT scheme')}
-                      labels={schemeLabels}
+                      label={t('VAT registration')}
+                      onBlur={field.handleBlur}
                       onChange={(value) => {
-                        field.handleChange(value);
+                        field.handleChange(formatVatRegistrationInput(value));
                         onDirty();
                       }}
-                      selection={field.state.value}
+                      value={field.state.value}
                     />
                   );
                 }}
               </form.Field>
-              <Grid columns={{ base: 1, sm: 2 }}>
-                <form.Field name="vat.registration">
-                  {(field) => {
+              {percentageField('vat.charge', t('Charge rate'))}
+              {percentageField('vat.pay', t('Pay rate'))}
+            </Grid>
+          </FormSection>
+          <FormSection
+            description={t('Used for annual reports.')}
+            divided
+            headingLevel={3}
+            layout="stacked"
+            title={t('Financial year end')}
+          >
+            <form.Field name="yearEnd.day">
+              {(dayField) => (
+                <form.Field name="yearEnd.month">
+                  {(monthField) => {
                     const errors = visibleValidationErrors(
                       schemaFieldErrors(
                         setupSchema,
                         form.state.values,
-                        'vat.registration',
+                        'yearEnd.day',
                       ),
-                      field.state.meta.isBlurred,
+                      dayField.state.meta.isBlurred,
                       form.state.submissionAttempts,
                     );
 
                     return (
-                      <VatRegistrationField
-                        error={validationMessage(errors)}
-                        invalid={errors.length > 0}
-                        label={t('VAT registration')}
-                        onBlur={field.handleBlur}
-                        onChange={(value) => {
-                          field.handleChange(formatVatRegistrationInput(value));
+                      <YearEndFields
+                        day={dayField.state.value}
+                        dayError={validationMessage(errors)}
+                        dayInvalid={errors.length > 0}
+                        dayLabel={t('Day')}
+                        month={monthField.state.value}
+                        monthLabel={t('Month')}
+                        months={months}
+                        onDayBlur={dayField.handleBlur}
+                        onDayChange={(value) => {
+                          dayField.handleChange(value);
                           onDirty();
                         }}
-                        value={field.state.value}
+                        onMonthChange={(value) => {
+                          monthField.handleChange(value);
+                          dayField.handleBlur();
+                          onDirty();
+                        }}
                       />
                     );
                   }}
                 </form.Field>
-                {percentageField('vat.charge', t('Charge rate'))}
-                {percentageField('vat.pay', t('Pay rate'))}
-              </Grid>
-            </FormSection>
-            <FormSection
-              description={t('Used for annual reports.')}
-              divided
-              headingLevel={3}
-              layout="stacked"
-              title={t('Financial year end')}
-            >
-              <form.Field name="yearEnd.day">
-                {(dayField) => (
-                  <form.Field name="yearEnd.month">
-                    {(monthField) => {
-                      const errors = visibleValidationErrors(
-                        schemaFieldErrors(
-                          setupSchema,
-                          form.state.values,
-                          'yearEnd.day',
-                        ),
-                        dayField.state.meta.isBlurred,
-                        form.state.submissionAttempts,
-                      );
-
-                      return (
-                        <YearEndFields
-                          day={dayField.state.value}
-                          dayError={validationMessage(errors)}
-                          dayInvalid={errors.length > 0}
-                          dayLabel={t('Day')}
-                          month={monthField.state.value}
-                          monthLabel={t('Month')}
-                          months={months}
-                          onDayBlur={dayField.handleBlur}
-                          onDayChange={(value) => {
-                            dayField.handleChange(value);
-                            onDirty();
-                          }}
-                          onMonthChange={(value) => {
-                            monthField.handleChange(value);
-                            dayField.handleBlur();
-                            onDirty();
-                          }}
-                        />
-                      );
-                    }}
-                  </form.Field>
-                )}
-              </form.Field>
-            </FormSection>
-            <FormSection
-              description={t('Starting values used by the account balance.')}
-              divided
-              headingLevel={3}
-              layout="stacked"
-              title={t('Opening accounts')}
-            >
-              <Grid columns={{ base: 1, sm: 2 }}>
-                {moneyField('balance.balance', t('Opening balance'))}
-                {moneyField('balance.vat.owed', t('VAT owed'))}
-                {moneyField('balance.vat.paid', t('VAT paid'))}
-              </Grid>
-            </FormSection>
-            <form.Subscribe
-              selector={(state) =>
-                [
-                  schemaValuesValid(setupSchema, state.values),
-                  state.isSubmitting,
-                ] as const
-              }
-            >
-              {([valuesValid, isSubmitting]) => (
-                <FormActions
-                  back={
-                    <Button
-                      appearance="outline"
-                      disabled={isSubmitting}
-                      onAction={() => onBack(form.state.values)}
-                    >
-                      {t('Back')}
-                    </Button>
-                  }
-                  cancel={
-                    <Button
-                      appearance="outline"
-                      disabled={isSubmitting}
-                      onAction={onCancel}
-                    >
-                      {t('Cancel')}
-                    </Button>
-                  }
-                  primary={
-                    <Button
-                      disabled={!valuesValid || isSubmitting || submitDisabled}
-                      loading={isSubmitting}
-                      type="submit"
-                    >
-                      {t('Save company')}
-                    </Button>
-                  }
-                />
               )}
-            </form.Subscribe>
-          </fieldset>
-        )}
-      </form.Subscribe>
-    </form>
+            </form.Field>
+          </FormSection>
+          <FormSection
+            description={t('Starting values used by the account balance.')}
+            divided
+            headingLevel={3}
+            layout="stacked"
+            title={t('Opening accounts')}
+          >
+            <Grid columns={{ base: 1, sm: 2 }}>
+              {moneyField('balance.balance', t('Opening balance'))}
+              {moneyField('balance.vat.owed', t('VAT owed'))}
+              {moneyField('balance.vat.paid', t('VAT paid'))}
+            </Grid>
+          </FormSection>
+          <form.Subscribe
+            selector={(state) =>
+              [
+                schemaValuesValid(setupSchema, state.values),
+                state.isSubmitting,
+              ] as const
+            }
+          >
+            {([valuesValid, isSubmitting]) => (
+              <FormActions
+                back={
+                  <Button
+                    appearance="outline"
+                    disabled={isSubmitting}
+                    onAction={() => onBack(form.state.values)}
+                  >
+                    {t('Back')}
+                  </Button>
+                }
+                cancel={
+                  <Button
+                    appearance="outline"
+                    disabled={isSubmitting}
+                    onAction={onCancel}
+                  >
+                    {t('Cancel')}
+                  </Button>
+                }
+                primary={
+                  <Button
+                    disabled={!valuesValid || isSubmitting || submitDisabled}
+                    loading={isSubmitting}
+                    type="submit"
+                  >
+                    {t('Save company')}
+                  </Button>
+                }
+              />
+            )}
+          </form.Subscribe>
+        </SubmittingForm>
+      )}
+    </form.Subscribe>
   );
 }
