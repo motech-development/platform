@@ -2,6 +2,7 @@ import type { ReactElement, ReactNode } from 'react';
 import { CloseIcon, WarningIcon } from '../../icons';
 import type { VisualAppearance } from '../../internal/styling/visual';
 import { AlertDialog } from '../../primitives/AlertDialog/AlertDialog';
+import { Button } from '../../primitives/Button/Button';
 import { IconTile } from '../../primitives/IconTile/IconTile';
 
 interface ConfirmationDialogSharedProps {
@@ -13,10 +14,18 @@ interface ConfirmationDialogSharedProps {
   confirmLabel: ReactNode;
   /** Consequence or decision context announced by the dialog. */
   description: ReactNode;
+  /** Additional confirmation content rendered between the description and actions. */
+  details?: ReactNode;
+  /** Prevents dismissing the dialog while confirmation is pending. */
+  dismissDisabled?: boolean;
   /** Prevents the confirming action. Defaults to `false`. */
   disabled?: boolean;
+  /** Shows progress on a confirmation that remains open. */
+  loading?: boolean;
   /** Uses the backdrop supplied by an existing modal layer. Defaults to `false`. */
   nested?: boolean;
+  /** Keeps the dialog open until controlled state is updated. Defaults to `false`. */
+  persistOnConfirm?: boolean;
   /** Reports the explicit confirming decision. */
   onConfirm: () => void;
   /** Dialog heading. */
@@ -75,11 +84,15 @@ export function ConfirmationDialog({
   confirmLabel,
   defaultOpen,
   description,
+  details,
+  dismissDisabled = false,
   disabled = false,
+  loading = false,
   nested = false,
   onConfirm,
   onOpenChange,
   open,
+  persistOnConfirm = false,
   readOnly,
   title,
   trigger,
@@ -93,6 +106,7 @@ export function ConfirmationDialog({
       </AlertDialog.Trigger>
       <AlertDialog.Content
         className="breeze-confirmation-dialog max-h-[calc(100dvh-2rem)] w-full max-w-md border-0 border-b-2 border-b-[var(--breeze-border-strong)] p-0 shadow-[0_8px_0_rgb(6_12_24_/_22%)]"
+        keyboardDismissDisabled={dismissDisabled}
         overlayClassName={`p-5 ${nested ? 'bg-transparent forced-colors:bg-transparent' : ''}`}
       >
         <div className="flex items-center justify-between gap-4 border-b border-[var(--breeze-border)] p-4 sm:px-5">
@@ -113,6 +127,7 @@ export function ConfirmationDialog({
             aria-label={closeLabel}
             appearance="ghost"
             className="size-11 min-h-11 border-0 p-0 text-[var(--breeze-ink)]"
+            disabled={dismissDisabled}
             variant="secondary"
           >
             <CloseIcon size={20} />
@@ -121,22 +136,35 @@ export function ConfirmationDialog({
         <AlertDialog.Description className="mb-0 p-4 text-base leading-relaxed sm:p-5">
           {description}
         </AlertDialog.Description>
+        {details ? <div className="px-4 pb-4 sm:px-5">{details}</div> : null}
         <AlertDialog.Actions className="px-4 pb-4 sm:px-5 sm:pb-5">
           <AlertDialog.Close
             appearance="outline"
             autoFocus
             className="text-[var(--breeze-ink)]"
+            disabled={dismissDisabled}
             variant="secondary"
           >
             {cancelLabel}
           </AlertDialog.Close>
-          <AlertDialog.Close
-            disabled={disabled}
-            onAction={onConfirm}
-            variant={variant}
-          >
-            {confirmLabel}
-          </AlertDialog.Close>
+          {persistOnConfirm ? (
+            <Button
+              disabled={disabled}
+              loading={loading}
+              onAction={onConfirm}
+              variant={variant}
+            >
+              {confirmLabel}
+            </Button>
+          ) : (
+            <AlertDialog.Close
+              disabled={disabled}
+              onAction={onConfirm}
+              variant={variant}
+            >
+              {confirmLabel}
+            </AlertDialog.Close>
+          )}
         </AlertDialog.Actions>
       </AlertDialog.Content>
     </>

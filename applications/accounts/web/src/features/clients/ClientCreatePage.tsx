@@ -1,13 +1,13 @@
 import { useMutation } from '@apollo/client/react';
 import { Drawer, useToast } from '@motech-development/breeze-ui';
-import { useBlocker, useNavigate } from '@tanstack/react-router';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CREATE_CLIENT } from '../../data/operations';
 import { DiscardChangesDialog } from '../companies/DiscardChangesDialog';
 import { upsertClientInCache } from './cache-updates';
 import { ClientDetailsForm } from './ClientDetailsForm';
 import { ClientsPageContent } from './ClientsPageContent';
+import { useClientDrawerNavigation } from './useClientDrawerNavigation';
 
 function clientDefaults(companyId: string) {
   return {
@@ -23,56 +23,21 @@ export function ClientCreatePage({
   companyId,
 }: Readonly<{ companyId: string }>) {
   const { t } = useTranslation('clients');
-  const navigate = useNavigate();
   const toast = useToast();
-  const allowNavigation = useRef(false);
   const creationComplete = useRef(false);
-  const [dirty, setDirty] = useState(false);
-  const [discardOpen, setDiscardOpen] = useState(false);
   const [creationPending, setCreationPending] = useState(false);
-  const blocker = useBlocker({
-    enableBeforeUnload: dirty,
-    shouldBlockFn: () => dirty && !allowNavigation.current,
-    withResolver: true,
+  const navigation = useClientDrawerNavigation({
+    companyId,
+    pending: creationPending,
   });
-  const blockerRef = useRef(blocker);
-
-  blockerRef.current = blocker;
   const [createClient] = useMutation(CREATE_CLIENT);
-  const discardChanges = () => {
-    allowNavigation.current = true;
-    setDirty(false);
-    setDiscardOpen(false);
-  };
-  const leave = () => {
-    discardChanges();
-
-    if (blocker.status === 'blocked') {
-      blocker.proceed();
-      return;
-    }
-
-    navigate({
-      params: { companyId },
-      to: '/my-companies/clients/$companyId',
-    }).catch(() => undefined);
-  };
-  const requestClose = () => {
-    if (creationPending) return;
-    if (dirty) setDiscardOpen(true);
-    else leave();
-  };
-
-  useEffect(() => {
-    if (blocker.status === 'blocked' && !creationPending) setDiscardOpen(true);
-  }, [blocker.status, creationPending]);
 
   return (
     <>
       <ClientsPageContent companyId={companyId} />
       <Drawer.Root
         onOpenChange={(open) => {
-          if (!open) requestClose();
+          if (!open) navigation.requestClose();
         }}
         open
         triggerless
@@ -89,8 +54,8 @@ export function ClientCreatePage({
           <Drawer.Title>{t('Add client')}</Drawer.Title>
           <ClientDetailsForm
             initialValues={clientDefaults(companyId)}
-            onCancel={requestClose}
-            onDirty={() => setDirty(true)}
+            onCancel={navigation.requestClose}
+            onDirty={navigation.markDirty}
             onSubmit={async (input) => {
               if (creationComplete.current) return;
               setCreationPending(true);
@@ -124,11 +89,7 @@ export function ClientCreatePage({
                 return;
               }
 
-              const activeBlocker = blockerRef.current;
-              if (activeBlocker.status === 'blocked') activeBlocker.reset?.();
               creationComplete.current = true;
-              allowNavigation.current = true;
-              setDirty(false);
               toast.show({
                 description: t('{{name}} is ready to use.', {
                   name: created.name,
@@ -136,13 +97,13 @@ export function ClientCreatePage({
                 title: t('Client added'),
                 variant: 'success',
               });
+              if (navigation.completeMutation()) return;
+
               try {
-                await navigate({
-                  params: { companyId: created.companyId },
-                  to: '/my-companies/clients/$companyId',
-                });
+                await navigation.navigateToClients(created.companyId);
               } catch {
-                await navigate({ to: '/my-companies' }).catch(() => {
+                await navigation.navigateToCompanies().catch(() => {
+                  navigation.restrictNavigation();
                   setCreationPending(false);
                 });
               }
@@ -152,25 +113,15 @@ export function ClientCreatePage({
         </Drawer.Content>
       </Drawer.Root>
       <DiscardChangesDialog
-        blocker={blocker}
+        blocker={navigation.blocker}
         closeLabel={t('Close discard confirmation')}
         description={t(
           'The client details entered in this drawer will be lost.',
         )}
         nested
-        onDiscard={() => {
-          if (creationPending) return;
-
-          discardChanges();
-          if (blocker.status !== 'blocked') {
-            navigate({
-              params: { companyId },
-              to: '/my-companies/clients/$companyId',
-            }).catch(() => undefined);
-          }
-        }}
-        onOpenChange={setDiscardOpen}
-        open={discardOpen}
+        onDiscard={navigation.discardChanges}
+        onOpenChange={navigation.setDiscardOpen}
+        open={navigation.discardOpen}
         title={t('Discard this client?')}
         trigger={t('Discard client')}
       />

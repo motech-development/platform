@@ -1,14 +1,11 @@
 import { useMutation, useQuery } from '@apollo/client/react';
 import {
-  AlertDialog,
-  Button,
+  ConfirmationDialog,
   Drawer,
-  Stack,
   TextField,
   useToast,
 } from '@motech-development/breeze-ui';
-import { useBlocker, useNavigate } from '@tanstack/react-router';
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   DELETE_CLIENT,
@@ -24,17 +21,14 @@ import { exactClientNameSchema } from './client';
 import { ClientDetailsForm } from './ClientDetailsForm';
 import { ClientDetailsFormSkeleton } from './ClientDetailsFormSkeleton';
 import { ClientsPageContent } from './ClientsPageContent';
+import { useClientDrawerNavigation } from './useClientDrawerNavigation';
 
 export function ClientEditPage({
   clientId,
   companyId,
 }: Readonly<{ clientId: string; companyId: string }>) {
   const { t } = useTranslation('clients');
-  const navigate = useNavigate();
   const toast = useToast();
-  const allowNavigation = useRef(false);
-  const [dirty, setDirty] = useState(false);
-  const [discardOpen, setDiscardOpen] = useState(false);
   const [savePending, setSavePending] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [confirmation, setConfirmation] = useState('');
@@ -45,50 +39,15 @@ export function ClientEditPage({
   });
   const [updateClient] = useMutation(UPDATE_CLIENT);
   const [deleteClient, { loading: deleting }] = useMutation(DELETE_CLIENT);
-  const blocker = useBlocker({
-    enableBeforeUnload: dirty || savePending || deleting,
-    shouldBlockFn: () =>
-      (dirty || savePending || deleting) && !allowNavigation.current,
-    withResolver: true,
+  const navigation = useClientDrawerNavigation({
+    companyId,
+    pending: savePending || deleting,
   });
-  const blockerRef = useRef(blocker);
-
-  blockerRef.current = blocker;
   const client =
     data?.getClient.companyId === companyId ? data.getClient : undefined;
   const confirmationValid = client
     ? exactClientNameSchema(client.name).safeParse(confirmation).success
     : false;
-  const discardChanges = () => {
-    allowNavigation.current = true;
-    setDirty(false);
-    setDiscardOpen(false);
-  };
-  const leave = () => {
-    discardChanges();
-
-    if (blocker.status === 'blocked') {
-      blocker.proceed();
-      return;
-    }
-
-    navigate({
-      params: { companyId },
-      to: '/my-companies/clients/$companyId',
-    }).catch(() => undefined);
-  };
-  const requestClose = () => {
-    if (savePending || deleting) return;
-    if (dirty) setDiscardOpen(true);
-    else leave();
-  };
-
-  useEffect(() => {
-    if (blocker.status === 'blocked' && !savePending && !deleting) {
-      setDiscardOpen(true);
-    }
-  }, [blocker.status, deleting, savePending]);
-
   const deleteCurrentClient = async () => {
     try {
       const result = await deleteClient({
@@ -105,8 +64,7 @@ export function ClientEditPage({
       });
       if (!result.data?.deleteClient) throw new Error('No client returned');
     } catch {
-      const activeBlocker = blockerRef.current;
-      if (activeBlocker.status === 'blocked') activeBlocker.reset?.();
+      navigation.resetBlockedNavigation();
       toast.show({
         description: t(
           'Nothing was deleted. Check your connection and try again.',
@@ -117,19 +75,12 @@ export function ClientEditPage({
       return;
     }
 
-    const activeBlocker = blockerRef.current;
-    if (activeBlocker.status === 'blocked') activeBlocker.reset?.();
-    allowNavigation.current = true;
-    setDirty(false);
     setDeleteOpen(false);
     setConfirmation('');
     toast.show({ title: t('Client deleted'), variant: 'success' });
-    await navigate({
-      params: { companyId },
-      to: '/my-companies/clients/$companyId',
-    }).catch(() => {
-      allowNavigation.current = false;
-    });
+    if (navigation.completeMutation()) return;
+
+    await navigation.navigateToClients().catch(navigation.restrictNavigation);
   };
 
   return (
@@ -137,7 +88,7 @@ export function ClientEditPage({
       <ClientsPageContent companyId={companyId} />
       <Drawer.Root
         onOpenChange={(open) => {
-          if (!open) requestClose();
+          if (!open) navigation.requestClose();
         }}
         open
         triggerless
@@ -184,63 +135,49 @@ export function ClientEditPage({
           {client ? (
             <ClientDetailsForm
               danger={
-                <AlertDialog.Root
+                <ConfirmationDialog
+                  cancelLabel={t('Cancel')}
+                  closeLabel={t('Close delete confirmation')}
+                  confirmLabel={t('Permanently delete client')}
+                  description={t(
+                    'The client will be removed. Existing transactions will remain.',
+                  )}
+                  details={
+                    <TextField.Root
+                      invalid={confirmation.length > 0 && !confirmationValid}
+                      onChange={setConfirmation}
+                      value={confirmation}
+                    >
+                      <TextField.Label>
+                        {t('Type {{name}} to confirm', {
+                          name: client.name,
+                        })}
+                      </TextField.Label>
+                      <TextField.Input autoComplete="off" />
+                      <TextField.Error>
+                        {t('The client name must match exactly.')}
+                      </TextField.Error>
+                    </TextField.Root>
+                  }
+                  disabled={!confirmationValid || deleting}
+                  dismissDisabled={deleting}
+                  loading={deleting}
+                  nested
                   onOpenChange={(open) => {
                     if (!open && deleting) return;
                     setDeleteOpen(open);
                     if (!open) setConfirmation('');
                   }}
+                  onConfirm={() => {
+                    deleteCurrentClient().catch(() => undefined);
+                  }}
                   open={deleteOpen}
-                >
-                  <AlertDialog.Trigger variant="danger">
-                    {t('Delete client')}
-                  </AlertDialog.Trigger>
-                  <AlertDialog.Content keyboardDismissDisabled={deleting}>
-                    <AlertDialog.Title>
-                      {t('Delete {{name}}?', { name: client.name })}
-                    </AlertDialog.Title>
-                    <AlertDialog.Description>
-                      {t(
-                        'The client will be removed. Existing transactions will remain.',
-                      )}
-                    </AlertDialog.Description>
-                    <Stack gap="lg">
-                      <TextField.Root
-                        invalid={confirmation.length > 0 && !confirmationValid}
-                        onChange={setConfirmation}
-                        value={confirmation}
-                      >
-                        <TextField.Label>
-                          {t('Type {{name}} to confirm', {
-                            name: client.name,
-                          })}
-                        </TextField.Label>
-                        <TextField.Input autoComplete="off" />
-                        <TextField.Error>
-                          {t('The client name must match exactly.')}
-                        </TextField.Error>
-                      </TextField.Root>
-                      <AlertDialog.Actions>
-                        <AlertDialog.Close
-                          appearance="outline"
-                          disabled={deleting}
-                        >
-                          {t('Cancel')}
-                        </AlertDialog.Close>
-                        <Button
-                          disabled={!confirmationValid || deleting}
-                          loading={deleting}
-                          onAction={() => {
-                            deleteCurrentClient().catch(() => undefined);
-                          }}
-                          variant="danger"
-                        >
-                          {t('Permanently delete client')}
-                        </Button>
-                      </AlertDialog.Actions>
-                    </Stack>
-                  </AlertDialog.Content>
-                </AlertDialog.Root>
+                  persistOnConfirm
+                  title={t('Delete {{name}}?', { name: client.name })}
+                  trigger={t('Delete client')}
+                  triggerAppearance="solid"
+                  variant="danger"
+                />
               }
               initialValues={{
                 ...client,
@@ -251,8 +188,8 @@ export function ClientEditPage({
                 },
               }}
               key={clientId}
-              onCancel={requestClose}
-              onDirty={() => setDirty(true)}
+              onCancel={navigation.requestClose}
+              onDirty={navigation.markDirty}
               onSubmit={async (input) => {
                 setSavePending(true);
 
@@ -281,11 +218,7 @@ export function ClientEditPage({
                       title: t('Client details could not be saved'),
                       variant: 'danger',
                     });
-                    const activeBlocker = blockerRef.current;
-                    if (activeBlocker.status === 'blocked' && !dirty) {
-                      allowNavigation.current = true;
-                      activeBlocker.proceed();
-                    }
+                    navigation.proceedBlockedNavigationIfPristine();
                     return;
                   }
 
@@ -293,21 +226,11 @@ export function ClientEditPage({
                     title: t('Client details saved'),
                     variant: 'success',
                   });
-                  const activeBlocker = blockerRef.current;
-                  if (activeBlocker.status === 'blocked') {
-                    allowNavigation.current = true;
-                    setDirty(false);
-                    activeBlocker.proceed();
-                    return;
-                  }
-                  allowNavigation.current = true;
-                  setDirty(false);
-                  await navigate({
-                    params: { companyId },
-                    to: '/my-companies/clients/$companyId',
-                  }).catch(() => {
-                    allowNavigation.current = false;
-                  });
+                  if (navigation.completeMutation()) return;
+
+                  await navigation
+                    .navigateToClients()
+                    .catch(navigation.restrictNavigation);
                 } finally {
                   setSavePending(false);
                 }
@@ -318,23 +241,13 @@ export function ClientEditPage({
         </Drawer.Content>
       </Drawer.Root>
       <DiscardChangesDialog
-        blocker={blocker}
+        blocker={navigation.blocker}
         closeLabel={t('Close discard confirmation')}
         description={t('The unsaved client changes will be lost.')}
         nested
-        onDiscard={() => {
-          if (savePending || deleting) return;
-
-          discardChanges();
-          if (blocker.status !== 'blocked') {
-            navigate({
-              params: { companyId },
-              to: '/my-companies/clients/$companyId',
-            }).catch(() => undefined);
-          }
-        }}
-        onOpenChange={setDiscardOpen}
-        open={discardOpen && !savePending && !deleting}
+        onDiscard={navigation.discardChanges}
+        onOpenChange={navigation.setDiscardOpen}
+        open={navigation.discardOpen && !savePending && !deleting}
         title={t('Discard client changes?')}
         trigger={t('Discard client changes')}
       />

@@ -10,7 +10,7 @@ import {
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { expenseCategoryRowClassName } from '../companies/expense-category-layout';
-import { companiesTableClassNames } from '../companies/tableLayout';
+import { responsiveEntityTableClassNames } from '../tableLayout';
 import { FinancialSummarySkeleton } from '../transactions/FinancialSummary';
 import { TransactionLedgerSkeleton } from '../transactions/TransactionLedger';
 
@@ -38,12 +38,12 @@ export function CompaniesTableSkeleton() {
         <Table.Root
           aria-label={t('Loading companies table')}
           boundary="strong"
-          className={companiesTableClassNames.root}
+          className={responsiveEntityTableClassNames.root}
           desktopColumns="mediaDetailsAction"
           layout="responsiveGrid"
           tabIndex={-1}
         >
-          <Table.Header className={companiesTableClassNames.header}>
+          <Table.Header className={responsiveEntityTableClassNames.header}>
             <Table.Column
               compactLabel={false}
               id="avatar"
@@ -69,42 +69,42 @@ export function CompaniesTableSkeleton() {
               <VisuallyHidden>{t('Action')}</VisuallyHidden>
             </Table.Column>
           </Table.Header>
-          <Table.Body className={companiesTableClassNames.body}>
+          <Table.Body className={responsiveEntityTableClassNames.body}>
             {[0, 1, 2].map((index) => (
               <Table.Row
                 id={`loading-company-${index}`}
-                className={companiesTableClassNames.row}
+                className={responsiveEntityTableClassNames.row}
                 key={index}
                 textValue={t('Loading company row {{count}}', {
                   count: index + 1,
                 })}
               >
                 <Table.Cell
-                  className={companiesTableClassNames.cells.avatar}
+                  className={responsiveEntityTableClassNames.cells.identity}
                   column="avatar"
                 >
                   <Skeleton className="size-9 shrink-0 rounded-none" />
                 </Table.Cell>
                 <Table.Cell
-                  className={companiesTableClassNames.cells.company}
+                  className={responsiveEntityTableClassNames.cells.primary}
                   column="company"
                 >
                   <Skeleton className="h-4 w-3/4 max-w-44" />
                 </Table.Cell>
                 <Table.Cell
-                  className={companiesTableClassNames.cells.number}
+                  className={responsiveEntityTableClassNames.cells.secondary}
                   column="number"
                 >
                   <Skeleton className="h-4 w-3/4 max-w-64" />
                 </Table.Cell>
                 <Table.Cell
-                  className={companiesTableClassNames.cells.contact}
+                  className={responsiveEntityTableClassNames.cells.tertiary}
                   column="contact"
                 >
                   <Skeleton className="h-4 w-3/4 max-w-64" />
                 </Table.Cell>
                 <Table.Cell
-                  className={companiesTableClassNames.cells.actions}
+                  className={responsiveEntityTableClassNames.cells.actions}
                   column="actions"
                 >
                   <Skeleton className="h-4 w-3" />

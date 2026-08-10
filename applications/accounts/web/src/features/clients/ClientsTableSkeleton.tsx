@@ -1,6 +1,6 @@
 import { Skeleton, Table, VisuallyHidden } from '@motech-development/breeze-ui';
 import { useTranslation } from 'react-i18next';
-import { companiesTableClassNames } from '../companies/tableLayout';
+import { responsiveEntityTableClassNames } from '../tableLayout';
 
 export function ClientsTableSkeleton() {
   const { t } = useTranslation(['clients', 'routing']);
@@ -12,12 +12,12 @@ export function ClientsTableSkeleton() {
         <Table.Root
           aria-label={t('Loading clients table')}
           boundary="strong"
-          className={companiesTableClassNames.root}
+          className={responsiveEntityTableClassNames.root}
           desktopColumns="mediaDetailsAction"
           layout="responsiveGrid"
           tabIndex={-1}
         >
-          <Table.Header className={companiesTableClassNames.header}>
+          <Table.Header className={responsiveEntityTableClassNames.header}>
             <Table.Column
               compactLabel={false}
               id="avatar"
@@ -43,10 +43,10 @@ export function ClientsTableSkeleton() {
               <VisuallyHidden>{t('Action')}</VisuallyHidden>
             </Table.Column>
           </Table.Header>
-          <Table.Body className={companiesTableClassNames.body}>
+          <Table.Body className={responsiveEntityTableClassNames.body}>
             {[0, 1, 2, 3].map((index) => (
               <Table.Row
-                className={companiesTableClassNames.row}
+                className={responsiveEntityTableClassNames.row}
                 id={`loading-client-${index}`}
                 key={index}
                 textValue={t('Loading client row {{count}}', {
@@ -54,31 +54,31 @@ export function ClientsTableSkeleton() {
                 })}
               >
                 <Table.Cell
-                  className={companiesTableClassNames.cells.avatar}
+                  className={responsiveEntityTableClassNames.cells.identity}
                   column="avatar"
                 >
                   <Skeleton className="size-9 shrink-0 rounded-full" />
                 </Table.Cell>
                 <Table.Cell
-                  className={companiesTableClassNames.cells.company}
+                  className={responsiveEntityTableClassNames.cells.primary}
                   column="client"
                 >
                   <Skeleton className="h-4 w-3/4 max-w-44" />
                 </Table.Cell>
                 <Table.Cell
-                  className={companiesTableClassNames.cells.number}
+                  className={responsiveEntityTableClassNames.cells.secondary}
                   column="email"
                 >
                   <Skeleton className="h-4 w-3/4 max-w-64" />
                 </Table.Cell>
                 <Table.Cell
-                  className={companiesTableClassNames.cells.contact}
+                  className={responsiveEntityTableClassNames.cells.tertiary}
                   column="telephone"
                 >
                   <Skeleton className="h-4 w-3/4 max-w-64" />
                 </Table.Cell>
                 <Table.Cell
-                  className={companiesTableClassNames.cells.actions}
+                  className={responsiveEntityTableClassNames.cells.actions}
                   column="actions"
                 >
                   <Skeleton className="h-4 w-3" />
