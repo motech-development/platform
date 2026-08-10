@@ -118,7 +118,7 @@ export async function primeClient(
     return;
   }
 
-  if (!result.data || result.data.getClient.companyId !== companyId) {
+  if (result.data?.getClient.companyId !== companyId) {
     notFound({ throw: true });
   }
 }
