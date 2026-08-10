@@ -1,11 +1,15 @@
-import { screen, waitFor, within } from '@testing-library/react';
+import { act, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import renderBreeze from '../../../test/render';
 import { Drawer } from './Drawer';
 
 describe('Drawer', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   it('frames content with description-first chrome and a translated close action', async () => {
     const user = userEvent.setup();
 
@@ -90,6 +94,44 @@ describe('Drawer', () => {
     await user.keyboard('{Escape}');
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     await waitFor(() => expect(externalTrigger).toHaveFocus());
+  });
+
+  it('tracks visual viewport size and offset changes', async () => {
+    const visualViewport = Object.assign(new EventTarget(), {
+      height: 500,
+      offsetTop: 40,
+    });
+
+    vi.stubGlobal('visualViewport', visualViewport);
+
+    renderBreeze(
+      <Drawer.Root readOnly open>
+        <Drawer.Content placement="bottom">
+          <Drawer.Title>Drawer details</Drawer.Title>
+          <Drawer.Description>Review the details.</Drawer.Description>
+          <p>Drawer body</p>
+        </Drawer.Content>
+      </Drawer.Root>,
+    );
+
+    const drawer = screen.getByRole('dialog', { name: 'Drawer details' });
+
+    expect(drawer).toHaveClass('breeze-drawer-visual-viewport');
+    await waitFor(() =>
+      expect(drawer).toHaveStyle(
+        '--breeze-drawer-visual-viewport-height: 500px; --breeze-drawer-visual-viewport-offset-top: 40px',
+      ),
+    );
+
+    visualViewport.height = 320;
+    visualViewport.offsetTop = 72;
+    await act(() => visualViewport.dispatchEvent(new Event('resize')));
+
+    await waitFor(() =>
+      expect(drawer).toHaveStyle(
+        '--breeze-drawer-visual-viewport-height: 320px; --breeze-drawer-visual-viewport-offset-top: 72px',
+      ),
+    );
   });
 
   it('supports a nested drawer and restores focus one layer at a time', async () => {

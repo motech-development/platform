@@ -5,12 +5,14 @@ import {
   createContext,
   createElement,
   isValidElement,
+  useCallback,
   useContext,
   useEffect,
   useRef,
 } from 'react';
 import { DialogTrigger as AriaDialogTrigger } from 'react-aria-components/Dialog';
 import { CloseIcon } from '../../icons';
+import useForwardedRef from '../../internal/hooks/useForwardedRef';
 import {
   SharedModalContent,
   type SharedModalContentProps,
@@ -74,6 +76,59 @@ const drawerWidths: Record<DrawerSize, string> = {
   wide: '48rem',
 };
 const adjacentDrawerWidth = '38rem';
+const visualViewportSurfaces = new Set<HTMLElement>();
+let removeVisualViewportListeners: (() => void) | undefined;
+
+function updateVisualViewportSurface(
+  surface: HTMLElement,
+  viewport: VisualViewport,
+): void {
+  surface.style.setProperty(
+    '--breeze-drawer-visual-viewport-height',
+    `${viewport.height}px`,
+  );
+  surface.style.setProperty(
+    '--breeze-drawer-visual-viewport-offset-top',
+    `${viewport.offsetTop}px`,
+  );
+}
+
+function updateVisualViewportSurfaces(): void {
+  const viewport = window.visualViewport ?? null;
+
+  if (viewport === null) return;
+
+  visualViewportSurfaces.forEach((surface) => {
+    updateVisualViewportSurface(surface, viewport);
+  });
+}
+
+function registerVisualViewportSurface(surface: HTMLElement): () => void {
+  const viewport = window.visualViewport ?? null;
+
+  if (viewport === null) return () => undefined;
+
+  visualViewportSurfaces.add(surface);
+  updateVisualViewportSurface(surface, viewport);
+
+  if (removeVisualViewportListeners === undefined) {
+    viewport.addEventListener('resize', updateVisualViewportSurfaces);
+    viewport.addEventListener('scroll', updateVisualViewportSurfaces);
+    removeVisualViewportListeners = () => {
+      viewport.removeEventListener('resize', updateVisualViewportSurfaces);
+      viewport.removeEventListener('scroll', updateVisualViewportSurfaces);
+    };
+  }
+
+  return () => {
+    visualViewportSurfaces.delete(surface);
+
+    if (visualViewportSurfaces.size === 0) {
+      removeVisualViewportListeners?.();
+      removeVisualViewportListeners = undefined;
+    }
+  };
+}
 
 interface DrawerModalState {
   onOpenChange: (open: boolean) => void;
@@ -219,6 +274,7 @@ export function Content({
   children,
   chrome = 'default',
   placement = 'end',
+  ref,
   scrollResetKey,
   size = 'default',
   ...props
@@ -226,6 +282,17 @@ export function Content({
   const { messages } = useBreezeContext();
   const modalState = useContext(DrawerModalStateContext);
   const bodyRef = useRef<HTMLDivElement>(null);
+  const visualViewportCleanupRef = useRef<(() => void) | undefined>(undefined);
+  const forwardedRef = useForwardedRef(ref);
+  const surfaceRef = useCallback(
+    (surface: HTMLElement | null) => {
+      visualViewportCleanupRef.current?.();
+      visualViewportCleanupRef.current =
+        surface === null ? undefined : registerVisualViewportSurface(surface);
+      forwardedRef(surface);
+    },
+    [forwardedRef],
+  );
   const childElements = Children.toArray(children);
   const titleElement = childElements.find(
     (child): child is ReactElement<DrawerTitleProps> =>
@@ -304,7 +371,8 @@ export function Content({
       modalState,
       overlayClassName: `items-stretch justify-stretch overflow-hidden p-0 sm:p-0 ${adjacent === undefined ? '' : 'breeze-drawer-adjacent-overlay'}`,
       overlayStyle,
-      surfaceClassName: `breeze-drawer-surface flex max-h-none flex-col overflow-clip border-0 p-0 shadow-xl ${adjacent === undefined ? '' : 'breeze-drawer-adjacent-surface'} ${resolveResponsiveClasses(placement, placementClasses)} ${resolveResponsiveClasses(placement, placementMotionClasses)}`,
+      ref: surfaceRef,
+      surfaceClassName: `breeze-drawer-surface breeze-drawer-visual-viewport flex max-h-none flex-col overflow-clip border-0 p-0 shadow-xl ${adjacent === undefined ? '' : 'breeze-drawer-adjacent-surface'} ${resolveResponsiveClasses(placement, placementClasses)} ${resolveResponsiveClasses(placement, placementMotionClasses)}`,
     } as SharedModalContentProps,
     chrome === 'none' ? children : framedChildren,
   );
