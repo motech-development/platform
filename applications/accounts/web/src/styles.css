@@ -6,8 +6,14 @@
 @source './**/*.{ts,tsx}';
 
 @layer base {
-  /* Breeze tokens are scoped below the document root, so overscroll needs the literal shell value. */
-  html:has([data-document-background='shell']) {
+  /* Breeze tokens are scoped below the document roots Safari uses for overscroll. */
+  html,
+  body {
+    background: #eef1f5;
+  }
+
+  html:has([data-document-background='shell']),
+  body:has([data-document-background='shell']) {
     background: #151c2b;
   }
 }

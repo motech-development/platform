@@ -78,7 +78,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
       <head>
         <HeadContent />
       </head>
-      <body className="bg-[#eef1f5]">
+      <body>
         {children}
         <div id="breeze-portal-root" />
         <Scripts />
