@@ -143,9 +143,11 @@ describe('Drawer', () => {
     visualViewport.offsetLeft = 80;
     visualViewport.offsetTop = 96;
     visualViewport.width = 600;
-    vi.spyOn(drawer, 'getBoundingClientRect').mockReturnValue(
-      DOMRect.fromRect({ height: 280, width: 600, x: 80, y: 96 }),
-    );
+    const getSurfaceBounds = vi
+      .spyOn(drawer, 'getBoundingClientRect')
+      .mockReturnValue(
+        DOMRect.fromRect({ height: 280, width: 600, x: 80, y: 96 }),
+      );
     await act(() => visualViewport.dispatchEvent(new Event('scroll')));
 
     await waitFor(() =>
@@ -161,6 +163,51 @@ describe('Drawer', () => {
     );
     expect(overlay).toHaveStyle(
       '--breeze-drawer-visual-viewport-offset-bottom: 524px; --breeze-drawer-visual-viewport-surface-left: 80px; --breeze-drawer-visual-viewport-surface-width: 600px',
+    );
+
+    getSurfaceBounds.mockReturnValue(
+      DOMRect.fromRect({ height: 280, width: 600, x: 12, y: 96 }),
+    );
+    await act(() =>
+      drawer.dispatchEvent(
+        Object.assign(new Event('animationend'), {
+          animationName: 'breeze-drawer-in',
+        }),
+      ),
+    );
+
+    expect(overlay).toHaveStyle(
+      '--breeze-drawer-visual-viewport-surface-left: 12px; --breeze-drawer-visual-viewport-surface-width: 600px',
+    );
+  });
+
+  it('matches the viewport filler to a custom drawer surface', async () => {
+    const visualViewport = Object.assign(new EventTarget(), {
+      height: 500,
+      offsetLeft: 0,
+      offsetTop: 0,
+      width: 700,
+    });
+
+    vi.stubGlobal('visualViewport', visualViewport);
+
+    renderBreeze(
+      <Drawer.Root readOnly open>
+        <Drawer.Content>
+          <Drawer.Title>Custom drawer</Drawer.Title>
+          <Drawer.Description>Custom surface treatment.</Drawer.Description>
+        </Drawer.Content>
+      </Drawer.Root>,
+    );
+
+    const drawer = screen.getByRole('dialog', { name: 'Custom drawer' });
+    const overlay = drawer.parentElement?.parentElement;
+
+    drawer.style.backgroundColor = 'rgb(21, 28, 43)';
+    await act(() => visualViewport.dispatchEvent(new Event('resize')));
+
+    expect(overlay).toHaveStyle(
+      '--breeze-drawer-visual-viewport-surface-background: rgb(21, 28, 43)',
     );
   });
 

@@ -148,6 +148,10 @@ function updateVisualViewportSurface(
     '--breeze-drawer-visual-viewport-surface-width',
     `${surfaceBounds.width}px`,
   );
+  overlay?.style.setProperty(
+    '--breeze-drawer-visual-viewport-surface-background',
+    window.getComputedStyle(surface).backgroundColor,
+  );
 }
 
 function updateVisualViewportSurfaces(): void {
@@ -168,6 +172,16 @@ function registerVisualViewportSurface(
 
   if (viewport === null) return () => undefined;
 
+  const refreshAfterEntry = (event: AnimationEvent) => {
+    if (
+      event.target === surface &&
+      event.animationName === 'breeze-drawer-in'
+    ) {
+      updateVisualViewportSurface(surface, viewport, direction);
+    }
+  };
+
+  surface.addEventListener('animationend', refreshAfterEntry);
   visualViewportSurfaces.set(surface, direction);
   updateVisualViewportSurface(surface, viewport, direction);
 
@@ -181,6 +195,7 @@ function registerVisualViewportSurface(
   }
 
   return () => {
+    surface.removeEventListener('animationend', refreshAfterEntry);
     visualViewportSurfaces.delete(surface);
 
     if (visualViewportSurfaces.size === 0) {
