@@ -2,8 +2,6 @@ import {
   Button,
   FormActions,
   FormSection,
-  Grid,
-  TextField,
 } from '@motech-development/breeze-ui';
 import { useForm } from '@tanstack/react-form';
 import type { ReactNode } from 'react';
@@ -11,9 +9,14 @@ import { useTranslation } from 'react-i18next';
 import {
   schemaFieldErrors,
   schemaValuesValid,
-  validationMessage,
   visibleValidationErrors,
 } from '../form-errors';
+import {
+  AddressDetailsFormSection,
+  BoundDetailsTextField,
+  ContactDetailsFormSection,
+  type DetailsFieldOptions,
+} from '../forms/ContactDetailsFormSections';
 import { type ClientDetails, clientDetailsSchema } from './client';
 
 type ClientFieldName =
@@ -25,39 +28,6 @@ type ClientFieldName =
   | 'contact.email'
   | 'contact.telephone'
   | 'name';
-
-function ClientTextField({
-  errors,
-  inputMode,
-  label,
-  onBlur,
-  onChange,
-  required = false,
-  type = 'text',
-  value,
-}: Readonly<{
-  errors: readonly unknown[];
-  inputMode?: 'email' | 'tel' | 'text';
-  label: string;
-  onBlur: () => void;
-  onChange: (value: string) => void;
-  required?: boolean;
-  type?: 'email' | 'tel' | 'text';
-  value: string;
-}>) {
-  return (
-    <TextField.Root
-      invalid={errors.length > 0}
-      onChange={onChange}
-      required={required}
-      value={value}
-    >
-      <TextField.Label>{label}</TextField.Label>
-      <TextField.Input inputMode={inputMode} onBlur={onBlur} type={type} />
-      <TextField.Error>{validationMessage(errors)}</TextField.Error>
-    </TextField.Root>
-  );
-}
 
 export function ClientDetailsForm({
   danger,
@@ -83,12 +53,7 @@ export function ClientDetailsForm({
   const field = (
     name: ClientFieldName,
     label: string,
-    options: {
-      inputMode?: 'email' | 'tel' | 'text';
-      normalise?: (value: string) => string;
-      required?: boolean;
-      type?: 'email' | 'tel' | 'text';
-    } = {},
+    options: DetailsFieldOptions = {},
   ) => (
     <form.Field key={name} name={name}>
       {(formField) => {
@@ -99,18 +64,12 @@ export function ClientDetailsForm({
         );
 
         return (
-          <ClientTextField
+          <BoundDetailsTextField
+            binding={formField}
             errors={errors}
-            inputMode={options.inputMode}
             label={label}
-            onBlur={formField.handleBlur}
-            onChange={(value) => {
-              formField.handleChange(options.normalise?.(value) ?? value);
-              onDirty();
-            }}
-            required={options.required}
-            type={options.type}
-            value={formField.state.value}
+            onDirty={onDirty}
+            options={options}
           />
         );
       }}
@@ -139,46 +98,20 @@ export function ClientDetailsForm({
             >
               {field('name', t('Client name'), { required: true })}
             </FormSection>
-            <FormSection
+            <ContactDetailsFormSection
               description={t('How to contact this client.')}
-              divided
+              field={field}
               headingLevel={3}
               layout="stacked"
-              title={t('Contact details')}
-            >
-              <Grid columns={{ base: 1, sm: 2 }}>
-                {field('contact.email', t('Email address'), {
-                  inputMode: 'email',
-                  required: true,
-                  type: 'email',
-                })}
-                {field('contact.telephone', t('Telephone number'), {
-                  inputMode: 'tel',
-                  required: true,
-                  type: 'tel',
-                })}
-              </Grid>
-            </FormSection>
-            <FormSection
+              namespace="clients"
+            />
+            <AddressDetailsFormSection
               description={t('The client’s postal address.')}
-              divided
+              field={field}
               headingLevel={3}
               layout="stacked"
-              title={t('Address')}
-            >
-              <Grid columns={{ base: 1, sm: 2 }}>
-                {field('address.line1', t('Address line 1'), {
-                  required: true,
-                })}
-                {field('address.line2', t('Address line 2'))}
-                {field('address.line3', t('Town or city'), { required: true })}
-                {field('address.line4', t('County'))}
-                {field('address.line5', t('Postcode'), {
-                  normalise: (value) => value.toUpperCase(),
-                  required: true,
-                })}
-              </Grid>
-            </FormSection>
+              namespace="clients"
+            />
             <form.Subscribe
               selector={(state) =>
                 [

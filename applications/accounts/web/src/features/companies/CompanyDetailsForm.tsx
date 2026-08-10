@@ -3,7 +3,6 @@ import {
   FormActions,
   FormSection,
   Grid,
-  TextField,
 } from '@motech-development/breeze-ui';
 import { useForm } from '@tanstack/react-form';
 import type { ReactNode } from 'react';
@@ -11,9 +10,14 @@ import { useTranslation } from 'react-i18next';
 import {
   schemaFieldErrors,
   schemaValuesValid,
-  validationMessage,
   visibleValidationErrors,
 } from '../form-errors';
+import {
+  AddressDetailsFormSection,
+  BoundDetailsTextField,
+  ContactDetailsFormSection,
+  type DetailsFieldOptions,
+} from '../forms/ContactDetailsFormSections';
 import {
   type CompanyDetails,
   companyDetailsSchema,
@@ -33,39 +37,6 @@ type CompanyDetailsFieldName =
   | 'contact.email'
   | 'contact.telephone'
   | 'name';
-
-function CompanyTextField({
-  errors,
-  inputMode,
-  label,
-  onBlur,
-  onChange,
-  required = false,
-  type = 'text',
-  value,
-}: Readonly<{
-  errors: readonly unknown[];
-  inputMode?: 'email' | 'numeric' | 'tel' | 'text';
-  label: string;
-  onBlur: () => void;
-  onChange: (value: string) => void;
-  required?: boolean;
-  type?: 'email' | 'tel' | 'text';
-  value: string;
-}>) {
-  return (
-    <TextField.Root
-      invalid={errors.length > 0}
-      onChange={onChange}
-      required={required}
-      value={value}
-    >
-      <TextField.Label>{label}</TextField.Label>
-      <TextField.Input inputMode={inputMode} onBlur={onBlur} type={type} />
-      <TextField.Error>{validationMessage(errors)}</TextField.Error>
-    </TextField.Root>
-  );
-}
 
 export function CompanyDetailsForm({
   danger,
@@ -96,12 +67,7 @@ export function CompanyDetailsForm({
   const field = (
     name: CompanyDetailsFieldName,
     label: string,
-    options: {
-      inputMode?: 'email' | 'numeric' | 'tel' | 'text';
-      normalise?: (value: string) => string;
-      required?: boolean;
-      type?: 'email' | 'tel' | 'text';
-    } = {},
+    options: DetailsFieldOptions = {},
   ) => (
     <form.Field key={name} name={name}>
       {(formField) => {
@@ -112,18 +78,12 @@ export function CompanyDetailsForm({
         );
 
         return (
-          <CompanyTextField
+          <BoundDetailsTextField
+            binding={formField}
             errors={errors}
-            inputMode={options.inputMode}
             label={label}
-            onBlur={formField.handleBlur}
-            onChange={(value) => {
-              formField.handleChange(options.normalise?.(value) ?? value);
-              onDirty();
-            }}
-            required={options.required}
-            type={options.type}
-            value={formField.state.value}
+            onDirty={onDirty}
+            options={options}
           />
         );
       }}
@@ -182,46 +142,20 @@ export function CompanyDetailsForm({
               </Grid>
             </FormSection>
             {layout === 'stacked' ? bankSection : null}
-            <FormSection
+            <AddressDetailsFormSection
               description={t('The registered company address.')}
-              divided
+              field={field}
               headingLevel={layout === 'stacked' ? 3 : 2}
               layout={layout}
-              title={t('Address')}
-            >
-              <Grid columns={{ base: 1, sm: 2 }}>
-                {field('address.line1', t('Address line 1'), {
-                  required: true,
-                })}
-                {field('address.line2', t('Address line 2'))}
-                {field('address.line3', t('Town or city'), { required: true })}
-                {field('address.line4', t('County'))}
-                {field('address.line5', t('Postcode'), {
-                  normalise: (value) => value.toUpperCase(),
-                  required: true,
-                })}
-              </Grid>
-            </FormSection>
-            <FormSection
+              namespace="companies"
+            />
+            <ContactDetailsFormSection
               description={t('Primary company contact details.')}
-              divided
+              field={field}
               headingLevel={layout === 'stacked' ? 3 : 2}
               layout={layout}
-              title={t('Contact details')}
-            >
-              <Grid columns={{ base: 1, sm: 2 }}>
-                {field('contact.email', t('Email address'), {
-                  inputMode: 'email',
-                  required: true,
-                  type: 'email',
-                })}
-                {field('contact.telephone', t('Telephone number'), {
-                  inputMode: 'tel',
-                  required: true,
-                  type: 'tel',
-                })}
-              </Grid>
-            </FormSection>
+              namespace="companies"
+            />
             {layout === 'split' ? bankSection : null}
             <form.Subscribe
               selector={(state) =>
