@@ -496,6 +496,9 @@ describe('SettingsPage', () => {
         <SettingsPage companyId="company-id" />
       </BreezeProvider>,
     );
+    const advertisingName = screen.getByLabelText('Advertising name');
+
+    advertisingName.focus();
 
     mocks.query.data = {
       ...mocks.query.data,
@@ -515,8 +518,9 @@ describe('SettingsPage', () => {
     );
 
     await waitFor(() =>
-      expect(screen.getByLabelText('Marketing name')).toHaveValue('Marketing'),
+      expect(screen.getByLabelText('Marketing name')).toBe(advertisingName),
     );
+    expect(advertisingName).toHaveFocus();
 
     fireEvent.change(screen.getByLabelText('Marketing name'), {
       target: { value: 'Local category' },

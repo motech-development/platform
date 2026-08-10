@@ -39,18 +39,21 @@ export function CompanyDetailsPage({
   const [savePending, setSavePending] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [confirmation, setConfirmation] = useState('');
+  const [updateCompany] = useMutation(UPDATE_COMPANY);
+  const [deleteCompany, { loading: deleting }] = useMutation(DELETE_COMPANY);
   const blocker = useBlocker({
-    enableBeforeUnload: dirty,
-    shouldBlockFn: () => dirty && !allowNavigation.current,
+    enableBeforeUnload: dirty || deleting,
+    shouldBlockFn: () => (dirty || deleting) && !allowNavigation.current,
     withResolver: true,
   });
+  const blockerRef = useRef(blocker);
+
+  blockerRef.current = blocker;
   const { data, error, loading, refetch } = useQuery(GET_COMPANY_DETAILS, {
     fetchPolicy: 'cache-and-network',
     nextFetchPolicy: 'cache-first',
     variables: { id: companyId },
   });
-  const [updateCompany] = useMutation(UPDATE_COMPANY);
-  const [deleteCompany, { loading: deleting }] = useMutation(DELETE_COMPANY);
   const company = data?.getCompany;
   const confirmationValid = company
     ? exactCompanyNameSchema(company.name).safeParse(confirmation).success
@@ -65,8 +68,8 @@ export function CompanyDetailsPage({
   );
 
   useEffect(() => {
-    if (blocker.status === 'blocked') setDiscardOpen(true);
-  }, [blocker.status]);
+    if (blocker.status === 'blocked' && !deleting) setDiscardOpen(true);
+  }, [blocker.status, deleting]);
 
   const deleteCurrentCompany = async () => {
     try {
@@ -85,6 +88,10 @@ export function CompanyDetailsPage({
 
       if (!result.data?.deleteCompany) throw new Error('No company returned');
     } catch {
+      const activeBlocker = blockerRef.current;
+
+      if (activeBlocker.status === 'blocked') activeBlocker.reset?.();
+
       toast.show({
         description: t(
           'Nothing was deleted. Check your connection and try again.',
@@ -96,6 +103,10 @@ export function CompanyDetailsPage({
       return;
     }
 
+    const activeBlocker = blockerRef.current;
+
+    if (activeBlocker.status === 'blocked') activeBlocker.reset?.();
+    setDiscardOpen(false);
     allowNavigation.current = true;
     setDirty(false);
     setDeleteOpen(false);
@@ -148,6 +159,8 @@ export function CompanyDetailsPage({
         danger={
           <AlertDialog.Root
             onOpenChange={(open) => {
+              if (!open && deleting) return;
+
               setDeleteOpen(open);
               if (!open) setConfirmation('');
             }}
@@ -156,7 +169,7 @@ export function CompanyDetailsPage({
             <AlertDialog.Trigger variant="danger">
               {t('Delete company')}
             </AlertDialog.Trigger>
-            <AlertDialog.Content>
+            <AlertDialog.Content keyboardDismissDisabled={deleting}>
               <AlertDialog.Title>
                 {t('Delete {{name}}?', { name: company.name })}
               </AlertDialog.Title>
@@ -180,7 +193,7 @@ export function CompanyDetailsPage({
                   </TextField.Error>
                 </TextField.Root>
                 <AlertDialog.Actions>
-                  <AlertDialog.Close appearance="outline">
+                  <AlertDialog.Close appearance="outline" disabled={deleting}>
                     {t('Cancel')}
                   </AlertDialog.Close>
                   <Button
@@ -244,7 +257,9 @@ export function CompanyDetailsPage({
               return;
             }
 
-            if (blocker.status === 'blocked') blocker.reset?.();
+            const activeBlocker = blockerRef.current;
+
+            if (activeBlocker.status === 'blocked') activeBlocker.reset?.();
             setDiscardOpen(false);
             allowNavigation.current = true;
             setDirty(false);
@@ -269,14 +284,14 @@ export function CompanyDetailsPage({
         closeLabel={t('Close discard confirmation')}
         description={t('The unsaved company changes will be lost.')}
         onDiscard={() => {
-          if (savePending) return;
+          if (savePending || deleting) return;
 
           allowNavigation.current = true;
           setDirty(false);
           setDiscardOpen(false);
         }}
         onOpenChange={setDiscardOpen}
-        open={discardOpen && !savePending}
+        open={discardOpen && !savePending && !deleting}
         title={t('Discard company changes?')}
         trigger={t('Discard company changes')}
       />

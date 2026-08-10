@@ -63,23 +63,40 @@ function reconcileCategoryKeys(
   nextCategories: CompanySettings['categories'],
   nextKey: () => string,
 ): string[] {
-  const keysByName = new Map<string, string[]>();
-
-  previousCategories.forEach((category, index) => {
+  const previousRows = previousCategories.flatMap((category, index) => {
     const key = previousKeys[index];
 
-    if (key === undefined) return;
+    return key === undefined ? [] : [{ key, name: category.name }];
+  });
+  const usedKeys = new Set<string>();
+  const reconciledKeys = nextCategories.map((category) => {
+    const matchingRow = previousRows.find(
+      (row) => row.name === category.name && !usedKeys.has(row.key),
+    );
 
-    keysByName.set(category.name, [
-      ...(keysByName.get(category.name) ?? []),
-      key,
-    ]);
+    if (matchingRow) usedKeys.add(matchingRow.key);
+
+    return matchingRow?.key;
   });
 
-  return nextCategories.map((category) => {
-    const matchingKeys = keysByName.get(category.name);
+  return reconciledKeys.map((key, index) => {
+    if (key !== undefined) return key;
 
-    return matchingKeys?.shift() ?? nextKey();
+    const positionalRow = previousRows[index];
+
+    if (positionalRow && !usedKeys.has(positionalRow.key)) {
+      usedKeys.add(positionalRow.key);
+
+      return positionalRow.key;
+    }
+
+    const availableRow = previousRows.find((row) => !usedKeys.has(row.key));
+
+    if (!availableRow) return nextKey();
+
+    usedKeys.add(availableRow.key);
+
+    return availableRow.key;
   });
 }
 
