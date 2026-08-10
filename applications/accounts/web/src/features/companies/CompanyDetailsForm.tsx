@@ -170,7 +170,7 @@ export function CompanyDetailsForm({
               divided
               headingLevel={layout === 'stacked' ? 3 : 2}
               layout={layout}
-              title={t(layout === 'stacked' ? 'Company details' : 'Identity')}
+              title={t('Company details')}
             >
               <Grid columns={{ base: 1, sm: 2 }}>
                 {field('name', t('Company name'), { required: true })}

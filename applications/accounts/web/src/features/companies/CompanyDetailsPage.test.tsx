@@ -153,6 +153,21 @@ describe('CompanyDetailsPage', () => {
     expect(screen.getByLabelText('Sort code')).toHaveValue('30-86-39');
   });
 
+  it('matches the prototype company-details section hierarchy', () => {
+    render(
+      <BreezeProvider locale="en-GB">
+        <CompanyDetailsPage companyId="company-id" owner="owner-id" />
+      </BreezeProvider>,
+    );
+
+    expect(
+      screen.getAllByRole('heading', { name: 'Company details' }),
+    ).toHaveLength(2);
+    expect(
+      screen.queryByRole('heading', { name: 'Identity' }),
+    ).not.toBeInTheDocument();
+  });
+
   it('requires the exact case-sensitive name before deleting a company', async () => {
     const user = userEvent.setup();
     mocks.deleteCompany.mockResolvedValue({
