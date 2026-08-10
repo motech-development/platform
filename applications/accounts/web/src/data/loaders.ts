@@ -92,7 +92,7 @@ export async function primeClients(context: RouterContext, companyId: string) {
   await primeOwnedCompanyResource(context, companyId, () =>
     context.apolloClient.query({
       query: GET_CLIENTS,
-      variables: { count: 100, id: companyId },
+      variables: { id: companyId },
     }),
   );
 }

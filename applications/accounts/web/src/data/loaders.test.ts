@@ -80,7 +80,7 @@ describe('company route priming', () => {
   );
 
   it.each([
-    [primeClients, GET_CLIENTS, { count: 100, id: companyId }],
+    [primeClients, GET_CLIENTS, { id: companyId }],
     [primeCompanyDetails, GET_COMPANY_DETAILS, { id: companyId }],
     [primeCompanySettings, GET_COMPANY_SETTINGS, { id: companyId }],
     [
