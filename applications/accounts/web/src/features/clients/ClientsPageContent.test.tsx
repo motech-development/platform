@@ -11,6 +11,14 @@ interface ClientQueryData {
   };
 }
 
+interface FetchMoreOptions {
+  updateQuery: (
+    previous: ClientQueryData,
+    options: { fetchMoreResult: ClientQueryData },
+  ) => ClientQueryData;
+  variables: { nextToken: string };
+}
+
 const mocks = vi.hoisted(() => ({
   navigate: vi.fn(),
   query: {
@@ -121,7 +129,7 @@ describe('ClientsPageContent', () => {
 
   it('loads the next page of clients', async () => {
     const user = userEvent.setup();
-    mocks.query.data = {
+    const firstPage: ClientQueryData = {
       getClients: {
         items: [
           {
@@ -136,21 +144,57 @@ describe('ClientsPageContent', () => {
         nextToken: 'next-page',
       },
     };
+    const secondPage: ClientQueryData = {
+      getClients: {
+        items: [
+          {
+            contact: {
+              email: 'alpha@example.com',
+              telephone: '020 7946 0001',
+            },
+            id: 'alpha-id',
+            name: 'Alpha Limited',
+          },
+          {
+            contact: {
+              email: 'beta@example.com',
+              telephone: '020 7946 0002',
+            },
+            id: 'beta-id',
+            name: 'Beta Limited',
+          },
+        ],
+        nextToken: null,
+      },
+    };
+    mocks.query.data = firstPage;
+    mocks.query.fetchMore.mockImplementationOnce((options: unknown) => {
+      const { updateQuery } = options as FetchMoreOptions;
+      mocks.query.data = updateQuery(firstPage, {
+        fetchMoreResult: secondPage,
+      });
 
-    render(
+      return Promise.resolve(undefined);
+    });
+
+    const view = render(
       <BreezeProvider locale="en-GB">
         <ClientsPageContent companyId="company-id" />
       </BreezeProvider>,
     );
 
     await user.click(screen.getByRole('button', { name: 'Load more' }));
-    expect(mocks.query.fetchMore).toHaveBeenCalledOnce();
-    const request = mocks.query.fetchMore.mock.calls[0]?.[0] as {
-      updateQuery?: unknown;
-      variables?: unknown;
-    };
-    expect(request.variables).toEqual({ nextToken: 'next-page' });
-    expect(request.updateQuery).toBeTypeOf('function');
+    expect(mocks.query.fetchMore).toHaveBeenCalledWith(
+      expect.objectContaining({ variables: { nextToken: 'next-page' } }),
+    );
+    view.rerender(
+      <BreezeProvider locale="en-GB">
+        <ClientsPageContent companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    expect(screen.getAllByTestId('Alpha Limited')).toHaveLength(1);
+    expect(screen.getByTestId('Beta Limited')).toBeVisible();
   });
 
   it('renders the complete loading composition while the first query runs', () => {
