@@ -60,7 +60,7 @@ vi.mock('@tanstack/react-router', async (importOriginal) => ({
   useBlocker: (options: { shouldBlockFn: () => boolean }) => {
     mocks.shouldBlockFn = options.shouldBlockFn;
 
-    return mocks.blocker;
+    return { ...mocks.blocker };
   },
   useNavigate: () => mocks.navigate,
 }));

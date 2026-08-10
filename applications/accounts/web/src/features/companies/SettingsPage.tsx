@@ -128,6 +128,9 @@ function SettingsForm({
     shouldBlockFn: () => dirty && !allowNavigation.current,
     withResolver: true,
   });
+  const blockerRef = useRef(blocker);
+
+  blockerRef.current = blocker;
   const [updateSettings] = useMutation(UPDATE_SETTINGS);
   const defaultValues: SettingsDraft = initialValues;
   const form = useForm({
@@ -153,7 +156,9 @@ function SettingsForm({
         return;
       }
 
-      if (blocker.status === 'blocked') blocker.reset?.();
+      const activeBlocker = blockerRef.current;
+
+      if (activeBlocker.status === 'blocked') activeBlocker.reset?.();
       setDiscardOpen(false);
       allowNavigation.current = true;
       setDirty(false);

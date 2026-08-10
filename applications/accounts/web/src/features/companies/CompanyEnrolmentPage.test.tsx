@@ -44,7 +44,7 @@ vi.mock('@motech-development/breeze-ui', async (importOriginal) => ({
 
 vi.mock('@tanstack/react-router', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@tanstack/react-router')>()),
-  useBlocker: () => mocks.blocker,
+  useBlocker: () => ({ ...mocks.blocker }),
   useNavigate: () => mocks.navigate,
 }));
 
@@ -268,7 +268,7 @@ describe('CompanyEnrolmentPage', () => {
       }),
     );
 
-    render(
+    const { rerender } = render(
       <BreezeProvider locale="en-GB">
         <CompanyEnrolmentPage owner="owner-id" />
       </BreezeProvider>,
@@ -298,6 +298,16 @@ describe('CompanyEnrolmentPage', () => {
       screen.queryByRole('heading', { name: 'Discard this company?' }),
     ).not.toBeInTheDocument();
 
+    mocks.blocker.status = 'blocked';
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <CompanyEnrolmentPage owner="owner-id" />
+      </BreezeProvider>,
+    );
+    expect(
+      screen.queryByRole('heading', { name: 'Discard this company?' }),
+    ).not.toBeInTheDocument();
+
     resolveCreation({
       data: {
         createCompany: {
@@ -309,6 +319,7 @@ describe('CompanyEnrolmentPage', () => {
       },
     });
 
+    await waitFor(() => expect(mocks.blocker.reset).toHaveBeenCalledOnce());
     await waitFor(() =>
       expect(mocks.navigate).toHaveBeenCalledWith({
         params: { companyId: 'company-id' },

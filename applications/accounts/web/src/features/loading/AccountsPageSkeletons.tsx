@@ -152,7 +152,7 @@ export function CompanyDetailsFormSkeleton({
         divided
         headingLevel={headingLevel}
         layout={layout}
-        title={t(layout === 'stacked' ? 'Company details' : 'Identity')}
+        title={t('Company details')}
       >
         <FieldSkeletons count={2} />
       </FormSection>
