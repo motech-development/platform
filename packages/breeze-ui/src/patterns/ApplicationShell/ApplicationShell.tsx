@@ -173,7 +173,7 @@ export function ApplicationShell({
           {account}
         </footer>
       </aside>
-      <header className="grid min-h-16 grid-cols-[2.75rem_minmax(0,1fr)_2.75rem] items-center gap-3 bg-[var(--breeze-shell)] px-3 text-[var(--breeze-ink-inverse)] md:hidden">
+      <header className="sticky top-0 z-20 grid min-h-16 grid-cols-[2.75rem_minmax(0,1fr)_2.75rem] items-center gap-3 bg-[var(--breeze-shell)] px-3 text-[var(--breeze-ink-inverse)] md:hidden">
         {compactNavigation}
         <div className="min-w-0 justify-self-center font-[family-name:var(--breeze-font-display)] text-xl font-semibold">
           {compactBrand ?? brand}
