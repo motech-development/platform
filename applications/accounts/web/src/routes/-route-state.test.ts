@@ -11,6 +11,12 @@ describe('Accounts pending view', () => {
       'record-transaction',
     ],
     ['/my-companies/accounts/company-1', 'transactions'],
+    ['/my-companies/clients/company-1', 'clients'],
+    ['/my-companies/clients/company-1/add-client', 'add-client'],
+    [
+      '/my-companies/clients/company-1/update-details/client-1',
+      'client-details',
+    ],
     ['/my-companies/dashboard/company-1', 'dashboard'],
     ['/my-companies/update-details/company-1', 'company-details'],
     ['/my-companies/settings/company-1', 'settings'],

@@ -35,6 +35,7 @@ vi.mock('@motech-development/breeze-ui/icons', async (importOriginal) => ({
   BuildingIcon: () => <svg aria-hidden="true" />,
   ChartIcon: () => <svg aria-hidden="true" />,
   SettingsIcon: () => <svg aria-hidden="true" />,
+  UsersIcon: () => <svg aria-hidden="true" />,
   WalletIcon: () => <svg aria-hidden="true" />,
 }));
 
@@ -98,8 +99,11 @@ describe('AccountsShell', () => {
       '/my-companies/settings/7c22bba3-8036-4fa8-aae1-4611f1651e17',
     );
     expect(
-      screen.queryByRole('link', { name: /clients/i }),
-    ).not.toBeInTheDocument();
+      screen.getAllByRole('link', { name: /Clients.*Manage clients/ })[0],
+    ).toHaveAttribute(
+      'href',
+      '/my-companies/clients/7c22bba3-8036-4fa8-aae1-4611f1651e17',
+    );
     expect(
       screen.queryByRole('link', { name: /reports/i }),
     ).not.toBeInTheDocument();

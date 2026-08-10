@@ -17,6 +17,7 @@ import {
   BuildingIcon,
   ChartIcon,
   SettingsIcon,
+  UsersIcon,
   WalletIcon,
 } from '@motech-development/breeze-ui/icons';
 import { useLocation, useNavigate } from '@tanstack/react-router';
@@ -121,6 +122,9 @@ export function AccountsShell({
   const transactions = companyId
     ? `/my-companies/accounts/${companyId}`
     : '/my-companies';
+  const clients = companyId
+    ? `/my-companies/clients/${companyId}`
+    : '/my-companies';
   const companyDetails = companyId
     ? `/my-companies/update-details/${companyId}`
     : '/my-companies';
@@ -202,6 +206,16 @@ export function AccountsShell({
                 <WalletIcon />
                 {t('Transactions')}
                 <VisuallyHidden>{t(' — Manage accounts')}</VisuallyHidden>
+              </NavigationList.Item>
+              <NavigationList.Item
+                current={location.pathname.startsWith('/my-companies/clients/')}
+                href={clients}
+                id="clients"
+                onAction={() => setCompactNavigationOpen(false)}
+              >
+                <UsersIcon />
+                {t('Clients')}
+                <VisuallyHidden>{t(' — Manage clients')}</VisuallyHidden>
               </NavigationList.Item>
               <NavigationList.Item
                 current={location.pathname.startsWith(

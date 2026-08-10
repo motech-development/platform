@@ -42,6 +42,9 @@ describe('AccountsPending', () => {
     ['/my-companies', 'My companies'],
     ['/my-companies/accounts/company-id', 'Accounts'],
     ['/my-companies/accounts/company-id/record-transaction', 'Accounts'],
+    ['/my-companies/clients/company-id', 'Clients'],
+    ['/my-companies/clients/company-id/add-client', 'Clients'],
+    ['/my-companies/clients/company-id/update-details/client-id', 'Clients'],
     ['/my-companies/update-details/company-id', 'Company details'],
     ['/my-companies/settings/company-id', 'Settings'],
   ])('keeps the %s page title stable while loading', (pathname, title) => {
@@ -74,6 +77,21 @@ describe('AccountsPending', () => {
     expect(screen.getByText('Bank account')).toBeInTheDocument();
     expect(screen.getByText('Address')).toBeInTheDocument();
     expect(screen.getByText('Contact details')).toBeInTheDocument();
+  });
+
+  it.each([
+    ['/my-companies/clients/company-id/add-client', 'Add client'],
+    [
+      '/my-companies/clients/company-id/update-details/client-id',
+      'Edit client',
+    ],
+  ])('keeps the client drawer visible while %s loads', (pathname, title) => {
+    renderPending(pathname);
+
+    expect(screen.getByRole('dialog', { name: title })).toBeInTheDocument();
+    expect(
+      screen.getByRole('status', { name: 'Loading client details' }),
+    ).toHaveAttribute('aria-busy', 'true');
   });
 
   it('closes the pending enrolment drawer to its safe parent', async () => {
