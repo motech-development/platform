@@ -23,6 +23,7 @@ import {
   visibleValidationErrors,
 } from '../form-errors';
 import { SettingsFormSkeleton } from '../loading/AccountsPageSkeletons';
+import { QueryRefreshAlert } from '../QueryRefreshAlert';
 import {
   type CompanySettings,
   formatVatRegistration,
@@ -42,7 +43,6 @@ import {
 import { DiscardChangesDialog } from './DiscardChangesDialog';
 import { expenseCategoryRowClassName } from './expense-category-layout';
 import { monthNames } from './month-names';
-import { QueryRefreshAlert } from './QueryRefreshAlert';
 
 type SettingsDraft = Omit<CompanySettings, 'categories' | 'vat' | 'yearEnd'> & {
   categories: Array<

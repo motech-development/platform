@@ -9,9 +9,9 @@ import {
 } from '../../data/operations';
 import { DiscardChangesDialog } from '../companies/DiscardChangesDialog';
 import { QueryFailureState } from '../companies/QueryFailureState';
-import { QueryRefreshAlert } from '../companies/QueryRefreshAlert';
 import { exactEntityNameSchema } from '../entity-details';
 import { FormSkeletonRegion } from '../loading/AccountsPageSkeletons';
+import { QueryRefreshAlert } from '../QueryRefreshAlert';
 import { removeClientFromCache, upsertClientInCache } from './cache-updates';
 import { ClientDeleteDialog } from './ClientDeleteDialog';
 import { ClientDetailsForm } from './ClientDetailsForm';

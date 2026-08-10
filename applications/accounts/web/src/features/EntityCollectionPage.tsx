@@ -1,18 +1,26 @@
-import { PageHeader } from '@motech-development/breeze-ui';
+import { Button, PageHeader, StatePanel } from '@motech-development/breeze-ui';
+import { WarningIcon } from '@motech-development/breeze-ui/icons';
 import type { ReactNode } from 'react';
+import { QueryRefreshAlert } from './QueryRefreshAlert';
 
 export function EntityCollectionPage({
   action,
   children,
   description,
-  refreshState,
+  queryState,
   state,
   title,
 }: Readonly<{
   action: ReactNode;
   children: ReactNode;
   description: string;
-  refreshState?: ReactNode;
+  queryState: {
+    errorDescription: string;
+    errorTitle: string;
+    onRetry: () => void;
+    refreshErrorDescription?: string;
+    retryLabel: string;
+  };
   state: 'empty' | 'error' | 'loading' | 'populated';
   title: string;
 }>) {
@@ -23,8 +31,29 @@ export function EntityCollectionPage({
         description={description}
         title={title}
       />
-      {refreshState}
-      {children}
+      {queryState.refreshErrorDescription ? (
+        <QueryRefreshAlert
+          onRetry={queryState.onRetry}
+          retryLabel={queryState.retryLabel}
+        >
+          {queryState.refreshErrorDescription}
+        </QueryRefreshAlert>
+      ) : null}
+      {state === 'error' ? (
+        <StatePanel
+          action={
+            <Button onAction={queryState.onRetry}>
+              {queryState.retryLabel}
+            </Button>
+          }
+          description={queryState.errorDescription}
+          icon={<WarningIcon />}
+          title={queryState.errorTitle}
+          variant="danger"
+        />
+      ) : (
+        children
+      )}
     </div>
   );
 }

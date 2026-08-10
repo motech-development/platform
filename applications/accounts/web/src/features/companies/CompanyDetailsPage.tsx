@@ -17,6 +17,7 @@ import {
 } from '../../data/operations';
 import { exactEntityNameSchema } from '../entity-details';
 import { CompanyDetailsFormSkeleton } from '../loading/AccountsPageSkeletons';
+import { QueryRefreshAlert } from '../QueryRefreshAlert';
 import { removeCompanyFromCache, upsertCompanyInCache } from './cache-updates';
 import { formatSortCode } from './company';
 import { CompanyDetailsForm } from './CompanyDetailsForm';
@@ -25,7 +26,6 @@ import {
   CompanyFormLoadingState,
 } from './CompanyFormQueryState';
 import { DiscardChangesDialog } from './DiscardChangesDialog';
-import { QueryRefreshAlert } from './QueryRefreshAlert';
 
 export function CompanyDetailsPage({
   companyId,

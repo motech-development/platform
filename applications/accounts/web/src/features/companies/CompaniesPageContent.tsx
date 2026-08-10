@@ -7,11 +7,7 @@ import {
   Typography,
   VisuallyHidden,
 } from '@motech-development/breeze-ui';
-import {
-  AddIcon,
-  BuildingIcon,
-  WarningIcon,
-} from '@motech-development/breeze-ui/icons';
+import { AddIcon, BuildingIcon } from '@motech-development/breeze-ui/icons';
 import { useNavigate } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import { useAccountsOwnerId } from '../../auth/owner';
@@ -20,7 +16,6 @@ import { sortNamedEntities } from '../entity-details';
 import { EntityCollectionPage } from '../EntityCollectionPage';
 import { CompaniesTableSkeleton } from '../loading/AccountsPageSkeletons';
 import { responsiveEntityTableClassNames } from '../tableLayout';
-import { QueryRefreshAlert } from './QueryRefreshAlert';
 
 export function CompaniesPageContent() {
   const { t } = useTranslation(['companies', 'routing']);
@@ -55,42 +50,24 @@ export function CompaniesPageContent() {
         </Button>
       }
       description={t('Select a company or add another business.')}
-      refreshState={
-        refreshError ? (
-          <QueryRefreshAlert
-            onRetry={() => {
-              refetch().catch(() => undefined);
-            }}
-            retryLabel={t('Try again', { ns: 'routing' })}
-          >
-            {t(
+      queryState={{
+        errorDescription: t('Check your connection, then try again.', {
+          ns: 'routing',
+        }),
+        errorTitle: t('We could not load companies'),
+        onRetry: () => {
+          refetch().catch(() => undefined);
+        },
+        refreshErrorDescription: refreshError
+          ? t(
               'Companies could not be refreshed. Check your connection, then try again.',
-            )}
-          </QueryRefreshAlert>
-        ) : undefined
-      }
+            )
+          : undefined,
+        retryLabel: t('Try again', { ns: 'routing' }),
+      }}
       state={collectionState}
       title={t('My companies')}
     >
-      {collectionState === 'error' && (
-        <StatePanel
-          action={
-            <Button
-              onAction={() => {
-                refetch().catch(() => undefined);
-              }}
-            >
-              {t('Try again', { ns: 'routing' })}
-            </Button>
-          }
-          description={t('Check your connection, then try again.', {
-            ns: 'routing',
-          })}
-          icon={<WarningIcon />}
-          title={t('We could not load companies')}
-          variant="danger"
-        />
-      )}
       {collectionState === 'loading' && <CompaniesTableSkeleton />}
       {collectionState === 'empty' && (
         <StatePanel
