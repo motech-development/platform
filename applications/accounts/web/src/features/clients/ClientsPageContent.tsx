@@ -2,7 +2,6 @@ import { useQuery } from '@apollo/client/react';
 import {
   Avatar,
   Button,
-  PageHeader,
   StatePanel,
   Table,
   Typography,
@@ -17,6 +16,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import { GET_CLIENTS } from '../../data/operations';
 import { QueryRefreshAlert } from '../companies/QueryRefreshAlert';
+import { EntityCollectionPage } from '../EntityCollectionPage';
 import { responsiveEntityTableClassNames } from '../tableLayout';
 import { sortClientsByName } from './client';
 import { ClientsTableSkeleton } from './ClientsTableSkeleton';
@@ -53,34 +53,29 @@ export function ClientsPageContent({
   };
 
   return (
-    <div className="min-w-0">
-      <PageHeader
-        actions={
-          clients.length && !initiallyLoading ? (
+    <EntityCollectionPage
+      action={
+        <Button aria-label={t('Add a new client')} onAction={addClient}>
+          <AddIcon />
+          {t('Add client')}
+        </Button>
+      }
+      description={t('People and organisations linked to sales transactions.')}
+      empty={empty}
+      emptyState={
+        <StatePanel
+          action={
             <Button aria-label={t('Add a new client')} onAction={addClient}>
-              <AddIcon />
               {t('Add client')}
             </Button>
-          ) : undefined
-        }
-        description={t(
-          'People and organisations linked to sales transactions.',
-        )}
-        title={t('Clients')}
-      />
-      {refreshError ? (
-        <QueryRefreshAlert
-          onRetry={() => {
-            refetch().catch(() => undefined);
-          }}
-          retryLabel={t('Try again', { ns: 'routing' })}
-        >
-          {t(
-            'Clients could not be refreshed. Check your connection, then try again.',
-          )}
-        </QueryRefreshAlert>
-      ) : null}
-      {fatalError ? (
+          }
+          description={t('Add a client to use them on sales transactions.')}
+          icon={<UsersIcon />}
+          title={t('No clients yet')}
+        />
+      }
+      error={fatalError}
+      errorState={
         <StatePanel
           action={
             <Button
@@ -98,8 +93,25 @@ export function ClientsPageContent({
           title={t('We could not load clients')}
           variant="danger"
         />
-      ) : null}
-      {initiallyLoading ? <ClientsTableSkeleton /> : null}
+      }
+      loading={initiallyLoading}
+      loadingState={<ClientsTableSkeleton />}
+      refreshState={
+        refreshError ? (
+          <QueryRefreshAlert
+            onRetry={() => {
+              refetch().catch(() => undefined);
+            }}
+            retryLabel={t('Try again', { ns: 'routing' })}
+          >
+            {t(
+              'Clients could not be refreshed. Check your connection, then try again.',
+            )}
+          </QueryRefreshAlert>
+        ) : undefined
+      }
+      title={t('Clients')}
+    >
       {clients.length ? (
         <Table.Root
           aria-label={t('Clients')}
@@ -190,18 +202,6 @@ export function ClientsPageContent({
           </Table.Body>
         </Table.Root>
       ) : null}
-      {empty ? (
-        <StatePanel
-          action={
-            <Button aria-label={t('Add a new client')} onAction={addClient}>
-              {t('Add client')}
-            </Button>
-          }
-          description={t('Add a client to use them on sales transactions.')}
-          icon={<UsersIcon />}
-          title={t('No clients yet')}
-        />
-      ) : null}
-    </div>
+    </EntityCollectionPage>
   );
 }

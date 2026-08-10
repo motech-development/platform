@@ -2,7 +2,6 @@ import { useQuery } from '@apollo/client/react';
 import {
   Avatar,
   Button,
-  PageHeader,
   StatePanel,
   Table,
   Typography,
@@ -17,6 +16,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import { useAccountsOwnerId } from '../../auth/owner';
 import { GET_COMPANIES } from '../../data/operations';
+import { EntityCollectionPage } from '../EntityCollectionPage';
 import { CompaniesTableSkeleton } from '../loading/AccountsPageSkeletons';
 import { responsiveEntityTableClassNames } from '../tableLayout';
 import { sortCompaniesByName } from './company';
@@ -42,32 +42,29 @@ export function CompaniesPageContent() {
   };
 
   return (
-    <div className="min-w-0">
-      <PageHeader
-        actions={
-          empty || fatalError || initiallyLoading ? undefined : (
+    <EntityCollectionPage
+      action={
+        <Button aria-label={t('Add a new company')} onAction={addCompany}>
+          <AddIcon />
+          {t('Add company')}
+        </Button>
+      }
+      description={t('Select a company or add another business.')}
+      empty={empty}
+      emptyState={
+        <StatePanel
+          action={
             <Button aria-label={t('Add a new company')} onAction={addCompany}>
-              <AddIcon />
               {t('Add company')}
             </Button>
-          )
-        }
-        description={t('Select a company or add another business.')}
-        title={t('My companies')}
-      />
-      {refreshError ? (
-        <QueryRefreshAlert
-          onRetry={() => {
-            refetch().catch(() => undefined);
-          }}
-          retryLabel={t('Try again', { ns: 'routing' })}
-        >
-          {t(
-            'Companies could not be refreshed. Check your connection, then try again.',
-          )}
-        </QueryRefreshAlert>
-      ) : null}
-      {fatalError ? (
+          }
+          description={t('Add your first company to start using Accounts.')}
+          icon={<BuildingIcon />}
+          title={t('No companies yet')}
+        />
+      }
+      error={fatalError}
+      errorState={
         <StatePanel
           action={
             <Button
@@ -85,8 +82,25 @@ export function CompaniesPageContent() {
           title={t('We could not load companies')}
           variant="danger"
         />
-      ) : null}
-      {initiallyLoading ? <CompaniesTableSkeleton /> : null}
+      }
+      loading={initiallyLoading}
+      loadingState={<CompaniesTableSkeleton />}
+      refreshState={
+        refreshError ? (
+          <QueryRefreshAlert
+            onRetry={() => {
+              refetch().catch(() => undefined);
+            }}
+            retryLabel={t('Try again', { ns: 'routing' })}
+          >
+            {t(
+              'Companies could not be refreshed. Check your connection, then try again.',
+            )}
+          </QueryRefreshAlert>
+        ) : undefined
+      }
+      title={t('My companies')}
+    >
       {companies.length ? (
         <Table.Root
           aria-label={t('Companies')}
@@ -180,18 +194,6 @@ export function CompaniesPageContent() {
           </Table.Body>
         </Table.Root>
       ) : null}
-      {empty ? (
-        <StatePanel
-          action={
-            <Button aria-label={t('Add a new company')} onAction={addCompany}>
-              {t('Add company')}
-            </Button>
-          }
-          description={t('Add your first company to start using Accounts.')}
-          icon={<BuildingIcon />}
-          title={t('No companies yet')}
-        />
-      ) : null}
-    </div>
+    </EntityCollectionPage>
   );
 }
