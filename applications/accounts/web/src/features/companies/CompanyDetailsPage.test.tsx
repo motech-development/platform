@@ -5,6 +5,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { CompanyDetailsPage } from './CompanyDetailsPage';
 
 const mocks = vi.hoisted(() => ({
+  blocker: {
+    proceed: vi.fn(),
+    reset: vi.fn(),
+    status: 'idle',
+  },
   deleteCompany: vi.fn(),
   navigate: vi.fn(),
   query: {
@@ -67,7 +72,7 @@ vi.mock('@tanstack/react-router', async (importOriginal) => ({
   useBlocker: (options: { shouldBlockFn: () => boolean }) => {
     mocks.shouldBlockFn = options.shouldBlockFn;
 
-    return { proceed: vi.fn(), reset: vi.fn(), status: 'idle' };
+    return mocks.blocker;
   },
   useNavigate: () => mocks.navigate,
 }));
@@ -76,6 +81,7 @@ describe('CompanyDetailsPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.navigate.mockResolvedValue(undefined);
+    mocks.blocker.status = 'idle';
     mocks.query.error = undefined;
     mocks.query.loading = false;
     mocks.query.refetch.mockResolvedValue(undefined);
@@ -306,6 +312,48 @@ describe('CompanyDetailsPage', () => {
     });
 
     await waitFor(() => expect(mocks.navigate).toHaveBeenCalledOnce());
+  });
+
+  it('holds blocked navigation until a pending save succeeds', async () => {
+    const user = userEvent.setup();
+    let resolveUpdate: (result: unknown) => void = () => undefined;
+
+    mocks.updateCompany.mockReturnValue(
+      new Promise((resolve) => {
+        resolveUpdate = resolve;
+      }),
+    );
+
+    const { rerender } = render(
+      <BreezeProvider locale="en-GB">
+        <CompanyDetailsPage companyId="company-id" owner="owner-id" />
+      </BreezeProvider>,
+    );
+
+    await user.clear(screen.getByLabelText('Email address'));
+    await user.type(screen.getByLabelText('Email address'), 'new@example.com');
+    await user.click(screen.getByRole('button', { name: 'Save changes' }));
+    await waitFor(() => expect(mocks.updateCompany).toHaveBeenCalledOnce());
+
+    mocks.blocker.status = 'blocked';
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <CompanyDetailsPage companyId="company-id" owner="owner-id" />
+      </BreezeProvider>,
+    );
+
+    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
+
+    resolveUpdate({
+      data: { updateCompany: mocks.query.data.getCompany },
+    });
+
+    await waitFor(() => expect(mocks.blocker.reset).toHaveBeenCalledOnce());
+    expect(mocks.blocker.proceed).not.toHaveBeenCalled();
+    expect(mocks.navigate).toHaveBeenCalledWith({
+      params: { companyId: 'company-id' },
+      to: '/my-companies/dashboard/$companyId',
+    });
   });
 
   it('preserves edited details when the save mutation fails', async () => {

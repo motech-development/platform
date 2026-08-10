@@ -5,6 +5,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { SettingsPage } from './SettingsPage';
 
 const mocks = vi.hoisted(() => ({
+  blocker: {
+    proceed: vi.fn(),
+    reset: vi.fn(),
+    status: 'idle',
+  },
   mutation: vi.fn(),
   navigate: vi.fn(),
   query: {
@@ -55,7 +60,7 @@ vi.mock('@tanstack/react-router', async (importOriginal) => ({
   useBlocker: (options: { shouldBlockFn: () => boolean }) => {
     mocks.shouldBlockFn = options.shouldBlockFn;
 
-    return { proceed: vi.fn(), reset: vi.fn(), status: 'idle' };
+    return mocks.blocker;
   },
   useNavigate: () => mocks.navigate,
 }));
@@ -63,6 +68,7 @@ vi.mock('@tanstack/react-router', async (importOriginal) => ({
 describe('SettingsPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mocks.blocker.status = 'idle';
     mocks.navigate.mockResolvedValue(undefined);
     mocks.query.data = {
       getCompany: { id: 'company-id', name: 'Example Company' },
@@ -343,6 +349,49 @@ describe('SettingsPage', () => {
     });
 
     await waitFor(() => expect(mocks.navigate).toHaveBeenCalledOnce());
+  });
+
+  it('holds blocked navigation until a pending settings save succeeds', async () => {
+    const user = userEvent.setup();
+    let resolveUpdate: (result: unknown) => void = () => undefined;
+
+    mocks.mutation.mockReturnValue(
+      new Promise((resolve) => {
+        resolveUpdate = resolve;
+      }),
+    );
+
+    const { rerender } = render(
+      <BreezeProvider locale="en-GB">
+        <SettingsPage companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    const categoryName = screen.getByLabelText('Advertising name');
+    await user.clear(categoryName);
+    await user.type(categoryName, 'Marketing');
+    await user.click(screen.getByRole('button', { name: 'Save settings' }));
+    await waitFor(() => expect(mocks.mutation).toHaveBeenCalledOnce());
+
+    mocks.blocker.status = 'blocked';
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <SettingsPage companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
+
+    resolveUpdate({
+      data: { updateSettings: mocks.query.data.getSettings },
+    });
+
+    await waitFor(() => expect(mocks.blocker.reset).toHaveBeenCalledOnce());
+    expect(mocks.blocker.proceed).not.toHaveBeenCalled();
+    expect(mocks.navigate).toHaveBeenCalledWith({
+      params: { companyId: 'company-id' },
+      to: '/my-companies/dashboard/$companyId',
+    });
   });
 
   it('restores dirty-form blocking when navigation fails after saving', async () => {
