@@ -53,6 +53,9 @@ export function AccountsPending() {
   const location = useLocation();
   const navigate = useNavigate();
   const pendingView = accountsPendingView(location.pathname);
+  const pendingClientCompanyId = location.pathname.match(
+    /^\/my-companies\/clients\/([^/]+)/u,
+  )?.[1];
 
   if (
     pendingView === 'clients' ||
@@ -77,7 +80,18 @@ export function AccountsPending() {
           <ClientsTableSkeleton />
         </div>
         {pendingView !== 'clients' ? (
-          <Drawer.Root onOpenChange={() => undefined} open triggerless>
+          <Drawer.Root
+            onOpenChange={(open) => {
+              if (!open && pendingClientCompanyId) {
+                navigate({
+                  params: { companyId: pendingClientCompanyId },
+                  to: '/my-companies/clients/$companyId',
+                }).catch(() => undefined);
+              }
+            }}
+            open
+            triggerless
+          >
             <Drawer.Content
               placement={{ base: 'bottom', md: 'end' }}
               size="medium"

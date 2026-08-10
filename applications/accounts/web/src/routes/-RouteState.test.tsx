@@ -94,6 +94,18 @@ describe('AccountsPending', () => {
     ).toHaveAttribute('aria-busy', 'true');
   });
 
+  it('closes a pending client drawer to its safe parent', async () => {
+    const user = userEvent.setup();
+    renderPending('/my-companies/clients/company-id/add-client');
+
+    await user.click(screen.getByRole('button', { name: 'Close' }));
+
+    expect(mocks.navigate).toHaveBeenCalledWith({
+      params: { companyId: 'company-id' },
+      to: '/my-companies/clients/$companyId',
+    });
+  });
+
   it('closes the pending enrolment drawer to its safe parent', async () => {
     const user = userEvent.setup();
     renderPending('/my-companies/add-company');

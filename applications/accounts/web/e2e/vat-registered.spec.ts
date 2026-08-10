@@ -428,6 +428,96 @@ test.describe('VAT registered Accounts', () => {
       await expect(page.getByTestId(client.name)).toBeVisible();
     });
 
+    test('should add client 2', async ({ page }) => {
+      const client = clients[1];
+
+      await openClients(page);
+      await page.getByRole('button', { name: 'Add a new client' }).click();
+      await page.getByLabel('Client name').fill(client.name);
+      await page.getByLabel('Address line 1').fill(client.address.line1);
+      await page.getByLabel('Address line 2').fill(client.address.line2);
+      await page.getByLabel('Town or city').fill(client.address.line3);
+      await page.getByLabel('County').fill(client.address.line4);
+      await page.getByLabel('Postcode').fill(client.address.line5);
+      await page.getByLabel('Email address').fill(client.contact.email);
+      await page.getByLabel('Telephone number').fill(client.contact.telephone);
+      await page.getByRole('button', { name: 'Save client' }).click();
+
+      await expect(
+        page.getByRole('heading', { level: 1, name: 'Clients' }),
+      ).toBeVisible();
+    });
+
+    test('should add client 3', async ({ page }) => {
+      const client = clients[2];
+
+      await openClients(page);
+      await page.getByRole('button', { name: 'Add a new client' }).click();
+      await page.getByLabel('Client name').fill(client.name);
+      await page.getByLabel('Address line 1').fill(client.address.line1);
+      await page.getByLabel('Town or city').fill(client.address.line3);
+      await page.getByLabel('County').fill(client.address.line4);
+      await page.getByLabel('Postcode').fill(client.address.line5);
+      await page.getByLabel('Email address').fill(client.contact.email);
+      await page.getByLabel('Telephone number').fill(client.contact.telephone);
+      await page.getByRole('button', { name: 'Save client' }).click();
+
+      await expect(
+        page.getByRole('heading', { level: 1, name: 'Clients' }),
+      ).toBeVisible();
+    });
+
+    test('should update client 2', async ({ page }) => {
+      const client = clients[1];
+      const updated = clients[3];
+
+      await openClients(page);
+      await page.getByTestId(client.name).click();
+
+      await expect(page.getByLabel('Client name')).toHaveValue(client.name);
+      await page.getByLabel('Client name').fill(updated.name);
+      await expect(page.getByLabel('Address line 1')).toHaveValue(
+        client.address.line1,
+      );
+      await expect(page.getByLabel('Address line 2')).toHaveValue(
+        client.address.line2,
+      );
+      await expect(page.getByLabel('Town or city')).toHaveValue(
+        client.address.line3,
+      );
+      await expect(page.getByLabel('County')).toHaveValue(client.address.line4);
+      await expect(page.getByLabel('Postcode')).toHaveValue(
+        client.address.line5,
+      );
+      await expect(page.getByLabel('Email address')).toHaveValue(
+        client.contact.email,
+      );
+      await expect(page.getByLabel('Telephone number')).toHaveValue(
+        client.contact.telephone,
+      );
+      await page.getByRole('button', { name: 'Save client' }).click();
+
+      await expect(
+        page.getByRole('heading', { level: 1, name: 'Clients' }),
+      ).toBeVisible();
+    });
+
+    test('should delete client 3', async ({ page }) => {
+      const client = clients[2];
+
+      await openClients(page);
+      await page.getByTestId(client.name).click();
+      await page.getByRole('button', { name: 'Delete client' }).click();
+      await page.getByLabel(`Type ${client.name} to confirm`).fill(client.name);
+      await page
+        .getByRole('button', { name: 'Permanently delete client' })
+        .click();
+
+      await expect(
+        page.getByRole('heading', { level: 1, name: 'Clients' }),
+      ).toBeVisible();
+    });
+
     test('should remove company', async ({ page }) => {
       await openCompanyDetails(page);
       await page.getByRole('button', { name: 'Delete company' }).click();
