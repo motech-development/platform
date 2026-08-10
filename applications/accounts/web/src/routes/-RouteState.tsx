@@ -25,7 +25,7 @@ import {
   TransactionsContentSkeleton,
 } from '../features/loading/AccountsPageSkeletons';
 import { captureRouteFailure } from '../observability';
-import { accountsPendingView } from './-route-state';
+import { type AccountsPendingView, accountsPendingView } from './-route-state';
 
 function CompanyFormPending({
   children,
@@ -48,75 +48,81 @@ function CompanyFormPending({
   );
 }
 
+type ClientPendingView = Extract<
+  AccountsPendingView,
+  'add-client' | 'client-details' | 'clients'
+>;
+
+function ClientsPending({
+  pathname,
+  pendingView,
+}: Readonly<{ pathname: string; pendingView: ClientPendingView }>) {
+  const { t } = useTranslation('clients');
+  const navigate = useNavigate();
+  const companyId = /^\/my-companies\/clients\/([^/]+)/u.exec(pathname)?.[1];
+  const addingClient = pendingView === 'add-client';
+
+  return (
+    <>
+      <div className="min-w-0">
+        <PageHeader
+          description={t(
+            'People and organisations linked to sales transactions.',
+          )}
+          title={t('Clients')}
+        />
+        <ClientsTableSkeleton />
+      </div>
+      {pendingView !== 'clients' ? (
+        <Drawer.Root
+          onOpenChange={(open) => {
+            if (!open && companyId) {
+              navigate({
+                params: { companyId },
+                to: '/my-companies/clients/$companyId',
+              }).catch(() => undefined);
+            }
+          }}
+          open
+          triggerless
+        >
+          <Drawer.Content
+            placement={{ base: 'bottom', md: 'end' }}
+            size="medium"
+          >
+            <Drawer.Description>
+              {addingClient
+                ? t('Create a client for sales transactions.')
+                : t('Update this client or remove them.')}
+            </Drawer.Description>
+            <Drawer.Title>
+              {addingClient ? t('Add client') : t('Edit client')}
+            </Drawer.Title>
+            <FormSkeletonRegion loadingLabel={t('Loading client details')}>
+              <ClientDetailsFormSkeleton
+                danger={pendingView === 'client-details'}
+              />
+            </FormSkeletonRegion>
+          </Drawer.Content>
+        </Drawer.Root>
+      ) : null}
+    </>
+  );
+}
+
 export function AccountsPending() {
-  const { t } = useTranslation(['routing', 'clients', 'companies', 'shell']);
+  const { t } = useTranslation(['routing', 'companies', 'shell']);
   const location = useLocation();
   const navigate = useNavigate();
   const pendingView = accountsPendingView(location.pathname);
-  const pendingClientCompanyId = location.pathname.match(
-    /^\/my-companies\/clients\/([^/]+)/u,
-  )?.[1];
 
   if (
     pendingView === 'clients' ||
     pendingView === 'add-client' ||
     pendingView === 'client-details'
   ) {
-    const drawerTitle =
-      pendingView === 'add-client'
-        ? t('Add client', { ns: 'clients' })
-        : t('Edit client', { ns: 'clients' });
-
     return (
-      <>
-        <div className="min-w-0">
-          <PageHeader
-            description={t(
-              'People and organisations linked to sales transactions.',
-              { ns: 'clients' },
-            )}
-            title={t('Clients', { ns: 'clients' })}
-          />
-          <ClientsTableSkeleton />
-        </div>
-        {pendingView !== 'clients' ? (
-          <Drawer.Root
-            onOpenChange={(open) => {
-              if (!open && pendingClientCompanyId) {
-                navigate({
-                  params: { companyId: pendingClientCompanyId },
-                  to: '/my-companies/clients/$companyId',
-                }).catch(() => undefined);
-              }
-            }}
-            open
-            triggerless
-          >
-            <Drawer.Content
-              placement={{ base: 'bottom', md: 'end' }}
-              size="medium"
-            >
-              <Drawer.Description>
-                {pendingView === 'add-client'
-                  ? t('Create a client for sales transactions.', {
-                      ns: 'clients',
-                    })
-                  : t('Update this client or remove them.', {
-                      ns: 'clients',
-                    })}
-              </Drawer.Description>
-              <Drawer.Title>{drawerTitle}</Drawer.Title>
-              <FormSkeletonRegion
-                loadingLabel={t('Loading client details', { ns: 'clients' })}
-              >
-                <ClientDetailsFormSkeleton
-                  danger={pendingView === 'client-details'}
-                />
-              </FormSkeletonRegion>
-            </Drawer.Content>
-          </Drawer.Root>
-        ) : null}
-      </>
+      <ClientsPending pathname={location.pathname} pendingView={pendingView} />
     );
   }
 

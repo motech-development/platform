@@ -1,4 +1,4 @@
-import type { FormEvent, ReactNode } from 'react';
+import type { ReactNode, SubmitEvent } from 'react';
 
 export function SubmittingForm({
   children,
@@ -11,7 +11,7 @@ export function SubmittingForm({
   onSubmit: () => Promise<unknown>;
   submissionPending: boolean;
 }>) {
-  const submit = (event: FormEvent<HTMLFormElement>) => {
+  const submit = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     event.stopPropagation();
     onSubmit().catch(() => undefined);
