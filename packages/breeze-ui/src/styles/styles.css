@@ -173,6 +173,12 @@
 }
 
 @layer utilities {
+  .breeze-drawer-visual-viewport {
+    inset-block-start: var(--breeze-drawer-visual-viewport-offset-top, 0px);
+    inset-block-end: auto;
+    block-size: var(--breeze-drawer-visual-viewport-height, 100dvh);
+  }
+
   @media (min-width: 73.8125rem) {
     .breeze-drawer-adjacent-overlay {
       background: transparent;
