@@ -179,7 +179,10 @@
     left: var(--breeze-drawer-visual-viewport-surface-left, 0px);
     width: var(--breeze-drawer-visual-viewport-surface-width, 0px);
     height: var(--breeze-drawer-visual-viewport-offset-bottom, 0px);
-    background: var(--breeze-surface);
+    background: var(
+      --breeze-drawer-visual-viewport-surface-background,
+      var(--breeze-surface)
+    );
     content: '';
     pointer-events: none;
   }
