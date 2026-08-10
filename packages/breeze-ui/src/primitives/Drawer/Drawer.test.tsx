@@ -149,6 +149,9 @@ describe('Drawer', () => {
         '--breeze-drawer-visual-viewport-height: 280px; --breeze-drawer-visual-viewport-width: 600px; --breeze-drawer-visual-viewport-offset-top: 96px; --breeze-drawer-visual-viewport-offset-left: 80px; --breeze-drawer-visual-viewport-offset-right: 320px; --breeze-drawer-visual-viewport-offset-inline-start: 80px; --breeze-drawer-visual-viewport-offset-inline-end: 320px',
       ),
     );
+    expect(drawer.parentElement?.parentElement).toHaveStyle(
+      '--breeze-drawer-visual-viewport-offset-inline-end: 320px',
+    );
   });
 
   it('maps visual viewport offsets to logical edges in right-to-left layouts', async () => {

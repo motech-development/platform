@@ -125,6 +125,12 @@ function updateVisualViewportSurface(
     '--breeze-drawer-visual-viewport-offset-inline-end',
     `${offsetInlineEnd}px`,
   );
+  surface
+    .closest<HTMLElement>('.breeze-modal-overlay')
+    ?.style.setProperty(
+      '--breeze-drawer-visual-viewport-offset-inline-end',
+      `${offsetInlineEnd}px`,
+    );
 }
 
 function updateVisualViewportSurfaces(): void {

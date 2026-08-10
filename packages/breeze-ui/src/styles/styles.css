@@ -187,7 +187,10 @@
     .breeze-drawer-adjacent-overlay::after {
       position: fixed;
       inset-block: 0;
-      inset-inline-end: 0;
+      inset-inline-end: var(
+        --breeze-drawer-visual-viewport-offset-inline-end,
+        0px
+      );
       width: var(--breeze-drawer-adjacent-inline-end);
       background: var(--breeze-overlay);
       content: '';
