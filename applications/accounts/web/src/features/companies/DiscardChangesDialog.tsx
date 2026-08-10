@@ -12,6 +12,7 @@ export function DiscardChangesDialog({
   blocker,
   closeLabel,
   description,
+  nested,
   onDiscard,
   onOpenChange,
   open,
@@ -21,6 +22,7 @@ export function DiscardChangesDialog({
   blocker: NavigationBlocker;
   closeLabel: string;
   description: string;
+  nested?: boolean;
   onDiscard: () => void;
   onOpenChange: (open: boolean) => void;
   open: boolean;
@@ -37,6 +39,7 @@ export function DiscardChangesDialog({
         closeLabel={closeLabel}
         confirmLabel={t('Discard changes')}
         description={description}
+        nested={nested}
         onConfirm={() => {
           discardConfirmed.current = true;
           onDiscard();

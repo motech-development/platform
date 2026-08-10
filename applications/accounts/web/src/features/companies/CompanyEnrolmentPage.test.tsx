@@ -395,6 +395,9 @@ describe('CompanyEnrolmentPage', () => {
       target: { value: 'Draft Company' },
     });
     await user.click(screen.getByRole('button', { name: 'Close' }));
+    expect(
+      screen.getByRole('alertdialog').closest('.breeze-modal-overlay'),
+    ).toHaveClass('bg-transparent');
     await user.click(screen.getByRole('button', { name: 'Discard changes' }));
 
     expect(mocks.navigate).toHaveBeenCalledWith({ to: '/my-companies' });

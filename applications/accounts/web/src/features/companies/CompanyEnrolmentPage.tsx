@@ -195,6 +195,7 @@ export function CompanyEnrolmentPage({ owner }: Readonly<{ owner: string }>) {
         description={t(
           'The company details entered in this drawer will be lost.',
         )}
+        nested
         onDiscard={() => {
           if (creationPending) return;
 

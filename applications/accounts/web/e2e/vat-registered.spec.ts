@@ -101,7 +101,7 @@ test.describe('VAT registered Accounts', () => {
 
     await page.getByRole('link', { name: /Manage company details/ }).click();
     await expect(
-      page.getByRole('heading', { name: 'Company details' }),
+      page.getByRole('heading', { level: 1, name: 'Company details' }),
     ).toBeVisible();
     await expect(page.getByLabel('Company name')).toBeVisible();
 
@@ -114,7 +114,10 @@ test.describe('VAT registered Accounts', () => {
 
     await gotoAuthenticatedPage({
       baseURL,
-      content: page.getByRole('heading', { name: 'Company details' }),
+      content: page.getByRole('heading', {
+        level: 1,
+        name: 'Company details',
+      }),
       page,
       path: `/my-companies/update-details/${companyId}`,
     });
@@ -168,7 +171,7 @@ test.describe('VAT registered Accounts', () => {
       await openCompany(page);
       await page.getByRole('link', { name: /Manage company details/ }).click();
       await expect(
-        page.getByRole('heading', { name: 'Company details' }),
+        page.getByRole('heading', { level: 1, name: 'Company details' }),
       ).toBeVisible();
     }
 

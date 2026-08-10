@@ -36,6 +36,7 @@ export function CompanyDetailsPage({
   const allowNavigation = useRef(false);
   const [dirty, setDirty] = useState(false);
   const [discardOpen, setDiscardOpen] = useState(false);
+  const [savePending, setSavePending] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [confirmation, setConfirmation] = useState('');
   const blocker = useBlocker({
@@ -212,46 +213,54 @@ export function CompanyDetailsPage({
         key={companyId}
         onDirty={() => setDirty(true)}
         onSubmit={async (input) => {
+          setSavePending(true);
+
           try {
-            const result = await updateCompany({
-              update: (cache, mutation) => {
-                if (mutation.data?.updateCompany) {
-                  upsertCompanyInCache(
-                    cache,
-                    owner,
-                    mutation.data.updateCompany,
-                  );
-                }
-              },
-              variables: { input },
-            });
+            try {
+              const result = await updateCompany({
+                update: (cache, mutation) => {
+                  if (mutation.data?.updateCompany) {
+                    upsertCompanyInCache(
+                      cache,
+                      owner,
+                      mutation.data.updateCompany,
+                    );
+                  }
+                },
+                variables: { input },
+              });
 
-            if (!result.data?.updateCompany)
-              throw new Error('No company returned');
-          } catch {
+              if (!result.data?.updateCompany)
+                throw new Error('No company returned');
+            } catch {
+              toast.show({
+                description: t(
+                  'Your changes are still here. Check them and try again.',
+                ),
+                title: t('Company details could not be saved'),
+                variant: 'danger',
+              });
+
+              return;
+            }
+
+            if (blocker.status === 'blocked') blocker.reset?.();
+            setDiscardOpen(false);
+            allowNavigation.current = true;
+            setDirty(false);
             toast.show({
-              description: t(
-                'Your changes are still here. Check them and try again.',
-              ),
-              title: t('Company details could not be saved'),
-              variant: 'danger',
+              title: t('Company details saved'),
+              variant: 'success',
             });
-
-            return;
+            await navigate({
+              params: { companyId },
+              to: '/my-companies/dashboard/$companyId',
+            }).catch(() => {
+              allowNavigation.current = false;
+            });
+          } finally {
+            setSavePending(false);
           }
-
-          allowNavigation.current = true;
-          setDirty(false);
-          toast.show({
-            title: t('Company details saved'),
-            variant: 'success',
-          });
-          await navigate({
-            params: { companyId },
-            to: '/my-companies/dashboard/$companyId',
-          }).catch(() => {
-            allowNavigation.current = false;
-          });
         }}
         submitLabel={t('Save changes')}
       />
@@ -260,12 +269,14 @@ export function CompanyDetailsPage({
         closeLabel={t('Close discard confirmation')}
         description={t('The unsaved company changes will be lost.')}
         onDiscard={() => {
+          if (savePending) return;
+
           allowNavigation.current = true;
           setDirty(false);
           setDiscardOpen(false);
         }}
         onOpenChange={setDiscardOpen}
-        open={discardOpen}
+        open={discardOpen && !savePending}
         title={t('Discard company changes?')}
         trigger={t('Discard company changes')}
       />

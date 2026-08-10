@@ -136,6 +136,8 @@ function SettingsForm({
         return;
       }
 
+      if (blocker.status === 'blocked') blocker.reset?.();
+      setDiscardOpen(false);
       allowNavigation.current = true;
       setDirty(false);
       toast.show({ title: t('Settings saved'), variant: 'success' });
@@ -164,6 +166,18 @@ function SettingsForm({
     );
     markDirty();
   };
+  const changeCategoryName = (index: number) => (value: string) => {
+    form.setFieldValue(`categories[${index}].name`, value);
+    markDirty();
+  };
+  const changeCategoryVatRate = (index: number) => (value: number | null) => {
+    form.setFieldValue(
+      `categories[${index}].vatRate`,
+      value === null ? null : value * 100,
+    );
+    markDirty();
+  };
+  const removeCategoryAt = (index: number) => () => removeCategory(index);
 
   useEffect(() => {
     if (blocker.status === 'blocked') setDiscardOpen(true);
@@ -279,10 +293,7 @@ function SettingsForm({
                               return (
                                 <TextField.Root
                                   invalid={errors.length > 0}
-                                  onChange={(value) => {
-                                    field.handleChange(value);
-                                    markDirty();
-                                  }}
+                                  onChange={changeCategoryName(index)}
                                   value={field.state.value}
                                 >
                                   <TextField.Label className="sr-only">
@@ -360,12 +371,7 @@ function SettingsForm({
                                   }}
                                   invalid={errors.length > 0}
                                   min={0}
-                                  onChange={(value) => {
-                                    field.handleChange(
-                                      value === null ? null : value * 100,
-                                    );
-                                    markDirty();
-                                  }}
+                                  onChange={changeCategoryVatRate(index)}
                                   required
                                   step={0.0001}
                                   value={
@@ -386,7 +392,7 @@ function SettingsForm({
                               })}
                               appearance="subtle"
                               className="self-start"
-                              onAction={() => removeCategory(index)}
+                              onAction={removeCategoryAt(index)}
                               variant="danger"
                             >
                               <CloseIcon />
@@ -551,12 +557,14 @@ function SettingsForm({
               closeLabel={t('Close discard confirmation')}
               description={t('The unsaved settings changes will be lost.')}
               onDiscard={() => {
+                if (submissionPending) return;
+
                 allowNavigation.current = true;
                 setDirty(false);
                 setDiscardOpen(false);
               }}
               onOpenChange={setDiscardOpen}
-              open={discardOpen}
+              open={discardOpen && !submissionPending}
               title={t('Discard settings changes?')}
               trigger={t('Discard settings changes')}
             />
