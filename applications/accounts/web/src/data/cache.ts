@@ -8,6 +8,7 @@ import { InMemoryCache } from '@apollo/client-integration-tanstack-start';
 type CacheReference = Reference | StoreObject;
 
 interface ClientPage {
+  readonly clientLoadedContinuationTokens?: readonly string[];
   readonly clientLoadedPageCount?: number;
   readonly clientRequestedPageCount?: number;
   readonly clientRefreshGeneration?: number;
@@ -47,6 +48,7 @@ function mergeClientPages(
     return !args?.nextToken && !partialFirstPage
       ? {
           ...incoming,
+          clientLoadedContinuationTokens: [],
           clientLoadedPageCount: 1,
           clientRefreshGeneration: 0,
           clientRequestedPageCount: 1,
@@ -59,6 +61,7 @@ function mergeClientPages(
 
     return {
       ...incoming,
+      clientLoadedContinuationTokens: [],
       clientLoadedPageCount: 1,
       clientRefreshGeneration: (existing.clientRefreshGeneration ?? 0) + 1,
       clientRequestedPageCount: Math.max(
@@ -75,6 +78,17 @@ function mergeClientPages(
   }
 
   const incomingIdSet = new Set(incomingIds);
+  const continuationToken =
+    typeof args?.nextToken === 'string' ? args.nextToken : undefined;
+  const loadedContinuationTokens =
+    existing.clientLoadedContinuationTokens ?? [];
+  const continuationAlreadyLoaded =
+    continuationToken !== undefined &&
+    loadedContinuationTokens.includes(continuationToken);
+  const loadedPageCount = existing.clientLoadedPageCount ?? 1;
+  const nextLoadedPageCount = continuationAlreadyLoaded
+    ? loadedPageCount
+    : loadedPageCount + 1;
   const retainedItems =
     existing.items?.filter(
       (client) => !incomingIdSet.has(entityId(client, readField) ?? ''),
@@ -82,10 +96,14 @@ function mergeClientPages(
 
   return {
     ...incoming,
-    clientLoadedPageCount: (existing.clientLoadedPageCount ?? 1) + 1,
+    clientLoadedContinuationTokens:
+      continuationToken && !continuationAlreadyLoaded
+        ? [...loadedContinuationTokens, continuationToken]
+        : loadedContinuationTokens,
+    clientLoadedPageCount: nextLoadedPageCount,
     clientRefreshGeneration: existing.clientRefreshGeneration ?? 0,
     clientRequestedPageCount: Math.max(
-      (existing.clientLoadedPageCount ?? 1) + 1,
+      nextLoadedPageCount,
       existing.clientRequestedPageCount ?? 1,
     ),
     items: [...retainedItems, ...incomingItems],
