@@ -43,6 +43,21 @@ function mergeClientPages(
     return incoming;
   }
 
+  if (partialFirstPage) {
+    const incomingById = new Map(
+      incoming.items?.map((client) => [entityId(client, readField), client]),
+    );
+
+    return {
+      ...existing,
+      ...incoming,
+      items: existing.items?.map(
+        (client) => incomingById.get(entityId(client, readField)) ?? client,
+      ),
+      nextToken: existing.nextToken,
+    };
+  }
+
   const incomingIds = new Set(
     incoming.items
       ?.map((client) => entityId(client, readField))
@@ -52,15 +67,6 @@ function mergeClientPages(
     existing.items?.filter(
       (client) => !incomingIds.has(entityId(client, readField)),
     ) ?? [];
-
-  if (partialFirstPage) {
-    return {
-      ...existing,
-      ...incoming,
-      items: [...(incoming.items ?? []), ...retainedItems],
-      nextToken: existing.nextToken,
-    };
-  }
 
   return {
     ...incoming,

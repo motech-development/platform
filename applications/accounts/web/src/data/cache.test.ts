@@ -36,6 +36,9 @@ const clientsQuery = gql`
       nextToken
       items {
         __typename
+        contact {
+          email
+        }
         id
         name
       }
@@ -259,7 +262,7 @@ describe('confirmed Transaction pages', () => {
 });
 
 describe('client pages', () => {
-  it('preserves loaded management pages across the transaction lookup', () => {
+  it('preserves complete ordered management pages across a partial transaction lookup', () => {
     const cache = createAccountsCache();
 
     cache.writeQuery({
@@ -267,7 +270,14 @@ describe('client pages', () => {
         getClients: {
           __typename: 'Clients',
           id: 'company-1',
-          items: [{ __typename: 'Client', id: 'first', name: 'First client' }],
+          items: [
+            {
+              __typename: 'Client',
+              contact: { email: 'alice@example.com' },
+              id: 'first',
+              name: 'Alice',
+            },
+          ],
           nextToken: 'page-2',
         },
       },
@@ -280,7 +290,12 @@ describe('client pages', () => {
           __typename: 'Clients',
           id: 'company-1',
           items: [
-            { __typename: 'Client', id: 'second', name: 'Second client' },
+            {
+              __typename: 'Client',
+              contact: { email: 'bob@example.com' },
+              id: 'second',
+              name: 'Bob',
+            },
           ],
           nextToken: 'page-3',
         },
@@ -293,7 +308,10 @@ describe('client pages', () => {
         getClients: {
           __typename: 'Clients',
           id: 'company-1',
-          items: [{ __typename: 'Client', id: 'first', name: 'Updated first' }],
+          items: [
+            { __typename: 'Client', id: 'second', name: 'Updated Bob' },
+            { __typename: 'Client', id: 'third', name: 'Unseen client' },
+          ],
         },
       },
       query: recordTransactionClientsQuery,
@@ -307,8 +325,18 @@ describe('client pages', () => {
         __typename: 'Clients',
         id: 'company-1',
         items: [
-          { __typename: 'Client', id: 'first', name: 'Updated first' },
-          { __typename: 'Client', id: 'second', name: 'Second client' },
+          {
+            __typename: 'Client',
+            contact: { email: 'alice@example.com' },
+            id: 'first',
+            name: 'Alice',
+          },
+          {
+            __typename: 'Client',
+            contact: { email: 'bob@example.com' },
+            id: 'second',
+            name: 'Updated Bob',
+          },
         ],
         nextToken: 'page-3',
       },
