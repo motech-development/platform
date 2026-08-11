@@ -57,6 +57,7 @@ export function RecordTransactionPage({
     requestClose,
     resetBlockedNavigation,
     setDiscardOpen,
+    submissionPending,
     trackAttachmentTransfer,
     vatRate,
   } = useConfirmedSaleForm(companyId, returnTo);
@@ -73,7 +74,12 @@ export function RecordTransactionPage({
         open
         triggerless
       >
-        <Drawer.Content placement={{ base: 'bottom', md: 'end' }} size="wide">
+        <Drawer.Content
+          dismissible={!submissionPending}
+          keyboardDismissDisabled={submissionPending}
+          placement={{ base: 'bottom', md: 'end' }}
+          size="wide"
+        >
           <Drawer.Description>
             {t('Record a confirmed sale.')}
           </Drawer.Description>
@@ -141,6 +147,7 @@ export function RecordTransactionPage({
                           description={t(
                             'The transaction details entered on this page will be lost.',
                           )}
+                          disabled={submissionPending}
                           onConfirm={leaveForm}
                           onOpenChange={(open) => {
                             setDiscardOpen(open);

@@ -154,7 +154,7 @@ function SettingsForm({
       }
 
       toast.show({ title: t('Settings saved'), variant: 'success' });
-      if (navigation.completeMutation()) return;
+      navigation.completeMutation();
       await navigate({
         params: { companyId },
         to: '/my-companies/dashboard/$companyId',

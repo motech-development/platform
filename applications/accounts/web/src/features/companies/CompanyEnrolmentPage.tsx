@@ -136,7 +136,7 @@ export function CompanyEnrolmentPage({ owner }: Readonly<{ owner: string }>) {
                   title: t('Company added'),
                   variant: 'success',
                 });
-                if (navigation.completeMutation()) return;
+                navigation.completeMutation();
 
                 try {
                   await navigate({

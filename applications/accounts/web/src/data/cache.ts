@@ -8,6 +8,8 @@ import { InMemoryCache } from '@apollo/client-integration-tanstack-start';
 type CacheReference = Reference | StoreObject;
 
 interface ClientPage {
+  readonly firstPageIds?: readonly string[];
+  readonly loadedContinuation?: boolean;
   readonly __typename?: 'Clients';
   readonly id?: string;
   readonly items?: readonly CacheReference[];
@@ -34,13 +36,50 @@ function mergeClientPages(
   incoming: ClientPage,
   { args, readField }: FieldFunctionOptions,
 ): ClientPage {
+  const partialFirstPage = incoming.nextToken === undefined;
+  const incomingItems = incoming.items ?? [];
+  const incomingIds = incomingItems
+    .map((client) => entityId(client, readField))
+    .filter((id): id is string => id !== undefined);
+
   if (!existing) {
-    return incoming;
+    return !args?.nextToken && !partialFirstPage
+      ? {
+          ...incoming,
+          firstPageIds: incomingIds,
+          loadedContinuation: false,
+        }
+      : incoming;
   }
 
-  const partialFirstPage = incoming.nextToken === undefined;
   if (!args?.nextToken && !partialFirstPage) {
-    return incoming;
+    if (!existing.loadedContinuation || incoming.nextToken === null) {
+      return {
+        ...incoming,
+        firstPageIds: incomingIds,
+        loadedContinuation: false,
+      };
+    }
+
+    const previousFirstPageIds = new Set(existing.firstPageIds ?? []);
+    const refreshedFirstPageIds = new Set(incomingIds);
+    const retainedContinuation =
+      existing.items?.filter((client) => {
+        const id = entityId(client, readField);
+
+        return (
+          !previousFirstPageIds.has(id ?? '') &&
+          !refreshedFirstPageIds.has(id ?? '')
+        );
+      }) ?? [];
+
+    return {
+      ...incoming,
+      firstPageIds: incomingIds,
+      items: [...incomingItems, ...retainedContinuation],
+      loadedContinuation: true,
+      nextToken: existing.nextToken,
+    };
   }
 
   if (partialFirstPage) {
@@ -58,19 +97,17 @@ function mergeClientPages(
     };
   }
 
-  const incomingIds = new Set(
-    incoming.items
-      ?.map((client) => entityId(client, readField))
-      .filter(Boolean),
-  );
+  const incomingIdSet = new Set(incomingIds);
   const retainedItems =
     existing.items?.filter(
-      (client) => !incomingIds.has(entityId(client, readField)),
+      (client) => !incomingIdSet.has(entityId(client, readField) ?? ''),
     ) ?? [];
 
   return {
     ...incoming,
-    items: [...retainedItems, ...(incoming.items ?? [])],
+    firstPageIds: existing.firstPageIds,
+    items: [...retainedItems, ...incomingItems],
+    loadedContinuation: true,
   };
 }
 

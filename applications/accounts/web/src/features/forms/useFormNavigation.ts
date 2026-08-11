@@ -32,6 +32,8 @@ export function useFormNavigation({
     allowNavigation.current = false;
   };
   const leave = () => {
+    if (pending) return;
+
     clearChanges();
 
     if (blocker.status === 'blocked') {

@@ -185,23 +185,6 @@ export function ClientsPageContent({
             loading={networkStatus === NetworkStatus.fetchMore}
             onAction={() => {
               fetchMore({
-                updateQuery: (previous, { fetchMoreResult }) => {
-                  const existingIds = new Set(
-                    previous.getClients.items.map(({ id }) => id),
-                  );
-
-                  return {
-                    getClients: {
-                      ...fetchMoreResult.getClients,
-                      items: [
-                        ...previous.getClients.items,
-                        ...fetchMoreResult.getClients.items.filter(
-                          ({ id }) => !existingIds.has(id),
-                        ),
-                      ],
-                    },
-                  };
-                },
                 variables: { nextToken: data.getClients.nextToken },
               }).catch(() => undefined);
             }}
