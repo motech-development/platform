@@ -86,7 +86,7 @@ export function CompanyDetailsPage({
     }
 
     toast.show({ title: t('Company deleted'), variant: 'success' });
-    if (navigation.completeMutation()) return true;
+    navigation.completeMutation();
     await navigate({ to: '/my-companies' }).catch(
       navigation.restrictNavigation,
     );
@@ -201,7 +201,7 @@ export function CompanyDetailsPage({
               title: t('Company details saved'),
               variant: 'success',
             });
-            if (navigation.completeMutation()) return;
+            navigation.completeMutation();
             await navigate({
               params: { companyId },
               to: '/my-companies/dashboard/$companyId',

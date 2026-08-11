@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@apollo/client/react';
 import { useToast } from '@motech-development/breeze-ui';
-import { useForm } from '@tanstack/react-form';
+import { useForm, useStore } from '@tanstack/react-form';
 import { useNavigate } from '@tanstack/react-router';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -31,13 +31,13 @@ export function useConfirmedSaleForm(
   const navigate = useNavigate();
   const toast = useToast();
   const online = useOnlineStatus();
-  const navigation = useFormNavigation({
-    onClose: () =>
-      navigate({
-        params: { companyId },
-        to: returnTo,
-      }),
-  });
+  const navigationActions = useRef<
+    | Pick<
+        ReturnType<typeof useFormNavigation>,
+        'completeMutation' | 'restrictNavigation'
+      >
+    | undefined
+  >(undefined);
   const attachmentTransfer = useRef<
     Promise<AttachmentTransferResult> | undefined
   >(undefined);
@@ -110,17 +110,28 @@ export function useConfirmedSaleForm(
         title: t('Confirmed sale recorded'),
         variant: 'success',
       });
-      if (navigation.completeMutation()) return;
+      navigationActions.current?.completeMutation();
       await navigate({
         params: { companyId },
         to: returnTo,
-      }).catch(navigation.restrictNavigation);
+      }).catch(navigationActions.current?.restrictNavigation);
     },
     validators: {
       onBlur: confirmedSaleSchema,
       onMount: confirmedSaleSchema,
     },
   });
+  const submissionPending = useStore(form.store, (state) => state.isSubmitting);
+  const navigation = useFormNavigation({
+    onClose: () =>
+      navigate({
+        params: { companyId },
+        to: returnTo,
+      }),
+    pending: submissionPending,
+  });
+
+  navigationActions.current = navigation;
 
   return {
     clients: data?.getClients.items ?? [],
@@ -137,6 +148,7 @@ export function useConfirmedSaleForm(
     requestClose: navigation.requestClose,
     resetBlockedNavigation: navigation.resetBlockedNavigation,
     setDiscardOpen: navigation.setDiscardOpen,
+    submissionPending,
     trackAttachmentTransfer: (transfer: Promise<AttachmentTransferResult>) => {
       attachmentTransfer.current = transfer;
     },

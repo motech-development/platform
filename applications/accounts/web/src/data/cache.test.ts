@@ -262,6 +262,89 @@ describe('confirmed Transaction pages', () => {
 });
 
 describe('client pages', () => {
+  it('preserves loaded continuation clients when the first page refreshes', () => {
+    const cache = createAccountsCache();
+
+    cache.writeQuery({
+      data: {
+        getClients: {
+          __typename: 'Clients',
+          id: 'company-1',
+          items: [
+            {
+              __typename: 'Client',
+              contact: { email: 'alice@example.com' },
+              id: 'first',
+              name: 'Alice',
+            },
+            {
+              __typename: 'Client',
+              contact: { email: 'stale@example.com' },
+              id: 'stale-first-page',
+              name: 'Stale first-page client',
+            },
+          ],
+          nextToken: 'page-2',
+        },
+      },
+      query: clientsQuery,
+      variables: { id: 'company-1' },
+    });
+    cache.writeQuery({
+      data: {
+        getClients: {
+          __typename: 'Clients',
+          id: 'company-1',
+          items: [
+            {
+              __typename: 'Client',
+              contact: { email: 'later@example.com' },
+              id: 'later',
+              name: 'Later client',
+            },
+          ],
+          nextToken: null,
+        },
+      },
+      query: clientsQuery,
+      variables: { id: 'company-1', nextToken: 'page-2' },
+    });
+    cache.writeQuery({
+      data: {
+        getClients: {
+          __typename: 'Clients',
+          id: 'company-1',
+          items: [
+            {
+              __typename: 'Client',
+              contact: { email: 'updated-alice@example.com' },
+              id: 'first',
+              name: 'Updated Alice',
+            },
+            {
+              __typename: 'Client',
+              contact: { email: 'replacement@example.com' },
+              id: 'replacement',
+              name: 'Replacement client',
+            },
+          ],
+          nextToken: 'page-2',
+        },
+      },
+      query: clientsQuery,
+      variables: { id: 'company-1' },
+    });
+
+    expect(
+      cache.readQuery<{
+        getClients: { items: { id: string }[]; nextToken: null };
+      }>({ query: clientsQuery, variables: { id: 'company-1' } })?.getClients,
+    ).toMatchObject({
+      items: [{ id: 'first' }, { id: 'replacement' }, { id: 'later' }],
+      nextToken: null,
+    });
+  });
+
   it('preserves complete ordered management pages across a partial transaction lookup', () => {
     const cache = createAccountsCache();
 

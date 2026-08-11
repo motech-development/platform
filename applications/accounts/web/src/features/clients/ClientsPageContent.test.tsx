@@ -11,14 +11,6 @@ interface ClientQueryData {
   };
 }
 
-interface FetchMoreOptions {
-  updateQuery: (
-    previous: ClientQueryData,
-    options: { fetchMoreResult: ClientQueryData },
-  ) => ClientQueryData;
-  variables: { nextToken: string };
-}
-
 const mocks = vi.hoisted(() => ({
   navigate: vi.fn(),
   query: {
@@ -168,11 +160,8 @@ describe('ClientsPageContent', () => {
       },
     };
     mocks.query.data = firstPage;
-    mocks.query.fetchMore.mockImplementationOnce((options: unknown) => {
-      const { updateQuery } = options as FetchMoreOptions;
-      mocks.query.data = updateQuery(firstPage, {
-        fetchMoreResult: secondPage,
-      });
+    mocks.query.fetchMore.mockImplementationOnce(() => {
+      mocks.query.data = secondPage;
 
       return Promise.resolve(undefined);
     });
@@ -184,9 +173,9 @@ describe('ClientsPageContent', () => {
     );
 
     await user.click(screen.getByRole('button', { name: 'Load more' }));
-    expect(mocks.query.fetchMore).toHaveBeenCalledWith(
-      expect.objectContaining({ variables: { nextToken: 'next-page' } }),
-    );
+    expect(mocks.query.fetchMore).toHaveBeenCalledWith({
+      variables: { nextToken: 'next-page' },
+    });
     view.rerender(
       <BreezeProvider locale="en-GB">
         <ClientsPageContent companyId="company-id" />

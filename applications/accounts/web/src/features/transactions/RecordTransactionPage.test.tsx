@@ -103,6 +103,7 @@ describe('RecordTransactionPage', () => {
   beforeEach(() => {
     mocks.addTransaction.mockReset();
     mocks.navigate.mockReset();
+    mocks.navigate.mockResolvedValue(undefined);
     mocks.queryResult.data = successfulQueryData;
     mocks.queryResult.error = undefined;
     mocks.queryResult.loading = false;
@@ -336,6 +337,47 @@ describe('RecordTransactionPage', () => {
     resolveMutation?.();
   });
 
+  it('prevents the drawer closing while a sale submission is pending', async () => {
+    const user = userEvent.setup();
+    let resolveMutation: (() => void) | undefined;
+
+    mocks.addTransaction.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolveMutation = () =>
+            resolve({
+              data: {
+                addTransaction: {
+                  description: 'Consulting',
+                  name: 'Example client',
+                },
+              },
+            });
+        }),
+    );
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <RecordTransactionPage companyId="company-id" origin="transactions" />
+      </BreezeProvider>,
+    );
+
+    await user.click(screen.getByRole('button', { name: /Supplier/ }));
+    await user.click(screen.getByRole('option', { name: 'Example client' }));
+    await user.type(screen.getByLabelText('Description'), 'Consulting');
+    await user.type(screen.getByLabelText('Amount'), '100');
+    await user.click(screen.getByRole('button', { name: 'Save' }));
+
+    await user.click(screen.getByRole('button', { name: 'Close' }));
+
+    expect(
+      screen.getByRole('heading', { name: 'Record transaction' }),
+    ).toBeVisible();
+    expect(mocks.navigate).not.toHaveBeenCalled();
+
+    resolveMutation?.();
+  });
+
   it('waits for the selected PDF upload before recording the sale', async () => {
     const user = userEvent.setup();
     let completeUpload: (() => void) | undefined;
@@ -386,6 +428,11 @@ describe('RecordTransactionPage', () => {
     await user.click(screen.getByRole('button', { name: 'Save' }));
 
     expect(mocks.addTransaction).not.toHaveBeenCalled();
+    await user.click(screen.getByRole('button', { name: 'Close' }));
+    expect(
+      screen.getByRole('heading', { name: 'Record transaction' }),
+    ).toBeVisible();
+    expect(mocks.navigate).not.toHaveBeenCalled();
 
     act(() => {
       completeUpload?.();
@@ -403,6 +450,52 @@ describe('RecordTransactionPage', () => {
           },
         },
       });
+    });
+  });
+
+  it('restores dismissal after an attachment transfer fails', async () => {
+    const user = userEvent.setup();
+    const file = new File(['invoice'], 'invoice.pdf', {
+      type: 'application/pdf',
+    });
+
+    mocks.requestUpload.mockResolvedValue({
+      data: {
+        requestUpload: {
+          id: 'upload-id',
+          url: 'https://upload/invoice',
+        },
+      },
+    });
+    mocks.uploadPresignedFile.mockRejectedValue(new Error('Upload failed'));
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <RecordTransactionPage companyId="company-id" origin="transactions" />
+      </BreezeProvider>,
+    );
+
+    await user.click(screen.getByRole('button', { name: /Supplier/ }));
+    await user.click(screen.getByRole('option', { name: 'Example client' }));
+    await user.type(screen.getByLabelText('Description'), 'Consulting');
+    await user.type(screen.getByLabelText('Amount'), '100');
+    const input = document.querySelector('input[type="file"]');
+
+    expect(input).toBeInstanceOf(HTMLInputElement);
+    await user.upload(input as HTMLInputElement, file);
+    await screen.findByRole('button', { name: 'Retry upload' });
+    await user.click(screen.getByRole('button', { name: 'Save' }));
+
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled(),
+    );
+    await user.click(screen.getByRole('button', { name: 'Close' }));
+    await user.click(screen.getByRole('button', { name: 'Discard changes' }));
+
+    expect(mocks.addTransaction).not.toHaveBeenCalled();
+    expect(mocks.navigate).toHaveBeenCalledWith({
+      params: { companyId: 'company-id' },
+      to: '/my-companies/accounts/$companyId',
     });
   });
 
