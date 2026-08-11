@@ -186,7 +186,8 @@ describe('ClientsPageContent', () => {
     expect(screen.getByTestId('Beta Limited')).toBeVisible();
   });
 
-  it('renders the complete loading composition while the first query runs', () => {
+  it('keeps client creation available while the first query runs', async () => {
+    const user = userEvent.setup();
     mocks.query.data = undefined;
     mocks.query.loading = true;
 
@@ -199,9 +200,11 @@ describe('ClientsPageContent', () => {
     expect(
       screen.getByRole('status', { name: 'Loading clients' }),
     ).toBeInTheDocument();
-    expect(
-      screen.queryByRole('button', { name: 'Add a new client' }),
-    ).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Add a new client' }));
+    expect(mocks.navigate).toHaveBeenCalledWith({
+      params: { companyId: 'company-id' },
+      to: '/my-companies/clients/$companyId/add-client',
+    });
     expect(screen.queryByText('No clients yet')).not.toBeInTheDocument();
   });
 

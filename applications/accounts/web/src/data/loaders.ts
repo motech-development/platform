@@ -21,10 +21,10 @@ function requireResourceId(id: string) {
   }
 }
 
-async function queryCompanies({
-  apolloClient,
-  authenticatedOwner,
-}: RouterContext) {
+async function queryCompanies(
+  { apolloClient, authenticatedOwner }: RouterContext,
+  nextToken?: string,
+) {
   const owner = authenticatedOwner;
 
   if (!owner) {
@@ -32,8 +32,9 @@ async function queryCompanies({
   }
 
   return apolloClient.query({
+    ...(nextToken === undefined ? {} : { fetchPolicy: 'no-cache' as const }),
     query: GET_COMPANIES,
-    variables: { owner },
+    variables: nextToken === undefined ? { owner } : { nextToken, owner },
   });
 }
 
@@ -45,17 +46,34 @@ export async function primeCompanies(context: RouterContext) {
   }
 }
 
-async function verifyOwnedCompany(context: RouterContext, companyId: string) {
-  requireResourceId(companyId);
-  const result = await queryCompanies(context);
+async function isOwnedCompany(
+  context: RouterContext,
+  companyId: string,
+  nextToken?: string,
+): Promise<boolean> {
+  const result = await queryCompanies(context, nextToken);
 
   if (!result?.data) {
     throw new Error('The owned company list did not return data');
   }
 
   if (
-    !result.data.getCompanies.items.some((company) => company.id === companyId)
+    result.data.getCompanies.items.some((company) => company.id === companyId)
   ) {
+    return true;
+  }
+
+  const continuation = result.data.getCompanies.nextToken ?? undefined;
+
+  return continuation
+    ? isOwnedCompany(context, companyId, continuation)
+    : false;
+}
+
+async function verifyOwnedCompany(context: RouterContext, companyId: string) {
+  requireResourceId(companyId);
+
+  if (!(await isOwnedCompany(context, companyId))) {
     notFound({ throw: true });
   }
 }

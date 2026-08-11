@@ -93,7 +93,8 @@ describe('CompaniesPageContent', () => {
     ).toHaveLength(1);
   });
 
-  it('renders the complete loading composition while the first query runs', () => {
+  it('keeps company creation available while the first query runs', async () => {
+    const user = userEvent.setup();
     mocks.query.data = undefined;
     mocks.query.loading = true;
 
@@ -106,9 +107,10 @@ describe('CompaniesPageContent', () => {
     expect(
       screen.getByRole('status', { name: 'Loading companies' }),
     ).toBeInTheDocument();
-    expect(
-      screen.queryByRole('button', { name: 'Add a new company' }),
-    ).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Add a new company' }));
+    expect(mocks.navigate).toHaveBeenCalledWith({
+      to: '/my-companies/add-company',
+    });
   });
 
   it('offers retry without showing the empty state after a query failure', async () => {
