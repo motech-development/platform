@@ -103,10 +103,10 @@ export function ClientEditPage({
         >
           <Drawer.Description>
             {client
-              ? t('Update {{name}} or remove this client.', {
+              ? t('Keep {{name}}’s details up to date.', {
                   name: client.name,
                 })
-              : t('Update this client or remove them.')}
+              : t('Keep this client’s details up to date.')}
           </Drawer.Description>
           <Drawer.Title>{t('Edit client')}</Drawer.Title>
           {error && client ? (

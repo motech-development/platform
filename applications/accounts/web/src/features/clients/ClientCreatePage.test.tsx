@@ -78,6 +78,11 @@ describe('ClientCreatePage', () => {
       </BreezeProvider>,
     );
 
+    expect(
+      screen.getByText(
+        'Save their details so they’re ready when you record a sale.',
+      ),
+    ).toBeVisible();
     fillRequiredClientDetails();
     await user.click(screen.getByRole('button', { name: 'Save client' }));
 

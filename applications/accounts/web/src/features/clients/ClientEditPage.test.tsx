@@ -100,6 +100,9 @@ describe('ClientEditPage', () => {
       </BreezeProvider>,
     );
 
+    expect(
+      screen.getByText('Keep Northstar Studio’s details up to date.'),
+    ).toBeVisible();
     await user.click(screen.getByRole('button', { name: 'Delete client' }));
     expect(screen.getByRole('alertdialog')).toHaveTextContent(
       'Type Northstar Studio to confirm',
