@@ -136,6 +136,7 @@ export function CompanyDetailsPage({
         danger={
           <EntityDeleteDialog
             cancelLabel={t('Cancel')}
+            closeLabel={t('Close delete confirmation')}
             confirmationError={t('The company name must match exactly.')}
             confirmationLabel={t('Type {{name}} to confirm', {
               name: company.name,

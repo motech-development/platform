@@ -262,7 +262,7 @@ describe('confirmed Transaction pages', () => {
 });
 
 describe('client pages', () => {
-  it('preserves loaded continuation clients when the first page refreshes', () => {
+  it('preserves clients displaced beyond the first page after a refresh', () => {
     const cache = createAccountsCache();
 
     cache.writeQuery({
@@ -280,8 +280,8 @@ describe('client pages', () => {
             {
               __typename: 'Client',
               contact: { email: 'stale@example.com' },
-              id: 'stale-first-page',
-              name: 'Stale first-page client',
+              id: 'displaced',
+              name: 'Displaced client',
             },
           ],
           nextToken: 'page-2',
@@ -340,7 +340,12 @@ describe('client pages', () => {
         getClients: { items: { id: string }[]; nextToken: null };
       }>({ query: clientsQuery, variables: { id: 'company-1' } })?.getClients,
     ).toMatchObject({
-      items: [{ id: 'first' }, { id: 'replacement' }, { id: 'later' }],
+      items: [
+        { id: 'first' },
+        { id: 'replacement' },
+        { id: 'displaced' },
+        { id: 'later' },
+      ],
       nextToken: null,
     });
   });

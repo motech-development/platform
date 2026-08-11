@@ -65,6 +65,7 @@ vi.mock('@motech-development/breeze-ui', async (importOriginal) => ({
 }));
 
 vi.mock('@motech-development/breeze-ui/icons', () => ({
+  CloseIcon: () => <span aria-hidden="true">close</span>,
   WarningIcon: () => <span aria-hidden="true">!</span>,
 }));
 

@@ -1,11 +1,11 @@
 import {
   Button,
-  ConfirmationDialog,
   Drawer,
   FormActions,
   StatePanel,
 } from '@motech-development/breeze-ui';
 import { useTranslation } from 'react-i18next';
+import { DiscardChangesDialog } from '../companies/DiscardChangesDialog';
 import { DashboardPageContent } from './DashboardPageContent';
 import { RecordTransactionFormFields } from './RecordTransactionFormFields';
 import { TransactionsPageContent } from './TransactionsPageContent';
@@ -43,19 +43,18 @@ export function RecordTransactionPage({
   const { t } = useTranslation(['transactions', 'routing']);
   const { Background, returnTo } = recordTransactionOrigins[origin];
   const {
+    blocker,
     clients,
     data,
-    dirty,
+    discardChanges,
     discardOpen,
     error,
     form,
-    leaveForm,
     loading,
     markDirty,
     online,
     refetch,
     requestClose,
-    resetBlockedNavigation,
     setDiscardOpen,
     submissionPending,
     trackAttachmentTransfer,
@@ -139,33 +138,9 @@ export function RecordTransactionPage({
                 {([canSubmit, isSubmitting]) => (
                   <FormActions
                     cancel={
-                      dirty ? (
-                        <ConfirmationDialog
-                          cancelLabel={t('Keep editing')}
-                          closeLabel={t('Close discard confirmation')}
-                          confirmLabel={t('Discard changes')}
-                          description={t(
-                            'The transaction details entered on this page will be lost.',
-                          )}
-                          disabled={submissionPending}
-                          onConfirm={leaveForm}
-                          onOpenChange={(open) => {
-                            setDiscardOpen(open);
-                            if (!open) {
-                              resetBlockedNavigation();
-                            }
-                          }}
-                          open={discardOpen}
-                          title={t('Discard these transaction changes?')}
-                          trigger={t('Cancel')}
-                          triggerAppearance="outline"
-                          variant="warning"
-                        />
-                      ) : (
-                        <Button appearance="outline" onAction={leaveForm}>
-                          {t('Cancel')}
-                        </Button>
-                      )
+                      <Button appearance="outline" onAction={requestClose}>
+                        {t('Cancel')}
+                      </Button>
                     }
                     primary={
                       <Button
@@ -183,6 +158,19 @@ export function RecordTransactionPage({
           ) : null}
         </Drawer.Content>
       </Drawer.Root>
+      <DiscardChangesDialog
+        blocker={blocker}
+        closeLabel={t('Close discard confirmation')}
+        description={t(
+          'The transaction details entered on this page will be lost.',
+        )}
+        nested
+        onDiscard={discardChanges}
+        onOpenChange={setDiscardOpen}
+        open={discardOpen && !submissionPending}
+        title={t('Discard these transaction changes?')}
+        trigger={t('Discard changes')}
+      />
     </>
   );
 }
