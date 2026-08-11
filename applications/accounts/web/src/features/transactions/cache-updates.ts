@@ -3,7 +3,7 @@ import {
   GET_COMPANY_DASHBOARD,
   GET_CONFIRMED_TRANSACTIONS,
 } from '../../data/operations';
-import type { AccountsWebDashboardQuery } from '../../graphql/graphql';
+import type { DashboardQuery } from '../../graphql/graphql';
 
 export interface ConfirmedTransactionCacheValue {
   readonly __typename?: 'Transaction';
@@ -45,8 +45,7 @@ function addToLedger<
   );
 }
 
-type ConfirmedLedgerItem =
-  AccountsWebDashboardQuery['getTransactions']['items'][number];
+type ConfirmedLedgerItem = DashboardQuery['getTransactions']['items'][number];
 
 function addTransactionToLedger(transaction: ConfirmedLedgerItem) {
   return <

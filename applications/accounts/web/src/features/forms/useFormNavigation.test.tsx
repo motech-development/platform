@@ -11,19 +11,24 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { useClientDrawerNavigation } from './useClientDrawerNavigation';
+import { useFormNavigation } from './useFormNavigation';
 
-function PendingClientMutation() {
+function PendingMutation() {
   const [pending, setPending] = useState(false);
   const navigate = useNavigate();
-  const navigation = useClientDrawerNavigation({
-    companyId: 'old-company',
+  const navigation = useFormNavigation({
+    blockPendingNavigation: pending,
+    onClose: () =>
+      navigate({
+        params: { companyId: 'old-company' },
+        to: '/my-companies/clients/$companyId',
+      }),
     pending,
   });
 
   return (
     <main>
-      <h1>Edit client</h1>
+      <h1>Edit form</h1>
       <button onClick={() => setPending(true)} type="button">
         Start saving
       </button>
@@ -36,11 +41,11 @@ function PendingClientMutation() {
         }}
         type="button"
       >
-        Switch company
+        Leave form
       </button>
       <button
         onClick={() => {
-          navigation.completeMutation();
+          navigation.completeMutation({ resumeBlockedNavigation: true });
           setPending(false);
         }}
         type="button"
@@ -51,26 +56,26 @@ function PendingClientMutation() {
   );
 }
 
-describe('useClientDrawerNavigation', () => {
+describe('useFormNavigation', () => {
   afterEach(() => vi.restoreAllMocks());
 
-  it('resumes a company switch after a pending mutation succeeds', async () => {
+  it('resumes blocked navigation after a pending mutation succeeds', async () => {
     const user = userEvent.setup();
     vi.spyOn(window, 'scrollTo').mockImplementation(() => undefined);
     const rootRoute = createRootRoute({ component: Outlet });
     const editRoute = createRoute({
-      component: PendingClientMutation,
+      component: PendingMutation,
       getParentRoute: () => rootRoute,
-      path: '/edit-client',
+      path: '/edit',
     });
-    const clientsRoute = createRoute({
-      component: () => <h1>New company clients</h1>,
+    const destinationRoute = createRoute({
+      component: () => <h1>Destination</h1>,
       getParentRoute: () => rootRoute,
       path: '/my-companies/clients/$companyId',
     });
     const router = createRouter({
-      history: createMemoryHistory({ initialEntries: ['/edit-client'] }),
-      routeTree: rootRoute.addChildren([editRoute, clientsRoute]),
+      history: createMemoryHistory({ initialEntries: ['/edit'] }),
+      routeTree: rootRoute.addChildren([editRoute, destinationRoute]),
     });
 
     render(<RouterProvider router={router} />);
@@ -78,10 +83,10 @@ describe('useClientDrawerNavigation', () => {
     await user.click(
       await screen.findByRole('button', { name: 'Start saving' }),
     );
-    await user.click(screen.getByRole('button', { name: 'Switch company' }));
+    await user.click(screen.getByRole('button', { name: 'Leave form' }));
 
-    expect(router.state.location.pathname).toBe('/edit-client');
-    expect(screen.getByRole('heading', { name: 'Edit client' })).toBeVisible();
+    expect(router.state.location.pathname).toBe('/edit');
+    expect(screen.getByRole('heading', { name: 'Edit form' })).toBeVisible();
 
     await user.click(screen.getByRole('button', { name: 'Finish saving' }));
 
@@ -90,8 +95,6 @@ describe('useClientDrawerNavigation', () => {
         '/my-companies/clients/new-company',
       ),
     );
-    expect(
-      screen.getByRole('heading', { name: 'New company clients' }),
-    ).toBeVisible();
+    expect(screen.getByRole('heading', { name: 'Destination' })).toBeVisible();
   });
 });

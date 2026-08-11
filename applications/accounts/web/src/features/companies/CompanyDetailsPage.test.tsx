@@ -50,11 +50,9 @@ vi.mock('@apollo/client/react', async (importOriginal) => ({
       ({ kind }) => kind === 'OperationDefinition',
     )?.name?.value;
     return [
-      name === 'AccountsWebDeleteCompany'
-        ? mocks.deleteCompany
-        : mocks.updateCompany,
+      name === 'DeleteCompany' ? mocks.deleteCompany : mocks.updateCompany,
       {
-        loading: name === 'AccountsWebDeleteCompany' && mocks.deleteLoading,
+        loading: name === 'DeleteCompany' && mocks.deleteLoading,
       },
     ];
   },

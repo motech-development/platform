@@ -49,7 +49,7 @@ vi.mock('@apollo/client/react', async (importOriginal) => ({
       (definition) => definition.kind === 'OperationDefinition',
     )?.name?.value;
 
-    return operationName === 'AccountsWebRequestUpload'
+    return operationName === 'RequestUpload'
       ? [mocks.requestUpload, { loading: false }]
       : [mocks.addTransaction];
   },

@@ -40,16 +40,7 @@ export function ClientsPageContent({
     },
   );
   const clients = sortNamedEntities(data?.getClients.items ?? []);
-  const initiallyLoading = loading && !data;
   const hasQueryData = data?.getClients !== undefined;
-  const fatalError = Boolean(error && !hasQueryData);
-  const refreshError = Boolean(error && hasQueryData);
-  const empty = !fatalError && !initiallyLoading && clients.length === 0;
-  let collectionState: 'empty' | 'error' | 'loading' | 'populated' =
-    'populated';
-  if (fatalError) collectionState = 'error';
-  else if (initiallyLoading) collectionState = 'loading';
-  else if (empty) collectionState = 'empty';
   const addClient = () => {
     navigate({
       params: { companyId },
@@ -66,26 +57,8 @@ export function ClientsPageContent({
         </Button>
       }
       description={t('People and organisations linked to sales transactions.')}
-      queryState={{
-        errorDescription: t('Check your connection, then try again.', {
-          ns: 'routing',
-        }),
-        errorTitle: t('We could not load clients'),
-        onRetry: () => {
-          refetch().catch(() => undefined);
-        },
-        refreshErrorDescription: refreshError
-          ? t(
-              'Clients could not be refreshed. Check your connection, then try again.',
-            )
-          : undefined,
-        retryLabel: t('Try again', { ns: 'routing' }),
-      }}
-      state={collectionState}
-      title={t('Clients')}
-    >
-      {collectionState === 'loading' && <ClientsTableSkeleton />}
-      {collectionState === 'empty' && (
+      empty={clients.length === 0}
+      emptyState={
         <StatePanel
           action={
             <Button aria-label={t('Add a new client')} onAction={addClient}>
@@ -96,130 +69,147 @@ export function ClientsPageContent({
           icon={<UsersIcon />}
           title={t('No clients yet')}
         />
-      )}
-      {collectionState === 'populated' && (
-        <div className="flex flex-col">
-          <Table.Root
-            aria-label={t('Clients')}
-            boundary="strong"
-            className={responsiveEntityTableClassNames.root}
-            desktopColumns="mediaDetailsAction"
-            layout="responsiveGrid"
-          >
-            <Table.Header className={responsiveEntityTableClassNames.header}>
-              <Table.Column
-                compactLabel={false}
-                id="avatar"
-                textValue={t('Client')}
-              >
-                <VisuallyHidden>{t('Client')}</VisuallyHidden>
-              </Table.Column>
-              <Table.Column compactLabel={false} id="client" rowHeader>
-                {t('Client')}
-              </Table.Column>
-              <Table.Column id="email">{t('Email')}</Table.Column>
-              <Table.Column id="telephone">{t('Telephone')}</Table.Column>
-              <Table.Column
-                compactLabel={false}
-                id="actions"
-                textValue={t('Action')}
-                width="1.25rem"
-              >
-                <VisuallyHidden>{t('Action')}</VisuallyHidden>
-              </Table.Column>
-            </Table.Header>
-            <Table.Body className={responsiveEntityTableClassNames.body}>
-              {clients.map((client, index) => (
-                <Table.Row
-                  className={responsiveEntityTableClassNames.row}
-                  data-testid={client.name}
-                  id={client.id}
-                  key={client.id}
-                  onAction={() => {
-                    navigate({
-                      params: { clientId: client.id, companyId },
-                      to: '/my-companies/clients/$companyId/update-details/$clientId',
-                    }).catch(() => undefined);
-                  }}
-                  textValue={t('{{client}} {{email}} {{telephone}}', {
-                    client: client.name,
-                    email: client.contact.email,
-                    telephone: client.contact.telephone,
-                  })}
-                >
-                  <Table.Cell
-                    className={responsiveEntityTableClassNames.cells.identity}
-                    column="avatar"
-                    textValue={client.name}
-                  >
-                    <Avatar
-                      initials={clientInitials(client.name)}
-                      name={client.name}
-                      shape="circle"
-                      size="sm"
-                      tone={index % 2 === 0 ? 'primary' : 'accent'}
-                    />
-                  </Table.Cell>
-                  <Table.Cell
-                    className={responsiveEntityTableClassNames.cells.primary}
-                    column="client"
-                  >
-                    <Typography as="strong">{client.name}</Typography>
-                  </Table.Cell>
-                  <Table.Cell
-                    className={responsiveEntityTableClassNames.cells.secondary}
-                    column="email"
-                  >
-                    {client.contact.email}
-                  </Table.Cell>
-                  <Table.Cell
-                    className={responsiveEntityTableClassNames.cells.tertiary}
-                    column="telephone"
-                  >
-                    {client.contact.telephone}
-                  </Table.Cell>
-                  <Table.Disclosure
-                    className={responsiveEntityTableClassNames.cells.actions}
-                    column="actions"
-                    position="flow"
-                  />
-                </Table.Row>
-              ))}
-            </Table.Body>
-          </Table.Root>
-          {data?.getClients.nextToken ? (
-            <Button
-              appearance="text"
-              className="mt-4 self-center"
-              loading={networkStatus === NetworkStatus.fetchMore}
-              onAction={() => {
-                fetchMore({
-                  updateQuery: (previous, { fetchMoreResult }) => {
-                    const existingIds = new Set(
-                      previous.getClients.items.map(({ id }) => id),
-                    );
-
-                    return {
-                      getClients: {
-                        ...fetchMoreResult.getClients,
-                        items: [
-                          ...previous.getClients.items,
-                          ...fetchMoreResult.getClients.items.filter(
-                            ({ id }) => !existingIds.has(id),
-                          ),
-                        ],
-                      },
-                    };
-                  },
-                  variables: { nextToken: data.getClients.nextToken },
-                }).catch(() => undefined);
-              }}
+      }
+      hasData={hasQueryData}
+      loading={loading}
+      loadingState={<ClientsTableSkeleton />}
+      queryState={{
+        error,
+        errorDescription: t('Check your connection, then try again.', {
+          ns: 'routing',
+        }),
+        errorTitle: t('We could not load clients'),
+        onRetry: () => {
+          refetch().catch(() => undefined);
+        },
+        refreshErrorDescription: t(
+          'Clients could not be refreshed. Check your connection, then try again.',
+        ),
+        retryLabel: t('Try again', { ns: 'routing' }),
+      }}
+      title={t('Clients')}
+    >
+      <div className="flex flex-col">
+        <Table.Root
+          aria-label={t('Clients')}
+          boundary="strong"
+          className={responsiveEntityTableClassNames.root}
+          desktopColumns="mediaDetailsAction"
+          layout="responsiveGrid"
+        >
+          <Table.Header className={responsiveEntityTableClassNames.header}>
+            <Table.Column
+              compactLabel={false}
+              id="avatar"
+              textValue={t('Client')}
             >
-              {t('Load more')}
-            </Button>
-          ) : null}
-        </div>
-      )}
+              <VisuallyHidden>{t('Client')}</VisuallyHidden>
+            </Table.Column>
+            <Table.Column compactLabel={false} id="client" rowHeader>
+              {t('Client')}
+            </Table.Column>
+            <Table.Column id="email">{t('Email')}</Table.Column>
+            <Table.Column id="telephone">{t('Telephone')}</Table.Column>
+            <Table.Column
+              compactLabel={false}
+              id="actions"
+              textValue={t('Action')}
+              width="1.25rem"
+            >
+              <VisuallyHidden>{t('Action')}</VisuallyHidden>
+            </Table.Column>
+          </Table.Header>
+          <Table.Body className={responsiveEntityTableClassNames.body}>
+            {clients.map((client, index) => (
+              <Table.Row
+                className={responsiveEntityTableClassNames.row}
+                data-testid={client.name}
+                id={client.id}
+                key={client.id}
+                onAction={() => {
+                  navigate({
+                    params: { clientId: client.id, companyId },
+                    to: '/my-companies/clients/$companyId/update-details/$clientId',
+                  }).catch(() => undefined);
+                }}
+                textValue={t('{{client}} {{email}} {{telephone}}', {
+                  client: client.name,
+                  email: client.contact.email,
+                  telephone: client.contact.telephone,
+                })}
+              >
+                <Table.Cell
+                  className={responsiveEntityTableClassNames.cells.identity}
+                  column="avatar"
+                  textValue={client.name}
+                >
+                  <Avatar
+                    initials={clientInitials(client.name)}
+                    name={client.name}
+                    shape="circle"
+                    size="sm"
+                    tone={index % 2 === 0 ? 'primary' : 'accent'}
+                  />
+                </Table.Cell>
+                <Table.Cell
+                  className={responsiveEntityTableClassNames.cells.primary}
+                  column="client"
+                >
+                  <Typography as="strong">{client.name}</Typography>
+                </Table.Cell>
+                <Table.Cell
+                  className={responsiveEntityTableClassNames.cells.secondary}
+                  column="email"
+                >
+                  {client.contact.email}
+                </Table.Cell>
+                <Table.Cell
+                  className={responsiveEntityTableClassNames.cells.tertiary}
+                  column="telephone"
+                >
+                  {client.contact.telephone}
+                </Table.Cell>
+                <Table.Disclosure
+                  className={responsiveEntityTableClassNames.cells.actions}
+                  column="actions"
+                  position="flow"
+                />
+              </Table.Row>
+            ))}
+          </Table.Body>
+        </Table.Root>
+        {data?.getClients.nextToken ? (
+          <Button
+            appearance="text"
+            className="mt-4 self-center"
+            loading={networkStatus === NetworkStatus.fetchMore}
+            onAction={() => {
+              fetchMore({
+                updateQuery: (previous, { fetchMoreResult }) => {
+                  const existingIds = new Set(
+                    previous.getClients.items.map(({ id }) => id),
+                  );
+
+                  return {
+                    getClients: {
+                      ...fetchMoreResult.getClients,
+                      items: [
+                        ...previous.getClients.items,
+                        ...fetchMoreResult.getClients.items.filter(
+                          ({ id }) => !existingIds.has(id),
+                        ),
+                      ],
+                    },
+                  };
+                },
+                variables: { nextToken: data.getClients.nextToken },
+              }).catch(() => undefined);
+            }}
+          >
+            {t('Load more')}
+          </Button>
+        ) : null}
+      </div>
     </EntityCollectionPage>
   );
 }

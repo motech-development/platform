@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from '@apollo/client/react';
 import { Drawer, useToast } from '@motech-development/breeze-ui';
+import { useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -9,15 +10,14 @@ import {
 } from '../../data/operations';
 import { DiscardChangesDialog } from '../companies/DiscardChangesDialog';
 import { QueryFailureState } from '../companies/QueryFailureState';
-import { exactEntityNameSchema } from '../entity-details';
+import { EntityDeleteDialog } from '../forms/EntityDeleteDialog';
+import { useFormNavigation } from '../forms/useFormNavigation';
 import { FormSkeletonRegion } from '../loading/AccountsPageSkeletons';
 import { QueryRefreshAlert } from '../QueryRefreshAlert';
 import { removeClientFromCache, upsertClientInCache } from './cache-updates';
-import { ClientDeleteDialog } from './ClientDeleteDialog';
 import { ClientDetailsForm } from './ClientDetailsForm';
 import { ClientDetailsFormSkeleton } from './ClientDetailsFormSkeleton';
 import { ClientsPageContent } from './ClientsPageContent';
-import { useClientDrawerNavigation } from './useClientDrawerNavigation';
 
 export function ClientEditPage({
   clientId,
@@ -25,9 +25,8 @@ export function ClientEditPage({
 }: Readonly<{ clientId: string; companyId: string }>) {
   const { t } = useTranslation('clients');
   const toast = useToast();
+  const navigate = useNavigate();
   const [savePending, setSavePending] = useState(false);
-  const [deleteOpen, setDeleteOpen] = useState(false);
-  const [confirmation, setConfirmation] = useState('');
   const { data, error, loading, refetch } = useQuery(GET_CLIENT, {
     fetchPolicy: 'cache-and-network',
     nextFetchPolicy: 'cache-first',
@@ -35,15 +34,17 @@ export function ClientEditPage({
   });
   const [updateClient] = useMutation(UPDATE_CLIENT);
   const [deleteClient, { loading: deleting }] = useMutation(DELETE_CLIENT);
-  const navigation = useClientDrawerNavigation({
-    companyId,
+  const navigation = useFormNavigation({
+    blockPendingNavigation: savePending || deleting,
+    onClose: () =>
+      navigate({
+        params: { companyId },
+        to: '/my-companies/clients/$companyId',
+      }),
     pending: savePending || deleting,
   });
   const client =
     data?.getClient.companyId === companyId ? data.getClient : undefined;
-  const confirmationValid = client
-    ? exactEntityNameSchema(client.name).safeParse(confirmation).success
-    : false;
   const deleteCurrentClient = async () => {
     try {
       const result = await deleteClient({
@@ -68,15 +69,20 @@ export function ClientEditPage({
         title: t('Client could not be deleted'),
         variant: 'danger',
       });
-      return;
+      return false;
     }
 
-    setDeleteOpen(false);
-    setConfirmation('');
     toast.show({ title: t('Client deleted'), variant: 'success' });
-    if (navigation.completeMutation()) return;
+    if (navigation.completeMutation({ resumeBlockedNavigation: true })) {
+      return true;
+    }
 
-    await navigation.navigateToClients().catch(navigation.restrictNavigation);
+    await navigate({
+      params: { companyId },
+      to: '/my-companies/clients/$companyId',
+    }).catch(navigation.restrictNavigation);
+
+    return true;
   };
 
   return (
@@ -131,21 +137,21 @@ export function ClientEditPage({
           {client ? (
             <ClientDetailsForm
               danger={
-                <ClientDeleteDialog
-                  clientName={client.name}
-                  confirmation={confirmation}
-                  confirmationValid={confirmationValid}
+                <EntityDeleteDialog
+                  cancelLabel={t('Cancel')}
+                  confirmationError={t('The client name must match exactly.')}
+                  confirmationLabel={t('Type {{name}} to confirm', {
+                    name: client.name,
+                  })}
+                  confirmLabel={t('Permanently delete client')}
                   deleting={deleting}
-                  onConfirmationChange={setConfirmation}
-                  onDelete={() => {
-                    deleteCurrentClient().catch(() => undefined);
-                  }}
-                  onOpenChange={(open) => {
-                    if (!open && deleting) return;
-                    setDeleteOpen(open);
-                    if (!open) setConfirmation('');
-                  }}
-                  open={deleteOpen}
+                  description={t(
+                    'The client will be removed. Existing transactions will remain.',
+                  )}
+                  entityName={client.name}
+                  onDelete={deleteCurrentClient}
+                  title={t('Delete {{name}}?', { name: client.name })}
+                  triggerLabel={t('Delete client')}
                 />
               }
               initialValues={{
@@ -195,11 +201,17 @@ export function ClientEditPage({
                     title: t('Client details saved'),
                     variant: 'success',
                   });
-                  if (navigation.completeMutation()) return;
+                  if (
+                    navigation.completeMutation({
+                      resumeBlockedNavigation: true,
+                    })
+                  )
+                    return;
 
-                  await navigation
-                    .navigateToClients()
-                    .catch(navigation.restrictNavigation);
+                  await navigate({
+                    params: { companyId },
+                    to: '/my-companies/clients/$companyId',
+                  }).catch(navigation.restrictNavigation);
                 } finally {
                   setSavePending(false);
                 }

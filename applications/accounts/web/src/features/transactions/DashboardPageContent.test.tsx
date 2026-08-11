@@ -3,12 +3,12 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { AccountsWebDashboardQuery } from '../../graphql/graphql';
+import type { DashboardQuery } from '../../graphql/graphql';
 import { DashboardPageContent } from './DashboardPageContent';
 
 const queryState = vi.hoisted(() => ({
   current: {
-    data: undefined as AccountsWebDashboardQuery | undefined,
+    data: undefined as DashboardQuery | undefined,
     error: undefined as Error | undefined,
     loading: true,
     refetch: vi.fn().mockResolvedValue(undefined),
@@ -66,11 +66,11 @@ const transaction = {
   description: 'Some work',
   id: 'transaction-id',
   name: 'Example client',
-} satisfies AccountsWebDashboardQuery['getTransactions']['items'][number];
+} satisfies DashboardQuery['getTransactions']['items'][number];
 
 function dashboardData(
-  items: AccountsWebDashboardQuery['getTransactions']['items'],
-): AccountsWebDashboardQuery {
+  items: DashboardQuery['getTransactions']['items'],
+): DashboardQuery {
   return {
     getBalance: {
       balance: 2500,

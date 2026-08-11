@@ -1,21 +1,15 @@
 import { useMutation, useQuery } from '@apollo/client/react';
-import {
-  AlertDialog,
-  Button,
-  PageHeader,
-  Stack,
-  TextField,
-  useToast,
-} from '@motech-development/breeze-ui';
-import { useBlocker, useNavigate } from '@tanstack/react-router';
-import { useEffect, useRef, useState } from 'react';
+import { PageHeader, useToast } from '@motech-development/breeze-ui';
+import { useNavigate } from '@tanstack/react-router';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   DELETE_COMPANY,
   GET_COMPANY_DETAILS,
   UPDATE_COMPANY,
 } from '../../data/operations';
-import { exactEntityNameSchema } from '../entity-details';
+import { EntityDeleteDialog } from '../forms/EntityDeleteDialog';
+import { useFormNavigation } from '../forms/useFormNavigation';
 import { CompanyDetailsFormSkeleton } from '../loading/AccountsPageSkeletons';
 import { QueryRefreshAlert } from '../QueryRefreshAlert';
 import { removeCompanyFromCache, upsertCompanyInCache } from './cache-updates';
@@ -34,31 +28,24 @@ export function CompanyDetailsPage({
   const { t } = useTranslation(['companies', 'routing']);
   const navigate = useNavigate();
   const toast = useToast();
-  const allowNavigation = useRef(false);
-  const [dirty, setDirty] = useState(false);
-  const [discardOpen, setDiscardOpen] = useState(false);
   const [savePending, setSavePending] = useState(false);
-  const [deleteOpen, setDeleteOpen] = useState(false);
-  const [confirmation, setConfirmation] = useState('');
   const [updateCompany] = useMutation(UPDATE_COMPANY);
   const [deleteCompany, { loading: deleting }] = useMutation(DELETE_COMPANY);
-  const blocker = useBlocker({
-    enableBeforeUnload: dirty || deleting,
-    shouldBlockFn: () => (dirty || deleting) && !allowNavigation.current,
-    withResolver: true,
+  const navigation = useFormNavigation({
+    blockPendingNavigation: deleting,
+    onClose: () =>
+      navigate({
+        params: { companyId },
+        to: '/my-companies/dashboard/$companyId',
+      }),
+    pending: savePending || deleting,
   });
-  const blockerRef = useRef(blocker);
-
-  blockerRef.current = blocker;
   const { data, error, loading, refetch } = useQuery(GET_COMPANY_DETAILS, {
     fetchPolicy: 'cache-and-network',
     nextFetchPolicy: 'cache-first',
     variables: { id: companyId },
   });
   const company = data?.getCompany;
-  const confirmationValid = company
-    ? exactEntityNameSchema(company.name).safeParse(confirmation).success
-    : false;
   const pageHeader = (
     <PageHeader
       description={t(
@@ -67,10 +54,6 @@ export function CompanyDetailsPage({
       title={t('Company details')}
     />
   );
-
-  useEffect(() => {
-    if (blocker.status === 'blocked' && !deleting) setDiscardOpen(true);
-  }, [blocker.status, deleting]);
 
   const deleteCurrentCompany = async () => {
     try {
@@ -89,9 +72,7 @@ export function CompanyDetailsPage({
 
       if (!result.data?.deleteCompany) throw new Error('No company returned');
     } catch {
-      const activeBlocker = blockerRef.current;
-
-      if (activeBlocker.status === 'blocked') activeBlocker.reset?.();
+      navigation.resetBlockedNavigation();
 
       toast.show({
         description: t(
@@ -101,21 +82,16 @@ export function CompanyDetailsPage({
         variant: 'danger',
       });
 
-      return;
+      return false;
     }
 
-    const activeBlocker = blockerRef.current;
-
-    if (activeBlocker.status === 'blocked') activeBlocker.reset?.();
-    setDiscardOpen(false);
-    allowNavigation.current = true;
-    setDirty(false);
-    setDeleteOpen(false);
-    setConfirmation('');
     toast.show({ title: t('Company deleted'), variant: 'success' });
-    await navigate({ to: '/my-companies' }).catch(() => {
-      allowNavigation.current = false;
-    });
+    if (navigation.completeMutation()) return true;
+    await navigate({ to: '/my-companies' }).catch(
+      navigation.restrictNavigation,
+    );
+
+    return true;
   };
 
   if (loading && !data) {
@@ -158,59 +134,22 @@ export function CompanyDetailsPage({
       ) : null}
       <CompanyDetailsForm
         danger={
-          <AlertDialog.Root
-            onOpenChange={(open) => {
-              if (!open && deleting) return;
-
-              setDeleteOpen(open);
-              if (!open) setConfirmation('');
-            }}
-            open={deleteOpen}
-          >
-            <AlertDialog.Trigger variant="danger">
-              {t('Delete company')}
-            </AlertDialog.Trigger>
-            <AlertDialog.Content keyboardDismissDisabled={deleting}>
-              <AlertDialog.Title>
-                {t('Delete {{name}}?', { name: company.name })}
-              </AlertDialog.Title>
-              <AlertDialog.Description>
-                {t(
-                  'Company records, clients, reports, and transactions will be permanently removed.',
-                )}
-              </AlertDialog.Description>
-              <Stack gap="lg">
-                <TextField.Root
-                  invalid={confirmation.length > 0 && !confirmationValid}
-                  onChange={setConfirmation}
-                  value={confirmation}
-                >
-                  <TextField.Label>
-                    {t('Type {{name}} to confirm', { name: company.name })}
-                  </TextField.Label>
-                  <TextField.Input autoComplete="off" />
-                  <TextField.Error>
-                    {t('The company name must match exactly.')}
-                  </TextField.Error>
-                </TextField.Root>
-                <AlertDialog.Actions>
-                  <AlertDialog.Close appearance="outline" disabled={deleting}>
-                    {t('Cancel')}
-                  </AlertDialog.Close>
-                  <Button
-                    disabled={!confirmationValid || deleting}
-                    loading={deleting}
-                    onAction={() => {
-                      deleteCurrentCompany().catch(() => undefined);
-                    }}
-                    variant="danger"
-                  >
-                    {t('Permanently delete company')}
-                  </Button>
-                </AlertDialog.Actions>
-              </Stack>
-            </AlertDialog.Content>
-          </AlertDialog.Root>
+          <EntityDeleteDialog
+            cancelLabel={t('Cancel')}
+            confirmationError={t('The company name must match exactly.')}
+            confirmationLabel={t('Type {{name}} to confirm', {
+              name: company.name,
+            })}
+            confirmLabel={t('Permanently delete company')}
+            deleting={deleting}
+            description={t(
+              'Company records, clients, reports, and transactions will be permanently removed.',
+            )}
+            entityName={company.name}
+            onDelete={deleteCurrentCompany}
+            title={t('Delete {{name}}?', { name: company.name })}
+            triggerLabel={t('Delete company')}
+          />
         }
         initialValues={{
           ...company,
@@ -225,7 +164,7 @@ export function CompanyDetailsPage({
           },
         }}
         key={companyId}
-        onDirty={() => setDirty(true)}
+        onDirty={navigation.markDirty}
         onSubmit={async (input) => {
           setSavePending(true);
 
@@ -258,22 +197,15 @@ export function CompanyDetailsPage({
               return;
             }
 
-            const activeBlocker = blockerRef.current;
-
-            if (activeBlocker.status === 'blocked') activeBlocker.reset?.();
-            setDiscardOpen(false);
-            allowNavigation.current = true;
-            setDirty(false);
             toast.show({
               title: t('Company details saved'),
               variant: 'success',
             });
+            if (navigation.completeMutation()) return;
             await navigate({
               params: { companyId },
               to: '/my-companies/dashboard/$companyId',
-            }).catch(() => {
-              allowNavigation.current = false;
-            });
+            }).catch(navigation.restrictNavigation);
           } finally {
             setSavePending(false);
           }
@@ -281,18 +213,12 @@ export function CompanyDetailsPage({
         submitLabel={t('Save changes')}
       />
       <DiscardChangesDialog
-        blocker={blocker}
+        blocker={navigation.blocker}
         closeLabel={t('Close discard confirmation')}
         description={t('The unsaved company changes will be lost.')}
-        onDiscard={() => {
-          if (savePending || deleting) return;
-
-          allowNavigation.current = true;
-          setDirty(false);
-          setDiscardOpen(false);
-        }}
-        onOpenChange={setDiscardOpen}
-        open={discardOpen && !savePending && !deleting}
+        onDiscard={navigation.discardChanges}
+        onOpenChange={navigation.setDiscardOpen}
+        open={navigation.discardOpen && !savePending && !deleting}
         title={t('Discard company changes?')}
         trigger={t('Discard company changes')}
       />

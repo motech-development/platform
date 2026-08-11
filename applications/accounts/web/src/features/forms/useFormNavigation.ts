@@ -1,42 +1,45 @@
-import { useBlocker, useNavigate } from '@tanstack/react-router';
+import { useBlocker } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
 
-export function useClientDrawerNavigation({
-  companyId,
-  pending,
-}: Readonly<{ companyId: string; pending: boolean }>) {
-  const navigate = useNavigate();
+export function useFormNavigation({
+  blockPendingNavigation = false,
+  onClose,
+  pending = false,
+}: Readonly<{
+  blockPendingNavigation?: boolean;
+  onClose: () => Promise<unknown>;
+  pending?: boolean;
+}>) {
   const allowNavigation = useRef(false);
   const [dirty, setDirty] = useState(false);
   const [discardOpen, setDiscardOpen] = useState(false);
+  const navigationBlocked = dirty || blockPendingNavigation;
   const blocker = useBlocker({
-    enableBeforeUnload: dirty || pending,
-    shouldBlockFn: () => (dirty || pending) && !allowNavigation.current,
+    enableBeforeUnload: navigationBlocked,
+    shouldBlockFn: () => navigationBlocked && !allowNavigation.current,
     withResolver: true,
   });
   const blockerRef = useRef(blocker);
 
   blockerRef.current = blocker;
 
-  const discardChanges = () => {
+  const clearChanges = () => {
     allowNavigation.current = true;
     setDirty(false);
     setDiscardOpen(false);
   };
-  const navigateToClients = (targetCompanyId = companyId) =>
-    navigate({
-      params: { companyId: targetCompanyId },
-      to: '/my-companies/clients/$companyId',
-    });
+  const restrictNavigation = () => {
+    allowNavigation.current = false;
+  };
   const leave = () => {
-    discardChanges();
+    clearChanges();
 
     if (blocker.status === 'blocked') {
       blocker.proceed();
       return;
     }
 
-    navigateToClients().catch(() => undefined);
+    onClose().catch(restrictNavigation);
   };
   const requestClose = () => {
     if (pending) return;
@@ -50,30 +53,31 @@ export function useClientDrawerNavigation({
 
   return {
     blocker,
-    completeMutation: () => {
+    completeMutation: ({ resumeBlockedNavigation = false } = {}) => {
       const activeBlocker = blockerRef.current;
-      allowNavigation.current = true;
-      setDirty(false);
+      clearChanges();
 
       if (activeBlocker.status === 'blocked') {
-        activeBlocker.proceed();
-        return true;
+        if (resumeBlockedNavigation) {
+          activeBlocker.proceed();
+          return true;
+        }
+
+        activeBlocker.reset?.();
       }
 
       return false;
     },
+    dirty,
     discardChanges: () => {
       if (pending) return;
 
-      discardChanges();
-      if (blocker.status !== 'blocked') {
-        navigateToClients().catch(() => undefined);
-      }
+      clearChanges();
+      if (blocker.status !== 'blocked') onClose().catch(restrictNavigation);
     },
     discardOpen,
+    leave,
     markDirty: () => setDirty(true),
-    navigateToClients,
-    navigateToCompanies: () => navigate({ to: '/my-companies' }),
     proceedBlockedNavigationIfPristine: () => {
       const activeBlocker = blockerRef.current;
       if (activeBlocker.status !== 'blocked' || dirty) return false;
@@ -87,9 +91,7 @@ export function useClientDrawerNavigation({
       const activeBlocker = blockerRef.current;
       if (activeBlocker.status === 'blocked') activeBlocker.reset?.();
     },
-    restrictNavigation: () => {
-      allowNavigation.current = false;
-    },
+    restrictNavigation,
     setDiscardOpen,
   };
 }

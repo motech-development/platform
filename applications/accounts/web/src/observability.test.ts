@@ -86,7 +86,7 @@ describe('Accounts web error monitoring', () => {
 
     captureGraphqlFailure({
       error,
-      operationName: 'AccountsWebRequestUpload',
+      operationName: 'RequestUpload',
       result: {
         data: {
           requestUpload: {
@@ -106,7 +106,7 @@ describe('Accounts web error monitoring', () => {
     expect(mocks.scope.setContext).toHaveBeenCalledWith(
       'graphql',
       expect.objectContaining({
-        operationName: 'AccountsWebRequestUpload',
+        operationName: 'RequestUpload',
         variables: {
           attachmentBytes: '[Filtered file contents]',
           authorization: '[Filtered]',
