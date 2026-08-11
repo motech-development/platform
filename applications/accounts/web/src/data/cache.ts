@@ -8,7 +8,6 @@ import { InMemoryCache } from '@apollo/client-integration-tanstack-start';
 type CacheReference = Reference | StoreObject;
 
 interface ClientPage {
-  readonly firstPageIds?: readonly string[];
   readonly loadedContinuation?: boolean;
   readonly __typename?: 'Clients';
   readonly id?: string;
@@ -46,7 +45,6 @@ function mergeClientPages(
     return !args?.nextToken && !partialFirstPage
       ? {
           ...incoming,
-          firstPageIds: incomingIds,
           loadedContinuation: false,
         }
       : incoming;
@@ -56,26 +54,20 @@ function mergeClientPages(
     if (!existing.loadedContinuation || incoming.nextToken === null) {
       return {
         ...incoming,
-        firstPageIds: incomingIds,
         loadedContinuation: false,
       };
     }
 
-    const previousFirstPageIds = new Set(existing.firstPageIds ?? []);
     const refreshedFirstPageIds = new Set(incomingIds);
     const retainedContinuation =
       existing.items?.filter((client) => {
         const id = entityId(client, readField);
 
-        return (
-          !previousFirstPageIds.has(id ?? '') &&
-          !refreshedFirstPageIds.has(id ?? '')
-        );
+        return !refreshedFirstPageIds.has(id ?? '');
       }) ?? [];
 
     return {
       ...incoming,
-      firstPageIds: incomingIds,
       items: [...incomingItems, ...retainedContinuation],
       loadedContinuation: true,
       nextToken: existing.nextToken,
@@ -105,7 +97,6 @@ function mergeClientPages(
 
   return {
     ...incoming,
-    firstPageIds: existing.firstPageIds,
     items: [...retainedItems, ...incomingItems],
     loadedContinuation: true,
   };

@@ -134,19 +134,18 @@ export function useConfirmedSaleForm(
   navigationActions.current = navigation;
 
   return {
+    blocker: navigation.blocker,
     clients: data?.getClients.items ?? [],
     data,
-    dirty: navigation.dirty,
+    discardChanges: navigation.discardChanges,
     discardOpen: navigation.discardOpen,
     error,
     form,
-    leaveForm: navigation.leave,
     loading,
     markDirty: navigation.markDirty,
     online,
     refetch,
     requestClose: navigation.requestClose,
-    resetBlockedNavigation: navigation.resetBlockedNavigation,
     setDiscardOpen: navigation.setDiscardOpen,
     submissionPending,
     trackAttachmentTransfer: (transfer: Promise<AttachmentTransferResult>) => {

@@ -339,7 +339,7 @@ describe('RecordTransactionPage', () => {
 
   it('prevents the drawer closing while a sale submission is pending', async () => {
     const user = userEvent.setup();
-    let resolveMutation: (() => void) | undefined;
+    let resolveMutation: () => void = vi.fn();
 
     mocks.addTransaction.mockImplementation(
       () =>
@@ -367,6 +367,7 @@ describe('RecordTransactionPage', () => {
     await user.type(screen.getByLabelText('Description'), 'Consulting');
     await user.type(screen.getByLabelText('Amount'), '100');
     await user.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() => expect(mocks.addTransaction).toHaveBeenCalledTimes(1));
 
     await user.click(screen.getByRole('button', { name: 'Close' }));
 
@@ -375,7 +376,7 @@ describe('RecordTransactionPage', () => {
     ).toBeVisible();
     expect(mocks.navigate).not.toHaveBeenCalled();
 
-    resolveMutation?.();
+    resolveMutation();
   });
 
   it('waits for the selected PDF upload before recording the sale', async () => {
@@ -489,10 +490,13 @@ describe('RecordTransactionPage', () => {
     await waitFor(() =>
       expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled(),
     );
+    expect(mocks.navigate).not.toHaveBeenCalled();
+
     await user.click(screen.getByRole('button', { name: 'Close' }));
     await user.click(screen.getByRole('button', { name: 'Discard changes' }));
 
     expect(mocks.addTransaction).not.toHaveBeenCalled();
+    expect(mocks.navigate).toHaveBeenCalledTimes(1);
     expect(mocks.navigate).toHaveBeenCalledWith({
       params: { companyId: 'company-id' },
       to: '/my-companies/accounts/$companyId',

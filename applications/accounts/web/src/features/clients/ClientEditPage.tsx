@@ -139,6 +139,7 @@ export function ClientEditPage({
               danger={
                 <EntityDeleteDialog
                   cancelLabel={t('Cancel')}
+                  closeLabel={t('Close delete confirmation')}
                   confirmationError={t('The client name must match exactly.')}
                   confirmationLabel={t('Type {{name}} to confirm', {
                     name: client.name,
@@ -149,6 +150,7 @@ export function ClientEditPage({
                     'The client will be removed. Existing transactions will remain.',
                   )}
                   entityName={client.name}
+                  nested
                   onDelete={deleteCurrentClient}
                   title={t('Delete {{name}}?', { name: client.name })}
                   triggerLabel={t('Delete client')}

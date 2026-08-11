@@ -4,11 +4,20 @@ import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { EntityDeleteDialog } from './EntityDeleteDialog';
 
+vi.mock('@motech-development/breeze-ui/icons', async (importOriginal) => ({
+  ...(await importOriginal<
+    typeof import('@motech-development/breeze-ui/icons')
+  >()),
+  CloseIcon: () => <span aria-hidden="true">close</span>,
+  WarningIcon: () => <span aria-hidden="true">warning</span>,
+}));
+
 function renderDialog(onDelete: () => Promise<boolean>) {
   render(
     <BreezeProvider locale="en-GB">
       <EntityDeleteDialog
         cancelLabel="Cancel"
+        closeLabel="Close delete confirmation"
         confirmationError="The name must match."
         confirmationLabel="Type Example to confirm"
         confirmLabel="Permanently delete"
@@ -64,5 +73,36 @@ describe('EntityDeleteDialog', () => {
     expect(screen.getByLabelText('Type Example to confirm')).toHaveValue(
       'Example',
     );
+  });
+
+  it('uses the nested destructive confirmation treatment', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <EntityDeleteDialog
+          cancelLabel="Cancel"
+          closeLabel="Close delete confirmation"
+          confirmationError="The name must match."
+          confirmationLabel="Type Example to confirm"
+          confirmLabel="Permanently delete"
+          deleting={false}
+          description="This entity will be removed."
+          entityName="Example"
+          nested
+          onDelete={vi.fn().mockResolvedValue(true)}
+          title="Delete Example?"
+          triggerLabel="Delete entity"
+        />
+      </BreezeProvider>,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Delete entity' }));
+
+    expect(
+      screen.getByRole('button', { name: 'Close delete confirmation' }),
+    ).toBeVisible();
+    expect(document.querySelector('[data-confirmation-icon]')).toBeVisible();
+    expect(document.querySelector('.bg-transparent')).toBeInTheDocument();
   });
 });
