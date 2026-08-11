@@ -8,13 +8,15 @@ import {
   Typography,
   VisuallyHidden,
 } from '@motech-development/breeze-ui';
-import { AddIcon, UsersIcon } from '@motech-development/breeze-ui/icons';
+import { UsersIcon } from '@motech-development/breeze-ui/icons';
 import { useNavigate } from '@tanstack/react-router';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GET_CLIENTS } from '../../data/operations';
 import { sortNamedEntities } from '../entity-details';
 import { EntityCollectionPage } from '../EntityCollectionPage';
 import { responsiveEntityTableClassNames } from '../tableLayout';
+import { AddClientAction } from './AddClientAction';
 import { ClientsTableSkeleton } from './ClientsTableSkeleton';
 
 function clientInitials(name: string) {
@@ -41,30 +43,43 @@ export function ClientsPageContent({
   );
   const clients = sortNamedEntities(data?.getClients.items ?? []);
   const hasQueryData = data?.getClients !== undefined;
-  const addClient = () => {
-    navigate({
-      params: { companyId },
-      to: '/my-companies/clients/$companyId/add-client',
-    }).catch(() => undefined);
-  };
+  const reconciliationAttempt = useRef<string | undefined>(undefined);
+  const page = data?.getClients;
+  const loadedPageCount = page?.clientLoadedPageCount ?? 1;
+  const requestedPageCount = page?.clientRequestedPageCount ?? 1;
+  const refreshGeneration = page?.clientRefreshGeneration ?? 0;
+  const nextToken = page?.nextToken;
+
+  useEffect(() => {
+    if (
+      !nextToken ||
+      loadedPageCount >= requestedPageCount ||
+      networkStatus === NetworkStatus.fetchMore
+    ) {
+      return;
+    }
+
+    const attempt = `${refreshGeneration}:${nextToken}`;
+    if (reconciliationAttempt.current === attempt) return;
+    reconciliationAttempt.current = attempt;
+    fetchMore({ variables: { nextToken } }).catch(() => undefined);
+  }, [
+    fetchMore,
+    loadedPageCount,
+    networkStatus,
+    nextToken,
+    refreshGeneration,
+    requestedPageCount,
+  ]);
 
   return (
     <EntityCollectionPage
-      action={
-        <Button aria-label={t('Add a new client')} onAction={addClient}>
-          <AddIcon />
-          {t('Add client')}
-        </Button>
-      }
+      action={<AddClientAction companyId={companyId} />}
       description={t('People and organisations linked to sales transactions.')}
       empty={clients.length === 0}
       emptyState={
         <StatePanel
-          action={
-            <Button aria-label={t('Add a new client')} onAction={addClient}>
-              {t('Add client')}
-            </Button>
-          }
+          action={<AddClientAction companyId={companyId} icon={false} />}
           description={t('Add a client to use them on sales transactions.')}
           icon={<UsersIcon />}
           title={t('No clients yet')}
