@@ -83,7 +83,7 @@ describe('AccountsPending', () => {
     [
       '/my-companies/clients/company-id/add-client',
       'Add client',
-      'Save their details so they’re ready when you record a sale.',
+      'Details for a new client.',
     ],
     [
       '/my-companies/clients/company-id/update-details/client-id',
