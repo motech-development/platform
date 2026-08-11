@@ -43,12 +43,15 @@ export function ClientsPageContent({
   );
   const clients = sortNamedEntities(data?.getClients.items ?? []);
   const hasQueryData = data?.getClients !== undefined;
-  const reconciliationAttempt = useRef<string | undefined>(undefined);
   const page = data?.getClients;
   const loadedPageCount = page?.clientLoadedPageCount ?? 1;
   const requestedPageCount = page?.clientRequestedPageCount ?? 1;
   const refreshGeneration = page?.clientRefreshGeneration ?? 0;
   const nextToken = page?.nextToken;
+  const reconciliationAttempts = useRef({
+    generation: refreshGeneration,
+    tokens: new Set<string>(),
+  });
 
   useEffect(() => {
     if (
@@ -59,9 +62,16 @@ export function ClientsPageContent({
       return;
     }
 
-    const attempt = `${refreshGeneration}:${nextToken}`;
-    if (reconciliationAttempt.current === attempt) return;
-    reconciliationAttempt.current = attempt;
+    if (reconciliationAttempts.current.generation !== refreshGeneration) {
+      reconciliationAttempts.current = {
+        generation: refreshGeneration,
+        tokens: new Set<string>(),
+      };
+    }
+
+    const attempts = reconciliationAttempts.current.tokens;
+    if (attempts.has(nextToken)) return;
+    attempts.add(nextToken);
     fetchMore({ variables: { nextToken } }).catch(() => undefined);
   }, [
     fetchMore,

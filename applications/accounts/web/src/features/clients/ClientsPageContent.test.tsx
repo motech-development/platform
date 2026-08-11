@@ -26,6 +26,31 @@ const mocks = vi.hoisted(() => ({
   },
 }));
 
+function refreshedClientPage(
+  loadedPageCount: number,
+  requestedPageCount: number,
+  nextToken: string | null,
+): ClientQueryData {
+  return {
+    getClients: {
+      clientLoadedPageCount: loadedPageCount,
+      clientRefreshGeneration: 2,
+      clientRequestedPageCount: requestedPageCount,
+      items: [
+        {
+          contact: {
+            email: 'alpha@example.com',
+            telephone: '020 7946 0001',
+          },
+          id: 'alpha-id',
+          name: 'Alpha Limited',
+        },
+      ],
+      nextToken,
+    },
+  };
+}
+
 vi.mock('@apollo/client/react', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@apollo/client/react')>()),
   useQuery: () => mocks.query,
@@ -189,28 +214,112 @@ describe('ClientsPageContent', () => {
     expect(screen.getByTestId('Beta Limited')).toBeVisible();
   });
 
-  it('rebuilds the previously loaded page span after a refresh', async () => {
-    mocks.query.data = {
-      getClients: {
-        clientLoadedPageCount: 1,
-        clientRefreshGeneration: 2,
-        clientRequestedPageCount: 2,
-        items: [],
-        nextToken: 'refreshed-page-2',
-      },
-    };
+  it('rebuilds an exhausted multi-page span with each refreshed token once', async () => {
+    mocks.query.data = refreshedClientPage(1, 3, 'refreshed-page-2');
+    mocks.query.fetchMore
+      .mockImplementationOnce(() => {
+        mocks.query.data = refreshedClientPage(2, 3, 'refreshed-page-3');
 
-    render(
+        return Promise.resolve(undefined);
+      })
+      .mockImplementationOnce(() => {
+        mocks.query.data = refreshedClientPage(3, 3, null);
+
+        return Promise.resolve(undefined);
+      });
+
+    const view = render(
       <BreezeProvider locale="en-GB">
         <ClientsPageContent companyId="company-id" />
       </BreezeProvider>,
     );
 
     await waitFor(() =>
-      expect(mocks.query.fetchMore).toHaveBeenCalledWith({
+      expect(mocks.query.fetchMore).toHaveBeenNthCalledWith(1, {
         variables: { nextToken: 'refreshed-page-2' },
       }),
     );
+    view.rerender(
+      <BreezeProvider locale="en-GB">
+        <ClientsPageContent companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    await waitFor(() =>
+      expect(mocks.query.fetchMore).toHaveBeenNthCalledWith(2, {
+        variables: { nextToken: 'refreshed-page-3' },
+      }),
+    );
+    expect(mocks.query.fetchMore).toHaveBeenCalledTimes(2);
+  });
+
+  it('stops automatic reconciliation when a continuation token repeats', async () => {
+    mocks.query.data = refreshedClientPage(1, 4, 'refreshed-page-a');
+    mocks.query.fetchMore
+      .mockImplementationOnce(() => {
+        mocks.query.data = refreshedClientPage(2, 4, 'refreshed-page-b');
+
+        return Promise.resolve(undefined);
+      })
+      .mockImplementationOnce(() => {
+        mocks.query.data = refreshedClientPage(3, 4, 'refreshed-page-a');
+
+        return Promise.resolve(undefined);
+      });
+
+    const view = render(
+      <BreezeProvider locale="en-GB">
+        <ClientsPageContent companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    await waitFor(() => expect(mocks.query.fetchMore).toHaveBeenCalledOnce());
+    view.rerender(
+      <BreezeProvider locale="en-GB">
+        <ClientsPageContent companyId="company-id" />
+      </BreezeProvider>,
+    );
+    await waitFor(() => expect(mocks.query.fetchMore).toHaveBeenCalledTimes(2));
+    view.rerender(
+      <BreezeProvider locale="en-GB">
+        <ClientsPageContent companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    await waitFor(() => expect(mocks.query.fetchMore).toHaveBeenCalledTimes(2));
+    expect(mocks.query.fetchMore).toHaveBeenNthCalledWith(1, {
+      variables: { nextToken: 'refreshed-page-a' },
+    });
+    expect(mocks.query.fetchMore).toHaveBeenNthCalledWith(2, {
+      variables: { nextToken: 'refreshed-page-b' },
+    });
+  });
+
+  it('does not automatically retry a failed token in the same refresh', async () => {
+    mocks.query.data = refreshedClientPage(1, 2, 'refreshed-page-2');
+    mocks.query.fetchMore.mockRejectedValue(new Error('Page unavailable'));
+
+    const view = render(
+      <BreezeProvider locale="en-GB">
+        <ClientsPageContent companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    await waitFor(() => expect(mocks.query.fetchMore).toHaveBeenCalledOnce());
+    mocks.query.networkStatus = 3;
+    view.rerender(
+      <BreezeProvider locale="en-GB">
+        <ClientsPageContent companyId="company-id" />
+      </BreezeProvider>,
+    );
+    mocks.query.networkStatus = 7;
+    view.rerender(
+      <BreezeProvider locale="en-GB">
+        <ClientsPageContent companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    await waitFor(() => expect(mocks.query.fetchMore).toHaveBeenCalledOnce());
   });
 
   it('keeps client creation available while the first query runs', async () => {

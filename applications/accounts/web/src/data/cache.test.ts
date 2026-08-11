@@ -258,6 +258,34 @@ describe('confirmed Transaction pages', () => {
 });
 
 describe('client pages', () => {
+  const writeClients = (
+    cache: ReturnType<typeof createAccountsCache>,
+    ids: readonly string[],
+    nextToken: string | null,
+    pageToken?: string,
+  ) => {
+    cache.writeQuery({
+      data: {
+        getClients: {
+          __typename: 'Clients',
+          id: 'company-1',
+          items: ids.map((id) => ({
+            __typename: 'Client',
+            contact: { email: `${id}@example.com` },
+            id,
+            name: id.toUpperCase(),
+          })),
+          nextToken,
+        },
+      },
+      query: clientsQuery,
+      variables: {
+        id: 'company-1',
+        ...(pageToken ? { nextToken: pageToken } : {}),
+      },
+    });
+  };
+
   it('reopens pagination when a refresh extends an exhausted collection', () => {
     const cache = createAccountsCache();
 
@@ -357,37 +385,10 @@ describe('client pages', () => {
   it('drops deleted clients while rebuilding previously loaded pages', () => {
     const cache = createAccountsCache();
 
-    const writeClients = (
-      ids: readonly string[],
-      nextToken: string | null,
-      pageToken?: string,
-    ) => {
-      cache.writeQuery({
-        data: {
-          getClients: {
-            __typename: 'Clients',
-            id: 'company-1',
-            items: ids.map((id) => ({
-              __typename: 'Client',
-              contact: { email: `${id}@example.com` },
-              id,
-              name: id.toUpperCase(),
-            })),
-            nextToken,
-          },
-        },
-        query: clientsQuery,
-        variables: {
-          id: 'company-1',
-          ...(pageToken ? { nextToken: pageToken } : {}),
-        },
-      });
-    };
-
-    writeClients(['a', 'b'], 'page-2');
-    writeClients(['c', 'd'], null, 'page-2');
-    writeClients(['a', 'c'], 'refreshed-page-2');
-    writeClients(['d'], null, 'refreshed-page-2');
+    writeClients(cache, ['a', 'b'], 'page-2');
+    writeClients(cache, ['c', 'd'], null, 'page-2');
+    writeClients(cache, ['a', 'c'], 'refreshed-page-2');
+    writeClients(cache, ['d'], null, 'refreshed-page-2');
 
     expect(
       cache
@@ -397,5 +398,30 @@ describe('client pages', () => {
         })
         ?.getClients.items.map(({ id }) => id),
     ).toEqual(['a', 'c', 'd']);
+  });
+
+  it('counts each continuation token once while rebuilding loaded pages', () => {
+    const cache = createAccountsCache();
+
+    writeClients(cache, ['a'], 'page-2');
+    writeClients(cache, ['b'], 'page-3', 'page-2');
+    writeClients(cache, ['c'], null, 'page-3');
+    writeClients(cache, ['a'], 'refreshed-page-2');
+    writeClients(cache, ['b'], 'refreshed-page-3', 'refreshed-page-2');
+    writeClients(cache, ['b'], 'refreshed-page-3', 'refreshed-page-2');
+
+    expect(
+      cache.readQuery({
+        query: clientPageStateQuery,
+        variables: { id: 'company-1' },
+      }),
+    ).toEqual({
+      getClients: {
+        __typename: 'Clients',
+        clientLoadedPageCount: 2,
+        clientRefreshGeneration: 1,
+        clientRequestedPageCount: 3,
+      },
+    });
   });
 });
