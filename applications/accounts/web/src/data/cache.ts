@@ -5,21 +5,67 @@ import type {
 } from '@apollo/client';
 import { InMemoryCache } from '@apollo/client-integration-tanstack-start';
 
-type TransactionReference = Reference | StoreObject;
+type CacheReference = Reference | StoreObject;
+
+interface ClientPage {
+  readonly __typename?: 'Clients';
+  readonly id?: string;
+  readonly items?: readonly CacheReference[];
+  readonly nextToken?: string | null;
+}
 
 interface TransactionPage {
   readonly __typename?: 'Transactions';
   readonly id?: string;
-  readonly items?: readonly TransactionReference[];
+  readonly items?: readonly CacheReference[];
   readonly nextToken?: string | null;
   readonly status?: string;
 }
 
-function transactionId(
-  transaction: TransactionReference,
+function entityId(
+  entity: CacheReference,
   readField: FieldFunctionOptions['readField'],
 ) {
-  return readField<string>('id', transaction);
+  return readField<string>('id', entity);
+}
+
+function mergeClientPages(
+  existing: ClientPage | undefined,
+  incoming: ClientPage,
+  { args, readField }: FieldFunctionOptions,
+): ClientPage {
+  if (!existing) {
+    return incoming;
+  }
+
+  const partialFirstPage = incoming.nextToken === undefined;
+  if (!args?.nextToken && !partialFirstPage) {
+    return incoming;
+  }
+
+  const incomingIds = new Set(
+    incoming.items
+      ?.map((client) => entityId(client, readField))
+      .filter(Boolean),
+  );
+  const retainedItems =
+    existing.items?.filter(
+      (client) => !incomingIds.has(entityId(client, readField)),
+    ) ?? [];
+
+  if (partialFirstPage) {
+    return {
+      ...existing,
+      ...incoming,
+      items: [...(incoming.items ?? []), ...retainedItems],
+      nextToken: existing.nextToken,
+    };
+  }
+
+  return {
+    ...incoming,
+    items: [...retainedItems, ...(incoming.items ?? [])],
+  };
 }
 
 function mergeTransactionPages(
@@ -33,7 +79,7 @@ function mergeTransactionPages(
 
   const incomingIds = new Set(
     incoming.items
-      ?.map((transaction) => transactionId(transaction, readField))
+      ?.map((transaction) => entityId(transaction, readField))
       .filter(Boolean),
   );
 
@@ -41,8 +87,7 @@ function mergeTransactionPages(
     ...incoming,
     items: [
       ...(existing.items?.filter(
-        (transaction) =>
-          !incomingIds.has(transactionId(transaction, readField)),
+        (transaction) => !incomingIds.has(entityId(transaction, readField)),
       ) ?? []),
       ...(incoming.items ?? []),
     ],
@@ -55,6 +100,9 @@ export function createAccountsCache() {
       Balance: {
         keyFields: ['id'],
       },
+      Clients: {
+        keyFields: false,
+      },
       Companies: {
         keyFields: ['id'],
       },
@@ -63,6 +111,10 @@ export function createAccountsCache() {
       },
       Query: {
         fields: {
+          getClients: {
+            keyArgs: ['id'],
+            merge: mergeClientPages,
+          },
           getTransactions: {
             keyArgs: ['count', 'id', 'status'],
             merge: mergeTransactionPages,
