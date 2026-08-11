@@ -317,7 +317,7 @@ test.describe('hosted Accounts foundation', () => {
       const refetchAfterReconnect = page.waitForRequest(
         (request) =>
           request.method() === 'POST' &&
-          request.postData()?.includes('AccountsWebRecordTransaction') === true,
+          request.postData()?.includes('RecordTransaction') === true,
       );
       await page.context().setOffline(false);
       await refetchAfterReconnect;

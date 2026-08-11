@@ -1,6 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import type { Locator, Page } from '@playwright/test';
 import { gotoAuthenticatedPage } from './auth';
+import clients from './fixtures/data/client.json' with { type: 'json' };
 import focusWithKeyboard from './keyboard';
 import { expect, test } from './test';
 
@@ -160,48 +161,6 @@ test.describe('VAT registered Accounts', () => {
     .serial('original company and client-management journeys', () => {
     const suffix = Date.now().toString().slice(-8);
     const companyName = `Accounts web ${suffix}`;
-    const clients = [
-      {
-        address: {
-          line1: '246 Park View',
-          line3: 'Whitley Bay',
-          line5: 'NE26 3QX',
-        },
-        contact: {
-          email: 'info@motechdevelopment.co.uk',
-          telephone: '01914628347',
-        },
-        name: 'Motech Development',
-      },
-      {
-        address: {
-          line1: 'Unit 20',
-          line2: '72 Wood Lane',
-          line3: 'Kingston upon Thames',
-          line4: 'Surrey',
-          line5: 'KT2 9TS',
-        },
-        contact: {
-          email: 'no-reply@inno-sols.com',
-          telephone: '02083877937',
-        },
-        name: 'Innovative Solutions',
-      },
-      {
-        address: {
-          line1: '34 Dover Road',
-          line3: 'Ledbury',
-          line4: 'Hereford',
-          line5: 'HR8 0QH',
-        },
-        contact: {
-          email: 'contact@acme.com',
-          telephone: '07736727672',
-        },
-        name: 'Acme Ltd',
-      },
-      { name: 'Inno Sols' },
-    ] as const;
 
     async function openCompany(page: Page): Promise<void> {
       await page.getByTestId(companyName).click();

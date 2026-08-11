@@ -12,7 +12,7 @@ export interface CompanyCacheValue {
 }
 
 const companyFragment = gql`
-  fragment AccountsWebCompanyCacheValue on Company {
+  fragment CompanyCacheValue on Company {
     id
     name
     companyNumber

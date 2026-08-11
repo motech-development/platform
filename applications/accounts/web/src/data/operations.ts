@@ -1,7 +1,7 @@
 import { graphql } from '../graphql';
 
 export const GET_COMPANIES = graphql(`
-  query AccountsWebCompanies($owner: ID!) {
+  query Companies($owner: ID!) {
     getCompanies(id: $owner) {
       id
       items {
@@ -17,7 +17,7 @@ export const GET_COMPANIES = graphql(`
 `);
 
 export const GET_COMPANY_DETAILS = graphql(`
-  query AccountsWebCompanyDetails($id: ID!) {
+  query CompanyDetails($id: ID!) {
     getCompany(id: $id) {
       address {
         line1
@@ -42,7 +42,7 @@ export const GET_COMPANY_DETAILS = graphql(`
 `);
 
 export const CREATE_COMPANY = graphql(`
-  mutation AccountsWebCreateCompany($input: CreateCompanyInput!) {
+  mutation CreateCompany($input: CreateCompanyInput!) {
     createCompany(input: $input) {
       address {
         line1
@@ -68,7 +68,7 @@ export const CREATE_COMPANY = graphql(`
 `);
 
 export const UPDATE_COMPANY = graphql(`
-  mutation AccountsWebUpdateCompany($input: CompanyInput!) {
+  mutation UpdateCompany($input: CompanyInput!) {
     updateCompany(input: $input) {
       address {
         line1
@@ -93,7 +93,7 @@ export const UPDATE_COMPANY = graphql(`
 `);
 
 export const DELETE_COMPANY = graphql(`
-  mutation AccountsWebDeleteCompany($id: ID!) {
+  mutation DeleteCompany($id: ID!) {
     deleteCompany(id: $id) {
       id
       name
@@ -103,7 +103,7 @@ export const DELETE_COMPANY = graphql(`
 `);
 
 export const GET_CLIENTS = graphql(`
-  query AccountsWebClients($id: ID!, $nextToken: String) {
+  query Clients($id: ID!, $nextToken: String) {
     getClients(id: $id, nextToken: $nextToken) {
       id
       items {
@@ -128,7 +128,7 @@ export const GET_CLIENTS = graphql(`
 `);
 
 export const GET_CLIENT = graphql(`
-  query AccountsWebClient($id: ID!) {
+  query Client($id: ID!) {
     getClient(id: $id) {
       address {
         line1
@@ -149,7 +149,7 @@ export const GET_CLIENT = graphql(`
 `);
 
 export const CREATE_CLIENT = graphql(`
-  mutation AccountsWebCreateClient($input: ClientInput!) {
+  mutation CreateClient($input: ClientInput!) {
     createClient(input: $input) {
       address {
         line1
@@ -170,7 +170,7 @@ export const CREATE_CLIENT = graphql(`
 `);
 
 export const UPDATE_CLIENT = graphql(`
-  mutation AccountsWebUpdateClient($input: ClientInput!) {
+  mutation UpdateClient($input: ClientInput!) {
     updateClient(input: $input) {
       address {
         line1
@@ -191,7 +191,7 @@ export const UPDATE_CLIENT = graphql(`
 `);
 
 export const DELETE_CLIENT = graphql(`
-  mutation AccountsWebDeleteClient($id: ID!) {
+  mutation DeleteClient($id: ID!) {
     deleteClient(id: $id) {
       companyId
       id
@@ -201,7 +201,7 @@ export const DELETE_CLIENT = graphql(`
 `);
 
 export const GET_COMPANY_SETTINGS = graphql(`
-  query AccountsWebCompanySettings($id: ID!) {
+  query CompanySettings($id: ID!) {
     getCompany(id: $id) {
       id
       name
@@ -228,7 +228,7 @@ export const GET_COMPANY_SETTINGS = graphql(`
 `);
 
 export const UPDATE_SETTINGS = graphql(`
-  mutation AccountsWebUpdateSettings($input: SettingsInput!) {
+  mutation UpdateSettings($input: SettingsInput!) {
     updateSettings(input: $input) {
       categories {
         name
@@ -251,11 +251,7 @@ export const UPDATE_SETTINGS = graphql(`
 `);
 
 export const GET_COMPANY_DASHBOARD = graphql(`
-  query AccountsWebDashboard(
-    $id: ID!
-    $status: TransactionStatus!
-    $count: Int
-  ) {
+  query Dashboard($id: ID!, $status: TransactionStatus!, $count: Int) {
     getCompany(id: $id) {
       id
       name
@@ -288,7 +284,7 @@ export const GET_COMPANY_DASHBOARD = graphql(`
 `);
 
 export const GET_CONFIRMED_TRANSACTIONS = graphql(`
-  query AccountsWebConfirmedTransactions(
+  query ConfirmedTransactions(
     $id: ID!
     $status: TransactionStatus!
     $count: Int
@@ -326,7 +322,7 @@ export const GET_CONFIRMED_TRANSACTIONS = graphql(`
 `);
 
 export const GET_RECORD_TRANSACTION = graphql(`
-  query AccountsWebRecordTransaction($id: ID!) {
+  query RecordTransaction($id: ID!) {
     getClients(id: $id) {
       id
       items {
@@ -344,7 +340,7 @@ export const GET_RECORD_TRANSACTION = graphql(`
 `);
 
 export const ADD_TRANSACTION = graphql(`
-  mutation AccountsWebAddTransaction($input: TransactionInput!) {
+  mutation AddTransaction($input: TransactionInput!) {
     addTransaction(input: $input) {
       id
       amount
@@ -363,7 +359,7 @@ export const ADD_TRANSACTION = graphql(`
 `);
 
 export const GET_TRANSACTION = graphql(`
-  query AccountsWebTransaction($transactionId: ID!) {
+  query Transaction($transactionId: ID!) {
     getTransaction(id: $transactionId) {
       id
       amount
@@ -382,7 +378,7 @@ export const GET_TRANSACTION = graphql(`
 `);
 
 export const REQUEST_UPLOAD = graphql(`
-  mutation AccountsWebRequestUpload($id: ID!, $input: StorageUploadInput!) {
+  mutation RequestUpload($id: ID!, $input: StorageUploadInput!) {
     requestUpload(id: $id, input: $input) {
       id
       url
@@ -391,7 +387,7 @@ export const REQUEST_UPLOAD = graphql(`
 `);
 
 export const REQUEST_DOWNLOAD = graphql(`
-  query AccountsWebRequestDownload($id: ID!, $path: String!) {
+  query RequestDownload($id: ID!, $path: String!) {
     requestDownload(id: $id, path: $path) {
       url
     }
@@ -399,7 +395,7 @@ export const REQUEST_DOWNLOAD = graphql(`
 `);
 
 export const ON_TRANSACTION = graphql(`
-  subscription AccountsWebOnTransaction($id: ID!, $owner: String!) {
+  subscription OnTransaction($id: ID!, $owner: String!) {
     onTransaction(id: $id, owner: $owner) {
       balance
       id

@@ -12,7 +12,7 @@ import {
 } from '@motech-development/breeze-ui';
 import { AddIcon, CloseIcon } from '@motech-development/breeze-ui/icons';
 import { useForm } from '@tanstack/react-form';
-import { useBlocker, useNavigate } from '@tanstack/react-router';
+import { useNavigate } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GET_COMPANY_SETTINGS, UPDATE_SETTINGS } from '../../data/operations';
@@ -22,6 +22,7 @@ import {
   validationMessage,
   visibleValidationErrors,
 } from '../form-errors';
+import { useFormNavigation } from '../forms/useFormNavigation';
 import { SettingsFormSkeleton } from '../loading/AccountsPageSkeletons';
 import { QueryRefreshAlert } from '../QueryRefreshAlert';
 import {
@@ -113,9 +114,6 @@ function SettingsForm({
     standard: t('Standard'),
   };
   const toast = useToast();
-  const [dirty, setDirty] = useState(false);
-  const [discardOpen, setDiscardOpen] = useState(false);
-  const allowNavigation = useRef(false);
   const keyCounter = useRef(initialValues.categories.length);
   const categorySource = useRef(initialValues.categories);
   const [categoryKeys, setCategoryKeys] = useState(() =>
@@ -123,14 +121,13 @@ function SettingsForm({
       (category, index) => `${category.name}-${index}`,
     ),
   );
-  const blocker = useBlocker({
-    enableBeforeUnload: dirty,
-    shouldBlockFn: () => dirty && !allowNavigation.current,
-    withResolver: true,
+  const navigation = useFormNavigation({
+    onClose: () =>
+      navigate({
+        params: { companyId },
+        to: '/my-companies/dashboard/$companyId',
+      }),
   });
-  const blockerRef = useRef(blocker);
-
-  blockerRef.current = blocker;
   const [updateSettings] = useMutation(UPDATE_SETTINGS);
   const defaultValues: SettingsDraft = initialValues;
   const form = useForm({
@@ -144,7 +141,7 @@ function SettingsForm({
         if (!result.data?.updateSettings)
           throw new Error('No settings returned');
       } catch {
-        allowNavigation.current = false;
+        navigation.restrictNavigation();
         toast.show({
           description: t(
             'Your changes are still here. Check them and try again.',
@@ -156,26 +153,19 @@ function SettingsForm({
         return;
       }
 
-      const activeBlocker = blockerRef.current;
-
-      if (activeBlocker.status === 'blocked') activeBlocker.reset?.();
-      setDiscardOpen(false);
-      allowNavigation.current = true;
-      setDirty(false);
       toast.show({ title: t('Settings saved'), variant: 'success' });
+      if (navigation.completeMutation()) return;
       await navigate({
         params: { companyId },
         to: '/my-companies/dashboard/$companyId',
-      }).catch(() => {
-        allowNavigation.current = false;
-      });
+      }).catch(navigation.restrictNavigation);
     },
     validators: {
       onBlur: settingsSchema,
       onChange: settingsSchema,
     },
   });
-  const markDirty = () => setDirty(true);
+  const { markDirty } = navigation;
   const removeCategory = (index: number) => {
     form.setFieldValue(
       'categories',
@@ -202,17 +192,13 @@ function SettingsForm({
   const removeCategoryAt = (index: number) => () => removeCategory(index);
 
   useEffect(() => {
-    if (blocker.status === 'blocked') setDiscardOpen(true);
-  }, [blocker.status]);
-
-  useEffect(() => {
     const previousCategories = categorySource.current;
 
     if (previousCategories === initialValues.categories) return;
 
     categorySource.current = initialValues.categories;
 
-    if (dirty) return;
+    if (navigation.dirty) return;
 
     setCategoryKeys((keys) =>
       reconcileCategoryKeys(
@@ -227,7 +213,7 @@ function SettingsForm({
         },
       ),
     );
-  }, [dirty, initialValues.categories]);
+  }, [initialValues.categories, navigation.dirty]);
 
   return (
     <form
@@ -575,18 +561,12 @@ function SettingsForm({
               )}
             </form.Subscribe>
             <DiscardChangesDialog
-              blocker={blocker}
+              blocker={navigation.blocker}
               closeLabel={t('Close discard confirmation')}
               description={t('The unsaved settings changes will be lost.')}
-              onDiscard={() => {
-                if (submissionPending) return;
-
-                allowNavigation.current = true;
-                setDirty(false);
-                setDiscardOpen(false);
-              }}
-              onOpenChange={setDiscardOpen}
-              open={discardOpen && !submissionPending}
+              onDiscard={navigation.discardChanges}
+              onOpenChange={navigation.setDiscardOpen}
+              open={navigation.discardOpen && !submissionPending}
               title={t('Discard settings changes?')}
               trigger={t('Discard settings changes')}
             />

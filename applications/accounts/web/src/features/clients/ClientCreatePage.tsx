@@ -1,13 +1,14 @@
 import { useMutation } from '@apollo/client/react';
 import { Drawer, useToast } from '@motech-development/breeze-ui';
+import { useNavigate } from '@tanstack/react-router';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CREATE_CLIENT } from '../../data/operations';
 import { DiscardChangesDialog } from '../companies/DiscardChangesDialog';
+import { useFormNavigation } from '../forms/useFormNavigation';
 import { upsertClientInCache } from './cache-updates';
 import { ClientDetailsForm } from './ClientDetailsForm';
 import { ClientsPageContent } from './ClientsPageContent';
-import { useClientDrawerNavigation } from './useClientDrawerNavigation';
 
 function clientDefaults(companyId: string) {
   return {
@@ -24,10 +25,16 @@ export function ClientCreatePage({
 }: Readonly<{ companyId: string }>) {
   const { t } = useTranslation('clients');
   const toast = useToast();
+  const navigate = useNavigate();
   const creationComplete = useRef(false);
   const [creationPending, setCreationPending] = useState(false);
-  const navigation = useClientDrawerNavigation({
-    companyId,
+  const navigation = useFormNavigation({
+    blockPendingNavigation: creationPending,
+    onClose: () =>
+      navigate({
+        params: { companyId },
+        to: '/my-companies/clients/$companyId',
+      }),
     pending: creationPending,
   });
   const [createClient] = useMutation(CREATE_CLIENT);
@@ -97,12 +104,18 @@ export function ClientCreatePage({
                 title: t('Client added'),
                 variant: 'success',
               });
-              if (navigation.completeMutation()) return;
+              if (
+                navigation.completeMutation({ resumeBlockedNavigation: true })
+              )
+                return;
 
               try {
-                await navigation.navigateToClients(created.companyId);
+                await navigate({
+                  params: { companyId: created.companyId },
+                  to: '/my-companies/clients/$companyId',
+                });
               } catch {
-                await navigation.navigateToCompanies().catch(() => {
+                await navigate({ to: '/my-companies' }).catch(() => {
                   navigation.restrictNavigation();
                   setCreationPending(false);
                 });

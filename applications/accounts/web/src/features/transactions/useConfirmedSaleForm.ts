@@ -1,11 +1,12 @@
 import { useMutation, useQuery } from '@apollo/client/react';
 import { useToast } from '@motech-development/breeze-ui';
 import { useForm } from '@tanstack/react-form';
-import { useBlocker, useNavigate } from '@tanstack/react-router';
-import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from '@tanstack/react-router';
+import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ADD_TRANSACTION, GET_RECORD_TRANSACTION } from '../../data/operations';
 import { useOnlineStatus } from '../../pwa/connectivity';
+import { useFormNavigation } from '../forms/useFormNavigation';
 import type { AttachmentTransferResult } from './AttachmentUpload';
 import { addConfirmedTransactionToCache } from './cache-updates';
 import { buildConfirmedSale, confirmedSaleSchema } from './sale';
@@ -30,17 +31,16 @@ export function useConfirmedSaleForm(
   const navigate = useNavigate();
   const toast = useToast();
   const online = useOnlineStatus();
-  const [dirty, setDirty] = useState(false);
-  const [discardOpen, setDiscardOpen] = useState(false);
-  const allowNavigation = useRef(false);
+  const navigation = useFormNavigation({
+    onClose: () =>
+      navigate({
+        params: { companyId },
+        to: returnTo,
+      }),
+  });
   const attachmentTransfer = useRef<
     Promise<AttachmentTransferResult> | undefined
   >(undefined);
-  const blocker = useBlocker({
-    enableBeforeUnload: dirty,
-    shouldBlockFn: () => dirty && !allowNavigation.current,
-    withResolver: true,
-  });
   const { data, error, loading, refetch } = useQuery(GET_RECORD_TRANSACTION, {
     fetchPolicy: 'cache-and-network',
     nextFetchPolicy: 'cache-first',
@@ -105,17 +105,16 @@ export function useConfirmedSaleForm(
         return;
       }
 
-      allowNavigation.current = true;
-      setDirty(false);
       toast.show({
         description: `${recordedSale.name} · ${recordedSale.description}`,
         title: t('Confirmed sale recorded'),
         variant: 'success',
       });
+      if (navigation.completeMutation()) return;
       await navigate({
         params: { companyId },
         to: returnTo,
-      }).catch(() => undefined);
+      }).catch(navigation.restrictNavigation);
     },
     validators: {
       onBlur: confirmedSaleSchema,
@@ -123,59 +122,21 @@ export function useConfirmedSaleForm(
     },
   });
 
-  const markDirty = () => {
-    setDirty(true);
-  };
-  const leaveForm = () => {
-    allowNavigation.current = true;
-    setDiscardOpen(false);
-    setDirty(false);
-
-    if (blocker.status === 'blocked') {
-      blocker.proceed();
-      return;
-    }
-
-    navigate({
-      params: { companyId },
-      to: returnTo,
-    }).catch(() => undefined);
-  };
-  const requestClose = () => {
-    if (dirty) {
-      setDiscardOpen(true);
-      return;
-    }
-
-    leaveForm();
-  };
-  const resetBlockedNavigation = () => {
-    if (blocker.status === 'blocked' && !allowNavigation.current) {
-      blocker.reset();
-    }
-  };
-
-  useEffect(() => {
-    if (blocker.status === 'blocked') {
-      setDiscardOpen(true);
-    }
-  }, [blocker.status]);
-
   return {
     clients: data?.getClients.items ?? [],
     data,
-    dirty,
-    discardOpen,
+    dirty: navigation.dirty,
+    discardOpen: navigation.discardOpen,
     error,
     form,
-    leaveForm,
+    leaveForm: navigation.leave,
     loading,
-    markDirty,
+    markDirty: navigation.markDirty,
     online,
     refetch,
-    requestClose,
-    resetBlockedNavigation,
-    setDiscardOpen,
+    requestClose: navigation.requestClose,
+    resetBlockedNavigation: navigation.resetBlockedNavigation,
+    setDiscardOpen: navigation.setDiscardOpen,
     trackAttachmentTransfer: (transfer: Promise<AttachmentTransferResult>) => {
       attachmentTransfer.current = transfer;
     },

@@ -11,7 +11,7 @@ export interface ClientCacheValue {
 }
 
 const clientFragment = gql`
-  fragment AccountsWebClientCacheValue on Client {
+  fragment ClientCacheValue on Client {
     id
     name
   }

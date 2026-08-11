@@ -1,9 +1,10 @@
 import { useMutation } from '@apollo/client/react';
 import { Drawer, useToast } from '@motech-development/breeze-ui';
-import { useBlocker, useNavigate } from '@tanstack/react-router';
-import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from '@tanstack/react-router';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CREATE_COMPANY } from '../../data/operations';
+import { useFormNavigation } from '../forms/useFormNavigation';
 import { upsertCompanyInCache } from './cache-updates';
 import { CompaniesPageContent } from './CompaniesPageContent';
 import {
@@ -23,11 +24,8 @@ export function CompanyEnrolmentPage({ owner }: Readonly<{ owner: string }>) {
   const navigate = useNavigate();
   const toast = useToast();
   const initialValues = useRef(companyEnrolmentDefaults());
-  const allowNavigation = useRef(false);
   const creationComplete = useRef(false);
   const [step, setStep] = useState<1 | 2>(1);
-  const [dirty, setDirty] = useState(false);
-  const [discardOpen, setDiscardOpen] = useState(false);
   const [companyCreated, setCompanyCreated] = useState(false);
   const [creationPending, setCreationPending] = useState(false);
   const [company, setCompany] = useState<NormalisedCompanyDetails>(
@@ -38,53 +36,18 @@ export function CompanyEnrolmentPage({ owner }: Readonly<{ owner: string }>) {
     vat: initialValues.current.vat,
     yearEnd: initialValues.current.yearEnd,
   });
-  const blocker = useBlocker({
-    enableBeforeUnload: dirty,
-    shouldBlockFn: () => dirty && !allowNavigation.current,
-    withResolver: true,
+  const navigation = useFormNavigation({
+    onClose: () => navigate({ to: '/my-companies' }),
+    pending: creationPending,
   });
-  const blockerRef = useRef(blocker);
-
-  blockerRef.current = blocker;
   const [createCompany] = useMutation(CREATE_COMPANY);
-
-  const discardChanges = () => {
-    allowNavigation.current = true;
-    setDirty(false);
-    setDiscardOpen(false);
-  };
-  const leave = () => {
-    discardChanges();
-
-    if (blocker.status === 'blocked') {
-      blocker.proceed();
-      return;
-    }
-
-    navigate({ to: '/my-companies' }).catch(() => undefined);
-  };
-  const requestClose = () => {
-    if (creationPending) return;
-
-    if (dirty) {
-      setDiscardOpen(true);
-    } else {
-      leave();
-    }
-  };
-
-  useEffect(() => {
-    if (blocker.status === 'blocked' && !creationPending) {
-      setDiscardOpen(true);
-    }
-  }, [blocker.status, creationPending]);
 
   return (
     <>
       <CompaniesPageContent />
       <Drawer.Root
         onOpenChange={(open) => {
-          if (!open) requestClose();
+          if (!open) navigation.requestClose();
         }}
         open
         triggerless
@@ -104,8 +67,8 @@ export function CompanyEnrolmentPage({ owner }: Readonly<{ owner: string }>) {
             <CompanyDetailsForm
               initialValues={company}
               layout="stacked"
-              onCancel={requestClose}
-              onDirty={() => setDirty(true)}
+              onCancel={navigation.requestClose}
+              onDirty={navigation.markDirty}
               onSubmit={(value) => {
                 setCompany(value);
                 setStep(2);
@@ -121,8 +84,8 @@ export function CompanyEnrolmentPage({ owner }: Readonly<{ owner: string }>) {
                 setSetup(value);
                 setStep(1);
               }}
-              onCancel={requestClose}
-              onDirty={() => setDirty(true)}
+              onCancel={navigation.requestClose}
+              onDirty={navigation.markDirty}
               onSubmit={async (value) => {
                 if (creationComplete.current) return;
 
@@ -164,13 +127,8 @@ export function CompanyEnrolmentPage({ owner }: Readonly<{ owner: string }>) {
                   return;
                 }
 
-                const activeBlocker = blockerRef.current;
-
-                if (activeBlocker.status === 'blocked') activeBlocker.reset?.();
                 creationComplete.current = true;
                 setCompanyCreated(true);
-                allowNavigation.current = true;
-                setDirty(false);
                 toast.show({
                   description: t('{{name}} is ready to use.', {
                     name: created.name,
@@ -178,6 +136,7 @@ export function CompanyEnrolmentPage({ owner }: Readonly<{ owner: string }>) {
                   title: t('Company added'),
                   variant: 'success',
                 });
+                if (navigation.completeMutation()) return;
 
                 try {
                   await navigate({
@@ -196,22 +155,15 @@ export function CompanyEnrolmentPage({ owner }: Readonly<{ owner: string }>) {
         </Drawer.Content>
       </Drawer.Root>
       <DiscardChangesDialog
-        blocker={blocker}
+        blocker={navigation.blocker}
         closeLabel={t('Close discard confirmation')}
         description={t(
           'The company details entered in this drawer will be lost.',
         )}
         nested
-        onDiscard={() => {
-          if (creationPending) return;
-
-          discardChanges();
-          if (blocker.status !== 'blocked') {
-            navigate({ to: '/my-companies' }).catch(() => undefined);
-          }
-        }}
-        onOpenChange={setDiscardOpen}
-        open={discardOpen}
+        onDiscard={navigation.discardChanges}
+        onOpenChange={navigation.setDiscardOpen}
+        open={navigation.discardOpen}
         title={t('Discard this company?')}
         trigger={t('Discard company')}
       />
