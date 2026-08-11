@@ -135,7 +135,7 @@ export function ClientsPageContent({
             </Table.Column>
           </Table.Header>
           <Table.Body className={responsiveEntityTableClassNames.body}>
-            {clients.map((client, index) => (
+            {clients.map((client) => (
               <Table.Row
                 className={responsiveEntityTableClassNames.row}
                 data-testid={client.name}
@@ -163,7 +163,7 @@ export function ClientsPageContent({
                     name={client.name}
                     shape="circle"
                     size="sm"
-                    tone={index % 2 === 0 ? 'primary' : 'accent'}
+                    tone="primary"
                   />
                 </Table.Cell>
                 <Table.Cell

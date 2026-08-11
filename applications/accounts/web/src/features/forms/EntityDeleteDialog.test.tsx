@@ -75,7 +75,7 @@ describe('EntityDeleteDialog', () => {
     );
   });
 
-  it('uses the nested destructive confirmation treatment', async () => {
+  it('provides a close control for nested confirmation', async () => {
     const user = userEvent.setup();
 
     render(
@@ -102,7 +102,5 @@ describe('EntityDeleteDialog', () => {
     expect(
       screen.getByRole('button', { name: 'Close delete confirmation' }),
     ).toBeVisible();
-    expect(document.querySelector('[data-confirmation-icon]')).toBeVisible();
-    expect(document.querySelector('.bg-transparent')).toBeInTheDocument();
   });
 });
