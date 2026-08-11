@@ -123,6 +123,38 @@ describe('company route priming', () => {
     expect(notFound).toHaveBeenCalledWith({ throw: true });
   });
 
+  it('accepts a company found on a continuation page', async () => {
+    const query = vi
+      .fn()
+      .mockResolvedValueOnce({
+        data: {
+          getCompanies: {
+            items: [{ id: 'another-company' }],
+            nextToken: 'page-2',
+          },
+        },
+      })
+      .mockResolvedValueOnce({
+        data: {
+          getCompanies: { items: [{ id: companyId }], nextToken: null },
+        },
+      })
+      .mockResolvedValueOnce({ data: {} });
+
+    await expect(
+      primeClients(context(query), companyId),
+    ).resolves.toBeUndefined();
+    expect(query).toHaveBeenNthCalledWith(2, {
+      fetchPolicy: 'no-cache',
+      query: GET_COMPANIES,
+      variables: { nextToken: 'page-2', owner: 'auth0|owner' },
+    });
+    expect(query).toHaveBeenNthCalledWith(3, {
+      query: GET_CLIENTS,
+      variables: { id: companyId },
+    });
+  });
+
   it.each([
     ['details', primeCompanyDetails],
     ['settings', primeCompanySettings],

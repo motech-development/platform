@@ -81,7 +81,9 @@ export function EntityCollectionPage({
   return (
     <div className="min-w-0">
       <PageHeader
-        actions={state === 'populated' ? action : undefined}
+        actions={
+          state === 'loading' || state === 'populated' ? action : undefined
+        }
         description={description}
         title={title}
       />

@@ -1,8 +1,8 @@
 import { graphql } from '../graphql';
 
 export const GET_COMPANIES = graphql(`
-  query Companies($owner: ID!) {
-    getCompanies(id: $owner) {
+  query Companies($owner: ID!, $nextToken: String) {
+    getCompanies(id: $owner, nextToken: $nextToken) {
       id
       items {
         contact {
@@ -12,6 +12,7 @@ export const GET_COMPANIES = graphql(`
         name
         companyNumber
       }
+      nextToken
     }
   }
 `);
