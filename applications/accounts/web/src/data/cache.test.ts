@@ -28,6 +28,35 @@ const transactionsQuery = gql`
   }
 `;
 
+const clientsQuery = gql`
+  query CacheClients($id: ID!, $nextToken: String) {
+    getClients(id: $id, nextToken: $nextToken) {
+      __typename
+      id
+      nextToken
+      items {
+        __typename
+        id
+        name
+      }
+    }
+  }
+`;
+
+const recordTransactionClientsQuery = gql`
+  query CacheRecordTransactionClients($id: ID!) {
+    getClients(id: $id) {
+      __typename
+      id
+      items {
+        __typename
+        id
+        name
+      }
+    }
+  }
+`;
+
 const variables = {
   count: 100,
   id: 'company-1',
@@ -226,5 +255,63 @@ describe('confirmed Transaction pages', () => {
         })
         ?.getTransactions.items.map(({ id }) => id),
     ).toEqual(['first', 'overlap', 'second']);
+  });
+});
+
+describe('client pages', () => {
+  it('preserves loaded management pages across the transaction lookup', () => {
+    const cache = createAccountsCache();
+
+    cache.writeQuery({
+      data: {
+        getClients: {
+          __typename: 'Clients',
+          id: 'company-1',
+          items: [{ __typename: 'Client', id: 'first', name: 'First client' }],
+          nextToken: 'page-2',
+        },
+      },
+      query: clientsQuery,
+      variables: { id: 'company-1' },
+    });
+    cache.writeQuery({
+      data: {
+        getClients: {
+          __typename: 'Clients',
+          id: 'company-1',
+          items: [
+            { __typename: 'Client', id: 'second', name: 'Second client' },
+          ],
+          nextToken: 'page-3',
+        },
+      },
+      query: clientsQuery,
+      variables: { id: 'company-1', nextToken: 'page-2' },
+    });
+    cache.writeQuery({
+      data: {
+        getClients: {
+          __typename: 'Clients',
+          id: 'company-1',
+          items: [{ __typename: 'Client', id: 'first', name: 'Updated first' }],
+        },
+      },
+      query: recordTransactionClientsQuery,
+      variables: { id: 'company-1' },
+    });
+
+    expect(
+      cache.readQuery({ query: clientsQuery, variables: { id: 'company-1' } }),
+    ).toEqual({
+      getClients: {
+        __typename: 'Clients',
+        id: 'company-1',
+        items: [
+          { __typename: 'Client', id: 'first', name: 'Updated first' },
+          { __typename: 'Client', id: 'second', name: 'Second client' },
+        ],
+        nextToken: 'page-3',
+      },
+    });
   });
 });

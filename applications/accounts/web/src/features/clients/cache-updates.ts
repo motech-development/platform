@@ -24,6 +24,7 @@ export function upsertClientInCache(
 ) {
   upsertNamedEntityInCache({
     cache,
+    collectionFieldName: 'getClients',
     collectionId: companyId,
     collectionTypeName: 'Clients',
     entity: client,
@@ -39,6 +40,7 @@ export function removeClientFromCache(
 ) {
   removeEntityFromCache({
     cache,
+    collectionFieldName: 'getClients',
     collectionId: companyId,
     collectionTypeName: 'Clients',
     entityId: clientId,
