@@ -1,6 +1,7 @@
 import { ApolloLink } from '@apollo/client';
 import { ErrorLink } from '@apollo/client/link/error';
 import { RemoveTypenameFromVariablesLink } from '@apollo/client/link/remove-typename';
+import { LocalState } from '@apollo/client/local-state';
 import { ApolloClient } from '@apollo/client-integration-tanstack-start';
 import { AUTH_TYPE, createAuthLink } from 'aws-appsync-auth-link';
 import { createSubscriptionHandshakeLink } from 'aws-appsync-subscription-link';
@@ -46,6 +47,7 @@ export function createAccountsApolloClient(config: AccountsWebConfig) {
       authLink,
       subscriptionLink,
     ]),
+    localState: new LocalState(),
   });
 }
 
