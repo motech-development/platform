@@ -92,9 +92,7 @@ function ClientsPending({
           >
             <Drawer.Description>
               {addingClient
-                ? t(
-                    'Save their details so they’re ready when you record a sale.',
-                  )
+                ? t('Details for a new client.')
                 : t('Keep this client’s details up to date.')}
             </Drawer.Description>
             <Drawer.Title>
