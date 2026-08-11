@@ -46,16 +46,12 @@ const clientsQuery = gql`
   }
 `;
 
-const recordTransactionClientsQuery = gql`
-  query CacheRecordTransactionClients($id: ID!) {
+const clientPageStateQuery = gql`
+  query CacheClientPageState($id: ID!) {
     getClients(id: $id) {
-      __typename
-      id
-      items {
-        __typename
-        id
-        name
-      }
+      clientLoadedPageCount @client
+      clientRequestedPageCount @client
+      clientRefreshGeneration @client
     }
   }
 `;
@@ -262,7 +258,7 @@ describe('confirmed Transaction pages', () => {
 });
 
 describe('client pages', () => {
-  it('preserves clients displaced beyond the first page after a refresh', () => {
+  it('reopens pagination when a refresh extends an exhausted collection', () => {
     const cache = createAccountsCache();
 
     cache.writeQuery({
@@ -280,8 +276,8 @@ describe('client pages', () => {
             {
               __typename: 'Client',
               contact: { email: 'stale@example.com' },
-              id: 'displaced',
-              name: 'Displaced client',
+              id: 'second',
+              name: 'Second client',
             },
           ],
           nextToken: 'page-2',
@@ -299,8 +295,8 @@ describe('client pages', () => {
             {
               __typename: 'Client',
               contact: { email: 'later@example.com' },
-              id: 'later',
-              name: 'Later client',
+              id: 'third',
+              name: 'Third client',
             },
           ],
           nextToken: null,
@@ -317,18 +313,18 @@ describe('client pages', () => {
           items: [
             {
               __typename: 'Client',
-              contact: { email: 'updated-alice@example.com' },
+              contact: { email: 'alice@example.com' },
               id: 'first',
-              name: 'Updated Alice',
+              name: 'Alice',
             },
             {
               __typename: 'Client',
-              contact: { email: 'replacement@example.com' },
-              id: 'replacement',
-              name: 'Replacement client',
+              contact: { email: 'stale@example.com' },
+              id: 'second',
+              name: 'Second client',
             },
           ],
-          nextToken: 'page-2',
+          nextToken: 'refreshed-page-2',
         },
       },
       query: clientsQuery,
@@ -337,97 +333,69 @@ describe('client pages', () => {
 
     expect(
       cache.readQuery<{
-        getClients: { items: { id: string }[]; nextToken: null };
+        getClients: { items: { id: string }[]; nextToken: string };
       }>({ query: clientsQuery, variables: { id: 'company-1' } })?.getClients,
     ).toMatchObject({
-      items: [
-        { id: 'first' },
-        { id: 'replacement' },
-        { id: 'displaced' },
-        { id: 'later' },
-      ],
-      nextToken: null,
+      items: [{ id: 'first' }, { id: 'second' }],
+      nextToken: 'refreshed-page-2',
     });
-  });
-
-  it('preserves complete ordered management pages across a partial transaction lookup', () => {
-    const cache = createAccountsCache();
-
-    cache.writeQuery({
-      data: {
-        getClients: {
-          __typename: 'Clients',
-          id: 'company-1',
-          items: [
-            {
-              __typename: 'Client',
-              contact: { email: 'alice@example.com' },
-              id: 'first',
-              name: 'Alice',
-            },
-          ],
-          nextToken: 'page-2',
-        },
-      },
-      query: clientsQuery,
-      variables: { id: 'company-1' },
-    });
-    cache.writeQuery({
-      data: {
-        getClients: {
-          __typename: 'Clients',
-          id: 'company-1',
-          items: [
-            {
-              __typename: 'Client',
-              contact: { email: 'bob@example.com' },
-              id: 'second',
-              name: 'Bob',
-            },
-          ],
-          nextToken: 'page-3',
-        },
-      },
-      query: clientsQuery,
-      variables: { id: 'company-1', nextToken: 'page-2' },
-    });
-    cache.writeQuery({
-      data: {
-        getClients: {
-          __typename: 'Clients',
-          id: 'company-1',
-          items: [
-            { __typename: 'Client', id: 'second', name: 'Updated Bob' },
-            { __typename: 'Client', id: 'third', name: 'Unseen client' },
-          ],
-        },
-      },
-      query: recordTransactionClientsQuery,
-      variables: { id: 'company-1' },
-    });
-
     expect(
-      cache.readQuery({ query: clientsQuery, variables: { id: 'company-1' } }),
+      cache.readQuery({
+        query: clientPageStateQuery,
+        variables: { id: 'company-1' },
+      }),
     ).toEqual({
       getClients: {
         __typename: 'Clients',
-        id: 'company-1',
-        items: [
-          {
-            __typename: 'Client',
-            contact: { email: 'alice@example.com' },
-            id: 'first',
-            name: 'Alice',
-          },
-          {
-            __typename: 'Client',
-            contact: { email: 'bob@example.com' },
-            id: 'second',
-            name: 'Updated Bob',
-          },
-        ],
-        nextToken: 'page-3',
+        clientLoadedPageCount: 1,
+        clientRefreshGeneration: 1,
+        clientRequestedPageCount: 2,
       },
     });
+  });
+
+  it('drops deleted clients while rebuilding previously loaded pages', () => {
+    const cache = createAccountsCache();
+
+    const writeClients = (
+      ids: readonly string[],
+      nextToken: string | null,
+      pageToken?: string,
+    ) => {
+      cache.writeQuery({
+        data: {
+          getClients: {
+            __typename: 'Clients',
+            id: 'company-1',
+            items: ids.map((id) => ({
+              __typename: 'Client',
+              contact: { email: `${id}@example.com` },
+              id,
+              name: id.toUpperCase(),
+            })),
+            nextToken,
+          },
+        },
+        query: clientsQuery,
+        variables: {
+          id: 'company-1',
+          ...(pageToken ? { nextToken: pageToken } : {}),
+        },
+      });
+    };
+
+    writeClients(['a', 'b'], 'page-2');
+    writeClients(['c', 'd'], null, 'page-2');
+    writeClients(['a', 'c'], 'refreshed-page-2');
+    writeClients(['d'], null, 'refreshed-page-2');
+
+    expect(
+      cache
+        .readQuery<{ getClients: { items: { id: string }[] } }>({
+          query: clientsQuery,
+          variables: { id: 'company-1' },
+        })
+        ?.getClients.items.map(({ id }) => id),
+    ).toEqual(['a', 'c', 'd']);
   });
 });

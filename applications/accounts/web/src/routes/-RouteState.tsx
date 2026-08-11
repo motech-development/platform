@@ -12,6 +12,7 @@ import { useLocation, useNavigate } from '@tanstack/react-router';
 import { type ReactNode, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AuthenticationPanel } from '../auth/AuthenticationPanel';
+import { AddClientAction } from '../features/clients/AddClientAction';
 import { ClientDetailsFormSkeleton } from '../features/clients/ClientDetailsFormSkeleton';
 import { ClientsTableSkeleton } from '../features/clients/ClientsTableSkeleton';
 import {
@@ -66,6 +67,9 @@ function ClientsPending({
     <>
       <div className="min-w-0">
         <PageHeader
+          actions={
+            companyId ? <AddClientAction companyId={companyId} /> : undefined
+          }
           description={t(
             'People and organisations linked to sales transactions.',
           )}

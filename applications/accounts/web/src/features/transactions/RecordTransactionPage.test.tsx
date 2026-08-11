@@ -13,6 +13,7 @@ import { RecordTransactionPage } from './RecordTransactionPage';
 const mocks = vi.hoisted(() => ({
   addTransaction: vi.fn(),
   navigate: vi.fn(),
+  queryOptions: vi.fn(),
   queryResult: {
     data: undefined as
       | {
@@ -53,7 +54,11 @@ vi.mock('@apollo/client/react', async (importOriginal) => ({
       ? [mocks.requestUpload, { loading: false }]
       : [mocks.addTransaction];
   },
-  useQuery: () => mocks.queryResult,
+  useQuery: (_document: unknown, options: unknown) => {
+    mocks.queryOptions(options);
+
+    return mocks.queryResult;
+  },
 }));
 
 const successfulQueryData = {
@@ -104,6 +109,7 @@ describe('RecordTransactionPage', () => {
     mocks.addTransaction.mockReset();
     mocks.navigate.mockReset();
     mocks.navigate.mockResolvedValue(undefined);
+    mocks.queryOptions.mockReset();
     mocks.queryResult.data = successfulQueryData;
     mocks.queryResult.error = undefined;
     mocks.queryResult.loading = false;
@@ -160,6 +166,11 @@ describe('RecordTransactionPage', () => {
         <RecordTransactionPage companyId="company-id" origin="transactions" />
       </BreezeProvider>,
     );
+
+    expect(mocks.queryOptions).toHaveBeenCalledWith({
+      fetchPolicy: 'no-cache',
+      variables: { id: 'company-id' },
+    });
 
     expect(screen.getByLabelText('Sale')).toBeChecked();
     expect(screen.getByLabelText('Confirmed')).toBeChecked();

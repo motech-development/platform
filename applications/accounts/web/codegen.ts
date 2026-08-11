@@ -23,7 +23,7 @@ const config: CodegenConfig = {
       },
     },
   },
-  schema: '../api/schema/*.graphql',
+  schema: ['../api/schema/*.graphql', 'src/data/client-schema.graphql'],
 };
 
 export default config;

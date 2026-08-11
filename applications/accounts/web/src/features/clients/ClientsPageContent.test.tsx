@@ -1,5 +1,5 @@
 import { BreezeProvider } from '@motech-development/breeze-ui';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ClientsPageContent } from './ClientsPageContent';
@@ -8,6 +8,9 @@ interface ClientQueryData {
   getClients: {
     items: Array<Record<string, unknown>>;
     nextToken?: string | null;
+    clientLoadedPageCount?: number;
+    clientRequestedPageCount?: number;
+    clientRefreshGeneration?: number;
   };
 }
 
@@ -184,6 +187,30 @@ describe('ClientsPageContent', () => {
 
     expect(screen.getAllByTestId('Alpha Limited')).toHaveLength(1);
     expect(screen.getByTestId('Beta Limited')).toBeVisible();
+  });
+
+  it('rebuilds the previously loaded page span after a refresh', async () => {
+    mocks.query.data = {
+      getClients: {
+        clientLoadedPageCount: 1,
+        clientRefreshGeneration: 2,
+        clientRequestedPageCount: 2,
+        items: [],
+        nextToken: 'refreshed-page-2',
+      },
+    };
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <ClientsPageContent companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    await waitFor(() =>
+      expect(mocks.query.fetchMore).toHaveBeenCalledWith({
+        variables: { nextToken: 'refreshed-page-2' },
+      }),
+    );
   });
 
   it('keeps client creation available while the first query runs', async () => {

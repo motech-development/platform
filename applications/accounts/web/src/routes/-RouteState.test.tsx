@@ -18,6 +18,13 @@ vi.mock('../observability', () => ({
   captureRouteFailure: mocks.captureRouteFailure,
 }));
 
+vi.mock('@motech-development/breeze-ui/icons', async (importOriginal) => ({
+  ...(await importOriginal<
+    typeof import('@motech-development/breeze-ui/icons')
+  >()),
+  AddIcon: () => <span aria-hidden="true">+</span>,
+}));
+
 vi.mock('@tanstack/react-router', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@tanstack/react-router')>()),
   useLocation: () => ({
@@ -77,6 +84,18 @@ describe('AccountsPending', () => {
     expect(screen.getByText('Bank account')).toBeInTheDocument();
     expect(screen.getByText('Address')).toBeInTheDocument();
     expect(screen.getByText('Contact details')).toBeInTheDocument();
+  });
+
+  it('keeps client creation available while the collection route loads', async () => {
+    const user = userEvent.setup();
+
+    renderPending('/my-companies/clients/company-id');
+
+    await user.click(screen.getByRole('button', { name: 'Add a new client' }));
+    expect(mocks.navigate).toHaveBeenCalledWith({
+      params: { companyId: 'company-id' },
+      to: '/my-companies/clients/$companyId/add-client',
+    });
   });
 
   it.each([

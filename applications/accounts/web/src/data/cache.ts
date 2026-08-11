@@ -8,7 +8,9 @@ import { InMemoryCache } from '@apollo/client-integration-tanstack-start';
 type CacheReference = Reference | StoreObject;
 
 interface ClientPage {
-  readonly loadedContinuation?: boolean;
+  readonly clientLoadedPageCount?: number;
+  readonly clientRequestedPageCount?: number;
+  readonly clientRefreshGeneration?: number;
   readonly __typename?: 'Clients';
   readonly id?: string;
   readonly items?: readonly CacheReference[];
@@ -45,48 +47,31 @@ function mergeClientPages(
     return !args?.nextToken && !partialFirstPage
       ? {
           ...incoming,
-          loadedContinuation: false,
+          clientLoadedPageCount: 1,
+          clientRefreshGeneration: 0,
+          clientRequestedPageCount: 1,
         }
       : incoming;
   }
 
   if (!args?.nextToken && !partialFirstPage) {
-    if (!existing.loadedContinuation || incoming.nextToken === null) {
-      return {
-        ...incoming,
-        loadedContinuation: false,
-      };
-    }
-
-    const refreshedFirstPageIds = new Set(incomingIds);
-    const retainedContinuation =
-      existing.items?.filter((client) => {
-        const id = entityId(client, readField);
-
-        return !refreshedFirstPageIds.has(id ?? '');
-      }) ?? [];
+    const loadedPageCount = existing.clientLoadedPageCount ?? 1;
 
     return {
       ...incoming,
-      items: [...incomingItems, ...retainedContinuation],
-      loadedContinuation: true,
-      nextToken: existing.nextToken,
+      clientLoadedPageCount: 1,
+      clientRefreshGeneration: (existing.clientRefreshGeneration ?? 0) + 1,
+      clientRequestedPageCount: Math.max(
+        loadedPageCount,
+        existing.clientRequestedPageCount ?? 1,
+      ),
     };
   }
 
   if (partialFirstPage) {
-    const incomingById = new Map(
-      incoming.items?.map((client) => [entityId(client, readField), client]),
-    );
-
-    return {
-      ...existing,
-      ...incoming,
-      items: existing.items?.map(
-        (client) => incomingById.get(entityId(client, readField)) ?? client,
-      ),
-      nextToken: existing.nextToken,
-    };
+    // Partial client consumers bypass cache writes. Preserve the complete
+    // management collection if an incidental partial write reaches this field.
+    return existing;
   }
 
   const incomingIdSet = new Set(incomingIds);
@@ -97,8 +82,13 @@ function mergeClientPages(
 
   return {
     ...incoming,
+    clientLoadedPageCount: (existing.clientLoadedPageCount ?? 1) + 1,
+    clientRefreshGeneration: existing.clientRefreshGeneration ?? 0,
+    clientRequestedPageCount: Math.max(
+      (existing.clientLoadedPageCount ?? 1) + 1,
+      existing.clientRequestedPageCount ?? 1,
+    ),
     items: [...retainedItems, ...incomingItems],
-    loadedContinuation: true,
   };
 }
 
@@ -135,6 +125,23 @@ export function createAccountsCache() {
         keyFields: ['id'],
       },
       Clients: {
+        fields: {
+          clientLoadedPageCount: {
+            read(value: number | undefined) {
+              return value ?? 1;
+            },
+          },
+          clientRefreshGeneration: {
+            read(value: number | undefined) {
+              return value ?? 0;
+            },
+          },
+          clientRequestedPageCount: {
+            read(value: number | undefined) {
+              return value ?? 1;
+            },
+          },
+        },
         keyFields: false,
       },
       Companies: {

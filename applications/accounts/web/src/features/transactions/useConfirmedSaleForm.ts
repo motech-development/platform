@@ -42,8 +42,7 @@ export function useConfirmedSaleForm(
     Promise<AttachmentTransferResult> | undefined
   >(undefined);
   const { data, error, loading, refetch } = useQuery(GET_RECORD_TRANSACTION, {
-    fetchPolicy: 'cache-and-network',
-    nextFetchPolicy: 'cache-first',
+    fetchPolicy: 'no-cache',
     variables: { id: companyId },
   });
   const [addTransaction] = useMutation(ADD_TRANSACTION);
