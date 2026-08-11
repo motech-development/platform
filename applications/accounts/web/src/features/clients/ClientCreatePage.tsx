@@ -56,7 +56,7 @@ export function ClientCreatePage({
           size="medium"
         >
           <Drawer.Description>
-            {t('Create a client for sales transactions.')}
+            {t('Save their details so they’re ready when you record a sale.')}
           </Drawer.Description>
           <Drawer.Title>{t('Add client')}</Drawer.Title>
           <ClientDetailsForm

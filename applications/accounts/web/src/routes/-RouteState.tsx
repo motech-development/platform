@@ -92,8 +92,10 @@ function ClientsPending({
           >
             <Drawer.Description>
               {addingClient
-                ? t('Create a client for sales transactions.')
-                : t('Update this client or remove them.')}
+                ? t(
+                    'Save their details so they’re ready when you record a sale.',
+                  )
+                : t('Keep this client’s details up to date.')}
             </Drawer.Description>
             <Drawer.Title>
               {addingClient ? t('Add client') : t('Edit client')}

@@ -80,19 +80,28 @@ describe('AccountsPending', () => {
   });
 
   it.each([
-    ['/my-companies/clients/company-id/add-client', 'Add client'],
+    [
+      '/my-companies/clients/company-id/add-client',
+      'Add client',
+      'Save their details so they’re ready when you record a sale.',
+    ],
     [
       '/my-companies/clients/company-id/update-details/client-id',
       'Edit client',
+      'Keep this client’s details up to date.',
     ],
-  ])('keeps the client drawer visible while %s loads', (pathname, title) => {
-    renderPending(pathname);
+  ])(
+    'keeps the client drawer visible while %s loads',
+    (pathname, title, description) => {
+      renderPending(pathname);
 
-    expect(screen.getByRole('dialog', { name: title })).toBeInTheDocument();
-    expect(
-      screen.getByRole('status', { name: 'Loading client details' }),
-    ).toHaveAttribute('aria-busy', 'true');
-  });
+      expect(screen.getByRole('dialog', { name: title })).toBeInTheDocument();
+      expect(screen.getByText(description)).toBeVisible();
+      expect(
+        screen.getByRole('status', { name: 'Loading client details' }),
+      ).toHaveAttribute('aria-busy', 'true');
+    },
+  );
 
   it.each([
     '/my-companies/clients/company-id/add-client',
