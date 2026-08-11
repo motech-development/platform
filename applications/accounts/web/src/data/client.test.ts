@@ -66,6 +66,59 @@ describe('createAccountsApolloClient', () => {
     expect(result.data).toEqual({ health: 'ok' });
   });
 
+  it('resolves client pagination state from the cache', async () => {
+    mocks.createSubscriptionHandshakeLink.mockReturnValue(
+      new ApolloLink(
+        () =>
+          new Observable((observer) => {
+            observer.next({
+              data: {
+                getClients: {
+                  __typename: 'Clients',
+                  id: 'company-id',
+                  items: [],
+                  nextToken: null,
+                },
+              },
+            });
+            observer.complete();
+          }),
+      ),
+    );
+    const client = createAccountsApolloClient(config);
+
+    const result = await client.query<{
+      getClients: {
+        clientLoadedPageCount: number;
+        clientRefreshGeneration: number;
+        clientRequestedPageCount: number;
+      };
+    }>({
+      fetchPolicy: 'network-only',
+      query: gql`
+        query ClientsWithPaginationState($id: ID!) {
+          getClients(id: $id) {
+            clientLoadedPageCount @client
+            clientRefreshGeneration @client
+            clientRequestedPageCount @client
+            id
+            items {
+              id
+            }
+            nextToken
+          }
+        }
+      `,
+      variables: { id: 'company-id' },
+    });
+
+    expect(result.data?.getClients).toMatchObject({
+      clientLoadedPageCount: 1,
+      clientRefreshGeneration: 0,
+      clientRequestedPageCount: 1,
+    });
+  });
+
   it('reports GraphQL transport failures with operation context', async () => {
     const transportError = new Error('Connection failed');
     mocks.createSubscriptionHandshakeLink.mockReturnValue(
