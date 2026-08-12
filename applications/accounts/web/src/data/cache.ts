@@ -26,6 +26,12 @@ interface TransactionPage {
   readonly status?: string;
 }
 
+interface NotificationCollection {
+  readonly __typename?: 'Notifications';
+  readonly id?: string | null;
+  readonly items?: readonly CacheReference[];
+}
+
 function entityId(
   entity: CacheReference,
   readField: FieldFunctionOptions['readField'],
@@ -136,6 +142,38 @@ function mergeTransactionPages(
   };
 }
 
+function mergeNotifications(
+  existing: NotificationCollection | undefined,
+  incoming: NotificationCollection,
+  { args, readField }: FieldFunctionOptions,
+): NotificationCollection {
+  const notifications = [...(incoming.items ?? []), ...(existing?.items ?? [])];
+  const count =
+    typeof args?.count === 'number' ? args.count : notifications.length;
+  const byId = new Map<string, CacheReference>();
+
+  notifications.forEach((notification) => {
+    const id = entityId(notification, readField);
+
+    if (id && !byId.has(id)) {
+      byId.set(id, notification);
+    }
+  });
+
+  return {
+    ...existing,
+    ...incoming,
+    items: [...byId.values()]
+      .sort((left, right) => {
+        const leftCreatedAt = readField<string>('createdAt', left) ?? '';
+        const rightCreatedAt = readField<string>('createdAt', right) ?? '';
+
+        return Date.parse(rightCreatedAt) - Date.parse(leftCreatedAt);
+      })
+      .slice(0, count),
+  };
+}
+
 export function createAccountsCache() {
   return new InMemoryCache({
     typePolicies: {
@@ -168,11 +206,27 @@ export function createAccountsCache() {
       Company: {
         keyFields: ['id'],
       },
+      Notification: {
+        fields: {
+          read: {
+            merge: (existing: boolean | undefined, incoming: boolean) =>
+              existing === true || incoming,
+          },
+        },
+        keyFields: ['id'],
+      },
+      Notifications: {
+        keyFields: false,
+      },
       Query: {
         fields: {
           getClients: {
             keyArgs: ['id'],
             merge: mergeClientPages,
+          },
+          getNotifications: {
+            keyArgs: ['count', 'id'],
+            merge: mergeNotifications,
           },
           getTransactions: {
             keyArgs: ['count', 'id', 'status'],

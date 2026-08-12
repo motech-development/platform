@@ -56,6 +56,23 @@ const clientPageStateQuery = gql`
   }
 `;
 
+const notificationsQuery = gql`
+  query CacheNotifications($id: ID!, $count: Int) {
+    getNotifications(id: $id, count: $count) {
+      __typename
+      id
+      items {
+        __typename
+        createdAt
+        id
+        message
+        owner
+        read
+      }
+    }
+  }
+`;
+
 const variables = {
   count: 100,
   id: 'company-1',
@@ -254,6 +271,76 @@ describe('confirmed Transaction pages', () => {
         })
         ?.getTransactions.items.map(({ id }) => id),
     ).toEqual(['first', 'overlap', 'second']);
+  });
+});
+
+describe('owner notifications', () => {
+  const notificationVariables = { count: 5, id: 'auth0|owner' };
+  const notification = (id: string, createdAt: string, read = false) => ({
+    __typename: 'Notification',
+    createdAt,
+    id,
+    message: 'REPORT_READY_TO_DOWNLOAD',
+    owner: notificationVariables.id,
+    read,
+  });
+  const writeNotifications = (
+    cache: ReturnType<typeof createAccountsCache>,
+    items: ReturnType<typeof notification>[],
+  ) => {
+    cache.writeQuery({
+      data: {
+        getNotifications: {
+          __typename: 'Notifications',
+          id: notificationVariables.id,
+          items,
+        },
+      },
+      query: notificationsQuery,
+      variables: notificationVariables,
+    });
+  };
+
+  it('retains a live notification when an eventually consistent query arrives later', () => {
+    const cache = createAccountsCache();
+
+    writeNotifications(cache, [
+      notification('live', '2026-08-12T10:00:00.000Z'),
+    ]);
+    writeNotifications(cache, [
+      notification('query', '2026-08-12T09:00:00.000Z'),
+    ]);
+
+    expect(
+      cache
+        .readQuery<{ getNotifications: { items: { id: string }[] } }>({
+          query: notificationsQuery,
+          variables: notificationVariables,
+        })
+        ?.getNotifications.items.map(({ id }) => id),
+    ).toEqual(['live', 'query']);
+  });
+
+  it('lets reconnect eviction replace retained events with authoritative state', () => {
+    const cache = createAccountsCache();
+
+    writeNotifications(cache, [
+      notification('stale-live', '2026-08-12T10:00:00.000Z'),
+    ]);
+    cache.evict({ fieldName: 'getNotifications', id: 'ROOT_QUERY' });
+    cache.gc();
+    writeNotifications(cache, [
+      notification('authoritative', '2026-08-12T11:00:00.000Z'),
+    ]);
+
+    expect(
+      cache
+        .readQuery<{ getNotifications: { items: { id: string }[] } }>({
+          query: notificationsQuery,
+          variables: notificationVariables,
+        })
+        ?.getNotifications.items.map(({ id }) => id),
+    ).toEqual(['authoritative']);
   });
 });
 

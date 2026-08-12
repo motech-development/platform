@@ -3,6 +3,26 @@
 This file supplements the repository-level `AGENTS.md` for work inside the
 Accounts application.
 
+## Specification and migration contract
+
+- Before implementing an issue, read its complete specification chain,
+  including every linked parent specification whose decisions govern the
+  task. Record the applicable requirements and the evidence that will prove
+  each one before editing code.
+- For replacement work, inventory the corresponding legacy source and browser
+  journeys before implementation. Preserve each applicable interaction intent,
+  identity, fixture, accessible control, and assertion, or record the exact
+  specification line that makes it unnecessary. Review for missing files and
+  missing journeys as well as defects in changed files.
+- Keep state ownership aligned with the Accounts migration specification: URL
+  state belongs to the router, remote state to Apollo, form state to TanStack
+  Form, and local interaction state to the nearest component. Do not duplicate
+  GraphQL records in React state to bridge query and subscription behaviour;
+  reconcile them through Apollo cache policies and updates.
+- A completion or review claim must map every acceptance criterion to direct
+  code and proportionate observable evidence. A focused component test does
+  not replace an explicitly required hosted browser journey.
+
 ## Design authority
 
 - Read the root `DESIGN.md` before adding or materially changing an Accounts
