@@ -559,9 +559,9 @@ describe('OwnerNotificationMenu', () => {
     await user.click(retry);
 
     await act(async () => {
-      failedRetry.reject(new Error('Overlapping retry failed'));
-      await Promise.resolve();
       successfulRetry.resolve(undefined);
+      await Promise.resolve();
+      failedRetry.reject(new Error('Overlapping retry failed'));
       await Promise.resolve();
     });
 

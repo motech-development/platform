@@ -17,6 +17,7 @@ import {
   useCallback,
   useContext,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -34,6 +35,62 @@ const LATEST_NOTIFICATION_COUNT = 5;
 type OwnerNotification = NonNullable<
   NonNullable<NotificationsQuery['getNotifications']['items']>[number]
 >;
+
+interface ReadAttemptState {
+  pendingAttempts: Set<symbol>;
+  succeeded: boolean;
+}
+
+function startReadAttempt(
+  attempts: Map<string, ReadAttemptState>,
+  ids: readonly string[],
+) {
+  const attempt = Symbol('read-attempt');
+
+  ids.forEach((id) => {
+    const state = attempts.get(id) ?? {
+      pendingAttempts: new Set<symbol>(),
+      succeeded: false,
+    };
+
+    state.pendingAttempts.add(attempt);
+    attempts.set(id, state);
+  });
+
+  return attempt;
+}
+
+function settleReadAttempt(
+  attempts: Map<string, ReadAttemptState>,
+  ids: readonly string[],
+  attempt: symbol,
+  succeeded: boolean,
+) {
+  const failedIds: string[] = [];
+
+  ids.forEach((id) => {
+    const state = attempts.get(id);
+
+    if (!state) {
+      return;
+    }
+
+    state.pendingAttempts.delete(attempt);
+    state.succeeded ||= succeeded;
+
+    if (state.pendingAttempts.size > 0) {
+      return;
+    }
+
+    attempts.delete(id);
+
+    if (!state.succeeded) {
+      failedIds.push(id);
+    }
+  });
+
+  return failedIds;
+}
 
 function newestNotificationFirst(
   left: OwnerNotification,
@@ -173,6 +230,7 @@ export function OwnerNotificationProvider({
     () => new Set<string>(),
   );
   const [failedReadIds, setFailedReadIds] = useState<readonly string[]>([]);
+  const readAttempts = useRef(new Map<string, ReadAttemptState>());
   const {
     error: subscriptionError,
     loading: subscriptionLoading,
@@ -257,11 +315,14 @@ export function OwnerNotificationProvider({
         return;
       }
 
+      const attempt = startReadAttempt(readAttempts.current, ids);
+
       setOptimisticallyReadIds((current) => new Set([...current, ...ids]));
       markNotificationsRead({
         variables: { id: owner, input: { ids: [...ids] } },
       })
         .then(() => {
+          settleReadAttempt(readAttempts.current, ids, attempt, true);
           const completedIds = new Set(ids);
 
           setOptimisticallyReadIds(
@@ -272,13 +333,26 @@ export function OwnerNotificationProvider({
           );
         })
         .catch(() => {
-          const failedIds = new Set(ids);
+          const failedIds = settleReadAttempt(
+            readAttempts.current,
+            ids,
+            attempt,
+            false,
+          );
+
+          if (failedIds.length === 0) {
+            return;
+          }
+
+          const failedIdSet = new Set(failedIds);
 
           setOptimisticallyReadIds(
             (current) =>
-              new Set([...current].filter((id) => !failedIds.has(id))),
+              new Set([...current].filter((id) => !failedIdSet.has(id))),
           );
-          setFailedReadIds((current) => [...new Set([...current, ...ids])]);
+          setFailedReadIds((current) => [
+            ...new Set([...current, ...failedIds]),
+          ]);
         });
     },
     [markNotificationsRead, owner],
