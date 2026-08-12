@@ -114,12 +114,14 @@ function successfulMarkReadMock(ids: readonly string[]) {
 }
 
 function pendingMutation() {
+  let resolve!: (value: unknown) => void;
   let reject!: (reason?: unknown) => void;
-  const promise = new Promise<unknown>((_resolve, rejectPromise) => {
+  const promise = new Promise<unknown>((resolvePromise, rejectPromise) => {
+    resolve = resolvePromise;
     reject = rejectPromise;
   });
 
-  return { promise, reject };
+  return { promise, reject, resolve };
 }
 
 function setNotificationQueryResult({
@@ -207,6 +209,7 @@ describe('OwnerNotificationMenu', () => {
 
     await user.click(trigger);
     expect(screen.getByText('Your report is ready to download')).toBeVisible();
+    expect(screen.getByText(/^Unread:/u)).toBeInTheDocument();
     expect(screen.getByText(/Created/u)).toContainElement(
       screen.getByText('12 Aug 2026, 10:30'),
     );
@@ -217,6 +220,10 @@ describe('OwnerNotificationMenu', () => {
         screen.getByRole('button', { name: 'Notifications (0 unread)' }),
       ).toBeVisible(),
     );
+    await user.click(
+      screen.getByRole('button', { name: 'Notifications (0 unread)' }),
+    );
+    expect(screen.queryByText(/^Unread:/u)).not.toBeInTheDocument();
   });
 
   it('prepends each live notification once and retains only the latest five', async () => {
@@ -513,6 +520,50 @@ describe('OwnerNotificationMenu', () => {
       }),
     );
     await user.click(screen.getByRole('button', { name: 'Try again' }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: 'Notifications (0 unread)' }),
+      ).toBeVisible();
+    });
+  });
+
+  it('retains successful read state when overlapping retries settle out of order', async () => {
+    const user = userEvent.setup();
+    const failedRetry = pendingMutation();
+    const successfulRetry = pendingMutation();
+    const markNotificationsRead = vi
+      .fn()
+      .mockRejectedValueOnce(new Error('Initial mutation failed'))
+      .mockReturnValueOnce(failedRetry.promise)
+      .mockReturnValueOnce(successfulRetry.promise);
+    subscription.mutationResult = [markNotificationsRead, { loading: false }];
+    setNotificationQueryResult({
+      items: [notification('notification-1', '2026-08-12T09:00:00.000Z')],
+    });
+    renderNotificationMenu();
+
+    const trigger = screen.getByRole('button', {
+      name: 'Notifications (1 unread)',
+    });
+    await user.click(trigger);
+    await user.click(trigger);
+    await user.click(
+      await screen.findByRole('button', {
+        name: 'Notifications (1 unread)',
+      }),
+    );
+    const retry = screen.getByRole('button', { name: 'Try again' });
+    await user.click(retry);
+    await user.click(retry);
+
+    await act(async () => {
+      failedRetry.reject(new Error('Overlapping retry failed'));
+      await Promise.resolve();
+      successfulRetry.resolve(undefined);
+      await Promise.resolve();
+    });
 
     await waitFor(() => {
       expect(screen.queryByRole('alert')).not.toBeInTheDocument();

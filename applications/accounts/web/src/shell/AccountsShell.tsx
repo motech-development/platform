@@ -30,7 +30,10 @@ import {
   OwnerNotificationMenu,
   OwnerNotificationProvider,
 } from '../features/notifications/OwnerNotificationMenu';
-import { setObservabilityCompany } from '../observability';
+import {
+  captureSignOutFailure,
+  setObservabilityCompany,
+} from '../observability';
 import { companyDestination, companyFromPath } from './navigation';
 
 function AccountMenu({ onSignOut }: Readonly<{ onSignOut: () => void }>) {
@@ -54,7 +57,7 @@ function AccountMenu({ onSignOut }: Readonly<{ onSignOut: () => void }>) {
   return (
     <OwnerNotificationMenu
       onSignOut={() => {
-        signOut().catch(() => undefined);
+        signOut().catch(captureSignOutFailure);
       }}
       userName={auth.user?.name || auth.user?.email || t('Account owner')}
     />

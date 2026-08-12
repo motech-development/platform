@@ -167,7 +167,7 @@ export function capturePresignedTransferFailure(
 
 function captureBoundaryFailure(
   context: 'authentication' | 'route',
-  operation: 'RenderRoute' | 'RenewSession',
+  operation: 'RenderRoute' | 'RenewSession' | 'SignOut',
   error: unknown,
 ) {
   Sentry.withScope((scope) => {
@@ -182,6 +182,10 @@ export function captureRouteFailure(error: unknown) {
 
 export function captureSessionRenewalFailure(error: unknown) {
   captureBoundaryFailure('authentication', 'RenewSession', error);
+}
+
+export function captureSignOutFailure(error: unknown) {
+  captureBoundaryFailure('authentication', 'SignOut', error);
 }
 
 export function initialiseObservability(config: AccountsWebConfig) {
