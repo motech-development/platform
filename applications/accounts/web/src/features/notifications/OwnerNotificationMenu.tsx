@@ -17,7 +17,6 @@ import {
   useCallback,
   useContext,
   useMemo,
-  useRef,
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -36,85 +35,10 @@ type OwnerNotification = NonNullable<
   NonNullable<NotificationsQuery['getNotifications']['items']>[number]
 >;
 
-interface ReadAttemptState {
-  pendingAttempts: Set<symbol>;
-  succeeded: boolean;
-}
-
-function startReadAttempt(
-  attempts: Map<string, ReadAttemptState>,
-  ids: readonly string[],
-) {
-  const attempt = Symbol('read-attempt');
-
-  ids.forEach((id) => {
-    const state = attempts.get(id) ?? {
-      pendingAttempts: new Set<symbol>(),
-      succeeded: false,
-    };
-
-    state.pendingAttempts.add(attempt);
-    attempts.set(id, state);
-  });
-
-  return attempt;
-}
-
-function settleReadAttempt(
-  attempts: Map<string, ReadAttemptState>,
-  ids: readonly string[],
-  attempt: symbol,
-  succeeded: boolean,
-) {
-  const failedIds: string[] = [];
-
-  ids.forEach((id) => {
-    const state = attempts.get(id);
-
-    if (!state) {
-      return;
-    }
-
-    state.pendingAttempts.delete(attempt);
-    state.succeeded ||= succeeded;
-
-    if (state.pendingAttempts.size > 0) {
-      return;
-    }
-
-    attempts.delete(id);
-
-    if (!state.succeeded) {
-      failedIds.push(id);
-    }
-  });
-
-  return failedIds;
-}
-
-function newestNotificationFirst(
-  left: OwnerNotification,
-  right: OwnerNotification,
-) {
-  return Date.parse(right.createdAt) - Date.parse(left.createdAt);
-}
-
-function latestNotifications(
-  notifications: readonly (OwnerNotification | null)[],
-) {
-  const byId = notifications.reduce((current, notification) => {
-    if (!notification || current.has(notification.id)) {
-      return current;
-    }
-
-    current.set(notification.id, notification);
-
-    return current;
-  }, new Map<string, OwnerNotification>());
-
-  return [...byId.values()]
-    .sort(newestNotificationFirst)
-    .slice(0, LATEST_NOTIFICATION_COUNT);
+function isOwnerNotification(
+  notification: OwnerNotification | null,
+): notification is OwnerNotification {
+  return notification !== null;
 }
 
 function NotificationItems({
@@ -223,14 +147,7 @@ export function OwnerNotificationProvider({
   const [markNotificationsRead, { loading: markingNotificationsRead }] =
     useMutation(MARK_NOTIFICATIONS_READ);
   const handleSubscriptionConnection = useAppSyncSubscriptionConnection();
-  const [liveNotifications, setLiveNotifications] = useState<
-    readonly OwnerNotification[]
-  >([]);
-  const [optimisticallyReadIds, setOptimisticallyReadIds] = useState(
-    () => new Set<string>(),
-  );
   const [failedReadIds, setFailedReadIds] = useState<readonly string[]>([]);
-  const readAttempts = useRef(new Map<string, ReadAttemptState>());
   const {
     error: subscriptionError,
     loading: subscriptionLoading,
@@ -242,7 +159,11 @@ export function OwnerNotificationProvider({
     onData: ({ client, data: subscriptionData }) => {
       if (
         handleSubscriptionConnection(subscriptionData, () => {
-          setLiveNotifications([]);
+          client.cache.evict({
+            fieldName: 'getNotifications',
+            id: 'ROOT_QUERY',
+          });
+          client.cache.gc();
           client
             .refetchQueries({ include: [GET_NOTIFICATIONS] })
             .catch(() => undefined);
@@ -257,12 +178,6 @@ export function OwnerNotificationProvider({
         return;
       }
 
-      const unreadIncoming = { ...incoming, read: false };
-
-      setLiveNotifications((current) =>
-        latestNotifications([unreadIncoming, ...current]),
-      );
-
       client.cache.updateQuery(
         {
           query: GET_NOTIFICATIONS,
@@ -274,10 +189,7 @@ export function OwnerNotificationProvider({
               __typename: 'Notifications',
               id: owner,
             }),
-            items: latestNotifications([
-              unreadIncoming,
-              ...(current?.getNotifications.items ?? []),
-            ]),
+            items: [incoming],
           },
         }),
       );
@@ -287,26 +199,12 @@ export function OwnerNotificationProvider({
   const notificationData = data ?? previousData;
   const items = useMemo(
     () =>
-      latestNotifications([
-        ...liveNotifications,
-        ...(notificationData?.getNotifications.items ?? []),
-      ]),
-    [liveNotifications, notificationData],
-  );
-  const unreadItems = useMemo(
-    () =>
-      items.filter(({ id, read }) => !read && !optimisticallyReadIds.has(id)),
-    [items, optimisticallyReadIds],
-  );
-  const displayedItems = useMemo(
-    () =>
-      items.map((notification) =>
-        optimisticallyReadIds.has(notification.id)
-          ? { ...notification, read: true }
-          : notification,
+      (notificationData?.getNotifications.items ?? []).filter(
+        isOwnerNotification,
       ),
-    [items, optimisticallyReadIds],
+    [notificationData],
   );
+  const unreadItems = useMemo(() => items.filter(({ read }) => !read), [items]);
   const unreadCount = unreadItems.length;
 
   const markNotificationIdsRead = useCallback(
@@ -315,44 +213,41 @@ export function OwnerNotificationProvider({
         return;
       }
 
-      const attempt = startReadAttempt(readAttempts.current, ids);
-
-      setOptimisticallyReadIds((current) => new Set([...current, ...ids]));
       markNotificationsRead({
+        optimisticResponse: {
+          markAsRead: {
+            items: ids.map((id) => ({
+              id,
+              read: true,
+            })),
+          },
+        },
+        update: (cache) => {
+          ids.forEach((id) => {
+            const notificationId = cache.identify({
+              __typename: 'Notification',
+              id,
+            });
+
+            if (notificationId) {
+              cache.modify({
+                fields: { read: () => true },
+                id: notificationId,
+              });
+            }
+          });
+        },
         variables: { id: owner, input: { ids: [...ids] } },
       })
         .then(() => {
-          settleReadAttempt(readAttempts.current, ids, attempt, true);
           const completedIds = new Set(ids);
 
-          setOptimisticallyReadIds(
-            (current) => new Set([...current, ...completedIds]),
-          );
           setFailedReadIds((current) =>
             current.filter((id) => !completedIds.has(id)),
           );
         })
         .catch(() => {
-          const failedIds = settleReadAttempt(
-            readAttempts.current,
-            ids,
-            attempt,
-            false,
-          );
-
-          if (failedIds.length === 0) {
-            return;
-          }
-
-          const failedIdSet = new Set(failedIds);
-
-          setOptimisticallyReadIds(
-            (current) =>
-              new Set([...current].filter((id) => !failedIdSet.has(id))),
-          );
-          setFailedReadIds((current) => [
-            ...new Set([...current, ...failedIds]),
-          ]);
+          setFailedReadIds((current) => [...new Set([...current, ...ids])]);
         });
     },
     [markNotificationsRead, owner],
@@ -362,8 +257,7 @@ export function OwnerNotificationProvider({
     markNotificationIdsRead(unreadItems.map(({ id }) => id));
   }, [markNotificationIdsRead, unreadItems]);
 
-  const noNotificationData =
-    !notificationData && liveNotifications.length === 0;
+  const noNotificationData = !notificationData;
 
   const retryQuery = useCallback(() => {
     refetch().catch(() => undefined);
@@ -372,7 +266,7 @@ export function OwnerNotificationProvider({
     () => ({
       failedToMarkRead: failedReadIds.length > 0,
       initialLoading: loading && noNotificationData,
-      items: displayedItems,
+      items,
       markDisplayedNotificationsRead,
       markingNotificationsRead,
       queryFailed: Boolean(error && noNotificationData),
@@ -388,7 +282,7 @@ export function OwnerNotificationProvider({
     [
       error,
       failedReadIds,
-      displayedItems,
+      items,
       loading,
       markDisplayedNotificationsRead,
       markNotificationIdsRead,

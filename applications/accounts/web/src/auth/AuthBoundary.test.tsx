@@ -3,6 +3,7 @@ import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { AccountsShell } from '../shell/AccountsShell';
 import { AuthBoundary } from './AuthBoundary';
 import { type AccountsOwnerId, accountsOwnerIdFromAuth0User } from './owner';
 
@@ -29,10 +30,14 @@ const mocks = vi.hoisted(() => ({
     href: '/my-companies',
     pathname: '/my-companies',
   },
+  navigate: vi.fn().mockResolvedValue(undefined),
   observability: {
     captureSessionRenewalFailure: vi.fn(),
+    captureSignOutFailure: vi.fn(),
+    setObservabilityCompany: vi.fn(),
     setObservabilityUser: vi.fn(),
   },
+  ownerSubscription: vi.fn<(owner: string) => () => void>(() => vi.fn()),
   router: {
     invalidate: vi.fn().mockResolvedValue(undefined),
   },
@@ -43,19 +48,58 @@ const mocks = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('@apollo/client/react', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@apollo/client/react')>()),
-  useApolloClient: () => mocks.apolloClient,
-}));
+vi.mock('@apollo/client/react', async (importOriginal) => {
+  const original =
+    await importOriginal<typeof import('@apollo/client/react')>();
+  const { useEffect } = await import('react');
+
+  return {
+    ...original,
+    useApolloClient: () => mocks.apolloClient,
+    useMutation: () => [vi.fn(), { loading: false }],
+    useQuery: () => ({
+      data: undefined,
+      error: undefined,
+      loading: false,
+      previousData: undefined,
+      refetch: vi.fn().mockResolvedValue(undefined),
+    }),
+    useSubscription: (
+      _query: unknown,
+      options?: { variables?: { owner?: string } },
+    ) => {
+      const owner = options?.variables?.owner;
+
+      useEffect(
+        () => (owner ? mocks.ownerSubscription(owner) : undefined),
+        [owner],
+      );
+
+      return { error: undefined, loading: false, restart: vi.fn() };
+    },
+  };
+});
 
 vi.mock('@auth0/auth0-react', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@auth0/auth0-react')>()),
   useAuth0: () => mocks.auth,
 }));
 
+vi.mock('@motech-development/breeze-ui/icons', async (importOriginal) => ({
+  ...(await importOriginal<
+    typeof import('@motech-development/breeze-ui/icons')
+  >()),
+  BuildingIcon: () => <svg aria-hidden="true" />,
+  ChartIcon: () => <svg aria-hidden="true" />,
+  SettingsIcon: () => <svg aria-hidden="true" />,
+  UsersIcon: () => <svg aria-hidden="true" />,
+  WalletIcon: () => <svg aria-hidden="true" />,
+}));
+
 vi.mock('@tanstack/react-router', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@tanstack/react-router')>()),
   useLocation: () => mocks.location,
+  useNavigate: () => mocks.navigate,
   useRouter: () => mocks.router,
 }));
 
@@ -91,6 +135,22 @@ function renderBoundary(children?: ReactNode, preparedOwner?: AccountsOwnerId) {
   return render(boundary(children, preparedOwner));
 }
 
+function authenticatedShellBoundary() {
+  return (
+    <BreezeProvider locale="en-GB">
+      <AuthBoundary
+        pending={<p>Loading protected route</p>}
+        preparedOwner={accountsOwnerIdFromAuth0User(mocks.auth.user)}
+        renderProtected={(content, owner) => (
+          <AccountsShell authenticatedOwner={owner}>{content}</AccountsShell>
+        )}
+      >
+        <p>Protected route</p>
+      </AuthBoundary>
+    </BreezeProvider>
+  );
+}
+
 describe('AuthBoundary', () => {
   beforeEach(() => {
     mocks.auth.error = undefined;
@@ -99,6 +159,8 @@ describe('AuthBoundary', () => {
     mocks.auth.user = undefined;
     mocks.location.href = '/my-companies';
     mocks.location.pathname = '/my-companies';
+    mocks.ownerSubscription.mockReset();
+    mocks.ownerSubscription.mockReturnValue(vi.fn());
     vi.clearAllMocks();
   });
 
@@ -264,5 +326,35 @@ describe('AuthBoundary', () => {
     expect(
       mocks.observability.captureSessionRenewalFailure,
     ).toHaveBeenCalledExactlyOnceWith(failure);
+  });
+
+  it('disposes owner notifications before terminal renewal recovery renders', async () => {
+    const unsubscribeOwnerNotifications = vi.fn();
+
+    mocks.auth.getAccessTokenSilently.mockRejectedValueOnce(
+      new Error('Session renewal failed'),
+    );
+    mocks.auth.isAuthenticated = true;
+    mocks.auth.user = { sub: 'auth0|owner' };
+    mocks.ownerSubscription.mockReturnValue(unsubscribeOwnerNotifications);
+
+    render(authenticatedShellBoundary());
+    await screen.findByText('Protected route');
+    expect(mocks.ownerSubscription).toHaveBeenCalledExactlyOnceWith(
+      'auth0|owner',
+    );
+
+    act(() => {
+      window.dispatchEvent(new Event('offline'));
+      window.dispatchEvent(new Event('online'));
+    });
+
+    expect(
+      await screen.findByRole('heading', { name: 'Sign-in failed' }),
+    ).toBeVisible();
+    expect(unsubscribeOwnerNotifications).toHaveBeenCalledOnce();
+    expect(
+      screen.queryByRole('button', { name: /Notifications/u }),
+    ).not.toBeInTheDocument();
   });
 });

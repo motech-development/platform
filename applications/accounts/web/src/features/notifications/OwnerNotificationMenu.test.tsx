@@ -1,10 +1,12 @@
+import { ApolloLink, Observable } from '@apollo/client';
 import { MockedProvider } from '@apollo/client/testing/react';
 import { BreezeProvider } from '@motech-development/breeze-ui';
 import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import type { ComponentProps } from 'react';
+import { type ComponentProps, useState } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AccountsOwnerId } from '../../auth/owner';
+import { createAccountsCache } from '../../data/cache';
 import {
   GET_NOTIFICATIONS,
   MARK_NOTIFICATIONS_READ,
@@ -70,12 +72,24 @@ function notification(
   message = 'REPORT_READY_TO_DOWNLOAD',
   read = false,
 ): OwnerNotification {
-  return { createdAt, id, message, owner, read };
+  const value = {
+    __typename: 'Notification' as const,
+    createdAt,
+    id,
+    message,
+    owner,
+    read,
+  };
+
+  return value;
 }
 
-function notificationQueryMock(items: readonly OwnerNotification[]) {
+function notificationQueryMock(
+  items: readonly OwnerNotification[],
+  maxUsageCount = Number.POSITIVE_INFINITY,
+) {
   return {
-    maxUsageCount: Number.POSITIVE_INFINITY,
+    maxUsageCount,
     request: {
       query: GET_NOTIFICATIONS,
       variables: { count: 5, id: owner },
@@ -113,15 +127,72 @@ function successfulMarkReadMock(ids: readonly string[]) {
   };
 }
 
-function pendingMutation() {
-  let resolve!: (value: unknown) => void;
-  let reject!: (reason?: unknown) => void;
-  const promise = new Promise<unknown>((resolvePromise, rejectPromise) => {
-    resolve = resolvePromise;
-    reject = rejectPromise;
-  });
+function controlledNotificationLink(items: readonly OwnerNotification[]) {
+  const pendingMutations: Array<{
+    reject: (error: Error) => void;
+    resolve: () => void;
+  }> = [];
+  const link = new ApolloLink(
+    (operation) =>
+      new Observable((observer) => {
+        if (operation.operationName === 'Notifications') {
+          observer.next({
+            data: {
+              getNotifications: {
+                __typename: 'Notifications',
+                id: owner,
+                items: [...items],
+              },
+            },
+          });
+          observer.complete();
 
-  return { promise, reject, resolve };
+          return;
+        }
+
+        const { input } = operation.variables as {
+          input: { ids: readonly string[] };
+        };
+        const { ids } = input;
+
+        pendingMutations.push({
+          reject: (error) => {
+            observer.error(error);
+          },
+          resolve: () => {
+            observer.next({
+              data: {
+                markAsRead: {
+                  __typename: 'Notifications',
+                  items: ids.map((id) => ({
+                    __typename: 'Notification',
+                    id,
+                    read: true,
+                  })),
+                },
+              },
+            });
+            observer.complete();
+          },
+        });
+      }),
+  );
+  const pendingMutation = (index: number) => {
+    const mutation = pendingMutations[index];
+
+    if (!mutation) {
+      throw new Error(`Mutation ${index + 1} has not started`);
+    }
+
+    return mutation;
+  };
+
+  return {
+    link,
+    reject: (index: number, error: Error) =>
+      pendingMutation(index).reject(error),
+    resolve: (index: number) => pendingMutation(index).resolve(),
+  };
 }
 
 function setNotificationQueryResult({
@@ -156,17 +227,21 @@ function setNotificationQueryResult({
 }
 
 interface NotificationTestHarnessProps {
+  link?: ComponentProps<typeof MockedProvider>['link'];
   mocks?: ComponentProps<typeof MockedProvider>['mocks'];
   timeZone?: string;
 }
 
 function NotificationTestHarness({
+  link,
   mocks,
   timeZone,
 }: Readonly<NotificationTestHarnessProps>) {
+  const [cache] = useState(createAccountsCache);
+
   return (
     <BreezeProvider locale="en-GB" timeZone={timeZone}>
-      <MockedProvider mocks={mocks}>
+      <MockedProvider cache={cache} link={link} mocks={mocks}>
         <OwnerNotificationProvider owner={owner}>
           <OwnerNotificationMenu onSignOut={vi.fn()} userName="Morgan Green" />
         </OwnerNotificationProvider>
@@ -177,7 +252,11 @@ function NotificationTestHarness({
 
 function renderNotificationMenu(props: NotificationTestHarnessProps = {}) {
   return render(
-    <NotificationTestHarness mocks={props.mocks} timeZone={props.timeZone} />,
+    <NotificationTestHarness
+      link={props.link}
+      mocks={props.mocks}
+      timeZone={props.timeZone}
+    />,
   );
 }
 
@@ -220,6 +299,23 @@ describe('OwnerNotificationMenu', () => {
         screen.getByRole('button', { name: 'Notifications (0 unread)' }),
       ).toBeVisible(),
     );
+    await act(async () => {
+      subscription.options?.onData?.({
+        client: subscription.client,
+        data: {
+          data: {
+            onNotification: notification(
+              'notification-1',
+              '2026-08-12T09:30:00.000Z',
+            ),
+          },
+        },
+      });
+      await Promise.resolve();
+    });
+    expect(
+      screen.getByRole('button', { name: 'Notifications (0 unread)' }),
+    ).toBeVisible();
     await user.click(
       screen.getByRole('button', { name: 'Notifications (0 unread)' }),
     );
@@ -249,9 +345,10 @@ describe('OwnerNotificationMenu', () => {
     ].map(([id, createdAt, message]) =>
       notification(id, createdAt, message, true),
     );
-    setNotificationQueryResult({ items: notifications });
-
-    renderNotificationMenu({ timeZone: 'Europe/London' });
+    renderNotificationMenu({
+      mocks: [notificationQueryMock(notifications)],
+      timeZone: 'Europe/London',
+    });
 
     await screen.findByRole('button', { name: 'Notifications (0 unread)' });
     const incoming = notification(
@@ -411,12 +508,26 @@ describe('OwnerNotificationMenu', () => {
   });
 
   it('refetches the authoritative list after the live connection reconnects', async () => {
-    setNotificationQueryResult();
-    const view = renderNotificationMenu();
+    const notificationAfterReconnect = notification(
+      'notification-after-reconnect',
+      '2026-08-12T11:00:00.000Z',
+      'TRANSACTION_PUBLISHED',
+    );
     const notificationBeforeReconnect = notification(
       'notification-before-reconnect',
       '2026-08-12T10:00:00.000Z',
     );
+
+    renderNotificationMenu({
+      mocks: [
+        notificationQueryMock([], 1),
+        notificationQueryMock([
+          notificationAfterReconnect,
+          notificationBeforeReconnect,
+        ]),
+      ],
+    });
+    await screen.findByRole('button', { name: 'Notifications (0 unread)' });
 
     await act(async () => {
       subscription.options?.onData?.({
@@ -428,22 +539,12 @@ describe('OwnerNotificationMenu', () => {
       await Promise.resolve();
     });
     expect(
-      screen.getByRole('button', { name: 'Notifications (1 unread)' }),
+      await screen.findByRole('button', {
+        name: 'Notifications (1 unread)',
+      }),
     ).toBeVisible();
-    const notificationAfterReconnect = notification(
-      'notification-after-reconnect',
-      '2026-08-12T11:00:00.000Z',
-      'TRANSACTION_PUBLISHED',
-    );
-    const refetchQueries = vi.fn().mockImplementation(() => {
-      setNotificationQueryResult({
-        items: [notificationAfterReconnect, notificationBeforeReconnect],
-      });
-
-      return Promise.resolve(undefined);
-    });
     const event = {
-      client: { ...subscription.client, refetchQueries },
+      client: subscription.client,
       data: { extensions: { controlMsgType: 'CONNECTED' } },
     };
 
@@ -452,11 +553,11 @@ describe('OwnerNotificationMenu', () => {
       subscription.options?.onData?.(event);
       await Promise.resolve();
     });
-    view.rerender(<NotificationTestHarness />);
-
     const user = userEvent.setup();
     await user.click(
-      screen.getByRole('button', { name: 'Notifications (2 unread)' }),
+      await screen.findByRole('button', {
+        name: 'Notifications (2 unread)',
+      }),
     );
     expect(
       screen.getAllByText('Your report is ready to download'),
@@ -468,21 +569,17 @@ describe('OwnerNotificationMenu', () => {
 
   it('retries every unread notification after overlapping dismissals fail', async () => {
     const user = userEvent.setup();
-    const firstMutation = pendingMutation();
-    const secondMutation = pendingMutation();
-    const markNotificationsRead = vi
-      .fn()
-      .mockReturnValueOnce(firstMutation.promise)
-      .mockReturnValueOnce(secondMutation.promise)
-      .mockResolvedValueOnce(undefined);
-    subscription.mutationResult = [markNotificationsRead, { loading: false }];
-    setNotificationQueryResult({
-      items: [notification('notification-1', '2026-08-12T09:00:00.000Z')],
+    const requests = controlledNotificationLink([
+      notification('notification-1', '2026-08-12T09:00:00.000Z'),
+    ]);
+    renderNotificationMenu({
+      link: requests.link,
     });
-    renderNotificationMenu();
 
     await user.click(
-      screen.getByRole('button', { name: 'Notifications (1 unread)' }),
+      await screen.findByRole('button', {
+        name: 'Notifications (1 unread)',
+      }),
     );
     await user.click(
       screen.getByRole('button', { name: 'Notifications (1 unread)' }),
@@ -502,16 +599,18 @@ describe('OwnerNotificationMenu', () => {
       await Promise.resolve();
     });
     await user.click(
-      screen.getByRole('button', { name: 'Notifications (1 unread)' }),
+      await screen.findByRole('button', {
+        name: 'Notifications (1 unread)',
+      }),
     );
     await user.click(
       screen.getByRole('button', { name: 'Notifications (1 unread)' }),
     );
 
     await act(async () => {
-      secondMutation.reject(new Error('Second mutation failed'));
+      requests.reject(1, new Error('Second mutation failed'));
       await Promise.resolve();
-      firstMutation.reject(new Error('First mutation failed'));
+      requests.reject(0, new Error('First mutation failed'));
       await Promise.resolve();
     });
     await user.click(
@@ -520,48 +619,8 @@ describe('OwnerNotificationMenu', () => {
       }),
     );
     await user.click(screen.getByRole('button', { name: 'Try again' }));
-
-    await waitFor(() => {
-      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
-      expect(
-        screen.getByRole('button', { name: 'Notifications (0 unread)' }),
-      ).toBeVisible();
-    });
-  });
-
-  it('retains successful read state when overlapping retries settle out of order', async () => {
-    const user = userEvent.setup();
-    const failedRetry = pendingMutation();
-    const successfulRetry = pendingMutation();
-    const markNotificationsRead = vi
-      .fn()
-      .mockRejectedValueOnce(new Error('Initial mutation failed'))
-      .mockReturnValueOnce(failedRetry.promise)
-      .mockReturnValueOnce(successfulRetry.promise);
-    subscription.mutationResult = [markNotificationsRead, { loading: false }];
-    setNotificationQueryResult({
-      items: [notification('notification-1', '2026-08-12T09:00:00.000Z')],
-    });
-    renderNotificationMenu();
-
-    const trigger = screen.getByRole('button', {
-      name: 'Notifications (1 unread)',
-    });
-    await user.click(trigger);
-    await user.click(trigger);
-    await user.click(
-      await screen.findByRole('button', {
-        name: 'Notifications (1 unread)',
-      }),
-    );
-    const retry = screen.getByRole('button', { name: 'Try again' });
-    await user.click(retry);
-    await user.click(retry);
-
     await act(async () => {
-      successfulRetry.resolve(undefined);
-      await Promise.resolve();
-      failedRetry.reject(new Error('Overlapping retry failed'));
+      requests.resolve(2);
       await Promise.resolve();
     });
 
