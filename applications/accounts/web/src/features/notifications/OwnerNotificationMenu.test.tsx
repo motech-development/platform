@@ -267,10 +267,17 @@ describe('OwnerNotificationMenu', () => {
     });
 
     await user.click(trigger);
-    const items = screen.getAllByRole('listitem');
-
-    expect(items).toHaveLength(5);
-    expect(items[0]).toHaveTextContent('12 Aug 2026, 11:00');
+    expect(
+      screen
+        .getAllByText(/^12 Aug 2026/u)
+        .map((createdAt) => createdAt.textContent),
+    ).toEqual([
+      '12 Aug 2026, 11:00',
+      '12 Aug 2026, 10:30',
+      '12 Aug 2026, 09:00',
+      '12 Aug 2026, 08:00',
+      '12 Aug 2026, 07:00',
+    ]);
     expect(screen.queryByText('12 Aug 2026, 06:00')).not.toBeInTheDocument();
     expect(screen.getAllByText('12 Aug 2026, 11:00')).toHaveLength(1);
     expect(screen.getByText('You have a new notification')).toBeVisible();
@@ -444,7 +451,6 @@ describe('OwnerNotificationMenu', () => {
     await user.click(
       screen.getByRole('button', { name: 'Notifications (2 unread)' }),
     );
-    expect(screen.getAllByRole('listitem')).toHaveLength(2);
     expect(
       screen.getAllByText('Your report is ready to download'),
     ).toHaveLength(1);

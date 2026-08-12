@@ -1,7 +1,12 @@
 import { useMutation, useQuery, useSubscription } from '@apollo/client/react';
 import {
+  Alert,
+  Button,
   FormattedDateTime,
+  Inline,
   Spinner,
+  Stack,
+  Typography,
   UserMenu,
 } from '@motech-development/breeze-ui';
 import { CONTROL_EVENTS_KEY } from 'aws-appsync-subscription-link';
@@ -21,7 +26,6 @@ import {
   ON_OWNER_NOTIFICATION,
 } from '../../data/operations';
 import type { NotificationsQuery } from '../../graphql/graphql';
-import { RetryAlert } from '../RetryAlert';
 import { useAppSyncSubscriptionConnection } from '../subscriptions';
 
 const LATEST_NOTIFICATION_COUNT = 5;
@@ -61,47 +65,62 @@ function NotificationItems({
   const { t } = useTranslation('notifications');
 
   if (items.length === 0) {
-    return <p>{t('No notifications yet')}</p>;
+    return <Typography>{t('No notifications yet')}</Typography>;
   }
 
   return (
-    <ul className="-m-4 divide-y divide-[var(--breeze-border)]">
+    <Stack gap="md">
       {items.map((notification) => (
-        <li className="p-4" key={notification.id}>
-          <p className={notification.read ? undefined : 'font-bold'}>
+        <Stack gap="xs" key={notification.id}>
+          <Typography weight={notification.read ? 'regular' : 'bold'}>
             {t(`messages.${notification.message}`, {
               defaultValue: t('messages.fallback'),
             })}
-          </p>
-          <p className="mt-1 text-[var(--breeze-ink-soft)]">
+          </Typography>
+          <Typography colour="muted">
             {t('Created')}{' '}
             <FormattedDateTime
               options={{ dateStyle: 'medium', timeStyle: 'short' }}
               value={notification.createdAt}
             />
-          </p>
-        </li>
+          </Typography>
+        </Stack>
       ))}
-    </ul>
+    </Stack>
   );
 }
 
-function NotificationStatus({
-  children,
-  withBottomMargin = true,
-}: Readonly<{ children: ReactNode; withBottomMargin?: boolean }>) {
+function NotificationStatus({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <span
-      className={
-        withBottomMargin
-          ? 'mb-4 flex items-center gap-2'
-          : 'flex items-center gap-2'
-      }
-      role="status"
-    >
+    <Inline gap="sm" role="status" wrap={false}>
       <Spinner size="sm" />
-      {children}
-    </span>
+      <Typography as="span">{children}</Typography>
+    </Inline>
+  );
+}
+
+function NotificationFailure({
+  children,
+  loading = false,
+  onRetry,
+  retryLabel,
+  variant = 'warning',
+}: Readonly<{
+  children: ReactNode;
+  loading?: boolean;
+  onRetry: () => void;
+  retryLabel: string;
+  variant?: 'danger' | 'warning';
+}>) {
+  return (
+    <Alert variant={variant}>
+      <Stack align="start" gap="sm">
+        <Typography>{children}</Typography>
+        <Button appearance="text" loading={loading} onAction={onRetry}>
+          {retryLabel}
+        </Button>
+      </Stack>
+    </Alert>
   );
 }
 
@@ -345,24 +364,21 @@ export function OwnerNotificationMenu({
 
   if (initialLoading) {
     notificationContent = (
-      <NotificationStatus withBottomMargin={false}>
-        {t('Loading notifications')}
-      </NotificationStatus>
+      <NotificationStatus>{t('Loading notifications')}</NotificationStatus>
     );
   } else if (queryFailed) {
     notificationContent = (
-      <RetryAlert
-        className="mb-4 flex-wrap last:mb-0"
+      <NotificationFailure
         onRetry={retryQuery}
         retryLabel={t('Try again', { ns: 'routing' })}
         variant="danger"
       >
         {t('Notifications could not be loaded')}
-      </RetryAlert>
+      </NotificationFailure>
     );
   } else {
     notificationContent = (
-      <div>
+      <Stack gap="md">
         {queryRefreshing ? (
           <NotificationStatus>
             {t('Refreshing notifications')}
@@ -377,36 +393,33 @@ export function OwnerNotificationMenu({
           <NotificationStatus>{t('Updating notifications')}</NotificationStatus>
         ) : null}
         {queryRefreshFailed ? (
-          <RetryAlert
-            className="mb-4 flex-wrap last:mb-0"
+          <NotificationFailure
             onRetry={retryQuery}
             retryLabel={t('Try again', { ns: 'routing' })}
           >
             {t('Notifications could not be refreshed')}
-          </RetryAlert>
+          </NotificationFailure>
         ) : null}
         {subscriptionFailed ? (
-          <RetryAlert
-            className="mb-4 flex-wrap last:mb-0"
+          <NotificationFailure
             onRetry={retrySubscription}
             retryLabel={t('Try reconnecting')}
           >
             {t('Live notification updates are unavailable')}
-          </RetryAlert>
+          </NotificationFailure>
         ) : null}
         {failedToMarkRead ? (
-          <RetryAlert
-            className="mb-4 flex-wrap last:mb-0"
+          <NotificationFailure
             loading={markingNotificationsRead}
             onRetry={retryMarkRead}
             retryLabel={t('Try again', { ns: 'routing' })}
             variant="danger"
           >
             {t('Notifications could not be marked as read')}
-          </RetryAlert>
+          </NotificationFailure>
         ) : null}
         <NotificationItems items={items} />
-      </div>
+      </Stack>
     );
   }
 
