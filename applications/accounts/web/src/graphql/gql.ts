@@ -34,6 +34,9 @@ type Documents = {
     "\n  mutation RequestUpload($id: ID!, $input: StorageUploadInput!) {\n    requestUpload(id: $id, input: $input) {\n      id\n      url\n    }\n  }\n": typeof types.RequestUploadDocument,
     "\n  query RequestDownload($id: ID!, $path: String!) {\n    requestDownload(id: $id, path: $path) {\n      url\n    }\n  }\n": typeof types.RequestDownloadDocument,
     "\n  subscription OnTransaction($id: ID!, $owner: String!) {\n    onTransaction(id: $id, owner: $owner) {\n      balance\n      id\n      vat {\n        owed\n        paid\n      }\n    }\n  }\n": typeof types.OnTransactionDocument,
+    "\n  query Notifications($id: ID!, $count: Int) {\n    getNotifications(id: $id, count: $count) {\n      id\n      items {\n        createdAt\n        id\n        message\n        owner\n        read\n      }\n    }\n  }\n": typeof types.NotificationsDocument,
+    "\n  mutation MarkNotificationsRead($id: ID!, $input: MarkNotificationsInput!) {\n    markAsRead(id: $id, input: $input) {\n      items {\n        id\n        read\n      }\n    }\n  }\n": typeof types.MarkNotificationsReadDocument,
+    "\n  subscription OnOwnerNotification($owner: String!) {\n    onNotification(owner: $owner) {\n      createdAt\n      id\n      message\n      owner\n      read\n    }\n  }\n": typeof types.OnOwnerNotificationDocument,
     "\n  fragment ClientCacheValue on Client {\n    id\n    name\n  }\n": typeof types.ClientCacheValueFragmentDoc,
     "\n  fragment CompanyCacheValue on Company {\n    id\n    name\n    companyNumber\n  }\n": typeof types.CompanyCacheValueFragmentDoc,
 };
@@ -58,6 +61,9 @@ const documents: Documents = {
     "\n  mutation RequestUpload($id: ID!, $input: StorageUploadInput!) {\n    requestUpload(id: $id, input: $input) {\n      id\n      url\n    }\n  }\n": types.RequestUploadDocument,
     "\n  query RequestDownload($id: ID!, $path: String!) {\n    requestDownload(id: $id, path: $path) {\n      url\n    }\n  }\n": types.RequestDownloadDocument,
     "\n  subscription OnTransaction($id: ID!, $owner: String!) {\n    onTransaction(id: $id, owner: $owner) {\n      balance\n      id\n      vat {\n        owed\n        paid\n      }\n    }\n  }\n": types.OnTransactionDocument,
+    "\n  query Notifications($id: ID!, $count: Int) {\n    getNotifications(id: $id, count: $count) {\n      id\n      items {\n        createdAt\n        id\n        message\n        owner\n        read\n      }\n    }\n  }\n": types.NotificationsDocument,
+    "\n  mutation MarkNotificationsRead($id: ID!, $input: MarkNotificationsInput!) {\n    markAsRead(id: $id, input: $input) {\n      items {\n        id\n        read\n      }\n    }\n  }\n": types.MarkNotificationsReadDocument,
+    "\n  subscription OnOwnerNotification($owner: String!) {\n    onNotification(owner: $owner) {\n      createdAt\n      id\n      message\n      owner\n      read\n    }\n  }\n": types.OnOwnerNotificationDocument,
     "\n  fragment ClientCacheValue on Client {\n    id\n    name\n  }\n": types.ClientCacheValueFragmentDoc,
     "\n  fragment CompanyCacheValue on Company {\n    id\n    name\n    companyNumber\n  }\n": types.CompanyCacheValueFragmentDoc,
 };
@@ -156,6 +162,18 @@ export function graphql(source: "\n  query RequestDownload($id: ID!, $path: Stri
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  subscription OnTransaction($id: ID!, $owner: String!) {\n    onTransaction(id: $id, owner: $owner) {\n      balance\n      id\n      vat {\n        owed\n        paid\n      }\n    }\n  }\n"): (typeof documents)["\n  subscription OnTransaction($id: ID!, $owner: String!) {\n    onTransaction(id: $id, owner: $owner) {\n      balance\n      id\n      vat {\n        owed\n        paid\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query Notifications($id: ID!, $count: Int) {\n    getNotifications(id: $id, count: $count) {\n      id\n      items {\n        createdAt\n        id\n        message\n        owner\n        read\n      }\n    }\n  }\n"): (typeof documents)["\n  query Notifications($id: ID!, $count: Int) {\n    getNotifications(id: $id, count: $count) {\n      id\n      items {\n        createdAt\n        id\n        message\n        owner\n        read\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation MarkNotificationsRead($id: ID!, $input: MarkNotificationsInput!) {\n    markAsRead(id: $id, input: $input) {\n      items {\n        id\n        read\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation MarkNotificationsRead($id: ID!, $input: MarkNotificationsInput!) {\n    markAsRead(id: $id, input: $input) {\n      items {\n        id\n        read\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  subscription OnOwnerNotification($owner: String!) {\n    onNotification(owner: $owner) {\n      createdAt\n      id\n      message\n      owner\n      read\n    }\n  }\n"): (typeof documents)["\n  subscription OnOwnerNotification($owner: String!) {\n    onNotification(owner: $owner) {\n      createdAt\n      id\n      message\n      owner\n      read\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
