@@ -746,7 +746,7 @@ jobs:
           yarn workspaces foreach -Rpt --from '@accounts/client' run package
           yarn workspace @accounts/client build
 
-      - name: Run hosted Confirmed-sale journey
+      - name: Run hosted legacy-backed journeys
         env:
           DEPLOYMENT_URL: ${{ needs.accounts-web.outputs.deployment-url }}
         shell: bash
@@ -769,7 +769,7 @@ jobs:
           yarn workspace @accounts/client e2e-ci \
             "(?:^|/)vat-registered\.spec\.ts$" \
             --project=chromium \
-            --grep "should create a company|should update company settings|should add client 1"
+            --grep "should create a company|should update company settings|should add client 1|should generate and download report"
 
           ACCOUNTS_WEB_HOSTED_SMOKE=true \
             BASE_URL="$DEPLOYMENT_URL" \

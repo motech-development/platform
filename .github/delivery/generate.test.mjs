@@ -1164,7 +1164,7 @@ test('client delivery receives public API configuration through explicit job out
   }
 });
 
-test('replacement Accounts web uses normal delivery and one hosted Confirmed-sale journey', async () => {
+test('replacement Accounts web uses normal delivery and hosted legacy-backed journeys', async () => {
   const generated = await generateWorkflows({ write: false });
   const previewWorkflow = generated['deploy-to-environment.yml'];
   const developWorkflow = generated['deploy-to-develop.yml'];
@@ -1234,7 +1234,7 @@ test('replacement Accounts web uses normal delivery and one hosted Confirmed-sal
   }
   assert.match(
     previewValidation,
-    /Build legacy fixture client[\s\S]*should create a company\|should update company settings\|should add client 1[\s\S]*BASE_URL="\$DEPLOYMENT_URL"[\s\S]*foundation\|vat-registered/,
+    /Build legacy fixture client[\s\S]*should create a company\|should update company settings\|should add client 1\|should generate and download report[\s\S]*BASE_URL="\$DEPLOYMENT_URL"[\s\S]*foundation\|vat-registered/,
   );
   assert.match(previewValidation, /^      - accounts-web$/m);
   assert.match(previewValidation, /^      - accounts-client$/m);
