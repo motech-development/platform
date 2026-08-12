@@ -10,6 +10,7 @@ const mocks = vi.hoisted(() => ({
     logout: vi.fn().mockResolvedValue(undefined),
     user: { name: 'Morgan Green' },
   },
+  captureSignOutFailure: vi.fn(),
   clearStore: vi.fn().mockResolvedValue([]),
   location: {
     pathname: '/my-companies/accounts/7c22bba3-8036-4fa8-aae1-4611f1651e17',
@@ -26,20 +27,21 @@ vi.mock('@apollo/client/react', async (importOriginal) => {
   const original =
     await importOriginal<typeof import('@apollo/client/react')>();
   const { useEffect } = await import('react');
+  const { GET_NOTIFICATIONS } = await import('../data/operations');
 
   return {
     ...original,
     useApolloClient: () => ({ clearStore: mocks.clearStore }),
     useMutation: () => [mocks.markNotificationsRead, { loading: false }],
     useQuery: (
-      _query: unknown,
+      query: unknown,
       options?: { variables?: { count?: number; id?: string } },
     ) =>
-      options?.variables?.count === 5
+      query === GET_NOTIFICATIONS
         ? {
             data: {
               getNotifications: {
-                id: options.variables.id,
+                id: options?.variables?.id,
                 items: [],
               },
             },
@@ -48,7 +50,7 @@ vi.mock('@apollo/client/react', async (importOriginal) => {
             previousData: undefined,
             refetch: vi.fn().mockResolvedValue(undefined),
           }
-        : { data: undefined },
+        : { data: undefined, error: undefined, loading: false },
     useSubscription: (
       _query: unknown,
       options?: { variables?: { owner?: string } },
@@ -92,6 +94,7 @@ vi.mock('@tanstack/react-router', async (importOriginal) => ({
 }));
 
 vi.mock('../observability', () => ({
+  captureSignOutFailure: mocks.captureSignOutFailure,
   setObservabilityCompany: vi.fn(),
 }));
 
@@ -99,6 +102,7 @@ describe('AccountsShell', () => {
   beforeEach(() => {
     mocks.auth.logout.mockReset().mockResolvedValue(undefined);
     mocks.clearStore.mockReset().mockResolvedValue([]);
+    mocks.captureSignOutFailure.mockReset();
     mocks.location.pathname =
       '/my-companies/accounts/7c22bba3-8036-4fa8-aae1-4611f1651e17';
     mocks.navigate.mockReset().mockResolvedValue(undefined);
@@ -200,6 +204,32 @@ describe('AccountsShell', () => {
       expect(mocks.auth.logout).toHaveBeenCalledWith({
         logoutParams: { returnTo: window.location.origin },
       });
+    });
+  });
+
+  it('reports a failed sign-out redirect', async () => {
+    const user = userEvent.setup();
+    const signOutError = new Error('Sign-out redirect failed');
+    mocks.auth.logout.mockRejectedValueOnce(signOutError);
+    render(
+      <BreezeProvider locale="en-GB">
+        <AccountsShell authenticatedOwner={'auth0|owner' as AccountsOwnerId}>
+          <p>Private account data</p>
+        </AccountsShell>
+      </BreezeProvider>,
+    );
+
+    await user.click(
+      screen.getAllByRole('button', {
+        name: 'Notifications (0 unread)',
+      })[0],
+    );
+    await user.click(screen.getByRole('menuitem', { name: 'Sign out' }));
+
+    await waitFor(() => {
+      expect(mocks.captureSignOutFailure).toHaveBeenCalledExactlyOnceWith(
+        signOutError,
+      );
     });
   });
 

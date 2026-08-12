@@ -8,6 +8,7 @@ import {
   Stack,
   Typography,
   UserMenu,
+  VisuallyHidden,
 } from '@motech-development/breeze-ui';
 import { CONTROL_EVENTS_KEY } from 'aws-appsync-subscription-link';
 import {
@@ -55,7 +56,7 @@ function latestNotifications(
   }, new Map<string, OwnerNotification>());
 
   return [...byId.values()]
-    .toSorted(newestNotificationFirst)
+    .sort(newestNotificationFirst)
     .slice(0, LATEST_NOTIFICATION_COUNT);
 }
 
@@ -73,6 +74,9 @@ function NotificationItems({
       {items.map((notification) => (
         <Stack gap="xs" key={notification.id}>
           <Typography weight={notification.read ? 'regular' : 'bold'}>
+            {notification.read ? null : (
+              <VisuallyHidden>{t('Unread')}: </VisuallyHidden>
+            )}
             {t(`messages.${notification.message}`, {
               defaultValue: t('messages.fallback'),
             })}
@@ -191,7 +195,7 @@ export function OwnerNotificationProvider({
 
       const incoming = subscriptionData.data?.onNotification;
 
-      if (!incoming || incoming.owner !== owner) {
+      if (incoming?.owner !== owner) {
         return;
       }
 
@@ -208,7 +212,10 @@ export function OwnerNotificationProvider({
         },
         (current) => ({
           getNotifications: {
-            ...(current?.getNotifications ?? { id: owner }),
+            ...(current?.getNotifications ?? {
+              __typename: 'Notifications',
+              id: owner,
+            }),
             items: latestNotifications([
               unreadIncoming,
               ...(current?.getNotifications.items ?? []),
@@ -257,6 +264,9 @@ export function OwnerNotificationProvider({
         .then(() => {
           const completedIds = new Set(ids);
 
+          setOptimisticallyReadIds(
+            (current) => new Set([...current, ...completedIds]),
+          );
           setFailedReadIds((current) =>
             current.filter((id) => !completedIds.has(id)),
           );
@@ -325,27 +335,14 @@ export function OwnerNotificationProvider({
   );
 }
 
-export function OwnerNotificationMenu({
-  onSignOut,
-  userName,
-}: Readonly<{
-  onSignOut: () => void;
-  userName: string;
-}>) {
-  const { t } = useTranslation('notifications');
-  const notifications = useContext(OwnerNotificationContext);
-
-  if (!notifications) {
-    throw new Error(
-      'OwnerNotificationMenu must be rendered inside OwnerNotificationProvider',
-    );
-  }
-
+function OwnerNotificationContent({
+  notifications,
+}: Readonly<{ notifications: OwnerNotificationContextValue }>) {
+  const { t } = useTranslation(['notifications', 'routing']);
   const {
     failedToMarkRead,
     initialLoading,
     items,
-    markDisplayedNotificationsRead,
     markingNotificationsRead,
     queryFailed,
     queryRefreshFailed,
@@ -355,19 +352,16 @@ export function OwnerNotificationMenu({
     retrySubscription,
     subscriptionConnecting,
     subscriptionFailed,
-    unreadCount,
   } = notifications;
-  const notificationLabel = t('Notifications ({{count}} unread)', {
-    count: unreadCount,
-  });
-  let notificationContent: ReactNode;
 
   if (initialLoading) {
-    notificationContent = (
+    return (
       <NotificationStatus>{t('Loading notifications')}</NotificationStatus>
     );
-  } else if (queryFailed) {
-    notificationContent = (
+  }
+
+  if (queryFailed) {
+    return (
       <NotificationFailure
         onRetry={retryQuery}
         retryLabel={t('Try again', { ns: 'routing' })}
@@ -376,52 +370,70 @@ export function OwnerNotificationMenu({
         {t('Notifications could not be loaded')}
       </NotificationFailure>
     );
-  } else {
-    notificationContent = (
-      <Stack gap="md">
-        {queryRefreshing ? (
-          <NotificationStatus>
-            {t('Refreshing notifications')}
-          </NotificationStatus>
-        ) : null}
-        {subscriptionConnecting ? (
-          <NotificationStatus>
-            {t('Connecting live updates')}
-          </NotificationStatus>
-        ) : null}
-        {markingNotificationsRead && !failedToMarkRead ? (
-          <NotificationStatus>{t('Updating notifications')}</NotificationStatus>
-        ) : null}
-        {queryRefreshFailed ? (
-          <NotificationFailure
-            onRetry={retryQuery}
-            retryLabel={t('Try again', { ns: 'routing' })}
-          >
-            {t('Notifications could not be refreshed')}
-          </NotificationFailure>
-        ) : null}
-        {subscriptionFailed ? (
-          <NotificationFailure
-            onRetry={retrySubscription}
-            retryLabel={t('Try reconnecting')}
-          >
-            {t('Live notification updates are unavailable')}
-          </NotificationFailure>
-        ) : null}
-        {failedToMarkRead ? (
-          <NotificationFailure
-            loading={markingNotificationsRead}
-            onRetry={retryMarkRead}
-            retryLabel={t('Try again', { ns: 'routing' })}
-            variant="danger"
-          >
-            {t('Notifications could not be marked as read')}
-          </NotificationFailure>
-        ) : null}
-        <NotificationItems items={items} />
-      </Stack>
+  }
+
+  return (
+    <Stack gap="md">
+      {queryRefreshing ? (
+        <NotificationStatus>{t('Refreshing notifications')}</NotificationStatus>
+      ) : null}
+      {subscriptionConnecting ? (
+        <NotificationStatus>{t('Connecting live updates')}</NotificationStatus>
+      ) : null}
+      {markingNotificationsRead && !failedToMarkRead ? (
+        <NotificationStatus>{t('Updating notifications')}</NotificationStatus>
+      ) : null}
+      {queryRefreshFailed ? (
+        <NotificationFailure
+          onRetry={retryQuery}
+          retryLabel={t('Try again', { ns: 'routing' })}
+        >
+          {t('Notifications could not be refreshed')}
+        </NotificationFailure>
+      ) : null}
+      {subscriptionFailed ? (
+        <NotificationFailure
+          onRetry={retrySubscription}
+          retryLabel={t('Try reconnecting')}
+        >
+          {t('Live notification updates are unavailable')}
+        </NotificationFailure>
+      ) : null}
+      {failedToMarkRead ? (
+        <NotificationFailure
+          loading={markingNotificationsRead}
+          onRetry={retryMarkRead}
+          retryLabel={t('Try again', { ns: 'routing' })}
+          variant="danger"
+        >
+          {t('Notifications could not be marked as read')}
+        </NotificationFailure>
+      ) : null}
+      <NotificationItems items={items} />
+    </Stack>
+  );
+}
+
+export function OwnerNotificationMenu({
+  onSignOut,
+  userName,
+}: Readonly<{
+  onSignOut: () => void;
+  userName: string;
+}>) {
+  const { t } = useTranslation(['notifications', 'shell']);
+  const notifications = useContext(OwnerNotificationContext);
+
+  if (!notifications) {
+    throw new Error(
+      'OwnerNotificationMenu must be rendered inside OwnerNotificationProvider',
     );
   }
+
+  const { markDisplayedNotificationsRead, unreadCount } = notifications;
+  const notificationLabel = t('Notifications ({{count}} unread)', {
+    count: unreadCount,
+  });
 
   return (
     <UserMenu
@@ -439,7 +451,7 @@ export function OwnerNotificationMenu({
       notificationState={
         unreadCount > 0 ? t('{{count}} new', { count: unreadCount }) : undefined
       }
-      notifications={notificationContent}
+      notifications={<OwnerNotificationContent notifications={notifications} />}
       onOpenChange={(open) => {
         if (!open) {
           markDisplayedNotificationsRead();

@@ -6,6 +6,7 @@ import {
   capturePresignedTransferFailure,
   captureRouteFailure,
   captureSessionRenewalFailure,
+  captureSignOutFailure,
   initialiseObservability,
   setObservabilityCompany,
   setObservabilityUser,
@@ -139,12 +140,14 @@ describe('Accounts web error monitoring', () => {
     expect(mocks.captureException).toHaveBeenCalledWith(error);
   });
 
-  it('captures original route and session-renewal failures at their boundaries', () => {
+  it('captures original route and authentication failures at their boundaries', () => {
     const routeError = new Error('Route rendering failed');
     const renewalError = new Error('Session renewal failed');
+    const signOutError = new Error('Sign-out redirect failed');
 
     captureRouteFailure(routeError);
     captureSessionRenewalFailure(renewalError);
+    captureSignOutFailure(signOutError);
 
     expect(mocks.scope.setContext).toHaveBeenNthCalledWith(1, 'route', {
       operation: 'RenderRoute',
@@ -154,8 +157,14 @@ describe('Accounts web error monitoring', () => {
       'authentication',
       { operation: 'RenewSession' },
     );
+    expect(mocks.scope.setContext).toHaveBeenNthCalledWith(
+      3,
+      'authentication',
+      { operation: 'SignOut' },
+    );
     expect(mocks.captureException).toHaveBeenNthCalledWith(1, routeError);
     expect(mocks.captureException).toHaveBeenNthCalledWith(2, renewalError);
+    expect(mocks.captureException).toHaveBeenNthCalledWith(3, signOutError);
   });
 
   it('keeps authenticated owner and active company context current', () => {
