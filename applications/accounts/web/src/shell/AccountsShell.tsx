@@ -10,7 +10,6 @@ import {
   NavigationList,
   Skeleton,
   Typography,
-  UserMenu,
   VisuallyHidden,
 } from '@motech-development/breeze-ui';
 import {
@@ -27,6 +26,10 @@ import { AuthenticationTransition } from '../auth/AuthenticationLoading';
 import type { AccountsOwnerId } from '../auth/owner';
 import { GET_COMPANIES } from '../data/operations';
 import { sortNamedEntities } from '../features/entity-details';
+import {
+  OwnerNotificationMenu,
+  OwnerNotificationProvider,
+} from '../features/notifications/OwnerNotificationMenu';
 import { setObservabilityCompany } from '../observability';
 import { companyDestination, companyFromPath } from './navigation';
 
@@ -49,18 +52,10 @@ function AccountMenu({ onSignOut }: Readonly<{ onSignOut: () => void }>) {
   };
 
   return (
-    <UserMenu
-      aria-label={t('Account menu')}
-      actions={[
-        {
-          id: 'logout',
-          label: t('Sign out'),
-          onAction: () => {
-            signOut().catch(() => undefined);
-          },
-          variant: 'danger',
-        },
-      ]}
+    <OwnerNotificationMenu
+      onSignOut={() => {
+        signOut().catch(() => undefined);
+      }}
       userName={auth.user?.name || auth.user?.email || t('Account owner')}
     />
   );
@@ -141,7 +136,7 @@ export function AccountsShell({
     return <AuthenticationTransition label={t('Signing out')} />;
   }
 
-  return (
+  const shell = (
     <ApplicationShell
       account={
         protectedOwner ? (
@@ -253,5 +248,13 @@ export function AccountsShell({
     >
       {children}
     </ApplicationShell>
+  );
+
+  return protectedOwner ? (
+    <OwnerNotificationProvider key={protectedOwner} owner={protectedOwner}>
+      {shell}
+    </OwnerNotificationProvider>
+  ) : (
+    shell
   );
 }

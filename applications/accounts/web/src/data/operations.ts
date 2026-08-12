@@ -410,3 +410,41 @@ export const ON_TRANSACTION = graphql(`
     }
   }
 `);
+
+export const GET_NOTIFICATIONS = graphql(`
+  query Notifications($id: ID!, $count: Int) {
+    getNotifications(id: $id, count: $count) {
+      id
+      items {
+        createdAt
+        id
+        message
+        owner
+        read
+      }
+    }
+  }
+`);
+
+export const MARK_NOTIFICATIONS_READ = graphql(`
+  mutation MarkNotificationsRead($id: ID!, $input: MarkNotificationsInput!) {
+    markAsRead(id: $id, input: $input) {
+      items {
+        id
+        read
+      }
+    }
+  }
+`);
+
+export const ON_OWNER_NOTIFICATION = graphql(`
+  subscription OnOwnerNotification($owner: String!) {
+    onNotification(owner: $owner) {
+      createdAt
+      id
+      message
+      owner
+      read
+    }
+  }
+`);

@@ -14,14 +14,60 @@ const mocks = vi.hoisted(() => ({
   location: {
     pathname: '/my-companies/accounts/7c22bba3-8036-4fa8-aae1-4611f1651e17',
   },
+  markNotificationsRead: vi.fn().mockResolvedValue(undefined),
   navigate: vi.fn().mockResolvedValue(undefined),
+  restartOwnerNotifications: vi.fn(),
+  subscribeToOwnerNotifications: vi.fn<(owner: string) => () => void>(() =>
+    vi.fn(),
+  ),
 }));
 
-vi.mock('@apollo/client/react', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@apollo/client/react')>()),
-  useApolloClient: () => ({ clearStore: mocks.clearStore }),
-  useQuery: () => ({ data: undefined }),
-}));
+vi.mock('@apollo/client/react', async (importOriginal) => {
+  const original =
+    await importOriginal<typeof import('@apollo/client/react')>();
+  const { useEffect } = await import('react');
+
+  return {
+    ...original,
+    useApolloClient: () => ({ clearStore: mocks.clearStore }),
+    useMutation: () => [mocks.markNotificationsRead, { loading: false }],
+    useQuery: (
+      _query: unknown,
+      options?: { variables?: { count?: number; id?: string } },
+    ) =>
+      options?.variables?.count === 5
+        ? {
+            data: {
+              getNotifications: {
+                id: options.variables.id,
+                items: [],
+              },
+            },
+            error: undefined,
+            loading: false,
+            previousData: undefined,
+            refetch: vi.fn().mockResolvedValue(undefined),
+          }
+        : { data: undefined },
+    useSubscription: (
+      _query: unknown,
+      options?: { variables?: { owner?: string } },
+    ) => {
+      const owner = options?.variables?.owner;
+
+      useEffect(
+        () => (owner ? mocks.subscribeToOwnerNotifications(owner) : undefined),
+        [owner],
+      );
+
+      return {
+        error: undefined,
+        loading: false,
+        restart: mocks.restartOwnerNotifications,
+      };
+    },
+  };
+});
 
 vi.mock('@auth0/auth0-react', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@auth0/auth0-react')>()),
@@ -56,6 +102,10 @@ describe('AccountsShell', () => {
     mocks.location.pathname =
       '/my-companies/accounts/7c22bba3-8036-4fa8-aae1-4611f1651e17';
     mocks.navigate.mockReset().mockResolvedValue(undefined);
+    mocks.markNotificationsRead.mockReset().mockResolvedValue(undefined);
+    mocks.restartOwnerNotifications.mockReset();
+    mocks.subscribeToOwnerNotifications.mockReset();
+    mocks.subscribeToOwnerNotifications.mockReturnValue(vi.fn());
   });
 
   it('hides company navigation when no company is selected', () => {
@@ -107,11 +157,23 @@ describe('AccountsShell', () => {
     expect(
       screen.queryByRole('link', { name: /reports/i }),
     ).not.toBeInTheDocument();
+    expect(
+      screen.getAllByRole('button', {
+        name: 'Notifications (0 unread)',
+      }),
+    ).toHaveLength(2);
+    expect(mocks.subscribeToOwnerNotifications).toHaveBeenCalledExactlyOnceWith(
+      'auth0|owner',
+    );
   });
 
   it('hides protected content and logs out when cache cleanup fails', async () => {
     const user = userEvent.setup();
+    const unsubscribeOwnerNotifications = vi.fn();
 
+    mocks.subscribeToOwnerNotifications.mockReturnValue(
+      unsubscribeOwnerNotifications,
+    );
     mocks.clearStore.mockRejectedValueOnce(new Error('Cache cleanup failed'));
     render(
       <BreezeProvider locale="en-GB">
@@ -122,12 +184,15 @@ describe('AccountsShell', () => {
     );
 
     await user.click(
-      screen.getAllByRole('button', { name: 'Account menu' })[0],
+      screen.getAllByRole('button', {
+        name: 'Notifications (0 unread)',
+      })[0],
     );
     await user.click(screen.getByRole('menuitem', { name: 'Sign out' }));
 
     expect(screen.queryByText('Private account data')).not.toBeInTheDocument();
     expect(screen.getByText('Signing out')).toBeVisible();
+    expect(unsubscribeOwnerNotifications).toHaveBeenCalledOnce();
     expect(
       screen.queryByRole('navigation', { name: 'Accounts navigation' }),
     ).not.toBeInTheDocument();
@@ -136,5 +201,32 @@ describe('AccountsShell', () => {
         logoutParams: { returnTo: window.location.origin },
       });
     });
+  });
+
+  it('replaces owner notification state when the authenticated identity changes', () => {
+    const firstOwner = 'auth0|first-owner' as AccountsOwnerId;
+    const secondOwner = 'auth0|second-owner' as AccountsOwnerId;
+    const shell = (authenticatedOwner: AccountsOwnerId) => (
+      <BreezeProvider locale="en-GB">
+        <AccountsShell authenticatedOwner={authenticatedOwner}>
+          <p>Private account data</p>
+        </AccountsShell>
+      </BreezeProvider>
+    );
+    const unsubscribeFirstOwner = vi.fn();
+    const unsubscribeSecondOwner = vi.fn();
+    mocks.subscribeToOwnerNotifications
+      .mockReturnValueOnce(unsubscribeFirstOwner)
+      .mockReturnValueOnce(unsubscribeSecondOwner);
+    const view = render(shell(firstOwner));
+
+    view.rerender(shell(secondOwner));
+
+    expect(unsubscribeFirstOwner).toHaveBeenCalledOnce();
+    expect(mocks.subscribeToOwnerNotifications).toHaveBeenNthCalledWith(
+      2,
+      secondOwner,
+    );
+    expect(unsubscribeSecondOwner).not.toHaveBeenCalled();
   });
 });
