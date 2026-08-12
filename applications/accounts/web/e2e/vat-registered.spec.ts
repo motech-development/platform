@@ -586,10 +586,27 @@ test.describe('VAT registered Accounts', () => {
     });
   });
 
+  test('receives and dismisses the established report-ready notification', async ({
+    page,
+  }) => {
+    const unreadNotifications = page.getByRole('button', {
+      name: /Notifications \([1-5] unread\)/,
+    });
+
+    await unreadNotifications.click();
+    await expect(
+      page.getByText('Your report is ready to download').first(),
+    ).toBeVisible();
+    await unreadNotifications.click();
+    await expect(
+      page.getByRole('button', { name: 'Notifications (0 unread)' }),
+    ).toBeVisible();
+  });
+
   test('receives and dismisses the established virus notification', async ({
     page,
   }, testInfo) => {
-    test.setTimeout(0);
+    test.setTimeout(930000);
 
     const notifications = page.getByRole('button', {
       name: /Notifications \([0-5] unread\)/,
@@ -627,7 +644,10 @@ test.describe('VAT registered Accounts', () => {
       name: /Notifications \([1-5] unread\)/,
     });
 
-    await unreadNotifications.waitFor({ state: 'visible' });
+    await unreadNotifications.waitFor({
+      state: 'visible',
+      timeout: 900000,
+    });
     await unreadNotifications.click();
 
     const virusNotification = page

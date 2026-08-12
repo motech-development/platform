@@ -18,17 +18,26 @@ function subscriptionControlMessage(result: unknown) {
 export function useAppSyncSubscriptionConnection() {
   const hasConnected = useRef(false);
 
-  return useCallback((result: unknown, onReconnect: () => void) => {
-    if (subscriptionControlMessage(result) !== 'CONNECTED') {
-      return false;
-    }
+  return useCallback(
+    (
+      result: unknown,
+      onReconnect: () => void,
+      reconcileInitialConnection = false,
+    ) => {
+      if (subscriptionControlMessage(result) !== 'CONNECTED') {
+        return false;
+      }
 
-    if (hasConnected.current) {
-      onReconnect();
-    } else {
-      hasConnected.current = true;
-    }
+      if (hasConnected.current || reconcileInitialConnection) {
+        onReconnect();
+      }
 
-    return true;
-  }, []);
+      if (!hasConnected.current) {
+        hasConnected.current = true;
+      }
+
+      return true;
+    },
+    [],
+  );
 }

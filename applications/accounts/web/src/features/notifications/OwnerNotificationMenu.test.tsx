@@ -476,21 +476,31 @@ describe('OwnerNotificationMenu', () => {
     expect(screen.getByText('Your report is ready to download')).toBeVisible();
   });
 
-  it('reports a failed live connection and lets the user retry it', async () => {
+  it('recovers missed notifications after retrying the first live connection', async () => {
     const user = userEvent.setup();
     const restart = vi.fn();
-    setNotificationQueryResult();
+    const recoveredNotification = notification(
+      'notification-after-retry',
+      '2026-08-12T11:00:00.000Z',
+      'TRANSACTION_PUBLISHED',
+    );
+    const mocks = [
+      notificationQueryMock([], 1),
+      notificationQueryMock([recoveredNotification]),
+    ];
     subscription.result = {
       error: new Error('Subscription failed'),
       loading: false,
       restart,
     };
-    const view = renderNotificationMenu();
+    const view = renderNotificationMenu({ mocks });
 
     await user.click(
-      screen.getByRole('button', { name: 'Notifications (0 unread)' }),
+      await screen.findByRole('button', {
+        name: 'Notifications (0 unread)',
+      }),
     );
-    expect(screen.getByRole('alert')).toHaveTextContent(
+    expect(await screen.findByRole('alert')).toHaveTextContent(
       'Live notification updates are unavailable',
     );
     await user.click(screen.getByRole('button', { name: 'Try reconnecting' }));
@@ -501,10 +511,27 @@ describe('OwnerNotificationMenu', () => {
       loading: true,
       restart,
     };
-    view.rerender(<NotificationTestHarness />);
+    view.rerender(<NotificationTestHarness mocks={mocks} />);
 
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
     expect(screen.getByText('No notifications yet')).toBeVisible();
+
+    await act(async () => {
+      subscription.options?.onData?.({
+        client: subscription.client,
+        data: { extensions: { controlMsgType: 'CONNECTED' } },
+      });
+      await Promise.resolve();
+    });
+
+    expect(
+      await screen.findByRole('button', {
+        name: 'Notifications (1 unread)',
+      }),
+    ).toBeVisible();
+    expect(
+      screen.getByText('A scheduled transaction has been published'),
+    ).toBeVisible();
   });
 
   it('refetches the authoritative list after the live connection reconnects', async () => {
