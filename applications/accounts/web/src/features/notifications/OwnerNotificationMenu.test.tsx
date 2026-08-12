@@ -573,6 +573,33 @@ describe('OwnerNotificationMenu', () => {
     ).toBeVisible();
   });
 
+  it('removes notifications omitted by an authoritative connection refresh', async () => {
+    renderNotificationMenu({
+      mocks: [
+        notificationQueryMock(
+          [notification('expired-notification', '2026-08-12T10:00:00.000Z')],
+          1,
+        ),
+        notificationQueryMock([]),
+      ],
+    });
+    await screen.findByRole('button', { name: 'Notifications (1 unread)' });
+
+    await act(async () => {
+      subscription.options?.onData?.({
+        client: subscription.client,
+        data: { extensions: { controlMsgType: 'CONNECTED' } },
+      });
+      await Promise.resolve();
+    });
+
+    expect(
+      await screen.findByRole('button', {
+        name: 'Notifications (0 unread)',
+      }),
+    ).toBeVisible();
+  });
+
   it('refetches the authoritative list after the live connection reconnects', async () => {
     const notificationAfterReconnect = notification(
       'notification-after-reconnect',

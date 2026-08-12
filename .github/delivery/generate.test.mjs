@@ -1234,7 +1234,7 @@ test('replacement Accounts web uses normal delivery and hosted legacy-backed jou
   }
   assert.match(
     previewValidation,
-    /Build legacy fixture client[\s\S]*should create a company\|should update company settings\|should add client 1\|should generate and download report[\s\S]*BASE_URL="\$DEPLOYMENT_URL"[\s\S]*foundation\|vat-registered/,
+    /Build legacy fixture client[\s\S]*should create a company\|should update company settings\|should add client 1\|should generate and download report[\s\S]*non-vat-registered[\s\S]*should schedule a purchase refund\|should have published the scheduled transaction[\s\S]*BASE_URL="\$DEPLOYMENT_URL"[\s\S]*foundation\|vat-registered/,
   );
   assert.match(previewValidation, /^      - accounts-web$/m);
   assert.match(previewValidation, /^      - accounts-client$/m);

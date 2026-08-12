@@ -141,6 +141,7 @@ export function OwnerNotificationProvider({
     {
       fetchPolicy: 'cache-and-network',
       nextFetchPolicy: 'cache-first',
+      refetchWritePolicy: 'overwrite',
       variables: { count: LATEST_NOTIFICATION_COUNT, id: owner },
     },
   );
