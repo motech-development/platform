@@ -21,7 +21,8 @@ Accounts application.
   reconcile them through Apollo cache policies and updates.
 - A completion or review claim must map every acceptance criterion to direct
   code and proportionate observable evidence. A focused component test does
-  not replace an explicitly required hosted browser journey.
+  not replace a browser journey that the specification explicitly requires to
+  run in the hosted environment.
 
 ## Design authority
 
