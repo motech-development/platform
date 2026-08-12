@@ -78,6 +78,16 @@ changed.
 
 ## Reuse and implementation
 
+- Before writing Accounts presentation JSX, inspect the relevant Breeze export,
+  component documentation, and canonical Storybook story. Record the exact
+  Breeze component or story that governs the composition.
+- Compose application UI from documented Breeze patterns and primitives. Do
+  not invent application-local presentation markup or utility styling when the
+  documented Breeze composition already expresses the required UI.
+- Treat raw presentation elements and application-local utility classes as an
+  exception. Before adding them, establish the specific requirement that the
+  Breeze API cannot express; if the requirement is reusable and domain-neutral,
+  extend and document Breeze instead.
 - Reuse the closest Accounts-owned presentation or screen-state abstraction
   when it matches the prototype. Do not rebuild an established composition from
   lower-level primitives on each screen.
@@ -103,6 +113,9 @@ changed.
 
 ## Review
 
+- Confirm the implementation follows the cited Breeze documentation and story.
+  A review is not clean while unexplained application-local presentation markup
+  or utility styling duplicates a documented Breeze composition.
 - Review new screens state-by-state before reviewing individual component
   details. Confirm that independently valid regions do not conflict when they
   render together.
