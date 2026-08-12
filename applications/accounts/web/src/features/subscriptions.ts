@@ -22,7 +22,9 @@ export function useAppSyncSubscriptionConnection() {
     (
       result: unknown,
       onReconnect: () => void,
-      reconcileInitialConnection = false,
+      {
+        reconcileInitialConnection = false,
+      }: Readonly<{ reconcileInitialConnection?: boolean }> = {},
     ) => {
       if (subscriptionControlMessage(result) !== 'CONNECTED') {
         return false;

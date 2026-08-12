@@ -597,7 +597,32 @@ test.describe('VAT registered Accounts', () => {
     await expect(
       page.getByText('Your report is ready to download').first(),
     ).toBeVisible();
+    const markReadResponse = page.waitForResponse((response) => {
+      try {
+        const body = response.request().postDataJSON() as {
+          operationName?: unknown;
+        };
+
+        return body.operationName === 'MarkNotificationsRead';
+      } catch {
+        return false;
+      }
+    });
+
     await unreadNotifications.click();
+    const response = await markReadResponse;
+    const result = (await response.json()) as {
+      data?: { markAsRead?: { items?: Array<{ read?: unknown } | null> } };
+      errors?: unknown;
+    };
+    const markedNotifications = result.data?.markAsRead?.items;
+
+    expect(response.ok()).toBe(true);
+    expect(result.errors).toBeUndefined();
+    expect(markedNotifications?.length).toBeGreaterThan(0);
+    expect(
+      markedNotifications?.every((notification) => notification?.read === true),
+    ).toBe(true);
     await expect(
       page.getByRole('button', { name: 'Notifications (0 unread)' }),
     ).toBeVisible();

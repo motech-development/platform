@@ -17,7 +17,6 @@ import {
   useCallback,
   useContext,
   useMemo,
-  useRef,
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -148,7 +147,6 @@ export function OwnerNotificationProvider({
   const [markNotificationsRead, { loading: markingNotificationsRead }] =
     useMutation(MARK_NOTIFICATIONS_READ);
   const handleSubscriptionConnection = useAppSyncSubscriptionConnection();
-  const reconcileOnNextConnection = useRef(false);
   const [failedReadIds, setFailedReadIds] = useState<readonly string[]>([]);
   const {
     error: subscriptionError,
@@ -172,11 +170,9 @@ export function OwnerNotificationProvider({
               .refetchQueries({ include: [GET_NOTIFICATIONS] })
               .catch(() => undefined);
           },
-          reconcileOnNextConnection.current,
+          { reconcileInitialConnection: true },
         )
       ) {
-        reconcileOnNextConnection.current = false;
-
         return;
       }
 
@@ -270,10 +266,6 @@ export function OwnerNotificationProvider({
   const retryQuery = useCallback(() => {
     refetch().catch(() => undefined);
   }, [refetch]);
-  const retrySubscription = useCallback(() => {
-    reconcileOnNextConnection.current = true;
-    restart();
-  }, [restart]);
   const contextValue = useMemo<OwnerNotificationContextValue>(
     () => ({
       failedToMarkRead: failedReadIds.length > 0,
@@ -286,7 +278,7 @@ export function OwnerNotificationProvider({
       queryRefreshing: loading && !noNotificationData,
       retryMarkRead: () => markNotificationIdsRead(failedReadIds),
       retryQuery,
-      retrySubscription,
+      retrySubscription: restart,
       subscriptionConnecting: subscriptionLoading && !subscriptionError,
       subscriptionFailed: Boolean(subscriptionError),
       unreadCount,
@@ -300,8 +292,8 @@ export function OwnerNotificationProvider({
       markNotificationIdsRead,
       markingNotificationsRead,
       noNotificationData,
+      restart,
       retryQuery,
-      retrySubscription,
       subscriptionError,
       subscriptionLoading,
       unreadCount,
