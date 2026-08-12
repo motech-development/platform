@@ -586,7 +586,7 @@ test.describe('VAT registered Accounts', () => {
     });
   });
 
-  test('receives and dismisses the established report-ready notification', async ({
+  test('receives and dismisses the established report and scheduled notifications', async ({
     page,
   }) => {
     const unreadNotifications = page.getByRole('button', {
@@ -596,6 +596,9 @@ test.describe('VAT registered Accounts', () => {
     await unreadNotifications.click();
     await expect(
       page.getByText('Your report is ready to download').first(),
+    ).toBeVisible();
+    await expect(
+      page.getByText('A scheduled transaction has been published').first(),
     ).toBeVisible();
     const markReadResponse = page.waitForResponse((response) => {
       try {

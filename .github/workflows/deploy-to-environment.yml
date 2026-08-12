@@ -2103,7 +2103,7 @@ jobs:
             exit_status=$?
             trap - EXIT
             if ! yarn workspace @accounts/client e2e-ci \
-              "(?:^|/)vat-registered\.spec\.ts$" \
+              "(?:^|/)(?:non-vat-registered|vat-registered)\.spec\.ts$" \
               --project=chromium \
               --grep "should remove company"; then
               if [[ "$exit_status" == "0" ]]; then
@@ -2118,6 +2118,11 @@ jobs:
             "(?:^|/)vat-registered\.spec\.ts$" \
             --project=chromium \
             --grep "should create a company|should update company settings|should add client 1|should generate and download report"
+
+          yarn workspace @accounts/client e2e-ci \
+            "(?:^|/)non-vat-registered\.spec\.ts$" \
+            --project=chromium \
+            --grep "should create a company|should update company settings|should schedule a purchase refund|should have published the scheduled transaction"
 
           ACCOUNTS_WEB_HOSTED_SMOKE=true \
             BASE_URL="$DEPLOYMENT_URL" \
