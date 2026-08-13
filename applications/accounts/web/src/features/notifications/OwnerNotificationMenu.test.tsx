@@ -30,6 +30,11 @@ const subscription = vi.hoisted<{
     onData?: (value: unknown) => void;
   };
   queryResult?: unknown;
+  result?: {
+    error?: Error;
+    loading: boolean;
+    restart: () => void;
+  };
 }>(() => ({}));
 
 vi.mock('@apollo/client/react', async (importOriginal) => {
@@ -47,7 +52,13 @@ vi.mock('@apollo/client/react', async (importOriginal) => {
       subscription.client = original.useApolloClient();
       subscription.options = options;
 
-      return { error: undefined, loading: true, restart: vi.fn() };
+      return (
+        subscription.result ?? {
+          error: undefined,
+          loading: true,
+          restart: vi.fn(),
+        }
+      );
     },
   };
 });
@@ -70,6 +81,18 @@ function notification(
   return value;
 }
 
+function notificationQueryResult(items: readonly OwnerNotification[]) {
+  return {
+    data: {
+      getNotifications: {
+        __typename: 'Notifications' as const,
+        id: owner,
+        items: [...items],
+      },
+    },
+  };
+}
+
 function notificationQueryMock(
   items: readonly OwnerNotification[],
   maxUsageCount = Number.POSITIVE_INFINITY,
@@ -80,15 +103,7 @@ function notificationQueryMock(
       query: GET_NOTIFICATIONS,
       variables: { count: 5, id: owner },
     },
-    result: {
-      data: {
-        getNotifications: {
-          __typename: 'Notifications' as const,
-          id: owner,
-          items: [...items],
-        },
-      },
-    },
+    result: notificationQueryResult(items),
   };
 }
 
@@ -122,15 +137,7 @@ function controlledNotificationLink(items: readonly OwnerNotification[]) {
     (operation) =>
       new Observable((observer) => {
         if (operation.operationName === 'Notifications') {
-          observer.next({
-            data: {
-              getNotifications: {
-                __typename: 'Notifications',
-                id: owner,
-                items: [...items],
-              },
-            },
-          });
+          observer.next(notificationQueryResult(items));
           observer.complete();
 
           return;
@@ -178,6 +185,56 @@ function controlledNotificationLink(items: readonly OwnerNotification[]) {
     reject: (index: number, error: Error) =>
       pendingMutation(index).reject(error),
     resolve: (index: number) => pendingMutation(index).resolve(),
+  };
+}
+
+function controlledNotificationRefetchLink(
+  initialItems: readonly OwnerNotification[],
+) {
+  let queryCount = 0;
+  let signalReconnectStarted: () => void = () => undefined;
+  const reconnectStarted = new Promise<void>((resolve) => {
+    signalReconnectStarted = resolve;
+  });
+  let completeReconnect:
+    | ((items: readonly OwnerNotification[]) => void)
+    | undefined;
+  const link = new ApolloLink(
+    (operation) =>
+      new Observable((observer) => {
+        if (operation.operationName !== 'Notifications') {
+          observer.complete();
+
+          return;
+        }
+
+        queryCount += 1;
+
+        if (queryCount === 1) {
+          observer.next(notificationQueryResult(initialItems));
+          observer.complete();
+
+          return;
+        }
+
+        completeReconnect = (items) => {
+          observer.next(notificationQueryResult(items));
+          observer.complete();
+        };
+        signalReconnectStarted();
+      }),
+  );
+
+  return {
+    link,
+    reconnectStarted,
+    resolveReconnect(items: readonly OwnerNotification[]) {
+      if (!completeReconnect) {
+        throw new Error('The reconnect query has not started');
+      }
+
+      completeReconnect(items);
+    },
   };
 }
 
@@ -246,6 +303,7 @@ describe('OwnerNotificationMenu', () => {
     subscription.client = undefined;
     subscription.options = undefined;
     subscription.queryResult = undefined;
+    subscription.result = undefined;
   });
 
   it('shows the latest notifications and marks displayed unread items read when dismissed', async () => {
@@ -537,6 +595,84 @@ describe('OwnerNotificationMenu', () => {
     expect(
       screen.getAllByText('Your report is ready to download'),
     ).toHaveLength(1);
+    expect(
+      screen.getByText('A scheduled transaction has been published'),
+    ).toBeVisible();
+  });
+
+  it('retains a notification delivered during an authoritative connection refresh', async () => {
+    const requests = controlledNotificationRefetchLink([]);
+
+    renderNotificationMenu({ link: requests.link });
+    await screen.findByRole('button', { name: 'Notifications (0 unread)' });
+
+    await act(async () => {
+      subscription.options?.onData?.({
+        client: subscription.client,
+        data: { extensions: { controlMsgType: 'CONNECTED' } },
+      });
+      await Promise.resolve();
+    });
+    await act(async () => {
+      subscription.options?.onData?.({
+        client: subscription.client,
+        data: {
+          data: {
+            onNotification: notification(
+              'notification-during-refresh',
+              '2026-08-12T11:00:00.000Z',
+            ),
+          },
+        },
+      });
+      await Promise.resolve();
+    });
+
+    await act(async () => {
+      requests.resolveReconnect([]);
+      await Promise.resolve();
+    });
+
+    expect(
+      screen.getByRole('button', { name: 'Notifications (1 unread)' }),
+    ).toBeVisible();
+  });
+
+  it('recovers the visible notification list after the subscription errors', async () => {
+    const recoveredNotification = notification(
+      'notification-after-recovery',
+      '2026-08-12T11:00:00.000Z',
+      'TRANSACTION_PUBLISHED',
+    );
+    const restart = vi.fn(() => {
+      subscription.options?.onData?.({
+        client: subscription.client,
+        data: { extensions: { controlMsgType: 'CONNECTED' } },
+      });
+    });
+    const requests = controlledNotificationRefetchLink([]);
+    const view = renderNotificationMenu({ link: requests.link });
+    await screen.findByRole('button', { name: 'Notifications (0 unread)' });
+
+    subscription.result = {
+      error: new Error('Subscription failed'),
+      loading: false,
+      restart,
+    };
+    view.rerender(<NotificationTestHarness link={requests.link} />);
+    await act(async () => {
+      await requests.reconnectStarted;
+      requests.resolveReconnect([recoveredNotification]);
+    });
+
+    expect(
+      await screen.findByRole('button', {
+        name: 'Notifications (1 unread)',
+      }),
+    ).toBeVisible();
+    await userEvent
+      .setup()
+      .click(screen.getByRole('button', { name: 'Notifications (1 unread)' }));
     expect(
       screen.getByText('A scheduled transaction has been published'),
     ).toBeVisible();

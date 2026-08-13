@@ -12,6 +12,7 @@ import {
   type ReactNode,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
 } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -22,6 +23,7 @@ import {
   ON_OWNER_NOTIFICATION,
 } from '../../data/operations';
 import type { NotificationsQuery } from '../../graphql/graphql';
+import { useOnlineStatus } from '../../pwa/connectivity';
 import { useAppSyncSubscriptionConnection } from '../subscriptions';
 
 const LATEST_NOTIFICATION_COUNT = 5;
@@ -89,59 +91,73 @@ export function OwnerNotificationProvider({
   const { data, previousData } = useQuery(GET_NOTIFICATIONS, {
     fetchPolicy: 'cache-and-network',
     nextFetchPolicy: 'cache-first',
-    refetchWritePolicy: 'overwrite',
+    refetchWritePolicy: 'merge',
     variables: { count: LATEST_NOTIFICATION_COUNT, id: owner },
   });
   const [markNotificationsRead] = useMutation(MARK_NOTIFICATIONS_READ);
   const handleSubscriptionConnection = useAppSyncSubscriptionConnection();
-  useSubscription(ON_OWNER_NOTIFICATION, {
-    context: {
-      controlMessages: { [CONTROL_EVENTS_KEY]: true },
-    },
-    onData: ({ client, data: subscriptionData }) => {
-      if (
-        handleSubscriptionConnection(
+  const online = useOnlineStatus();
+  const { error: subscriptionError, restart: restartSubscription } =
+    useSubscription(ON_OWNER_NOTIFICATION, {
+      context: {
+        controlMessages: { [CONTROL_EVENTS_KEY]: true },
+      },
+      onData: ({ client, data: subscriptionData }) => {
+        const incoming = subscriptionData.data?.onNotification;
+        const reconcileNotifications = () => {
+          client.cache.evict({
+            fieldName: 'getNotifications',
+            id: 'ROOT_QUERY',
+          });
+          client.cache.gc();
+          client
+            .refetchQueries({ include: [GET_NOTIFICATIONS] })
+            .catch(() => undefined);
+        };
+        const connected = handleSubscriptionConnection(
           subscriptionData,
-          () => {
-            client.cache.evict({
-              fieldName: 'getNotifications',
-              id: 'ROOT_QUERY',
-            });
-            client.cache.gc();
-            client
-              .refetchQueries({ include: [GET_NOTIFICATIONS] })
-              .catch(() => undefined);
-          },
+          reconcileNotifications,
           { reconcileInitialConnection: true },
-        )
-      ) {
-        return;
-      }
+        );
 
-      const incoming = subscriptionData.data?.onNotification;
+        // Apollo's subscription hook omits result extensions, but still delivers
+        // the AppSync connection control result without the subscription field.
+        if (connected || incoming === undefined) {
+          if (!connected) {
+            reconcileNotifications();
+          }
 
-      if (incoming?.owner !== owner) {
-        return;
-      }
+          return;
+        }
 
-      client.cache.updateQuery(
-        {
-          query: GET_NOTIFICATIONS,
-          variables: { count: LATEST_NOTIFICATION_COUNT, id: owner },
-        },
-        (current) => ({
-          getNotifications: {
-            ...(current?.getNotifications ?? {
-              __typename: 'Notifications',
-              id: owner,
-            }),
-            items: [incoming],
+        if (incoming?.owner !== owner) {
+          return;
+        }
+
+        client.cache.updateQuery(
+          {
+            query: GET_NOTIFICATIONS,
+            variables: { count: LATEST_NOTIFICATION_COUNT, id: owner },
           },
-        }),
-      );
-    },
-    variables: { owner },
-  });
+          (current) => ({
+            getNotifications: {
+              ...(current?.getNotifications ?? {
+                __typename: 'Notifications',
+                id: owner,
+              }),
+              items: [incoming],
+            },
+          }),
+        );
+      },
+      variables: { owner },
+    });
+
+  useEffect(() => {
+    if (subscriptionError && online) {
+      restartSubscription();
+    }
+  }, [online, restartSubscription, subscriptionError]);
   const notificationData = data ?? previousData;
   const items = useMemo(() => {
     if (!notificationData) {

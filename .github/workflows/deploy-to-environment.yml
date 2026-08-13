@@ -2099,15 +2099,15 @@ jobs:
           DEPLOYMENT_URL: ${{ needs.accounts-web.outputs.deployment-url }}
         shell: bash
         run: |
-          vat_fixture_created=false
-          non_vat_fixture_created=false
+          vat_fixture_cleanup_required=false
+          non_vat_fixture_cleanup_required=false
 
           cleanup_fixture() {
             exit_status=$?
             cleanup_failed=false
             trap - EXIT
 
-            if [[ "$vat_fixture_created" == "true" ]] && \
+            if [[ "$vat_fixture_cleanup_required" == "true" ]] && \
               ! yarn workspace @accounts/client e2e-ci \
                 "(?:^|/)vat-registered\.spec\.ts$" \
                 --project=chromium \
@@ -2115,7 +2115,7 @@ jobs:
               cleanup_failed=true
             fi
 
-            if [[ "$non_vat_fixture_created" == "true" ]] && \
+            if [[ "$non_vat_fixture_cleanup_required" == "true" ]] && \
               ! yarn workspace @accounts/client e2e-ci \
                 "(?:^|/)non-vat-registered\.spec\.ts$" \
                 --project=chromium \
@@ -2131,16 +2131,16 @@ jobs:
           }
           trap cleanup_fixture EXIT
 
+          vat_fixture_cleanup_required=true
           yarn workspace @accounts/client e2e-ci \
             "(?:^|/)vat-registered\.spec\.ts$" \
             --project=chromium \
             --grep "should create a company"
-          vat_fixture_created=true
 
           yarn workspace @accounts/client e2e-ci \
             "(?:^|/)vat-registered\.spec\.ts$" \
             --project=chromium \
-            --grep "should update company settings|should add client 1|should generate and download report"
+            --grep "should update company settings|should add client 1|should add a confirmed sale|should generate and download report"
 
           ACCOUNTS_WEB_HOSTED_SMOKE=true \
             BASE_URL="$DEPLOYMENT_URL" \
@@ -2149,16 +2149,16 @@ jobs:
               --project=chromium \
               --grep "receives and dismisses the established report-ready notification"
 
+          non_vat_fixture_cleanup_required=true
           yarn workspace @accounts/client e2e-ci \
             "(?:^|/)non-vat-registered\.spec\.ts$" \
             --project=chromium \
             --grep "should create a company"
-          non_vat_fixture_created=true
 
           yarn workspace @accounts/client e2e-ci \
             "(?:^|/)non-vat-registered\.spec\.ts$" \
             --project=chromium \
-            --grep "should update company settings|should schedule a purchase refund|should have published the scheduled transaction"
+            --grep "should update company settings|should add client 1|should add a confirmed sale|should schedule a purchase refund|should have published the scheduled transaction|should generate a report"
 
           ACCOUNTS_WEB_HOSTED_SMOKE=true \
             BASE_URL="$DEPLOYMENT_URL" \
