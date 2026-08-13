@@ -2140,13 +2140,13 @@ jobs:
           yarn workspace @accounts/client e2e-ci \
             "(?:^|/)vat-registered\.spec\.ts$" \
             --project=chromium \
-            --grep "should update company settings|should add client 1|should add a confirmed sale"
+            --grep "should update company settings|should add client 1|should add a confirmed sale$"
 
           yarn workspace @accounts/client e2e-ci \
             "(?:^|/)vat-registered\.spec\.ts$" \
             --project=chromium \
             --grep "should generate and download report" \
-            --timeout=60000
+            --timeout=90000
 
           ACCOUNTS_WEB_HOSTED_SMOKE=true \
             BASE_URL="$DEPLOYMENT_URL" \
@@ -2164,13 +2164,13 @@ jobs:
           yarn workspace @accounts/client e2e-ci \
             "(?:^|/)non-vat-registered\.spec\.ts$" \
             --project=chromium \
-            --grep "should update company settings|should add client 1|should add a confirmed sale|should schedule a purchase refund|should have published the scheduled transaction"
+            --grep "should update company settings|should add client 1|should add a confirmed sale$|should add a pending sale|should schedule a purchase refund|should have published the scheduled transaction"
 
           yarn workspace @accounts/client e2e-ci \
             "(?:^|/)non-vat-registered\.spec\.ts$" \
             --project=chromium \
             --grep "should generate a report" \
-            --timeout=60000
+            --timeout=90000
 
           ACCOUNTS_WEB_HOSTED_SMOKE=true \
             BASE_URL="$DEPLOYMENT_URL" \

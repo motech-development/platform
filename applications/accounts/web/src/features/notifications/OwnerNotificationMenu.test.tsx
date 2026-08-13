@@ -701,6 +701,34 @@ describe('OwnerNotificationMenu', () => {
     ).toBeVisible();
   });
 
+  it('does not restart a persistent subscription error before reconnecting', async () => {
+    const restart = vi.fn();
+    const view = renderNotificationMenu({
+      mocks: [notificationQueryMock([])],
+    });
+    await screen.findByRole('button', { name: 'Notifications (0 unread)' });
+
+    subscription.result = {
+      error: new Error('Subscription failed'),
+      loading: false,
+      restart,
+    };
+    view.rerender(<NotificationTestHarness />);
+    await waitFor(() => expect(restart).toHaveBeenCalledOnce());
+
+    subscription.result = {
+      error: new Error('Subscription still failing'),
+      loading: false,
+      restart,
+    };
+    view.rerender(<NotificationTestHarness />);
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(restart).toHaveBeenCalledOnce();
+  });
+
   it('retries every unread notification on the next dismissal after overlapping failures', async () => {
     const user = userEvent.setup();
     const requests = controlledNotificationLink([

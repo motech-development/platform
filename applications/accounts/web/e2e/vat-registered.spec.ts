@@ -629,14 +629,14 @@ test.describe('VAT registered Accounts', () => {
     }, testInfo) => {
       const eicarPath = testInfo.outputPath('eicar.pdf');
 
-      await writeFile(
-        eicarPath,
-        'X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*',
-      );
       await page.getByTestId('VAT registered co.').click();
       await page.getByRole('link', { name: 'Manage accounts' }).click();
       await page.getByRole('link', { name: 'Record transaction' }).click();
       await page.getByRole('radio', { name: 'Sale' }).check();
+      await writeFile(
+        eicarPath,
+        'X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*',
+      );
       await page.getByLabel('Select file to upload').setInputFiles(eicarPath);
       await expect(page.getByRole('status')).toContainText(
         'PDF attached: eicar.pdf',
@@ -645,8 +645,14 @@ test.describe('VAT registered Accounts', () => {
       await page.getByRole('option', { name: 'Motech Development' }).click();
       await page.getByLabel('Description').fill('Virus notification journey');
       await page.getByRole('radio', { name: 'Confirmed' }).check();
-      await page.getByLabel('Amount').fill('1');
-      await page.getByRole('button', { name: 'Save' }).click();
+      const amount = page.getByLabel('Amount');
+
+      await amount.fill('1');
+      await amount.press('Tab');
+      const save = page.getByRole('button', { name: 'Save' });
+
+      await expect(save).toBeEnabled();
+      await save.click();
       await expect(page.getByText('Confirmed sale recorded')).toBeVisible();
     });
 
@@ -680,6 +686,21 @@ test.describe('VAT registered Accounts', () => {
       await notifications.click();
       await expect(
         page.getByRole('button', { name: 'Notifications (0 unread)' }),
+      ).toBeVisible();
+    });
+
+    test('should remove the virus from the transaction', async ({ page }) => {
+      await page.getByTestId('VAT registered co.').click();
+      await page.getByRole('link', { name: 'Manage accounts' }).click();
+      await page
+        .getByText('Virus notification journey', { exact: true })
+        .click();
+
+      await expect(
+        page.getByRole('heading', { name: 'Virus notification journey' }),
+      ).toBeVisible();
+      await expect(
+        page.getByText('This confirmed sale has no source PDF.'),
       ).toBeVisible();
     });
   });
