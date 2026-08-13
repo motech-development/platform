@@ -2159,12 +2159,7 @@ jobs:
           yarn workspace @accounts/client e2e-ci \
             "(?:^|/)non-vat-registered\.spec\.ts$" \
             --project=chromium \
-            --grep "should create a company"
-
-          yarn workspace @accounts/client e2e-ci \
-            "(?:^|/)non-vat-registered\.spec\.ts$" \
-            --project=chromium \
-            --grep "should update company settings|should add client 1|should add a confirmed sale$|should add a pending sale|should schedule a purchase refund|should have published the scheduled transaction"
+            --grep "should create a company|should have correct default settings|should update company settings|should add client 1|should add a confirmed sale$|should add a confirmed purchase$|should add a confirmed purchase refund$|should add a pending sale|should schedule a purchase refund|should have published the scheduled transaction"
 
           yarn workspace @accounts/client e2e-ci \
             "(?:^|/)non-vat-registered\.spec\.ts$" \
