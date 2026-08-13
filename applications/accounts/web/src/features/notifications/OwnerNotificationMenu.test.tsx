@@ -600,11 +600,18 @@ describe('OwnerNotificationMenu', () => {
     ).toBeVisible();
   });
 
-  it('retains a notification delivered during an authoritative connection refresh', async () => {
-    const requests = controlledNotificationRefetchLink([]);
+  it('replaces stale notifications without losing one delivered during the refresh', async () => {
+    const requests = controlledNotificationRefetchLink([
+      notification('stale-notification', '2026-08-12T09:00:00.000Z'),
+    ]);
+    const authoritativeNotification = notification(
+      'authoritative-notification',
+      '2026-08-12T10:00:00.000Z',
+      'VIRUS_SCAN_FAIL',
+    );
 
     renderNotificationMenu({ link: requests.link });
-    await screen.findByRole('button', { name: 'Notifications (0 unread)' });
+    await screen.findByRole('button', { name: 'Notifications (1 unread)' });
 
     await act(async () => {
       subscription.options?.onData?.({
@@ -621,6 +628,7 @@ describe('OwnerNotificationMenu', () => {
             onNotification: notification(
               'notification-during-refresh',
               '2026-08-12T11:00:00.000Z',
+              'TRANSACTION_PUBLISHED',
             ),
           },
         },
@@ -629,12 +637,27 @@ describe('OwnerNotificationMenu', () => {
     });
 
     await act(async () => {
-      requests.resolveReconnect([]);
+      requests.resolveReconnect([authoritativeNotification]);
       await Promise.resolve();
     });
-
     expect(
-      screen.getByRole('button', { name: 'Notifications (1 unread)' }),
+      await screen.findByRole('button', { name: 'Notifications (2 unread)' }),
+    ).toBeVisible();
+    await userEvent
+      .setup()
+      .click(screen.getByRole('button', { name: 'Notifications (2 unread)' }));
+    expect(
+      await screen.findByText(
+        'A file you have uploaded is infected with a virus and it has been removed',
+      ),
+    ).toBeVisible();
+    await waitFor(() =>
+      expect(
+        screen.queryByText('Your report is ready to download'),
+      ).not.toBeInTheDocument(),
+    );
+    expect(
+      screen.getByText('A scheduled transaction has been published'),
     ).toBeVisible();
   });
 
