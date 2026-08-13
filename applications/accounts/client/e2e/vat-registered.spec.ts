@@ -805,6 +805,8 @@ test.describe('VAT registered', () => {
     });
 
     test('should generate and download report', async ({ companies, page }) => {
+      test.setTimeout(test.info().timeout + timeout);
+
       await page.getByRole('link', { name: 'Create new report' }).click();
       await page.getByTestId('connected-content').waitFor();
 

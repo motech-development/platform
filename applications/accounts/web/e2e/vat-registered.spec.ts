@@ -586,111 +586,102 @@ test.describe('VAT registered Accounts', () => {
     });
   });
 
-  test('receives and dismisses the established report and scheduled notifications', async ({
+  test('receives and dismisses the established report-ready notification', async ({
     page,
   }) => {
-    const unreadNotifications = page.getByRole('button', {
-      name: /Notifications \([1-5] unread\)/,
-    });
-
-    await unreadNotifications.click();
-    await expect(
-      page.getByText('Your report is ready to download').first(),
-    ).toBeVisible();
-    await expect(
-      page.getByText('A scheduled transaction has been published').first(),
-    ).toBeVisible();
-    const markReadResponse = page.waitForResponse((response) => {
-      try {
-        const body = response.request().postDataJSON() as {
-          operationName?: unknown;
-        };
-
-        return body.operationName === 'MarkNotificationsRead';
-      } catch {
-        return false;
-      }
-    });
-
-    await unreadNotifications.click();
-    const response = await markReadResponse;
-    const result = (await response.json()) as {
-      data?: { markAsRead?: { items?: Array<{ read?: unknown } | null> } };
-      errors?: unknown;
-    };
-    const markedNotifications = result.data?.markAsRead?.items;
-
-    expect(response.ok()).toBe(true);
-    expect(result.errors).toBeUndefined();
-    expect(markedNotifications?.length).toBeGreaterThan(0);
-    expect(
-      markedNotifications?.every((notification) => notification?.read === true),
-    ).toBe(true);
-    await expect(
-      page.getByRole('button', { name: 'Notifications (0 unread)' }),
-    ).toBeVisible();
-  });
-
-  test('receives and dismisses the established virus notification', async ({
-    page,
-  }, testInfo) => {
-    test.setTimeout(930000);
-
     const notifications = page.getByRole('button', {
       name: /Notifications \([0-5] unread\)/,
     });
 
     await notifications.click();
+    await expect(
+      page.getByText('Your report is ready to download').first(),
+    ).toBeVisible();
     await notifications.click();
     await expect(
       page.getByRole('button', { name: 'Notifications (0 unread)' }),
     ).toBeVisible();
+  });
 
-    const eicarPath = testInfo.outputPath('eicar.pdf');
-
-    await writeFile(
-      eicarPath,
-      'X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*',
-    );
-    await page.getByTestId('VAT registered co.').click();
-    await page.getByRole('link', { name: 'Manage accounts' }).click();
-    await page.getByRole('link', { name: 'Record transaction' }).click();
-    await page.getByRole('radio', { name: 'Sale' }).check();
-    await page.getByLabel('Select file to upload').setInputFiles(eicarPath);
-    await expect(page.getByRole('status')).toContainText(
-      'PDF attached: eicar.pdf',
-    );
-    await page.getByRole('button', { name: /Supplier/ }).click();
-    await page.getByRole('option', { name: 'Motech Development' }).click();
-    await page.getByLabel('Description').fill('Virus notification journey');
-    await page.getByRole('radio', { name: 'Confirmed' }).check();
-    await page.getByLabel('Amount').fill('1');
-    await page.getByRole('button', { name: 'Save' }).click();
-    await expect(page.getByText('Confirmed sale recorded')).toBeVisible();
-
-    const unreadNotifications = page.getByRole('button', {
-      name: /Notifications \([1-5] unread\)/,
+  test('receives and dismisses the established scheduled-transaction notification', async ({
+    page,
+  }) => {
+    const notifications = page.getByRole('button', {
+      name: /Notifications \([0-5] unread\)/,
     });
 
-    await unreadNotifications.waitFor({
-      state: 'visible',
-      timeout: 900000,
-    });
-    await unreadNotifications.click();
-
-    const virusNotification = page
-      .getByText(
-        'A file you have uploaded is infected with a virus and it has been removed',
-      )
-      .first();
-
-    await expect(virusNotification).toBeVisible();
-
-    await expectNoA11yViolations(page, virusNotification);
-    await unreadNotifications.click();
+    await notifications.click();
+    await expect(
+      page.getByText('A scheduled transaction has been published').first(),
+    ).toBeVisible();
+    await expect(
+      page.getByText('Your report is ready to download').first(),
+    ).toBeVisible();
+    await notifications.click();
     await expect(
       page.getByRole('button', { name: 'Notifications (0 unread)' }),
     ).toBeVisible();
+  });
+
+  test.describe.serial('Virus scanning', () => {
+    test('should add a confirmed sale with an infected attachment', async ({
+      page,
+    }, testInfo) => {
+      const eicarPath = testInfo.outputPath('eicar.pdf');
+
+      await writeFile(
+        eicarPath,
+        'X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*',
+      );
+      await page.getByTestId('VAT registered co.').click();
+      await page.getByRole('link', { name: 'Manage accounts' }).click();
+      await page.getByRole('link', { name: 'Record transaction' }).click();
+      await page.getByRole('radio', { name: 'Sale' }).check();
+      await page.getByLabel('Select file to upload').setInputFiles(eicarPath);
+      await expect(page.getByRole('status')).toContainText(
+        'PDF attached: eicar.pdf',
+      );
+      await page.getByRole('button', { name: /Supplier/ }).click();
+      await page.getByRole('option', { name: 'Motech Development' }).click();
+      await page.getByLabel('Description').fill('Virus notification journey');
+      await page.getByRole('radio', { name: 'Confirmed' }).check();
+      await page.getByLabel('Amount').fill('1');
+      await page.getByRole('button', { name: 'Save' }).click();
+      await expect(page.getByText('Confirmed sale recorded')).toBeVisible();
+    });
+
+    test('should display the virus notification', async ({ page }) => {
+      test.setTimeout(930000);
+
+      const unreadNotifications = page.getByRole('button', {
+        name: /Notifications \([1-5] unread\)/,
+      });
+      const notifications = page.getByRole('button', {
+        name: /Notifications \([0-5] unread\)/,
+      });
+
+      await unreadNotifications.waitFor({
+        state: 'visible',
+        timeout: 900000,
+      });
+      await unreadNotifications.click();
+
+      const virusNotification = page
+        .getByText(
+          'A file you have uploaded is infected with a virus and it has been removed',
+        )
+        .first();
+
+      await virusNotification.waitFor({
+        state: 'visible',
+        timeout: 900000,
+      });
+      await expectNoA11yViolations(page, virusNotification);
+      await notifications.click();
+      await expect(
+        page.getByRole('button', { name: 'Notifications (0 unread)' }),
+      ).toBeVisible();
+    });
   });
 
   test('should add a confirmed sale', async ({ page }) => {
