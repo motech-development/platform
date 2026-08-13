@@ -1234,11 +1234,15 @@ test('replacement Accounts web uses normal delivery and one-to-one hosted notifi
   }
   assert.match(
     previewValidation,
-    /Build legacy fixture client[\s\S]*Run hosted replacement journeys with legacy event producers[\s\S]*vat-registered[\s\S]*should create a company[\s\S]*vat_fixture_created=true[\s\S]*should update company settings\|should add client 1\|should generate and download report[\s\S]*BASE_URL="\$DEPLOYMENT_URL"[\s\S]*receives and dismisses the established report-ready notification[\s\S]*non-vat-registered[\s\S]*should create a company[\s\S]*non_vat_fixture_created=true[\s\S]*should update company settings\|should schedule a purchase refund\|should have published the scheduled transaction[\s\S]*BASE_URL="\$DEPLOYMENT_URL"[\s\S]*receives and dismisses the established scheduled-transaction notification[\s\S]*grep-invert "receives and dismisses the established \(report-ready\|scheduled-transaction\) notification"/,
+    /Build legacy fixture client[\s\S]*Run hosted replacement journeys with legacy event producers[\s\S]*should create a company[\s\S]*should update company settings\|should add client 1\|should add a confirmed sale\|should generate and download report[\s\S]*BASE_URL="\$DEPLOYMENT_URL"[\s\S]*receives and dismisses the established report-ready notification[\s\S]*should create a company[\s\S]*should update company settings\|should add client 1\|should add a confirmed sale\|should schedule a purchase refund\|should have published the scheduled transaction\|should generate a report[\s\S]*BASE_URL="\$DEPLOYMENT_URL"[\s\S]*receives and dismisses the established scheduled-transaction notification[\s\S]*grep-invert "receives and dismisses the established \(report-ready\|scheduled-transaction\) notification"/,
   );
   assert.match(
     previewValidation,
-    /if \[\[ "\$vat_fixture_created" == "true" \]\][\s\S]*vat-registered[\s\S]*should remove company[\s\S]*if \[\[ "\$non_vat_fixture_created" == "true" \]\][\s\S]*non-vat-registered[\s\S]*should remove company/,
+    /if \[\[ "\$vat_fixture_cleanup_required" == "true" \]\][\s\S]*vat-registered[\s\S]*should remove company[\s\S]*if \[\[ "\$non_vat_fixture_cleanup_required" == "true" \]\][\s\S]*non-vat-registered[\s\S]*should remove company/,
+  );
+  assert.match(
+    previewValidation,
+    /trap cleanup_fixture EXIT\s+vat_fixture_cleanup_required=true\s+yarn workspace @accounts\/client e2e-ci[\s\S]*--grep "should create a company"[\s\S]*non_vat_fixture_cleanup_required=true\s+yarn workspace @accounts\/client e2e-ci[\s\S]*--grep "should create a company"/,
   );
   assert.match(previewValidation, /^      - accounts-web$/m);
   assert.match(previewValidation, /^      - accounts-client$/m);
