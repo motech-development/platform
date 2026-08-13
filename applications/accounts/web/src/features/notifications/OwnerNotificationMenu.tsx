@@ -99,6 +99,7 @@ export function OwnerNotificationProvider({
   const handleSubscriptionConnection = useAppSyncSubscriptionConnection();
   const online = useOnlineStatus();
   const activeNotificationRefreshes = useRef(new Set<Set<string>>());
+  const subscriptionRestartPending = useRef(false);
   const { error: subscriptionError, restart: restartSubscription } =
     useSubscription(ON_OWNER_NOTIFICATION, {
       context: {
@@ -165,7 +166,9 @@ export function OwnerNotificationProvider({
         // Apollo's subscription hook omits result extensions, but still delivers
         // the AppSync connection control result without the subscription field.
         if (connected || incoming === undefined) {
-          if (!connected) {
+          if (connected) {
+            subscriptionRestartPending.current = false;
+          } else {
             reconcileNotifications();
           }
 
@@ -201,11 +204,18 @@ export function OwnerNotificationProvider({
   useEffect(
     () => () => {
       activeNotificationRefreshes.current.clear();
+      subscriptionRestartPending.current = false;
     },
     [owner],
   );
   useEffect(() => {
-    if (subscriptionError && online) {
+    if (!online) {
+      subscriptionRestartPending.current = false;
+      return;
+    }
+
+    if (subscriptionError && !subscriptionRestartPending.current) {
+      subscriptionRestartPending.current = true;
       restartSubscription();
     }
   }, [online, restartSubscription, subscriptionError]);
