@@ -14,6 +14,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { AccountsOwnerId } from '../../auth/owner';
@@ -91,12 +92,13 @@ export function OwnerNotificationProvider({
   const { data, previousData } = useQuery(GET_NOTIFICATIONS, {
     fetchPolicy: 'cache-and-network',
     nextFetchPolicy: 'cache-first',
-    refetchWritePolicy: 'merge',
+    refetchWritePolicy: 'overwrite',
     variables: { count: LATEST_NOTIFICATION_COUNT, id: owner },
   });
   const [markNotificationsRead] = useMutation(MARK_NOTIFICATIONS_READ);
   const handleSubscriptionConnection = useAppSyncSubscriptionConnection();
   const online = useOnlineStatus();
+  const activeNotificationRefreshes = useRef(new Set<Set<string>>());
   const { error: subscriptionError, restart: restartSubscription } =
     useSubscription(ON_OWNER_NOTIFICATION, {
       context: {
@@ -105,14 +107,54 @@ export function OwnerNotificationProvider({
       onData: ({ client, data: subscriptionData }) => {
         const incoming = subscriptionData.data?.onNotification;
         const reconcileNotifications = () => {
-          client.cache.evict({
-            fieldName: 'getNotifications',
-            id: 'ROOT_QUERY',
-          });
-          client.cache.gc();
+          const query = {
+            query: GET_NOTIFICATIONS,
+            variables: { count: LATEST_NOTIFICATION_COUNT, id: owner },
+          };
+          const deliveredNotificationIds = new Set<string>();
+          activeNotificationRefreshes.current.add(deliveredNotificationIds);
+
           client
-            .refetchQueries({ include: [GET_NOTIFICATIONS] })
-            .catch(() => undefined);
+            .query({ ...query, fetchPolicy: 'no-cache' })
+            .then(({ data: authoritativeData }) => {
+              if (
+                !authoritativeData ||
+                !activeNotificationRefreshes.current.has(
+                  deliveredNotificationIds,
+                )
+              ) {
+                return;
+              }
+
+              const notificationsDeliveredDuringRefresh = (
+                client.cache.readQuery<NotificationsQuery>(query)
+                  ?.getNotifications.items ?? []
+              ).filter(
+                (notification): notification is OwnerNotification =>
+                  isOwnerNotification(notification) &&
+                  deliveredNotificationIds.has(notification.id),
+              );
+
+              client.cache.writeQuery({
+                ...query,
+                data: {
+                  getNotifications: {
+                    ...authoritativeData.getNotifications,
+                    items: [
+                      ...notificationsDeliveredDuringRefresh,
+                      ...(authoritativeData.getNotifications.items ?? []),
+                    ],
+                  },
+                },
+                overwrite: true,
+              });
+            })
+            .catch(() => undefined)
+            .finally(() => {
+              activeNotificationRefreshes.current.delete(
+                deliveredNotificationIds,
+              );
+            });
         };
         const connected = handleSubscriptionConnection(
           subscriptionData,
@@ -134,6 +176,9 @@ export function OwnerNotificationProvider({
           return;
         }
 
+        activeNotificationRefreshes.current.forEach((notificationIds) => {
+          notificationIds.add(incoming.id);
+        });
         client.cache.updateQuery(
           {
             query: GET_NOTIFICATIONS,
@@ -153,6 +198,12 @@ export function OwnerNotificationProvider({
       variables: { owner },
     });
 
+  useEffect(
+    () => () => {
+      activeNotificationRefreshes.current.clear();
+    },
+    [owner],
+  );
   useEffect(() => {
     if (subscriptionError && online) {
       restartSubscription();
