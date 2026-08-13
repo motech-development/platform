@@ -746,22 +746,39 @@ jobs:
           yarn workspaces foreach -Rpt --from '@accounts/client' run package
           yarn workspace @accounts/client build
 
-      - name: Run hosted legacy-backed journeys
+      - name: Run hosted replacement journeys with legacy event producers
         env:
           DEPLOYMENT_URL: ${{ needs.accounts-web.outputs.deployment-url }}
         shell: bash
         run: |
+          vat_fixture_created=false
+          non_vat_fixture_created=false
+
           cleanup_fixture() {
             exit_status=$?
+            cleanup_failed=false
             trap - EXIT
-            if ! yarn workspace @accounts/client e2e-ci \
-              "(?:^|/)(?:non-vat-registered|vat-registered)\.spec\.ts$" \
-              --project=chromium \
-              --grep "should remove company"; then
-              if [[ "$exit_status" == "0" ]]; then
-                exit_status=1
-              fi
+
+            if [[ "$vat_fixture_created" == "true" ]] && \
+              ! yarn workspace @accounts/client e2e-ci \
+                "(?:^|/)vat-registered\.spec\.ts$" \
+                --project=chromium \
+                --grep "should remove company"; then
+              cleanup_failed=true
             fi
+
+            if [[ "$non_vat_fixture_created" == "true" ]] && \
+              ! yarn workspace @accounts/client e2e-ci \
+                "(?:^|/)non-vat-registered\.spec\.ts$" \
+                --project=chromium \
+                --grep "should remove company"; then
+              cleanup_failed=true
+            fi
+
+            if [[ "$exit_status" == "0" && "$cleanup_failed" == "true" ]]; then
+              exit_status=1
+            fi
+
             exit "$exit_status"
           }
           trap cleanup_fixture EXIT
@@ -769,17 +786,44 @@ jobs:
           yarn workspace @accounts/client e2e-ci \
             "(?:^|/)vat-registered\.spec\.ts$" \
             --project=chromium \
-            --grep "should create a company|should update company settings|should add client 1|should generate and download report"
+            --grep "should create a company"
+          vat_fixture_created=true
 
           yarn workspace @accounts/client e2e-ci \
-            "(?:^|/)non-vat-registered\.spec\.ts$" \
+            "(?:^|/)vat-registered\.spec\.ts$" \
             --project=chromium \
-            --grep "should create a company|should update company settings|should schedule a purchase refund|should have published the scheduled transaction"
+            --grep "should update company settings|should add client 1|should generate and download report"
 
           ACCOUNTS_WEB_HOSTED_SMOKE=true \
             BASE_URL="$DEPLOYMENT_URL" \
             yarn workspace @accounts/web e2e-ci \
-              "(?:^|/)(?:foundation|vat-registered)\.spec\.ts$"
+              "(?:^|/)vat-registered\.spec\.ts$" \
+              --project=chromium \
+              --grep "receives and dismisses the established report-ready notification"
+
+          yarn workspace @accounts/client e2e-ci \
+            "(?:^|/)non-vat-registered\.spec\.ts$" \
+            --project=chromium \
+            --grep "should create a company"
+          non_vat_fixture_created=true
+
+          yarn workspace @accounts/client e2e-ci \
+            "(?:^|/)non-vat-registered\.spec\.ts$" \
+            --project=chromium \
+            --grep "should update company settings|should schedule a purchase refund|should have published the scheduled transaction"
+
+          ACCOUNTS_WEB_HOSTED_SMOKE=true \
+            BASE_URL="$DEPLOYMENT_URL" \
+            yarn workspace @accounts/web e2e-ci \
+              "(?:^|/)vat-registered\.spec\.ts$" \
+              --project=chromium \
+              --grep "receives and dismisses the established scheduled-transaction notification"
+
+          ACCOUNTS_WEB_HOSTED_SMOKE=true \
+            BASE_URL="$DEPLOYMENT_URL" \
+            yarn workspace @accounts/web e2e-ci \
+              "(?:^|/)(?:foundation|vat-registered)\.spec\.ts$" \
+              --grep-invert "receives and dismisses the established (report-ready|scheduled-transaction) notification"
 
   # Accounts (client)
   accounts-client:
