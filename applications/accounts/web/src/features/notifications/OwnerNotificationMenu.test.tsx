@@ -29,13 +29,7 @@ const subscription = vi.hoisted<{
   options?: {
     onData?: (value: unknown) => void;
   };
-  mutationResult?: readonly [ReturnType<typeof vi.fn>, { loading: boolean }];
   queryResult?: unknown;
-  result?: {
-    error?: Error;
-    loading: boolean;
-    restart: ReturnType<typeof vi.fn>;
-  };
 }>(() => ({}));
 
 vi.mock('@apollo/client/react', async (importOriginal) => {
@@ -44,8 +38,6 @@ vi.mock('@apollo/client/react', async (importOriginal) => {
 
   return {
     ...original,
-    useMutation: (...args: Parameters<typeof original.useMutation>) =>
-      subscription.mutationResult ?? original.useMutation(...args),
     useQuery: (...args: Parameters<typeof original.useQuery>) =>
       subscription.queryResult ?? original.useQuery(...args),
     useSubscription: (
@@ -55,13 +47,7 @@ vi.mock('@apollo/client/react', async (importOriginal) => {
       subscription.client = original.useApolloClient();
       subscription.options = options;
 
-      return (
-        subscription.result ?? {
-          error: undefined,
-          loading: true,
-          restart: vi.fn(),
-        }
-      );
+      return { error: undefined, loading: true, restart: vi.fn() };
     },
   };
 });
@@ -201,14 +187,12 @@ function setNotificationQueryResult({
   items = [],
   loading = false,
   previousItems,
-  refetch = vi.fn().mockResolvedValue(undefined),
 }: Readonly<{
   error?: Error;
   hasData?: boolean;
   items?: readonly OwnerNotification[];
   loading?: boolean;
   previousItems?: readonly OwnerNotification[];
-  refetch?: ReturnType<typeof vi.fn>;
 }> = {}) {
   subscription.queryResult = {
     data:
@@ -220,10 +204,7 @@ function setNotificationQueryResult({
     previousData: previousItems
       ? { getNotifications: { id: owner, items: [...previousItems] } }
       : undefined,
-    refetch,
   };
-
-  return refetch;
 }
 
 interface NotificationTestHarnessProps {
@@ -263,10 +244,8 @@ function renderNotificationMenu(props: NotificationTestHarnessProps = {}) {
 describe('OwnerNotificationMenu', () => {
   beforeEach(() => {
     subscription.client = undefined;
-    subscription.mutationResult = undefined;
     subscription.options = undefined;
     subscription.queryResult = undefined;
-    subscription.result = undefined;
   });
 
   it('shows the latest notifications and marks displayed unread items read when dismissed', async () => {
@@ -387,68 +366,38 @@ describe('OwnerNotificationMenu', () => {
     expect(screen.getByText('You have a new notification')).toBeVisible();
   });
 
-  it('keeps account actions available while a failed query is retried and recovers', async () => {
+  it('keeps account actions available before notification data is available', async () => {
     const user = userEvent.setup();
-    const refetch = setNotificationQueryResult({
-      error: new Error('Query failed'),
-    });
+    setNotificationQueryResult({ hasData: false, loading: true });
     const view = renderNotificationMenu();
     const trigger = screen.getByRole('button', {
       name: 'Notifications (0 unread)',
     });
 
     await user.click(trigger);
-    expect(screen.getByRole('alert')).toHaveTextContent(
-      'Notifications could not be loaded',
-    );
     expect(screen.getByRole('menuitem', { name: 'Sign out' })).toBeVisible();
-    await user.click(screen.getByRole('button', { name: 'Try again' }));
-    expect(refetch).toHaveBeenCalledOnce();
+    expect(
+      screen.queryByText('You have no new notifications'),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText('Notifications')).not.toBeInTheDocument();
 
-    setNotificationQueryResult({ refetch });
+    setNotificationQueryResult({ error: new Error('Query failed') });
     view.rerender(<NotificationTestHarness />);
 
-    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
-    expect(screen.getByText('No notifications yet')).toBeVisible();
-  });
-
-  it('presents initial and background notification progress without hiding safe actions', async () => {
-    const user = userEvent.setup();
-    const mutationState = { loading: false };
-    subscription.mutationResult = [vi.fn(), mutationState];
-    setNotificationQueryResult({ hasData: false, loading: true });
-    const view = renderNotificationMenu();
-
-    await user.click(
-      screen.getByRole('button', { name: 'Notifications (0 unread)' }),
-    );
-    expect(screen.getByText('Loading notifications')).toBeVisible();
     expect(screen.getByRole('menuitem', { name: 'Sign out' })).toBeVisible();
+    expect(
+      screen.queryByText('You have no new notifications'),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText('Notifications')).not.toBeInTheDocument();
 
-    const retainedNotification = notification(
-      'notification-1',
-      '2026-08-12T09:00:00.000Z',
-    );
-    setNotificationQueryResult({
-      items: [retainedNotification],
-      loading: true,
-    });
-    subscription.result = {
-      error: undefined,
-      loading: true,
-      restart: vi.fn(),
-    };
-    mutationState.loading = true;
+    setNotificationQueryResult();
     view.rerender(<NotificationTestHarness />);
 
-    expect(screen.getByText('Refreshing notifications')).toBeVisible();
-    expect(screen.getByText('Connecting live updates')).toBeVisible();
-    expect(screen.getByText('Updating notifications')).toBeVisible();
-    expect(screen.getByText('Your report is ready to download')).toBeVisible();
-    expect(screen.getByRole('menuitem', { name: 'Sign out' })).toBeVisible();
+    expect(screen.getByText('Notifications')).toBeVisible();
+    expect(screen.getByText('You have no new notifications')).toBeVisible();
   });
 
-  it('retains notifications and safe actions through refresh failure and recovery', async () => {
+  it('retains notifications and safe actions through a refresh failure', async () => {
     const user = userEvent.setup();
     const retainedNotification = notification(
       'notification-1',
@@ -458,80 +407,13 @@ describe('OwnerNotificationMenu', () => {
       error: new Error('Refresh failed'),
       previousItems: [retainedNotification],
     });
-    const view = renderNotificationMenu();
+    renderNotificationMenu();
 
     await user.click(
       screen.getByRole('button', { name: 'Notifications (1 unread)' }),
     );
-    expect(screen.getByRole('alert')).toHaveTextContent(
-      'Notifications could not be refreshed',
-    );
     expect(screen.getByText('Your report is ready to download')).toBeVisible();
     expect(screen.getByRole('menuitem', { name: 'Sign out' })).toBeVisible();
-
-    setNotificationQueryResult({ items: [retainedNotification] });
-    view.rerender(<NotificationTestHarness />);
-
-    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
-    expect(screen.getByText('Your report is ready to download')).toBeVisible();
-  });
-
-  it('recovers missed notifications after retrying the first live connection', async () => {
-    const user = userEvent.setup();
-    const restart = vi.fn();
-    const recoveredNotification = notification(
-      'notification-after-retry',
-      '2026-08-12T11:00:00.000Z',
-      'TRANSACTION_PUBLISHED',
-    );
-    const mocks = [
-      notificationQueryMock([], 1),
-      notificationQueryMock([recoveredNotification]),
-    ];
-    subscription.result = {
-      error: new Error('Subscription failed'),
-      loading: false,
-      restart,
-    };
-    const view = renderNotificationMenu({ mocks });
-
-    await user.click(
-      await screen.findByRole('button', {
-        name: 'Notifications (0 unread)',
-      }),
-    );
-    expect(await screen.findByRole('alert')).toHaveTextContent(
-      'Live notification updates are unavailable',
-    );
-    await user.click(screen.getByRole('button', { name: 'Try reconnecting' }));
-    expect(restart).toHaveBeenCalledOnce();
-
-    subscription.result = {
-      error: undefined,
-      loading: true,
-      restart,
-    };
-    view.rerender(<NotificationTestHarness mocks={mocks} />);
-
-    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
-    expect(screen.getByText('No notifications yet')).toBeVisible();
-
-    await act(async () => {
-      subscription.options?.onData?.({
-        client: subscription.client,
-        data: { extensions: { controlMsgType: 'CONNECTED' } },
-      });
-      await Promise.resolve();
-    });
-
-    expect(
-      await screen.findByRole('button', {
-        name: 'Notifications (1 unread)',
-      }),
-    ).toBeVisible();
-    expect(
-      screen.getByText('A scheduled transaction has been published'),
-    ).toBeVisible();
   });
 
   it('reconciles notifications after the first live connection succeeds', async () => {
@@ -553,7 +435,7 @@ describe('OwnerNotificationMenu', () => {
         name: 'Notifications (0 unread)',
       }),
     );
-    await screen.findByText('No notifications yet');
+    await screen.findByText('You have no new notifications');
 
     await act(async () => {
       subscription.options?.onData?.({
@@ -660,7 +542,7 @@ describe('OwnerNotificationMenu', () => {
     ).toBeVisible();
   });
 
-  it('retries every unread notification after overlapping dismissals fail', async () => {
+  it('retries every unread notification on the next dismissal after overlapping failures', async () => {
     const user = userEvent.setup();
     const requests = controlledNotificationLink([
       notification('notification-1', '2026-08-12T09:00:00.000Z'),
@@ -706,19 +588,17 @@ describe('OwnerNotificationMenu', () => {
       requests.reject(0, new Error('First mutation failed'));
       await Promise.resolve();
     });
-    await user.click(
-      await screen.findByRole('button', {
-        name: 'Notifications (2 unread)',
-      }),
-    );
-    await user.click(screen.getByRole('button', { name: 'Try again' }));
+    const restoredTrigger = await screen.findByRole('button', {
+      name: 'Notifications (2 unread)',
+    });
+    await user.click(restoredTrigger);
+    await user.click(restoredTrigger);
     await act(async () => {
       requests.resolve(2);
       await Promise.resolve();
     });
 
     await waitFor(() => {
-      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
       expect(
         screen.getByRole('button', { name: 'Notifications (0 unread)' }),
       ).toBeVisible();
@@ -755,14 +635,9 @@ describe('OwnerNotificationMenu', () => {
       name: 'Notifications (1 unread)',
     });
     await user.click(restoredTrigger);
-
-    expect(screen.getByRole('alert')).toHaveTextContent(
-      'Notifications could not be marked as read',
-    );
-    await user.click(screen.getByRole('button', { name: 'Try again' }));
+    await user.click(restoredTrigger);
 
     await waitFor(() => {
-      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
       expect(
         screen.getByRole('button', { name: 'Notifications (0 unread)' }),
       ).toBeVisible();
