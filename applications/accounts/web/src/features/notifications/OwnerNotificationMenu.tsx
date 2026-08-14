@@ -116,7 +116,11 @@ export function OwnerNotificationProvider({
           activeNotificationRefreshes.current.add(deliveredNotificationIds);
 
           client
-            .query({ ...query, fetchPolicy: 'no-cache' })
+            .query({
+              ...query,
+              context: { queryDeduplication: false },
+              fetchPolicy: 'no-cache',
+            })
             .then(({ data: authoritativeData }) => {
               if (
                 !authoritativeData ||
@@ -166,9 +170,9 @@ export function OwnerNotificationProvider({
         // Apollo's subscription hook omits result extensions, but still delivers
         // the AppSync connection control result without the subscription field.
         if (connected || incoming === undefined) {
-          if (connected) {
-            subscriptionRestartPending.current = false;
-          } else {
+          subscriptionRestartPending.current = false;
+
+          if (!connected) {
             reconcileNotifications();
           }
 
