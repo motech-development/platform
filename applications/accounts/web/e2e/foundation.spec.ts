@@ -1,8 +1,4 @@
-import AxeBuilder from '@axe-core/playwright';
-import type { Page } from '@playwright/test';
-import { gotoAuthenticatedPage, isLocalBaseUrl } from './auth';
-import focusWithKeyboard from './keyboard';
-import { expect, test } from './test';
+import { expect, isLocalBaseUrl, test } from './test';
 
 interface PersistedState {
   cacheEntries: { body?: string; url: string }[];
@@ -10,32 +6,6 @@ interface PersistedState {
   databaseNames: (string | undefined)[];
   localStorageEntries: [string, string][];
   sessionStorageEntries: [string, string][];
-}
-
-async function openAccountsRoute(page: Page, baseURL: string | undefined) {
-  await gotoAuthenticatedPage({
-    baseURL,
-    content: page.getByRole('heading', { name: 'My companies' }),
-    page,
-    path: '/my-companies',
-  });
-  await page.getByTestId('VAT registered co.').click();
-  const companyId = new URL(page.url()).pathname.split('/').at(-1);
-
-  if (!companyId) {
-    throw new Error('Company route did not expose its identifier');
-  }
-
-  const path = `/my-companies/accounts/${companyId}`;
-
-  await gotoAuthenticatedPage({
-    baseURL,
-    content: page.getByRole('heading', { name: 'Accounts' }).last(),
-    page,
-    path,
-  });
-
-  return path;
 }
 
 test.describe('hosted Accounts foundation', () => {
@@ -46,15 +16,18 @@ test.describe('hosted Accounts foundation', () => {
 
   test('supports keyboard use and the configured viewport without overflow', async ({
     baseURL,
+    expectNoA11yViolations,
+    focusWithKeyboard,
+    gotoAuthenticatedPage,
+    openAccountsRoute,
     page,
   }) => {
-    await openAccountsRoute(page, baseURL);
+    await openAccountsRoute();
     const recordTransaction = page.getByRole('link', {
       name: 'Record transaction',
     });
 
     await focusWithKeyboard(
-      page,
       recordTransaction,
       'Record transaction link was not reachable by keyboard',
     );
@@ -91,9 +64,7 @@ test.describe('hosted Accounts foundation', () => {
       }
 
       await gotoAuthenticatedPage({
-        baseURL,
         content: recordTransactionHeading,
-        page,
         path: recordTransactionPath,
       });
     }
@@ -112,23 +83,18 @@ test.describe('hosted Accounts foundation', () => {
         () => document.documentElement.scrollWidth <= window.innerWidth,
       ),
     ).toBe(true);
-    const { violations } = await new AxeBuilder({ page })
-      .withTags(['wcag2a', 'wcag2aa'])
-      .analyze();
-
-    expect(violations).toEqual([]);
+    await expectNoA11yViolations(page.getByLabel('Description'));
   });
 
   test('serves direct links and an offline public shell without persisting account data', async ({
-    baseURL,
+    gotoAuthenticatedPage,
+    openAccountsRoute,
     page,
   }) => {
-    const directPath = await openAccountsRoute(page, baseURL);
+    const directPath = await openAccountsRoute();
 
     await gotoAuthenticatedPage({
-      baseURL,
       content: page.getByRole('heading', { name: 'Accounts' }).last(),
-      page,
       path: directPath,
     });
 
@@ -276,10 +242,10 @@ test.describe('hosted Accounts foundation', () => {
   });
 
   test('does not queue or replay an accounting write after reconnect', async ({
-    baseURL,
+    openAccountsRoute,
     page,
   }) => {
-    await openAccountsRoute(page, baseURL);
+    await openAccountsRoute();
     await page.getByRole('link', { name: 'Record transaction' }).click();
     await page.getByRole('button', { name: /Supplier/ }).click();
     await page.getByRole('option', { name: 'Motech Development' }).click();

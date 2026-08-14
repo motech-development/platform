@@ -447,7 +447,7 @@ describe('OwnerNotificationMenu', () => {
     ]);
     expect(screen.queryByText('12 Aug 2026, 06:00')).not.toBeInTheDocument();
     expect(screen.getAllByText('12 Aug 2026, 11:00')).toHaveLength(1);
-    expect(screen.getByText('You have a new notification')).toBeVisible();
+    expect(screen.getByText('UNKNOWN_MESSAGE')).toBeVisible();
   });
 
   it('keeps account actions available before notification data is available', async () => {

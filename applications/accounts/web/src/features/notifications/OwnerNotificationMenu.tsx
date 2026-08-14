@@ -57,7 +57,7 @@ function NotificationItems({
               <VisuallyHidden>{t('Unread')}: </VisuallyHidden>
             )}
             {t(`messages.${notification.message}`, {
-              defaultValue: t('messages.fallback'),
+              defaultValue: notification.message,
             })}
           </Typography>
           <Typography colour="muted">

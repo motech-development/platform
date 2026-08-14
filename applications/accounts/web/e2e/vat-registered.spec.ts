@@ -1,68 +1,5 @@
-import { writeFile } from 'node:fs/promises';
-import AxeBuilder from '@axe-core/playwright';
-import type { Locator, Page } from '@playwright/test';
-import { gotoAuthenticatedPage } from './auth';
 import clients from './fixtures/data/client.json' with { type: 'json' };
-import focusWithKeyboard from './keyboard';
-import dismissNotifications from './notifications';
 import { expect, test } from './test';
-
-async function expectNoA11yViolations(
-  page: Page,
-  readyState: Locator,
-): Promise<void> {
-  await expect(readyState).toBeVisible();
-  await readyState.evaluate(async (element) => {
-    await Promise.allSettled(
-      element.ownerDocument
-        .getAnimations()
-        .map((animation) => animation.finished),
-    );
-  });
-  const { violations } = await new AxeBuilder({ page })
-    .withTags(['wcag2a', 'wcag2aa'])
-    .analyze();
-
-  expect(violations).toEqual([]);
-}
-
-async function selectOption(
-  page: Page,
-  label: string,
-  option: string,
-): Promise<void> {
-  await page.getByLabel(label).click();
-  await page.getByRole('option', { exact: true, name: option }).click();
-}
-
-async function removeCompany(
-  page: Page,
-  baseURL: string | undefined,
-  companyName: string,
-): Promise<void> {
-  await gotoAuthenticatedPage({
-    baseURL,
-    content: page.getByRole('heading', { name: 'My companies' }),
-    page,
-    path: '/my-companies',
-  });
-  const company = page.getByTestId(companyName);
-
-  await expect(
-    page.getByRole('status', { name: 'Loading companies' }),
-  ).toHaveCount(0);
-
-  if (!(await company.isVisible())) return;
-
-  await company.click();
-  await page.getByRole('link', { name: /Manage company details/ }).click();
-  await page.getByRole('button', { name: 'Delete company' }).click();
-  await page.getByLabel(`Type ${companyName} to confirm`).fill(companyName);
-  await page
-    .getByRole('button', { name: 'Permanently delete company' })
-    .click();
-  await expect(page.getByTestId(companyName)).toHaveCount(0);
-}
 
 test.describe('VAT registered Accounts', () => {
   test.skip(
@@ -70,17 +7,17 @@ test.describe('VAT registered Accounts', () => {
     'Requires the designated Accounts smoke-test fixture',
   );
 
-  test.beforeEach(async ({ baseURL, page }) => {
+  test.beforeEach(async ({ gotoAuthenticatedPage, page }) => {
     await gotoAuthenticatedPage({
-      baseURL,
       content: page.getByRole('heading', { name: 'My companies' }),
-      page,
       path: '/my-companies',
     });
   });
 
   test('supports company management routes at desktop and compact sizes', async ({
-    baseURL,
+    expectNoA11yViolations,
+    focusWithKeyboard,
+    gotoAuthenticatedPage,
     page,
   }) => {
     const companyNames = await page
@@ -113,22 +50,18 @@ test.describe('VAT registered Accounts', () => {
       page.getByRole('heading', { exact: true, name: 'Settings' }),
     ).toBeVisible();
     await expect(page.locator('input[readonly]').first()).toBeVisible();
-    await expectNoA11yViolations(page, page.getByLabel('Registration number'));
+    await expectNoA11yViolations(page.getByLabel('Registration number'));
 
     await gotoAuthenticatedPage({
-      baseURL,
       content: page.getByRole('heading', {
         level: 1,
         name: 'Company details',
       }),
-      page,
       path: `/my-companies/update-details/${companyId}`,
     });
 
     await gotoAuthenticatedPage({
-      baseURL,
       content: page.getByRole('heading', { name: 'My companies' }),
-      page,
       path: '/my-companies',
     });
     await page.setViewportSize({ height: 844, width: 390 });
@@ -137,7 +70,6 @@ test.describe('VAT registered Accounts', () => {
       .first();
 
     await focusWithKeyboard(
-      page,
       addCompany,
       'Add company was not reachable by keyboard',
     );
@@ -164,48 +96,6 @@ test.describe('VAT registered Accounts', () => {
     const suffix = Date.now().toString().slice(-8);
     const companyName = `Accounts web ${suffix}`;
 
-    async function openCompany(page: Page): Promise<void> {
-      await page.getByTestId(companyName).click();
-      await expect(
-        page.getByRole('heading', { level: 1, name: companyName }),
-      ).toBeVisible();
-    }
-
-    async function openCompanyDetails(page: Page): Promise<void> {
-      await openCompany(page);
-      await page.getByRole('link', { name: /Manage company details/ }).click();
-      await expect(
-        page.getByRole('heading', { level: 1, name: 'Company details' }),
-      ).toBeVisible();
-    }
-
-    async function openSettings(page: Page): Promise<void> {
-      await openCompany(page);
-      await page.getByRole('link', { name: /Manage settings/ }).click();
-      await expect(
-        page.getByRole('heading', { exact: true, name: 'Settings' }),
-      ).toBeVisible();
-    }
-
-    async function openClients(page: Page): Promise<void> {
-      await openCompany(page);
-      await page.getByRole('link', { name: /Manage clients/ }).click();
-      await expect(
-        page.getByRole('heading', { level: 1, name: 'Clients' }),
-      ).toBeVisible();
-      await expect(page).toHaveURL(/my-companies\/clients\/[0-9a-f-]+$/);
-    }
-
-    async function addCategory(
-      page: Page,
-      name: string,
-      vatRate: string,
-    ): Promise<void> {
-      await page.getByRole('button', { name: 'Add a new category' }).click();
-      await page.getByLabel('New category name').fill(name);
-      await page.getByLabel(`VAT rate for ${name}`).fill(vatRate);
-    }
-
     test.afterAll(async ({ baseURL, browser }) => {
       const page = await browser.newPage({
         baseURL,
@@ -213,15 +103,42 @@ test.describe('VAT registered Accounts', () => {
       });
 
       try {
-        await removeCompany(page, baseURL, companyName).catch(() => undefined);
+        await page.goto('/my-companies');
+        await expect(
+          page.getByRole('heading', { name: 'My companies' }),
+        ).toBeVisible();
+        const company = page.getByTestId(companyName);
+
+        await expect(
+          page.getByRole('status', { name: 'Loading companies' }),
+        ).toHaveCount(0);
+
+        if (await company.isVisible()) {
+          await company.click();
+          await page
+            .getByRole('link', { name: /Manage company details/ })
+            .click();
+          await page.getByRole('button', { name: 'Delete company' }).click();
+          await page
+            .getByLabel(`Type ${companyName} to confirm`)
+            .fill(companyName);
+          await page
+            .getByRole('button', { name: 'Permanently delete company' })
+            .click();
+          await expect(page.getByTestId(companyName)).toHaveCount(0);
+        }
+      } catch {
+        // The final journey performs the same cleanup during a successful run.
       } finally {
         await page.close();
       }
     });
 
-    test('should create a company', async ({ page }) => {
+    test('should create a company', async ({
+      expectNoA11yViolations,
+      page,
+    }) => {
       await expectNoA11yViolations(
-        page,
         page.getByRole('button', { name: 'Add a new company' }).first(),
       );
       await page
@@ -231,7 +148,7 @@ test.describe('VAT registered Accounts', () => {
       await expect(
         page.getByRole('heading', { name: 'Add company' }),
       ).toBeVisible();
-      await expectNoA11yViolations(page, page.getByLabel('Company name'));
+      await expectNoA11yViolations(page.getByLabel('Company name'));
 
       await page.getByLabel('Company name').fill(companyName);
       await page.getByLabel('Company number').fill(suffix);
@@ -256,7 +173,8 @@ test.describe('VAT registered Accounts', () => {
       await page.getByLabel('Standard').press('Space');
       await expect(page.getByLabel('Standard')).toBeChecked();
       await page.getByLabel('Day').fill('5');
-      await selectOption(page, 'Month', 'April');
+      await page.getByLabel('Month').click();
+      await page.getByRole('option', { exact: true, name: 'April' }).click();
       await page.getByLabel('Opening balance').fill('1000');
       await page.getByLabel('VAT owed').fill('100');
       await page.getByLabel('VAT paid').fill('10');
@@ -267,9 +185,13 @@ test.describe('VAT registered Accounts', () => {
       ).toBeVisible();
     });
 
-    test('should update company details', async ({ page }) => {
-      await openCompanyDetails(page);
-      await expectNoA11yViolations(page, page.getByLabel('Company name'));
+    test('should update company details', async ({
+      expectNoA11yViolations,
+      openCompanyDetails,
+      page,
+    }) => {
+      await openCompanyDetails(companyName);
+      await expectNoA11yViolations(page.getByLabel('Company name'));
 
       await expect(page.getByLabel('Company name')).toHaveValue(companyName);
       await expect(page.getByLabel('Company number')).toHaveValue(suffix);
@@ -287,16 +209,18 @@ test.describe('VAT registered Accounts', () => {
       ).toBeVisible();
     });
 
-    test('should update company settings', async ({ page }) => {
-      await openSettings(page);
-      await expectNoA11yViolations(
-        page,
-        page.getByLabel('Registration number'),
-      );
+    test('should update company settings', async ({
+      addCompanyCategory,
+      expectNoA11yViolations,
+      openCompanySettings,
+      page,
+    }) => {
+      await openCompanySettings(companyName);
+      await expectNoA11yViolations(page.getByLabel('Registration number'));
 
-      await addCategory(page, 'Accommodation', '20');
-      await addCategory(page, 'Travel', '0');
-      await addCategory(page, 'Sustenance', '20');
+      await addCompanyCategory('Accommodation', '20');
+      await addCompanyCategory('Travel', '0');
+      await addCompanyCategory('Sustenance', '20');
 
       await expect(page.getByLabel('Pay rate')).toHaveValue('20%');
       const payRate = page.getByLabel('Pay rate');
@@ -315,8 +239,11 @@ test.describe('VAT registered Accounts', () => {
       ).toBeVisible();
     });
 
-    test('should remove expenses category', async ({ page }) => {
-      await openSettings(page);
+    test('should remove expenses category', async ({
+      openCompanySettings,
+      page,
+    }) => {
+      await openCompanySettings(companyName);
       await expect(page.getByLabel('Accommodation name')).toHaveValue(
         'Accommodation',
       );
@@ -334,11 +261,15 @@ test.describe('VAT registered Accounts', () => {
       ).toBeVisible();
     });
 
-    test('should re-add expense categories', async ({ page }) => {
-      await openSettings(page);
+    test('should re-add expense categories', async ({
+      addCompanyCategory,
+      openCompanySettings,
+      page,
+    }) => {
+      await openCompanySettings(companyName);
 
-      await addCategory(page, 'Expenses', '20');
-      await addCategory(page, 'Travel', '0');
+      await addCompanyCategory('Expenses', '20');
+      await addCompanyCategory('Travel', '0');
 
       await page.getByRole('button', { name: 'Save settings' }).click();
       await expect(
@@ -346,12 +277,16 @@ test.describe('VAT registered Accounts', () => {
       ).toBeVisible();
     });
 
-    test('should add client 1', async ({ page }) => {
+    test('should add client 1', async ({
+      expectNoA11yViolations,
+      focusWithKeyboard,
+      openCompanyClients,
+      page,
+    }) => {
       const client = clients[0];
 
-      await openClients(page);
+      await openCompanyClients(companyName);
       await expectNoA11yViolations(
-        page,
         page.getByRole('button', { name: 'Add a new client' }),
       );
       await page.setViewportSize({ height: 844, width: 390 });
@@ -360,7 +295,6 @@ test.describe('VAT registered Accounts', () => {
       });
 
       await focusWithKeyboard(
-        page,
         addClient,
         'Add client was not reachable by keyboard',
       );
@@ -368,7 +302,7 @@ test.describe('VAT registered Accounts', () => {
       await expect(
         page.getByRole('heading', { name: 'Add client' }),
       ).toBeVisible();
-      await expectNoA11yViolations(page, page.getByLabel('Client name'));
+      await expectNoA11yViolations(page.getByLabel('Client name'));
       expect(
         await page.evaluate(
           () => document.documentElement.scrollWidth <= window.innerWidth,
@@ -389,10 +323,10 @@ test.describe('VAT registered Accounts', () => {
       await expect(page.getByTestId(client.name)).toBeVisible();
     });
 
-    test('should add client 2', async ({ page }) => {
+    test('should add client 2', async ({ openCompanyClients, page }) => {
       const client = clients[1];
 
-      await openClients(page);
+      await openCompanyClients(companyName);
       await page.getByRole('button', { name: 'Add a new client' }).click();
       await page.getByLabel('Client name').fill(client.name);
       await page.getByLabel('Address line 1').fill(client.address.line1);
@@ -410,10 +344,10 @@ test.describe('VAT registered Accounts', () => {
       await expect(page.getByTestId(client.name)).toBeVisible();
     });
 
-    test('should add client 3', async ({ page }) => {
+    test('should add client 3', async ({ openCompanyClients, page }) => {
       const client = clients[2];
 
-      await openClients(page);
+      await openCompanyClients(companyName);
       await page.getByRole('button', { name: 'Add a new client' }).click();
       await page.getByLabel('Client name').fill(client.name);
       await page.getByLabel('Address line 1').fill(client.address.line1);
@@ -430,11 +364,11 @@ test.describe('VAT registered Accounts', () => {
       await expect(page.getByTestId(client.name)).toBeVisible();
     });
 
-    test('should update client 2', async ({ page }) => {
+    test('should update client 2', async ({ openCompanyClients, page }) => {
       const client = clients[1];
       const updated = clients[3];
 
-      await openClients(page);
+      await openCompanyClients(companyName);
       await page.getByTestId(client.name).click();
 
       await expect(page.getByLabel('Client name')).toHaveValue(client.name);
@@ -467,10 +401,10 @@ test.describe('VAT registered Accounts', () => {
       await expect(page.getByTestId(client.name)).toHaveCount(0);
     });
 
-    test('should delete client 3', async ({ page }) => {
+    test('should delete client 3', async ({ openCompanyClients, page }) => {
       const client = clients[2];
 
-      await openClients(page);
+      await openCompanyClients(companyName);
       await page.getByTestId(client.name).click();
       await page.getByRole('button', { name: 'Delete client' }).click();
       await page.getByLabel(`Type ${client.name} to confirm`).fill(client.name);
@@ -484,8 +418,8 @@ test.describe('VAT registered Accounts', () => {
       await expect(page.getByTestId(client.name)).toHaveCount(0);
     });
 
-    test('should remove company', async ({ page }) => {
-      await openCompanyDetails(page);
+    test('should remove company', async ({ openCompanyDetails, page }) => {
+      await openCompanyDetails(companyName);
       await page.getByRole('button', { name: 'Delete company' }).click();
       const confirmation = page.getByLabel(`Type ${companyName} to confirm`);
       const deleteCompany = page.getByRole('button', {
@@ -504,7 +438,10 @@ test.describe('VAT registered Accounts', () => {
   });
 
   test.describe('Notifications', () => {
-    test('should display a notification', async ({ page }) => {
+    test('should display a notification', async ({
+      dismissNotifications,
+      page,
+    }) => {
       const notifications = page.getByRole('button', {
         name: /Notifications \([0-5] unread\)/,
       });
@@ -513,24 +450,21 @@ test.describe('VAT registered Accounts', () => {
       await expect(
         page.getByText('Your report is ready to download').first(),
       ).toBeVisible();
-      await dismissNotifications(page, notifications);
+      await dismissNotifications(notifications);
     });
   });
 
   test.describe.serial('Virus scanning', () => {
     test('should add a confirmed sale with an infected attachment', async ({
+      eicar,
       page,
-    }, testInfo) => {
-      const eicarPath = testInfo.outputPath('eicar.pdf');
+    }) => {
+      const eicarPath = await eicar();
 
       await page.getByTestId('VAT registered co.').click();
       await page.getByRole('link', { name: 'Manage accounts' }).click();
       await page.getByRole('link', { name: 'Record transaction' }).click();
       await page.getByRole('radio', { name: 'Sale' }).check();
-      await writeFile(
-        eicarPath,
-        'X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*',
-      );
       await page.getByLabel('Select file to upload').setInputFiles(eicarPath);
       await expect(page.getByRole('status')).toContainText(
         'PDF attached: eicar.pdf',
@@ -550,7 +484,11 @@ test.describe('VAT registered Accounts', () => {
       await expect(page.getByText('Confirmed sale recorded')).toBeVisible();
     });
 
-    test('should display the virus notification', async ({ page }) => {
+    test('should display the virus notification', async ({
+      dismissNotifications,
+      expectNoA11yViolations,
+      page,
+    }) => {
       test.setTimeout(930000);
 
       const unreadNotifications = page.getByRole('button', {
@@ -576,8 +514,8 @@ test.describe('VAT registered Accounts', () => {
         state: 'visible',
         timeout: 900000,
       });
-      await expectNoA11yViolations(page, virusNotification);
-      await dismissNotifications(page, notifications);
+      await expectNoA11yViolations(virusNotification);
+      await dismissNotifications(notifications);
     });
 
     test('should remove the virus from the transaction', async ({ page }) => {
