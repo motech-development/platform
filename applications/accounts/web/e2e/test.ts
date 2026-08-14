@@ -1,6 +1,7 @@
 import { writeFile } from 'node:fs/promises';
 import AxeBuilder from '@axe-core/playwright';
 import {
+  type BrowserContextOptions,
   expect,
   type Locator,
   type Response,
@@ -36,7 +37,15 @@ export interface AccountsFixtures {
   openCompanySettings: (companyName: string) => Promise<void>;
 }
 
-export const test = base.extend<AccountsFixtures>({
+interface AccountsWorkerFixtures {
+  cleanupCompany: (options: {
+    baseURL: string | undefined;
+    companyName: string;
+    storageState: BrowserContextOptions['storageState'];
+  }) => Promise<void>;
+}
+
+export const test = base.extend<AccountsFixtures, AccountsWorkerFixtures>({
   addCompanyCategory: async ({ page }, use) => {
     await use(async (name, vatRate) => {
       await page.getByRole('button', { name: 'Add a new category' }).click();
@@ -44,6 +53,43 @@ export const test = base.extend<AccountsFixtures>({
       await page.getByLabel(`VAT rate for ${name}`).fill(vatRate);
     });
   },
+  cleanupCompany: [
+    async ({ browser }, use) => {
+      await use(async ({ baseURL, companyName, storageState }) => {
+        const page = await browser.newPage({ baseURL, storageState });
+
+        try {
+          await page.goto('/my-companies');
+          await expect(
+            page.getByRole('heading', { name: 'My companies' }),
+          ).toBeVisible();
+          const company = page.getByTestId(companyName);
+
+          await expect(
+            page.getByRole('status', { name: 'Loading companies' }),
+          ).toHaveCount(0);
+
+          if (!(await company.isVisible())) return;
+
+          await company.click();
+          await page
+            .getByRole('link', { name: /Manage company details/ })
+            .click();
+          await page.getByRole('button', { name: 'Delete company' }).click();
+          await page
+            .getByLabel(`Type ${companyName} to confirm`)
+            .fill(companyName);
+          await page
+            .getByRole('button', { name: 'Permanently delete company' })
+            .click();
+          await expect(page.getByTestId(companyName)).toHaveCount(0);
+        } finally {
+          await page.close();
+        }
+      });
+    },
+    { scope: 'worker' },
+  ],
   completeAuthentication: async ({ baseURL, page }, use) => {
     await use(async (content) => {
       const consent = page.locator('button#allow');
@@ -214,6 +260,8 @@ export const test = base.extend<AccountsFixtures>({
     use,
   ) => {
     await use(async ({ content, path }) => {
+      const destination = new URL(path, baseURL ?? page.url());
+
       if (isLocalBaseUrl(baseURL)) {
         if (page.url() === 'about:blank') {
           await page.goto('/');
@@ -226,7 +274,9 @@ export const test = base.extend<AccountsFixtures>({
           name: 'Sign in securely',
         });
 
-        await expect(companiesHeading.or(signIn)).toBeVisible();
+        if (new URL(page.url()).pathname === '/') {
+          await expect(companiesHeading.or(signIn)).toBeVisible();
+        }
 
         if (await signIn.isVisible()) {
           await signIn.click();
@@ -242,6 +292,9 @@ export const test = base.extend<AccountsFixtures>({
       }
 
       await completeAuthentication(content);
+      await expect
+        .poll(() => new URL(page.url()).pathname)
+        .toBe(destination.pathname);
     });
   },
   openAccountsRoute: async ({ gotoAuthenticatedPage, page }, use) => {

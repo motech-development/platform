@@ -96,42 +96,12 @@ test.describe('VAT registered Accounts', () => {
     const suffix = Date.now().toString().slice(-8);
     const companyName = `Accounts web ${suffix}`;
 
-    test.afterAll(async ({ baseURL, browser }) => {
-      const page = await browser.newPage({
+    test.afterAll(async ({ baseURL, cleanupCompany }, testInfo) => {
+      await cleanupCompany({
         baseURL,
-        storageState: test.info().project.use.storageState,
-      });
-
-      try {
-        await page.goto('/my-companies');
-        await expect(
-          page.getByRole('heading', { name: 'My companies' }),
-        ).toBeVisible();
-        const company = page.getByTestId(companyName);
-
-        await expect(
-          page.getByRole('status', { name: 'Loading companies' }),
-        ).toHaveCount(0);
-
-        if (await company.isVisible()) {
-          await company.click();
-          await page
-            .getByRole('link', { name: /Manage company details/ })
-            .click();
-          await page.getByRole('button', { name: 'Delete company' }).click();
-          await page
-            .getByLabel(`Type ${companyName} to confirm`)
-            .fill(companyName);
-          await page
-            .getByRole('button', { name: 'Permanently delete company' })
-            .click();
-          await expect(page.getByTestId(companyName)).toHaveCount(0);
-        }
-      } catch {
-        // The final journey performs the same cleanup during a successful run.
-      } finally {
-        await page.close();
-      }
+        companyName,
+        storageState: testInfo.project.use.storageState,
+      }).catch(() => undefined);
     });
 
     test('should create a company', async ({
