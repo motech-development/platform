@@ -1,7 +1,11 @@
-import clients from './fixtures/data/client.json' with { type: 'json' };
+import companyFixtures from '@accounts/client/e2e/fixtures/data/company.json' with { type: 'json' };
 import { expect, test } from './test';
 
-test.describe('VAT registered Accounts', () => {
+test.describe('VAT registered', () => {
+  const companyFixture = companyFixtures[0];
+  const companyName = companyFixture.company.name;
+  let companyCleanupRequired = false;
+
   test.skip(
     process.env.ACCOUNTS_WEB_HOSTED_SMOKE !== 'true',
     'Requires the designated Accounts smoke-test fixture',
@@ -11,6 +15,16 @@ test.describe('VAT registered Accounts', () => {
     await gotoAuthenticatedPage({
       content: page.getByRole('heading', { name: 'My companies' }),
       path: '/my-companies',
+    });
+  });
+
+  test.afterAll(async ({ baseURL, cleanupCompany }, testInfo) => {
+    if (!companyCleanupRequired) return;
+
+    await cleanupCompany({
+      baseURL,
+      companyName,
+      storageState: testInfo.project.use.storageState,
     });
   });
 
@@ -32,7 +46,7 @@ test.describe('VAT registered Accounts', () => {
       ),
     );
 
-    await page.getByTestId('VAT registered co.').click();
+    await page.getByTestId(companyName).click();
     const companyId = new URL(page.url()).pathname.split('/').at(-1);
 
     if (!companyId) {
@@ -82,7 +96,7 @@ test.describe('VAT registered Accounts', () => {
       ),
     ).toBe(true);
 
-    await page.getByLabel('Company name').fill('Unsaved company');
+    await page.getByLabel('Company name').fill(companyName);
     await page.getByRole('button', { name: 'Cancel' }).click();
     await expect(
       page.getByRole('heading', { name: 'Discard this company?' }),
@@ -91,23 +105,25 @@ test.describe('VAT registered Accounts', () => {
     await expect(page).toHaveURL(/\/my-companies$/);
   });
 
-  test.describe
-    .serial('original company and client-management journeys', () => {
-    const suffix = Date.now().toString().slice(-8);
-    const companyName = `Accounts web ${suffix}`;
-
-    test.afterAll(async ({ baseURL, cleanupCompany }, testInfo) => {
+  test.describe('Register company', () => {
+    test.beforeAll(async ({ baseURL, cleanupCompany }, testInfo) => {
       await cleanupCompany({
         baseURL,
         companyName,
         storageState: testInfo.project.use.storageState,
-      }).catch(() => undefined);
+      });
     });
 
     test('should create a company', async ({
+      companies,
       expectNoA11yViolations,
+      format,
       page,
+      selectMonth,
     }) => {
+      const company = companies[0];
+
+      companyCleanupRequired = true;
       await expectNoA11yViolations(
         page.getByRole('button', { name: 'Add a new company' }).first(),
       );
@@ -120,88 +136,164 @@ test.describe('VAT registered Accounts', () => {
       ).toBeVisible();
       await expectNoA11yViolations(page.getByLabel('Company name'));
 
-      await page.getByLabel('Company name').fill(companyName);
-      await page.getByLabel('Company number').fill(suffix);
-      await page.getByLabel('Account number').fill('62057264');
-      await page.getByLabel('Sort code').fill('308639');
-      await expect(page.getByLabel('Sort code')).toHaveValue('30-86-39');
-      await page.getByLabel('Address line 1').fill('Unit 1');
-      await page.getByLabel('Address line 2').fill('123 Cypress Street');
-      await page.getByLabel('Town or city').fill('London');
-      await page.getByLabel('Postcode').fill('sw21 1na');
-      await page.getByLabel('Email address').fill('accounts-web@example.com');
+      await page.getByLabel('Company name').fill(company.company.name);
+      await page
+        .getByLabel('Company number')
+        .fill(company.company.companyNumber);
+      await page
+        .getByLabel('Account number')
+        .fill(company.company.bank.accountNumber);
+      await page.getByLabel('Sort code').fill(company.company.bank.sortCode);
+      await expect(page.getByLabel('Sort code')).toHaveValue(
+        format('sort code', company.company.bank.sortCode),
+      );
+      await page
+        .getByLabel('Address line 1')
+        .fill(company.company.address.line1);
+      await page
+        .getByLabel('Address line 2')
+        .fill(company.company.address.line2);
+      await page.getByLabel('Town or city').fill(company.company.address.line3);
+      await page.getByLabel('Postcode').fill(company.company.address.line5);
+      await page
+        .getByLabel('Email address')
+        .fill(company.company.contact.email);
       const telephone = page.getByLabel('Telephone number');
 
-      await telephone.fill('02083895728');
+      await telephone.fill(company.company.contact.telephone);
       await telephone.press('Tab');
       await page.getByRole('button', { name: 'Continue to settings' }).click();
 
-      await page.getByLabel('VAT registration').fill('216506516');
+      await page.getByLabel('VAT registration').fill(company.vat.registration);
       await expect(page.getByLabel('VAT registration')).toHaveValue(
-        'GB216506516',
+        format('VAT registration', company.vat.registration),
       );
       await page.getByLabel('Standard').press('Space');
       await expect(page.getByLabel('Standard')).toBeChecked();
-      await page.getByLabel('Day').fill('5');
-      await page.getByLabel('Month').click();
-      await page.getByRole('option', { exact: true, name: 'April' }).click();
-      await page.getByLabel('Opening balance').fill('1000');
-      await page.getByLabel('VAT owed').fill('100');
-      await page.getByLabel('VAT paid').fill('10');
+      await page.getByLabel('Day').fill(company.yearEnd.day);
+      await selectMonth(company.yearEnd.month);
+      await page.getByLabel('Opening balance').fill(company.balance.balance);
+      await page.getByLabel('VAT owed').fill(company.balance.vat.owed);
+      await page.getByLabel('VAT paid').fill(company.balance.vat.paid);
       await page.getByRole('button', { name: 'Save company' }).click();
 
       await expect(
-        page.getByRole('heading', { level: 1, name: companyName }),
+        page.getByRole('heading', {
+          level: 1,
+          name: company.company.name,
+        }),
       ).toBeVisible();
     });
+  });
 
+  test.describe('Update company', () => {
     test('should update company details', async ({
+      companies,
       expectNoA11yViolations,
+      format,
       openCompanyDetails,
       page,
     }) => {
+      const company = companies[0];
+      const updated = companies[2].company;
+
       await openCompanyDetails(companyName);
       await expectNoA11yViolations(page.getByLabel('Company name'));
 
-      await expect(page.getByLabel('Company name')).toHaveValue(companyName);
-      await expect(page.getByLabel('Company number')).toHaveValue(suffix);
-      await expect(page.getByLabel('Account number')).toHaveValue('62057264');
-      await expect(page.getByLabel('Sort code')).toHaveValue('30-86-39');
-      await page.getByLabel('Account number').fill('74782147');
-      await page.getByLabel('Sort code').fill('347924');
-      await page.getByLabel('Address line 1').fill('Motech Towers');
+      await expect(page.getByLabel('Company name')).toHaveValue(
+        company.company.name,
+      );
+      await expect(page.getByLabel('Company number')).toHaveValue(
+        company.company.companyNumber,
+      );
+      await expect(page.getByLabel('Account number')).toHaveValue(
+        company.company.bank.accountNumber,
+      );
+      await expect(page.getByLabel('Sort code')).toHaveValue(
+        format('sort code', company.company.bank.sortCode),
+      );
+      await expect(page.getByLabel('Address line 1')).toHaveValue(
+        company.company.address.line1,
+      );
+      await expect(page.getByLabel('Address line 2')).toHaveValue(
+        company.company.address.line2,
+      );
+      await expect(page.getByLabel('Town or city')).toHaveValue(
+        company.company.address.line3,
+      );
+      await expect(page.getByLabel('Postcode')).toHaveValue(
+        company.company.address.line5,
+      );
+      await expect(page.getByLabel('Email address')).toHaveValue(
+        company.company.contact.email,
+      );
+      await expect(page.getByLabel('Telephone number')).toHaveValue(
+        company.company.contact.telephone,
+      );
+
+      await page.getByLabel('Account number').fill(updated.bank.accountNumber);
+      await page.getByLabel('Sort code').fill(updated.bank.sortCode);
+      await page.getByLabel('Address line 1').fill(updated.address.line1);
       await page.getByLabel('Address line 2').clear();
-      await page.getByLabel('Email address').fill('update@example.com');
+      await page.getByLabel('Email address').fill(updated.contact.email);
       await page.getByRole('button', { name: 'Save changes' }).click();
 
       await expect(
         page.getByRole('heading', { level: 1, name: companyName }),
       ).toBeVisible();
     });
+  });
 
+  test.describe('Settings', () => {
     test('should update company settings', async ({
       addCompanyCategory,
+      companies,
       expectNoA11yViolations,
+      format,
       openCompanySettings,
       page,
+      settings,
     }) => {
+      const company = companies[0];
+      const setting = settings[0];
+
       await openCompanySettings(companyName);
       await expectNoA11yViolations(page.getByLabel('Registration number'));
 
-      await addCompanyCategory('Accommodation', '20');
-      await addCompanyCategory('Travel', '0');
-      await addCompanyCategory('Sustenance', '20');
+      await addCompanyCategory(
+        setting.categories[0].name,
+        setting.categories[0].vatRate,
+      );
+      await addCompanyCategory(
+        setting.categories[1].name,
+        setting.categories[1].vatRate,
+      );
+      await addCompanyCategory(
+        setting.categories[2].name,
+        setting.categories[2].vatRate,
+      );
 
-      await expect(page.getByLabel('Pay rate')).toHaveValue('20%');
+      await expect(page.getByLabel('Pay rate')).toHaveValue(
+        format('percentage', '20'),
+      );
       const payRate = page.getByLabel('Pay rate');
 
       await payRate.clear();
-      await payRate.type('15.5');
+      await payRate.type(setting.vat.pay);
       await payRate.press('Tab');
-      await expect(payRate).toHaveValue('15.5%');
-      await page.getByLabel('Registration number').fill('657497583');
+      await expect(payRate).toHaveValue(format('percentage', setting.vat.pay));
+      await expect(page.getByLabel('Registration number')).toHaveValue(
+        format('VAT registration', company.vat.registration),
+      );
+      await page
+        .getByLabel('Registration number')
+        .fill(setting.vat.registration);
       await page.getByLabel('Flat rate').press('Space');
       await expect(page.getByLabel('Flat rate')).toBeChecked();
+      await expect(page.getByLabel('Day')).toHaveValue(company.yearEnd.day);
+      await expect(page.getByLabel('Month')).toHaveText(
+        format('month', company.yearEnd.month),
+      );
       await page.getByRole('button', { name: 'Save settings' }).click();
 
       await expect(
@@ -210,15 +302,41 @@ test.describe('VAT registered Accounts', () => {
     });
 
     test('should remove expenses category', async ({
+      format,
       openCompanySettings,
       page,
+      settings,
     }) => {
+      const setting = settings[0];
+
       await openCompanySettings(companyName);
       await expect(page.getByLabel('Accommodation name')).toHaveValue(
-        'Accommodation',
+        setting.categories[0].name,
       );
-      await expect(page.getByLabel('VAT rate for Travel')).toHaveValue('0%');
-      await expect(page.getByLabel('Pay rate')).toHaveValue('15.5%');
+      await expect(page.getByLabel('VAT rate for Accommodation')).toHaveValue(
+        format('percentage', setting.categories[0].vatRate),
+      );
+      await expect(page.getByLabel('Travel name')).toHaveValue(
+        setting.categories[1].name,
+      );
+      await expect(page.getByLabel('VAT rate for Travel')).toHaveValue(
+        format('percentage', setting.categories[1].vatRate),
+      );
+      await expect(page.getByLabel('Sustenance name')).toHaveValue(
+        setting.categories[2].name,
+      );
+      await expect(page.getByLabel('VAT rate for Sustenance')).toHaveValue(
+        format('percentage', setting.categories[2].vatRate),
+      );
+      await expect(page.getByLabel('Charge rate')).toHaveValue(
+        format('percentage', setting.vat.charge),
+      );
+      await expect(page.getByLabel('Pay rate')).toHaveValue(
+        format('percentage', setting.vat.pay),
+      );
+      await expect(page.getByLabel('Registration number')).toHaveValue(
+        format('VAT registration', setting.vat.registration),
+      );
       await expect(page.getByLabel('Flat rate')).toBeChecked();
 
       await page.getByRole('button', { name: 'Remove Accommodation' }).click();
@@ -235,19 +353,28 @@ test.describe('VAT registered Accounts', () => {
       addCompanyCategory,
       openCompanySettings,
       page,
+      settings,
     }) => {
+      const setting = settings[0];
+
       await openCompanySettings(companyName);
 
-      await addCompanyCategory('Expenses', '20');
-      await addCompanyCategory('Travel', '0');
+      await addCompanyCategory('Expenses', setting.categories[0].vatRate);
+      await addCompanyCategory(
+        setting.categories[1].name,
+        setting.categories[1].vatRate,
+      );
 
       await page.getByRole('button', { name: 'Save settings' }).click();
       await expect(
         page.getByRole('heading', { level: 1, name: companyName }),
       ).toBeVisible();
     });
+  });
 
+  test.describe('Clients', () => {
     test('should add client 1', async ({
+      clients,
       expectNoA11yViolations,
       focusWithKeyboard,
       openCompanyClients,
@@ -292,169 +419,48 @@ test.describe('VAT registered Accounts', () => {
       ).toBeVisible();
       await expect(page.getByTestId(client.name)).toBeVisible();
     });
-
-    test('should add client 2', async ({ openCompanyClients, page }) => {
-      const client = clients[1];
-
-      await openCompanyClients(companyName);
-      await page.getByRole('button', { name: 'Add a new client' }).click();
-      await page.getByLabel('Client name').fill(client.name);
-      await page.getByLabel('Address line 1').fill(client.address.line1);
-      await page.getByLabel('Address line 2').fill(client.address.line2);
-      await page.getByLabel('Town or city').fill(client.address.line3);
-      await page.getByLabel('County').fill(client.address.line4);
-      await page.getByLabel('Postcode').fill(client.address.line5);
-      await page.getByLabel('Email address').fill(client.contact.email);
-      await page.getByLabel('Telephone number').fill(client.contact.telephone);
-      await page.getByRole('button', { name: 'Save client' }).click();
-
-      await expect(
-        page.getByRole('heading', { level: 1, name: 'Clients' }),
-      ).toBeVisible();
-      await expect(page.getByTestId(client.name)).toBeVisible();
-    });
-
-    test('should add client 3', async ({ openCompanyClients, page }) => {
-      const client = clients[2];
-
-      await openCompanyClients(companyName);
-      await page.getByRole('button', { name: 'Add a new client' }).click();
-      await page.getByLabel('Client name').fill(client.name);
-      await page.getByLabel('Address line 1').fill(client.address.line1);
-      await page.getByLabel('Town or city').fill(client.address.line3);
-      await page.getByLabel('County').fill(client.address.line4);
-      await page.getByLabel('Postcode').fill(client.address.line5);
-      await page.getByLabel('Email address').fill(client.contact.email);
-      await page.getByLabel('Telephone number').fill(client.contact.telephone);
-      await page.getByRole('button', { name: 'Save client' }).click();
-
-      await expect(
-        page.getByRole('heading', { level: 1, name: 'Clients' }),
-      ).toBeVisible();
-      await expect(page.getByTestId(client.name)).toBeVisible();
-    });
-
-    test('should update client 2', async ({ openCompanyClients, page }) => {
-      const client = clients[1];
-      const updated = clients[3];
-
-      await openCompanyClients(companyName);
-      await page.getByTestId(client.name).click();
-
-      await expect(page.getByLabel('Client name')).toHaveValue(client.name);
-      await page.getByLabel('Client name').fill(updated.name);
-      await expect(page.getByLabel('Address line 1')).toHaveValue(
-        client.address.line1,
-      );
-      await expect(page.getByLabel('Address line 2')).toHaveValue(
-        client.address.line2,
-      );
-      await expect(page.getByLabel('Town or city')).toHaveValue(
-        client.address.line3,
-      );
-      await expect(page.getByLabel('County')).toHaveValue(client.address.line4);
-      await expect(page.getByLabel('Postcode')).toHaveValue(
-        client.address.line5,
-      );
-      await expect(page.getByLabel('Email address')).toHaveValue(
-        client.contact.email,
-      );
-      await expect(page.getByLabel('Telephone number')).toHaveValue(
-        client.contact.telephone,
-      );
-      await page.getByRole('button', { name: 'Save client' }).click();
-
-      await expect(
-        page.getByRole('heading', { level: 1, name: 'Clients' }),
-      ).toBeVisible();
-      await expect(page.getByTestId(updated.name)).toBeVisible();
-      await expect(page.getByTestId(client.name)).toHaveCount(0);
-    });
-
-    test('should delete client 3', async ({ openCompanyClients, page }) => {
-      const client = clients[2];
-
-      await openCompanyClients(companyName);
-      await page.getByTestId(client.name).click();
-      await page.getByRole('button', { name: 'Delete client' }).click();
-      await page.getByLabel(`Type ${client.name} to confirm`).fill(client.name);
-      await page
-        .getByRole('button', { name: 'Permanently delete client' })
-        .click();
-
-      await expect(
-        page.getByRole('heading', { level: 1, name: 'Clients' }),
-      ).toBeVisible();
-      await expect(page.getByTestId(client.name)).toHaveCount(0);
-    });
-
-    test('should remove company', async ({ openCompanyDetails, page }) => {
-      await openCompanyDetails(companyName);
-      await page.getByRole('button', { name: 'Delete company' }).click();
-      const confirmation = page.getByLabel(`Type ${companyName} to confirm`);
-      const deleteCompany = page.getByRole('button', {
-        name: 'Permanently delete company',
-      });
-
-      await confirmation.fill(companyName.toLowerCase());
-      await expect(deleteCompany).toBeDisabled();
-      await confirmation.fill(companyName);
-      await deleteCompany.click();
-      await expect(
-        page.getByRole('heading', { name: 'My companies' }),
-      ).toBeVisible();
-      await expect(page.getByTestId(companyName)).toHaveCount(0);
-    });
   });
 
-  test.describe('Notifications', () => {
-    test('should display a notification', async ({
-      dismissNotifications,
-      page,
-    }) => {
-      const notifications = page.getByRole('button', {
-        name: /Notifications \([0-5] unread\)/,
-      });
+  test.describe('Accounts', () => {
+    test('should add a confirmed sale', async ({ accounts, format, page }) => {
+      const transaction = accounts[0];
 
-      await notifications.click();
+      await page.getByTestId(companyName).click();
       await expect(
-        page.getByText('Your report is ready to download').first(),
+        page.getByRole('heading', { name: companyName }),
       ).toBeVisible();
-      await dismissNotifications(notifications);
-    });
-  });
 
-  test.describe.serial('Virus scanning', () => {
-    test('should add a confirmed sale with an infected attachment', async ({
-      eicar,
-      page,
-    }) => {
-      const eicarPath = await eicar();
-
-      await page.getByTestId('VAT registered co.').click();
       await page.getByRole('link', { name: 'Manage accounts' }).click();
+      await expect(
+        page.getByRole('heading', { name: 'Accounts' }).last(),
+      ).toBeVisible();
+
       await page.getByRole('link', { name: 'Record transaction' }).click();
       await page.getByRole('radio', { name: 'Sale' }).check();
-      await page.getByLabel('Select file to upload').setInputFiles(eicarPath);
+
+      await page
+        .getByLabel('Select file to upload')
+        .setInputFiles('../client/e2e/fixtures/upload/invoice.pdf');
       await expect(page.getByRole('status')).toContainText(
-        'PDF attached: eicar.pdf',
+        'PDF attached: invoice.pdf',
       );
+
       await page.getByRole('button', { name: /Supplier/ }).click();
-      await page.getByRole('option', { name: 'Motech Development' }).click();
-      await page.getByLabel('Description').fill('Virus notification journey');
+      await page.getByRole('option', { name: transaction.supplier }).click();
+      await page.getByLabel('Description').fill(transaction.description);
       await page.getByRole('radio', { name: 'Confirmed' }).check();
-      const amount = page.getByLabel('Amount');
+      await page.getByLabel('Amount').fill(transaction.amount);
+      await expect(page.getByLabel('VAT', { exact: true })).toHaveValue(
+        format('currency', transaction.vat),
+      );
 
-      await amount.fill('1');
-      await amount.press('Tab');
-      const save = page.getByRole('button', { name: 'Save' });
-
-      await expect(save).toBeEnabled();
-      await save.click();
+      await page.getByRole('button', { name: 'Save' }).click();
       await expect(page.getByText('Confirmed sale recorded')).toBeVisible();
     });
+  });
 
-    test('should display the virus notification', async ({
+  test.describe('Virus scanning', () => {
+    test('should display a notification', async ({
       dismissNotifications,
       expectNoA11yViolations,
       page,
@@ -462,10 +468,10 @@ test.describe('VAT registered Accounts', () => {
       test.setTimeout(930000);
 
       const unreadNotifications = page.getByRole('button', {
-        name: /Notifications \([1-5] unread\)/,
+        name: /Notifications \([1-4] unread\)/,
       });
       const notifications = page.getByRole('button', {
-        name: /Notifications \([0-5] unread\)/,
+        name: /Notifications \([0-4] unread\)/,
       });
 
       await unreadNotifications.waitFor({
@@ -488,15 +494,24 @@ test.describe('VAT registered Accounts', () => {
       await dismissNotifications(notifications);
     });
 
-    test('should remove the virus from the transaction', async ({ page }) => {
-      await page.getByTestId('VAT registered co.').click();
+    test('should remove virus from transaction', async ({
+      accounts,
+      format,
+      page,
+    }) => {
+      const transaction = accounts[8];
+
+      await page.getByTestId(companyName).click();
       await page.getByRole('link', { name: 'Manage accounts' }).click();
       await page
-        .getByText('Virus notification journey', { exact: true })
+        .getByRole('row')
+        .filter({ hasText: transaction.description })
+        .filter({ hasText: format('currency', transaction.amount) })
+        .getByText(transaction.description, { exact: true })
         .click();
 
       await expect(
-        page.getByRole('heading', { name: 'Virus notification journey' }),
+        page.getByRole('heading', { name: transaction.description }),
       ).toBeVisible();
       await expect(
         page.getByText('This confirmed sale has no source PDF.'),
@@ -504,42 +519,42 @@ test.describe('VAT registered Accounts', () => {
     });
   });
 
-  test('should add a confirmed sale', async ({ page }) => {
-    const description = `Confirmed invoice ${Date.now()}`;
+  test.describe('Notifications', () => {
+    test('should display a notification', async ({
+      dismissNotifications,
+      page,
+    }) => {
+      const notifications = page.getByRole('button', {
+        name: /Notifications \([0-4] unread\)/,
+      });
 
-    await page.getByTestId('VAT registered co.').click();
-    await expect(
-      page.getByRole('heading', { name: 'VAT registered co.' }),
-    ).toBeVisible();
+      await notifications.click();
+      await expect(
+        page.getByText('Your report is ready to download').first(),
+      ).toBeVisible();
+      await dismissNotifications(notifications);
+    });
+  });
 
-    await page.getByRole('link', { name: 'Manage accounts' }).click();
-    await expect(
-      page.getByRole('heading', { name: 'Accounts' }).last(),
-    ).toBeVisible();
+  test.describe('Delete company', () => {
+    test('should remove company', async ({ openCompanyDetails, page }) => {
+      await openCompanyDetails(companyName);
+      await page.getByRole('button', { name: 'Delete company' }).click();
+      const confirmation = page.getByLabel(`Type ${companyName} to confirm`);
+      const deleteCompany = page.getByRole('button', {
+        name: 'Permanently delete company',
+      });
 
-    await page.getByRole('link', { name: 'Record transaction' }).click();
-    await page.getByRole('radio', { name: 'Sale' }).check();
+      await confirmation.fill(companyName.toLowerCase());
+      await expect(deleteCompany).toBeDisabled();
+      await confirmation.fill(companyName);
+      await deleteCompany.click();
 
-    await page
-      .getByLabel('Select file to upload')
-      .setInputFiles('e2e/fixtures/upload/invoice.pdf');
-    await expect(page.getByRole('status')).toContainText(
-      'PDF attached: invoice.pdf',
-    );
-
-    await page.getByRole('button', { name: /Supplier/ }).click();
-    await page.getByRole('option', { name: 'Motech Development' }).click();
-    await page.getByLabel('Description').fill(description);
-    await page.getByRole('radio', { name: 'Confirmed' }).check();
-    await page.getByLabel('Amount').fill('2000');
-    await expect(page.getByLabel('VAT', { exact: true })).toHaveValue(
-      '£310.00',
-    );
-
-    await page.getByRole('button', { name: 'Save' }).click();
-    await expect(page.getByText('Confirmed sale recorded')).toBeVisible();
-    await expect(
-      page.getByRole('row', { name: new RegExp(description) }),
-    ).toBeVisible();
+      companyCleanupRequired = false;
+      await expect(
+        page.getByRole('heading', { name: 'My companies' }),
+      ).toBeVisible();
+      await expect(page.getByTestId(companyName)).toHaveCount(0);
+    });
   });
 });

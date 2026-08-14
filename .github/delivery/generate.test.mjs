@@ -1234,7 +1234,7 @@ test('replacement Accounts web uses normal delivery and one-to-one hosted notifi
   }
   assert.match(
     previewValidation,
-    /Build legacy fixture client[\s\S]*Run hosted replacement journeys with legacy event producers[\s\S]*should create a company[\s\S]*should update company settings\|should add client 1\|should add a confirmed sale\$"[\s\S]*should generate and download report"\s+\\\s+--timeout=90000[\s\S]*BASE_URL="\$DEPLOYMENT_URL"[\s\S]*should display a notification[\s\S]*should create a company\|should have correct default settings\|should update company settings\|should add client 1\|should add a confirmed sale\$\|should add a confirmed purchase\$\|should add a confirmed purchase refund\$\|should add a pending sale\|should schedule a purchase refund\|should have published the scheduled transaction"[\s\S]*should generate a report"\s+\\\s+--timeout=90000[\s\S]*BASE_URL="\$DEPLOYMENT_URL"[\s\S]*should display a notification[\s\S]*grep-invert "should display a notification"/,
+    /Build legacy fixture client[\s\S]*Run hosted replacement journeys with legacy event producers[\s\S]*should create a company[\s\S]*should update company settings\|should add client 1\|should add a confirmed sale\$\|should add a confirmed sale refund\$"[\s\S]*should generate and download report"\s+\\\s+--timeout=90000[\s\S]*BASE_URL="\$DEPLOYMENT_URL"[\s\S]*should display a notification\|should remove virus from transaction[\s\S]*should create a company\|should have correct default settings\|should update company settings\|should add client 1\|should add a confirmed sale\$\|should add a confirmed purchase\$\|should add a confirmed purchase refund\$\|should add a pending sale\|should schedule a purchase refund\|should have published the scheduled transaction"[\s\S]*should generate a report"\s+\\\s+--timeout=90000[\s\S]*BASE_URL="\$DEPLOYMENT_URL"[\s\S]*should display a notification[\s\S]*grep-invert "should display a notification"/,
   );
   assert.match(
     previewValidation,
@@ -1242,7 +1242,7 @@ test('replacement Accounts web uses normal delivery and one-to-one hosted notifi
   );
   assert.match(
     previewValidation,
-    /\(\?:foundation\|non-vat-registered\|vat-registered\)\\\.spec\\\.ts\$/,
+    /foundation\\\.spec\\\.ts\$"[\s\S]*non-vat-registered\\\.spec\\\.ts\$"[\s\S]*--project=chromium[\s\S]*--grep-invert "should display a notification"[\s\S]*non_vat_fixture_cleanup_required=false[\s\S]*vat-registered\\\.spec\\\.ts\$"[\s\S]*--project=chromium[\s\S]*--grep-invert "should display a notification\|should remove virus from transaction"[\s\S]*vat_fixture_cleanup_required=false/,
   );
   assert.match(
     previewValidation,
@@ -1975,7 +1975,7 @@ test('generated preview workflow plans per pull request and selectively deploys 
   );
   assert.match(
     accountsWebValidation,
-    /ACCOUNTS_WEB_HOSTED_SMOKE=true[\s\S]*BASE_URL="\$DEPLOYMENT_URL"[\s\S]*yarn workspace @accounts\/web e2e-ci[\s\S]*foundation\|non-vat-registered\|vat-registered/,
+    /ACCOUNTS_WEB_HOSTED_SMOKE=true[\s\S]*BASE_URL="\$DEPLOYMENT_URL"[\s\S]*yarn workspace @accounts\/web e2e-ci[\s\S]*foundation\\\.spec\\\.ts\$[\s\S]*non-vat-registered\\\.spec\\\.ts\$[\s\S]*vat-registered\\\.spec\\\.ts\$/,
   );
   assert.match(
     playwright,
