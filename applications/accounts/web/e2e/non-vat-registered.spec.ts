@@ -16,6 +16,14 @@ test.describe('Non-VAT registered', () => {
     });
   });
 
+  test.afterAll(async ({ baseURL, cleanupCompany }, testInfo) => {
+    await cleanupCompany({
+      baseURL,
+      companyName,
+      storageState: testInfo.project.use.storageState,
+    }).catch(() => undefined);
+  });
+
   test.describe('Register company', () => {
     test('should create a company', async ({ page }) => {
       await page
@@ -36,8 +44,9 @@ test.describe('Non-VAT registered', () => {
       await page.getByRole('button', { name: 'Continue to settings' }).click();
 
       await page.getByLabel('None').press('Space');
-      await page.getByLabel('Charge rate').fill('0');
-      await page.getByLabel('Pay rate').fill('0');
+      await expect(page.getByLabel('VAT registration')).toHaveValue('');
+      await expect(page.getByLabel('Charge rate')).toHaveValue('20%');
+      await expect(page.getByLabel('Pay rate')).toHaveValue('20%');
       await page.getByLabel('Day').fill('5');
       await page.getByLabel('Month').click();
       await page.getByRole('option', { exact: true, name: 'April' }).click();
@@ -62,8 +71,8 @@ test.describe('Non-VAT registered', () => {
     });
 
     test('should have correct default settings', async ({ page }) => {
-      await expect(page.getByLabel('Charge rate')).toHaveValue('0%');
-      await expect(page.getByLabel('Pay rate')).toHaveValue('0%');
+      await expect(page.getByLabel('Charge rate')).toHaveValue('20%');
+      await expect(page.getByLabel('Pay rate')).toHaveValue('20%');
       await expect(page.getByLabel('Registration number')).toHaveValue('');
       await expect(page.getByLabel('None')).toBeChecked();
       await expect(page.getByLabel('Day')).toHaveValue('5');
