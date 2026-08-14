@@ -190,12 +190,20 @@ function controlledNotificationLink(items: readonly OwnerNotification[]) {
 
 function controlledNotificationRefetchLink(
   initialItems: readonly OwnerNotification[],
+  { holdInitial = false }: Readonly<{ holdInitial?: boolean }> = {},
 ) {
   let queryCount = 0;
+  let signalInitialStarted: () => void = () => undefined;
+  const initialStarted = new Promise<void>((resolve) => {
+    signalInitialStarted = resolve;
+  });
   let signalReconnectStarted: () => void = () => undefined;
   const reconnectStarted = new Promise<void>((resolve) => {
     signalReconnectStarted = resolve;
   });
+  let completeInitial:
+    | ((items: readonly OwnerNotification[]) => void)
+    | undefined;
   let completeReconnect:
     | ((items: readonly OwnerNotification[]) => void)
     | undefined;
@@ -211,8 +219,17 @@ function controlledNotificationRefetchLink(
         queryCount += 1;
 
         if (queryCount === 1) {
-          observer.next(notificationQueryResult(initialItems));
-          observer.complete();
+          signalInitialStarted();
+
+          if (holdInitial) {
+            completeInitial = (items) => {
+              observer.next(notificationQueryResult(items));
+              observer.complete();
+            };
+          } else {
+            observer.next(notificationQueryResult(initialItems));
+            observer.complete();
+          }
 
           return;
         }
@@ -226,8 +243,17 @@ function controlledNotificationRefetchLink(
   );
 
   return {
+    initialStarted,
     link,
+    queryCount: () => queryCount,
     reconnectStarted,
+    resolveInitial(items: readonly OwnerNotification[]) {
+      if (!completeInitial) {
+        throw new Error('The initial notification query has not started');
+      }
+
+      completeInitial(items);
+    },
     resolveReconnect(items: readonly OwnerNotification[]) {
       if (!completeReconnect) {
         throw new Error('The reconnect query has not started');
@@ -513,6 +539,40 @@ describe('OwnerNotificationMenu', () => {
     ).toBeVisible();
   });
 
+  it('starts a fresh reconciliation while the initial notification query is in flight', async () => {
+    const requests = controlledNotificationRefetchLink([], {
+      holdInitial: true,
+    });
+    const notificationAfterConnection = notification(
+      'notification-after-connection',
+      '2026-08-12T11:00:00.000Z',
+      'TRANSACTION_PUBLISHED',
+    );
+
+    renderNotificationMenu({ link: requests.link });
+    await requests.initialStarted;
+
+    await act(async () => {
+      subscription.options?.onData?.({
+        client: subscription.client,
+        data: { extensions: { controlMsgType: 'CONNECTED' } },
+      });
+      await Promise.resolve();
+    });
+    await waitFor(() => expect(requests.queryCount()).toBe(2));
+
+    await act(async () => {
+      requests.resolveInitial([]);
+      requests.resolveReconnect([notificationAfterConnection]);
+      await Promise.resolve();
+    });
+    expect(
+      await screen.findByRole('button', {
+        name: 'Notifications (1 unread)',
+      }),
+    ).toBeVisible();
+  });
+
   it('removes notifications omitted by an authoritative connection refresh', async () => {
     renderNotificationMenu({
       mocks: [
@@ -727,6 +787,36 @@ describe('OwnerNotificationMenu', () => {
     });
 
     expect(restart).toHaveBeenCalledOnce();
+  });
+
+  it('restarts again after an extensionless connection acknowledgement', async () => {
+    const restart = vi.fn(() => {
+      subscription.options?.onData?.({
+        client: subscription.client,
+        data: { data: {} },
+      });
+    });
+    const view = renderNotificationMenu({
+      mocks: [notificationQueryMock([])],
+    });
+    await screen.findByRole('button', { name: 'Notifications (0 unread)' });
+
+    subscription.result = {
+      error: new Error('Subscription failed'),
+      loading: false,
+      restart,
+    };
+    view.rerender(<NotificationTestHarness />);
+    await waitFor(() => expect(restart).toHaveBeenCalledOnce());
+
+    subscription.result = {
+      error: new Error('Subscription failed again'),
+      loading: false,
+      restart,
+    };
+    view.rerender(<NotificationTestHarness />);
+
+    await waitFor(() => expect(restart).toHaveBeenCalledTimes(2));
   });
 
   it('retries every unread notification on the next dismissal after overlapping failures', async () => {
