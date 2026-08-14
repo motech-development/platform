@@ -1,9 +1,10 @@
 import { writeFile } from 'node:fs/promises';
 import AxeBuilder from '@axe-core/playwright';
-import type { Locator, Page, Response } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 import { gotoAuthenticatedPage } from './auth';
 import clients from './fixtures/data/client.json' with { type: 'json' };
 import focusWithKeyboard from './keyboard';
+import dismissNotifications from './notifications';
 import { expect, test } from './test';
 
 async function expectNoA11yViolations(
@@ -32,72 +33,6 @@ async function selectOption(
 ): Promise<void> {
   await page.getByLabel(label).click();
   await page.getByRole('option', { exact: true, name: option }).click();
-}
-
-async function dismissNotifications(
-  page: Page,
-  notifications: Locator,
-): Promise<void> {
-  let resolveMarkReadResponse: (response: Response) => void = () => undefined;
-  const markReadResponse = new Promise<Response>((resolve) => {
-    resolveMarkReadResponse = resolve;
-  });
-  const captureMarkReadResponse = (response: Response) => {
-    const request = response.request();
-
-    if (request.method() !== 'POST') return;
-
-    try {
-      const body = request.postDataJSON() as { operationName?: unknown };
-
-      if (body.operationName === 'MarkNotificationsRead') {
-        resolveMarkReadResponse(response);
-      }
-    } catch {
-      // Other POST responses do not participate in notification dismissal.
-    }
-  };
-
-  page.on('response', captureMarkReadResponse);
-
-  try {
-    const hasUnreadNotifications = await notifications.evaluate((button) => {
-      const hasUnread =
-        button.getAttribute('aria-label') !== 'Notifications (0 unread)';
-
-      if (!(button instanceof HTMLElement)) {
-        throw new Error('Notifications trigger is not interactive');
-      }
-
-      button.click();
-
-      return hasUnread;
-    });
-
-    if (hasUnreadNotifications) {
-      const response = await markReadResponse;
-      const result = (await response.json()) as {
-        data?: {
-          markAsRead?: {
-            items?: Array<{ read?: boolean } | null> | null;
-          } | null;
-        };
-        errors?: unknown;
-      };
-
-      expect(response.ok()).toBe(true);
-      expect(result.errors).toBeUndefined();
-      expect(result.data?.markAsRead?.items?.every((item) => item?.read)).toBe(
-        true,
-      );
-    }
-  } finally {
-    page.off('response', captureMarkReadResponse);
-  }
-
-  await expect(
-    page.getByRole('button', { name: 'Notifications (0 unread)' }),
-  ).toBeVisible();
 }
 
 async function removeCompany(
@@ -568,119 +503,18 @@ test.describe('VAT registered Accounts', () => {
     });
   });
 
-  test.describe.serial('original non-VAT company-management journeys', () => {
-    const suffix = Date.now().toString().slice(-8);
-    const companyName = `Accounts non-VAT ${suffix}`;
-
-    async function openSettings(page: Page): Promise<void> {
-      await page.getByTestId(companyName).click();
-      await page.getByRole('link', { name: /Manage settings/ }).click();
-      await expect(
-        page.getByRole('heading', { exact: true, name: 'Settings' }),
-      ).toBeVisible();
-    }
-
-    test.afterAll(async ({ baseURL, browser }) => {
-      const page = await browser.newPage({
-        baseURL,
-        storageState: test.info().project.use.storageState,
+  test.describe('Notifications', () => {
+    test('should display a notification', async ({ page }) => {
+      const notifications = page.getByRole('button', {
+        name: /Notifications \([0-5] unread\)/,
       });
 
-      try {
-        await removeCompany(page, baseURL, companyName).catch(() => undefined);
-      } finally {
-        await page.close();
-      }
-    });
-
-    test('should create a non-VAT company with the established defaults', async ({
-      page,
-    }) => {
-      await page
-        .getByRole('button', { name: 'Add a new company' })
-        .first()
-        .click();
-      await page.getByLabel('Company name').fill(companyName);
-      await page.getByLabel('Company number').fill(suffix);
-      await page.getByLabel('Account number').fill('62057264');
-      await page.getByLabel('Sort code').fill('308639');
-      await page.getByLabel('Address line 1').fill('Unit 2');
-      await page.getByLabel('Town or city').fill('London');
-      await page.getByLabel('Postcode').fill('SW21 1NA');
-      await page.getByLabel('Email address').fill('non-vat@example.com');
-      await page.getByLabel('Telephone number').fill('02083895728');
-      await page.getByRole('button', { name: 'Continue to settings' }).click();
-
-      await page.getByLabel('None').press('Space');
-      await expect(page.getByLabel('VAT registration')).toHaveValue('');
-      await expect(page.getByLabel('Charge rate')).toHaveValue('20%');
-      await expect(page.getByLabel('Pay rate')).toHaveValue('20%');
-      await page.getByRole('button', { name: 'Save company' }).click();
-
+      await notifications.click();
       await expect(
-        page.getByRole('heading', { level: 1, name: companyName }),
+        page.getByText('Your report is ready to download').first(),
       ).toBeVisible();
+      await dismissNotifications(page, notifications);
     });
-
-    test('should preserve and update non-VAT settings', async ({ page }) => {
-      await openSettings(page);
-      await expect(page.getByLabel('None')).toBeChecked();
-      await expect(page.getByLabel('Registration number')).toHaveValue('');
-      await expect(page.getByLabel('Charge rate')).toHaveValue('20%');
-      await expect(page.getByLabel('Pay rate')).toHaveValue('20%');
-
-      await page.getByLabel('Day').fill('1');
-      await selectOption(page, 'Month', 'January');
-      await page.getByRole('button', { name: 'Save settings' }).click();
-      await expect(
-        page.getByRole('heading', { level: 1, name: companyName }),
-      ).toBeVisible();
-
-      await page.getByRole('link', { name: /Manage settings/ }).click();
-      await expect(page.getByLabel('Day')).toHaveValue('1');
-      await expect(page.getByLabel('Month')).toHaveText('January');
-    });
-
-    test('should remove the non-VAT company', async ({ baseURL, page }) => {
-      await gotoAuthenticatedPage({
-        baseURL,
-        content: page.getByRole('heading', { name: 'My companies' }),
-        page,
-        path: '/my-companies',
-      });
-      await removeCompany(page, baseURL, companyName);
-    });
-  });
-
-  test('receives and dismisses the established report-ready notification', async ({
-    page,
-  }) => {
-    const notifications = page.getByRole('button', {
-      name: /Notifications \([0-5] unread\)/,
-    });
-
-    await notifications.click();
-    await expect(
-      page.getByText('Your report is ready to download').first(),
-    ).toBeVisible();
-    await dismissNotifications(page, notifications);
-  });
-
-  test('receives and dismisses the established scheduled-transaction notification', async ({
-    page,
-  }) => {
-    const notifications = page.getByRole('button', {
-      name: /Notifications \([0-5] unread\)/,
-    });
-
-    await notifications.click();
-    await expect(
-      page.getByText('A scheduled transaction has been published').first(),
-    ).toBeVisible();
-    await expect(
-      page.getByText('Your report is ready to download').first(),
-    ).toBeVisible();
-    await dismissNotifications(page, notifications);
   });
 
   test.describe.serial('Virus scanning', () => {

@@ -805,7 +805,7 @@ jobs:
             yarn workspace @accounts/web e2e-ci \
               "(?:^|/)vat-registered\.spec\.ts$" \
               --project=chromium \
-              --grep "receives and dismisses the established report-ready notification"
+              --grep "should display a notification"
 
           non_vat_fixture_cleanup_required=true
           yarn workspace @accounts/client e2e-ci \
@@ -822,15 +822,15 @@ jobs:
           ACCOUNTS_WEB_HOSTED_SMOKE=true \
             BASE_URL="$DEPLOYMENT_URL" \
             yarn workspace @accounts/web e2e-ci \
-              "(?:^|/)vat-registered\.spec\.ts$" \
+              "(?:^|/)non-vat-registered\.spec\.ts$" \
               --project=chromium \
-              --grep "receives and dismisses the established scheduled-transaction notification"
+              --grep "should display a notification"
 
           ACCOUNTS_WEB_HOSTED_SMOKE=true \
             BASE_URL="$DEPLOYMENT_URL" \
             yarn workspace @accounts/web e2e-ci \
-              "(?:^|/)(?:foundation|vat-registered)\.spec\.ts$" \
-              --grep-invert "receives and dismisses the established (report-ready|scheduled-transaction) notification"
+              "(?:^|/)(?:foundation|non-vat-registered|vat-registered)\.spec\.ts$" \
+              --grep-invert "should display a notification"
 
   # Accounts (client)
   accounts-client:

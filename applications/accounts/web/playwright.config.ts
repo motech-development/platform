@@ -19,7 +19,7 @@ export default defineConfig({
     {
       dependencies: ['setup'],
       name: 'chromium',
-      testMatch: /(?:foundation|vat-registered)\.spec\.ts/,
+      testMatch: /(?:foundation|non-vat-registered|vat-registered)\.spec\.ts/,
       use: {
         ...devices['Desktop Chrome'],
         storageState: resolve('playwright/.auth/user.json'),
