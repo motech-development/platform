@@ -794,6 +794,13 @@ jobs:
             --project=chromium \
             --grep "should update company settings|should add client 1|should add a confirmed sale$|should add a confirmed sale refund$"
 
+          ACCOUNTS_WEB_HOSTED_SMOKE=true \
+            BASE_URL="$DEPLOYMENT_URL" \
+            yarn workspace @accounts/web e2e-ci \
+              "(?:^|/)vat-registered\.spec\.ts$" \
+              --project=chromium \
+              --grep "Virus scanning should display a notification|should remove virus from transaction"
+
           # Preserve the legacy report journey's explicit 60-second download
           # wait plus Playwright's normal 30-second test allowance.
           yarn workspace @accounts/client e2e-ci \
@@ -807,7 +814,7 @@ jobs:
             yarn workspace @accounts/web e2e-ci \
               "(?:^|/)vat-registered\.spec\.ts$" \
               --project=chromium \
-              --grep "should display a notification|should remove virus from transaction"
+              --grep "Notifications should display a notification"
 
           non_vat_fixture_cleanup_required=true
           yarn workspace @accounts/client e2e-ci \
