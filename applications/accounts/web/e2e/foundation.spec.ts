@@ -87,6 +87,7 @@ test.describe('hosted Accounts foundation', () => {
   });
 
   test('serves direct links and an offline public shell without persisting account data', async ({
+    companies,
     gotoAuthenticatedPage,
     openAccountsRoute,
     page,
@@ -207,7 +208,9 @@ test.describe('hosted Accounts foundation', () => {
         );
       }),
     ).toEqual([]);
-    expect(JSON.stringify(persistedState)).not.toContain('VAT registered co.');
+    expect(JSON.stringify(persistedState)).not.toContain(
+      companies[0].company.name,
+    );
 
     await page.goto('/');
     await page.evaluate(async () => {

@@ -1,4 +1,7 @@
-import { writeFile } from 'node:fs/promises';
+import accountFixtures from '@accounts/client/e2e/fixtures/data/account.json' with { type: 'json' };
+import clientFixtures from '@accounts/client/e2e/fixtures/data/client.json' with { type: 'json' };
+import companyFixtures from '@accounts/client/e2e/fixtures/data/company.json' with { type: 'json' };
+import settingFixtures from '@accounts/client/e2e/fixtures/data/setting.json' with { type: 'json' };
 import AxeBuilder from '@axe-core/playwright';
 import {
   type BrowserContextOptions,
@@ -17,15 +20,18 @@ export function isLocalBaseUrl(baseURL: string | undefined): boolean {
 }
 
 export interface AccountsFixtures {
+  accounts: typeof accountFixtures;
   addCompanyCategory: (name: string, vatRate: string) => Promise<void>;
+  clients: typeof clientFixtures;
+  companies: typeof companyFixtures;
   completeAuthentication: (content: Locator) => Promise<void>;
   dismissNotifications: (notifications: Locator) => Promise<void>;
-  eicar: () => Promise<string>;
   expectNoA11yViolations: (readyState: Locator) => Promise<void>;
   focusWithKeyboard: (
     target: Locator,
     unreachableMessage: string,
   ) => Promise<void>;
+  format: (type: string, value: string) => string;
   gotoAuthenticatedPage: (options: {
     content: Locator;
     path: string;
@@ -35,6 +41,8 @@ export interface AccountsFixtures {
   openCompanyClients: (companyName: string) => Promise<void>;
   openCompanyDetails: (companyName: string) => Promise<void>;
   openCompanySettings: (companyName: string) => Promise<void>;
+  selectMonth: (month: string) => Promise<void>;
+  settings: typeof settingFixtures;
 }
 
 interface AccountsWorkerFixtures {
@@ -46,6 +54,9 @@ interface AccountsWorkerFixtures {
 }
 
 export const test = base.extend<AccountsFixtures, AccountsWorkerFixtures>({
+  accounts: async ({}, use) => {
+    await use(accountFixtures);
+  },
   addCompanyCategory: async ({ page }, use) => {
     await use(async (name, vatRate) => {
       await page.getByRole('button', { name: 'Add a new category' }).click();
@@ -59,30 +70,46 @@ export const test = base.extend<AccountsFixtures, AccountsWorkerFixtures>({
         const page = await browser.newPage({ baseURL, storageState });
 
         try {
-          await page.goto('/my-companies');
-          await expect(
-            page.getByRole('heading', { name: 'My companies' }),
-          ).toBeVisible();
-          const company = page.getByTestId(companyName);
+          async function openCompanyList(): Promise<Locator> {
+            await page.goto('/my-companies');
+            await expect(
+              page.getByRole('heading', { name: 'My companies' }),
+            ).toBeVisible();
+            await expect(
+              page.getByRole('status', { name: 'Loading companies' }),
+            ).toHaveCount(0);
 
-          await expect(
-            page.getByRole('status', { name: 'Loading companies' }),
-          ).toHaveCount(0);
+            return page.getByTestId(companyName);
+          }
 
-          if (!(await company.isVisible())) return;
+          async function deleteMatchingCompanies(): Promise<void> {
+            const company = await openCompanyList();
+            const remainingCompanies = await company.count();
 
-          await company.click();
-          await page
-            .getByRole('link', { name: /Manage company details/ })
-            .click();
-          await page.getByRole('button', { name: 'Delete company' }).click();
-          await page
-            .getByLabel(`Type ${companyName} to confirm`)
-            .fill(companyName);
-          await page
-            .getByRole('button', { name: 'Permanently delete company' })
-            .click();
-          await expect(page.getByTestId(companyName)).toHaveCount(0);
+            if (remainingCompanies === 0) return;
+
+            await company.first().click();
+            await page
+              .getByRole('link', { name: /Manage company details/ })
+              .click();
+            await page.getByRole('button', { name: 'Delete company' }).click();
+            await page
+              .getByLabel(`Type ${companyName} to confirm`)
+              .fill(companyName);
+            await page
+              .getByRole('button', { name: 'Permanently delete company' })
+              .click();
+            await expect(
+              page.getByRole('heading', { name: 'My companies' }),
+            ).toBeVisible();
+            await expect(await openCompanyList()).toHaveCount(
+              remainingCompanies - 1,
+            );
+
+            await deleteMatchingCompanies();
+          }
+
+          await deleteMatchingCompanies();
         } finally {
           await page.close();
         }
@@ -90,12 +117,16 @@ export const test = base.extend<AccountsFixtures, AccountsWorkerFixtures>({
     },
     { scope: 'worker' },
   ],
+  clients: async ({}, use) => {
+    await use(clientFixtures);
+  },
+  companies: async ({}, use) => {
+    await use(companyFixtures);
+  },
   completeAuthentication: async ({ baseURL, page }, use) => {
     await use(async (content) => {
       const consent = page.locator('button#allow');
       const email = page.getByLabel('Email address');
-
-      await expect(content.or(consent).or(email)).toBeVisible();
 
       if (
         baseURL &&
@@ -105,6 +136,8 @@ export const test = base.extend<AccountsFixtures, AccountsWorkerFixtures>({
 
         return;
       }
+
+      await expect(content.or(consent).or(email)).toBeVisible();
 
       if (await email.isVisible()) {
         await email.fill(process.env.E2E_USERNAME!);
@@ -187,18 +220,6 @@ export const test = base.extend<AccountsFixtures, AccountsWorkerFixtures>({
       ).toBeVisible();
     });
   },
-  eicar: async ({}, use, testInfo) => {
-    await use(async () => {
-      const path = testInfo.outputPath('eicar.pdf');
-
-      await writeFile(
-        path,
-        'X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*',
-      );
-
-      return path;
-    });
-  },
   expectNoA11yViolations: async ({ page }, use) => {
     await use(async (readyState) => {
       await expect(readyState).toBeVisible();
@@ -255,6 +276,27 @@ export const test = base.extend<AccountsFixtures, AccountsWorkerFixtures>({
       }
     });
   },
+  format: async ({}, use) => {
+    await use((type, value) => {
+      switch (type) {
+        case 'currency':
+          return `£${Math.abs(parseFloat(value)).toFixed(2)}`;
+        case 'month':
+          return new Intl.DateTimeFormat('en-GB', {
+            month: 'long',
+            timeZone: 'UTC',
+          }).format(new Date(Date.UTC(2000, parseInt(value, 10), 1)));
+        case 'percentage':
+          return `${value}%`;
+        case 'sort code':
+          return value.replace(/(\d{2})(\d{2})(\d{2})/, '$1-$2-$3');
+        case 'VAT registration':
+          return `GB${value}`;
+        default:
+          throw new Error('Format unknown');
+      }
+    });
+  },
   gotoAuthenticatedPage: async (
     { baseURL, completeAuthentication, page },
     use,
@@ -297,13 +339,16 @@ export const test = base.extend<AccountsFixtures, AccountsWorkerFixtures>({
         .toBe(destination.pathname);
     });
   },
-  openAccountsRoute: async ({ gotoAuthenticatedPage, page }, use) => {
+  openAccountsRoute: async (
+    { companies, gotoAuthenticatedPage, page },
+    use,
+  ) => {
     await use(async () => {
       await gotoAuthenticatedPage({
         content: page.getByRole('heading', { name: 'My companies' }),
         path: '/my-companies',
       });
-      await page.getByTestId('VAT registered co.').click();
+      await page.getByTestId(companies[0].company.name).click();
       const companyId = new URL(page.url()).pathname.split('/').at(-1);
 
       if (!companyId) {
@@ -355,6 +400,17 @@ export const test = base.extend<AccountsFixtures, AccountsWorkerFixtures>({
         page.getByRole('heading', { exact: true, name: 'Settings' }),
       ).toBeVisible();
     });
+  },
+  selectMonth: async ({ format, page }, use) => {
+    await use(async (month) => {
+      await page.getByLabel('Month').click();
+      await page
+        .getByRole('option', { exact: true, name: format('month', month) })
+        .click();
+    });
+  },
+  settings: async ({}, use) => {
+    await use(settingFixtures);
   },
 });
 

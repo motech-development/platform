@@ -2140,8 +2140,10 @@ jobs:
           yarn workspace @accounts/client e2e-ci \
             "(?:^|/)vat-registered\.spec\.ts$" \
             --project=chromium \
-            --grep "should update company settings|should add client 1|should add a confirmed sale$"
+            --grep "should update company settings|should add client 1|should add a confirmed sale$|should add a confirmed sale refund$"
 
+          # Preserve the legacy report journey's explicit 60-second download
+          # wait plus Playwright's normal 30-second test allowance.
           yarn workspace @accounts/client e2e-ci \
             "(?:^|/)vat-registered\.spec\.ts$" \
             --project=chromium \
@@ -2153,7 +2155,7 @@ jobs:
             yarn workspace @accounts/web e2e-ci \
               "(?:^|/)vat-registered\.spec\.ts$" \
               --project=chromium \
-              --grep "should display a notification"
+              --grep "should display a notification|should remove virus from transaction"
 
           non_vat_fixture_cleanup_required=true
           yarn workspace @accounts/client e2e-ci \
@@ -2161,6 +2163,8 @@ jobs:
             --project=chromium \
             --grep "should create a company|should have correct default settings|should update company settings|should add client 1|should add a confirmed sale$|should add a confirmed purchase$|should add a confirmed purchase refund$|should add a pending sale|should schedule a purchase refund|should have published the scheduled transaction"
 
+          # Preserve the legacy report journey's explicit 60-second download
+          # wait plus Playwright's normal 30-second test allowance.
           yarn workspace @accounts/client e2e-ci \
             "(?:^|/)non-vat-registered\.spec\.ts$" \
             --project=chromium \
@@ -2177,8 +2181,23 @@ jobs:
           ACCOUNTS_WEB_HOSTED_SMOKE=true \
             BASE_URL="$DEPLOYMENT_URL" \
             yarn workspace @accounts/web e2e-ci \
-              "(?:^|/)(?:foundation|non-vat-registered|vat-registered)\.spec\.ts$" \
+              "(?:^|/)foundation\.spec\.ts$"
+
+          ACCOUNTS_WEB_HOSTED_SMOKE=true \
+            BASE_URL="$DEPLOYMENT_URL" \
+            yarn workspace @accounts/web e2e-ci \
+              "(?:^|/)non-vat-registered\.spec\.ts$" \
+              --project=chromium \
               --grep-invert "should display a notification"
+          non_vat_fixture_cleanup_required=false
+
+          ACCOUNTS_WEB_HOSTED_SMOKE=true \
+            BASE_URL="$DEPLOYMENT_URL" \
+            yarn workspace @accounts/web e2e-ci \
+              "(?:^|/)vat-registered\.spec\.ts$" \
+              --project=chromium \
+              --grep-invert "should display a notification|should remove virus from transaction"
+          vat_fixture_cleanup_required=false
 
   # Accounts (client)
   accounts-client:
