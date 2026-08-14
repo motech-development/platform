@@ -34,6 +34,54 @@ async function selectOption(
   await page.getByRole('option', { exact: true, name: option }).click();
 }
 
+async function dismissNotifications(
+  page: Page,
+  notifications: Locator,
+): Promise<void> {
+  const hasUnreadNotifications =
+    (await notifications.getAttribute('aria-label')) !==
+    'Notifications (0 unread)';
+  const markReadResponse = hasUnreadNotifications
+    ? page.waitForResponse((response) => {
+        const request = response.request();
+
+        if (request.method() !== 'POST') return false;
+
+        try {
+          const body = request.postDataJSON() as { operationName?: unknown };
+
+          return body.operationName === 'MarkNotificationsRead';
+        } catch {
+          return false;
+        }
+      })
+    : null;
+
+  await notifications.click();
+
+  if (markReadResponse) {
+    const response = await markReadResponse;
+    const result = (await response.json()) as {
+      data?: {
+        markAsRead?: {
+          items?: Array<{ read?: boolean } | null> | null;
+        } | null;
+      };
+      errors?: unknown;
+    };
+
+    expect(response.ok()).toBe(true);
+    expect(result.errors).toBeUndefined();
+    expect(result.data?.markAsRead?.items?.every((item) => item?.read)).toBe(
+      true,
+    );
+  }
+
+  await expect(
+    page.getByRole('button', { name: 'Notifications (0 unread)' }),
+  ).toBeVisible();
+}
+
 async function removeCompany(
   page: Page,
   baseURL: string | undefined,
@@ -597,10 +645,7 @@ test.describe('VAT registered Accounts', () => {
     await expect(
       page.getByText('Your report is ready to download').first(),
     ).toBeVisible();
-    await notifications.click();
-    await expect(
-      page.getByRole('button', { name: 'Notifications (0 unread)' }),
-    ).toBeVisible();
+    await dismissNotifications(page, notifications);
   });
 
   test('receives and dismisses the established scheduled-transaction notification', async ({
@@ -617,10 +662,7 @@ test.describe('VAT registered Accounts', () => {
     await expect(
       page.getByText('Your report is ready to download').first(),
     ).toBeVisible();
-    await notifications.click();
-    await expect(
-      page.getByRole('button', { name: 'Notifications (0 unread)' }),
-    ).toBeVisible();
+    await dismissNotifications(page, notifications);
   });
 
   test.describe.serial('Virus scanning', () => {
@@ -683,10 +725,7 @@ test.describe('VAT registered Accounts', () => {
         timeout: 900000,
       });
       await expectNoA11yViolations(page, virusNotification);
-      await notifications.click();
-      await expect(
-        page.getByRole('button', { name: 'Notifications (0 unread)' }),
-      ).toBeVisible();
+      await dismissNotifications(page, notifications);
     });
 
     test('should remove the virus from the transaction', async ({ page }) => {
