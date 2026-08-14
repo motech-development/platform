@@ -468,10 +468,10 @@ test.describe('VAT registered', () => {
       test.setTimeout(930000);
 
       const unreadNotifications = page.getByRole('button', {
-        name: /Notifications \([1-4] unread\)/,
+        name: /Notifications \([1-5] unread\)/,
       });
       const notifications = page.getByRole('button', {
-        name: /Notifications \([0-4] unread\)/,
+        name: /Notifications \([0-5] unread\)/,
       });
 
       await unreadNotifications.waitFor({
@@ -525,7 +525,7 @@ test.describe('VAT registered', () => {
       page,
     }) => {
       const notifications = page.getByRole('button', {
-        name: /Notifications \([0-4] unread\)/,
+        name: /Notifications \([0-5] unread\)/,
       });
 
       await notifications.click();
