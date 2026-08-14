@@ -51,12 +51,12 @@ export default async function dismissNotifications(
         };
         errors?: unknown;
       };
+      const items = result.data?.markAsRead?.items;
 
       expect(response.ok()).toBe(true);
       expect(result.errors).toBeUndefined();
-      expect(result.data?.markAsRead?.items?.every((item) => item?.read)).toBe(
-        true,
-      );
+      expect(items?.length).toBeGreaterThan(0);
+      expect(items?.every((item) => item?.read)).toBe(true);
     }
   } finally {
     page.off('response', captureMarkReadResponse);
