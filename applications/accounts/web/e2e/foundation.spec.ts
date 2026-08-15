@@ -251,7 +251,7 @@ test.describe('hosted Accounts foundation', () => {
     await openAccountsRoute();
     await page.getByRole('link', { name: 'Record transaction' }).click();
     await page.getByRole('radio', { name: 'Sale' }).check();
-    await page.getByRole('button', { name: /Supplier/ }).click();
+    await page.getByRole('button', { name: /Client/ }).click();
     await page.getByRole('option', { name: 'Motech Development' }).click();
     await page.getByLabel('Description').fill('Offline draft');
     await page.getByRole('radio', { name: 'Confirmed' }).check();

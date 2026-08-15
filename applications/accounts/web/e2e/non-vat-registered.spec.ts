@@ -311,19 +311,43 @@ test.describe('Non-VAT registered', () => {
   });
 
   test.describe('Accounts', () => {
-    test('should record confirmed sales, purchases, and refunds', async ({
+    test('should add a confirmed sale', async ({
       accounts,
       openAccountsRoute,
       recordTransaction,
     }) => {
       await openAccountsRoute();
       await recordTransaction({ transaction: accounts[0] });
+    });
+
+    test('should add a confirmed purchase', async ({
+      accounts,
+      openAccountsRoute,
+      recordTransaction,
+    }) => {
+      await openAccountsRoute();
       await recordTransaction({ transaction: accounts[1] });
+    });
+
+    test('should add a confirmed purchase refund', async ({
+      accounts,
+      openAccountsRoute,
+      recordTransaction,
+    }) => {
+      await openAccountsRoute();
       await recordTransaction({ refund: true, transaction: accounts[9] });
+    });
+
+    test('should add a confirmed purchase refund for updates', async ({
+      accounts,
+      openAccountsRoute,
+      recordTransaction,
+    }) => {
+      await openAccountsRoute();
       await recordTransaction({ refund: true, transaction: accounts[11] });
     });
 
-    test('should update and delete a confirmed purchase refund', async ({
+    test('should update a confirmed purchase refund', async ({
       accounts,
       openAccountsRoute,
       page,
@@ -346,7 +370,17 @@ test.describe('Non-VAT registered', () => {
         .fill(updatedDescription);
       await page.getByRole('button', { name: 'Save' }).click();
       await expect(page.getByText(updatedDescription)).toBeVisible();
+    });
 
+    test('should delete a confirmed purchase refund', async ({
+      accounts,
+      openAccountsRoute,
+      page,
+    }) => {
+      const transaction = accounts[11];
+      const updatedDescription = `${transaction.description} updated`;
+
+      await openAccountsRoute();
       await page
         .getByRole('row')
         .filter({ hasText: updatedDescription })
@@ -362,25 +396,45 @@ test.describe('Non-VAT registered', () => {
       await expect(page.getByText(updatedDescription)).toHaveCount(0);
     });
 
-    test('should record and remove a zero VAT purchase', async ({
+    test('should add a confirmed zero VAT rate purchase', async ({
       accounts,
       openAccountsRoute,
-      page,
       recordTransaction,
+    }) => {
+      await openAccountsRoute();
+      await recordTransaction({ transaction: accounts[2] });
+    });
+
+    test('should show correct balance details', async ({
+      openAccountsRoute,
+      page,
+    }) => {
+      await openAccountsRoute();
+      await expect(page.getByText('Balance: £1810.40')).toBeVisible();
+      await expect(page.getByText('VAT owed: £0.00')).toBeVisible();
+      await expect(page.getByText('VAT paid: £12.94')).toBeVisible();
+    });
+
+    test('should delete a confirmed transaction', async ({
+      accounts,
+      expectNoA11yViolations,
+      openAccountsRoute,
+      page,
     }) => {
       const transaction = accounts[2];
 
       await openAccountsRoute();
-      await recordTransaction({ transaction });
-      await expect(page.getByText('Balance: £1810.40')).toBeVisible();
-      await expect(page.getByText('VAT owed: £0.00')).toBeVisible();
-      await expect(page.getByText('VAT paid: £12.94')).toBeVisible();
       await page
         .getByRole('row')
         .filter({ hasText: transaction.description })
         .first()
         .click();
       await page.getByRole('button', { name: 'Delete Transaction' }).click();
+      await expectNoA11yViolations(
+        page.getByRole('heading', {
+          name: `Delete ${transaction.description}?`,
+        }),
+      );
       await page
         .getByLabel(`Type ${transaction.description} to confirm`)
         .fill(transaction.description);
@@ -390,7 +444,7 @@ test.describe('Non-VAT registered', () => {
       await expect(page.getByText('Balance: £1922.40')).toBeVisible();
     });
 
-    test('should record Pending and Scheduled Transactions', async ({
+    test('should add a pending sale', async ({
       accounts,
       openAccountsRoute,
       recordTransaction,
@@ -401,15 +455,39 @@ test.describe('Non-VAT registered', () => {
         status: 'pending',
         transaction: accounts[3],
       });
+    });
+
+    test('should add a pending purchase', async ({
+      accounts,
+      openAccountsRoute,
+      recordTransaction,
+    }) => {
+      await openAccountsRoute();
       await recordTransaction({
         status: 'pending',
         transaction: accounts[4],
       });
+    });
+
+    test('should add a pending zero VAT rate purchase', async ({
+      accounts,
+      openAccountsRoute,
+      recordTransaction,
+    }) => {
+      await openAccountsRoute();
       await recordTransaction({
         date: 'tomorrow',
         status: 'pending',
         transaction: accounts[5],
       });
+    });
+
+    test('should schedule a purchase refund', async ({
+      accounts,
+      openAccountsRoute,
+      recordTransaction,
+    }) => {
+      await openAccountsRoute();
       await recordTransaction({
         refund: true,
         scheduled: true,
@@ -418,7 +496,7 @@ test.describe('Non-VAT registered', () => {
       });
     });
 
-    test('should delete a Pending Transaction', async ({
+    test('should delete a pending transaction', async ({
       accounts,
       openAccountsRoute,
       page,
@@ -444,7 +522,7 @@ test.describe('Non-VAT registered', () => {
       await expect(page.getByText(transaction.description)).toHaveCount(0);
     });
 
-    test('should publish the Scheduled Transaction', async ({
+    test('should have published the scheduled transaction', async ({
       openAccountsRoute,
       page,
     }) => {

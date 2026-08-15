@@ -2,6 +2,8 @@ import Decimal from 'decimal.js';
 import { z } from 'zod';
 import i18n from '../../i18n';
 
+const SALES_CATEGORY = 'Sales';
+
 const requiredText = (message: string) =>
   z
     .string()
@@ -97,6 +99,10 @@ export interface TransactionInput {
   vat: number;
 }
 
+export function isSaleTransactionCategory(category: string): boolean {
+  return category === SALES_CATEGORY;
+}
+
 export function calculateSaleVat(amount: string, vatRate: number): number {
   return new Decimal(amount)
     .times(vatRate)
@@ -128,7 +134,7 @@ export function buildTransactionInput(
   return {
     amount: signedAmount.toNumber(),
     attachment: value.attachment,
-    category: purchase ? value.category : 'Sales',
+    category: purchase ? value.category : SALES_CATEGORY,
     companyId: value.companyId,
     date: new Date(`${value.date}T00:00:00.000Z`).toISOString(),
     description: value.description,
@@ -147,7 +153,9 @@ export function editableTransaction(
   return {
     amount: new Decimal(transaction.amount).abs().toString(),
     attachment: transaction.attachment,
-    category: transaction.category === 'Sales' ? '' : transaction.category,
+    category: isSaleTransactionCategory(transaction.category)
+      ? ''
+      : transaction.category,
     companyId: transaction.companyId,
     date: transaction.date.substring(0, 10),
     description: transaction.description,
@@ -156,7 +164,9 @@ export function editableTransaction(
     refund: transaction.refund,
     scheduled: transaction.status === 'pending' && transaction.scheduled,
     status: transaction.status,
-    transactionType: transaction.category === 'Sales' ? 'sale' : 'purchase',
+    transactionType: isSaleTransactionCategory(transaction.category)
+      ? 'sale'
+      : 'purchase',
     vat: new Decimal(transaction.vat).abs().toString(),
   };
 }

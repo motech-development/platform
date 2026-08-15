@@ -23,6 +23,9 @@ export function isLocalBaseUrl(baseURL: string | undefined): boolean {
 }
 
 type TransactionFixture = (typeof accountFixtures)[number];
+type AttachmentFixturePath = string & {
+  readonly attachmentFixturePath: unique symbol;
+};
 
 export interface AccountsFixtures {
   accounts: typeof accountFixtures;
@@ -30,7 +33,7 @@ export interface AccountsFixtures {
   clients: typeof clientFixtures;
   completeAuthentication: (content: Locator) => Promise<void>;
   dismissNotifications: (notifications: Locator) => Promise<void>;
-  eicar: () => Promise<void>;
+  eicar: () => Promise<AttachmentFixturePath>;
   expectNoA11yViolations: (readyState: Locator) => Promise<void>;
   focusWithKeyboard: (
     target: Locator,
@@ -41,13 +44,15 @@ export interface AccountsFixtures {
     content: Locator;
     path: string;
   }) => Promise<void>;
+  invoice: AttachmentFixturePath;
   openAccountsRoute: () => Promise<string>;
   openCompany: (companyName: string) => Promise<void>;
   openCompanyClients: (companyName: string) => Promise<void>;
   openCompanyDetails: (companyName: string) => Promise<void>;
   openCompanySettings: (companyName: string) => Promise<void>;
   recordTransaction: (options: {
-    attachment?: string;
+    attachment?: AttachmentFixturePath;
+    checkA11y?: boolean;
     date?: 'tomorrow';
     refund?: boolean;
     scheduled?: boolean;
@@ -234,13 +239,17 @@ export const test = base.extend<AccountsFixtures, AccountsWorkerFixtures>({
   },
   eicar: async ({}, use) => {
     await use(async () => {
+      const path = join(
+        dirname(fileURLToPath(import.meta.url)),
+        'fixtures/upload/eicar.pdf',
+      ) as AttachmentFixturePath;
+
       await writeFile(
-        join(
-          dirname(fileURLToPath(import.meta.url)),
-          'fixtures/upload/eicar.pdf',
-        ),
+        path,
         'X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*',
       );
+
+      return path;
     });
   },
   expectNoA11yViolations: async ({ page }, use) => {
@@ -362,6 +371,14 @@ export const test = base.extend<AccountsFixtures, AccountsWorkerFixtures>({
         .toBe(destination.pathname);
     });
   },
+  invoice: async ({}, use) => {
+    await use(
+      join(
+        dirname(fileURLToPath(import.meta.url)),
+        'fixtures/upload/invoice.pdf',
+      ) as AttachmentFixturePath,
+    );
+  },
   openAccountsRoute: async (
     { companies, gotoAuthenticatedPage, page },
     use,
@@ -424,24 +441,35 @@ export const test = base.extend<AccountsFixtures, AccountsWorkerFixtures>({
       ).toBeVisible();
     });
   },
-  recordTransaction: async ({ format, page }, use) => {
+  recordTransaction: async ({ expectNoA11yViolations, format, page }, use) => {
     await use(
       async ({
         attachment,
+        checkA11y = false,
         date,
         refund = false,
         scheduled = false,
         status = 'confirmed',
         transaction,
       }) => {
+        if (checkA11y) {
+          await expectNoA11yViolations(
+            page.getByRole('heading', { level: 1, name: 'Transactions' }),
+          );
+        }
         await page.getByRole('link', { name: 'Record transaction' }).click();
+        if (checkA11y) {
+          await expectNoA11yViolations(
+            page.getByRole('heading', { name: 'Record transaction' }),
+          );
+        }
         const sale = transaction.type === 'Sales';
 
         await page
           .getByRole('radio', { name: sale ? 'Sale' : 'Purchase' })
           .check();
         if (sale) {
-          await page.getByRole('button', { name: /Supplier/ }).click();
+          await page.getByRole('button', { name: /Client/ }).click();
           await page
             .getByRole('option', { name: transaction.supplier })
             .click();

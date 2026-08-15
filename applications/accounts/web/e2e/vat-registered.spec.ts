@@ -429,48 +429,59 @@ test.describe('VAT registered', () => {
   test.describe('Accounts', () => {
     test('should add a confirmed sale', async ({
       accounts,
+      invoice,
       openAccountsRoute,
       recordTransaction,
     }) => {
       await openAccountsRoute();
       await recordTransaction({
-        attachment: 'e2e/fixtures/upload/invoice.pdf',
+        attachment: invoice,
+        checkA11y: true,
         transaction: accounts[0],
       });
     });
 
-    test('should add a confirmed sale refund with an infected attachment', async ({
+    test('should add a confirmed sale refund', async ({
       accounts,
       eicar,
       openAccountsRoute,
       recordTransaction,
     }) => {
       await openAccountsRoute();
-      await eicar();
       await recordTransaction({
-        attachment: 'e2e/fixtures/upload/eicar.pdf',
+        attachment: await eicar(),
         refund: true,
         transaction: accounts[8],
       });
     });
 
-    test('should add confirmed purchase variants', async ({
+    test('should add a confirmed purchase', async ({
       accounts,
+      invoice,
       openAccountsRoute,
       recordTransaction,
     }) => {
       await openAccountsRoute();
       await recordTransaction({
-        attachment: 'e2e/fixtures/upload/invoice.pdf',
+        attachment: invoice,
         transaction: accounts[1],
       });
+    });
+
+    test('should add a confirmed zero VAT rate purchase', async ({
+      accounts,
+      invoice,
+      openAccountsRoute,
+      recordTransaction,
+    }) => {
+      await openAccountsRoute();
       await recordTransaction({
-        attachment: 'e2e/fixtures/upload/invoice.pdf',
+        attachment: invoice,
         transaction: accounts[2],
       });
     });
 
-    test('should show the confirmed accounting totals', async ({
+    test('should show correct balance details', async ({
       openAccountsRoute,
       page,
     }) => {
@@ -480,9 +491,11 @@ test.describe('VAT registered', () => {
       await expect(page.getByText('VAT paid: £26.27')).toBeVisible();
     });
 
-    test('should update a confirmed transaction and replace its attachment', async ({
+    test('should update a transaction', async ({
       accounts,
+      expectNoA11yViolations,
       format,
+      invoice,
       openAccountsRoute,
       page,
     }) => {
@@ -497,6 +510,9 @@ test.describe('VAT registered', () => {
       await expect(
         page.getByRole('heading', { name: 'Edit transaction' }),
       ).toBeVisible();
+      await expectNoA11yViolations(
+        page.getByRole('heading', { name: 'Edit transaction' }),
+      );
       await expect(page.getByLabel('Sale')).toBeChecked();
       await expect(
         page.getByRole('radiogroup', { name: 'Refund' }).getByLabel('No'),
@@ -506,16 +522,15 @@ test.describe('VAT registered', () => {
         format('currency', transaction.vat),
       );
       await page.getByRole('button', { name: 'Delete file' }).click();
-      await page
-        .getByLabel('Select file to upload')
-        .setInputFiles('e2e/fixtures/upload/invoice.pdf');
+      await page.getByLabel('Select file to upload').setInputFiles(invoice);
       await page.getByRole('button', { name: 'Save' }).click();
       await expect(page.getByText('Balance: £2790.40')).toBeVisible();
       await expect(page.getByText('VAT owed: £410.00')).toBeVisible();
     });
 
-    test('should delete a confirmed transaction with exact confirmation', async ({
+    test('should delete a confirmed transaction', async ({
       accounts,
+      expectNoA11yViolations,
       openAccountsRoute,
       page,
     }) => {
@@ -528,6 +543,11 @@ test.describe('VAT registered', () => {
         .first()
         .click();
       await page.getByRole('button', { name: 'Delete Transaction' }).click();
+      await expectNoA11yViolations(
+        page.getByRole('heading', {
+          name: `Delete ${transaction.description}?`,
+        }),
+      );
       await page
         .getByLabel(`Type ${transaction.description} to confirm`)
         .fill(transaction.description);
@@ -538,17 +558,25 @@ test.describe('VAT registered', () => {
       await expect(page.getByText('VAT owed: £22.50')).toBeVisible();
     });
 
-    test('should record VAT payment and refund semantics', async ({
+    test('should make a VAT payment', async ({
       accounts,
       openAccountsRoute,
       recordTransaction,
     }) => {
       await openAccountsRoute();
       await recordTransaction({ transaction: accounts[7] });
+    });
+
+    test('should make a VAT refund', async ({
+      accounts,
+      openAccountsRoute,
+      recordTransaction,
+    }) => {
+      await openAccountsRoute();
       await recordTransaction({ refund: true, transaction: accounts[10] });
     });
 
-    test('should show totals after VAT is paid', async ({
+    test('should show correct balance details after VAT is paid', async ({
       openAccountsRoute,
       page,
     }) => {
@@ -557,7 +585,7 @@ test.describe('VAT registered', () => {
       await expect(page.getByText('VAT owed: £0.00')).toBeVisible();
     });
 
-    test('should preview and download a PDF attachment', async ({
+    test('should download attachment', async ({
       accounts,
       openAccountsRoute,
       page,

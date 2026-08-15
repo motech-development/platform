@@ -4,6 +4,7 @@ import {
   type Reference,
   type StoreObject,
 } from '@apollo/client';
+import { isSaleTransactionCategory } from './transaction';
 
 export interface TransactionCacheValue {
   readonly __typename?: 'Transaction';
@@ -67,7 +68,7 @@ function updateSuggestions(
 
   if (!typeaheadId) return;
 
-  const sale = transaction.category === 'Sales';
+  const sale = isSaleTransactionCategory(transaction.category);
 
   cache.modify({
     fields: {
