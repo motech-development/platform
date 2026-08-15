@@ -473,19 +473,15 @@ export function RecordTransactionFormFields({
                         </Select.Trigger>
                         <Select.Popover>
                           <Select.ListBox>
-                            {[...categories]
-                              .sort((left, right) =>
-                                left.name.localeCompare(right.name),
-                              )
-                              .map(({ name }) => (
-                                <Select.Item
-                                  id={name}
-                                  key={name}
-                                  textValue={name}
-                                >
-                                  {name}
-                                </Select.Item>
-                              ))}
+                            {categories.map(({ name }) => (
+                              <Select.Item
+                                id={name}
+                                key={name}
+                                textValue={name}
+                              >
+                                {name}
+                              </Select.Item>
+                            ))}
                           </Select.ListBox>
                         </Select.Popover>
                         <Select.Error>

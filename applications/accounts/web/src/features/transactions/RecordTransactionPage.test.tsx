@@ -18,7 +18,10 @@ const mocks = vi.hoisted(() => {
         items: [{ id: 'client-id', name: 'Example client' }],
       },
       getSettings: {
-        categories: [{ name: 'Professional fees', vatRate: 20 }],
+        categories: [
+          { name: 'Travel', vatRate: 20 },
+          { name: 'Professional fees', vatRate: 20 },
+        ],
         id: 'company-id',
         vat: { pay: 20 },
       },
@@ -147,6 +150,20 @@ describe('RecordTransactionPage', () => {
       screen.getByRole('button', { name: 'Select client Client' }),
     ).toBeVisible();
     expect(screen.queryByLabelText('Category')).not.toBeInTheDocument();
+  });
+
+  it('preserves the accounting category order supplied by the API', async () => {
+    render(
+      <BreezeProvider locale="en-GB">
+        <RecordTransactionPage companyId="company-id" origin="transactions" />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(screen.getByRole('button', { name: /Category/ }));
+
+    expect(
+      screen.getAllByRole('option').map((option) => option.textContent),
+    ).toEqual(['Travel', 'Professional fees']);
   });
 
   it('retries the form query after it fails', async () => {
