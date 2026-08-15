@@ -1,9 +1,6 @@
-import companyFixtures from '@accounts/client/e2e/fixtures/data/company.json' with { type: 'json' };
 import { expect, test } from './test';
 
 test.describe('VAT registered', () => {
-  const companyFixture = companyFixtures[0];
-  const companyName = companyFixture.company.name;
   let companyCleanupRequired = false;
 
   test.skip(
@@ -18,22 +15,24 @@ test.describe('VAT registered', () => {
     });
   });
 
-  test.afterAll(async ({ baseURL, cleanupCompany }, testInfo) => {
+  test.afterAll(async ({ baseURL, cleanupCompany, companies }, testInfo) => {
     if (!companyCleanupRequired) return;
 
     await cleanupCompany({
       baseURL,
-      companyName,
+      companyName: companies[0].company.name,
       storageState: testInfo.project.use.storageState,
     });
   });
 
   test('supports company management routes at desktop and compact sizes', async ({
+    companies,
     expectNoA11yViolations,
     focusWithKeyboard,
     gotoAuthenticatedPage,
     page,
   }) => {
+    const companyName = companies[0].company.name;
     const companyNames = await page
       .locator('[data-testid]')
       .evaluateAll((elements) =>
@@ -106,10 +105,10 @@ test.describe('VAT registered', () => {
   });
 
   test.describe('Register company', () => {
-    test.beforeAll(async ({ baseURL, cleanupCompany }, testInfo) => {
+    test.beforeAll(async ({ baseURL, cleanupCompany, companies }, testInfo) => {
       await cleanupCompany({
         baseURL,
-        companyName,
+        companyName: companies[0].company.name,
         storageState: testInfo.project.use.storageState,
       });
     });
@@ -197,7 +196,7 @@ test.describe('VAT registered', () => {
       const company = companies[0];
       const updated = companies[2].company;
 
-      await openCompanyDetails(companyName);
+      await openCompanyDetails(company.company.name);
       await expectNoA11yViolations(page.getByLabel('Company name'));
 
       await expect(page.getByLabel('Company name')).toHaveValue(
@@ -239,7 +238,7 @@ test.describe('VAT registered', () => {
       await page.getByRole('button', { name: 'Save changes' }).click();
 
       await expect(
-        page.getByRole('heading', { level: 1, name: companyName }),
+        page.getByRole('heading', { level: 1, name: company.company.name }),
       ).toBeVisible();
     });
   });
@@ -257,7 +256,7 @@ test.describe('VAT registered', () => {
       const company = companies[0];
       const setting = settings[0];
 
-      await openCompanySettings(companyName);
+      await openCompanySettings(company.company.name);
       await expectNoA11yViolations(page.getByLabel('Registration number'));
 
       await addCompanyCategory(
@@ -297,16 +296,18 @@ test.describe('VAT registered', () => {
       await page.getByRole('button', { name: 'Save settings' }).click();
 
       await expect(
-        page.getByRole('heading', { level: 1, name: companyName }),
+        page.getByRole('heading', { level: 1, name: company.company.name }),
       ).toBeVisible();
     });
 
     test('should remove expenses category', async ({
+      companies,
       format,
       openCompanySettings,
       page,
       settings,
     }) => {
+      const companyName = companies[0].company.name;
       const setting = settings[0];
 
       await openCompanySettings(companyName);
@@ -351,10 +352,12 @@ test.describe('VAT registered', () => {
 
     test('should re-add expense categories', async ({
       addCompanyCategory,
+      companies,
       openCompanySettings,
       page,
       settings,
     }) => {
+      const companyName = companies[0].company.name;
       const setting = settings[0];
 
       await openCompanySettings(companyName);
@@ -375,12 +378,14 @@ test.describe('VAT registered', () => {
   test.describe('Clients', () => {
     test('should add client 1', async ({
       clients,
+      companies,
       expectNoA11yViolations,
       focusWithKeyboard,
       openCompanyClients,
       page,
     }) => {
       const client = clients[0];
+      const companyName = companies[0].company.name;
 
       await openCompanyClients(companyName);
       await expectNoA11yViolations(
@@ -422,7 +427,13 @@ test.describe('VAT registered', () => {
   });
 
   test.describe('Accounts', () => {
-    test('should add a confirmed sale', async ({ accounts, format, page }) => {
+    test('should add a confirmed sale', async ({
+      accounts,
+      companies,
+      format,
+      page,
+    }) => {
+      const companyName = companies[0].company.name;
       const transaction = accounts[0];
 
       await page.getByTestId(companyName).click();
@@ -440,7 +451,7 @@ test.describe('VAT registered', () => {
 
       await page
         .getByLabel('Select file to upload')
-        .setInputFiles('../client/e2e/fixtures/upload/invoice.pdf');
+        .setInputFiles('e2e/fixtures/upload/invoice.pdf');
       await expect(page.getByRole('status')).toContainText(
         'PDF attached: invoice.pdf',
       );
@@ -496,9 +507,11 @@ test.describe('VAT registered', () => {
 
     test('should remove virus from transaction', async ({
       accounts,
+      companies,
       format,
       page,
     }) => {
+      const companyName = companies[0].company.name;
       const transaction = accounts[8];
 
       await page.getByTestId(companyName).click();
@@ -537,7 +550,13 @@ test.describe('VAT registered', () => {
   });
 
   test.describe('Delete company', () => {
-    test('should remove company', async ({ openCompanyDetails, page }) => {
+    test('should remove company', async ({
+      companies,
+      openCompanyDetails,
+      page,
+    }) => {
+      const companyName = companies[0].company.name;
+
       await openCompanyDetails(companyName);
       await page.getByRole('button', { name: 'Delete company' }).click();
       const confirmation = page.getByLabel(`Type ${companyName} to confirm`);

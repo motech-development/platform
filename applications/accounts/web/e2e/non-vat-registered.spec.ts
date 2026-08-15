@@ -1,9 +1,6 @@
-import companyFixtures from '@accounts/client/e2e/fixtures/data/company.json' with { type: 'json' };
 import { expect, test } from './test';
 
 test.describe('Non-VAT registered', () => {
-  const companyFixture = companyFixtures[1];
-  const companyName = companyFixture.company.name;
   let companyCleanupRequired = false;
 
   test.skip(
@@ -18,21 +15,21 @@ test.describe('Non-VAT registered', () => {
     });
   });
 
-  test.afterAll(async ({ baseURL, cleanupCompany }, testInfo) => {
+  test.afterAll(async ({ baseURL, cleanupCompany, companies }, testInfo) => {
     if (!companyCleanupRequired) return;
 
     await cleanupCompany({
       baseURL,
-      companyName,
+      companyName: companies[1].company.name,
       storageState: testInfo.project.use.storageState,
     });
   });
 
   test.describe('Register company', () => {
-    test.beforeAll(async ({ baseURL, cleanupCompany }, testInfo) => {
+    test.beforeAll(async ({ baseURL, cleanupCompany, companies }, testInfo) => {
       await cleanupCompany({
         baseURL,
-        companyName,
+        companyName: companies[1].company.name,
         storageState: testInfo.project.use.storageState,
       });
     });
@@ -89,8 +86,8 @@ test.describe('Non-VAT registered', () => {
   });
 
   test.describe('Settings', () => {
-    test.beforeEach(async ({ openCompanySettings }) => {
-      await openCompanySettings(companyName);
+    test.beforeEach(async ({ companies, openCompanySettings }) => {
+      await openCompanySettings(companies[1].company.name);
     });
 
     test('should have correct default settings', async ({
@@ -132,10 +129,12 @@ test.describe('Non-VAT registered', () => {
 
     test('should update company settings', async ({
       addCompanyCategory,
+      companies,
       format,
       page,
       settings,
     }) => {
+      const companyName = companies[1].company.name;
       const setting = settings[1];
 
       await addCompanyCategory(
@@ -167,10 +166,12 @@ test.describe('Non-VAT registered', () => {
   test.describe('Clients', () => {
     test('should add client 1', async ({
       clients,
+      companies,
       openCompanyClients,
       page,
     }) => {
       const client = clients[0];
+      const companyName = companies[1].company.name;
 
       await openCompanyClients(companyName);
       await page.getByRole('button', { name: 'Add a new client' }).click();
@@ -190,10 +191,12 @@ test.describe('Non-VAT registered', () => {
 
     test('should add client 2', async ({
       clients,
+      companies,
       openCompanyClients,
       page,
     }) => {
       const client = clients[1];
+      const companyName = companies[1].company.name;
 
       await openCompanyClients(companyName);
       await page.getByRole('button', { name: 'Add a new client' }).click();
@@ -215,10 +218,12 @@ test.describe('Non-VAT registered', () => {
 
     test('should add client 3', async ({
       clients,
+      companies,
       openCompanyClients,
       page,
     }) => {
       const client = clients[2];
+      const companyName = companies[1].company.name;
 
       await openCompanyClients(companyName);
       await page.getByRole('button', { name: 'Add a new client' }).click();
@@ -239,10 +244,12 @@ test.describe('Non-VAT registered', () => {
 
     test('should update client 2', async ({
       clients,
+      companies,
       openCompanyClients,
       page,
     }) => {
       const client = clients[1];
+      const companyName = companies[1].company.name;
       const updated = clients[3];
 
       await openCompanyClients(companyName);
@@ -281,10 +288,12 @@ test.describe('Non-VAT registered', () => {
 
     test('should delete client 3', async ({
       clients,
+      companies,
       openCompanyClients,
       page,
     }) => {
       const client = clients[2];
+      const companyName = companies[1].company.name;
 
       await openCompanyClients(companyName);
       await page.getByTestId(client.name).click();
@@ -322,7 +331,13 @@ test.describe('Non-VAT registered', () => {
   });
 
   test.describe('Delete company', () => {
-    test('should remove company', async ({ openCompanyDetails, page }) => {
+    test('should remove company', async ({
+      companies,
+      openCompanyDetails,
+      page,
+    }) => {
+      const companyName = companies[1].company.name;
+
       await openCompanyDetails(companyName);
       await page.getByRole('button', { name: 'Delete company' }).click();
       await page.getByLabel(`Type ${companyName} to confirm`).fill(companyName);
