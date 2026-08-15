@@ -5,7 +5,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { TransactionsPageContent } from './TransactionsPageContent';
 
 const mocks = vi.hoisted(() => ({
+  confirmedError: undefined as Error | undefined,
   confirmedFetchMore: vi.fn().mockResolvedValue(undefined),
+  pendingError: undefined as Error | undefined,
   pendingFetchMore: vi.fn().mockResolvedValue(undefined),
   queryCall: 0,
 }));
@@ -41,7 +43,7 @@ vi.mock('@apollo/client/react', async (importOriginal) => ({
           nextToken: confirmed ? 'confirmed-next' : null,
         },
       },
-      error: undefined,
+      error: confirmed ? mocks.confirmedError : mocks.pendingError,
       fetchMore: confirmed ? mocks.confirmedFetchMore : mocks.pendingFetchMore,
       loading: false,
       networkStatus: undefined,
@@ -69,6 +71,8 @@ vi.mock('./TransactionPagePresentation', () => ({
 describe('TransactionsPageContent', () => {
   beforeEach(() => {
     mocks.queryCall = 0;
+    mocks.confirmedError = undefined;
+    mocks.pendingError = undefined;
     vi.clearAllMocks();
   });
 
@@ -86,5 +90,23 @@ describe('TransactionsPageContent', () => {
       variables: { nextToken: 'confirmed-next' },
     });
     expect(mocks.pendingFetchMore).not.toHaveBeenCalled();
+  });
+
+  it('keeps available Transactions visible after a partial refresh failure', () => {
+    mocks.pendingError = new Error('Pending refresh failed');
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <TransactionsPageContent companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    expect(screen.getByText('pending-id,confirmed-id')).toBeVisible();
+    expect(
+      screen.getByText(
+        'Transactions could not be refreshed. Existing results are still shown.',
+      ),
+    ).toBeVisible();
+    expect(screen.queryByText('Could not load')).not.toBeInTheDocument();
   });
 });

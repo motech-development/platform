@@ -1,6 +1,6 @@
 import { BreezeProvider } from '@motech-development/breeze-ui';
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { PendingTransactionsPageContent } from './PendingTransactionsPageContent';
 
 const query = vi.hoisted(() => ({
@@ -26,7 +26,7 @@ const query = vi.hoisted(() => ({
       nextToken: null,
     },
   },
-  error: undefined,
+  error: undefined as Error | undefined,
   fetchMore: vi.fn(),
   loading: false,
   networkStatus: undefined,
@@ -52,6 +52,11 @@ vi.mock('@motech-development/breeze-ui/icons', () => ({
 }));
 
 describe('PendingTransactionsPageContent', () => {
+  beforeEach(() => {
+    query.error = undefined;
+    vi.clearAllMocks();
+  });
+
   it('presents the dedicated Pending Transaction collection', () => {
     render(
       <BreezeProvider locale="en-GB">
@@ -74,5 +79,25 @@ describe('PendingTransactionsPageContent', () => {
     expect(
       screen.getByRole('img', { name: 'Scheduled transaction' }),
     ).toBeVisible();
+  });
+
+  it('keeps cached Pending Transactions visible after a refresh failure', () => {
+    query.error = new Error('Refresh failed');
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <PendingTransactionsPageContent companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    expect(
+      screen.getByText(
+        'Transactions could not be refreshed. Existing results are still shown.',
+      ),
+    ).toBeVisible();
+    expect(screen.getByText('Quarterly bookkeeping')).toBeVisible();
+    expect(
+      screen.queryByText('We could not load Pending Transactions'),
+    ).not.toBeInTheDocument();
   });
 });

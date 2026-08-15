@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { type ComponentType, createElement } from 'react';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { Route } from './index';
 
 vi.mock(
@@ -23,6 +23,8 @@ vi.mock(
 );
 
 describe('view Transaction route', () => {
+  afterEach(() => vi.restoreAllMocks());
+
   it('opens the shared editor over the Transactions collection', () => {
     vi.spyOn(Route, 'useParams').mockReturnValue({
       companyId: 'company-id',

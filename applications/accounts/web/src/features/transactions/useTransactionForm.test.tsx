@@ -6,7 +6,9 @@ import { useTransactionForm } from './useTransactionForm';
 
 const mocks = vi.hoisted(() => ({
   add: vi.fn(),
+  deleteFile: vi.fn(),
   navigate: vi.fn().mockResolvedValue(undefined),
+  shouldBlockFn: undefined as undefined | (() => boolean),
   toast: { show: vi.fn() },
   update: vi.fn(),
 }));
@@ -19,9 +21,13 @@ vi.mock('@apollo/client/react', async (importOriginal) => ({
     const operation = document.definitions?.find(({ name }) => name)?.name
       ?.value;
 
-    return operation === 'UpdateTransaction'
-      ? [mocks.update, { loading: false }]
-      : [mocks.add, { loading: false }];
+    if (operation === 'UpdateTransaction') {
+      return [mocks.update, { loading: false }];
+    }
+    if (operation === 'DeleteFile') {
+      return [mocks.deleteFile, { loading: false }];
+    }
+    return [mocks.add, { loading: false }];
   },
   useQuery: () => ({
     data: {
@@ -52,7 +58,10 @@ vi.mock('@motech-development/breeze-ui', async (importOriginal) => ({
 
 vi.mock('@tanstack/react-router', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@tanstack/react-router')>()),
-  useBlocker: () => ({ proceed: vi.fn(), reset: vi.fn(), status: 'idle' }),
+  useBlocker: ({ shouldBlockFn }: { shouldBlockFn: () => boolean }) => {
+    mocks.shouldBlockFn = shouldBlockFn;
+    return { proceed: vi.fn(), reset: vi.fn(), status: 'idle' };
+  },
   useNavigate: () => mocks.navigate,
 }));
 
@@ -123,6 +132,87 @@ function EditHarness() {
   );
 }
 
+function RemoveAttachmentHarness() {
+  const { form } = useTransactionForm({
+    companyId: 'company-id',
+    confirmedReturnTo: '/my-companies/accounts/$companyId',
+    initialValues: {
+      amount: '75',
+      attachment: 'company-id/invoice.pdf',
+      category: 'Sales',
+      companyId: 'company-id',
+      date: '2026-08-16',
+      description: 'Retainer',
+      id: 'transaction-id',
+      name: 'Known client',
+      refund: false,
+      scheduled: false,
+      status: 'confirmed',
+      transactionType: 'sale',
+      vat: '15',
+    },
+  });
+
+  return (
+    <button
+      onClick={() => {
+        form.setFieldValue('attachment', '');
+        form.handleSubmit().catch(() => undefined);
+      }}
+      type="button"
+    >
+      Remove attachment
+    </button>
+  );
+}
+
+function FailedTransferHarness() {
+  const { form, trackAttachmentTransfer } = useTransactionForm({
+    companyId: 'company-id',
+    confirmedReturnTo: '/my-companies/accounts/$companyId',
+  });
+
+  return (
+    <button
+      onClick={() => {
+        form.setFieldValue('amount', '120');
+        form.setFieldValue('category', 'Professional fees');
+        form.setFieldValue('description', 'Quarterly bookkeeping');
+        form.setFieldValue('name', 'Oak & Co');
+        form.setFieldValue('status', 'confirmed');
+        form.setFieldValue('vat', '20');
+        trackAttachmentTransfer(Promise.resolve({ status: 'failed' }));
+        form.handleSubmit().catch(() => undefined);
+      }}
+      type="button"
+    >
+      Submit after failed transfer
+    </button>
+  );
+}
+
+function PendingTransferHarness() {
+  const { trackAttachmentTransfer } = useTransactionForm({
+    companyId: 'company-id',
+    confirmedReturnTo: '/my-companies/accounts/$companyId',
+  });
+
+  return (
+    <button
+      onClick={() => {
+        trackAttachmentTransfer(
+          new Promise<never>(() => {
+            // Keep the transfer pending to exercise the navigation blocker.
+          }),
+        );
+      }}
+      type="button"
+    >
+      Start attachment transfer
+    </button>
+  );
+}
+
 function mutationInput(mock: typeof mocks.add) {
   const calls = mock.mock.calls as unknown as Array<
     [{ variables: { input: Record<string, unknown> } }]
@@ -134,6 +224,7 @@ function mutationInput(mock: typeof mocks.add) {
 describe('useTransactionForm', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mocks.shouldBlockFn = undefined;
     mocks.navigate.mockResolvedValue(undefined);
     mocks.add.mockResolvedValue({
       data: {
@@ -170,6 +261,9 @@ describe('useTransactionForm', () => {
           vat: 15,
         },
       },
+    });
+    mocks.deleteFile.mockResolvedValue({
+      data: { deleteFile: { path: 'company-id/invoice.pdf' } },
     });
   });
 
@@ -244,5 +338,82 @@ describe('useTransactionForm', () => {
       params: { companyId: 'company-id' },
       to: '/my-companies/accounts/$companyId',
     });
+  });
+
+  it('deletes a replaced attachment only after the Transaction update succeeds', async () => {
+    render(
+      <BreezeProvider locale="en-GB">
+        <RemoveAttachmentHarness />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Remove attachment' }),
+    );
+
+    await waitFor(() => expect(mocks.deleteFile).toHaveBeenCalledOnce());
+    expect(mocks.update).toHaveBeenCalledOnce();
+    expect(mocks.update.mock.invocationCallOrder[0]).toBeLessThan(
+      mocks.deleteFile.mock.invocationCallOrder[0] ?? 0,
+    );
+    expect(mocks.deleteFile).toHaveBeenCalledWith({
+      variables: {
+        id: 'company-id',
+        path: 'company-id/invoice.pdf',
+      },
+    });
+  });
+
+  it('retains a persisted attachment when the Transaction update fails', async () => {
+    mocks.update.mockRejectedValueOnce(new Error('Update failed'));
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <RemoveAttachmentHarness />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Remove attachment' }),
+    );
+
+    await waitFor(() => expect(mocks.update).toHaveBeenCalledOnce());
+    expect(mocks.deleteFile).not.toHaveBeenCalled();
+  });
+
+  it('explains why a failed attachment transfer blocks submission', async () => {
+    render(
+      <BreezeProvider locale="en-GB">
+        <FailedTransferHarness />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Submit after failed transfer' }),
+    );
+
+    await waitFor(() =>
+      expect(mocks.toast.show).toHaveBeenCalledWith(
+        expect.objectContaining({
+          description: 'Retry the attachment, then save again.',
+          variant: 'danger',
+        }),
+      ),
+    );
+    expect(mocks.add).not.toHaveBeenCalled();
+  });
+
+  it('blocks route navigation while an attachment transfer is pending', async () => {
+    render(
+      <BreezeProvider locale="en-GB">
+        <PendingTransferHarness />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Start attachment transfer' }),
+    );
+
+    expect(mocks.shouldBlockFn?.()).toBe(true);
   });
 });

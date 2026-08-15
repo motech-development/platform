@@ -8,6 +8,7 @@ import {
   GET_PENDING_TRANSACTIONS,
 } from '../../data/operations';
 import { TransactionsContentSkeleton } from '../loading/AccountsPageSkeletons';
+import { QueryRefreshAlert } from '../QueryRefreshAlert';
 import { FinancialSummary } from './FinancialSummary';
 import { TransactionLedger } from './TransactionLedger';
 import {
@@ -77,11 +78,25 @@ export function TransactionsPageContent({
         )}
         title={t('Transactions')}
       />
-      {error ? (
+      {error && !data ? (
         <TransactionPageError
           onRetry={() => Promise.all([confirmed.refetch(), pending.refetch()])}
           title={t('We could not load transactions')}
         />
+      ) : null}
+      {error && data ? (
+        <QueryRefreshAlert
+          onRetry={() => {
+            Promise.all([confirmed.refetch(), pending.refetch()]).catch(
+              () => undefined,
+            );
+          }}
+          retryLabel={t('Try again', { ns: 'routing' })}
+        >
+          {t(
+            'Transactions could not be refreshed. Existing results are still shown.',
+          )}
+        </QueryRefreshAlert>
       ) : null}
       {initiallyLoading ? <TransactionsContentSkeleton /> : null}
       {hasTransactions && data ? (

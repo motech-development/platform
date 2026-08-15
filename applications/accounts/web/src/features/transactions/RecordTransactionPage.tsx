@@ -1,9 +1,4 @@
-import {
-  Button,
-  Drawer,
-  FormActions,
-  StatePanel,
-} from '@motech-development/breeze-ui';
+import { Button, Drawer, FormActions } from '@motech-development/breeze-ui';
 import { useTranslation } from 'react-i18next';
 import { DiscardChangesDialog } from '../companies/DiscardChangesDialog';
 import { SubmittingForm } from '../forms/SubmittingForm';
@@ -11,6 +6,7 @@ import { QueryRefreshAlert } from '../QueryRefreshAlert';
 import { DashboardPageContent } from './DashboardPageContent';
 import { PendingTransactionsPageContent } from './PendingTransactionsPageContent';
 import { RecordTransactionFormFields } from './RecordTransactionFormFields';
+import { TransactionFormUnavailable } from './TransactionPagePresentation';
 import { TransactionsPageContent } from './TransactionsPageContent';
 import { useTransactionForm } from './useTransactionForm';
 
@@ -65,7 +61,6 @@ export function RecordTransactionPage({
     refetch,
     requestClose,
     setDiscardOpen,
-    setAttachmentActionPending,
     suggestions,
     submissionPending,
     trackAttachmentTransfer,
@@ -111,21 +106,11 @@ export function RecordTransactionPage({
             </QueryRefreshAlert>
           ) : null}
           {error && !data ? (
-            <StatePanel
-              action={
-                <Button
-                  disabled={loading}
-                  onAction={() => {
-                    refetch().catch(() => undefined);
-                  }}
-                >
-                  {t('Try again', { ns: 'routing' })}
-                </Button>
-              }
-              description={t('Transaction settings could not be loaded.')}
-              icon={<span aria-hidden="true">!</span>}
-              title={t('Transaction form unavailable')}
-              variant="danger"
+            <TransactionFormUnavailable
+              loading={loading}
+              onRetry={() => {
+                refetch().catch(() => undefined);
+              }}
             />
           ) : null}
           {loading && !data ? (
@@ -147,7 +132,6 @@ export function RecordTransactionPage({
                 form={form}
                 markDirty={markDirty}
                 online={online}
-                onAttachmentPendingChange={setAttachmentActionPending}
                 suggestions={suggestions}
                 trackAttachmentTransfer={trackAttachmentTransfer}
                 vatRate={vatRate}

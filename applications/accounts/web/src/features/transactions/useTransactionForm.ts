@@ -6,6 +6,7 @@ import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ADD_TRANSACTION,
+  DELETE_FILE,
   GET_RECORD_TRANSACTION,
   UPDATE_TRANSACTION,
 } from '../../data/operations';
@@ -57,11 +58,13 @@ export function useTransactionForm({
   companyId,
   closeTo,
   confirmedReturnTo,
+  additionalPending = false,
   initialValues,
   initialStatus = '',
 }: Readonly<{
   companyId: string;
   closeTo?: TransactionReturnRoute;
+  additionalPending?: boolean;
   confirmedReturnTo: Exclude<
     TransactionReturnRoute,
     '/my-companies/accounts/$companyId/pending-transactions'
@@ -69,11 +72,10 @@ export function useTransactionForm({
   initialStatus?: '' | 'confirmed' | 'pending';
   initialValues?: TransactionFormValues;
 }>) {
-  const { t } = useTranslation('transactions');
+  const { t } = useTranslation(['transactions', 'attachments']);
   const navigate = useNavigate();
   const toast = useToast();
   const online = useOnlineStatus();
-  const [attachmentActionPending, setAttachmentActionPending] = useState(false);
   const [attachmentTransferPending, setAttachmentTransferPending] =
     useState(false);
   const navigationActions = useRef<
@@ -92,13 +94,25 @@ export function useTransactionForm({
     variables: { id: companyId },
   });
   const [addTransaction] = useMutation(ADD_TRANSACTION);
+  const [deleteFile] = useMutation(DELETE_FILE);
   const [updateTransaction] = useMutation(UPDATE_TRANSACTION);
   const form = useForm({
     defaultValues: initialValues ?? defaultValues(companyId, initialStatus),
     onSubmit: async ({ value }) => {
       const transfer = await attachmentTransfer.current;
 
-      if (transfer?.status === 'cancelled' || transfer?.status === 'failed') {
+      if (transfer?.status === 'cancelled') {
+        return;
+      }
+
+      if (transfer?.status === 'failed') {
+        toast.show({
+          description: t('Retry the attachment, then save again.', {
+            ns: 'attachments',
+          }),
+          title: t('Attachment upload failed', { ns: 'attachments' }),
+          variant: 'danger',
+        });
         return;
       }
 
@@ -125,6 +139,28 @@ export function useTransactionForm({
 
           if (!result.data?.updateTransaction) {
             throw new Error(t('No transaction was returned'));
+          }
+
+          const previousAttachment = initialValues?.attachment;
+
+          if (previousAttachment && previousAttachment !== input.attachment) {
+            try {
+              const deletion = await deleteFile({
+                variables: { id: companyId, path: previousAttachment },
+              });
+
+              if (!deletion.data?.deleteFile.path) {
+                throw new Error('No deleted file returned');
+              }
+            } catch {
+              toast.show({
+                description: t(
+                  'The Transaction was saved, but the previous attachment could not be deleted.',
+                ),
+                title: t('Attachment cleanup failed'),
+                variant: 'danger',
+              });
+            }
           }
         } else {
           const result = await addTransaction({
@@ -177,11 +213,9 @@ export function useTransactionForm({
     form.store,
     (state) => state.isSubmitting,
   );
-  const submissionPending =
-    formSubmissionPending ||
-    attachmentActionPending ||
-    attachmentTransferPending;
+  const submissionPending = formSubmissionPending || attachmentTransferPending;
   const navigation = useFormNavigation({
+    blockPendingNavigation: submissionPending || additionalPending,
     onClose: () =>
       navigate({
         params: { companyId },
@@ -210,7 +244,6 @@ export function useTransactionForm({
     loading,
     online,
     refetch,
-    setAttachmentActionPending,
     submissionPending,
     suggestions: data?.getTypeahead,
     trackAttachmentTransfer: (transfer: Promise<AttachmentTransferResult>) => {

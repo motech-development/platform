@@ -686,7 +686,7 @@ test.describe('VAT registered', () => {
         page.getByRole('heading', { name: 'Edit transaction' }),
       ).toBeVisible();
       await expect(
-        page.getByText('Choose one PDF, JPG, or PNG file.'),
+        page.getByText('Choose one PDF, GIF, JPG, or PNG file.'),
       ).toBeVisible();
     });
   });

@@ -6,7 +6,6 @@ import { TransactionAttachment } from './TransactionAttachment';
 
 const mocks = vi.hoisted(() => ({
   capture: vi.fn(),
-  deleteFile: vi.fn(),
   query: vi.fn(),
   toast: { show: vi.fn() },
 }));
@@ -14,7 +13,6 @@ const mocks = vi.hoisted(() => ({
 vi.mock('@apollo/client/react', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@apollo/client/react')>()),
   useApolloClient: () => ({ query: mocks.query }),
-  useMutation: () => [mocks.deleteFile, { loading: false }],
 }));
 
 vi.mock('@motech-development/breeze-ui', async (importOriginal) => ({
@@ -40,7 +38,6 @@ describe('TransactionAttachment', () => {
         <TransactionAttachment
           companyId="company-id"
           onDeleted={vi.fn()}
-          onPendingChange={vi.fn()}
           path="company-id/invoice.pdf"
         />
       </BreezeProvider>,
@@ -62,18 +59,14 @@ describe('TransactionAttachment', () => {
     );
   });
 
-  it('deletes by the exact persisted path', async () => {
+  it('marks a persisted attachment for deletion without deleting it immediately', async () => {
     const onDeleted = vi.fn();
 
-    mocks.deleteFile.mockResolvedValue({
-      data: { deleteFile: { path: 'company-id/receipt.png' } },
-    });
     render(
       <BreezeProvider locale="en-GB">
         <TransactionAttachment
           companyId="company-id"
           onDeleted={onDeleted}
-          onPendingChange={vi.fn()}
           path="company-id/receipt.png"
         />
       </BreezeProvider>,
@@ -81,12 +74,6 @@ describe('TransactionAttachment', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'Delete file' }));
 
-    await waitFor(() => expect(onDeleted).toHaveBeenCalledOnce());
-    expect(mocks.deleteFile).toHaveBeenCalledWith({
-      variables: {
-        id: 'company-id',
-        path: 'company-id/receipt.png',
-      },
-    });
+    expect(onDeleted).toHaveBeenCalledOnce();
   });
 });

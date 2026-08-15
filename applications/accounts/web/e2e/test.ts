@@ -640,6 +640,7 @@ export const test = base.extend<AccountsFixtures, AccountsWorkerFixtures>({
         ).toHaveCount(0);
         await expect(
           page.getByRole('heading', {
+            exact: true,
             level: 1,
             name:
               status === 'pending' ? 'Pending Transactions' : 'Transactions',

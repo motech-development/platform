@@ -36,6 +36,7 @@ export function AttachmentUpload({
   const upload = (file: File) => {
     const extensions = {
       'application/pdf': ['pdf'],
+      'image/gif': ['gif'],
       'image/jpeg': ['jpg', 'jpeg'],
       'image/png': ['png'],
     }[file.type];
@@ -123,7 +124,12 @@ export function AttachmentUpload({
   return (
     <>
       <FileUpload
-        acceptedFileTypes={['application/pdf', 'image/jpeg', 'image/png']}
+        acceptedFileTypes={[
+          'application/pdf',
+          'image/gif',
+          'image/jpeg',
+          'image/png',
+        ]}
         browseLabel={
           disabled
             ? t('Connection required', { ns: 'transactions' })
@@ -133,7 +139,7 @@ export function AttachmentUpload({
         guidance={
           disabled
             ? t('Connection required to attach a file.')
-            : t('Choose one PDF, JPG, or PNG file.')
+            : t('Choose one PDF, GIF, JPG, or PNG file.')
         }
         label={loading ? t('Uploading PDF…') : t('No file selected')}
         onFiles={(files) => {
@@ -145,7 +151,7 @@ export function AttachmentUpload({
         }}
         onReject={() => {
           toast.show({
-            description: t('Choose one PDF, JPG, or PNG file.'),
+            description: t('Choose one PDF, GIF, JPG, or PNG file.'),
             title: t('File not accepted'),
             variant: 'warning',
           });

@@ -8,6 +8,7 @@ vi.mock('@motech-development/breeze-ui/icons', async (importOriginal) => ({
     typeof import('@motech-development/breeze-ui/icons')
   >()),
   AddIcon: () => <span aria-hidden="true">+</span>,
+  CalendarIcon: () => <span aria-hidden="true">calendar</span>,
   WarningIcon: () => <span aria-hidden="true">!</span>,
 }));
 
@@ -44,5 +45,23 @@ describe('TransactionPageHeaderAction', () => {
     expect(
       screen.getByRole('link', { name: 'Record transaction' }),
     ).toHaveAttribute('href', '/record-transaction');
+  });
+
+  it('matches the transaction action DOM order to its visual order', () => {
+    render(
+      <BreezeProvider locale="en-GB">
+        <TransactionPageHeaderAction
+          hasTransactions
+          initiallyLoading={false}
+          pendingTransactionsHref="/pending-transactions"
+          recordTransactionHref="/record-transaction"
+        />
+      </BreezeProvider>,
+    );
+
+    const links = screen.getAllByRole('link');
+
+    expect(links[0]).toHaveAccessibleName('View Pending Transactions');
+    expect(links[1]).toHaveAccessibleName('Record transaction');
   });
 });

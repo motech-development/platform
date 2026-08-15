@@ -121,7 +121,9 @@ describe('RecordTransactionPage', () => {
     expect(screen.getByLabelText('Category')).toBeVisible();
     expect(screen.getByLabelText('Amount')).toBeVisible();
     expect(screen.getByLabelText('VAT')).toBeVisible();
-    expect(screen.getByText('Choose one PDF, JPG, or PNG file.')).toBeVisible();
+    expect(
+      screen.getByText('Choose one PDF, GIF, JPG, or PNG file.'),
+    ).toBeVisible();
   });
 
   it('defaults a Pending Transaction entry to Pending and offers scheduling', () => {

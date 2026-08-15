@@ -1,4 +1,4 @@
-import { useApolloClient, useMutation } from '@apollo/client/react';
+import { useApolloClient } from '@apollo/client/react';
 import {
   Button,
   Drawer,
@@ -10,7 +10,7 @@ import {
 import { saveAs } from 'file-saver';
 import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DELETE_FILE, REQUEST_DOWNLOAD } from '../../data/operations';
+import { REQUEST_DOWNLOAD } from '../../data/operations';
 import { downloadPresignedFile } from '../../data/presigned-transfer';
 import { capturePresignedTransferFailure } from '../../observability';
 import { useOnlineStatus } from '../../pwa/connectivity';
@@ -24,13 +24,11 @@ export function TransactionAttachment({
   companyId,
   disabled,
   onDeleted,
-  onPendingChange,
   path,
 }: Readonly<{
   companyId: string;
   disabled?: boolean;
   onDeleted: () => void;
-  onPendingChange: (pending: boolean) => void;
   path: string;
 }>) {
   const { t } = useTranslation(['attachments', 'transactions']);
@@ -38,7 +36,6 @@ export function TransactionAttachment({
   const toast = useToast();
   const online = useOnlineStatus();
   const runLatestTransfer = useLatestTransfer();
-  const [deleteFile, { loading: deleting }] = useMutation(DELETE_FILE);
   const [file, setFile] = useState<Blob>();
   const [loading, setLoading] = useState(false);
   const name = path.split('/').at(-1) ?? path;
@@ -53,12 +50,6 @@ export function TransactionAttachment({
     },
     [imageUrl],
   );
-  useEffect(() => {
-    onPendingChange(deleting);
-
-    return () => onPendingChange(false);
-  }, [deleting, onPendingChange]);
-
   const download = async () => {
     const result = await runLatestTransfer(async (signal) => {
       const response = await apolloClient.query({
@@ -140,24 +131,10 @@ export function TransactionAttachment({
               {t('Download file')}
             </Button>
             <Button
-              disabled={!online || disabled || deleting}
-              loading={deleting}
+              disabled={!online || disabled}
               onAction={() => {
-                deleteFile({ variables: { id: companyId, path } })
-                  .then((result) => {
-                    if (!result.data?.deleteFile.path) {
-                      throw new Error('No deleted file returned');
-                    }
-                    setFile(undefined);
-                    onDeleted();
-                  })
-                  .catch(() => {
-                    toast.show({
-                      description: t('Nothing was deleted. Try again.'),
-                      title: t('Attachment could not be deleted'),
-                      variant: 'danger',
-                    });
-                  });
+                setFile(undefined);
+                onDeleted();
               }}
               variant="danger"
             >

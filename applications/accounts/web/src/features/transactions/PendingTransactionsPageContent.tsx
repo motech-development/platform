@@ -4,6 +4,7 @@ import { Button, LinkButton, PageHeader } from '@motech-development/breeze-ui';
 import { ArrowLeftIcon } from '@motech-development/breeze-ui/icons';
 import { useTranslation } from 'react-i18next';
 import { GET_PENDING_TRANSACTIONS } from '../../data/operations';
+import { QueryRefreshAlert } from '../QueryRefreshAlert';
 import {
   TransactionLedger,
   TransactionLedgerSkeleton,
@@ -16,7 +17,7 @@ import {
 export function PendingTransactionsPageContent({
   companyId,
 }: Readonly<{ companyId: string }>) {
-  const { t } = useTranslation('transactions');
+  const { t } = useTranslation(['transactions', 'routing']);
   const { data, error, fetchMore, loading, networkStatus, refetch } = useQuery(
     GET_PENDING_TRANSACTIONS,
     {
@@ -52,11 +53,23 @@ export function PendingTransactionsPageContent({
         )}
         title={t('Pending Transactions')}
       />
-      {error ? (
+      {error && !data ? (
         <TransactionPageError
           onRetry={refetch}
           title={t('We could not load Pending Transactions')}
         />
+      ) : null}
+      {error && data ? (
+        <QueryRefreshAlert
+          onRetry={() => {
+            refetch().catch(() => undefined);
+          }}
+          retryLabel={t('Try again', { ns: 'routing' })}
+        >
+          {t(
+            'Transactions could not be refreshed. Existing results are still shown.',
+          )}
+        </QueryRefreshAlert>
       ) : null}
       {initiallyLoading ? <TransactionLedgerSkeleton pending /> : null}
       {data ? (

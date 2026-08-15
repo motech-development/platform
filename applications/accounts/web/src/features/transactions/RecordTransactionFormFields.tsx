@@ -151,7 +151,6 @@ export function RecordTransactionFormFields({
   form,
   markDirty,
   online,
-  onAttachmentPendingChange,
   suggestions,
   trackAttachmentTransfer,
   vatRate,
@@ -165,7 +164,6 @@ export function RecordTransactionFormFields({
   form: TransactionForm;
   markDirty: () => void;
   online: boolean;
-  onAttachmentPendingChange: (pending: boolean) => void;
   suggestions?: Readonly<{
     purchases?: readonly string[] | null;
     sales?: readonly string[] | null;
@@ -650,7 +648,7 @@ export function RecordTransactionFormFields({
         </form.Subscribe>
       </FormSection>
       <FormSection
-        description={t('Attach a PDF, JPG, or PNG invoice or receipt.')}
+        description={t('Attach a PDF, GIF, JPG, or PNG invoice or receipt.')}
         divided
         headingLevel={3}
         layout="stacked"
@@ -669,7 +667,6 @@ export function RecordTransactionFormFields({
                       field.handleChange('');
                       markDirty();
                     }}
-                    onPendingChange={onAttachmentPendingChange}
                     path={field.state.value}
                   />
                 ) : (

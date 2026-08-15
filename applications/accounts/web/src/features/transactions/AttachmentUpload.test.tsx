@@ -80,7 +80,9 @@ describe('AttachmentUpload', () => {
     const input = document.querySelector('input[type="file"]');
 
     expect(input).toBeInstanceOf(HTMLInputElement);
-    expect(screen.getByText('Choose one PDF, JPG, or PNG file.')).toBeVisible();
+    expect(
+      screen.getByText('Choose one PDF, GIF, JPG, or PNG file.'),
+    ).toBeVisible();
     await user.upload(input as HTMLInputElement, firstFile);
     await waitFor(() => {
       expect(mocks.uploadPresignedFile).toHaveBeenCalledTimes(1);
@@ -146,6 +148,46 @@ describe('AttachmentUpload', () => {
           metadata: { id: 'transaction-1', typename: 'Transaction' },
         },
       },
+    });
+  });
+
+  it('preserves GIF attachments supported by the Transaction storage contract', async () => {
+    const user = userEvent.setup();
+    const file = new File(['image'], 'receipt.gif', { type: 'image/gif' });
+
+    mocks.requestUpload.mockResolvedValue({
+      data: {
+        requestUpload: { id: 'upload-gif', url: 'https://upload/gif' },
+      },
+    });
+    mocks.uploadPresignedFile.mockResolvedValue(undefined);
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <AttachmentUpload
+          companyId="company-1"
+          onTransfer={vi.fn()}
+          onUploaded={vi.fn()}
+        />
+      </BreezeProvider>,
+    );
+
+    await user.upload(
+      document.querySelector('input[type="file"]') as HTMLInputElement,
+      file,
+    );
+
+    await waitFor(() => {
+      expect(mocks.requestUpload).toHaveBeenCalledWith({
+        variables: {
+          id: 'company-1',
+          input: {
+            contentType: 'image/gif',
+            extension: 'gif',
+            metadata: { typename: 'Transaction' },
+          },
+        },
+      });
     });
   });
 

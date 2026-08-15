@@ -124,4 +124,40 @@ describe('TransactionLedger', () => {
       screen.getByRole('img', { name: 'Scheduled transaction' }),
     ).toBeVisible();
   });
+
+  it('does not open a transaction when its scheduled indicator is activated', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <TransactionLedger
+          companyId="company-id"
+          currencyCode="GBP"
+          transactions={[
+            {
+              amount: 100,
+              attachment: 'invoice.pdf',
+              category: 'Sales',
+              date: '2026-08-15T00:00:00.000Z',
+              description: 'Scheduled work',
+              id: 'scheduled-id',
+              name: 'Client',
+              scheduled: true,
+              status: 'confirmed',
+            },
+          ]}
+        />
+      </BreezeProvider>,
+    );
+
+    const indicator = screen.getByRole('img', {
+      name: 'Scheduled transaction',
+    });
+
+    await user.click(indicator);
+    indicator.focus();
+    await user.keyboard('{Enter}');
+
+    expect(mocks.navigate).not.toHaveBeenCalled();
+  });
 });

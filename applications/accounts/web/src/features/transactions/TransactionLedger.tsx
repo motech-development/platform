@@ -15,7 +15,7 @@ import {
 } from '@motech-development/breeze-ui/icons';
 import { useNavigate } from '@tanstack/react-router';
 import Decimal from 'decimal.js';
-import { useState } from 'react';
+import { type ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { formatCurrency } from '../../formatting/currency';
 
@@ -48,12 +48,31 @@ function dayLabel(date: string, locale: string) {
   }).format(new Date(date));
 }
 
+function TransactionIndicatorBoundary({
+  children,
+}: Readonly<{ children: ReactNode }>) {
+  return (
+    <span
+      className="relative z-[2]"
+      onClick={(event) => event.stopPropagation()}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter') event.stopPropagation();
+      }}
+      onPointerDown={(event) => event.stopPropagation()}
+      onPointerUp={(event) => event.stopPropagation()}
+      role="presentation"
+    >
+      {children}
+    </span>
+  );
+}
+
 function MissingAttachmentWarning() {
   const { t } = useTranslation('transactions');
   const [open, setOpen] = useState(false);
 
   return (
-    <span className="relative z-[2]">
+    <TransactionIndicatorBoundary>
       <Tooltip.Root onOpenChange={setOpen} open={open}>
         <Tooltip.IconTrigger
           aria-label={t('No invoice or receipt')}
@@ -69,7 +88,7 @@ function MissingAttachmentWarning() {
           {t('No invoice or receipt')}
         </Tooltip.Content>
       </Tooltip.Root>
-    </span>
+    </TransactionIndicatorBoundary>
   );
 }
 
@@ -78,7 +97,7 @@ function ScheduledTransactionIndicator() {
   const [open, setOpen] = useState(false);
 
   return (
-    <span className="relative z-[2]">
+    <TransactionIndicatorBoundary>
       <Tooltip.Root onOpenChange={setOpen} open={open}>
         <Tooltip.IconTrigger
           aria-label={t('Scheduled transaction')}
@@ -94,7 +113,7 @@ function ScheduledTransactionIndicator() {
           {t('Scheduled transaction')}
         </Tooltip.Content>
       </Tooltip.Root>
-    </span>
+    </TransactionIndicatorBoundary>
   );
 }
 

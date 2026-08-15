@@ -17,6 +17,7 @@ import { PendingTransactionsPageContent } from './PendingTransactionsPageContent
 import { RecordTransactionFormFields } from './RecordTransactionFormFields';
 import { editableTransaction } from './transaction';
 import { removeTransactionFromCache } from './transaction-cache';
+import { TransactionFormUnavailable } from './TransactionPagePresentation';
 import { TransactionsPageContent } from './TransactionsPageContent';
 import { useTransactionForm } from './useTransactionForm';
 
@@ -51,6 +52,7 @@ function TransactionEditDrawer({
     categories,
     clearAttachmentTransfer,
     clients,
+    completeMutation,
     currency,
     data,
     discardChanges,
@@ -62,13 +64,13 @@ function TransactionEditDrawer({
     online,
     refetch,
     requestClose,
-    setAttachmentActionPending,
     setDiscardOpen,
     submissionPending,
     suggestions,
     trackAttachmentTransfer,
     vatRate,
   } = useTransactionForm({
+    additionalPending: deleting,
     closeTo,
     companyId,
     confirmedReturnTo: '/my-companies/accounts/$companyId',
@@ -105,6 +107,7 @@ function TransactionEditDrawer({
     }
 
     toast.show({ title: t('Transaction deleted'), variant: 'success' });
+    completeMutation();
     await navigate({ params: { companyId }, to: closeTo }).catch(
       () => undefined,
     );
@@ -144,6 +147,16 @@ function TransactionEditDrawer({
               )}
             </QueryRefreshAlert>
           ) : null}
+          {error && !data ? (
+            <TransactionFormUnavailable
+              loading={loading}
+              onRetry={() => {
+                Promise.all([refetch(), refetchTransaction()]).catch(
+                  () => undefined,
+                );
+              }}
+            />
+          ) : null}
           {loading && !data ? (
             <p aria-live="polite">{t('Preparing transaction form…')}</p>
           ) : null}
@@ -163,7 +176,6 @@ function TransactionEditDrawer({
                 form={form}
                 markDirty={markDirty}
                 online={online}
-                onAttachmentPendingChange={setAttachmentActionPending}
                 suggestions={suggestions}
                 trackAttachmentTransfer={trackAttachmentTransfer}
                 vatRate={vatRate}
@@ -295,7 +307,7 @@ export function TransactionEditPage({
           <Drawer.Content placement={{ base: 'bottom', md: 'end' }} size="wide">
             <Drawer.Description>{t('Transaction details')}</Drawer.Description>
             <Drawer.Title>{t('Edit transaction')}</Drawer.Title>
-            {error ? (
+            {error || (!loading && !transaction) ? (
               <StatePanel
                 action={
                   <Button

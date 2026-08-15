@@ -48,21 +48,35 @@ export function TransactionPageHeaderAction({
 
   return (
     <Inline gap="sm" wrap>
-      <RecordTransactionLink
-        className="sm:order-2"
-        href={recordTransactionHref}
-      />
       {pendingTransactionsHref ? (
-        <LinkButton
-          appearance="outline"
-          className="sm:order-1"
-          href={pendingTransactionsHref}
-        >
+        <LinkButton appearance="outline" href={pendingTransactionsHref}>
           <CalendarIcon />
           {t('View Pending Transactions')}
         </LinkButton>
       ) : null}
+      <RecordTransactionLink href={recordTransactionHref} />
     </Inline>
+  );
+}
+
+export function TransactionFormUnavailable({
+  loading,
+  onRetry,
+}: Readonly<{ loading: boolean; onRetry: () => void }>) {
+  const { t } = useTranslation(['transactions', 'routing']);
+
+  return (
+    <StatePanel
+      action={
+        <Button disabled={loading} onAction={onRetry}>
+          {t('Try again', { ns: 'routing' })}
+        </Button>
+      }
+      description={t('Transaction settings could not be loaded.')}
+      icon={<span aria-hidden="true">!</span>}
+      title={t('Transaction form unavailable')}
+      variant="danger"
+    />
   );
 }
 
