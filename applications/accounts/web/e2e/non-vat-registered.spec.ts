@@ -1,4 +1,4 @@
-import { expect, test } from './test';
+import { expect, expectFinancialSummary, getFormInput, test } from './test';
 
 test.describe('Non-VAT registered', () => {
   let companyCleanupRequired = false;
@@ -316,8 +316,8 @@ test.describe('Non-VAT registered', () => {
       openAccountsRoute,
       recordTransaction,
     }) => {
-      await openAccountsRoute();
-      await recordTransaction({ transaction: accounts[0] });
+      await openAccountsRoute('not-registered');
+      await recordTransaction({ expectedVat: '0', transaction: accounts[0] });
     });
 
     test('should add a confirmed purchase', async ({
@@ -325,7 +325,7 @@ test.describe('Non-VAT registered', () => {
       openAccountsRoute,
       recordTransaction,
     }) => {
-      await openAccountsRoute();
+      await openAccountsRoute('not-registered');
       await recordTransaction({ transaction: accounts[1] });
     });
 
@@ -334,7 +334,7 @@ test.describe('Non-VAT registered', () => {
       openAccountsRoute,
       recordTransaction,
     }) => {
-      await openAccountsRoute();
+      await openAccountsRoute('not-registered');
       await recordTransaction({ refund: true, transaction: accounts[9] });
     });
 
@@ -343,7 +343,7 @@ test.describe('Non-VAT registered', () => {
       openAccountsRoute,
       recordTransaction,
     }) => {
-      await openAccountsRoute();
+      await openAccountsRoute('not-registered');
       await recordTransaction({ refund: true, transaction: accounts[11] });
     });
 
@@ -355,7 +355,7 @@ test.describe('Non-VAT registered', () => {
       const transaction = accounts[11];
       const updatedDescription = `${transaction.description} updated`;
 
-      await openAccountsRoute();
+      await openAccountsRoute('not-registered');
       await page
         .getByRole('row')
         .filter({ hasText: transaction.description })
@@ -365,11 +365,23 @@ test.describe('Non-VAT registered', () => {
       await expect(
         page.getByRole('radiogroup', { name: 'Refund' }).getByLabel('Yes'),
       ).toBeChecked();
-      await page
-        .getByRole('combobox', { name: 'Description' })
-        .fill(updatedDescription);
+      await expect(getFormInput(page, 'Supplier')).toHaveValue(
+        transaction.supplier,
+      );
+      await expect(getFormInput(page, 'Description')).toHaveValue(
+        transaction.description,
+      );
+      const description = getFormInput(page, 'Description');
+
+      await description.fill(updatedDescription);
+      await description.press('Escape');
       await page.getByRole('button', { name: 'Save' }).click();
-      await expect(page.getByText(updatedDescription)).toBeVisible();
+      await expect(
+        page.getByRole('heading', { name: 'Edit transaction' }),
+      ).toHaveCount(0);
+      await expect(
+        page.getByText(updatedDescription, { exact: true }),
+      ).toBeVisible();
     });
 
     test('should delete a confirmed purchase refund', async ({
@@ -380,7 +392,7 @@ test.describe('Non-VAT registered', () => {
       const transaction = accounts[11];
       const updatedDescription = `${transaction.description} updated`;
 
-      await openAccountsRoute();
+      await openAccountsRoute('not-registered');
       await page
         .getByRole('row')
         .filter({ hasText: updatedDescription })
@@ -401,7 +413,7 @@ test.describe('Non-VAT registered', () => {
       openAccountsRoute,
       recordTransaction,
     }) => {
-      await openAccountsRoute();
+      await openAccountsRoute('not-registered');
       await recordTransaction({ transaction: accounts[2] });
     });
 
@@ -409,10 +421,12 @@ test.describe('Non-VAT registered', () => {
       openAccountsRoute,
       page,
     }) => {
-      await openAccountsRoute();
-      await expect(page.getByText('Balance: £1810.40')).toBeVisible();
-      await expect(page.getByText('VAT owed: £0.00')).toBeVisible();
-      await expect(page.getByText('VAT paid: £12.94')).toBeVisible();
+      await openAccountsRoute('not-registered');
+      await expectFinancialSummary(page, {
+        balance: '£1,810.40',
+        owed: '£0.00',
+        paid: '£12.94',
+      });
     });
 
     test('should delete a confirmed transaction', async ({
@@ -423,7 +437,7 @@ test.describe('Non-VAT registered', () => {
     }) => {
       const transaction = accounts[2];
 
-      await openAccountsRoute();
+      await openAccountsRoute('not-registered');
       await page
         .getByRole('row')
         .filter({ hasText: transaction.description })
@@ -441,7 +455,7 @@ test.describe('Non-VAT registered', () => {
       await page
         .getByRole('button', { name: 'Permanently delete Transaction' })
         .click();
-      await expect(page.getByText('Balance: £1922.40')).toBeVisible();
+      await expectFinancialSummary(page, { balance: '£1,922.40' });
     });
 
     test('should add a pending sale', async ({
@@ -449,8 +463,9 @@ test.describe('Non-VAT registered', () => {
       openAccountsRoute,
       recordTransaction,
     }) => {
-      await openAccountsRoute();
+      await openAccountsRoute('not-registered');
       await recordTransaction({
+        expectedVat: '0',
         scheduled: true,
         status: 'pending',
         transaction: accounts[3],
@@ -462,7 +477,7 @@ test.describe('Non-VAT registered', () => {
       openAccountsRoute,
       recordTransaction,
     }) => {
-      await openAccountsRoute();
+      await openAccountsRoute('not-registered');
       await recordTransaction({
         status: 'pending',
         transaction: accounts[4],
@@ -474,7 +489,7 @@ test.describe('Non-VAT registered', () => {
       openAccountsRoute,
       recordTransaction,
     }) => {
-      await openAccountsRoute();
+      await openAccountsRoute('not-registered');
       await recordTransaction({
         date: 'tomorrow',
         status: 'pending',
@@ -485,15 +500,21 @@ test.describe('Non-VAT registered', () => {
     test('should schedule a purchase refund', async ({
       accounts,
       openAccountsRoute,
+      page,
       recordTransaction,
     }) => {
-      await openAccountsRoute();
+      const transaction = accounts[12];
+
+      await openAccountsRoute('not-registered');
       await recordTransaction({
         refund: true,
         scheduled: true,
         status: 'pending',
-        transaction: accounts[12],
+        transaction,
       });
+      await expect(
+        page.getByText(transaction.description, { exact: true }),
+      ).toBeVisible();
     });
 
     test('should delete a pending transaction', async ({
@@ -503,7 +524,7 @@ test.describe('Non-VAT registered', () => {
     }) => {
       const transaction = accounts[5];
 
-      await openAccountsRoute();
+      await openAccountsRoute('not-registered');
       await page
         .getByRole('link', { name: 'View Pending Transactions' })
         .click();
@@ -527,13 +548,15 @@ test.describe('Non-VAT registered', () => {
       page,
     }) => {
       test.setTimeout(630000);
-      await openAccountsRoute();
+      await openAccountsRoute('not-registered');
 
       await expect(async () => {
         await page.reload();
-        await expect(page.getByText('Balance: £3946.40')).toBeVisible();
-        await expect(page.getByText('VAT owed: £0.00')).toBeVisible();
-        await expect(page.getByText('VAT paid: £8.94')).toBeVisible();
+        await expectFinancialSummary(page, {
+          balance: '£3,946.40',
+          owed: '£0.00',
+          paid: '£8.94',
+        });
       }).toPass({ timeout: 600000 });
     });
   });

@@ -1,4 +1,10 @@
-import { expect, isLocalBaseUrl, test } from './test';
+import {
+  expect,
+  getFormInput,
+  isLocalBaseUrl,
+  selectRadioOption,
+  test,
+} from './test';
 
 interface PersistedState {
   cacheEntries: { body?: string; url: string }[];
@@ -33,44 +39,48 @@ test.describe('hosted Accounts foundation', () => {
     );
     await expect(recordTransaction).toBeFocused();
 
-    if (isLocalBaseUrl(baseURL)) {
-      await recordTransaction.evaluate((element) => {
-        element.addEventListener(
-          'click',
-          (event) => {
-            event.preventDefault();
-            element.setAttribute('data-keyboard-activated', 'true');
-          },
-          { once: true },
-        );
-      });
-    }
-
-    await page.keyboard.press('Enter');
     const recordTransactionHeading = page.getByRole('heading', {
       name: 'Record transaction',
     });
+    const recordTransactionPath = isLocalBaseUrl(baseURL)
+      ? await recordTransaction.getAttribute('href')
+      : null;
 
-    if (isLocalBaseUrl(baseURL)) {
-      await expect(recordTransaction).toHaveAttribute(
-        'data-keyboard-activated',
-        'true',
-      );
-      const recordTransactionPath =
-        await recordTransaction.getAttribute('href');
+    if (isLocalBaseUrl(baseURL) && !recordTransactionPath) {
+      throw new Error('Record transaction link did not expose a path');
+    }
 
-      if (!recordTransactionPath) {
-        throw new Error('Record transaction link did not expose a path');
-      }
+    await page.keyboard.press('Enter');
 
+    if (recordTransactionPath) {
+      await expect
+        .poll(() => new URL(page.url()).pathname)
+        .toBe(recordTransactionPath);
+
+      const browserSession = await page.context().newCDPSession(page);
+
+      await browserSession.send('Page.stopLoading');
+      await browserSession.detach();
       await gotoAuthenticatedPage({
         content: recordTransactionHeading,
         path: recordTransactionPath,
       });
+
+      const unavailableForm = page.getByRole('region', {
+        name: 'Transaction form unavailable',
+      });
+
+      if (await unavailableForm.isVisible()) {
+        await unavailableForm
+          .getByRole('button', { name: 'Try again' })
+          .click();
+      }
     }
 
     await expect(recordTransactionHeading).toBeVisible();
-    await expect(page.getByLabel('Description')).toBeVisible();
+    const description = getFormInput(page, 'Description');
+
+    await expect(description).toBeVisible();
     await expect
       .poll(() =>
         page.evaluate(() =>
@@ -83,7 +93,7 @@ test.describe('hosted Accounts foundation', () => {
         () => document.documentElement.scrollWidth <= window.innerWidth,
       ),
     ).toBe(true);
-    await expectNoA11yViolations(page.getByLabel('Description'));
+    await expectNoA11yViolations(description);
   });
 
   test('serves direct links and an offline public shell without persisting account data', async ({
@@ -250,13 +260,15 @@ test.describe('hosted Accounts foundation', () => {
   }) => {
     await openAccountsRoute();
     await page.getByRole('link', { name: 'Record transaction' }).click();
-    await page.getByRole('radio', { name: 'Sale' }).check();
+    await selectRadioOption(page, 'Transaction type', 'Sale');
     await page.getByRole('button', { name: /Client/ }).click();
     await page.getByRole('option', { name: 'Motech Development' }).click();
-    await page.getByLabel('Description').fill('Offline draft');
-    await page.getByRole('radio', { name: 'Confirmed' }).check();
+    await getFormInput(page, 'Description').fill('Offline draft');
+    await selectRadioOption(page, undefined, 'Confirmed');
     await page.getByLabel('Amount').fill('100');
-    const save = page.locator('button[type="submit"]');
+    const save = page.getByRole('button', {
+      name: /Connection required|Save/,
+    });
 
     let mutationAttempts = 0;
 
@@ -298,7 +310,9 @@ test.describe('hosted Accounts foundation', () => {
       await expect(save).toBeEnabled();
 
       expect(mutationAttempts).toBe(mutationAttemptsBeforeReconnect);
-      await expect(page.getByLabel('Description')).toHaveValue('Offline draft');
+      await expect(getFormInput(page, 'Description')).toHaveValue(
+        'Offline draft',
+      );
     } finally {
       await page.context().setOffline(false);
     }

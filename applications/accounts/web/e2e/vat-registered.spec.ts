@@ -1,4 +1,4 @@
-import { expect, test } from './test';
+import { expect, expectFinancialSummary, getFormInput, test } from './test';
 
 test.describe('VAT registered', () => {
   let companyCleanupRequired = false;
@@ -486,9 +486,11 @@ test.describe('VAT registered', () => {
       page,
     }) => {
       await openAccountsRoute();
-      await expect(page.getByText('Balance: £2290.40')).toBeVisible();
-      await expect(page.getByText('VAT owed: £332.50')).toBeVisible();
-      await expect(page.getByText('VAT paid: £26.27')).toBeVisible();
+      await expectFinancialSummary(page, {
+        balance: '£2,290.40',
+        owed: '£332.50',
+        paid: '£26.27',
+      });
     });
 
     test('should update a transaction', async ({
@@ -505,7 +507,7 @@ test.describe('VAT registered', () => {
       await page
         .getByRole('row')
         .filter({ hasText: transaction.description })
-        .first()
+        .filter({ hasText: format('ledger currency', accounts[0].amount) })
         .click();
       await expect(
         page.getByRole('heading', { name: 'Edit transaction' }),
@@ -513,7 +515,18 @@ test.describe('VAT registered', () => {
       await expectNoA11yViolations(
         page.getByRole('heading', { name: 'Edit transaction' }),
       );
-      await expect(page.getByLabel('Sale')).toBeChecked();
+      await expect(
+        page
+          .getByRole('radiogroup', { name: 'Transaction type' })
+          .getByLabel('Sale'),
+      ).toBeChecked();
+      await expect(
+        page.getByRole('button', { name: transaction.supplier }),
+      ).toBeVisible();
+      await expect(getFormInput(page, 'Description')).toHaveValue(
+        transaction.description,
+      );
+      await expect(page.locator('form').getByLabel('Confirmed')).toBeChecked();
       await expect(
         page.getByRole('radiogroup', { name: 'Refund' }).getByLabel('No'),
       ).toBeChecked();
@@ -523,14 +536,21 @@ test.describe('VAT registered', () => {
       );
       await page.getByRole('button', { name: 'Delete file' }).click();
       await page.getByLabel('Select file to upload').setInputFiles(invoice);
+      await expect(page.getByLabel('Select file to upload')).toHaveCount(0);
       await page.getByRole('button', { name: 'Save' }).click();
-      await expect(page.getByText('Balance: £2790.40')).toBeVisible();
-      await expect(page.getByText('VAT owed: £410.00')).toBeVisible();
+      await expect(
+        page.getByRole('heading', { name: 'Edit transaction' }),
+      ).toHaveCount(0);
+      await expectFinancialSummary(page, {
+        balance: '£2,790.40',
+        owed: '£410.00',
+      });
     });
 
     test('should delete a confirmed transaction', async ({
       accounts,
       expectNoA11yViolations,
+      format,
       openAccountsRoute,
       page,
     }) => {
@@ -540,7 +560,7 @@ test.describe('VAT registered', () => {
       await page
         .getByRole('row')
         .filter({ hasText: transaction.description })
-        .first()
+        .filter({ hasText: format('ledger currency', accounts[6].amount) })
         .click();
       await page.getByRole('button', { name: 'Delete Transaction' }).click();
       await expectNoA11yViolations(
@@ -554,8 +574,10 @@ test.describe('VAT registered', () => {
       await page
         .getByRole('button', { name: 'Permanently delete Transaction' })
         .click();
-      await expect(page.getByText('Balance: £290.40')).toBeVisible();
-      await expect(page.getByText('VAT owed: £22.50')).toBeVisible();
+      await expectFinancialSummary(page, {
+        balance: '£290.40',
+        owed: '£22.50',
+      });
     });
 
     test('should make a VAT payment', async ({
@@ -581,8 +603,10 @@ test.describe('VAT registered', () => {
       page,
     }) => {
       await openAccountsRoute();
-      await expect(page.getByText('Balance: £267.90')).toBeVisible();
-      await expect(page.getByText('VAT owed: £0.00')).toBeVisible();
+      await expectFinancialSummary(page, {
+        balance: '£267.90',
+        owed: '£0.00',
+      });
     });
 
     test('should download attachment', async ({

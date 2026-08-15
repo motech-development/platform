@@ -1,4 +1,3 @@
-import { writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import AxeBuilder from '@axe-core/playwright';
@@ -6,6 +5,7 @@ import {
   type BrowserContextOptions,
   expect,
   type Locator,
+  type Page,
   type Response,
   test as base,
 } from '@playwright/test';
@@ -22,10 +22,99 @@ export function isLocalBaseUrl(baseURL: string | undefined): boolean {
   return hostname === 'localhost' || hostname === '127.0.0.1';
 }
 
+export function getFormInput(page: Page, name: string): Locator {
+  return page
+    .locator('form')
+    .getByLabel(name, { exact: true })
+    .and(page.locator('input'));
+}
+
+export async function selectRadioOption(
+  page: Page,
+  groupName: string | RegExp | undefined,
+  optionName: string,
+) {
+  const scope = groupName
+    ? page.getByRole('radiogroup', { name: groupName })
+    : page.locator('form');
+  const option = scope.getByLabel(optionName, {
+    exact: true,
+  });
+
+  await option.press('Space');
+  await expect(option).toBeChecked();
+}
+
+export async function expectFinancialSummary(
+  page: Page,
+  values: { balance: string; owed?: string; paid?: string },
+) {
+  const summary = page.getByRole('region', { name: 'Financial summary' });
+  const balance = summary.getByRole('article', { name: 'Current balance' });
+
+  await expect(
+    balance.getByText(values.balance, { exact: true }),
+  ).toBeVisible();
+  if (values.owed) {
+    await expect(
+      summary
+        .locator('dt')
+        .filter({ hasText: /^Owed$/ })
+        .locator('..')
+        .locator('dd'),
+    ).toHaveText(values.owed);
+  }
+  if (values.paid) {
+    await expect(
+      summary
+        .locator('dt')
+        .filter({ hasText: /^Paid$/ })
+        .locator('..')
+        .locator('dd'),
+    ).toHaveText(values.paid);
+  }
+}
+
+async function completeAuthenticationForPage(
+  baseURL: string | undefined,
+  content: Locator,
+  page: Page,
+) {
+  const consent = page.locator('button#allow');
+  const email = page.getByLabel('Email address');
+
+  if (baseURL && new URL(page.url()).hostname === new URL(baseURL).hostname) {
+    await expect(content).toBeVisible();
+
+    return;
+  }
+
+  await expect(content.or(consent).or(email)).toBeVisible();
+
+  if (await email.isVisible()) {
+    await email.fill(process.env.E2E_USERNAME!);
+    await page.getByLabel('Password').fill(process.env.E2E_PASSWORD!);
+    await page.getByRole('button', { name: 'Log in' }).click();
+    await expect(content.or(consent)).toBeVisible();
+  }
+
+  if (await consent.isVisible()) {
+    await consent.click();
+  }
+
+  await expect(content).toBeVisible();
+}
+
 type TransactionFixture = (typeof accountFixtures)[number];
 type AttachmentFixturePath = string & {
   readonly attachmentFixturePath: unique symbol;
 };
+interface AttachmentFixturePayload {
+  buffer: Buffer;
+  mimeType: string;
+  name: string;
+}
+type AttachmentFixture = AttachmentFixturePath | AttachmentFixturePayload;
 
 export interface AccountsFixtures {
   accounts: typeof accountFixtures;
@@ -33,7 +122,7 @@ export interface AccountsFixtures {
   clients: typeof clientFixtures;
   completeAuthentication: (content: Locator) => Promise<void>;
   dismissNotifications: (notifications: Locator) => Promise<void>;
-  eicar: () => Promise<AttachmentFixturePath>;
+  eicar: () => Promise<AttachmentFixturePayload>;
   expectNoA11yViolations: (readyState: Locator) => Promise<void>;
   focusWithKeyboard: (
     target: Locator,
@@ -45,15 +134,18 @@ export interface AccountsFixtures {
     path: string;
   }) => Promise<void>;
   invoice: AttachmentFixturePath;
-  openAccountsRoute: () => Promise<string>;
+  openAccountsRoute: (
+    vatRegistration?: 'not-registered' | 'registered',
+  ) => Promise<string>;
   openCompany: (companyName: string) => Promise<void>;
   openCompanyClients: (companyName: string) => Promise<void>;
   openCompanyDetails: (companyName: string) => Promise<void>;
   openCompanySettings: (companyName: string) => Promise<void>;
   recordTransaction: (options: {
-    attachment?: AttachmentFixturePath;
+    attachment?: AttachmentFixture;
     checkA11y?: boolean;
     date?: 'tomorrow';
+    expectedVat?: string;
     refund?: boolean;
     scheduled?: boolean;
     status?: 'confirmed' | 'pending';
@@ -89,11 +181,40 @@ export const test = base.extend<AccountsFixtures, AccountsWorkerFixtures>({
         const page = await browser.newPage({ baseURL, storageState });
 
         try {
+          const companiesHeading = page.getByRole('heading', {
+            name: 'My companies',
+          });
+
+          if (isLocalBaseUrl(baseURL)) {
+            await page.goto('/');
+            const signIn = page.getByRole('button', {
+              name: 'Sign in securely',
+            });
+
+            await expect(companiesHeading.or(signIn)).toBeVisible();
+            if (await signIn.isVisible()) {
+              await signIn.click();
+              await completeAuthenticationForPage(
+                baseURL,
+                companiesHeading,
+                page,
+              );
+            }
+          }
+
           async function openCompanyList(): Promise<Locator> {
-            await page.goto('/my-companies');
-            await expect(
-              page.getByRole('heading', { name: 'My companies' }),
-            ).toBeVisible();
+            if (new URL(page.url()).pathname !== '/my-companies') {
+              if (isLocalBaseUrl(baseURL)) {
+                await page.evaluate(() => {
+                  window.history.pushState(null, '', '/my-companies');
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                });
+              } else {
+                await page.goto('/my-companies');
+              }
+            }
+
+            await expect(companiesHeading).toBeVisible();
             await expect(
               page.getByRole('status', { name: 'Loading companies' }),
             ).toHaveCount(0);
@@ -142,32 +263,7 @@ export const test = base.extend<AccountsFixtures, AccountsWorkerFixtures>({
   companies: [async ({}, use) => use(companyFixtures), { scope: 'worker' }],
   completeAuthentication: async ({ baseURL, page }, use) => {
     await use(async (content) => {
-      const consent = page.locator('button#allow');
-      const email = page.getByLabel('Email address');
-
-      if (
-        baseURL &&
-        new URL(page.url()).hostname === new URL(baseURL).hostname
-      ) {
-        await expect(content).toBeVisible();
-
-        return;
-      }
-
-      await expect(content.or(consent).or(email)).toBeVisible();
-
-      if (await email.isVisible()) {
-        await email.fill(process.env.E2E_USERNAME!);
-        await page.getByLabel('Password').fill(process.env.E2E_PASSWORD!);
-        await page.getByRole('button', { name: 'Log in' }).click();
-        await expect(content.or(consent)).toBeVisible();
-      }
-
-      if (await consent.isVisible()) {
-        await consent.click();
-      }
-
-      await expect(content).toBeVisible();
+      await completeAuthenticationForPage(baseURL, content, page);
     });
   },
   dismissNotifications: async ({ page }, use) => {
@@ -238,19 +334,15 @@ export const test = base.extend<AccountsFixtures, AccountsWorkerFixtures>({
     });
   },
   eicar: async ({}, use) => {
-    await use(async () => {
-      const path = join(
-        dirname(fileURLToPath(import.meta.url)),
-        'fixtures/upload/eicar.pdf',
-      ) as AttachmentFixturePath;
-
-      await writeFile(
-        path,
-        'X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*',
-      );
-
-      return path;
-    });
+    await use(() =>
+      Promise.resolve({
+        buffer: Buffer.from(
+          'X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*',
+        ),
+        mimeType: 'application/pdf',
+        name: 'eicar.pdf',
+      }),
+    );
   },
   expectNoA11yViolations: async ({ page }, use) => {
     await use(async (readyState) => {
@@ -313,6 +405,12 @@ export const test = base.extend<AccountsFixtures, AccountsWorkerFixtures>({
       switch (type) {
         case 'currency':
           return `£${Math.abs(parseFloat(value)).toFixed(2)}`;
+        case 'ledger currency':
+          return new Intl.NumberFormat('en-GB', {
+            currency: 'GBP',
+            signDisplay: 'always',
+            style: 'currency',
+          }).format(parseFloat(value));
         case 'month':
           return new Intl.DateTimeFormat('en-GB', {
             month: 'long',
@@ -383,12 +481,14 @@ export const test = base.extend<AccountsFixtures, AccountsWorkerFixtures>({
     { companies, gotoAuthenticatedPage, page },
     use,
   ) => {
-    await use(async () => {
+    await use(async (vatRegistration = 'registered') => {
       await gotoAuthenticatedPage({
         content: page.getByRole('heading', { name: 'My companies' }),
         path: '/my-companies',
       });
-      await page.getByTestId(companies[0].company.name).click();
+      const company = companies[vatRegistration === 'registered' ? 0 : 1];
+
+      await page.getByTestId(company.company.name).click();
       const companyId = new URL(page.url()).pathname.split('/').at(-1);
 
       if (!companyId) {
@@ -447,10 +547,11 @@ export const test = base.extend<AccountsFixtures, AccountsWorkerFixtures>({
         attachment,
         checkA11y = false,
         date,
+        transaction,
+        expectedVat = transaction.vat,
         refund = false,
         scheduled = false,
         status = 'confirmed',
-        transaction,
       }) => {
         if (checkA11y) {
           await expectNoA11yViolations(
@@ -465,27 +566,31 @@ export const test = base.extend<AccountsFixtures, AccountsWorkerFixtures>({
         }
         const sale = transaction.type === 'Sales';
 
-        await page
-          .getByRole('radio', { name: sale ? 'Sale' : 'Purchase' })
-          .check();
+        await selectRadioOption(
+          page,
+          'Transaction type',
+          sale ? 'Sale' : 'Purchase',
+        );
         if (sale) {
           await page.getByRole('button', { name: /Client/ }).click();
           await page
             .getByRole('option', { name: transaction.supplier })
             .click();
         } else {
-          await page
-            .getByRole('combobox', { name: 'Supplier' })
-            .fill(transaction.supplier);
+          await getFormInput(page, 'Supplier').fill(transaction.supplier);
         }
-        await page
-          .getByRole('combobox', { name: 'Description' })
-          .fill(transaction.description);
+        const description = getFormInput(page, 'Description');
+
+        await description.fill(transaction.description);
+        if ((await description.getAttribute('aria-expanded')) === 'true') {
+          await description.press('Escape');
+        }
         if (date === 'tomorrow') {
-          const tomorrow = new Date();
+          const today = new Date();
+          const tomorrow = new Date(today);
 
           tomorrow.setDate(tomorrow.getDate() + 1);
-          await page.getByRole('button', { name: /Calendar Date/ }).click();
+          await page.getByRole('button', { name: 'Calendar' }).click();
           await page
             .getByRole('button', {
               name: new Intl.DateTimeFormat('en-GB', {
@@ -494,15 +599,12 @@ export const test = base.extend<AccountsFixtures, AccountsWorkerFixtures>({
             })
             .click();
         }
-        await page
-          .getByRole('radio', {
-            name: status === 'pending' ? 'Pending' : 'Confirmed',
-          })
-          .check();
-        await page
-          .getByRole('radiogroup', { name: 'Refund' })
-          .getByLabel(refund ? 'Yes' : 'No')
-          .check();
+        await selectRadioOption(
+          page,
+          undefined,
+          status === 'pending' ? 'Pending' : 'Confirmed',
+        );
+        await selectRadioOption(page, 'Refund', refund ? 'Yes' : 'No');
 
         if (!sale && 'category' in transaction) {
           await page.getByRole('button', { name: /Category/ }).click();
@@ -513,25 +615,29 @@ export const test = base.extend<AccountsFixtures, AccountsWorkerFixtures>({
         }
 
         if (status === 'pending') {
-          await page
-            .getByRole('radiogroup', { name: 'Schedule transaction' })
-            .getByLabel(scheduled ? 'Yes' : 'No')
-            .check();
+          await selectRadioOption(
+            page,
+            'Schedule transaction',
+            scheduled ? 'Yes' : 'No',
+          );
         }
 
         await page.getByLabel('Amount').fill(transaction.amount);
         await expect(page.getByLabel('VAT', { exact: true })).toHaveValue(
-          format('currency', transaction.vat),
+          format('currency', expectedVat),
         );
 
         if (attachment) {
           await page
             .getByLabel('Select file to upload')
             .setInputFiles(attachment);
-          await expect(page.getByRole('status')).toContainText('File attached');
+          await expect(page.getByLabel('Select file to upload')).toHaveCount(0);
         }
 
         await page.getByRole('button', { name: 'Save' }).click();
+        await expect(
+          page.getByRole('heading', { name: 'Record transaction' }),
+        ).toHaveCount(0);
         await expect(
           page.getByRole('heading', {
             level: 1,
