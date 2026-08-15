@@ -282,7 +282,7 @@ export function RecordTransactionFormFields({
                         ?.id ?? null
                     }
                   >
-                    <Select.Label>{t('Supplier')}</Select.Label>
+                    <Select.Label>{t('Client')}</Select.Label>
                     <Select.Trigger>
                       <Select.Value />
                     </Select.Trigger>

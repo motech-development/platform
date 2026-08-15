@@ -134,6 +134,21 @@ describe('RecordTransactionPage', () => {
     ).toBeVisible();
   });
 
+  it('uses the known client selector for sales', async () => {
+    render(
+      <BreezeProvider locale="en-GB">
+        <RecordTransactionPage companyId="company-id" origin="transactions" />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(screen.getByLabelText('Sale'));
+
+    expect(
+      screen.getByRole('button', { name: 'Select client Client' }),
+    ).toBeVisible();
+    expect(screen.queryByLabelText('Category')).not.toBeInTheDocument();
+  });
+
   it('retries the form query after it fails', async () => {
     mocks.query.error = new Error('failed');
     mocks.query.data = undefined;
