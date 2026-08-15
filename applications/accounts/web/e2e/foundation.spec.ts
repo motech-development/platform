@@ -266,9 +266,9 @@ test.describe('hosted Accounts foundation', () => {
     await getFormInput(page, 'Description').fill('Offline draft');
     await selectRadioOption(page, undefined, 'Confirmed');
     await page.getByLabel('Amount').fill('100');
-    const save = page.getByRole('button', {
-      name: /Connection required|Save/,
-    });
+    const save = page
+      .getByRole('button', { name: /Connection required|Save/ })
+      .and(page.locator('button[type="submit"]'));
 
     let mutationAttempts = 0;
 
