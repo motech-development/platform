@@ -14,6 +14,26 @@ Accounts application.
   identity, fixture, accessible control, and assertion, or record the exact
   specification line that makes it unnecessary. Review for missing files and
   missing journeys as well as defects in changed files.
+- Before editing a replacement browser journey, record a parity map in the
+  working commentary or plan. For each legacy journey, identify its source
+  file, suite and test title, fixture indexes and assets, producer and consumer
+  prerequisites, execution order, cleanup behaviour, replacement journey, and
+  every authorised difference. Provide this map to delegated reviewers so they
+  review against the same migration contract.
+- Copy legacy browser fixture files byte-for-byte into the replacement
+  workspace. Do not import fixtures or assets from the legacy workspace, and
+  do not modify the replacement copies. Expose the copies through the
+  replacement Playwright fixture module; specification files must consume the
+  Playwright fixtures rather than importing fixture JSON or assets directly.
+- Preserve the legacy browser suite hierarchy, test titles, ordering, fixture
+  indexes, producer-consumer dependencies, and cleanup behaviour. Limit
+  differences to selectors and interactions required by the replacement UI.
+  Any other difference requires the exact specification authority to be
+  recorded in the parity map before implementation.
+- Before claiming a replacement browser journey complete, run the exact
+  generated delivery commands in their generated order against the same
+  backend used by the hosted check. Passing isolated test selections does not
+  prove an ordered producer-consumer workflow.
 - Keep state ownership aligned with the Accounts migration specification: URL
   state belongs to the router, remote state to Apollo, form state to TanStack
   Form, and local interaction state to the nearest component. Do not duplicate
@@ -134,6 +154,11 @@ changed.
 
 ## Review
 
+- Treat review feedback as a claim against the recorded specification and
+  parity map, not as authority to expand or redesign the implementation.
+- When a user or reviewer identifies a migration mismatch, search every
+  affected replacement file for the same class of mismatch before claiming it
+  is resolved. Do not patch only the reported occurrence.
 - Confirm the implementation follows the cited Breeze documentation and story.
   A review is not clean while unexplained application-local presentation markup
   or utility styling duplicates a documented Breeze composition.
@@ -142,3 +167,5 @@ changed.
   render together.
 - Treat a mismatch in whole-screen composition, action ownership, or prototype
   state as a functional finding, not cosmetic feedback.
+- Do not commit or push changes unless the user explicitly requests that action
+  in the current task.
