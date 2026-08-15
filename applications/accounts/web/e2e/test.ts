@@ -1,7 +1,3 @@
-import accountFixtures from '@accounts/client/e2e/fixtures/data/account.json' with { type: 'json' };
-import clientFixtures from '@accounts/client/e2e/fixtures/data/client.json' with { type: 'json' };
-import companyFixtures from '@accounts/client/e2e/fixtures/data/company.json' with { type: 'json' };
-import settingFixtures from '@accounts/client/e2e/fixtures/data/setting.json' with { type: 'json' };
 import AxeBuilder from '@axe-core/playwright';
 import {
   type BrowserContextOptions,
@@ -10,6 +6,10 @@ import {
   type Response,
   test as base,
 } from '@playwright/test';
+import accountFixtures from './fixtures/data/account.json' with { type: 'json' };
+import clientFixtures from './fixtures/data/client.json' with { type: 'json' };
+import companyFixtures from './fixtures/data/company.json' with { type: 'json' };
+import settingFixtures from './fixtures/data/setting.json' with { type: 'json' };
 
 export function isLocalBaseUrl(baseURL: string | undefined): boolean {
   if (!baseURL) return true;
@@ -23,7 +23,6 @@ export interface AccountsFixtures {
   accounts: typeof accountFixtures;
   addCompanyCategory: (name: string, vatRate: string) => Promise<void>;
   clients: typeof clientFixtures;
-  companies: typeof companyFixtures;
   completeAuthentication: (content: Locator) => Promise<void>;
   dismissNotifications: (notifications: Locator) => Promise<void>;
   expectNoA11yViolations: (readyState: Locator) => Promise<void>;
@@ -51,6 +50,7 @@ interface AccountsWorkerFixtures {
     companyName: string;
     storageState: BrowserContextOptions['storageState'];
   }) => Promise<void>;
+  companies: typeof companyFixtures;
 }
 
 export const test = base.extend<AccountsFixtures, AccountsWorkerFixtures>({
@@ -120,9 +120,7 @@ export const test = base.extend<AccountsFixtures, AccountsWorkerFixtures>({
   clients: async ({}, use) => {
     await use(clientFixtures);
   },
-  companies: async ({}, use) => {
-    await use(companyFixtures);
-  },
+  companies: [async ({}, use) => use(companyFixtures), { scope: 'worker' }],
   completeAuthentication: async ({ baseURL, page }, use) => {
     await use(async (content) => {
       const consent = page.locator('button#allow');
