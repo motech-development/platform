@@ -1,71 +1,216 @@
 import {
+  ComboBox,
   DatePicker,
   FormSection,
   Grid,
   NumberField,
   RadioGroup,
   Select,
-  TextField,
 } from '@motech-development/breeze-ui';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { validationMessage, visibleValidationErrors } from '../form-errors';
 import {
   type AttachmentTransferResult,
   AttachmentUpload,
 } from './AttachmentUpload';
-import { calculateSaleVat } from './sale';
-import type { ConfirmedSaleForm } from './useConfirmedSaleForm';
+import { calculatePurchaseVat, calculateSaleVat } from './transaction';
+import { TransactionAttachment } from './TransactionAttachment';
+import type { TransactionForm } from './useTransactionForm';
 
 function representsSameAmount(current: string, next: string) {
-  if (current === next) {
-    return true;
-  }
-
-  const currentNumber = Number(current);
-  const nextNumber = Number(next);
+  if (current === next) return true;
 
   return (
     current !== '' &&
     next !== '' &&
-    Number.isFinite(currentNumber) &&
-    Number.isFinite(nextNumber) &&
-    currentNumber === nextNumber
+    Number.isFinite(Number(current)) &&
+    Number.isFinite(Number(next)) &&
+    Number(current) === Number(next)
+  );
+}
+
+function RadioOptions({
+  labels,
+}: Readonly<{ labels: readonly { label: string; value: string }[] }>) {
+  return labels.map(({ label, value }) => (
+    <RadioGroup.Item key={value} value={value}>
+      <RadioGroup.Control>
+        <RadioGroup.Indicator />
+        <RadioGroup.ItemLabel>{label}</RadioGroup.ItemLabel>
+      </RadioGroup.Control>
+    </RadioGroup.Item>
+  ));
+}
+
+function ControlledRadioGroup({
+  children,
+  invalid,
+  onSelectionChange,
+  readOnly = false,
+  selection,
+}: Readonly<{
+  children: ReactNode;
+  invalid?: boolean;
+  onSelectionChange: (selection: string) => void;
+  readOnly?: boolean;
+  selection: string | null;
+}>) {
+  if (readOnly) {
+    return (
+      <RadioGroup.Root
+        invalid={invalid}
+        orientation="horizontal"
+        readOnly
+        selection={selection}
+      >
+        {children}
+      </RadioGroup.Root>
+    );
+  }
+
+  return (
+    <RadioGroup.Root
+      invalid={invalid}
+      onSelectionChange={onSelectionChange}
+      orientation="horizontal"
+      selection={selection}
+    >
+      {children}
+    </RadioGroup.Root>
+  );
+}
+
+function SuggestionField({
+  error,
+  invalid,
+  label,
+  onBlur,
+  onChange,
+  onCommit,
+  placeholder,
+  suggestions,
+  value,
+}: Readonly<{
+  error: string;
+  invalid: boolean;
+  label: string;
+  onBlur: () => void;
+  onChange: (value: string) => void;
+  onCommit: () => void;
+  placeholder?: string;
+  suggestions: readonly string[];
+  value: string;
+}>) {
+  return (
+    <ComboBox.Root
+      allowsCustomValue
+      inputValue={value}
+      invalid={invalid}
+      onCommit={(nextValue) => {
+        onChange(nextValue);
+        onCommit();
+      }}
+      onInputChange={onChange}
+      onSelectionChange={(selection) => {
+        onChange(String(selection ?? ''));
+        onCommit();
+      }}
+      selection={suggestions.includes(value) ? value : null}
+    >
+      <ComboBox.Label>{label}</ComboBox.Label>
+      <ComboBox.Group>
+        <ComboBox.Input onBlur={onBlur} placeholder={placeholder} />
+        <ComboBox.Trigger />
+      </ComboBox.Group>
+      <ComboBox.Popover>
+        <ComboBox.ListBox>
+          {suggestions.map((suggestion) => (
+            <ComboBox.Item
+              id={suggestion}
+              key={suggestion}
+              textValue={suggestion}
+            >
+              {suggestion}
+            </ComboBox.Item>
+          ))}
+        </ComboBox.ListBox>
+      </ComboBox.Popover>
+      <ComboBox.Error>{error}</ComboBox.Error>
+    </ComboBox.Root>
   );
 }
 
 export function RecordTransactionFormFields({
+  categories,
+  clearAttachmentTransfer,
   clients,
   companyId,
+  currency,
+  editing,
   form,
   markDirty,
   online,
+  onAttachmentPendingChange,
+  suggestions,
   trackAttachmentTransfer,
   vatRate,
 }: Readonly<{
+  categories: readonly { name: string; vatRate: number }[];
+  clearAttachmentTransfer: () => void;
   clients: readonly { id: string; name: string }[];
   companyId: string;
-  form: ConfirmedSaleForm;
+  currency: string;
+  editing: boolean;
+  form: TransactionForm;
   markDirty: () => void;
   online: boolean;
+  onAttachmentPendingChange: (pending: boolean) => void;
+  suggestions?: Readonly<{
+    purchases?: readonly string[] | null;
+    sales?: readonly string[] | null;
+    suppliers?: readonly string[] | null;
+  }>;
   trackAttachmentTransfer: (
     transfer: Promise<AttachmentTransferResult>,
   ) => void;
   vatRate: number;
 }>) {
   const { t } = useTranslation('transactions');
-  const revalidateVisibleErrors = (blurred: boolean) => {
-    if (blurred || form.state.submissionAttempts > 0) {
-      Promise.resolve(form.validate('blur')).catch(() => undefined);
-    }
-  };
-  const changeStringField = (
-    handleChange: (value: string) => void,
-    value: string,
-    blurred: boolean,
-  ) => {
-    handleChange(value);
-    revalidateVisibleErrors(blurred);
+  const touch = () => {
     markDirty();
+    Promise.resolve(form.validate('blur')).catch(() => undefined);
+  };
+  const errorsFor = (
+    errors: Parameters<typeof visibleValidationErrors>[0],
+    blurred: boolean,
+  ) => visibleValidationErrors(errors, blurred, form.state.submissionAttempts);
+  const updateCalculatedVat = (
+    amount: string,
+    transactionType: 'purchase' | 'sale',
+    category: string,
+  ) => {
+    if (!amount || !Number.isFinite(Number(amount))) {
+      form.setFieldValue('vat', '');
+      return;
+    }
+
+    const rate =
+      transactionType === 'sale'
+        ? vatRate
+        : categories.find(({ name }) => name === category)?.vatRate;
+
+    if (rate === undefined) {
+      form.setFieldValue('vat', '');
+      return;
+    }
+
+    const vat =
+      transactionType === 'sale'
+        ? calculateSaleVat(amount, rate)
+        : calculatePurchaseVat(amount, rate);
+
+    form.setFieldValue('vat', vat.toFixed(2));
   };
 
   return (
@@ -79,106 +224,142 @@ export function RecordTransactionFormFields({
         layout="stacked"
         title={t('Transaction details')}
       >
-        <RadioGroup.Root orientation="horizontal" readOnly selection="sale">
-          <RadioGroup.Label>{t('Transaction type')}</RadioGroup.Label>
-          <RadioGroup.Item value="sale">
-            <RadioGroup.Control>
-              <RadioGroup.Indicator />
-              <RadioGroup.ItemLabel>{t('Sale')}</RadioGroup.ItemLabel>
-            </RadioGroup.Control>
-          </RadioGroup.Item>
-        </RadioGroup.Root>
-        <form.Field name="client">
-          {(field) => {
-            const errors = visibleValidationErrors(
-              field.state.meta.errors,
-              field.state.meta.isBlurred,
-              form.state.submissionAttempts,
-            );
+        <form.Field name="transactionType">
+          {(field) => (
+            <ControlledRadioGroup
+              onSelectionChange={(selection) => {
+                if (selection !== 'purchase' && selection !== 'sale') return;
 
-            return (
-              <Select.Root
-                invalid={errors.length > 0}
-                onBlur={field.handleBlur}
-                onChange={(value) => {
-                  const client = clients.find(({ id }) => id === value);
-
-                  changeStringField(
-                    field.handleChange,
-                    client?.name ?? '',
-                    field.state.meta.isBlurred,
-                  );
-                }}
-                placeholder={t('Select client')}
-                required
-                value={
-                  clients.find(({ name }) => name === field.state.value)?.id ??
-                  null
+                field.handleChange(selection);
+                form.setFieldValue('name', '');
+                form.setFieldValue('refund', false);
+                if (selection === 'sale') {
+                  form.setFieldValue('category', '');
                 }
-              >
-                <Select.Label>{t('Supplier')}</Select.Label>
-                <Select.Trigger>
-                  <Select.Value />
-                </Select.Trigger>
-                <Select.Popover>
-                  <Select.ListBox>
-                    {clients.map((client) => (
-                      <Select.Item
-                        id={client.id}
-                        key={client.id}
-                        textValue={client.name}
-                      >
-                        {client.name}
-                      </Select.Item>
-                    ))}
-                  </Select.ListBox>
-                </Select.Popover>
-                <Select.Error>
-                  {validationMessage(errors, t('Check this value'))}
-                </Select.Error>
-              </Select.Root>
-            );
-          }}
+                updateCalculatedVat(
+                  form.getFieldValue('amount'),
+                  selection,
+                  form.getFieldValue('category'),
+                );
+                touch();
+              }}
+              readOnly={editing}
+              selection={field.state.value}
+            >
+              <RadioGroup.Label>{t('Transaction type')}</RadioGroup.Label>
+              <RadioOptions
+                labels={[
+                  { label: t('Purchase'), value: 'purchase' },
+                  { label: t('Sale'), value: 'sale' },
+                ]}
+              />
+            </ControlledRadioGroup>
+          )}
         </form.Field>
-        <form.Field name="description">
-          {(field) => {
-            const errors = visibleValidationErrors(
-              field.state.meta.errors,
-              field.state.meta.isBlurred,
-              form.state.submissionAttempts,
-            );
+        <form.Subscribe selector={(state) => state.values.transactionType}>
+          {(transactionType) => (
+            <form.Field name="name">
+              {(field) => {
+                const errors = errorsFor(
+                  field.state.meta.errors,
+                  field.state.meta.isBlurred,
+                );
 
-            return (
-              <TextField.Root
-                invalid={errors.length > 0}
-                onChange={(value) => {
-                  changeStringField(
-                    field.handleChange,
-                    value,
-                    field.state.meta.isBlurred,
-                  );
-                }}
-                required
-                value={field.state.value}
-              >
-                <TextField.Label>{t('Description')}</TextField.Label>
-                <TextField.Input
-                  onBlur={field.handleBlur}
-                  placeholder={t('What was this for?')}
-                />
-                <TextField.Error>
-                  {validationMessage(errors, t('Check this value'))}
-                </TextField.Error>
-              </TextField.Root>
-            );
-          }}
-        </form.Field>
+                return transactionType === 'sale' ? (
+                  <Select.Root
+                    invalid={errors.length > 0}
+                    onBlur={field.handleBlur}
+                    onChange={(clientId) => {
+                      field.handleChange(
+                        clients.find(({ id }) => id === clientId)?.name ?? '',
+                      );
+                      touch();
+                    }}
+                    placeholder={t('Select client')}
+                    required
+                    value={
+                      clients.find(({ name }) => name === field.state.value)
+                        ?.id ?? null
+                    }
+                  >
+                    <Select.Label>{t('Supplier')}</Select.Label>
+                    <Select.Trigger>
+                      <Select.Value />
+                    </Select.Trigger>
+                    <Select.Popover>
+                      <Select.ListBox>
+                        {clients.map((client) => (
+                          <Select.Item
+                            id={client.id}
+                            key={client.id}
+                            textValue={client.name}
+                          >
+                            {client.name}
+                          </Select.Item>
+                        ))}
+                      </Select.ListBox>
+                    </Select.Popover>
+                    <Select.Error>
+                      {validationMessage(errors, t('Check this value'))}
+                    </Select.Error>
+                  </Select.Root>
+                ) : (
+                  <SuggestionField
+                    error={validationMessage(errors, t('Check this value'))}
+                    invalid={errors.length > 0}
+                    label={t('Supplier')}
+                    onBlur={field.handleBlur}
+                    onChange={(value) => {
+                      field.handleChange(value);
+                      markDirty();
+                    }}
+                    onCommit={touch}
+                    suggestions={suggestions?.suppliers ?? []}
+                    value={field.state.value}
+                  />
+                );
+              }}
+            </form.Field>
+          )}
+        </form.Subscribe>
+        <form.Subscribe selector={(state) => state.values.transactionType}>
+          {(transactionType) => (
+            <form.Field name="description">
+              {(field) => {
+                const errors = errorsFor(
+                  field.state.meta.errors,
+                  field.state.meta.isBlurred,
+                );
+
+                return (
+                  <SuggestionField
+                    error={validationMessage(errors, t('Check this value'))}
+                    invalid={errors.length > 0}
+                    label={t('Description')}
+                    onBlur={field.handleBlur}
+                    onChange={(value) => {
+                      field.handleChange(value);
+                      markDirty();
+                    }}
+                    onCommit={touch}
+                    placeholder={t('What was this for?')}
+                    suggestions={
+                      (transactionType === 'sale'
+                        ? suggestions?.sales
+                        : suggestions?.purchases) ?? []
+                    }
+                    value={field.state.value}
+                  />
+                );
+              }}
+            </form.Field>
+          )}
+        </form.Subscribe>
         <form.Field name="date">
           {(field) => {
-            const errors = visibleValidationErrors(
+            const errors = errorsFor(
               field.state.meta.errors,
               field.state.meta.isBlurred,
-              form.state.submissionAttempts,
             );
 
             return (
@@ -186,11 +367,8 @@ export function RecordTransactionFormFields({
                 invalid={errors.length > 0}
                 onBlur={field.handleBlur}
                 onChange={(value) => {
-                  changeStringField(
-                    field.handleChange,
-                    value ?? '',
-                    field.state.meta.isBlurred,
-                  );
+                  field.handleChange(value ?? '');
+                  touch();
                 }}
                 required
                 value={field.state.value || null}
@@ -212,165 +390,305 @@ export function RecordTransactionFormFields({
         </form.Field>
       </FormSection>
       <FormSection
-        description={t('Enter the confirmed sale amount and VAT.')}
+        description={t(
+          'Set its accounting state, amount, VAT, and refund meaning.',
+        )}
         divided
         headingLevel={3}
         layout="stacked"
         title={t('Status and totals')}
       >
-        <RadioGroup.Root
-          orientation="horizontal"
-          readOnly
-          selection="confirmed"
+        <form.Field name="status">
+          {(field) => {
+            const errors = errorsFor(
+              field.state.meta.errors,
+              field.state.meta.isBlurred,
+            );
+
+            return (
+              <RadioGroup.Root
+                invalid={errors.length > 0}
+                onSelectionChange={(selection) => {
+                  field.handleChange(selection);
+                  if (selection === 'confirmed') {
+                    form.setFieldValue('scheduled', false);
+                  }
+                  touch();
+                }}
+                orientation="horizontal"
+                selection={field.state.value || null}
+              >
+                <RadioGroup.Label>{t('Status')}</RadioGroup.Label>
+                <RadioOptions
+                  labels={[
+                    { label: t('Confirmed'), value: 'confirmed' },
+                    { label: t('Pending'), value: 'pending' },
+                  ]}
+                />
+                <RadioGroup.Error>
+                  {validationMessage(errors, t('Check this value'))}
+                </RadioGroup.Error>
+              </RadioGroup.Root>
+            );
+          }}
+        </form.Field>
+        <form.Subscribe
+          selector={(state) => ({
+            category: state.values.category,
+            transactionType: state.values.transactionType,
+          })}
         >
-          <RadioGroup.Label>{t('Status')}</RadioGroup.Label>
-          <RadioGroup.Item value="confirmed">
-            <RadioGroup.Control>
-              <RadioGroup.Indicator />
-              <RadioGroup.ItemLabel>{t('Confirmed')}</RadioGroup.ItemLabel>
-            </RadioGroup.Control>
-          </RadioGroup.Item>
-        </RadioGroup.Root>
-        <Grid columns={{ base: 1, sm: 2 }}>
-          <form.Field name="amount">
-            {(field) => {
-              const errors = visibleValidationErrors(
-                field.state.meta.errors,
-                field.state.meta.isBlurred,
-                form.state.submissionAttempts,
-              );
-              const numericValue = field.state.value
-                ? Number(field.state.value)
-                : null;
-              const updateVat = (amount: string) => {
-                if (amount && Number.isFinite(Number(amount))) {
-                  form.setFieldValue(
-                    'vat',
-                    calculateSaleVat(amount, vatRate).toFixed(2),
-                  );
-                } else if (!amount) {
-                  form.setFieldValue('vat', '');
-                }
-              };
-              const updateAmount = (amount: string) => {
-                field.handleChange(amount);
-                updateVat(amount);
-                Promise.resolve(form.validate('blur')).catch(() => undefined);
-                markDirty();
-              };
-
-              return (
-                <NumberField.Root
-                  formatOptions={{ currency: 'GBP', style: 'currency' }}
-                  min={0.01}
-                  invalid={errors.length > 0}
-                  onChange={(value) => updateAmount(value?.toString() ?? '')}
-                  required
-                  step={0.01}
-                  value={numericValue}
-                >
-                  <NumberField.Label>{t('Amount')}</NumberField.Label>
-                  <NumberField.Group>
-                    <NumberField.Input
-                      onBlur={field.handleBlur}
-                      onInput={(event) => {
-                        const amount = event.currentTarget.value.replace(
-                          /[^\d.-]/gu,
-                          '',
-                        );
-                        const { nativeEvent: inputEvent } = event;
-
-                        if (
-                          inputEvent.inputType === 'insertText' &&
-                          inputEvent.data?.length === 1
-                        ) {
-                          // React Aria owns incremental keyboard editing.
-                          updateVat(amount);
-                          markDirty();
-                          return;
-                        }
-
-                        // Input-only replacements (including browser automation
-                        // and autofill) may not commit a semantic NumberField
-                        // value until blur.
-                        queueMicrotask(() => {
-                          if (
-                            !representsSameAmount(
-                              form.getFieldValue('amount'),
-                              amount,
-                            )
-                          ) {
-                            updateAmount(amount);
-                          }
-                        });
-                      }}
-                    />
-                  </NumberField.Group>
-                  <NumberField.Error>
-                    {validationMessage(errors, t('Check this value'))}
-                  </NumberField.Error>
-                </NumberField.Root>
-              );
-            }}
-          </form.Field>
-          <form.Field name="vat">
-            {(field) => {
-              const errors = visibleValidationErrors(
-                field.state.meta.errors,
-                field.state.meta.isBlurred,
-                form.state.submissionAttempts,
-              );
-
-              return (
-                <NumberField.Root
-                  formatOptions={{ currency: 'GBP', style: 'currency' }}
-                  min={0}
-                  invalid={errors.length > 0}
-                  onChange={(value) => {
-                    changeStringField(
-                      field.handleChange,
-                      value?.toString() ?? '',
+          {({ category, transactionType }) => (
+            <>
+              {transactionType === 'purchase' ? (
+                <form.Field name="category">
+                  {(field) => {
+                    const errors = errorsFor(
+                      field.state.meta.errors,
                       field.state.meta.isBlurred,
                     );
+
+                    return (
+                      <Select.Root
+                        invalid={errors.length > 0}
+                        onBlur={field.handleBlur}
+                        onChange={(value) => {
+                          const nextCategory = String(value ?? '');
+
+                          field.handleChange(nextCategory);
+                          updateCalculatedVat(
+                            form.getFieldValue('amount'),
+                            'purchase',
+                            nextCategory,
+                          );
+                          touch();
+                        }}
+                        placeholder={t('Select category')}
+                        required
+                        value={field.state.value || null}
+                      >
+                        <Select.Label>{t('Category')}</Select.Label>
+                        <Select.Trigger>
+                          <Select.Value />
+                        </Select.Trigger>
+                        <Select.Popover>
+                          <Select.ListBox>
+                            {[...categories]
+                              .sort((left, right) =>
+                                left.name.localeCompare(right.name),
+                              )
+                              .map(({ name }) => (
+                                <Select.Item
+                                  id={name}
+                                  key={name}
+                                  textValue={name}
+                                >
+                                  {name}
+                                </Select.Item>
+                              ))}
+                          </Select.ListBox>
+                        </Select.Popover>
+                        <Select.Error>
+                          {validationMessage(errors, t('Check this value'))}
+                        </Select.Error>
+                      </Select.Root>
+                    );
                   }}
-                  required
-                  step={0.01}
-                  value={field.state.value ? Number(field.state.value) : null}
-                >
-                  <NumberField.Label>{t('VAT')}</NumberField.Label>
-                  <NumberField.Group>
-                    <NumberField.Input onBlur={field.handleBlur} />
-                  </NumberField.Group>
-                  <NumberField.Error>
-                    {validationMessage(errors, t('Check this value'))}
-                  </NumberField.Error>
-                </NumberField.Root>
-              );
-            }}
-          </form.Field>
-        </Grid>
+                </form.Field>
+              ) : null}
+              <Grid columns={{ base: 1, sm: 2 }}>
+                <form.Field name="amount">
+                  {(field) => {
+                    const errors = errorsFor(
+                      field.state.meta.errors,
+                      field.state.meta.isBlurred,
+                    );
+                    const updateAmount = (amount: string) => {
+                      field.handleChange(amount);
+                      updateCalculatedVat(amount, transactionType, category);
+                      touch();
+                    };
+
+                    return (
+                      <NumberField.Root
+                        formatOptions={{ currency, style: 'currency' }}
+                        invalid={errors.length > 0}
+                        min={0.01}
+                        onChange={(value) => {
+                          updateAmount(value?.toString() ?? '');
+                        }}
+                        required
+                        step={0.01}
+                        value={
+                          field.state.value ? Number(field.state.value) : null
+                        }
+                      >
+                        <NumberField.Label>{t('Amount')}</NumberField.Label>
+                        <NumberField.Group>
+                          <NumberField.Input
+                            onBlur={field.handleBlur}
+                            onInput={(event) => {
+                              const amount = event.currentTarget.value.replace(
+                                /[^\d.-]/gu,
+                                '',
+                              );
+                              const { nativeEvent: inputEvent } = event;
+
+                              if (
+                                inputEvent.inputType === 'insertText' &&
+                                inputEvent.data?.length === 1
+                              ) {
+                                updateCalculatedVat(
+                                  amount,
+                                  transactionType,
+                                  category,
+                                );
+                                markDirty();
+                                return;
+                              }
+
+                              queueMicrotask(() => {
+                                if (
+                                  !representsSameAmount(
+                                    form.getFieldValue('amount'),
+                                    amount,
+                                  )
+                                ) {
+                                  updateAmount(amount);
+                                }
+                              });
+                            }}
+                          />
+                        </NumberField.Group>
+                        <NumberField.Error>
+                          {validationMessage(errors, t('Check this value'))}
+                        </NumberField.Error>
+                      </NumberField.Root>
+                    );
+                  }}
+                </form.Field>
+                <form.Field name="vat">
+                  {(field) => {
+                    const errors = errorsFor(
+                      field.state.meta.errors,
+                      field.state.meta.isBlurred,
+                    );
+
+                    return (
+                      <NumberField.Root
+                        formatOptions={{ currency, style: 'currency' }}
+                        invalid={errors.length > 0}
+                        min={0}
+                        onChange={(value) => {
+                          field.handleChange(value?.toString() ?? '');
+                          touch();
+                        }}
+                        required
+                        step={0.01}
+                        value={
+                          field.state.value ? Number(field.state.value) : null
+                        }
+                      >
+                        <NumberField.Label>{t('VAT')}</NumberField.Label>
+                        <NumberField.Group>
+                          <NumberField.Input onBlur={field.handleBlur} />
+                        </NumberField.Group>
+                        <NumberField.Error>
+                          {validationMessage(errors, t('Check this value'))}
+                        </NumberField.Error>
+                      </NumberField.Root>
+                    );
+                  }}
+                </form.Field>
+              </Grid>
+            </>
+          )}
+        </form.Subscribe>
+        <form.Field name="refund">
+          {(field) => (
+            <ControlledRadioGroup
+              onSelectionChange={(selection) => {
+                field.handleChange(selection === 'yes');
+                touch();
+              }}
+              readOnly={editing}
+              selection={field.state.value ? 'yes' : 'no'}
+            >
+              <RadioGroup.Label>{t('Refund')}</RadioGroup.Label>
+              <RadioOptions
+                labels={[
+                  { label: t('No'), value: 'no' },
+                  { label: t('Yes'), value: 'yes' },
+                ]}
+              />
+            </ControlledRadioGroup>
+          )}
+        </form.Field>
+        <form.Subscribe selector={(state) => state.values.status}>
+          {(status) =>
+            status === 'pending' ? (
+              <form.Field name="scheduled">
+                {(field) => (
+                  <RadioGroup.Root
+                    onSelectionChange={(selection) => {
+                      field.handleChange(selection === 'yes');
+                      touch();
+                    }}
+                    orientation="horizontal"
+                    selection={field.state.value ? 'yes' : 'no'}
+                  >
+                    <RadioGroup.Label>
+                      {t('Schedule transaction')}
+                    </RadioGroup.Label>
+                    <RadioOptions
+                      labels={[
+                        { label: t('No'), value: 'no' },
+                        { label: t('Yes'), value: 'yes' },
+                      ]}
+                    />
+                  </RadioGroup.Root>
+                )}
+              </form.Field>
+            ) : null
+          }
+        </form.Subscribe>
       </FormSection>
       <FormSection
-        description={t('Attach an invoice to this transaction.')}
+        description={t('Attach a PDF, JPG, or PNG invoice or receipt.')}
         divided
         headingLevel={3}
         layout="stacked"
-        title={t('Invoice')}
+        title={t('Invoice or receipt')}
       >
         <form.Subscribe selector={(state) => state.isSubmitting}>
           {(isSubmitting) => (
             <form.Field name="attachment">
-              {(field) => (
-                <AttachmentUpload
-                  companyId={companyId}
-                  disabled={!online || isSubmitting}
-                  onTransfer={trackAttachmentTransfer}
-                  onUploaded={(path) => {
-                    field.handleChange(path);
-                    markDirty();
-                  }}
-                />
-              )}
+              {(field) =>
+                field.state.value ? (
+                  <TransactionAttachment
+                    companyId={companyId}
+                    disabled={isSubmitting}
+                    onDeleted={() => {
+                      clearAttachmentTransfer();
+                      field.handleChange('');
+                      markDirty();
+                    }}
+                    onPendingChange={onAttachmentPendingChange}
+                    path={field.state.value}
+                  />
+                ) : (
+                  <AttachmentUpload
+                    companyId={companyId}
+                    disabled={!online || isSubmitting}
+                    onTransfer={trackAttachmentTransfer}
+                    onUploaded={(path) => {
+                      field.handleChange(path);
+                      markDirty();
+                    }}
+                    transactionId={form.getFieldValue('id') || undefined}
+                  />
+                )
+              }
             </form.Field>
           )}
         </form.Subscribe>

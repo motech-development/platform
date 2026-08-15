@@ -49,6 +49,7 @@ export function CompanyTransactionSubscription({
           id: companyId,
         }),
       });
+      client.refetchQueries({ include: 'active' }).catch(() => undefined);
     },
     variables: { id: companyId, owner },
   });

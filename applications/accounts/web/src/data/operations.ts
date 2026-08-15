@@ -287,6 +287,44 @@ export const GET_COMPANY_DASHBOARD = graphql(`
   }
 `);
 
+export const GET_PENDING_TRANSACTIONS = graphql(`
+  query PendingTransactions(
+    $id: ID!
+    $status: TransactionStatus!
+    $count: Int
+    $nextToken: String
+  ) {
+    getBalance(id: $id) {
+      id
+      currency
+    }
+    getTransactions(
+      id: $id
+      status: $status
+      count: $count
+      nextToken: $nextToken
+    ) {
+      id
+      status
+      items {
+        id
+        amount
+        attachment
+        category
+        companyId
+        date
+        description
+        name
+        refund
+        scheduled
+        status
+        vat
+      }
+      nextToken
+    }
+  }
+`);
+
 export const GET_CONFIRMED_TRANSACTIONS = graphql(`
   query ConfirmedTransactions(
     $id: ID!
@@ -327,6 +365,10 @@ export const GET_CONFIRMED_TRANSACTIONS = graphql(`
 
 export const GET_RECORD_TRANSACTION = graphql(`
   query RecordTransaction($id: ID!) {
+    getBalance(id: $id) {
+      currency
+      id
+    }
     getClients(id: $id) {
       id
       items {
@@ -335,10 +377,20 @@ export const GET_RECORD_TRANSACTION = graphql(`
       }
     }
     getSettings(id: $id) {
+      categories {
+        name
+        vatRate
+      }
       id
       vat {
         pay
       }
+    }
+    getTypeahead(id: $id) {
+      id
+      purchases
+      sales
+      suppliers
     }
   }
 `);
@@ -381,6 +433,35 @@ export const GET_TRANSACTION = graphql(`
   }
 `);
 
+export const UPDATE_TRANSACTION = graphql(`
+  mutation UpdateTransaction($input: TransactionInput!) {
+    updateTransaction(input: $input) {
+      id
+      amount
+      attachment
+      category
+      companyId
+      date
+      description
+      name
+      refund
+      scheduled
+      status
+      vat
+    }
+  }
+`);
+
+export const DELETE_TRANSACTION = graphql(`
+  mutation DeleteTransaction($id: ID!) {
+    deleteTransaction(id: $id) {
+      companyId
+      id
+      status
+    }
+  }
+`);
+
 export const REQUEST_UPLOAD = graphql(`
   mutation RequestUpload($id: ID!, $input: StorageUploadInput!) {
     requestUpload(id: $id, input: $input) {
@@ -394,6 +475,14 @@ export const REQUEST_DOWNLOAD = graphql(`
   query RequestDownload($id: ID!, $path: String!) {
     requestDownload(id: $id, path: $path) {
       url
+    }
+  }
+`);
+
+export const DELETE_FILE = graphql(`
+  mutation DeleteFile($id: ID!, $path: String!) {
+    deleteFile(id: $id, path: $path) {
+      path
     }
   }
 `);

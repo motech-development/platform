@@ -1,12 +1,24 @@
-import { Button, LinkButton, StatePanel } from '@motech-development/breeze-ui';
-import { AddIcon, WarningIcon } from '@motech-development/breeze-ui/icons';
+import {
+  Button,
+  Inline,
+  LinkButton,
+  StatePanel,
+} from '@motech-development/breeze-ui';
+import {
+  AddIcon,
+  CalendarIcon,
+  WarningIcon,
+} from '@motech-development/breeze-ui/icons';
 import { useTranslation } from 'react-i18next';
 
-export function RecordTransactionLink({ href }: Readonly<{ href: string }>) {
+export function RecordTransactionLink({
+  className,
+  href,
+}: Readonly<{ className?: string; href: string }>) {
   const { t } = useTranslation('transactions');
 
   return (
-    <LinkButton href={href}>
+    <LinkButton className={className} href={href}>
       <AddIcon />
       {t('Record transaction')}
     </LinkButton>
@@ -16,12 +28,16 @@ export function RecordTransactionLink({ href }: Readonly<{ href: string }>) {
 export function TransactionPageHeaderAction({
   hasTransactions,
   initiallyLoading,
+  pendingTransactionsHref,
   recordTransactionHref,
 }: Readonly<{
   hasTransactions: boolean;
   initiallyLoading: boolean;
+  pendingTransactionsHref?: string;
   recordTransactionHref: string;
 }>) {
+  const { t } = useTranslation('transactions');
+
   if (initiallyLoading) {
     return null;
   }
@@ -30,7 +46,24 @@ export function TransactionPageHeaderAction({
     return null;
   }
 
-  return <RecordTransactionLink href={recordTransactionHref} />;
+  return (
+    <Inline gap="sm" wrap>
+      <RecordTransactionLink
+        className="sm:order-2"
+        href={recordTransactionHref}
+      />
+      {pendingTransactionsHref ? (
+        <LinkButton
+          appearance="outline"
+          className="sm:order-1"
+          href={pendingTransactionsHref}
+        >
+          <CalendarIcon />
+          {t('View Pending Transactions')}
+        </LinkButton>
+      ) : null}
+    </Inline>
+  );
 }
 
 export function TransactionPageError({

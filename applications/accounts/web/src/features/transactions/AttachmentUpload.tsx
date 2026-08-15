@@ -17,11 +17,13 @@ export function AttachmentUpload({
   disabled,
   onTransfer,
   onUploaded,
+  transactionId,
 }: Readonly<{
   companyId: string;
   disabled?: boolean;
   onTransfer: (transfer: Promise<AttachmentTransferResult>) => void;
   onUploaded: (path: string) => void;
+  transactionId?: string;
 }>) {
   const { t } = useTranslation(['attachments', 'transactions']);
   const toast = useToast();
@@ -32,6 +34,20 @@ export function AttachmentUpload({
   const [requestUpload, { loading }] = useMutation(REQUEST_UPLOAD);
 
   const upload = (file: File) => {
+    const extensions = {
+      'application/pdf': ['pdf'],
+      'image/jpeg': ['jpg', 'jpeg'],
+      'image/png': ['png'],
+    }[file.type];
+    const requestedExtension = file.name.split('.').at(-1)?.toLowerCase();
+    const extension =
+      extensions?.find((value) => value === requestedExtension) ??
+      extensions?.[0];
+
+    if (!extension) {
+      return Promise.resolve({ status: 'failed' } as const);
+    }
+
     setSelectedFiles([file]);
     setUploadFailed(false);
     setUploaded(false);
@@ -44,8 +60,9 @@ export function AttachmentUpload({
               id: companyId,
               input: {
                 contentType: file.type,
-                extension: 'pdf',
+                extension,
                 metadata: {
+                  ...(transactionId ? { id: transactionId } : {}),
                   typename: 'Transaction',
                 },
               },
@@ -62,7 +79,7 @@ export function AttachmentUpload({
 
           await uploadPresignedFile(presigned.url, file, signal);
 
-          return `${companyId}/${presigned.id}.pdf`;
+          return `${companyId}/${presigned.id}.${extension}`;
         });
 
         if (result.status === 'cancelled') {
@@ -73,7 +90,7 @@ export function AttachmentUpload({
         setUploaded(true);
         toast.show({
           description: file.name,
-          title: t('PDF attached'),
+          title: t('File attached'),
           variant: 'success',
         });
 
@@ -98,7 +115,7 @@ export function AttachmentUpload({
   if (uploaded) {
     return (
       <p role="status">
-        {t('PDF attached')}: {selectedFiles[0]?.name}
+        {t('File attached')}: {selectedFiles[0]?.name}
       </p>
     );
   }
@@ -106,7 +123,7 @@ export function AttachmentUpload({
   return (
     <>
       <FileUpload
-        acceptedFileTypes={['application/pdf']}
+        acceptedFileTypes={['application/pdf', 'image/jpeg', 'image/png']}
         browseLabel={
           disabled
             ? t('Connection required', { ns: 'transactions' })
@@ -115,8 +132,8 @@ export function AttachmentUpload({
         disabled={disabled || loading}
         guidance={
           disabled
-            ? t('Connection required to attach a source PDF.')
-            : t('Choose one PDF file.')
+            ? t('Connection required to attach a file.')
+            : t('Choose one PDF, JPG, or PNG file.')
         }
         label={loading ? t('Uploading PDF…') : t('No file selected')}
         onFiles={(files) => {
@@ -128,7 +145,7 @@ export function AttachmentUpload({
         }}
         onReject={() => {
           toast.show({
-            description: t('Choose one PDF file.'),
+            description: t('Choose one PDF, JPG, or PNG file.'),
             title: t('File not accepted'),
             variant: 'warning',
           });

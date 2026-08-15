@@ -17,6 +17,7 @@ export function EntityDeleteDialog({
   confirmLabel,
   deleting,
   description,
+  disabled = false,
   entityName,
   nested = false,
   onDelete,
@@ -30,6 +31,7 @@ export function EntityDeleteDialog({
   confirmLabel: string;
   deleting: boolean;
   description: string;
+  disabled?: boolean;
   entityName: string;
   nested?: boolean;
   onDelete: () => Promise<boolean>;
@@ -44,13 +46,15 @@ export function EntityDeleteDialog({
   return (
     <AlertDialog.Root
       onOpenChange={(nextOpen) => {
-        if (!nextOpen && deleting) return;
+        if ((!nextOpen && deleting) || (nextOpen && disabled)) return;
         setOpen(nextOpen);
         if (!nextOpen) setConfirmation('');
       }}
       open={open}
     >
-      <AlertDialog.Trigger variant="danger">{triggerLabel}</AlertDialog.Trigger>
+      <AlertDialog.Trigger disabled={disabled} variant="danger">
+        {triggerLabel}
+      </AlertDialog.Trigger>
       <AlertDialog.Content
         className="breeze-confirmation-dialog max-h-[calc(100dvh-2rem)] w-full max-w-md border-0 border-b-2 border-b-[var(--breeze-border-strong)] p-0 shadow-[0_8px_0_rgb(6_12_24_/_22%)]"
         keyboardDismissDisabled={deleting}
@@ -103,7 +107,7 @@ export function EntityDeleteDialog({
               {cancelLabel}
             </AlertDialog.Close>
             <Button
-              disabled={!confirmationValid || deleting}
+              disabled={disabled || !confirmationValid || deleting}
               loading={deleting}
               onAction={() => {
                 onDelete()

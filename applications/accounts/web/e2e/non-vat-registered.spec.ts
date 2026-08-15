@@ -310,6 +310,156 @@ test.describe('Non-VAT registered', () => {
     });
   });
 
+  test.describe('Accounts', () => {
+    test('should record confirmed sales, purchases, and refunds', async ({
+      accounts,
+      openAccountsRoute,
+      recordTransaction,
+    }) => {
+      await openAccountsRoute();
+      await recordTransaction({ transaction: accounts[0] });
+      await recordTransaction({ transaction: accounts[1] });
+      await recordTransaction({ refund: true, transaction: accounts[9] });
+      await recordTransaction({ refund: true, transaction: accounts[11] });
+    });
+
+    test('should update and delete a confirmed purchase refund', async ({
+      accounts,
+      openAccountsRoute,
+      page,
+    }) => {
+      const transaction = accounts[11];
+      const updatedDescription = `${transaction.description} updated`;
+
+      await openAccountsRoute();
+      await page
+        .getByRole('row')
+        .filter({ hasText: transaction.description })
+        .first()
+        .click();
+      await expect(page.getByLabel('Purchase')).toBeChecked();
+      await expect(
+        page.getByRole('radiogroup', { name: 'Refund' }).getByLabel('Yes'),
+      ).toBeChecked();
+      await page
+        .getByRole('combobox', { name: 'Description' })
+        .fill(updatedDescription);
+      await page.getByRole('button', { name: 'Save' }).click();
+      await expect(page.getByText(updatedDescription)).toBeVisible();
+
+      await page
+        .getByRole('row')
+        .filter({ hasText: updatedDescription })
+        .first()
+        .click();
+      await page.getByRole('button', { name: 'Delete Transaction' }).click();
+      await page
+        .getByLabel(`Type ${updatedDescription} to confirm`)
+        .fill(updatedDescription);
+      await page
+        .getByRole('button', { name: 'Permanently delete Transaction' })
+        .click();
+      await expect(page.getByText(updatedDescription)).toHaveCount(0);
+    });
+
+    test('should record and remove a zero VAT purchase', async ({
+      accounts,
+      openAccountsRoute,
+      page,
+      recordTransaction,
+    }) => {
+      const transaction = accounts[2];
+
+      await openAccountsRoute();
+      await recordTransaction({ transaction });
+      await expect(page.getByText('Balance: £1810.40')).toBeVisible();
+      await expect(page.getByText('VAT owed: £0.00')).toBeVisible();
+      await expect(page.getByText('VAT paid: £12.94')).toBeVisible();
+      await page
+        .getByRole('row')
+        .filter({ hasText: transaction.description })
+        .first()
+        .click();
+      await page.getByRole('button', { name: 'Delete Transaction' }).click();
+      await page
+        .getByLabel(`Type ${transaction.description} to confirm`)
+        .fill(transaction.description);
+      await page
+        .getByRole('button', { name: 'Permanently delete Transaction' })
+        .click();
+      await expect(page.getByText('Balance: £1922.40')).toBeVisible();
+    });
+
+    test('should record Pending and Scheduled Transactions', async ({
+      accounts,
+      openAccountsRoute,
+      recordTransaction,
+    }) => {
+      await openAccountsRoute();
+      await recordTransaction({
+        scheduled: true,
+        status: 'pending',
+        transaction: accounts[3],
+      });
+      await recordTransaction({
+        status: 'pending',
+        transaction: accounts[4],
+      });
+      await recordTransaction({
+        date: 'tomorrow',
+        status: 'pending',
+        transaction: accounts[5],
+      });
+      await recordTransaction({
+        refund: true,
+        scheduled: true,
+        status: 'pending',
+        transaction: accounts[12],
+      });
+    });
+
+    test('should delete a Pending Transaction', async ({
+      accounts,
+      openAccountsRoute,
+      page,
+    }) => {
+      const transaction = accounts[5];
+
+      await openAccountsRoute();
+      await page
+        .getByRole('link', { name: 'View Pending Transactions' })
+        .click();
+      await page
+        .getByRole('row')
+        .filter({ hasText: transaction.description })
+        .first()
+        .click();
+      await page.getByRole('button', { name: 'Delete Transaction' }).click();
+      await page
+        .getByLabel(`Type ${transaction.description} to confirm`)
+        .fill(transaction.description);
+      await page
+        .getByRole('button', { name: 'Permanently delete Transaction' })
+        .click();
+      await expect(page.getByText(transaction.description)).toHaveCount(0);
+    });
+
+    test('should publish the Scheduled Transaction', async ({
+      openAccountsRoute,
+      page,
+    }) => {
+      test.setTimeout(630000);
+      await openAccountsRoute();
+
+      await expect(async () => {
+        await page.reload();
+        await expect(page.getByText('Balance: £3946.40')).toBeVisible();
+        await expect(page.getByText('VAT owed: £0.00')).toBeVisible();
+        await expect(page.getByText('VAT paid: £8.94')).toBeVisible();
+      }).toPass({ timeout: 600000 });
+    });
+  });
+
   test.describe('Notifications', () => {
     test('should display a notification', async ({
       dismissNotifications,

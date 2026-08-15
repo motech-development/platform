@@ -6,20 +6,24 @@ import {
 } from '@motech-development/breeze-ui';
 import { useTranslation } from 'react-i18next';
 import { DiscardChangesDialog } from '../companies/DiscardChangesDialog';
+import { SubmittingForm } from '../forms/SubmittingForm';
+import { QueryRefreshAlert } from '../QueryRefreshAlert';
 import { DashboardPageContent } from './DashboardPageContent';
+import { PendingTransactionsPageContent } from './PendingTransactionsPageContent';
 import { RecordTransactionFormFields } from './RecordTransactionFormFields';
 import { TransactionsPageContent } from './TransactionsPageContent';
-import {
-  type ConfirmedSaleReturnRoute,
-  useConfirmedSaleForm,
-} from './useConfirmedSaleForm';
+import { useTransactionForm } from './useTransactionForm';
 
-type RecordTransactionOrigin = 'dashboard' | 'transactions';
+type RecordTransactionOrigin = 'dashboard' | 'pending' | 'transactions';
 
 const recordTransactionOrigins = {
   dashboard: {
     Background: DashboardPageContent,
     returnTo: '/my-companies/dashboard/$companyId',
+  },
+  pending: {
+    Background: PendingTransactionsPageContent,
+    returnTo: '/my-companies/accounts/$companyId',
   },
   transactions: {
     Background: TransactionsPageContent,
@@ -29,7 +33,9 @@ const recordTransactionOrigins = {
   RecordTransactionOrigin,
   {
     Background: typeof DashboardPageContent | typeof TransactionsPageContent;
-    returnTo: ConfirmedSaleReturnRoute;
+    returnTo:
+      | '/my-companies/accounts/$companyId'
+      | '/my-companies/dashboard/$companyId';
   }
 >;
 
@@ -44,7 +50,10 @@ export function RecordTransactionPage({
   const { Background, returnTo } = recordTransactionOrigins[origin];
   const {
     blocker,
+    categories,
+    clearAttachmentTransfer,
     clients,
+    currency,
     data,
     discardChanges,
     discardOpen,
@@ -56,10 +65,16 @@ export function RecordTransactionPage({
     refetch,
     requestClose,
     setDiscardOpen,
+    setAttachmentActionPending,
+    suggestions,
     submissionPending,
     trackAttachmentTransfer,
     vatRate,
-  } = useConfirmedSaleForm(companyId, returnTo);
+  } = useTransactionForm({
+    companyId,
+    confirmedReturnTo: returnTo,
+    initialStatus: origin === 'pending' ? 'pending' : '',
+  });
 
   return (
     <>
@@ -80,10 +95,22 @@ export function RecordTransactionPage({
           size="wide"
         >
           <Drawer.Description>
-            {t('Record a confirmed sale.')}
+            {t('Record a purchase, sale, refund, or Pending Transaction.')}
           </Drawer.Description>
           <Drawer.Title>{t('Record transaction')}</Drawer.Title>
-          {error ? (
+          {error && data ? (
+            <QueryRefreshAlert
+              onRetry={() => {
+                refetch().catch(() => undefined);
+              }}
+              retryLabel={t('Try again', { ns: 'routing' })}
+            >
+              {t(
+                'Transaction settings could not be refreshed. Your edits are unchanged.',
+              )}
+            </QueryRefreshAlert>
+          ) : null}
+          {error && !data ? (
             <StatePanel
               action={
                 <Button
@@ -95,38 +122,33 @@ export function RecordTransactionPage({
                   {t('Try again', { ns: 'routing' })}
                 </Button>
               }
-              description={t('Clients and VAT settings could not be loaded.')}
+              description={t('Transaction settings could not be loaded.')}
               icon={<span aria-hidden="true">!</span>}
-              title={t('Sale form unavailable')}
+              title={t('Transaction form unavailable')}
               variant="danger"
             />
           ) : null}
-          {loading ? (
-            <p aria-live="polite">{t('Preparing sale form…')}</p>
+          {loading && !data ? (
+            <p aria-live="polite">{t('Preparing transaction form…')}</p>
           ) : null}
-          {data && clients.length === 0 ? (
-            <StatePanel
-              description={t('Add a client before recording a confirmed sale.')}
-              icon={<span aria-hidden="true">!</span>}
-              title={t('No clients available')}
-            />
-          ) : null}
-          {data && clients.length > 0 ? (
-            <form
+          {data ? (
+            <SubmittingForm
               className="grid min-h-full gap-6"
-              noValidate
-              onSubmit={(event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                form.handleSubmit().catch(() => undefined);
-              }}
+              onSubmit={() => form.handleSubmit()}
+              submissionPending={submissionPending}
             >
               <RecordTransactionFormFields
+                categories={categories}
+                clearAttachmentTransfer={clearAttachmentTransfer}
                 clients={clients}
                 companyId={companyId}
+                currency={currency}
+                editing={false}
                 form={form}
                 markDirty={markDirty}
                 online={online}
+                onAttachmentPendingChange={setAttachmentActionPending}
+                suggestions={suggestions}
                 trackAttachmentTransfer={trackAttachmentTransfer}
                 vatRate={vatRate}
               />
@@ -154,7 +176,7 @@ export function RecordTransactionPage({
                   />
                 )}
               </form.Subscribe>
-            </form>
+            </SubmittingForm>
           ) : null}
         </Drawer.Content>
       </Drawer.Root>

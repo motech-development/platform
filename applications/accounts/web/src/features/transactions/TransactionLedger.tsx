@@ -10,9 +10,11 @@ import {
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
+  CalendarIcon,
   WarningIcon,
 } from '@motech-development/breeze-ui/icons';
 import { useNavigate } from '@tanstack/react-router';
+import Decimal from 'decimal.js';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { formatCurrency } from '../../formatting/currency';
@@ -25,6 +27,8 @@ export interface LedgerTransaction {
   description: string;
   id: string;
   name: string;
+  scheduled?: boolean;
+  status?: 'confirmed' | 'pending';
 }
 
 const compactTransactionTableClassName =
@@ -69,10 +73,36 @@ function MissingAttachmentWarning() {
   );
 }
 
+function ScheduledTransactionIndicator() {
+  const { t } = useTranslation('transactions');
+  const [open, setOpen] = useState(false);
+
+  return (
+    <span className="relative z-[2]">
+      <Tooltip.Root onOpenChange={setOpen} open={open}>
+        <Tooltip.IconTrigger
+          aria-label={t('Scheduled transaction')}
+          onBlur={() => setOpen(false)}
+          onFocus={() => setOpen(true)}
+          onMouseEnter={() => setOpen(true)}
+          onMouseLeave={() => setOpen(false)}
+          variant="primary"
+        >
+          <CalendarIcon size="1rem" />
+        </Tooltip.IconTrigger>
+        <Tooltip.Content placement="right" variant="primary">
+          {t('Scheduled transaction')}
+        </Tooltip.Content>
+      </Tooltip.Root>
+    </span>
+  );
+}
+
 function TransactionTableHeader({
   compact = false,
   loading = false,
-}: Readonly<{ compact?: boolean; loading?: boolean }>) {
+  pending = false,
+}: Readonly<{ compact?: boolean; loading?: boolean; pending?: boolean }>) {
   const { t } = useTranslation('transactions');
 
   return (
@@ -99,10 +129,12 @@ function TransactionTableHeader({
       {compact ? null : (
         <Table.Column
           compactLabel={false}
-          id="category"
-          textValue={t('Category')}
+          id={pending ? 'date' : 'category'}
+          textValue={pending ? t('Date') : t('Category')}
         >
-          {loading ? <Skeleton className="h-4 w-20" /> : t('Category')}
+          {loading ? <Skeleton className="h-4 w-20" /> : null}
+          {!loading && pending ? t('Date') : null}
+          {!loading && !pending ? t('Category') : null}
         </Table.Column>
       )}
       <Table.Column
@@ -134,18 +166,31 @@ function TransactionRow({
   compact,
   companyId,
   currencyCode,
+  locale,
+  pendingCollection,
   transaction,
 }: Readonly<{
   compact: boolean;
   companyId: string;
   currencyCode: string;
+  locale: string;
+  pendingCollection: boolean;
   transaction: LedgerTransaction;
 }>) {
+  const { t } = useTranslation('transactions');
   const navigate = useNavigate();
   const incoming = transaction.amount >= 0;
+  const pending = transaction.status === 'pending';
+  const transactionLabel = pending
+    ? t('Pending transaction: {{name}} {{description}}', {
+        description: transaction.description,
+        name: transaction.name,
+      })
+    : `${transaction.name} ${transaction.description}`;
 
   return (
     <Table.Row
+      className={pending ? 'bg-[var(--breeze-surface-subtle)]' : undefined}
       id={transaction.id}
       onAction={() => {
         navigate({
@@ -153,16 +198,16 @@ function TransactionRow({
             companyId,
             transactionId: transaction.id,
           },
-          to: '/my-companies/accounts/$companyId/view-transaction/$transactionId',
+          to: pendingCollection
+            ? '/my-companies/accounts/$companyId/pending-transactions/view-transaction/$transactionId'
+            : '/my-companies/accounts/$companyId/view-transaction/$transactionId',
         }).catch(() => undefined);
       }}
-      textValue={`${transaction.name} ${transaction.description} ${transaction.category}`}
+      textValue={`${transactionLabel} ${transaction.category}`}
     >
-      <Table.Cell
-        column="direction"
-        textValue={`${transaction.name} ${transaction.description}`}
-      >
+      <Table.Cell column="direction" textValue={transactionLabel}>
         <VisuallyHidden>
+          {pending ? <>{t('Pending transaction:')} </> : null}
           {transaction.name} {transaction.description}
           {compact ? null : (
             <span className="min-[681px]:hidden">, {transaction.category}</span>
@@ -188,15 +233,26 @@ function TransactionRow({
               {transaction.name}
             </Typography>
             {transaction.attachment ? null : <MissingAttachmentWarning />}
+            {!pendingCollection && transaction.scheduled ? (
+              <ScheduledTransactionIndicator />
+            ) : null}
           </span>
           <Typography as="span" colour="muted" truncate>
             {transaction.description}
           </Typography>
         </span>
       </Table.Cell>
-      {compact ? null : (
+      {!compact && pendingCollection ? (
+        <Table.Cell column="date">
+          <span className="flex items-center gap-2">
+            <span>{dayLabel(transaction.date, locale)}</span>
+            {transaction.scheduled ? <ScheduledTransactionIndicator /> : null}
+          </span>
+        </Table.Cell>
+      ) : null}
+      {!compact && !pendingCollection ? (
         <Table.Cell column="category">{transaction.category}</Table.Cell>
-      )}
+      ) : null}
       <Table.Cell align="end" column="amount">
         <Typography
           as="span"
@@ -215,7 +271,8 @@ function TransactionRow({
 function LoadingTransactionRow({
   compact,
   index,
-}: Readonly<{ compact: boolean; index: number }>) {
+  pending = false,
+}: Readonly<{ compact: boolean; index: number; pending?: boolean }>) {
   const { t } = useTranslation('transactions');
 
   return (
@@ -239,7 +296,7 @@ function LoadingTransactionRow({
         </div>
       </Table.Cell>
       {compact ? null : (
-        <Table.Cell column="category">
+        <Table.Cell column={pending ? 'date' : 'category'}>
           <Skeleton className="h-4 w-28 max-w-full" />
         </Table.Cell>
       )}
@@ -284,8 +341,14 @@ function LoadingSectionRow({ index }: Readonly<{ index: number }>) {
 export function TransactionLedgerSkeleton({
   compact = false,
   grouped = false,
+  pending = false,
   rows = 4,
-}: Readonly<{ compact?: boolean; grouped?: boolean; rows?: number }>) {
+}: Readonly<{
+  compact?: boolean;
+  grouped?: boolean;
+  pending?: boolean;
+  rows?: number;
+}>) {
   const { t } = useTranslation('transactions');
   const rowIndexes = Array.from({ length: rows }, (_, index) => index);
 
@@ -303,7 +366,7 @@ export function TransactionLedgerSkeleton({
         layout={compact ? 'grid' : 'responsiveGrid'}
         tabIndex={-1}
       >
-        <TransactionTableHeader compact={compact} loading />
+        <TransactionTableHeader compact={compact} loading pending={pending} />
         {grouped ? (
           <>
             <Table.Body id="loading-transaction-group-1">
@@ -313,6 +376,7 @@ export function TransactionLedgerSkeleton({
                   compact={compact}
                   index={index}
                   key={index}
+                  pending={pending}
                 />
               ))}
             </Table.Body>
@@ -323,6 +387,7 @@ export function TransactionLedgerSkeleton({
                   compact={compact}
                   index={index}
                   key={index}
+                  pending={pending}
                 />
               ))}
             </Table.Body>
@@ -334,6 +399,7 @@ export function TransactionLedgerSkeleton({
                 compact={compact}
                 index={index}
                 key={index}
+                pending={pending}
               />
             ))}
           </Table.Body>
@@ -347,23 +413,36 @@ export function TransactionLedger({
   compact = false,
   companyId,
   currencyCode,
+  pending = false,
   transactions,
 }: Readonly<{
   compact?: boolean;
   companyId: string;
   currencyCode: string;
+  pending?: boolean;
   transactions: readonly LedgerTransaction[];
 }>) {
   const { i18n, t } = useTranslation('transactions');
+  let tableLabel = t('Transactions grouped by day');
+
+  if (compact) {
+    tableLabel = t('Recent transactions');
+  } else if (pending) {
+    tableLabel = t('Pending Transactions');
+  }
 
   if (transactions.length === 0) {
     return (
       <StatePanel
         description={t(
-          'Record a confirmed sale to start this transaction history.',
+          pending
+            ? 'Pending Transactions appear here until they are confirmed.'
+            : 'Record a confirmed sale to start this transaction history.',
         )}
         icon={<ArrowRightIcon />}
-        title={t('No transactions yet')}
+        title={
+          pending ? t('No Pending Transactions') : t('No transactions yet')
+        }
       />
     );
   }
@@ -384,9 +463,7 @@ export function TransactionLedger({
   return (
     <div>
       <Table.Root
-        aria-label={
-          compact ? t('Recent transactions') : t('Transactions grouped by day')
-        }
+        aria-label={tableLabel}
         boundary={compact ? 'none' : 'strong'}
         className={
           compact
@@ -396,15 +473,17 @@ export function TransactionLedger({
         desktopColumns={compact ? undefined : 'mediaDetailsAction'}
         layout={compact ? 'grid' : 'responsiveGrid'}
       >
-        <TransactionTableHeader compact={compact} />
-        {compact ? (
+        <TransactionTableHeader compact={compact} pending={pending} />
+        {compact || pending ? (
           <Table.Body>
             {transactions.map((transaction) => (
               <TransactionRow
-                compact
+                compact={compact}
                 companyId={companyId}
                 currencyCode={currencyCode}
                 key={transaction.id}
+                locale={i18n.language}
+                pendingCollection={pending}
                 transaction={transaction}
               />
             ))}
@@ -413,10 +492,14 @@ export function TransactionLedger({
           [...groups].map(([day, items]) => {
             const date = dayLabel(`${day}T00:00:00.000Z`, i18n.language);
             const total = formatCurrency(
-              items.reduce(
-                (dailyTotal, transaction) => dailyTotal + transaction.amount,
-                0,
-              ),
+              items
+                .filter(({ status }) => status !== 'pending')
+                .reduce(
+                  (dailyTotal, transaction) =>
+                    dailyTotal.plus(transaction.amount),
+                  new Decimal(0),
+                )
+                .toNumber(),
               currencyCode,
             );
 
@@ -457,6 +540,8 @@ export function TransactionLedger({
                     companyId={companyId}
                     currencyCode={currencyCode}
                     key={transaction.id}
+                    locale={i18n.language}
+                    pendingCollection={false}
                     transaction={transaction}
                   />
                 ))}

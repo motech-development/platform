@@ -79,6 +79,21 @@ describe('company route priming', () => {
     },
   );
 
+  it('leaves a partial Transaction collection failure to the page', async () => {
+    const query = vi
+      .fn()
+      .mockResolvedValueOnce({
+        data: { getCompanies: { items: [{ id: companyId }] } },
+      })
+      .mockResolvedValueOnce({ data: {} })
+      .mockRejectedValueOnce(new Error('Pending unavailable'));
+
+    await expect(
+      primeTransactions(context(query), companyId),
+    ).resolves.toBeUndefined();
+    expect(query).toHaveBeenCalledTimes(3);
+  });
+
   it.each([
     [primeClients, GET_CLIENTS, { id: companyId }],
     [primeCompanyDetails, GET_COMPANY_DETAILS, { id: companyId }],
@@ -186,7 +201,7 @@ describe('primeTransaction', () => {
         data: { getTransaction: { companyId, status: 'pending' } },
       });
     await expect(
-      primeTransaction(context(query), companyId, transactionId),
+      primeTransaction(context(query), companyId, transactionId, 'confirmed'),
     ).rejects.toThrow('Not found');
     expect(notFound).toHaveBeenCalledWith({ throw: true });
   });

@@ -1,3 +1,6 @@
+import { writeFile } from 'node:fs/promises';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import AxeBuilder from '@axe-core/playwright';
 import {
   type BrowserContextOptions,
@@ -19,12 +22,15 @@ export function isLocalBaseUrl(baseURL: string | undefined): boolean {
   return hostname === 'localhost' || hostname === '127.0.0.1';
 }
 
+type TransactionFixture = (typeof accountFixtures)[number];
+
 export interface AccountsFixtures {
   accounts: typeof accountFixtures;
   addCompanyCategory: (name: string, vatRate: string) => Promise<void>;
   clients: typeof clientFixtures;
   completeAuthentication: (content: Locator) => Promise<void>;
   dismissNotifications: (notifications: Locator) => Promise<void>;
+  eicar: () => Promise<void>;
   expectNoA11yViolations: (readyState: Locator) => Promise<void>;
   focusWithKeyboard: (
     target: Locator,
@@ -40,6 +46,14 @@ export interface AccountsFixtures {
   openCompanyClients: (companyName: string) => Promise<void>;
   openCompanyDetails: (companyName: string) => Promise<void>;
   openCompanySettings: (companyName: string) => Promise<void>;
+  recordTransaction: (options: {
+    attachment?: string;
+    date?: 'tomorrow';
+    refund?: boolean;
+    scheduled?: boolean;
+    status?: 'confirmed' | 'pending';
+    transaction: TransactionFixture;
+  }) => Promise<void>;
   selectMonth: (month: string) => Promise<void>;
   settings: typeof settingFixtures;
 }
@@ -218,6 +232,17 @@ export const test = base.extend<AccountsFixtures, AccountsWorkerFixtures>({
       ).toBeVisible();
     });
   },
+  eicar: async ({}, use) => {
+    await use(async () => {
+      await writeFile(
+        join(
+          dirname(fileURLToPath(import.meta.url)),
+          'fixtures/upload/eicar.pdf',
+        ),
+        'X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*',
+      );
+    });
+  },
   expectNoA11yViolations: async ({ page }, use) => {
     await use(async (readyState) => {
       await expect(readyState).toBeVisible();
@@ -356,7 +381,7 @@ export const test = base.extend<AccountsFixtures, AccountsWorkerFixtures>({
       const path = `/my-companies/accounts/${companyId}`;
 
       await gotoAuthenticatedPage({
-        content: page.getByRole('heading', { name: 'Accounts' }).last(),
+        content: page.getByRole('heading', { name: 'Transactions' }).last(),
         path,
       });
 
@@ -398,6 +423,96 @@ export const test = base.extend<AccountsFixtures, AccountsWorkerFixtures>({
         page.getByRole('heading', { exact: true, name: 'Settings' }),
       ).toBeVisible();
     });
+  },
+  recordTransaction: async ({ format, page }, use) => {
+    await use(
+      async ({
+        attachment,
+        date,
+        refund = false,
+        scheduled = false,
+        status = 'confirmed',
+        transaction,
+      }) => {
+        await page.getByRole('link', { name: 'Record transaction' }).click();
+        const sale = transaction.type === 'Sales';
+
+        await page
+          .getByRole('radio', { name: sale ? 'Sale' : 'Purchase' })
+          .check();
+        if (sale) {
+          await page.getByRole('button', { name: /Supplier/ }).click();
+          await page
+            .getByRole('option', { name: transaction.supplier })
+            .click();
+        } else {
+          await page
+            .getByRole('combobox', { name: 'Supplier' })
+            .fill(transaction.supplier);
+        }
+        await page
+          .getByRole('combobox', { name: 'Description' })
+          .fill(transaction.description);
+        if (date === 'tomorrow') {
+          const tomorrow = new Date();
+
+          tomorrow.setDate(tomorrow.getDate() + 1);
+          await page.getByRole('button', { name: /Calendar Date/ }).click();
+          await page
+            .getByRole('button', {
+              name: new Intl.DateTimeFormat('en-GB', {
+                dateStyle: 'full',
+              }).format(tomorrow),
+            })
+            .click();
+        }
+        await page
+          .getByRole('radio', {
+            name: status === 'pending' ? 'Pending' : 'Confirmed',
+          })
+          .check();
+        await page
+          .getByRole('radiogroup', { name: 'Refund' })
+          .getByLabel(refund ? 'Yes' : 'No')
+          .check();
+
+        if (!sale && 'category' in transaction) {
+          await page.getByRole('button', { name: /Category/ }).click();
+          await page
+            .getByRole('option')
+            .nth(Number(transaction.category))
+            .click();
+        }
+
+        if (status === 'pending') {
+          await page
+            .getByRole('radiogroup', { name: 'Schedule transaction' })
+            .getByLabel(scheduled ? 'Yes' : 'No')
+            .check();
+        }
+
+        await page.getByLabel('Amount').fill(transaction.amount);
+        await expect(page.getByLabel('VAT', { exact: true })).toHaveValue(
+          format('currency', transaction.vat),
+        );
+
+        if (attachment) {
+          await page
+            .getByLabel('Select file to upload')
+            .setInputFiles(attachment);
+          await expect(page.getByRole('status')).toContainText('File attached');
+        }
+
+        await page.getByRole('button', { name: 'Save' }).click();
+        await expect(
+          page.getByRole('heading', {
+            level: 1,
+            name:
+              status === 'pending' ? 'Pending Transactions' : 'Transactions',
+          }),
+        ).toBeVisible();
+      },
+    );
   },
   selectMonth: async ({ format, page }, use) => {
     await use(async (month) => {

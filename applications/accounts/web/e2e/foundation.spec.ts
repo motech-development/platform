@@ -95,7 +95,7 @@ test.describe('hosted Accounts foundation', () => {
     const directPath = await openAccountsRoute();
 
     await gotoAuthenticatedPage({
-      content: page.getByRole('heading', { name: 'Accounts' }).last(),
+      content: page.getByRole('heading', { name: 'Transactions' }).last(),
       path: directPath,
     });
 
@@ -250,9 +250,11 @@ test.describe('hosted Accounts foundation', () => {
   }) => {
     await openAccountsRoute();
     await page.getByRole('link', { name: 'Record transaction' }).click();
+    await page.getByRole('radio', { name: 'Sale' }).check();
     await page.getByRole('button', { name: /Supplier/ }).click();
     await page.getByRole('option', { name: 'Motech Development' }).click();
     await page.getByLabel('Description').fill('Offline draft');
+    await page.getByRole('radio', { name: 'Confirmed' }).check();
     await page.getByLabel('Amount').fill('100');
     const save = page.locator('button[type="submit"]');
 
@@ -275,7 +277,9 @@ test.describe('hosted Accounts foundation', () => {
     await expect(save).toHaveAccessibleName('Save');
     await expect(save).toBeEnabled();
     await save.click();
-    await expect(page.getByText('Sale could not be recorded')).toBeVisible();
+    await expect(
+      page.getByText('Transaction could not be saved'),
+    ).toBeVisible();
     expect(mutationAttempts).toBeGreaterThan(0);
     const mutationAttemptsBeforeReconnect = mutationAttempts;
     await page.context().setOffline(true);

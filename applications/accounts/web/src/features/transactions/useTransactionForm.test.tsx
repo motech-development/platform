@@ -1,0 +1,248 @@
+import { BreezeProvider } from '@motech-development/breeze-ui';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { useTransactionForm } from './useTransactionForm';
+
+const mocks = vi.hoisted(() => ({
+  add: vi.fn(),
+  navigate: vi.fn().mockResolvedValue(undefined),
+  toast: { show: vi.fn() },
+  update: vi.fn(),
+}));
+
+vi.mock('@apollo/client/react', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@apollo/client/react')>()),
+  useMutation: (document: {
+    definitions?: { name?: { value?: string } }[];
+  }) => {
+    const operation = document.definitions?.find(({ name }) => name)?.name
+      ?.value;
+
+    return operation === 'UpdateTransaction'
+      ? [mocks.update, { loading: false }]
+      : [mocks.add, { loading: false }];
+  },
+  useQuery: () => ({
+    data: {
+      getBalance: { currency: 'GBP', id: 'company-id' },
+      getClients: { id: 'company-id', items: [] },
+      getSettings: {
+        categories: [{ name: 'Professional fees', vatRate: 20 }],
+        id: 'company-id',
+        vat: { pay: 20 },
+      },
+      getTypeahead: {
+        id: 'company-id',
+        purchases: [],
+        sales: [],
+        suppliers: [],
+      },
+    },
+    error: undefined,
+    loading: false,
+    refetch: vi.fn(),
+  }),
+}));
+
+vi.mock('@motech-development/breeze-ui', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@motech-development/breeze-ui')>()),
+  useToast: () => mocks.toast,
+}));
+
+vi.mock('@tanstack/react-router', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@tanstack/react-router')>()),
+  useBlocker: () => ({ proceed: vi.fn(), reset: vi.fn(), status: 'idle' }),
+  useNavigate: () => mocks.navigate,
+}));
+
+vi.mock('../../pwa/connectivity', () => ({ useOnlineStatus: () => true }));
+
+function Harness() {
+  const { form } = useTransactionForm({
+    companyId: 'company-id',
+    confirmedReturnTo: '/my-companies/accounts/$companyId',
+  });
+
+  return (
+    <>
+      <button
+        onClick={() => {
+          form.setFieldValue('amount', '120');
+          form.setFieldValue('category', 'Professional fees');
+          form.setFieldValue('description', 'Quarterly bookkeeping');
+          form.setFieldValue('name', 'Oak & Co');
+          form.setFieldValue('refund', true);
+          form.setFieldValue('scheduled', true);
+          form.setFieldValue('status', 'pending');
+          form.setFieldValue('vat', '20');
+          form.handleSubmit().catch(() => undefined);
+        }}
+        type="button"
+      >
+        Submit valid refund
+      </button>
+      <form.Subscribe selector={(state) => state.values.description}>
+        {(description) => <output>{description}</output>}
+      </form.Subscribe>
+    </>
+  );
+}
+
+function EditHarness() {
+  const { form } = useTransactionForm({
+    companyId: 'company-id',
+    confirmedReturnTo: '/my-companies/accounts/$companyId',
+    initialValues: {
+      amount: '75',
+      attachment: '',
+      category: '',
+      companyId: 'company-id',
+      date: '2026-08-16',
+      description: 'Retainer',
+      id: 'transaction-id',
+      name: 'Known client',
+      refund: false,
+      scheduled: true,
+      status: 'pending',
+      transactionType: 'sale',
+      vat: '15',
+    },
+  });
+
+  return (
+    <button
+      onClick={() => {
+        form.setFieldValue('status', 'confirmed');
+        form.handleSubmit().catch(() => undefined);
+      }}
+      type="button"
+    >
+      Confirm transaction
+    </button>
+  );
+}
+
+function mutationInput(mock: typeof mocks.add) {
+  const calls = mock.mock.calls as unknown as Array<
+    [{ variables: { input: Record<string, unknown> } }]
+  >;
+
+  return calls[0]?.[0].variables.input;
+}
+
+describe('useTransactionForm', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mocks.navigate.mockResolvedValue(undefined);
+    mocks.add.mockResolvedValue({
+      data: {
+        addTransaction: {
+          amount: 120,
+          attachment: '',
+          category: 'Professional fees',
+          companyId: 'company-id',
+          date: '2026-08-15T00:00:00.000Z',
+          description: 'Quarterly bookkeeping',
+          id: 'transaction-id',
+          name: 'Oak & Co',
+          refund: true,
+          scheduled: true,
+          status: 'pending',
+          vat: -20,
+        },
+      },
+    });
+    mocks.update.mockResolvedValue({
+      data: {
+        updateTransaction: {
+          amount: 75,
+          attachment: '',
+          category: 'Sales',
+          companyId: 'company-id',
+          date: '2026-08-16T00:00:00.000Z',
+          description: 'Retainer',
+          id: 'transaction-id',
+          name: 'Known client',
+          refund: false,
+          scheduled: false,
+          status: 'confirmed',
+          vat: 15,
+        },
+      },
+    });
+  });
+
+  it('submits the accounting mapping once and returns to the resulting collection', async () => {
+    render(
+      <BreezeProvider locale="en-GB">
+        <Harness />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Submit valid refund' }),
+    );
+
+    await waitFor(() => expect(mocks.add).toHaveBeenCalledOnce());
+    expect(mutationInput(mocks.add)).toMatchObject({
+      amount: 120,
+      category: 'Professional fees',
+      refund: true,
+      scheduled: true,
+      status: 'pending',
+      vat: -20,
+    });
+    expect(mocks.navigate).toHaveBeenCalledWith({
+      params: { companyId: 'company-id' },
+      to: '/my-companies/accounts/$companyId/pending-transactions',
+    });
+  });
+
+  it('preserves entered values and stays put after a mutation failure', async () => {
+    mocks.add.mockRejectedValue(new Error('offline'));
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <Harness />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Submit valid refund' }),
+    );
+
+    await waitFor(() =>
+      expect(mocks.toast.show).toHaveBeenCalledWith(
+        expect.objectContaining({ variant: 'danger' }),
+      ),
+    );
+    expect(screen.getByText('Quarterly bookkeeping')).toBeVisible();
+    expect(mocks.navigate).not.toHaveBeenCalled();
+  });
+
+  it('updates an existing transaction and returns it to the confirmed collection', async () => {
+    render(
+      <BreezeProvider locale="en-GB">
+        <EditHarness />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Confirm transaction' }),
+    );
+
+    await waitFor(() => expect(mocks.update).toHaveBeenCalledOnce());
+    expect(mocks.add).not.toHaveBeenCalled();
+    expect(mutationInput(mocks.update)).toMatchObject({
+      category: 'Sales',
+      id: 'transaction-id',
+      scheduled: false,
+      status: 'confirmed',
+    });
+    expect(mocks.navigate).toHaveBeenCalledWith({
+      params: { companyId: 'company-id' },
+      to: '/my-companies/accounts/$companyId',
+    });
+  });
+});

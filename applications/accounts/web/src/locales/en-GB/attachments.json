@@ -28,5 +28,15 @@
   "No file selected": "No file selected",
   "Choose one PDF file.": "Choose one PDF file.",
   "File not accepted": "File not accepted",
-  "Opening PDF…": "Opening PDF…"
+  "Opening PDF…": "Opening PDF…",
+  "File attached": "File attached",
+  "Connection required to attach a file.": "Connection required to attach a file.",
+  "Choose one PDF, JPG, or PNG file.": "Choose one PDF, JPG, or PNG file.",
+  "The file could not be opened. Try again.": "The file could not be opened. Try again.",
+  "View file": "View file",
+  "Download file": "Download file",
+  "Delete file": "Delete file",
+  "Nothing was deleted. Try again.": "Nothing was deleted. Try again.",
+  "Attachment could not be deleted": "Attachment could not be deleted",
+  "Transaction attachment": "Transaction attachment"
 }

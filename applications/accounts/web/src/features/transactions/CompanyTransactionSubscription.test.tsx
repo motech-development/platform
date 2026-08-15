@@ -46,4 +46,37 @@ describe('CompanyTransactionSubscription', () => {
     mocks.options?.onData?.(connected);
     expect(refetchQueries).toHaveBeenCalledWith({ include: 'active' });
   });
+
+  it('refreshes active collections after an ordinary Transaction event', () => {
+    const modify = vi.fn();
+    const refetchQueries = vi.fn().mockResolvedValue(undefined);
+
+    render(
+      <CompanyTransactionSubscription companyId="company-id" owner={ownerId}>
+        <p>Transactions</p>
+      </CompanyTransactionSubscription>,
+    );
+
+    mocks.options?.onData?.({
+      client: {
+        cache: {
+          identify: vi.fn().mockReturnValue('Balance:company-id'),
+          modify,
+        },
+        refetchQueries,
+      },
+      data: {
+        data: {
+          onTransaction: {
+            balance: 120,
+            id: 'company-id',
+            vat: { owed: 20, paid: 0 },
+          },
+        },
+      },
+    });
+
+    expect(modify).toHaveBeenCalledOnce();
+    expect(refetchQueries).toHaveBeenCalledWith({ include: 'active' });
+  });
 });

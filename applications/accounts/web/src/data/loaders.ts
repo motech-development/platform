@@ -9,6 +9,7 @@ import {
   GET_COMPANY_DETAILS,
   GET_COMPANY_SETTINGS,
   GET_CONFIRMED_TRANSACTIONS,
+  GET_PENDING_TRANSACTIONS,
   GET_TRANSACTION,
 } from './operations';
 
@@ -177,14 +178,36 @@ export async function primeTransactions(
   }
 
   await verifyOwnedCompany(context, companyId);
-  await context.apolloClient.query({
-    query: GET_CONFIRMED_TRANSACTIONS,
-    variables: {
-      count: 100,
-      id: companyId,
-      status: 'confirmed',
-    },
-  });
+  try {
+    await Promise.all([
+      context.apolloClient.query({
+        query: GET_CONFIRMED_TRANSACTIONS,
+        variables: {
+          count: 100,
+          id: companyId,
+          status: 'confirmed',
+        },
+      }),
+      context.apolloClient.query({
+        query: GET_PENDING_TRANSACTIONS,
+        variables: { count: 100, id: companyId, status: 'pending' },
+      }),
+    ]);
+  } catch {
+    // The collection owns partial-data and retry presentation.
+  }
+}
+
+export async function primePendingTransactions(
+  context: RouterContext,
+  companyId: string,
+) {
+  await primeOwnedCompanyResource(context, companyId, () =>
+    context.apolloClient.query({
+      query: GET_PENDING_TRANSACTIONS,
+      variables: { count: 100, id: companyId, status: 'pending' },
+    }),
+  );
 }
 
 export async function verifyRecordTransactionRoute(
@@ -202,6 +225,7 @@ export async function primeTransaction(
   context: RouterContext,
   companyId: string,
   transactionId: string,
+  expectedStatus?: 'confirmed' | 'pending',
 ) {
   if (!context.authenticatedOwner) {
     return;
@@ -220,7 +244,8 @@ export async function primeTransaction(
 
   if (
     result.data.getTransaction.companyId !== companyId ||
-    result.data.getTransaction.status !== 'confirmed'
+    (expectedStatus !== undefined &&
+      result.data.getTransaction.status !== expectedStatus)
   ) {
     notFound({ throw: true });
   }

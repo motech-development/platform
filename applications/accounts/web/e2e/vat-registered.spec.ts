@@ -429,44 +429,151 @@ test.describe('VAT registered', () => {
   test.describe('Accounts', () => {
     test('should add a confirmed sale', async ({
       accounts,
-      companies,
-      format,
+      openAccountsRoute,
+      recordTransaction,
+    }) => {
+      await openAccountsRoute();
+      await recordTransaction({
+        attachment: 'e2e/fixtures/upload/invoice.pdf',
+        transaction: accounts[0],
+      });
+    });
+
+    test('should add a confirmed sale refund with an infected attachment', async ({
+      accounts,
+      eicar,
+      openAccountsRoute,
+      recordTransaction,
+    }) => {
+      await openAccountsRoute();
+      await eicar();
+      await recordTransaction({
+        attachment: 'e2e/fixtures/upload/eicar.pdf',
+        refund: true,
+        transaction: accounts[8],
+      });
+    });
+
+    test('should add confirmed purchase variants', async ({
+      accounts,
+      openAccountsRoute,
+      recordTransaction,
+    }) => {
+      await openAccountsRoute();
+      await recordTransaction({
+        attachment: 'e2e/fixtures/upload/invoice.pdf',
+        transaction: accounts[1],
+      });
+      await recordTransaction({
+        attachment: 'e2e/fixtures/upload/invoice.pdf',
+        transaction: accounts[2],
+      });
+    });
+
+    test('should show the confirmed accounting totals', async ({
+      openAccountsRoute,
       page,
     }) => {
-      const companyName = companies[0].company.name;
-      const transaction = accounts[0];
+      await openAccountsRoute();
+      await expect(page.getByText('Balance: £2290.40')).toBeVisible();
+      await expect(page.getByText('VAT owed: £332.50')).toBeVisible();
+      await expect(page.getByText('VAT paid: £26.27')).toBeVisible();
+    });
 
-      await page.getByTestId(companyName).click();
-      await expect(
-        page.getByRole('heading', { name: companyName }),
-      ).toBeVisible();
+    test('should update a confirmed transaction and replace its attachment', async ({
+      accounts,
+      format,
+      openAccountsRoute,
+      page,
+    }) => {
+      const transaction = accounts[6];
 
-      await page.getByRole('link', { name: 'Manage accounts' }).click();
-      await expect(
-        page.getByRole('heading', { name: 'Accounts' }).last(),
-      ).toBeVisible();
-
-      await page.getByRole('link', { name: 'Record transaction' }).click();
-      await page.getByRole('radio', { name: 'Sale' }).check();
-
+      await openAccountsRoute();
       await page
-        .getByLabel('Select file to upload')
-        .setInputFiles('e2e/fixtures/upload/invoice.pdf');
-      await expect(page.getByRole('status')).toContainText(
-        'PDF attached: invoice.pdf',
-      );
-
-      await page.getByRole('button', { name: /Supplier/ }).click();
-      await page.getByRole('option', { name: transaction.supplier }).click();
-      await page.getByLabel('Description').fill(transaction.description);
-      await page.getByRole('radio', { name: 'Confirmed' }).check();
+        .getByRole('row')
+        .filter({ hasText: transaction.description })
+        .first()
+        .click();
+      await expect(
+        page.getByRole('heading', { name: 'Edit transaction' }),
+      ).toBeVisible();
+      await expect(page.getByLabel('Sale')).toBeChecked();
+      await expect(
+        page.getByRole('radiogroup', { name: 'Refund' }).getByLabel('No'),
+      ).toBeChecked();
       await page.getByLabel('Amount').fill(transaction.amount);
       await expect(page.getByLabel('VAT', { exact: true })).toHaveValue(
         format('currency', transaction.vat),
       );
-
+      await page.getByRole('button', { name: 'Delete file' }).click();
+      await page
+        .getByLabel('Select file to upload')
+        .setInputFiles('e2e/fixtures/upload/invoice.pdf');
       await page.getByRole('button', { name: 'Save' }).click();
-      await expect(page.getByText('Confirmed sale recorded')).toBeVisible();
+      await expect(page.getByText('Balance: £2790.40')).toBeVisible();
+      await expect(page.getByText('VAT owed: £410.00')).toBeVisible();
+    });
+
+    test('should delete a confirmed transaction with exact confirmation', async ({
+      accounts,
+      openAccountsRoute,
+      page,
+    }) => {
+      const transaction = accounts[0];
+
+      await openAccountsRoute();
+      await page
+        .getByRole('row')
+        .filter({ hasText: transaction.description })
+        .first()
+        .click();
+      await page.getByRole('button', { name: 'Delete Transaction' }).click();
+      await page
+        .getByLabel(`Type ${transaction.description} to confirm`)
+        .fill(transaction.description);
+      await page
+        .getByRole('button', { name: 'Permanently delete Transaction' })
+        .click();
+      await expect(page.getByText('Balance: £290.40')).toBeVisible();
+      await expect(page.getByText('VAT owed: £22.50')).toBeVisible();
+    });
+
+    test('should record VAT payment and refund semantics', async ({
+      accounts,
+      openAccountsRoute,
+      recordTransaction,
+    }) => {
+      await openAccountsRoute();
+      await recordTransaction({ transaction: accounts[7] });
+      await recordTransaction({ refund: true, transaction: accounts[10] });
+    });
+
+    test('should show totals after VAT is paid', async ({
+      openAccountsRoute,
+      page,
+    }) => {
+      await openAccountsRoute();
+      await expect(page.getByText('Balance: £267.90')).toBeVisible();
+      await expect(page.getByText('VAT owed: £0.00')).toBeVisible();
+    });
+
+    test('should preview and download a PDF attachment', async ({
+      accounts,
+      openAccountsRoute,
+      page,
+    }) => {
+      await openAccountsRoute();
+      await page
+        .getByRole('row')
+        .filter({ hasText: accounts[1].description })
+        .first()
+        .click();
+      await page.getByRole('button', { name: 'View file' }).click();
+      await expect(page.locator('.react-pdf__Document')).toBeVisible();
+      const download = page.waitForEvent('download');
+
+      await page.getByRole('button', { name: 'Download file' }).last().click();
+      await download;
     });
   });
 
@@ -524,10 +631,10 @@ test.describe('VAT registered', () => {
         .click();
 
       await expect(
-        page.getByRole('heading', { name: transaction.description }),
+        page.getByRole('heading', { name: 'Edit transaction' }),
       ).toBeVisible();
       await expect(
-        page.getByText('This confirmed sale has no source PDF.'),
+        page.getByText('Choose one PDF, JPG, or PNG file.'),
       ).toBeVisible();
     });
   });
