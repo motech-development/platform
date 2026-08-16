@@ -33,6 +33,33 @@ function renderDialog(onDelete: () => Promise<boolean>) {
 }
 
 describe('EntityDeleteDialog', () => {
+  it('does not open while deletion is unavailable', async () => {
+    render(
+      <BreezeProvider locale="en-GB">
+        <EntityDeleteDialog
+          cancelLabel="Cancel"
+          closeLabel="Close delete confirmation"
+          confirmationError="The name must match."
+          confirmationLabel="Type Example to confirm"
+          confirmLabel="Permanently delete"
+          deleting={false}
+          description="This entity will be removed."
+          disabled
+          entityName="Example"
+          onDelete={vi.fn().mockResolvedValue(true)}
+          title="Delete Example?"
+          triggerLabel="Delete entity"
+        />
+      </BreezeProvider>,
+    );
+
+    const trigger = screen.getByRole('button', { name: 'Delete entity' });
+
+    expect(trigger).toBeDisabled();
+    await userEvent.click(trigger);
+    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
+  });
+
   it('closes and resets after a successful deletion', async () => {
     const user = userEvent.setup();
     const onDelete = vi.fn().mockResolvedValue(true);
@@ -73,6 +100,24 @@ describe('EntityDeleteDialog', () => {
     expect(screen.getByLabelText('Type Example to confirm')).toHaveValue(
       'Example',
     );
+  });
+
+  it('stays open when deletion rejects unexpectedly', async () => {
+    const user = userEvent.setup();
+    const onDelete = vi.fn().mockRejectedValue(new Error('Unavailable'));
+
+    renderDialog(onDelete);
+    await user.click(screen.getByRole('button', { name: 'Delete entity' }));
+    await user.type(
+      screen.getByLabelText('Type Example to confirm'),
+      'Example',
+    );
+    await user.click(
+      screen.getByRole('button', { name: 'Permanently delete' }),
+    );
+
+    await waitFor(() => expect(onDelete).toHaveBeenCalledOnce());
+    expect(screen.getByRole('alertdialog')).toBeVisible();
   });
 
   it('provides a close control for nested confirmation', async () => {

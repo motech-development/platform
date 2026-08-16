@@ -1,7 +1,8 @@
+import { CombinedGraphQLErrors } from '@apollo/client/errors';
 import { BreezeProvider } from '@motech-development/breeze-ui';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   AccountsPending,
   PublicRouteNotFound,
@@ -45,6 +46,11 @@ function renderPending(pathname: string) {
   );
 }
 
+beforeEach(() => {
+  vi.clearAllMocks();
+  mocks.navigate.mockResolvedValue(undefined);
+});
+
 describe('AccountsPending', () => {
   it.each([
     ['/my-companies', 'My companies'],
@@ -58,6 +64,7 @@ describe('AccountsPending', () => {
       'Pending Transactions',
     ],
     ['/my-companies/accounts/company-id/record-transaction', 'Accounts'],
+    ['/my-companies/dashboard/company-id', ''],
     ['/my-companies/clients/company-id', 'Clients'],
     ['/my-companies/clients/company-id/add-client', 'Clients'],
     ['/my-companies/clients/company-id/update-details/client-id', 'Clients'],
@@ -77,6 +84,14 @@ describe('AccountsPending', () => {
     expect(
       screen.getByRole('link', { name: 'Back to Transactions' }),
     ).toHaveAttribute('href', '/my-companies/accounts/company-id');
+  });
+
+  it('uses the safe companies route when a Pending URL has no company identity', () => {
+    renderPending('/my-companies/accounts//pending-transactions');
+
+    expect(
+      screen.getByRole('link', { name: 'Back to Transactions' }),
+    ).toHaveAttribute('href', '/my-companies');
   });
 
   it('announces the Pending Transactions load and preserves its record drawer context', () => {
@@ -179,6 +194,24 @@ describe('AccountsPending', () => {
     expect(mocks.navigate).toHaveBeenCalledWith({ to: '/my-companies' });
   });
 
+  it('keeps a rejected client-drawer close navigation recoverable', async () => {
+    mocks.navigate.mockRejectedValueOnce(new Error('Navigation failed'));
+    renderPending('/my-companies/clients/company-id/add-client');
+
+    await userEvent.click(screen.getByRole('button', { name: 'Close' }));
+
+    expect(screen.getByRole('dialog', { name: 'Add client' })).toBeVisible();
+  });
+
+  it('falls back to the authentication loading panel for an unknown pending route', () => {
+    renderPending('/unexpected');
+
+    expect(screen.getByRole('heading', { name: 'Welcome back' })).toBeVisible();
+    expect(
+      screen.getByRole('button', { name: 'Sign in securely' }),
+    ).toHaveAttribute('aria-busy', 'true');
+  });
+
   it('uses a form-shaped company-details loading state', () => {
     renderPending('/my-companies/update-details/company-id');
 
@@ -226,5 +259,22 @@ describe('RouteError', () => {
     expect(
       screen.getByRole('button', { name: 'Try again' }),
     ).toBeInTheDocument();
+  });
+
+  it('leaves GraphQL failures with Apollo telemetry and still provides recovery', async () => {
+    const reset = vi.fn();
+    const error = new CombinedGraphQLErrors({
+      errors: [{ message: 'Resolver failed' }],
+    });
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <RouteError error={error} reset={reset} />
+      </BreezeProvider>,
+    );
+
+    expect(mocks.captureRouteFailure).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
+    expect(reset).toHaveBeenCalledOnce();
   });
 });

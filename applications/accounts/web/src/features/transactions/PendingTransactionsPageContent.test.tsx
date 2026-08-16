@@ -1,5 +1,6 @@
 import { BreezeProvider } from '@motech-development/breeze-ui';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { PendingTransactionsPageContent } from './PendingTransactionsPageContent';
 
@@ -23,14 +24,14 @@ const query = vi.hoisted(() => ({
           vat: 20,
         },
       ],
-      nextToken: null,
+      nextToken: null as string | null,
     },
   },
   error: undefined as Error | undefined,
-  fetchMore: vi.fn(),
+  fetchMore: vi.fn().mockResolvedValue(undefined),
   loading: false,
   networkStatus: undefined,
-  refetch: vi.fn(),
+  refetch: vi.fn().mockResolvedValue(undefined),
 }));
 
 vi.mock('@apollo/client/react', async (importOriginal) => ({
@@ -137,5 +138,55 @@ describe('PendingTransactionsPageContent', () => {
     expect(
       screen.queryByText('We could not load Pending Transactions'),
     ).not.toBeInTheDocument();
+  });
+
+  it('offers recovery when Pending Transactions have no initial data', async () => {
+    query.data = undefined as never;
+    query.error = new Error('Initial load failed');
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <PendingTransactionsPageContent companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    expect(
+      screen.getByText('We could not load Pending Transactions'),
+    ).toBeVisible();
+    await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
+    expect(query.refetch).toHaveBeenCalledOnce();
+  });
+
+  it('retries a failed refresh while retaining the current ledger', async () => {
+    query.error = new Error('Refresh failed');
+    query.refetch.mockRejectedValueOnce(new Error('Still unavailable'));
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <PendingTransactionsPageContent companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
+
+    expect(query.refetch).toHaveBeenCalledOnce();
+    expect(screen.getByText('Quarterly bookkeeping')).toBeVisible();
+  });
+
+  it('loads the next Pending Transaction page', async () => {
+    query.data.getTransactions.nextToken = 'page-2';
+    query.fetchMore.mockRejectedValueOnce(new Error('Page unavailable'));
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <PendingTransactionsPageContent companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(screen.getByRole('button', { name: 'Load more' }));
+
+    expect(query.fetchMore).toHaveBeenCalledWith({
+      variables: { nextToken: 'page-2' },
+    });
   });
 });

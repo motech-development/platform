@@ -46,6 +46,20 @@ const clientsQuery = gql`
   }
 `;
 
+const partialClientsQuery = gql`
+  query CachePartialClients($id: ID!) {
+    getClients(id: $id) {
+      __typename
+      id
+      items {
+        __typename
+        id
+        name
+      }
+    }
+  }
+`;
+
 const clientPageStateQuery = gql`
   query CacheClientPageState($id: ID!) {
     getClients(id: $id) {
@@ -80,6 +94,65 @@ const variables = {
 };
 
 describe('confirmed Transaction pages', () => {
+  it('retains loaded Transactions when a refresh omits its item list', () => {
+    const cache = createAccountsCache();
+
+    cache.writeQuery({
+      data: {
+        getTransactions: {
+          __typename: 'Transactions',
+          id: 'company-1',
+          items: [],
+          nextToken: 'page-2',
+          status: 'confirmed',
+        },
+      },
+      query: transactionsQuery,
+      variables,
+    });
+    cache.writeQuery({
+      data: {
+        getTransactions: {
+          __typename: 'Transactions',
+          id: 'company-1',
+          items: [
+            {
+              __typename: 'Transaction',
+              date: '2026-07-27T00:00:00.000Z',
+              id: 'continued',
+              name: 'Continued sale',
+            },
+          ],
+          nextToken: null,
+          status: 'confirmed',
+        },
+      },
+      query: transactionsQuery,
+      variables: { ...variables, nextToken: 'page-2' },
+    });
+    cache.writeQuery({
+      data: {
+        getTransactions: {
+          __typename: 'Transactions',
+          id: 'company-1',
+          nextToken: null,
+          status: 'confirmed',
+        },
+      } as never,
+      query: transactionsQuery,
+      variables,
+    });
+
+    expect(
+      cache
+        .readQuery<{ getTransactions: { items: Array<{ id: string }> } }>({
+          query: transactionsQuery,
+          variables,
+        })
+        ?.getTransactions.items.map(({ id }) => id),
+    ).toEqual(['continued']);
+  });
+
   it('keeps dashboard and ledger page sizes in separate cache entries', () => {
     const cache = createAccountsCache();
     const dashboardVariables = { ...variables, count: 5 };
@@ -448,6 +521,38 @@ describe('client pages', () => {
       },
     });
   };
+
+  it('preserves the complete collection when a partial consumer writes later', () => {
+    const cache = createAccountsCache();
+
+    writeClients(cache, ['complete'], 'page-2');
+    cache.writeQuery({
+      data: {
+        getClients: {
+          __typename: 'Clients',
+          id: 'company-1',
+          items: [
+            {
+              __typename: 'Client',
+              id: 'partial',
+              name: 'PARTIAL',
+            },
+          ],
+        },
+      },
+      query: partialClientsQuery,
+      variables: { id: 'company-1' },
+    });
+
+    expect(
+      cache
+        .readQuery<{ getClients: { items: { id: string }[] } }>({
+          query: clientsQuery,
+          variables: { id: 'company-1' },
+        })
+        ?.getClients.items.map(({ id }) => id),
+    ).toEqual(['complete']);
+  });
 
   it('reopens pagination when a refresh extends an exhausted collection', () => {
     const cache = createAccountsCache();

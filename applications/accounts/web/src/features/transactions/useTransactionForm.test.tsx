@@ -3,6 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { createAccountsCache } from '../../data/cache';
 import { useTransactionForm } from './useTransactionForm';
 
 const mocks = vi.hoisted(() => ({
@@ -194,6 +195,37 @@ function FailedTransferHarness() {
   );
 }
 
+function TransferSubmissionHarness({
+  transfer,
+}: Readonly<{
+  transfer: Promise<
+    { path: string; status: 'uploaded' } | { status: 'cancelled' }
+  >;
+}>) {
+  const { form, trackAttachmentTransfer } = useTransactionForm({
+    companyId: 'company-id',
+    confirmedReturnTo: '/my-companies/accounts/$companyId',
+  });
+
+  return (
+    <button
+      onClick={() => {
+        form.setFieldValue('amount', '120');
+        form.setFieldValue('category', 'Professional fees');
+        form.setFieldValue('description', 'Quarterly bookkeeping');
+        form.setFieldValue('name', 'Oak & Co');
+        form.setFieldValue('status', 'confirmed');
+        form.setFieldValue('vat', '20');
+        trackAttachmentTransfer(transfer);
+        form.handleSubmit().catch(() => undefined);
+      }}
+      type="button"
+    >
+      Submit with attachment transfer
+    </button>
+  );
+}
+
 function PendingTransferHarness() {
   const { trackAttachmentTransfer } = useTransactionForm({
     companyId: 'company-id',
@@ -284,6 +316,175 @@ function DiscardStagedAttachmentHarness() {
   );
 }
 
+function RemovePersistedAttachmentHarness() {
+  const [removed, setRemoved] = useState(false);
+  const { removeAttachment } = useTransactionForm({
+    companyId: 'company-id',
+    confirmedReturnTo: '/my-companies/accounts/$companyId',
+  });
+
+  return (
+    <>
+      <button
+        onClick={() => {
+          removeAttachment('company-id/persisted-invoice.pdf')
+            .then(setRemoved)
+            .catch(() => undefined);
+        }}
+        type="button"
+      >
+        Remove persisted attachment
+      </button>
+      {removed ? <p>Persisted attachment retained for save</p> : null}
+    </>
+  );
+}
+
+function PendingCloseHarness() {
+  const { requestClose } = useTransactionForm({
+    companyId: 'company-id',
+    confirmedReturnTo: '/my-companies/accounts/$companyId',
+    initialStatus: 'pending',
+  });
+
+  return (
+    <button onClick={requestClose} type="button">
+      Close Pending Transaction
+    </button>
+  );
+}
+
+function RejectedTransferHarness() {
+  const { submissionPending, trackAttachmentTransfer } = useTransactionForm({
+    companyId: 'company-id',
+    confirmedReturnTo: '/my-companies/accounts/$companyId',
+  });
+
+  return (
+    <>
+      <button
+        onClick={() => {
+          trackAttachmentTransfer(Promise.reject(new Error('Upload failed')));
+        }}
+        type="button"
+      >
+        Start rejected transfer
+      </button>
+      <output>
+        {submissionPending ? 'Transfer pending' : 'Transfer settled'}
+      </output>
+    </>
+  );
+}
+
+function RejectingDiscardHarness() {
+  const { discardChanges, markDirty, trackAttachmentTransfer } =
+    useTransactionForm({
+      companyId: 'company-id',
+      confirmedReturnTo: '/my-companies/accounts/$companyId',
+    });
+
+  return (
+    <>
+      <button
+        onClick={() => {
+          markDirty();
+          trackAttachmentTransfer(Promise.reject(new Error('Upload failed')));
+        }}
+        type="button"
+      >
+        Start failed staged transfer
+      </button>
+      <button onClick={discardChanges} type="button">
+        Discard failed transfer
+      </button>
+    </>
+  );
+}
+
+function CloseWithStagedAttachmentHarness() {
+  const { requestClose, trackAttachmentTransfer } = useTransactionForm({
+    companyId: 'company-id',
+    confirmedReturnTo: '/my-companies/accounts/$companyId',
+  });
+
+  return (
+    <>
+      <button
+        onClick={() => {
+          trackAttachmentTransfer(
+            Promise.resolve({
+              path: 'company-id/staged-invoice.pdf',
+              status: 'uploaded',
+            }),
+          );
+        }}
+        type="button"
+      >
+        Stage before close
+      </button>
+      <button onClick={requestClose} type="button">
+        Close with staged attachment
+      </button>
+    </>
+  );
+}
+
+function SupersededTransferHarness({
+  firstTransfer,
+}: Readonly<{
+  firstTransfer: Promise<{ path: string; status: 'uploaded' }>;
+}>) {
+  const [removed, setRemoved] = useState(false);
+  const { removeAttachment, trackAttachmentTransfer } = useTransactionForm({
+    companyId: 'company-id',
+    confirmedReturnTo: '/my-companies/accounts/$companyId',
+  });
+
+  return (
+    <>
+      <button
+        onClick={() => {
+          trackAttachmentTransfer(firstTransfer);
+        }}
+        type="button"
+      >
+        Start first transfer
+      </button>
+      <button
+        onClick={() => {
+          trackAttachmentTransfer(Promise.resolve({ status: 'cancelled' }));
+        }}
+        type="button"
+      >
+        Supersede transfer
+      </button>
+      <button
+        onClick={() => {
+          removeAttachment('company-id/first.pdf')
+            .then(setRemoved)
+            .catch(() => undefined);
+        }}
+        type="button"
+      >
+        Remove superseded attachment
+      </button>
+      {removed ? <p>Superseded attachment ignored</p> : null}
+    </>
+  );
+}
+
+function runMutationUpdate(options: unknown, result: unknown) {
+  const { update } = options as {
+    update?: (
+      cache: ReturnType<typeof createAccountsCache>,
+      mutation: unknown,
+    ) => void;
+  };
+
+  update?.(createAccountsCache(), result);
+}
+
 function mutationInput(mock: typeof mocks.add) {
   const calls = mock.mock.calls as unknown as Array<
     [{ variables: { input: Record<string, unknown> } }]
@@ -297,7 +498,7 @@ describe('useTransactionForm', () => {
     vi.clearAllMocks();
     mocks.shouldBlockFn = undefined;
     mocks.navigate.mockResolvedValue(undefined);
-    mocks.add.mockResolvedValue({
+    const addResult = {
       data: {
         addTransaction: {
           amount: 120,
@@ -314,8 +515,8 @@ describe('useTransactionForm', () => {
           vat: -20,
         },
       },
-    });
-    mocks.update.mockResolvedValue({
+    };
+    const updateResult = {
       data: {
         updateTransaction: {
           amount: 75,
@@ -332,6 +533,15 @@ describe('useTransactionForm', () => {
           vat: 15,
         },
       },
+    };
+
+    mocks.add.mockImplementation((options) => {
+      runMutationUpdate(options, addResult);
+      return Promise.resolve(addResult);
+    });
+    mocks.update.mockImplementation((options) => {
+      runMutationUpdate(options, updateResult);
+      return Promise.resolve(updateResult);
     });
     mocks.deleteFile.mockResolvedValue({
       data: { deleteFile: { path: 'company-id/invoice.pdf' } },
@@ -533,6 +743,222 @@ describe('useTransactionForm', () => {
       ),
     );
     expect(mocks.add).not.toHaveBeenCalled();
+  });
+
+  it('uses an uploaded attachment when recording the Transaction', async () => {
+    render(
+      <BreezeProvider locale="en-GB">
+        <TransferSubmissionHarness
+          transfer={Promise.resolve({
+            path: 'company-id/uploaded-invoice.pdf',
+            status: 'uploaded',
+          })}
+        />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Submit with attachment transfer' }),
+    );
+
+    await waitFor(() => expect(mocks.add).toHaveBeenCalledOnce());
+    expect(mutationInput(mocks.add)).toMatchObject({
+      attachment: 'company-id/uploaded-invoice.pdf',
+    });
+  });
+
+  it('does not save after the attachment transfer is cancelled', async () => {
+    render(
+      <BreezeProvider locale="en-GB">
+        <TransferSubmissionHarness
+          transfer={Promise.resolve({ status: 'cancelled' })}
+        />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Submit with attachment transfer' }),
+    );
+
+    await waitFor(() => expect(mocks.shouldBlockFn?.()).toBe(false));
+    expect(mocks.add).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['record', Harness, 'add'],
+    ['update', EditHarness, 'update'],
+  ] as const)(
+    'keeps the form open when a %s mutation returns no Transaction',
+    async (_, TestHarness, mutation) => {
+      mocks[mutation].mockResolvedValueOnce({ data: null });
+
+      render(
+        <BreezeProvider locale="en-GB">
+          <TestHarness />
+        </BreezeProvider>,
+      );
+
+      await userEvent.click(
+        screen.getByRole('button', {
+          name:
+            mutation === 'add' ? 'Submit valid refund' : 'Confirm transaction',
+        }),
+      );
+
+      await waitFor(() =>
+        expect(mocks.toast.show).toHaveBeenCalledWith(
+          expect.objectContaining({
+            title: 'Transaction could not be saved',
+          }),
+        ),
+      );
+      expect(mocks.navigate).not.toHaveBeenCalled();
+    },
+  );
+
+  it('keeps staged attachment ownership when cleanup fails', async () => {
+    mocks.deleteFile.mockResolvedValueOnce({ data: null });
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <DiscardStagedAttachmentHarness />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Stage attachment' }),
+    );
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Discard changes' }),
+    );
+
+    await waitFor(() =>
+      expect(mocks.toast.show).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Attachment cleanup failed' }),
+      ),
+    );
+    expect(mocks.navigate).not.toHaveBeenCalled();
+  });
+
+  it('keeps the form open when close-time staged attachment cleanup fails', async () => {
+    mocks.deleteFile.mockResolvedValueOnce({ data: null });
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <CloseWithStagedAttachmentHarness />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Stage before close' }),
+    );
+    await waitFor(() => expect(mocks.shouldBlockFn?.()).toBe(false));
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Close with staged attachment' }),
+    );
+
+    await waitFor(() => expect(mocks.deleteFile).toHaveBeenCalledOnce());
+    expect(mocks.navigate).not.toHaveBeenCalled();
+  });
+
+  it('leaves a persisted attachment for the Transaction save operation', async () => {
+    render(
+      <BreezeProvider locale="en-GB">
+        <RemovePersistedAttachmentHarness />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Remove persisted attachment' }),
+    );
+
+    expect(
+      await screen.findByText('Persisted attachment retained for save'),
+    ).toBeVisible();
+    expect(mocks.deleteFile).not.toHaveBeenCalled();
+  });
+
+  it('returns a new Pending Transaction to the Pending collection when closed', async () => {
+    render(
+      <BreezeProvider locale="en-GB">
+        <PendingCloseHarness />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Close Pending Transaction' }),
+    );
+
+    expect(mocks.navigate).toHaveBeenCalledWith({
+      params: { companyId: 'company-id' },
+      to: '/my-companies/accounts/$companyId/pending-transactions',
+    });
+  });
+
+  it('settles a rejected attachment transfer without blocking navigation forever', async () => {
+    render(
+      <BreezeProvider locale="en-GB">
+        <RejectedTransferHarness />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Start rejected transfer' }),
+    );
+
+    expect(await screen.findByText('Transfer settled')).toBeVisible();
+  });
+
+  it('does not navigate when a rejected transfer cannot be discarded', async () => {
+    render(
+      <BreezeProvider locale="en-GB">
+        <RejectingDiscardHarness />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Start failed staged transfer' }),
+    );
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Discard failed transfer' }),
+    );
+
+    await waitFor(() => expect(mocks.shouldBlockFn?.()).toBe(true));
+    expect(mocks.navigate).not.toHaveBeenCalled();
+  });
+
+  it('does not let a superseded transfer claim the staged attachment', async () => {
+    let resolveFirst: (value: {
+      path: string;
+      status: 'uploaded';
+    }) => void = () => undefined;
+    const firstTransfer = new Promise<{ path: string; status: 'uploaded' }>(
+      (resolve) => {
+        resolveFirst = resolve;
+      },
+    );
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <SupersededTransferHarness firstTransfer={firstTransfer} />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Start first transfer' }),
+    );
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Supersede transfer' }),
+    );
+    resolveFirst({ path: 'company-id/first.pdf', status: 'uploaded' });
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Remove superseded attachment' }),
+    );
+
+    expect(
+      await screen.findByText('Superseded attachment ignored'),
+    ).toBeVisible();
+    expect(mocks.deleteFile).not.toHaveBeenCalled();
   });
 
   it('blocks route navigation while an attachment transfer is pending', async () => {

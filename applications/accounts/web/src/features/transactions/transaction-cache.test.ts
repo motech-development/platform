@@ -205,6 +205,121 @@ describe('Transaction cache reconciliation', () => {
     });
   });
 
+  it('adds sale suggestions in display order without changing purchase suggestions', () => {
+    const cache = createAccountsCache();
+
+    cache.writeQuery({
+      data: {
+        getTypeahead: {
+          __typename: 'Typeahead',
+          id: companyId,
+          purchases: ['Existing purchase'],
+          sales: ['Zulu work', 'Alpha work'],
+          suppliers: ['Existing supplier'],
+        },
+      },
+      query: typeaheadQuery,
+      variables: { id: companyId },
+    });
+
+    reconcileTransactionInCache(
+      cache,
+      transaction({
+        category: 'Sales',
+        description: 'Beta work',
+        name: 'New client',
+        status: 'confirmed',
+      }),
+    );
+
+    expect(
+      cache.readQuery({ query: typeaheadQuery, variables: { id: companyId } }),
+    ).toEqual({
+      getTypeahead: {
+        __typename: 'Typeahead',
+        id: companyId,
+        purchases: ['Existing purchase'],
+        sales: ['Alpha work', 'Beta work', 'Zulu work'],
+        suppliers: ['Existing supplier'],
+      },
+    });
+  });
+
+  it('leaves collections belonging to another company unchanged', () => {
+    const cache = createAccountsCache();
+    const otherCompanyTransaction = transaction({
+      companyId: 'company-2',
+      id: 'other-transaction',
+      status: 'confirmed',
+    });
+
+    cache.writeQuery({
+      data: {
+        getTransactions: {
+          __typename: 'Transactions',
+          id: 'company-2',
+          items: [otherCompanyTransaction],
+          nextToken: null,
+          status: 'confirmed',
+        },
+      },
+      query: transactionsQuery,
+      variables: { count: 100, id: 'company-2', status: 'confirmed' },
+    });
+
+    reconcileTransactionInCache(
+      cache,
+      transaction({ scheduled: false, status: 'confirmed' }),
+    );
+
+    expect(
+      cache
+        .readQuery<{ getTransactions: { items: Array<{ id: string }> } }>({
+          query: transactionsQuery,
+          variables: { count: 100, id: 'company-2', status: 'confirmed' },
+        })
+        ?.getTransactions.items.map(({ id }) => id),
+    ).toEqual(['other-transaction']);
+  });
+
+  it('does not modify collections when Apollo cannot create a Transaction reference', () => {
+    const cache = {
+      modify: vi.fn(),
+      writeFragment: vi.fn(() => undefined),
+    };
+
+    reconcileTransactionInCache(cache as never, transaction());
+
+    expect(cache.modify).not.toHaveBeenCalled();
+  });
+
+  it('preserves unresolved Typeahead fields until Apollo resolves them', () => {
+    const unresolved = { __ref: 'Typeahead:unresolved' };
+    const cache = {
+      identify: vi.fn(() => 'Typeahead:company-1'),
+      modify: vi.fn(
+        ({
+          fields,
+          id,
+        }: {
+          fields: Record<string, (existing: unknown) => unknown>;
+          id: string;
+        }) => {
+          if (id === 'ROOT_QUERY') return;
+
+          expect(fields.purchases?.(unresolved)).toBe(unresolved);
+          expect(fields.sales?.(unresolved)).toBe(unresolved);
+          expect(fields.suppliers?.(unresolved)).toBe(unresolved);
+        },
+      ),
+      writeFragment: vi.fn(() => ({ __ref: 'Transaction:transaction-1' })),
+    };
+
+    reconcileTransactionInCache(cache as never, transaction());
+
+    expect(cache.modify).toHaveBeenCalledTimes(2);
+  });
+
   it('removes a deleted Transaction from every loaded collection', () => {
     const cache = createAccountsCache();
     const item = transaction();

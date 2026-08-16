@@ -129,6 +129,28 @@ describe('Transaction accounting input', () => {
       transactionType: 'sale',
       vat: '24',
     });
+
+    expect(
+      editableTransaction({
+        ...buildTransactionInput(baseValues),
+        id: 'transaction-2',
+      }),
+    ).toMatchObject({
+      category: 'Professional fees',
+      scheduled: false,
+      transactionType: 'purchase',
+    });
+
+    expect(
+      editableTransaction({
+        ...buildTransactionInput({
+          ...baseValues,
+          scheduled: false,
+          status: 'pending',
+        }),
+        id: 'transaction-3',
+      }).scheduled,
+    ).toBe(false);
   });
 
   it('requires a status and purchase category while allowing a sale category to be derived', () => {

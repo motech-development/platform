@@ -9,6 +9,7 @@ import {
   primeCompanyDetails,
   primeCompanySettings,
   primeDashboard,
+  primePendingTransactions,
   primeTransaction,
   primeTransactions,
   verifyRecordTransactionRoute,
@@ -21,6 +22,7 @@ import {
   GET_COMPANY_DETAILS,
   GET_COMPANY_SETTINGS,
   GET_CONFIRMED_TRANSACTIONS,
+  GET_PENDING_TRANSACTIONS,
 } from './operations';
 
 const notFound = vi.hoisted(() =>
@@ -58,6 +60,32 @@ describe('company route priming', () => {
       query: GET_COMPANIES,
       variables: { owner: 'auth0|owner' },
     });
+  });
+
+  it('does not prime companies without an authenticated owner', async () => {
+    const query = vi.fn();
+
+    await expect(
+      primeCompanies(context(query, false)),
+    ).resolves.toBeUndefined();
+    expect(query).not.toHaveBeenCalled();
+  });
+
+  it('rejects malformed company identities before querying', async () => {
+    const query = vi.fn();
+
+    await expect(
+      primeCompanyDetails(context(query), 'not-a-company-id'),
+    ).rejects.toThrow('Not found');
+    expect(query).not.toHaveBeenCalled();
+  });
+
+  it('rejects ownership checks whose company collection has no data', async () => {
+    const query = vi.fn().mockResolvedValue({ data: undefined });
+
+    await expect(
+      primeCompanyDetails(context(query), companyId),
+    ).rejects.toThrow('The owned company list did not return data');
   });
 
   it.each([
@@ -107,6 +135,11 @@ describe('company route priming', () => {
       primeTransactions,
       GET_CONFIRMED_TRANSACTIONS,
       { count: 100, id: companyId, status: 'confirmed' },
+    ],
+    [
+      primePendingTransactions,
+      GET_PENDING_TRANSACTIONS,
+      { count: 100, id: companyId, status: 'pending' },
     ],
   ] as const)(
     'primes an owned company resource',
@@ -170,6 +203,17 @@ describe('company route priming', () => {
     });
   });
 
+  it('verifies an owned company before opening the record route', async () => {
+    const query = vi.fn().mockResolvedValue({
+      data: { getCompanies: { items: [{ id: companyId }] } },
+    });
+
+    await expect(
+      verifyRecordTransactionRoute(context(query), companyId),
+    ).resolves.toBeUndefined();
+    expect(query).toHaveBeenCalledOnce();
+  });
+
   it.each([
     ['details', primeCompanyDetails],
     ['settings', primeCompanySettings],
@@ -190,6 +234,33 @@ describe('company route priming', () => {
 });
 
 describe('primeTransaction', () => {
+  it('does not prime a Transaction without an authenticated owner', async () => {
+    const query = vi.fn();
+
+    await expect(
+      primeTransaction(
+        context(query, false),
+        companyId,
+        '3456df4a-51f8-49af-a52e-c1a21b8ff087',
+      ),
+    ).resolves.toBeUndefined();
+    expect(query).not.toHaveBeenCalled();
+  });
+
+  it('rejects a Transaction response without data', async () => {
+    const transactionId = '3456df4a-51f8-49af-a52e-c1a21b8ff087';
+    const query = vi
+      .fn()
+      .mockResolvedValueOnce({
+        data: { getCompanies: { items: [{ id: companyId }] } },
+      })
+      .mockResolvedValueOnce({ data: undefined });
+
+    await expect(
+      primeTransaction(context(query), companyId, transactionId),
+    ).rejects.toThrow('The Transaction did not return data');
+  });
+
   it('rejects a non-confirmed transaction on the confirmed detail route', async () => {
     const transactionId = '3456df4a-51f8-49af-a52e-c1a21b8ff087';
     const query = vi

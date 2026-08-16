@@ -1,5 +1,5 @@
 import { BreezeProvider } from '@motech-development/breeze-ui';
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AttachmentUpload } from './AttachmentUpload';
 
@@ -149,6 +149,76 @@ describe('AttachmentUpload', () => {
         },
       },
     });
+  });
+
+  it('uses the media type extension when the selected filename has none', async () => {
+    const user = userEvent.setup();
+    const file = new File(['image'], 'receipt', { type: 'image/png' });
+
+    mocks.requestUpload.mockResolvedValue({
+      data: {
+        requestUpload: { id: 'upload-image', url: 'https://upload/image' },
+      },
+    });
+    mocks.uploadPresignedFile.mockResolvedValue(undefined);
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <AttachmentUpload
+          companyId="company-1"
+          onTransfer={vi.fn()}
+          onUploaded={vi.fn()}
+        />
+      </BreezeProvider>,
+    );
+
+    await user.upload(
+      document.querySelector('input[type="file"]') as HTMLInputElement,
+      file,
+    );
+
+    await waitFor(() => {
+      expect(mocks.requestUpload).toHaveBeenCalledWith({
+        variables: {
+          id: 'company-1',
+          input: {
+            contentType: 'image/png',
+            extension: 'png',
+            metadata: { typename: 'Transaction' },
+          },
+        },
+      });
+    });
+  });
+
+  it('rejects a file outside the attachment media contract', async () => {
+    const transfer = vi.fn();
+    const file = new File(['notes'], 'notes.txt', { type: 'text/plain' });
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <AttachmentUpload
+          companyId="company-1"
+          onTransfer={transfer}
+          onUploaded={vi.fn()}
+        />
+      </BreezeProvider>,
+    );
+
+    fireEvent.change(
+      document.querySelector('input[type="file"]') as HTMLInputElement,
+      { target: { files: [file] } },
+    );
+
+    await waitFor(() =>
+      expect(mocks.toast.show).toHaveBeenCalledWith({
+        description: 'Choose one PDF, GIF, JPG, or PNG file.',
+        title: 'File not accepted',
+        variant: 'warning',
+      }),
+    );
+    expect(transfer).not.toHaveBeenCalled();
+    expect(mocks.requestUpload).not.toHaveBeenCalled();
   });
 
   it('preserves GIF attachments supported by the Transaction storage contract', async () => {

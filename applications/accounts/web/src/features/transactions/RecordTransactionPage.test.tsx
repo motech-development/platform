@@ -1,5 +1,5 @@
 import { BreezeProvider } from '@motech-development/breeze-ui';
-import { render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { RecordTransactionPage } from './RecordTransactionPage';
@@ -38,6 +38,8 @@ const mocks = vi.hoisted(() => {
   };
 
   return {
+    deleteFile: vi.fn(),
+    downloadQuery: vi.fn(),
     navigate: vi.fn().mockResolvedValue(undefined),
     query,
     requestUpload: vi.fn(),
@@ -49,15 +51,20 @@ const successfulQueryData = mocks.query.data;
 
 vi.mock('@apollo/client/react', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@apollo/client/react')>()),
+  useApolloClient: () => ({ query: mocks.downloadQuery }),
   useMutation: (document: {
     definitions?: { name?: { value?: string } }[];
   }) => {
     const operation = document.definitions?.find(({ name }) => name)?.name
       ?.value;
 
-    return operation === 'RequestUpload'
-      ? [mocks.requestUpload, { loading: false }]
-      : [vi.fn(), { loading: false }];
+    if (operation === 'RequestUpload') {
+      return [mocks.requestUpload, { loading: false }];
+    }
+    if (operation === 'DeleteFile') {
+      return [mocks.deleteFile, { loading: false }];
+    }
+    return [vi.fn(), { loading: false }];
   },
   useQuery: () => mocks.query,
 }));
@@ -96,12 +103,16 @@ vi.mock('./PendingTransactionsPageContent', () => ({
 
 describe('RecordTransactionPage', () => {
   beforeEach(() => {
+    vi.clearAllMocks();
     mocks.query.data = successfulQueryData;
     mocks.query.error = undefined;
     mocks.query.loading = false;
     mocks.query.refetch.mockClear();
     mocks.requestUpload.mockReset();
+    mocks.deleteFile.mockReset();
+    mocks.downloadQuery.mockReset();
     mocks.uploadPresignedFile.mockReset();
+    mocks.navigate.mockResolvedValue(undefined);
   });
 
   it('exposes the complete accounting form with purchase defaults', () => {
@@ -154,6 +165,144 @@ describe('RecordTransactionPage', () => {
     expect(screen.queryByLabelText('Category')).not.toBeInTheDocument();
   });
 
+  it('commits purchase suggestions and calculates inclusive VAT', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <RecordTransactionPage companyId="company-id" origin="transactions" />
+      </BreezeProvider>,
+    );
+
+    const supplier = screen.getByRole('combobox', { name: 'Supplier' });
+    const description = screen.getByRole('combobox', { name: 'Description' });
+
+    await user.type(supplier, 'Oak & Co');
+    await user.keyboard('{ArrowDown}{Enter}');
+    await user.type(description, 'Bookkeeping');
+    await user.keyboard('{ArrowDown}{Enter}');
+    await user.click(screen.getByRole('button', { name: /Category/u }));
+    await user.click(
+      await screen.findByRole('option', { name: 'Professional fees' }),
+    );
+    await user.clear(screen.getByLabelText('Amount'));
+    await user.type(screen.getByLabelText('Amount'), '120');
+
+    expect(supplier).toHaveValue('Oak & Co');
+    expect(description).toHaveValue('Bookkeeping');
+    expect(screen.getByLabelText('VAT')).toHaveValue('£20.00');
+
+    await user.clear(supplier);
+    await user.type(supplier, 'New supplier{Enter}');
+    expect(supplier).toHaveValue('New supplier');
+  });
+
+  it('switches accounting meaning and keeps derived fields consistent', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <RecordTransactionPage companyId="company-id" origin="pending" />
+      </BreezeProvider>,
+    );
+
+    const schedule = screen.getByRole('radiogroup', {
+      name: 'Schedule transaction',
+    });
+
+    await user.click(within(schedule).getByLabelText('Yes'));
+    expect(within(schedule).getByLabelText('Yes')).toBeChecked();
+    await user.click(screen.getByLabelText('Confirmed'));
+    expect(
+      screen.queryByRole('radiogroup', { name: 'Schedule transaction' }),
+    ).not.toBeInTheDocument();
+
+    await user.click(screen.getByLabelText('Sale'));
+    await user.click(screen.getByRole('button', { name: /Client/u }));
+    await user.click(
+      await screen.findByRole('option', { name: 'Example client' }),
+    );
+    await user.clear(screen.getByLabelText('Amount'));
+    await user.type(screen.getByLabelText('Amount'), '100');
+
+    expect(screen.getByLabelText('VAT')).toHaveValue('£20.00');
+    expect(screen.getByLabelText('No')).toBeChecked();
+    expect(screen.queryByLabelText('Category')).not.toBeInTheDocument();
+  });
+
+  it('updates dates, refund meaning, and manually entered VAT', async () => {
+    const user = userEvent.setup();
+    const tomorrow = new Date();
+
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <RecordTransactionPage companyId="company-id" origin="transactions" />
+      </BreezeProvider>,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Calendar Date' }));
+    await user.click(
+      screen.getByRole('button', {
+        name: new Intl.DateTimeFormat('en-GB', { dateStyle: 'full' }).format(
+          tomorrow,
+        ),
+      }),
+    );
+    await user.click(
+      within(screen.getByRole('radiogroup', { name: 'Refund' })).getByLabelText(
+        'Yes',
+      ),
+    );
+    await user.clear(screen.getByLabelText('VAT'));
+    await user.type(screen.getByLabelText('VAT'), '7.50');
+    await user.tab();
+
+    expect(
+      within(screen.getByRole('radiogroup', { name: 'Refund' })).getByLabelText(
+        'Yes',
+      ),
+    ).toBeChecked();
+    expect(screen.getByLabelText('VAT')).toHaveValue('£7.50');
+  });
+
+  it('closes a clean record drawer to its originating collection', async () => {
+    render(
+      <BreezeProvider locale="en-GB">
+        <RecordTransactionPage companyId="company-id" origin="dashboard" />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(screen.getByRole('button', { name: 'Close' }));
+
+    expect(mocks.navigate).toHaveBeenCalledWith({
+      params: { companyId: 'company-id' },
+      to: '/my-companies/dashboard/$companyId',
+    });
+  });
+
+  it('clears calculated VAT when an amount has no applicable category rate', async () => {
+    render(
+      <BreezeProvider locale="en-GB">
+        <RecordTransactionPage companyId="company-id" origin="transactions" />
+      </BreezeProvider>,
+    );
+
+    const amountInput = screen.getByLabelText('Amount');
+
+    await act(async () => {
+      fireEvent.input(amountInput, {
+        data: '100',
+        inputType: 'insertFromPaste',
+        target: { value: '100' },
+      });
+      await Promise.resolve();
+    });
+
+    expect(screen.getByLabelText('VAT')).toHaveValue('');
+  });
+
   it('preserves the accounting category order supplied by the API', async () => {
     render(
       <BreezeProvider locale="en-GB">
@@ -182,6 +331,53 @@ describe('RecordTransactionPage', () => {
     expect(mocks.query.refetch).toHaveBeenCalledOnce();
   });
 
+  it('retains the form while a failed background refresh is retried', async () => {
+    mocks.query.error = new Error('failed');
+    mocks.query.refetch.mockRejectedValueOnce(new Error('still failed'));
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <RecordTransactionPage companyId="company-id" origin="transactions" />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
+
+    expect(mocks.query.refetch).toHaveBeenCalledOnce();
+    expect(screen.getByRole('combobox', { name: 'Supplier' })).toBeVisible();
+  });
+
+  it('announces preparation while the form has no initial data', () => {
+    mocks.query.data = undefined;
+    mocks.query.loading = true;
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <RecordTransactionPage companyId="company-id" origin="transactions" />
+      </BreezeProvider>,
+    );
+
+    expect(screen.getByText('Preparing transaction form…')).toHaveAttribute(
+      'aria-live',
+      'polite',
+    );
+  });
+
+  it('keeps an invalid browser form submission open', () => {
+    render(
+      <BreezeProvider locale="en-GB">
+        <RecordTransactionPage companyId="company-id" origin="transactions" />
+      </BreezeProvider>,
+    );
+
+    fireEvent.submit(document.querySelector('form') as HTMLFormElement);
+
+    expect(
+      screen.getByRole('dialog', { name: 'Record transaction' }),
+    ).toBeVisible();
+    expect(mocks.navigate).not.toHaveBeenCalled();
+  });
+
   it('disables the complete form while an attachment transfer is pending', async () => {
     mocks.requestUpload.mockResolvedValue({
       data: { requestUpload: { id: 'upload-id', url: 'https://upload' } },
@@ -208,5 +404,58 @@ describe('RecordTransactionPage', () => {
     expect(fieldset).toBeInstanceOf(HTMLFieldSetElement);
     expect(fieldset).toBeDisabled();
     expect(screen.getByRole('button', { name: 'Cancel' })).toBeDisabled();
+  });
+
+  it('keeps an uploaded attachment visible when its cleanup fails', async () => {
+    mocks.requestUpload.mockResolvedValue({
+      data: { requestUpload: { id: 'upload-id', url: 'https://upload' } },
+    });
+    mocks.uploadPresignedFile.mockResolvedValue(undefined);
+    mocks.deleteFile.mockResolvedValue({ data: null });
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <RecordTransactionPage companyId="company-id" origin="transactions" />
+      </BreezeProvider>,
+    );
+
+    await userEvent.upload(
+      document.querySelector('input[type="file"]') as HTMLInputElement,
+      new File(['invoice'], 'invoice.pdf', { type: 'application/pdf' }),
+    );
+    expect(await screen.findByText('upload-id.pdf')).toBeVisible();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Delete file' }));
+
+    expect(await screen.findByText('upload-id.pdf')).toBeVisible();
+    expect(mocks.toast.show).toHaveBeenCalledWith(
+      expect.objectContaining({ title: 'Attachment cleanup failed' }),
+    );
+  });
+
+  it('returns to the upload control after removing an uploaded attachment', async () => {
+    mocks.requestUpload.mockResolvedValue({
+      data: { requestUpload: { id: 'upload-id', url: 'https://upload' } },
+    });
+    mocks.uploadPresignedFile.mockResolvedValue(undefined);
+    mocks.deleteFile.mockResolvedValue({
+      data: { deleteFile: { path: 'company-id/upload-id.pdf' } },
+    });
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <RecordTransactionPage companyId="company-id" origin="transactions" />
+      </BreezeProvider>,
+    );
+
+    await userEvent.upload(
+      document.querySelector('input[type="file"]') as HTMLInputElement,
+      new File(['invoice'], 'invoice.pdf', { type: 'application/pdf' }),
+    );
+    await userEvent.click(
+      await screen.findByRole('button', { name: 'Delete file' }),
+    );
+
+    expect(await screen.findByText('No file selected')).toBeVisible();
   });
 });

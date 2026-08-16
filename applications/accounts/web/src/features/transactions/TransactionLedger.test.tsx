@@ -157,7 +157,209 @@ describe('TransactionLedger', () => {
     await user.click(indicator);
     indicator.focus();
     await user.keyboard('{Enter}');
+    await user.keyboard('{Escape}');
 
     expect(mocks.navigate).not.toHaveBeenCalled();
+  });
+
+  it('opens a Pending Transaction through the Pending collection route', async () => {
+    render(
+      <BreezeProvider locale="en-GB">
+        <TransactionLedger
+          companyId="company-id"
+          currencyCode="GBP"
+          pending
+          transactions={[
+            {
+              amount: -120,
+              attachment: null,
+              category: 'Professional fees',
+              date: '2026-08-20T00:00:00.000Z',
+              description: 'Quarterly bookkeeping',
+              id: 'pending-id',
+              name: 'Oak & Co Accountants',
+              scheduled: true,
+              status: 'pending',
+            },
+          ]}
+        />
+      </BreezeProvider>,
+    );
+
+    expect(
+      screen.getByRole('img', { name: 'Scheduled transaction' }),
+    ).toBeVisible();
+    await userEvent.click(
+      screen.getByRole('row', {
+        name: /Pending transaction: Oak & Co Accountants/u,
+      }),
+    );
+
+    expect(mocks.navigate).toHaveBeenCalledWith({
+      params: { companyId: 'company-id', transactionId: 'pending-id' },
+      to: '/my-companies/accounts/$companyId/pending-transactions/view-transaction/$transactionId',
+    });
+  });
+
+  it('labels a compact ledger as recent transactions', () => {
+    render(
+      <BreezeProvider locale="en-GB">
+        <TransactionLedger
+          compact
+          companyId="company-id"
+          currencyCode="GBP"
+          transactions={[
+            {
+              amount: 100,
+              attachment: null,
+              category: 'Sales',
+              date: '2026-08-15T00:00:00.000Z',
+              description: 'Recent work',
+              id: 'recent-id',
+              name: 'Client',
+            },
+          ]}
+        />
+      </BreezeProvider>,
+    );
+
+    expect(
+      screen.getByRole('grid', { name: 'Recent transactions' }),
+    ).toBeVisible();
+  });
+
+  it('does not mark an unscheduled Pending Transaction as scheduled', () => {
+    render(
+      <BreezeProvider locale="en-GB">
+        <TransactionLedger
+          companyId="company-id"
+          currencyCode="GBP"
+          pending
+          transactions={[
+            {
+              amount: -100,
+              attachment: null,
+              category: 'Professional fees',
+              date: '2026-08-15T00:00:00.000Z',
+              description: 'Unscheduled cost',
+              id: 'pending-id',
+              name: 'Supplier',
+              scheduled: false,
+              status: 'pending',
+            },
+          ]}
+        />
+      </BreezeProvider>,
+    );
+
+    expect(
+      screen.queryByRole('img', { name: 'Scheduled transaction' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('reveals and dismisses Transaction indicator explanations', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <TransactionLedger
+          companyId="company-id"
+          currencyCode="GBP"
+          transactions={[
+            {
+              amount: 100,
+              attachment: null,
+              category: 'Sales',
+              date: '2026-08-15T00:00:00.000Z',
+              description: 'Scheduled work',
+              id: 'scheduled-id',
+              name: 'Client',
+              scheduled: true,
+              status: 'confirmed',
+            },
+          ]}
+        />
+      </BreezeProvider>,
+    );
+
+    const missingAttachment = screen.getByRole('img', {
+      name: 'No invoice or receipt',
+    });
+    const scheduled = screen.getByRole('img', {
+      name: 'Scheduled transaction',
+    });
+
+    await user.hover(missingAttachment);
+    expect(screen.getByRole('tooltip')).toHaveTextContent(
+      'No invoice or receipt',
+    );
+    await user.unhover(missingAttachment);
+    expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+
+    await user.click(missingAttachment);
+    expect(await screen.findByRole('tooltip')).toHaveTextContent(
+      'No invoice or receipt',
+    );
+    await user.tab();
+    expect(screen.getByRole('tooltip')).toHaveTextContent(
+      'Scheduled transaction',
+    );
+    await user.tab();
+    expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+
+    await user.hover(scheduled);
+    expect(await screen.findByRole('tooltip')).toHaveTextContent(
+      'Scheduled transaction',
+    );
+    await user.unhover(scheduled);
+    expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+  });
+
+  it('keeps the ledger usable when route navigation rejects', async () => {
+    mocks.navigate.mockRejectedValueOnce(new Error('Navigation failed'));
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <TransactionLedger
+          companyId="company-id"
+          currencyCode="GBP"
+          transactions={[
+            {
+              amount: 100,
+              attachment: 'invoice.pdf',
+              category: 'Sales',
+              date: '2026-08-15T00:00:00.000Z',
+              description: 'Client work',
+              id: 'transaction-id',
+              name: 'Client',
+            },
+          ]}
+        />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(
+      screen.getByRole('row', { name: /Client Client work/u }),
+    );
+
+    expect(screen.getByRole('grid')).toBeVisible();
+  });
+
+  it.each([
+    [false, 'No transactions yet'],
+    [true, 'No Pending Transactions'],
+  ])('presents the correct empty state when pending=%s', (pending, title) => {
+    render(
+      <BreezeProvider locale="en-GB">
+        <TransactionLedger
+          companyId="company-id"
+          currencyCode="GBP"
+          pending={pending}
+          transactions={[]}
+        />
+      </BreezeProvider>,
+    );
+
+    expect(screen.getByText(title)).toBeVisible();
   });
 });
