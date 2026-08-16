@@ -133,17 +133,7 @@ export function buildTransactionInput(
   }
 
   const referenceDate = new Date(referenceDateTime);
-  let transactionDate = `${value.date}T${referenceDate.toISOString().slice(11)}`;
-
-  if (!value.id && value.status === 'pending' && value.scheduled) {
-    const scheduleDate = new Date(referenceDate);
-
-    scheduleDate.setUTCMinutes(scheduleDate.getUTCMinutes() + 1, 0, 0);
-    transactionDate =
-      value.date === referenceDate.toISOString().slice(0, 10)
-        ? scheduleDate.toISOString()
-        : `${value.date}T${scheduleDate.toISOString().slice(11)}`;
-  }
+  const transactionDate = `${value.date}T${referenceDate.toISOString().slice(11)}`;
 
   return {
     amount: signedAmount.toNumber(),

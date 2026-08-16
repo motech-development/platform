@@ -325,9 +325,7 @@ describe('useTransactionForm', () => {
       status: 'pending',
       vat: -20,
     });
-    expect(mutationInput(mocks.add).date).toMatch(
-      /^2026-08-15T\d{2}:\d{2}:00\.000Z$/,
-    );
+    expect(mutationInput(mocks.add).date).toBe('2026-08-15T23:13:14.567Z');
     expect(mocks.navigate).toHaveBeenCalledWith({
       params: { companyId: 'company-id' },
       to: '/my-companies/accounts/$companyId/pending-transactions',

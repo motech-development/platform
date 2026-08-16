@@ -551,20 +551,7 @@ test.describe('Non-VAT registered', () => {
       await openAccountsRoute('not-registered');
 
       await expect(async () => {
-        await page
-          .getByRole('link', { name: 'View Pending Transactions' })
-          .click();
-        await expect(
-          page.getByRole('heading', { name: 'Pending Transactions' }),
-        ).toBeVisible();
-        await page.getByRole('link', { name: 'Back to Transactions' }).click();
-        await expect(
-          page.getByRole('heading', {
-            exact: true,
-            level: 1,
-            name: 'Transactions',
-          }),
-        ).toBeVisible();
+        await page.reload();
         await expectFinancialSummary(page, {
           balance: '£3,946.40',
           owed: '£0.00',

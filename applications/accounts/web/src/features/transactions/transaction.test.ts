@@ -75,7 +75,7 @@ describe('Transaction accounting input', () => {
     });
   });
 
-  it('preserves scheduling only for a Pending Transaction', () => {
+  it('preserves the captured form time for a new scheduled Pending Transaction', () => {
     expect(
       buildTransactionInput(
         {
@@ -86,23 +86,24 @@ describe('Transaction accounting input', () => {
         '2026-08-15T12:59:59.999Z',
       ),
     ).toMatchObject({
-      date: '2026-08-15T13:00:00.000Z',
+      date: '2026-08-15T12:59:59.999Z',
       scheduled: true,
       status: 'pending',
     });
   });
 
-  it('keeps a new scheduled Transaction in the future across a UTC day boundary', () => {
+  it('combines a scheduled Transaction calendar date with the captured form time', () => {
     expect(
       buildTransactionInput(
         {
           ...baseValues,
+          date: '2026-08-16',
           scheduled: true,
           status: 'pending',
         },
         '2026-08-15T23:59:59.999Z',
       ),
-    ).toMatchObject({ date: '2026-08-16T00:00:00.000Z' });
+    ).toMatchObject({ date: '2026-08-16T23:59:59.999Z' });
   });
 
   it('uses exact decimal VAT calculations for sale and inclusive purchase rates', () => {

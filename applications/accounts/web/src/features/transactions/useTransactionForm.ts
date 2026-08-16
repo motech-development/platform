@@ -145,18 +145,13 @@ export function useTransactionForm({
         return;
       }
 
-      const referenceDateTime =
-        !value.id && value.status === 'pending' && value.scheduled
-          ? new Date().toISOString()
-          : transactionDateTime.current;
-
       const input = buildTransactionInput(
         {
           ...value,
           attachment:
             transfer?.status === 'uploaded' ? transfer.path : value.attachment,
         },
-        referenceDateTime,
+        transactionDateTime.current,
       );
       const editing = Boolean(input.id);
 
