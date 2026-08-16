@@ -50,7 +50,6 @@ function TransactionEditDrawer({
   const {
     blocker,
     categories,
-    clearAttachmentTransfer,
     clients,
     completeMutation,
     currency,
@@ -63,6 +62,7 @@ function TransactionEditDrawer({
     markDirty,
     online,
     refetch,
+    removeAttachment,
     requestClose,
     setDiscardOpen,
     submissionPending,
@@ -168,7 +168,6 @@ function TransactionEditDrawer({
             >
               <RecordTransactionFormFields
                 categories={categories}
-                clearAttachmentTransfer={clearAttachmentTransfer}
                 clients={clients}
                 companyId={companyId}
                 currency={currency}
@@ -176,6 +175,7 @@ function TransactionEditDrawer({
                 form={form}
                 markDirty={markDirty}
                 online={online}
+                removeAttachment={removeAttachment}
                 suggestions={suggestions}
                 trackAttachmentTransfer={trackAttachmentTransfer}
                 vatRate={vatRate}

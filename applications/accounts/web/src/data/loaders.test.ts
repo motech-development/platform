@@ -203,6 +203,10 @@ describe('primeTransaction', () => {
     await expect(
       primeTransaction(context(query), companyId, transactionId, 'confirmed'),
     ).rejects.toThrow('Not found');
+    expect(query).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({ fetchPolicy: 'network-only' }),
+    );
     expect(notFound).toHaveBeenCalledWith({ throw: true });
   });
 });

@@ -234,6 +234,7 @@ export async function primeTransaction(
   await verifyOwnedCompany(context, companyId);
   requireResourceId(transactionId);
   const result = await context.apolloClient.query({
+    fetchPolicy: 'network-only',
     query: GET_TRANSACTION,
     variables: { transactionId },
   });

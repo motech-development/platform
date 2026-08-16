@@ -7,6 +7,7 @@ import {
   Skeleton,
   StatePanel,
 } from '@motech-development/breeze-ui';
+import { ArrowLeftIcon } from '@motech-development/breeze-ui/icons';
 import type { ErrorComponentProps } from '@tanstack/react-router';
 import { useLocation, useNavigate } from '@tanstack/react-router';
 import { type ReactNode, useEffect } from 'react';
@@ -25,6 +26,7 @@ import {
   SettingsFormSkeleton,
   TransactionsContentSkeleton,
 } from '../features/loading/AccountsPageSkeletons';
+import { TransactionLedgerSkeleton } from '../features/transactions/TransactionLedger';
 import { captureRouteFailure } from '../observability';
 import { type AccountsPendingView, accountsPendingView } from './-route-state';
 
@@ -115,7 +117,12 @@ function ClientsPending({
 }
 
 export function AccountsPending() {
-  const { t } = useTranslation(['routing', 'companies', 'shell']);
+  const { t } = useTranslation([
+    'routing',
+    'companies',
+    'shell',
+    'transactions',
+  ]);
   const location = useLocation();
   const navigate = useNavigate();
   const pendingView = accountsPendingView(location.pathname);
@@ -180,6 +187,34 @@ export function AccountsPending() {
           title={t('Accounts', { ns: 'shell' })}
         />
         <TransactionsContentSkeleton />
+      </div>
+    );
+  }
+
+  if (pendingView === 'pending-transactions') {
+    const companyId = /^\/my-companies\/accounts\/([^/]+)/u.exec(
+      location.pathname,
+    )?.[1];
+    const accountsHref = companyId
+      ? `/my-companies/accounts/${encodeURIComponent(companyId)}`
+      : '/my-companies';
+
+    return (
+      <div className="min-w-0">
+        <PageHeader
+          back={
+            <LinkButton appearance="ghost" href={accountsHref}>
+              <ArrowLeftIcon />
+              {t('Back to Transactions', { ns: 'transactions' })}
+            </LinkButton>
+          }
+          description={t(
+            'Review transactions waiting to be confirmed or scheduled for publication.',
+            { ns: 'transactions' },
+          )}
+          title={t('Pending Transactions', { ns: 'transactions' })}
+        />
+        <TransactionLedgerSkeleton pending />
       </div>
     );
   }

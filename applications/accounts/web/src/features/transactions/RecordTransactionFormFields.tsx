@@ -143,7 +143,6 @@ function SuggestionField({
 
 export function RecordTransactionFormFields({
   categories,
-  clearAttachmentTransfer,
   clients,
   companyId,
   currency,
@@ -151,12 +150,12 @@ export function RecordTransactionFormFields({
   form,
   markDirty,
   online,
+  removeAttachment,
   suggestions,
   trackAttachmentTransfer,
   vatRate,
 }: Readonly<{
   categories: readonly { name: string; vatRate: number }[];
-  clearAttachmentTransfer: () => void;
   clients: readonly { id: string; name: string }[];
   companyId: string;
   currency: string;
@@ -164,6 +163,7 @@ export function RecordTransactionFormFields({
   form: TransactionForm;
   markDirty: () => void;
   online: boolean;
+  removeAttachment: (path: string) => Promise<boolean>;
   suggestions?: Readonly<{
     purchases?: readonly string[] | null;
     sales?: readonly string[] | null;
@@ -662,10 +662,15 @@ export function RecordTransactionFormFields({
                   <TransactionAttachment
                     companyId={companyId}
                     disabled={isSubmitting}
-                    onDeleted={() => {
-                      clearAttachmentTransfer();
-                      field.handleChange('');
-                      markDirty();
+                    onDeleted={async () => {
+                      const removed = await removeAttachment(field.state.value);
+
+                      if (removed) {
+                        field.handleChange('');
+                        markDirty();
+                      }
+
+                      return removed;
                     }}
                     path={field.state.value}
                   />

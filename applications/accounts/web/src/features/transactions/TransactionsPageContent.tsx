@@ -99,7 +99,7 @@ export function TransactionsPageContent({
         </QueryRefreshAlert>
       ) : null}
       {initiallyLoading ? <TransactionsContentSkeleton /> : null}
-      {hasTransactions && data ? (
+      {!initiallyLoading && hasTransactions && data ? (
         <div className="flex flex-col">
           {confirmed.data ? (
             <FinancialSummary

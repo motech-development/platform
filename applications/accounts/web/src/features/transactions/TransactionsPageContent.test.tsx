@@ -7,8 +7,12 @@ import { TransactionsPageContent } from './TransactionsPageContent';
 const mocks = vi.hoisted(() => ({
   confirmedError: undefined as Error | undefined,
   confirmedFetchMore: vi.fn().mockResolvedValue(undefined),
+  confirmedHasData: true,
+  confirmedLoading: false,
   pendingError: undefined as Error | undefined,
   pendingFetchMore: vi.fn().mockResolvedValue(undefined),
+  pendingHasData: true,
+  pendingLoading: false,
   queryCall: 0,
 }));
 
@@ -20,32 +24,34 @@ vi.mock('@apollo/client/react', async (importOriginal) => ({
     mocks.queryCall += 1;
 
     return {
-      data: {
-        getBalance: {
-          balance: 0,
-          currency: 'GBP',
-          vat: { owed: 0, paid: 0 },
-        },
-        getTransactions: {
-          items: [
-            {
-              amount: confirmed ? 100 : -20,
-              category: confirmed ? 'Sales' : 'Professional fees',
-              date: confirmed
-                ? '2026-08-15T00:00:00.000Z'
-                : '2026-08-16T00:00:00.000Z',
-              description: confirmed ? 'Confirmed work' : 'Pending work',
-              id: confirmed ? 'confirmed-id' : 'pending-id',
-              name: confirmed ? 'Client' : 'Supplier',
-              ...(confirmed ? {} : { status: 'pending' }),
+      data: (confirmed ? mocks.confirmedHasData : mocks.pendingHasData)
+        ? {
+            getBalance: {
+              balance: 0,
+              currency: 'GBP',
+              vat: { owed: 0, paid: 0 },
             },
-          ],
-          nextToken: confirmed ? 'confirmed-next' : null,
-        },
-      },
+            getTransactions: {
+              items: [
+                {
+                  amount: confirmed ? 100 : -20,
+                  category: confirmed ? 'Sales' : 'Professional fees',
+                  date: confirmed
+                    ? '2026-08-15T00:00:00.000Z'
+                    : '2026-08-16T00:00:00.000Z',
+                  description: confirmed ? 'Confirmed work' : 'Pending work',
+                  id: confirmed ? 'confirmed-id' : 'pending-id',
+                  name: confirmed ? 'Client' : 'Supplier',
+                  ...(confirmed ? {} : { status: 'pending' }),
+                },
+              ],
+              nextToken: confirmed ? 'confirmed-next' : null,
+            },
+          }
+        : undefined,
       error: confirmed ? mocks.confirmedError : mocks.pendingError,
       fetchMore: confirmed ? mocks.confirmedFetchMore : mocks.pendingFetchMore,
-      loading: false,
+      loading: confirmed ? mocks.confirmedLoading : mocks.pendingLoading,
       networkStatus: undefined,
       refetch: vi.fn(),
     };
@@ -54,12 +60,14 @@ vi.mock('@apollo/client/react', async (importOriginal) => ({
 
 vi.mock('./FinancialSummary', () => ({
   FinancialSummary: () => <p>Financial summary</p>,
+  FinancialSummarySkeleton: () => <p>Financial summary skeleton</p>,
 }));
 
 vi.mock('./TransactionLedger', () => ({
   TransactionLedger: ({ transactions }: { transactions: { id: string }[] }) => (
     <p>{transactions.map(({ id }) => id).join(',')}</p>
   ),
+  TransactionLedgerSkeleton: () => <p>Transaction ledger skeleton</p>,
 }));
 
 vi.mock('./TransactionPagePresentation', () => ({
@@ -72,7 +80,11 @@ describe('TransactionsPageContent', () => {
   beforeEach(() => {
     mocks.queryCall = 0;
     mocks.confirmedError = undefined;
+    mocks.confirmedHasData = true;
+    mocks.confirmedLoading = false;
     mocks.pendingError = undefined;
+    mocks.pendingHasData = true;
+    mocks.pendingLoading = false;
     vi.clearAllMocks();
   });
 
@@ -108,5 +120,22 @@ describe('TransactionsPageContent', () => {
       ),
     ).toBeVisible();
     expect(screen.queryByText('Could not load')).not.toBeInTheDocument();
+  });
+
+  it('shows only the loading layout until both transaction sources have initial data', () => {
+    mocks.pendingHasData = false;
+    mocks.pendingLoading = true;
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <TransactionsPageContent companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    expect(
+      screen.getByRole('status', { name: 'Loading transactions' }),
+    ).toBeVisible();
+    expect(screen.queryByText('confirmed-id')).not.toBeInTheDocument();
+    expect(screen.queryByText('Financial summary')).not.toBeInTheDocument();
   });
 });

@@ -7,6 +7,7 @@ export type AccountsPendingView =
   | 'companies'
   | 'company-details'
   | 'dashboard'
+  | 'pending-transactions'
   | 'record-transaction'
   | 'settings'
   | 'transactions';
@@ -23,6 +24,10 @@ export function accountsPendingView(pathname: string): AccountsPendingView {
   }
 
   if (pathname.includes('/my-companies/accounts/')) {
+    if (pathname.includes('/pending-transactions')) {
+      return 'pending-transactions';
+    }
+
     return 'transactions';
   }
 

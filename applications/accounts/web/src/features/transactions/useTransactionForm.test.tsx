@@ -1,6 +1,7 @@
 import { BreezeProvider } from '@motech-development/breeze-ui';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { useState } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useTransactionForm } from './useTransactionForm';
 
@@ -213,6 +214,41 @@ function PendingTransferHarness() {
   );
 }
 
+function StagedAttachmentHarness() {
+  const [removed, setRemoved] = useState(false);
+  const { removeAttachment, trackAttachmentTransfer } = useTransactionForm({
+    companyId: 'company-id',
+    confirmedReturnTo: '/my-companies/accounts/$companyId',
+  });
+  const path = 'company-id/staged-invoice.pdf';
+
+  return (
+    <>
+      <button
+        onClick={() => {
+          trackAttachmentTransfer(
+            Promise.resolve({ path, status: 'uploaded' }),
+          );
+        }}
+        type="button"
+      >
+        Stage attachment
+      </button>
+      <button
+        onClick={() => {
+          removeAttachment(path)
+            .then(setRemoved)
+            .catch(() => undefined);
+        }}
+        type="button"
+      >
+        Remove staged attachment
+      </button>
+      {removed ? <p>Staged attachment removed</p> : null}
+    </>
+  );
+}
+
 function mutationInput(mock: typeof mocks.add) {
   const calls = mock.mock.calls as unknown as Array<
     [{ variables: { input: Record<string, unknown> } }]
@@ -379,6 +415,36 @@ describe('useTransactionForm', () => {
 
     await waitFor(() => expect(mocks.update).toHaveBeenCalledOnce());
     expect(mocks.deleteFile).not.toHaveBeenCalled();
+  });
+
+  it('deletes a staged attachment when it is removed before submission', async () => {
+    mocks.deleteFile.mockResolvedValueOnce({
+      data: { deleteFile: { path: 'company-id/staged-invoice.pdf' } },
+    });
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <StagedAttachmentHarness />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Stage attachment' }),
+    );
+    await waitFor(() => expect(mocks.shouldBlockFn?.()).toBe(false));
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Remove staged attachment' }),
+    );
+
+    expect(await screen.findByText('Staged attachment removed')).toBeVisible();
+    expect(mocks.deleteFile).toHaveBeenCalledWith({
+      variables: {
+        id: 'company-id',
+        path: 'company-id/staged-invoice.pdf',
+      },
+    });
+    expect(mocks.add).not.toHaveBeenCalled();
+    expect(mocks.update).not.toHaveBeenCalled();
   });
 
   it('explains why a failed attachment transfer blocks submission', async () => {

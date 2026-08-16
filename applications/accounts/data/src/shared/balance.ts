@@ -5,15 +5,12 @@ import aggregatedDay from './aggregated-day';
 import { ITransaction, TransactionStatus } from './transaction';
 
 interface IVatUtility {
-  name: 'amount' | 'vat';
   property: 'owed' | 'paid';
   value: number;
 }
 
 const vatUtility = (record: ITransaction): IVatUtility => {
   const value = record.category === 'VAT payment' ? record.amount : record.vat;
-  const name = record.category === 'VAT payment' ? 'amount' : 'vat';
-
   let property: IVatUtility['property'];
 
   switch (record.category) {
@@ -26,7 +23,6 @@ const vatUtility = (record: ITransaction): IVatUtility => {
   }
 
   return {
-    name,
     property,
     value,
   };
@@ -103,16 +99,21 @@ export const update = (
     oldRecord.status === TransactionStatus.Confirmed &&
     newRecord.status === TransactionStatus.Pending
   ) {
-    return remove(documentClient, tableName, newRecord);
+    return remove(documentClient, tableName, oldRecord);
   }
 
   const now = new Date();
-  const { name, property } = vatUtility(newRecord);
+  const oldVat = vatUtility(oldRecord);
+  const newVat = vatUtility(newRecord);
+  const vatPropertyChanged = oldVat.property !== newVat.property;
   const isSameDate =
     aggregatedDay(newRecord.date) === aggregatedDay(oldRecord.date);
+  const vatUpdateExpression = vatPropertyChanged
+    ? '#vat.#vatPropertyOld :vatOld, #vat.#vatPropertyNew :vatNew'
+    : '#vat.#vatProperty :vat';
   const UpdateExpression = isSameDate
-    ? 'SET #updatedAt = :updatedAt ADD #balance :balance, #vat.#vatProperty :vat, #items.#itemProperty :balance'
-    : 'SET #updatedAt = :updatedAt, #items.#itemPropertyOld = #items.#itemPropertyOld - :itemPropertyOld ADD #balance :balance, #vat.#vatProperty :vat, #items.#itemPropertyNew :itemPropertyNew';
+    ? `SET #updatedAt = :updatedAt ADD #balance :balance, ${vatUpdateExpression}, #items.#itemProperty :balance`
+    : `SET #updatedAt = :updatedAt, #items.#itemPropertyOld = #items.#itemPropertyOld - :itemPropertyOld ADD #balance :balance, ${vatUpdateExpression}, #items.#itemPropertyNew :itemPropertyNew`;
   const command = new UpdateCommand({
     ExpressionAttributeNames: {
       '#balance': 'balance',
@@ -127,7 +128,12 @@ export const update = (
       '#items': 'items',
       '#updatedAt': 'updatedAt',
       '#vat': 'vat',
-      '#vatProperty': property,
+      ...(vatPropertyChanged
+        ? {
+            '#vatPropertyNew': newVat.property,
+            '#vatPropertyOld': oldVat.property,
+          }
+        : { '#vatProperty': newVat.property }),
     },
     ExpressionAttributeValues: {
       ':balance': new Decimal(newRecord.amount)
@@ -140,7 +146,14 @@ export const update = (
             ':itemPropertyOld': oldRecord.amount,
           }),
       ':updatedAt': now.toISOString(),
-      ':vat': new Decimal(newRecord[name]).minus(oldRecord[name]).toNumber(),
+      ...(vatPropertyChanged
+        ? {
+            ':vatNew': newVat.value,
+            ':vatOld': new Decimal(oldVat.value).negated().toNumber(),
+          }
+        : {
+            ':vat': new Decimal(newVat.value).minus(oldVat.value).toNumber(),
+          }),
     },
     Key: {
       __typename: 'Balance',

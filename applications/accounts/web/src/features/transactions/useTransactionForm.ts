@@ -88,6 +88,7 @@ export function useTransactionForm({
   const attachmentTransfer = useRef<
     Promise<AttachmentTransferResult> | undefined
   >(undefined);
+  const stagedAttachmentPath = useRef<string | undefined>(undefined);
   const { data, error, loading, refetch } = useQuery(GET_RECORD_TRANSACTION, {
     fetchPolicy: 'cache-and-network',
     nextFetchPolicy: 'cache-first',
@@ -96,6 +97,26 @@ export function useTransactionForm({
   const [addTransaction] = useMutation(ADD_TRANSACTION);
   const [deleteFile] = useMutation(DELETE_FILE);
   const [updateTransaction] = useMutation(UPDATE_TRANSACTION);
+  const deleteAttachment = async (path: string, failureDescription: string) => {
+    try {
+      const deletion = await deleteFile({
+        variables: { id: companyId, path },
+      });
+
+      if (!deletion.data?.deleteFile.path) {
+        throw new Error('No deleted file returned');
+      }
+
+      return true;
+    } catch {
+      toast.show({
+        description: failureDescription,
+        title: t('Attachment cleanup failed'),
+        variant: 'danger',
+      });
+      return false;
+    }
+  };
   const form = useForm({
     defaultValues: initialValues ?? defaultValues(companyId, initialStatus),
     onSubmit: async ({ value }) => {
@@ -144,23 +165,12 @@ export function useTransactionForm({
           const previousAttachment = initialValues?.attachment;
 
           if (previousAttachment && previousAttachment !== input.attachment) {
-            try {
-              const deletion = await deleteFile({
-                variables: { id: companyId, path: previousAttachment },
-              });
-
-              if (!deletion.data?.deleteFile.path) {
-                throw new Error('No deleted file returned');
-              }
-            } catch {
-              toast.show({
-                description: t(
-                  'The Transaction was saved, but the previous attachment could not be deleted.',
-                ),
-                title: t('Attachment cleanup failed'),
-                variant: 'danger',
-              });
-            }
+            await deleteAttachment(
+              previousAttachment,
+              t(
+                'The Transaction was saved, but the previous attachment could not be deleted.',
+              ),
+            );
           }
         } else {
           const result = await addTransaction({
@@ -233,9 +243,6 @@ export function useTransactionForm({
   return {
     ...navigation,
     categories: data?.getSettings.categories ?? [],
-    clearAttachmentTransfer: () => {
-      attachmentTransfer.current = undefined;
-    },
     clients: data?.getClients.items ?? [],
     currency: data?.getBalance?.currency ?? 'GBP',
     data,
@@ -244,12 +251,44 @@ export function useTransactionForm({
     loading,
     online,
     refetch,
+    removeAttachment: async (path: string) => {
+      const transfer = attachmentTransfer.current;
+
+      attachmentTransfer.current = undefined;
+      const transferResult = await transfer;
+      const stagedPath =
+        transferResult?.status === 'uploaded'
+          ? transferResult.path
+          : stagedAttachmentPath.current;
+
+      if (stagedPath !== path) return true;
+
+      setAttachmentTransferPending(true);
+      const deleted = await deleteAttachment(
+        path,
+        t('Nothing was deleted. Try again.', {
+          ns: 'attachments',
+        }),
+      );
+
+      if (deleted) stagedAttachmentPath.current = undefined;
+      setAttachmentTransferPending(false);
+      return deleted;
+    },
     submissionPending,
     suggestions: data?.getTypeahead,
     trackAttachmentTransfer: (transfer: Promise<AttachmentTransferResult>) => {
       attachmentTransfer.current = transfer;
       setAttachmentTransferPending(true);
       transfer
+        .then((result) => {
+          if (
+            attachmentTransfer.current === transfer &&
+            result.status === 'uploaded'
+          ) {
+            stagedAttachmentPath.current = result.path;
+          }
+        })
         .finally(() => {
           if (attachmentTransfer.current === transfer) {
             setAttachmentTransferPending(false);

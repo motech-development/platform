@@ -28,7 +28,7 @@ export function TransactionAttachment({
 }: Readonly<{
   companyId: string;
   disabled?: boolean;
-  onDeleted: () => void;
+  onDeleted: () => boolean | Promise<boolean>;
   path: string;
 }>) {
   const { t } = useTranslation(['attachments', 'transactions']);
@@ -37,6 +37,7 @@ export function TransactionAttachment({
   const online = useOnlineStatus();
   const runLatestTransfer = useLatestTransfer();
   const [file, setFile] = useState<Blob>();
+  const [deleting, setDeleting] = useState(false);
   const [loading, setLoading] = useState(false);
   const name = path.split('/').at(-1) ?? path;
   const imageUrl = useMemo(
@@ -131,10 +132,18 @@ export function TransactionAttachment({
               {t('Download file')}
             </Button>
             <Button
-              disabled={!online || disabled}
+              disabled={!online || disabled || deleting}
+              loading={deleting}
               onAction={() => {
-                setFile(undefined);
-                onDeleted();
+                setDeleting(true);
+                Promise.resolve(onDeleted())
+                  .then((deleted) => {
+                    if (deleted) setFile(undefined);
+                  })
+                  .then(
+                    () => setDeleting(false),
+                    () => setDeleting(false),
+                  );
               }}
               variant="danger"
             >

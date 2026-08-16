@@ -47,7 +47,6 @@ export function RecordTransactionPage({
   const {
     blocker,
     categories,
-    clearAttachmentTransfer,
     clients,
     currency,
     data,
@@ -59,6 +58,7 @@ export function RecordTransactionPage({
     markDirty,
     online,
     refetch,
+    removeAttachment,
     requestClose,
     setDiscardOpen,
     suggestions,
@@ -124,7 +124,6 @@ export function RecordTransactionPage({
             >
               <RecordTransactionFormFields
                 categories={categories}
-                clearAttachmentTransfer={clearAttachmentTransfer}
                 clients={clients}
                 companyId={companyId}
                 currency={currency}
@@ -132,6 +131,7 @@ export function RecordTransactionPage({
                 form={form}
                 markDirty={markDirty}
                 online={online}
+                removeAttachment={removeAttachment}
                 suggestions={suggestions}
                 trackAttachmentTransfer={trackAttachmentTransfer}
                 vatRate={vatRate}

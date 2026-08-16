@@ -37,7 +37,7 @@ describe('TransactionAttachment', () => {
       <BreezeProvider locale="en-GB">
         <TransactionAttachment
           companyId="company-id"
-          onDeleted={vi.fn()}
+          onDeleted={() => true}
           path="company-id/invoice.pdf"
         />
       </BreezeProvider>,
@@ -60,7 +60,7 @@ describe('TransactionAttachment', () => {
   });
 
   it('marks a persisted attachment for deletion without deleting it immediately', async () => {
-    const onDeleted = vi.fn();
+    const onDeleted = vi.fn(() => true);
 
     render(
       <BreezeProvider locale="en-GB">

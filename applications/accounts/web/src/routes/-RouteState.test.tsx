@@ -23,6 +23,7 @@ vi.mock('@motech-development/breeze-ui/icons', async (importOriginal) => ({
     typeof import('@motech-development/breeze-ui/icons')
   >()),
   AddIcon: () => <span aria-hidden="true">+</span>,
+  ArrowLeftIcon: () => <span aria-hidden="true">←</span>,
 }));
 
 vi.mock('@tanstack/react-router', async (importOriginal) => ({
@@ -48,6 +49,10 @@ describe('AccountsPending', () => {
   it.each([
     ['/my-companies', 'My companies'],
     ['/my-companies/accounts/company-id', 'Accounts'],
+    [
+      '/my-companies/accounts/company-id/pending-transactions',
+      'Pending Transactions',
+    ],
     ['/my-companies/accounts/company-id/record-transaction', 'Accounts'],
     ['/my-companies/clients/company-id', 'Clients'],
     ['/my-companies/clients/company-id/add-client', 'Clients'],
@@ -60,6 +65,14 @@ describe('AccountsPending', () => {
     expect(
       screen.getByRole('heading', { level: 1, name: title }),
     ).toBeInTheDocument();
+  });
+
+  it('keeps the Pending Transactions back action visible while loading', () => {
+    renderPending('/my-companies/accounts/company-id/pending-transactions');
+
+    expect(
+      screen.getByRole('link', { name: 'Back to Transactions' }),
+    ).toHaveAttribute('href', '/my-companies/accounts/company-id');
   });
 
   it.each([
