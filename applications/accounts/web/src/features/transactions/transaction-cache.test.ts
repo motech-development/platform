@@ -115,7 +115,7 @@ describe('Transaction cache reconciliation', () => {
     expect(ids(cache, 'pending')).toEqual([]);
   });
 
-  it('keeps newest-first ordering stable and preserves collection tokens', () => {
+  it('keeps Pending ordering oldest-first and preserves collection tokens', () => {
     const cache = createAccountsCache();
 
     cache.writeQuery({
@@ -147,10 +147,29 @@ describe('Transaction cache reconciliation', () => {
     });
 
     expect(collection?.getTransactions.items.map(({ id }) => id)).toEqual([
-      'transaction-1',
       'older',
+      'transaction-1',
     ]);
     expect(collection?.getTransactions.nextToken).toBe('page-2');
+  });
+
+  it('keeps Confirmed ordering newest-first', () => {
+    const cache = createAccountsCache();
+
+    writeCollection(cache, 'confirmed', 100, [
+      transaction({
+        date: '2026-08-14T00:00:00.000Z',
+        id: 'older',
+        status: 'confirmed',
+      }),
+    ]);
+
+    reconcileTransactionInCache(
+      cache,
+      transaction({ scheduled: false, status: 'confirmed' }),
+    );
+
+    expect(ids(cache, 'confirmed', 100)).toEqual(['transaction-1', 'older']);
   });
 
   it('adds purchase suggestions without duplicates', () => {

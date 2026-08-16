@@ -53,6 +53,10 @@ describe('AccountsPending', () => {
       '/my-companies/accounts/company-id/pending-transactions',
       'Pending Transactions',
     ],
+    [
+      '/my-companies/accounts/company-id/pending-transactions/record-transaction',
+      'Pending Transactions',
+    ],
     ['/my-companies/accounts/company-id/record-transaction', 'Accounts'],
     ['/my-companies/clients/company-id', 'Clients'],
     ['/my-companies/clients/company-id/add-client', 'Clients'],
@@ -73,6 +77,19 @@ describe('AccountsPending', () => {
     expect(
       screen.getByRole('link', { name: 'Back to Transactions' }),
     ).toHaveAttribute('href', '/my-companies/accounts/company-id');
+  });
+
+  it('announces the Pending Transactions load and preserves its record drawer context', () => {
+    renderPending(
+      '/my-companies/accounts/company-id/pending-transactions/record-transaction',
+    );
+
+    expect(
+      screen.getByRole('status', { name: 'Loading Pending Transactions' }),
+    ).toHaveAttribute('aria-busy', 'true');
+    expect(
+      screen.getByRole('dialog', { name: 'Record transaction' }),
+    ).toBeVisible();
   });
 
   it.each([

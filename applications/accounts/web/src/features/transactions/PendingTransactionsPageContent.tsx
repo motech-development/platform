@@ -4,6 +4,7 @@ import { Button, LinkButton, PageHeader } from '@motech-development/breeze-ui';
 import { ArrowLeftIcon } from '@motech-development/breeze-ui/icons';
 import { useTranslation } from 'react-i18next';
 import { GET_PENDING_TRANSACTIONS } from '../../data/operations';
+import { LoadingSkeletonRegion } from '../loading/AccountsPageSkeletons';
 import { QueryRefreshAlert } from '../QueryRefreshAlert';
 import {
   TransactionLedger,
@@ -71,7 +72,11 @@ export function PendingTransactionsPageContent({
           )}
         </QueryRefreshAlert>
       ) : null}
-      {initiallyLoading ? <TransactionLedgerSkeleton pending /> : null}
+      {initiallyLoading ? (
+        <LoadingSkeletonRegion loadingLabel={t('Loading Pending Transactions')}>
+          <TransactionLedgerSkeleton pending />
+        </LoadingSkeletonRegion>
+      ) : null}
       {data ? (
         <>
           <TransactionLedger

@@ -21,6 +21,7 @@ import {
   CompanyDetailsFormSkeleton,
   CompanyEnrolmentDrawerSkeleton,
   FormSkeletonRegion,
+  LoadingSkeletonRegion,
   OverviewContentSkeleton,
   RecordTransactionDrawerSkeleton,
   SettingsFormSkeleton,
@@ -191,7 +192,10 @@ export function AccountsPending() {
     );
   }
 
-  if (pendingView === 'pending-transactions') {
+  if (
+    pendingView === 'pending-transactions' ||
+    pendingView === 'pending-record-transaction'
+  ) {
     const companyId = /^\/my-companies\/accounts\/([^/]+)/u.exec(
       location.pathname,
     )?.[1];
@@ -200,22 +204,33 @@ export function AccountsPending() {
       : '/my-companies';
 
     return (
-      <div className="min-w-0">
-        <PageHeader
-          back={
-            <LinkButton appearance="ghost" href={accountsHref}>
-              <ArrowLeftIcon />
-              {t('Back to Transactions', { ns: 'transactions' })}
-            </LinkButton>
-          }
-          description={t(
-            'Review transactions waiting to be confirmed or scheduled for publication.',
-            { ns: 'transactions' },
-          )}
-          title={t('Pending Transactions', { ns: 'transactions' })}
-        />
-        <TransactionLedgerSkeleton pending />
-      </div>
+      <>
+        <div className="min-w-0">
+          <PageHeader
+            back={
+              <LinkButton appearance="ghost" href={accountsHref}>
+                <ArrowLeftIcon />
+                {t('Back to Transactions', { ns: 'transactions' })}
+              </LinkButton>
+            }
+            description={t(
+              'Review transactions waiting to be confirmed or scheduled for publication.',
+              { ns: 'transactions' },
+            )}
+            title={t('Pending Transactions', { ns: 'transactions' })}
+          />
+          <LoadingSkeletonRegion
+            loadingLabel={t('Loading Pending Transactions', {
+              ns: 'transactions',
+            })}
+          >
+            <TransactionLedgerSkeleton pending />
+          </LoadingSkeletonRegion>
+        </div>
+        {pendingView === 'pending-record-transaction' ? (
+          <RecordTransactionDrawerSkeleton />
+        ) : null}
+      </>
     );
   }
 

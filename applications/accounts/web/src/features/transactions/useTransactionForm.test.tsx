@@ -251,6 +251,39 @@ function StagedAttachmentHarness() {
   );
 }
 
+function DiscardStagedAttachmentHarness() {
+  const { discardChanges, markDirty, trackAttachmentTransfer } =
+    useTransactionForm({
+      companyId: 'company-id',
+      confirmedReturnTo: '/my-companies/accounts/$companyId',
+    });
+  const path = 'company-id/staged-invoice.pdf';
+
+  return (
+    <>
+      <button
+        onClick={() => {
+          markDirty();
+          trackAttachmentTransfer(
+            Promise.resolve({ path, status: 'uploaded' }),
+          );
+        }}
+        type="button"
+      >
+        Stage attachment
+      </button>
+      <button
+        onClick={() => {
+          discardChanges();
+        }}
+        type="button"
+      >
+        Discard changes
+      </button>
+    </>
+  );
+}
+
 function mutationInput(mock: typeof mocks.add) {
   const calls = mock.mock.calls as unknown as Array<
     [{ variables: { input: Record<string, unknown> } }]
@@ -449,6 +482,35 @@ describe('useTransactionForm', () => {
     });
     expect(mocks.add).not.toHaveBeenCalled();
     expect(mocks.update).not.toHaveBeenCalled();
+  });
+
+  it('deletes a staged attachment before abandoning the form', async () => {
+    mocks.deleteFile.mockResolvedValueOnce({
+      data: { deleteFile: { path: 'company-id/staged-invoice.pdf' } },
+    });
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <DiscardStagedAttachmentHarness />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Stage attachment' }),
+    );
+    await waitFor(() => expect(mocks.shouldBlockFn?.()).toBe(true));
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Discard changes' }),
+    );
+
+    await waitFor(() => expect(mocks.deleteFile).toHaveBeenCalledOnce());
+    expect(mocks.deleteFile.mock.invocationCallOrder[0]).toBeLessThan(
+      mocks.navigate.mock.invocationCallOrder[0] ?? 0,
+    );
+    expect(mocks.navigate).toHaveBeenCalledWith({
+      params: { companyId: 'company-id' },
+      to: '/my-companies/accounts/$companyId',
+    });
   });
 
   it('explains why a failed attachment transfer blocks submission', async () => {

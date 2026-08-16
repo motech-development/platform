@@ -137,7 +137,9 @@ function updateLoadedCollections(
           const leftDate = readField<string>('date', left) ?? '';
           const rightDate = readField<string>('date', right) ?? '';
 
-          return rightDate.localeCompare(leftDate);
+          return status === 'pending'
+            ? leftDate.localeCompare(rightDate)
+            : rightDate.localeCompare(leftDate);
         });
 
         return { ...existing, items: next };

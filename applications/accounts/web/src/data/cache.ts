@@ -19,6 +19,7 @@ interface ClientPage {
 }
 
 interface TransactionPage {
+  readonly transactionContinuationLoaded?: boolean;
   readonly __typename?: 'Transactions';
   readonly id?: string;
   readonly items?: readonly CacheReference[];
@@ -121,24 +122,36 @@ function mergeTransactionPages(
   incoming: TransactionPage,
   { args, readField }: FieldFunctionOptions,
 ): TransactionPage {
-  if (!args?.nextToken || !existing) {
-    return incoming;
-  }
-
+  const incomingItems = incoming.items ?? [];
   const incomingIds = new Set(
-    incoming.items
-      ?.map((transaction) => entityId(transaction, readField))
+    incomingItems
+      .map((transaction) => entityId(transaction, readField))
       .filter(Boolean),
   );
+  const retainedItems =
+    existing?.items?.filter(
+      (transaction) => !incomingIds.has(entityId(transaction, readField)),
+    ) ?? [];
+
+  if (!existing) {
+    return { ...incoming, transactionContinuationLoaded: false };
+  }
+
+  if (!args?.nextToken) {
+    return existing.transactionContinuationLoaded
+      ? {
+          ...incoming,
+          items: [...incomingItems, ...retainedItems],
+          nextToken: existing.nextToken,
+          transactionContinuationLoaded: true,
+        }
+      : { ...incoming, transactionContinuationLoaded: false };
+  }
 
   return {
     ...incoming,
-    items: [
-      ...(existing.items?.filter(
-        (transaction) => !incomingIds.has(entityId(transaction, readField)),
-      ) ?? []),
-      ...(incoming.items ?? []),
-    ],
+    items: [...retainedItems, ...incomingItems],
+    transactionContinuationLoaded: true,
   };
 }
 

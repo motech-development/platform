@@ -8,10 +8,12 @@ const mocks = vi.hoisted(() => ({
   confirmedError: undefined as Error | undefined,
   confirmedFetchMore: vi.fn().mockResolvedValue(undefined),
   confirmedHasData: true,
+  confirmedId: 'confirmed-id',
   confirmedLoading: false,
   pendingError: undefined as Error | undefined,
   pendingFetchMore: vi.fn().mockResolvedValue(undefined),
   pendingHasData: true,
+  pendingId: 'pending-id',
   pendingLoading: false,
   queryCall: 0,
 }));
@@ -40,7 +42,7 @@ vi.mock('@apollo/client/react', async (importOriginal) => ({
                     ? '2026-08-15T00:00:00.000Z'
                     : '2026-08-16T00:00:00.000Z',
                   description: confirmed ? 'Confirmed work' : 'Pending work',
-                  id: confirmed ? 'confirmed-id' : 'pending-id',
+                  id: confirmed ? mocks.confirmedId : mocks.pendingId,
                   name: confirmed ? 'Client' : 'Supplier',
                   ...(confirmed ? {} : { status: 'pending' }),
                 },
@@ -64,8 +66,12 @@ vi.mock('./FinancialSummary', () => ({
 }));
 
 vi.mock('./TransactionLedger', () => ({
-  TransactionLedger: ({ transactions }: { transactions: { id: string }[] }) => (
-    <p>{transactions.map(({ id }) => id).join(',')}</p>
+  TransactionLedger: ({
+    transactions,
+  }: {
+    transactions: { id: string; status: string }[];
+  }) => (
+    <p>{transactions.map(({ id, status }) => `${id}:${status}`).join(',')}</p>
   ),
   TransactionLedgerSkeleton: () => <p>Transaction ledger skeleton</p>,
 }));
@@ -81,9 +87,11 @@ describe('TransactionsPageContent', () => {
     mocks.queryCall = 0;
     mocks.confirmedError = undefined;
     mocks.confirmedHasData = true;
+    mocks.confirmedId = 'confirmed-id';
     mocks.confirmedLoading = false;
     mocks.pendingError = undefined;
     mocks.pendingHasData = true;
+    mocks.pendingId = 'pending-id';
     mocks.pendingLoading = false;
     vi.clearAllMocks();
   });
@@ -95,13 +103,31 @@ describe('TransactionsPageContent', () => {
       </BreezeProvider>,
     );
 
-    expect(screen.getByText('pending-id,confirmed-id')).toBeVisible();
+    expect(
+      screen.getByText('pending-id:pending,confirmed-id:confirmed'),
+    ).toBeVisible();
     await userEvent.click(screen.getByRole('button', { name: 'Load more' }));
 
     expect(mocks.confirmedFetchMore).toHaveBeenCalledWith({
       variables: { nextToken: 'confirmed-next' },
     });
     expect(mocks.pendingFetchMore).not.toHaveBeenCalled();
+  });
+
+  it('deduplicates overlapping status snapshots with Pending precedence', () => {
+    mocks.confirmedId = 'shared-id';
+    mocks.pendingId = 'shared-id';
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <TransactionsPageContent companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    expect(screen.getByText('shared-id:pending')).toBeVisible();
+    expect(
+      screen.queryByText(/shared-id:.*shared-id/u),
+    ).not.toBeInTheDocument();
   });
 
   it('keeps available Transactions visible after a partial refresh failure', () => {
@@ -113,7 +139,9 @@ describe('TransactionsPageContent', () => {
       </BreezeProvider>,
     );
 
-    expect(screen.getByText('pending-id,confirmed-id')).toBeVisible();
+    expect(
+      screen.getByText('pending-id:pending,confirmed-id:confirmed'),
+    ).toBeVisible();
     expect(
       screen.getByText(
         'Transactions could not be refreshed. Existing results are still shown.',

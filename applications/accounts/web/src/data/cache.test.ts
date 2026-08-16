@@ -272,6 +272,82 @@ describe('confirmed Transaction pages', () => {
         ?.getTransactions.items.map(({ id }) => id),
     ).toEqual(['first', 'overlap', 'second']);
   });
+
+  it('preserves loaded continuation Transactions during a first-page refresh', () => {
+    const cache = createAccountsCache();
+
+    cache.writeQuery({
+      data: {
+        getTransactions: {
+          __typename: 'Transactions',
+          id: 'company-1',
+          items: [
+            {
+              __typename: 'Transaction',
+              date: '2026-07-27T00:00:00.000Z',
+              id: 'first',
+              name: 'First sale',
+            },
+          ],
+          nextToken: 'page-2',
+          status: 'confirmed',
+        },
+      },
+      query: transactionsQuery,
+      variables,
+    });
+    cache.writeQuery({
+      data: {
+        getTransactions: {
+          __typename: 'Transactions',
+          id: 'company-1',
+          items: [
+            {
+              __typename: 'Transaction',
+              date: '2026-07-26T00:00:00.000Z',
+              id: 'second',
+              name: 'Second sale',
+            },
+          ],
+          nextToken: 'page-3',
+          status: 'confirmed',
+        },
+      },
+      query: transactionsQuery,
+      variables: { ...variables, nextToken: 'page-2' },
+    });
+
+    cache.writeQuery({
+      data: {
+        getTransactions: {
+          __typename: 'Transactions',
+          id: 'company-1',
+          items: [
+            {
+              __typename: 'Transaction',
+              date: '2026-07-28T00:00:00.000Z',
+              id: 'first',
+              name: 'Updated first sale',
+            },
+          ],
+          nextToken: 'refreshed-page-2',
+          status: 'confirmed',
+        },
+      },
+      query: transactionsQuery,
+      variables,
+    });
+
+    const collection = cache.readQuery<{
+      getTransactions: { items: { id: string }[]; nextToken: string };
+    }>({ query: transactionsQuery, variables });
+
+    expect(collection?.getTransactions.items.map(({ id }) => id)).toEqual([
+      'first',
+      'second',
+    ]);
+    expect(collection?.getTransactions.nextToken).toBe('page-3');
+  });
 });
 
 describe('owner notifications', () => {

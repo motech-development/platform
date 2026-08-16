@@ -13,7 +13,7 @@ import { EntityTableSkeleton } from '../EntityTableSkeleton';
 import { FinancialSummarySkeleton } from '../transactions/FinancialSummary';
 import { TransactionLedgerSkeleton } from '../transactions/TransactionLedger';
 
-export function FormSkeletonRegion({
+export function LoadingSkeletonRegion({
   children,
   loadingLabel,
 }: Readonly<{ children: ReactNode; loadingLabel: string }>) {
@@ -26,6 +26,8 @@ export function FormSkeletonRegion({
     </section>
   );
 }
+
+export const FormSkeletonRegion = LoadingSkeletonRegion;
 
 export function CompaniesTableSkeleton() {
   const { t } = useTranslation(['companies', 'routing']);

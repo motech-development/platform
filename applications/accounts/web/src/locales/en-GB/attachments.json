@@ -38,6 +38,7 @@
   "Download file": "Download file",
   "Delete file": "Delete file",
   "Nothing was deleted. Try again.": "Nothing was deleted. Try again.",
+  "The staged attachment could not be deleted. Try again.": "The staged attachment could not be deleted. Try again.",
   "Attachment could not be deleted": "Attachment could not be deleted",
   "Transaction attachment": "Transaction attachment"
 }

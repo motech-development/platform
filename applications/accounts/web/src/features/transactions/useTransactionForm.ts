@@ -123,6 +123,30 @@ export function useTransactionForm({
       return false;
     }
   };
+  const discardStagedAttachment = async () => {
+    const transfer = attachmentTransfer.current;
+
+    attachmentTransfer.current = undefined;
+    const transferResult = await transfer;
+    const path =
+      transferResult?.status === 'uploaded'
+        ? transferResult.path
+        : stagedAttachmentPath.current;
+
+    if (!path) return true;
+
+    setAttachmentTransferPending(true);
+    const deleted = await deleteAttachment(
+      path,
+      t('The staged attachment could not be deleted. Try again.', {
+        ns: 'attachments',
+      }),
+    );
+
+    if (deleted) stagedAttachmentPath.current = undefined;
+    setAttachmentTransferPending(false);
+    return deleted;
+  };
   const form = useForm({
     defaultValues:
       initialValues ??
@@ -211,6 +235,8 @@ export function useTransactionForm({
         return;
       }
 
+      attachmentTransfer.current = undefined;
+      stagedAttachmentPath.current = undefined;
       toast.show({
         title: editing ? t('Transaction updated') : t('Transaction recorded'),
         variant: 'success',
@@ -237,15 +263,20 @@ export function useTransactionForm({
   const submissionPending = formSubmissionPending || attachmentTransferPending;
   const navigation = useFormNavigation({
     blockPendingNavigation: submissionPending || additionalPending,
-    onClose: () =>
-      navigate({
+    onClose: async () => {
+      if (!(await discardStagedAttachment())) {
+        throw new Error('Staged attachment cleanup failed');
+      }
+
+      return navigate({
         params: { companyId },
         to:
           closeTo ??
           (initialValues?.status === 'pending' || initialStatus === 'pending'
             ? '/my-companies/accounts/$companyId/pending-transactions'
             : confirmedReturnTo),
-      }),
+      });
+    },
     pending: submissionPending,
   });
 
@@ -257,6 +288,14 @@ export function useTransactionForm({
     clients: data?.getClients.items ?? [],
     currency: data?.getBalance?.currency ?? 'GBP',
     data,
+    discardChanges: () => {
+      discardStagedAttachment()
+        .then((discarded) => {
+          if (discarded) navigation.discardChanges();
+        })
+        .catch(() => undefined);
+    },
+    discardStagedAttachment,
     error,
     form,
     loading,

@@ -56,6 +56,7 @@ function TransactionEditDrawer({
     data,
     discardChanges,
     discardOpen,
+    discardStagedAttachment,
     error,
     form,
     loading,
@@ -79,6 +80,8 @@ function TransactionEditDrawer({
   });
   const pending = submissionPending || deleting;
   const deleteCurrentTransaction = async () => {
+    if (!(await discardStagedAttachment())) return false;
+
     try {
       const result = await deleteTransaction({
         update: (cache, mutation) => {

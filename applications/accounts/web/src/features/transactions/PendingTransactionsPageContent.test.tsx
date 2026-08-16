@@ -53,8 +53,46 @@ vi.mock('@motech-development/breeze-ui/icons', () => ({
 
 describe('PendingTransactionsPageContent', () => {
   beforeEach(() => {
+    query.data = {
+      getBalance: { currency: 'GBP', id: 'company-id' },
+      getTransactions: {
+        items: [
+          {
+            amount: -120,
+            attachment: null,
+            category: 'Professional fees',
+            companyId: 'company-id',
+            date: '2026-08-20T00:00:00.000Z',
+            description: 'Quarterly bookkeeping',
+            id: 'pending-id',
+            name: 'Oak & Co Accountants',
+            refund: false,
+            scheduled: true,
+            status: 'pending',
+            vat: 20,
+          },
+        ],
+        nextToken: null,
+      },
+    };
     query.error = undefined;
+    query.loading = false;
     vi.clearAllMocks();
+  });
+
+  it('announces the initial Pending Transactions load', () => {
+    query.data = undefined as never;
+    query.loading = true;
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <PendingTransactionsPageContent companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    expect(
+      screen.getByRole('status', { name: 'Loading Pending Transactions' }),
+    ).toHaveAttribute('aria-busy', 'true');
   });
 
   it('presents the dedicated Pending Transaction collection', () => {

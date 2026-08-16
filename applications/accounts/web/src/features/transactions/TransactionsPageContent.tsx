@@ -10,7 +10,7 @@ import {
 import { TransactionsContentSkeleton } from '../loading/AccountsPageSkeletons';
 import { QueryRefreshAlert } from '../QueryRefreshAlert';
 import { FinancialSummary } from './FinancialSummary';
-import { TransactionLedger } from './TransactionLedger';
+import { type LedgerTransaction, TransactionLedger } from './TransactionLedger';
 import {
   RecordTransactionLink,
   TransactionPageError,
@@ -45,13 +45,29 @@ export function TransactionsPageContent({
   const initiallyLoading =
     (confirmed.loading && !confirmed.data) ||
     (pending.loading && !pending.data);
-  const transactions = [
-    ...(confirmed.data?.getTransactions.items ?? []).map((transaction) => ({
-      ...transaction,
-      status: 'confirmed' as const,
-    })),
-    ...(pending.data?.getTransactions.items ?? []),
-  ].sort((left, right) => right.date.localeCompare(left.date));
+  // Pending is the explicit status-bearing snapshot and wins while the two
+  // eventually consistent status indexes overlap.
+  const transactionsById = new Map<string, LedgerTransaction>([
+    ...(confirmed.data?.getTransactions.items ?? []).map(
+      (transaction): [string, LedgerTransaction] => [
+        transaction.id,
+        {
+          ...transaction,
+          status: 'confirmed',
+        },
+      ],
+    ),
+    ...(pending.data?.getTransactions.items ?? []).map(
+      (transaction): [string, LedgerTransaction] => [
+        transaction.id,
+        transaction,
+      ],
+    ),
+  ]);
+
+  const transactions = [...transactionsById.values()].sort((left, right) =>
+    right.date.localeCompare(left.date),
+  );
   const hasTransactions = transactions.length > 0;
   const recordTransactionHref = `/my-companies/accounts/${encodeURIComponent(companyId)}/record-transaction`;
   const pendingTransactionsHref = `/my-companies/accounts/${encodeURIComponent(companyId)}/pending-transactions`;
