@@ -134,6 +134,10 @@ describe('TransactionAttachment', () => {
     );
     expect(mocks.saveAs).toHaveBeenCalledWith(file, 'invoice.pdf');
     expect(mocks.download).toHaveBeenCalledOnce();
+    expect(mocks.toast.show).toHaveBeenCalledWith({
+      title: 'The download has started',
+      variant: 'success',
+    });
     await userEvent.click(screen.getByRole('button', { name: 'Close' }));
     expect(
       screen.queryByText('PDF preview: application/pdf'),
@@ -194,6 +198,10 @@ describe('TransactionAttachment', () => {
     await waitFor(() =>
       expect(mocks.saveAs).toHaveBeenCalledWith(file, 'invoice.pdf'),
     );
+    expect(mocks.toast.show).toHaveBeenCalledWith({
+      title: 'The download has started',
+      variant: 'success',
+    });
   });
 
   it('reports a failed direct download without removing the attachment', async () => {

@@ -25,6 +25,7 @@ import {
   OverviewContentSkeleton,
   RecordTransactionDrawerSkeleton,
   SettingsFormSkeleton,
+  TransactionEditDrawerSkeleton,
   TransactionsContentSkeleton,
 } from '../features/loading/AccountsPageSkeletons';
 import { TransactionLedgerSkeleton } from '../features/transactions/TransactionLedger';
@@ -138,7 +139,10 @@ export function AccountsPending() {
     );
   }
 
-  if (pendingView === 'record-transaction') {
+  if (
+    pendingView === 'record-transaction' ||
+    pendingView === 'transaction-details'
+  ) {
     const openedFromDashboard = location.pathname.includes(
       '/my-companies/dashboard/',
     );
@@ -173,7 +177,11 @@ export function AccountsPending() {
             <TransactionsContentSkeleton />
           )}
         </div>
-        <RecordTransactionDrawerSkeleton />
+        {pendingView === 'record-transaction' ? (
+          <RecordTransactionDrawerSkeleton />
+        ) : (
+          <TransactionEditDrawerSkeleton />
+        )}
       </>
     );
   }
@@ -194,7 +202,8 @@ export function AccountsPending() {
 
   if (
     pendingView === 'pending-transactions' ||
-    pendingView === 'pending-record-transaction'
+    pendingView === 'pending-record-transaction' ||
+    pendingView === 'pending-transaction-details'
   ) {
     const companyId = /^\/my-companies\/accounts\/([^/]+)/u.exec(
       location.pathname,
@@ -227,9 +236,12 @@ export function AccountsPending() {
             <TransactionLedgerSkeleton pending />
           </LoadingSkeletonRegion>
         </div>
-        {pendingView === 'pending-record-transaction' ? (
+        {pendingView === 'pending-record-transaction' && (
           <RecordTransactionDrawerSkeleton />
-        ) : null}
+        )}
+        {pendingView === 'pending-transaction-details' && (
+          <TransactionEditDrawerSkeleton />
+        )}
       </>
     );
   }

@@ -261,6 +261,20 @@ describe('primeTransaction', () => {
     ).rejects.toThrow('The Transaction did not return data');
   });
 
+  it('leaves a transient Transaction query failure to the page recovery state', async () => {
+    const transactionId = '3456df4a-51f8-49af-a52e-c1a21b8ff087';
+    const query = vi
+      .fn()
+      .mockResolvedValueOnce({
+        data: { getCompanies: { items: [{ id: companyId }] } },
+      })
+      .mockRejectedValueOnce(new Error('Unavailable'));
+
+    await expect(
+      primeTransaction(context(query), companyId, transactionId),
+    ).resolves.toBeUndefined();
+  });
+
   it('rejects a non-confirmed transaction on the confirmed detail route', async () => {
     const transactionId = '3456df4a-51f8-49af-a52e-c1a21b8ff087';
     const query = vi

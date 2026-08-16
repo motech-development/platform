@@ -19,7 +19,10 @@ interface ClientPage {
 }
 
 interface TransactionPage {
-  readonly transactionContinuationLoaded?: boolean;
+  readonly transactionLoadedContinuationTokens?: readonly string[];
+  readonly transactionLoadedPageCount?: number;
+  readonly transactionRefreshGeneration?: number;
+  readonly transactionRequestedPageCount?: number;
   readonly __typename?: 'Transactions';
   readonly id?: string;
   readonly items?: readonly CacheReference[];
@@ -122,36 +125,74 @@ function mergeTransactionPages(
   incoming: TransactionPage,
   { args, readField }: FieldFunctionOptions,
 ): TransactionPage {
+  const partialFirstPage = incoming.items === undefined;
   const incomingItems = incoming.items ?? [];
   const incomingIds = new Set(
     incomingItems
       .map((transaction) => entityId(transaction, readField))
       .filter(Boolean),
   );
-  const retainedItems =
-    existing?.items?.filter(
-      (transaction) => !incomingIds.has(entityId(transaction, readField)),
-    ) ?? [];
-
   if (!existing) {
-    return { ...incoming, transactionContinuationLoaded: false };
+    return !args?.nextToken
+      ? {
+          ...incoming,
+          transactionLoadedContinuationTokens: [],
+          transactionLoadedPageCount: 1,
+          transactionRefreshGeneration: 0,
+          transactionRequestedPageCount: 1,
+        }
+      : incoming;
+  }
+
+  if (!args?.nextToken && partialFirstPage) {
+    return existing;
   }
 
   if (!args?.nextToken) {
-    return existing.transactionContinuationLoaded
-      ? {
-          ...incoming,
-          items: [...incomingItems, ...retainedItems],
-          nextToken: existing.nextToken,
-          transactionContinuationLoaded: true,
-        }
-      : { ...incoming, transactionContinuationLoaded: false };
+    const loadedPageCount = existing.transactionLoadedPageCount ?? 1;
+
+    return {
+      ...incoming,
+      transactionLoadedContinuationTokens: [],
+      transactionLoadedPageCount: 1,
+      transactionRefreshGeneration:
+        (existing.transactionRefreshGeneration ?? 0) + 1,
+      transactionRequestedPageCount: Math.max(
+        loadedPageCount,
+        existing.transactionRequestedPageCount ?? 1,
+      ),
+    };
   }
+
+  const retainedItems =
+    existing.items?.filter(
+      (transaction) => !incomingIds.has(entityId(transaction, readField)),
+    ) ?? [];
+  const continuationToken =
+    typeof args.nextToken === 'string' ? args.nextToken : undefined;
+  const loadedContinuationTokens =
+    existing.transactionLoadedContinuationTokens ?? [];
+  const continuationAlreadyLoaded =
+    continuationToken !== undefined &&
+    loadedContinuationTokens.includes(continuationToken);
+  const loadedPageCount = existing.transactionLoadedPageCount ?? 1;
+  const nextLoadedPageCount = continuationAlreadyLoaded
+    ? loadedPageCount
+    : loadedPageCount + 1;
 
   return {
     ...incoming,
     items: [...retainedItems, ...incomingItems],
-    transactionContinuationLoaded: true,
+    transactionLoadedContinuationTokens:
+      continuationToken && !continuationAlreadyLoaded
+        ? [...loadedContinuationTokens, continuationToken]
+        : loadedContinuationTokens,
+    transactionLoadedPageCount: nextLoadedPageCount,
+    transactionRefreshGeneration: existing.transactionRefreshGeneration ?? 0,
+    transactionRequestedPageCount: Math.max(
+      nextLoadedPageCount,
+      existing.transactionRequestedPageCount ?? 1,
+    ),
   };
 }
 
@@ -254,6 +295,23 @@ export function createAccountsCache() {
       // the wrapper embedded lets its field policy distinguish first pages from
       // continuation pages without persisting any authenticated data.
       Transactions: {
+        fields: {
+          transactionLoadedPageCount: {
+            read(value: number | undefined) {
+              return value ?? 1;
+            },
+          },
+          transactionRefreshGeneration: {
+            read(value: number | undefined) {
+              return value ?? 0;
+            },
+          },
+          transactionRequestedPageCount: {
+            read(value: number | undefined) {
+              return value ?? 1;
+            },
+          },
+        },
         keyFields: false,
       },
     },

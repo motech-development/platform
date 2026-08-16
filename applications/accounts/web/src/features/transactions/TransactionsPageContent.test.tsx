@@ -1,5 +1,5 @@
 import { BreezeProvider } from '@motech-development/breeze-ui';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { TransactionsPageContent } from './TransactionsPageContent';
@@ -10,26 +10,32 @@ const mocks = vi.hoisted(() => ({
   confirmedHasData: true,
   confirmedHasItems: true,
   confirmedId: 'confirmed-id',
+  confirmedLoadedPageCount: 1,
   confirmedLoading: false,
   confirmedNextToken: null as string | null,
   confirmedRefetch: vi.fn().mockResolvedValue(undefined),
+  confirmedRefreshGeneration: 0,
+  confirmedRequestedPageCount: 1,
   pendingError: undefined as Error | undefined,
   pendingFetchMore: vi.fn().mockResolvedValue(undefined),
   pendingHasData: true,
   pendingHasItems: true,
   pendingId: 'pending-id',
+  pendingLoadedPageCount: 1,
   pendingLoading: false,
   pendingNextToken: null as string | null,
   pendingRefetch: vi.fn().mockResolvedValue(undefined),
-  queryCall: 0,
+  pendingRefreshGeneration: 0,
+  pendingRequestedPageCount: 1,
 }));
 
 vi.mock('@apollo/client/react', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@apollo/client/react')>()),
-  useQuery: () => {
-    const confirmed = mocks.queryCall % 2 === 0;
-
-    mocks.queryCall += 1;
+  useQuery: (
+    _document: unknown,
+    { variables }: { variables: { status: string } },
+  ) => {
+    const confirmed = variables.status === 'confirmed';
 
     return {
       data: (confirmed ? mocks.confirmedHasData : mocks.pendingHasData)
@@ -62,13 +68,22 @@ vi.mock('@apollo/client/react', async (importOriginal) => ({
               nextToken: confirmed
                 ? mocks.confirmedNextToken
                 : mocks.pendingNextToken,
+              transactionLoadedPageCount: confirmed
+                ? mocks.confirmedLoadedPageCount
+                : mocks.pendingLoadedPageCount,
+              transactionRefreshGeneration: confirmed
+                ? mocks.confirmedRefreshGeneration
+                : mocks.pendingRefreshGeneration,
+              transactionRequestedPageCount: confirmed
+                ? mocks.confirmedRequestedPageCount
+                : mocks.pendingRequestedPageCount,
             },
           }
         : undefined,
       error: confirmed ? mocks.confirmedError : mocks.pendingError,
       fetchMore: confirmed ? mocks.confirmedFetchMore : mocks.pendingFetchMore,
       loading: confirmed ? mocks.confirmedLoading : mocks.pendingLoading,
-      networkStatus: undefined,
+      networkStatus: 7,
       refetch: confirmed ? mocks.confirmedRefetch : mocks.pendingRefetch,
     };
   },
@@ -114,19 +129,24 @@ vi.mock('./TransactionPagePresentation', () => ({
 
 describe('TransactionsPageContent', () => {
   beforeEach(() => {
-    mocks.queryCall = 0;
     mocks.confirmedError = undefined;
     mocks.confirmedHasData = true;
     mocks.confirmedHasItems = true;
     mocks.confirmedId = 'confirmed-id';
     mocks.confirmedLoading = false;
     mocks.confirmedNextToken = 'confirmed-next';
+    mocks.confirmedLoadedPageCount = 1;
+    mocks.confirmedRefreshGeneration = 0;
+    mocks.confirmedRequestedPageCount = 1;
     mocks.pendingError = undefined;
     mocks.pendingHasData = true;
     mocks.pendingHasItems = true;
     mocks.pendingId = 'pending-id';
     mocks.pendingLoading = false;
     mocks.pendingNextToken = null;
+    mocks.pendingLoadedPageCount = 1;
+    mocks.pendingRefreshGeneration = 0;
+    mocks.pendingRequestedPageCount = 1;
     vi.clearAllMocks();
   });
 
@@ -281,6 +301,30 @@ describe('TransactionsPageContent', () => {
     expect(mocks.confirmedFetchMore).not.toHaveBeenCalled();
     expect(mocks.pendingFetchMore).toHaveBeenCalledWith({
       variables: { nextToken: 'pending-next' },
+    });
+  });
+
+  it('rebuilds each source to its previously loaded depth after refresh', async () => {
+    mocks.confirmedNextToken = 'confirmed-refreshed-page-2';
+    mocks.confirmedRefreshGeneration = 1;
+    mocks.confirmedRequestedPageCount = 2;
+    mocks.pendingNextToken = 'pending-refreshed-page-2';
+    mocks.pendingRefreshGeneration = 1;
+    mocks.pendingRequestedPageCount = 2;
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <TransactionsPageContent companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    await waitFor(() => {
+      expect(mocks.confirmedFetchMore).toHaveBeenCalledWith({
+        variables: { nextToken: 'confirmed-refreshed-page-2' },
+      });
+      expect(mocks.pendingFetchMore).toHaveBeenCalledWith({
+        variables: { nextToken: 'pending-refreshed-page-2' },
+      });
     });
   });
 

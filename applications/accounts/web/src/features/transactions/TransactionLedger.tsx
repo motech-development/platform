@@ -209,7 +209,11 @@ function TransactionRow({
 
   return (
     <Table.Row
-      className={pending ? 'bg-[var(--breeze-surface-subtle)]' : undefined}
+      className={
+        pending && !pendingCollection
+          ? 'bg-[var(--breeze-surface-subtle)]'
+          : undefined
+      }
       id={transaction.id}
       onAction={() => {
         navigate({

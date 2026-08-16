@@ -34,6 +34,7 @@
   "Connection required to attach a file.": "Connection required to attach a file.",
   "Choose one PDF, GIF, JPG, or PNG file.": "Choose one PDF, GIF, JPG, or PNG file.",
   "The file could not be opened. Try again.": "The file could not be opened. Try again.",
+  "The download has started": "The download has started",
   "View file": "View file",
   "Download file": "Download file",
   "Delete file": "Delete file",

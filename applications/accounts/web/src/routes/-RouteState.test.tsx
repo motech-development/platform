@@ -63,7 +63,15 @@ describe('AccountsPending', () => {
       '/my-companies/accounts/company-id/pending-transactions/record-transaction',
       'Pending Transactions',
     ],
+    [
+      '/my-companies/accounts/company-id/pending-transactions/view-transaction/transaction-id',
+      'Pending Transactions',
+    ],
     ['/my-companies/accounts/company-id/record-transaction', 'Accounts'],
+    [
+      '/my-companies/accounts/company-id/view-transaction/transaction-id',
+      'Accounts',
+    ],
     ['/my-companies/dashboard/company-id', ''],
     ['/my-companies/clients/company-id', 'Clients'],
     ['/my-companies/clients/company-id/add-client', 'Clients'],
@@ -104,6 +112,20 @@ describe('AccountsPending', () => {
     ).toHaveAttribute('aria-busy', 'true');
     expect(
       screen.getByRole('dialog', { name: 'Record transaction' }),
+    ).toBeVisible();
+  });
+
+  it.each([
+    '/my-companies/accounts/company-id/view-transaction/transaction-id',
+    '/my-companies/accounts/company-id/pending-transactions/view-transaction/transaction-id',
+  ])('preserves the edit drawer context while %s loads', (pathname) => {
+    renderPending(pathname);
+
+    expect(
+      screen.getByRole('dialog', { name: 'Edit transaction' }),
+    ).toBeVisible();
+    expect(
+      screen.getByRole('status', { name: 'Loading transaction form' }),
     ).toBeVisible();
   });
 

@@ -14,6 +14,7 @@ import {
   RecordTransactionLink,
   TransactionPageError,
 } from './TransactionPagePresentation';
+import { useTransactionPageReconciliation } from './useTransactionPageReconciliation';
 
 export function PendingTransactionsPageContent({
   companyId,
@@ -31,6 +32,12 @@ export function PendingTransactionsPageContent({
   const initiallyLoading = loading && !data;
   const accountsHref = `/my-companies/accounts/${encodeURIComponent(companyId)}`;
   const recordTransactionHref = `${accountsHref}/pending-transactions/record-transaction`;
+
+  useTransactionPageReconciliation({
+    fetchMore,
+    networkStatus,
+    page: data?.getTransactions,
+  });
 
   return (
     <div

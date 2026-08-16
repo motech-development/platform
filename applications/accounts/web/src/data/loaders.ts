@@ -233,11 +233,17 @@ export async function primeTransaction(
 
   await verifyOwnedCompany(context, companyId);
   requireResourceId(transactionId);
-  const result = await context.apolloClient.query({
-    fetchPolicy: 'network-only',
-    query: GET_TRANSACTION,
-    variables: { transactionId },
-  });
+  let result;
+
+  try {
+    result = await context.apolloClient.query({
+      fetchPolicy: 'network-only',
+      query: GET_TRANSACTION,
+      variables: { transactionId },
+    });
+  } catch {
+    return;
+  }
 
   if (!result.data) {
     throw new Error('The Transaction did not return data');

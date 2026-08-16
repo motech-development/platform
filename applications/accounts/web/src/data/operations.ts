@@ -306,6 +306,9 @@ export const GET_PENDING_TRANSACTIONS = graphql(`
     ) {
       id
       status
+      transactionLoadedPageCount @client
+      transactionRequestedPageCount @client
+      transactionRefreshGeneration @client
       items {
         id
         amount
@@ -349,6 +352,9 @@ export const GET_CONFIRMED_TRANSACTIONS = graphql(`
     ) {
       id
       status
+      transactionLoadedPageCount @client
+      transactionRequestedPageCount @client
+      transactionRefreshGeneration @client
       items {
         id
         amount

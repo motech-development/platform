@@ -115,11 +115,14 @@ describe('TransactionLedger', () => {
     );
 
     expect(screen.getByText('£0.30')).toBeVisible();
-    expect(
-      screen.getByRole('rowheader', {
-        name: /Pending transaction: Oak & Co Accountants/,
-      }),
-    ).toBeVisible();
+    const pendingIdentity = screen.getByRole('rowheader', {
+      name: /Pending transaction: Oak & Co Accountants/,
+    });
+
+    expect(pendingIdentity).toBeVisible();
+    expect(pendingIdentity.closest('[role="row"]')).toHaveClass(
+      'bg-[var(--breeze-surface-subtle)]',
+    );
     expect(
       screen.getByRole('img', { name: 'Scheduled transaction' }),
     ).toBeVisible();
@@ -189,11 +192,12 @@ describe('TransactionLedger', () => {
     expect(
       screen.getByRole('img', { name: 'Scheduled transaction' }),
     ).toBeVisible();
-    await userEvent.click(
-      screen.getByRole('row', {
-        name: /Pending transaction: Oak & Co Accountants/u,
-      }),
-    );
+    const pendingRow = screen.getByRole('row', {
+      name: /Pending transaction: Oak & Co Accountants/u,
+    });
+
+    expect(pendingRow).not.toHaveClass('bg-[var(--breeze-surface-subtle)]');
+    await userEvent.click(pendingRow);
 
     expect(mocks.navigate).toHaveBeenCalledWith({
       params: { companyId: 'company-id', transactionId: 'pending-id' },

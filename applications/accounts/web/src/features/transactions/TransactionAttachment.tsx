@@ -52,6 +52,8 @@ export function TransactionAttachment({
     [imageUrl],
   );
   const download = async () => {
+    if (file) return file;
+
     const result = await runLatestTransfer(async (signal) => {
       const response = await apolloClient.query({
         fetchPolicy: 'no-cache',
@@ -71,6 +73,10 @@ export function TransactionAttachment({
     });
 
     return result.status === 'cancelled' ? undefined : result.value;
+  };
+  const saveDownload = (downloaded: Blob) => {
+    saveAs(downloaded, name);
+    toast.show({ title: t('The download has started'), variant: 'success' });
   };
   const getFile = async () => {
     if (file) return file;
@@ -116,7 +122,7 @@ export function TransactionAttachment({
               onAction={() => {
                 download()
                   .then((downloaded) => {
-                    if (downloaded) saveAs(downloaded, name);
+                    if (downloaded) saveDownload(downloaded);
                   })
                   .catch(() => {
                     toast.show({
@@ -177,7 +183,7 @@ export function TransactionAttachment({
                 <Inline justify="end">
                   <Button
                     appearance="outline"
-                    onAction={() => saveAs(file, name)}
+                    onAction={() => saveDownload(file)}
                   >
                     {t('Download file')}
                   </Button>

@@ -70,6 +70,20 @@ const clientPageStateQuery = gql`
   }
 `;
 
+const transactionPageStateQuery = gql`
+  query CacheTransactionPageState(
+    $count: Int
+    $id: ID!
+    $status: TransactionStatus!
+  ) {
+    getTransactions(count: $count, id: $id, status: $status) {
+      transactionLoadedPageCount @client
+      transactionRequestedPageCount @client
+      transactionRefreshGeneration @client
+    }
+  }
+`;
+
 const notificationsQuery = gql`
   query CacheNotifications($id: ID!, $count: Int) {
     getNotifications(id: $id, count: $count) {
@@ -346,7 +360,7 @@ describe('confirmed Transaction pages', () => {
     ).toEqual(['first', 'overlap', 'second']);
   });
 
-  it('preserves loaded continuation Transactions during a first-page refresh', () => {
+  it('rebuilds the loaded page depth from the refreshed continuation cursor', () => {
     const cache = createAccountsCache();
 
     cache.writeQuery({
@@ -417,9 +431,58 @@ describe('confirmed Transaction pages', () => {
 
     expect(collection?.getTransactions.items.map(({ id }) => id)).toEqual([
       'first',
-      'second',
     ]);
-    expect(collection?.getTransactions.nextToken).toBe('page-3');
+    expect(collection?.getTransactions.nextToken).toBe('refreshed-page-2');
+    expect(
+      cache.readQuery({ query: transactionPageStateQuery, variables }),
+    ).toEqual({
+      getTransactions: {
+        __typename: 'Transactions',
+        transactionLoadedPageCount: 1,
+        transactionRefreshGeneration: 1,
+        transactionRequestedPageCount: 2,
+      },
+    });
+
+    cache.writeQuery({
+      data: {
+        getTransactions: {
+          __typename: 'Transactions',
+          id: 'company-1',
+          items: [
+            {
+              __typename: 'Transaction',
+              date: '2026-07-29T00:00:00.000Z',
+              id: 'fresh-second',
+              name: 'Fresh second sale',
+            },
+          ],
+          nextToken: null,
+          status: 'confirmed',
+        },
+      },
+      query: transactionsQuery,
+      variables: { ...variables, nextToken: 'refreshed-page-2' },
+    });
+
+    expect(
+      cache
+        .readQuery<{ getTransactions: { items: { id: string }[] } }>({
+          query: transactionsQuery,
+          variables,
+        })
+        ?.getTransactions.items.map(({ id }) => id),
+    ).toEqual(['first', 'fresh-second']);
+    expect(
+      cache.readQuery({ query: transactionPageStateQuery, variables }),
+    ).toEqual({
+      getTransactions: {
+        __typename: 'Transactions',
+        transactionLoadedPageCount: 2,
+        transactionRefreshGeneration: 1,
+        transactionRequestedPageCount: 2,
+      },
+    });
   });
 });
 

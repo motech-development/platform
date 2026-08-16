@@ -1,5 +1,5 @@
 import { BreezeProvider } from '@motech-development/breeze-ui';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { PendingTransactionsPageContent } from './PendingTransactionsPageContent';
@@ -25,12 +25,15 @@ const query = vi.hoisted(() => ({
         },
       ],
       nextToken: null as string | null,
+      transactionLoadedPageCount: 1,
+      transactionRefreshGeneration: 0,
+      transactionRequestedPageCount: 1,
     },
   },
   error: undefined as Error | undefined,
   fetchMore: vi.fn().mockResolvedValue(undefined),
   loading: false,
-  networkStatus: undefined,
+  networkStatus: 7,
   refetch: vi.fn().mockResolvedValue(undefined),
 }));
 
@@ -74,6 +77,9 @@ describe('PendingTransactionsPageContent', () => {
           },
         ],
         nextToken: null,
+        transactionLoadedPageCount: 1,
+        transactionRefreshGeneration: 0,
+        transactionRequestedPageCount: 1,
       },
     };
     query.error = undefined;
@@ -188,5 +194,23 @@ describe('PendingTransactionsPageContent', () => {
     expect(query.fetchMore).toHaveBeenCalledWith({
       variables: { nextToken: 'page-2' },
     });
+  });
+
+  it('rebuilds previously loaded pages after a first-page refresh', async () => {
+    query.data.getTransactions.nextToken = 'refreshed-page-2';
+    query.data.getTransactions.transactionRefreshGeneration = 1;
+    query.data.getTransactions.transactionRequestedPageCount = 2;
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <PendingTransactionsPageContent companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    await waitFor(() =>
+      expect(query.fetchMore).toHaveBeenCalledWith({
+        variables: { nextToken: 'refreshed-page-2' },
+      }),
+    );
   });
 });

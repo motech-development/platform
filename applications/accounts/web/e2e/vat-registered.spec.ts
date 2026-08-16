@@ -621,11 +621,19 @@ test.describe('VAT registered', () => {
         .first()
         .click();
       await page.getByRole('button', { name: 'View file' }).click();
-      await expect(page.locator('.react-pdf__Document')).toBeVisible();
-      const download = page.waitForEvent('download');
+      const preview = page.getByRole('region', { name: 'PDF preview' });
 
-      await page.getByRole('button', { name: 'Download file' }).last().click();
+      await expect(preview).toBeVisible();
+      const download = page.waitForEvent('download');
+      const attachment = page.getByRole('dialog').filter({ has: preview });
+
+      await attachment.getByRole('button', { name: 'Download file' }).click();
       await download;
+      await expect(
+        page.getByRole('alert').filter({
+          hasText: 'The download has started',
+        }),
+      ).toBeVisible();
     });
   });
 

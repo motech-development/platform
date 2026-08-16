@@ -16,6 +16,7 @@ import {
   TransactionPageError,
   TransactionPageHeaderAction,
 } from './TransactionPagePresentation';
+import { useTransactionPageReconciliation } from './useTransactionPageReconciliation';
 
 export function TransactionsPageContent({
   companyId,
@@ -73,6 +74,17 @@ export function TransactionsPageContent({
   const pendingTransactionsHref = `/my-companies/accounts/${encodeURIComponent(companyId)}/pending-transactions`;
   const data = confirmed.data ?? pending.data;
   const error = confirmed.error ?? pending.error;
+
+  useTransactionPageReconciliation({
+    fetchMore: confirmed.fetchMore,
+    networkStatus: confirmed.networkStatus,
+    page: confirmed.data?.getTransactions,
+  });
+  useTransactionPageReconciliation({
+    fetchMore: pending.fetchMore,
+    networkStatus: pending.networkStatus,
+    page: pending.data?.getTransactions,
+  });
 
   return (
     <div

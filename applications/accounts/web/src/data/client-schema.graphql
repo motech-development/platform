@@ -5,3 +5,9 @@ extend type Clients {
   clientRequestedPageCount: Int!
   clientRefreshGeneration: Int!
 }
+
+extend type Transactions {
+  transactionLoadedPageCount: Int!
+  transactionRequestedPageCount: Int!
+  transactionRefreshGeneration: Int!
+}

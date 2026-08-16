@@ -256,14 +256,17 @@ export function TransactionsContentSkeleton() {
   );
 }
 
-export function RecordTransactionDrawerSkeleton() {
+function TransactionDrawerSkeleton({
+  description,
+  title,
+}: Readonly<{ description: string; title: string }>) {
   const { t } = useTranslation(['transactions', 'routing']);
 
   return (
     <Drawer.Root onOpenChange={() => undefined} open triggerless>
       <Drawer.Content placement={{ base: 'bottom', md: 'end' }} size="wide">
-        <Drawer.Description>{t('Record a confirmed sale.')}</Drawer.Description>
-        <Drawer.Title>{t('Record transaction')}</Drawer.Title>
+        <Drawer.Description>{description}</Drawer.Description>
+        <Drawer.Title>{title}</Drawer.Title>
         <section aria-label={t('Loading transaction form')} role="status">
           <VisuallyHidden>{t('Loading', { ns: 'routing' })}</VisuallyHidden>
           <div aria-hidden="true" className="grid gap-7" inert>
@@ -311,5 +314,27 @@ export function RecordTransactionDrawerSkeleton() {
         </section>
       </Drawer.Content>
     </Drawer.Root>
+  );
+}
+
+export function RecordTransactionDrawerSkeleton() {
+  const { t } = useTranslation('transactions');
+
+  return (
+    <TransactionDrawerSkeleton
+      description={t('Record a confirmed sale.')}
+      title={t('Record transaction')}
+    />
+  );
+}
+
+export function TransactionEditDrawerSkeleton() {
+  const { t } = useTranslation('transactions');
+
+  return (
+    <TransactionDrawerSkeleton
+      description={t('Update this Transaction.')}
+      title={t('Edit transaction')}
+    />
   );
 }
