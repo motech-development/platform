@@ -72,6 +72,7 @@ function Harness() {
   const { form } = useTransactionForm({
     companyId: 'company-id',
     confirmedReturnTo: '/my-companies/accounts/$companyId',
+    initialDateTime: '2026-08-15T23:13:14.567Z',
   });
 
   return (
@@ -103,6 +104,7 @@ function EditHarness() {
   const { form } = useTransactionForm({
     companyId: 'company-id',
     confirmedReturnTo: '/my-companies/accounts/$companyId',
+    initialDateTime: '2026-08-16T14:35:12.345Z',
     initialValues: {
       amount: '75',
       attachment: '',
@@ -323,6 +325,9 @@ describe('useTransactionForm', () => {
       status: 'pending',
       vat: -20,
     });
+    expect(mutationInput(mocks.add).date).toMatch(
+      /^2026-08-15T\d{2}:\d{2}:00\.000Z$/,
+    );
     expect(mocks.navigate).toHaveBeenCalledWith({
       params: { companyId: 'company-id' },
       to: '/my-companies/accounts/$companyId/pending-transactions',
@@ -366,6 +371,7 @@ describe('useTransactionForm', () => {
     expect(mocks.add).not.toHaveBeenCalled();
     expect(mutationInput(mocks.update)).toMatchObject({
       category: 'Sales',
+      date: '2026-08-16T14:35:12.345Z',
       id: 'transaction-id',
       scheduled: false,
       status: 'confirmed',

@@ -25,24 +25,25 @@ export type TransactionReturnRoute =
   | '/my-companies/dashboard/$companyId'
   | '/my-companies/accounts/$companyId/pending-transactions';
 
-function localCalendarDate(date: Date) {
+function utcCalendarDate(date: Date) {
   return [
-    date.getFullYear().toString().padStart(4, '0'),
-    (date.getMonth() + 1).toString().padStart(2, '0'),
-    date.getDate().toString().padStart(2, '0'),
+    date.getUTCFullYear().toString().padStart(4, '0'),
+    (date.getUTCMonth() + 1).toString().padStart(2, '0'),
+    date.getUTCDate().toString().padStart(2, '0'),
   ].join('-');
 }
 
 function defaultValues(
   companyId: string,
   status: '' | 'confirmed' | 'pending',
+  dateTime: string,
 ): TransactionFormValues {
   return {
     amount: '',
     attachment: '',
     category: '',
     companyId,
-    date: localCalendarDate(new Date()),
+    date: utcCalendarDate(new Date(dateTime)),
     description: '',
     id: '',
     name: '',
@@ -59,6 +60,7 @@ export function useTransactionForm({
   closeTo,
   confirmedReturnTo,
   additionalPending = false,
+  initialDateTime,
   initialValues,
   initialStatus = '',
 }: Readonly<{
@@ -69,6 +71,7 @@ export function useTransactionForm({
     TransactionReturnRoute,
     '/my-companies/accounts/$companyId/pending-transactions'
   >;
+  initialDateTime?: string;
   initialStatus?: '' | 'confirmed' | 'pending';
   initialValues?: TransactionFormValues;
 }>) {
@@ -89,6 +92,9 @@ export function useTransactionForm({
     Promise<AttachmentTransferResult> | undefined
   >(undefined);
   const stagedAttachmentPath = useRef<string | undefined>(undefined);
+  const transactionDateTime = useRef(
+    initialDateTime ?? new Date().toISOString(),
+  );
   const { data, error, loading, refetch } = useQuery(GET_RECORD_TRANSACTION, {
     fetchPolicy: 'cache-and-network',
     nextFetchPolicy: 'cache-first',
@@ -118,7 +124,9 @@ export function useTransactionForm({
     }
   };
   const form = useForm({
-    defaultValues: initialValues ?? defaultValues(companyId, initialStatus),
+    defaultValues:
+      initialValues ??
+      defaultValues(companyId, initialStatus, transactionDateTime.current),
     onSubmit: async ({ value }) => {
       const transfer = await attachmentTransfer.current;
 
@@ -137,11 +145,19 @@ export function useTransactionForm({
         return;
       }
 
-      const input = buildTransactionInput({
-        ...value,
-        attachment:
-          transfer?.status === 'uploaded' ? transfer.path : value.attachment,
-      });
+      const referenceDateTime =
+        !value.id && value.status === 'pending' && value.scheduled
+          ? new Date().toISOString()
+          : transactionDateTime.current;
+
+      const input = buildTransactionInput(
+        {
+          ...value,
+          attachment:
+            transfer?.status === 'uploaded' ? transfer.path : value.attachment,
+        },
+        referenceDateTime,
+      );
       const editing = Boolean(input.id);
 
       try {

@@ -74,6 +74,7 @@ function TransactionEditDrawer({
     closeTo,
     companyId,
     confirmedReturnTo: '/my-companies/accounts/$companyId',
+    initialDateTime: transaction.date,
     initialValues: editableTransaction(transaction),
   });
   const pending = submissionPending || deleting;

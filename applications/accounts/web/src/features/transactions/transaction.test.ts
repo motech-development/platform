@@ -59,14 +59,17 @@ describe('Transaction accounting input', () => {
     },
   );
 
-  it('normalises the Transaction Date to midnight UTC and clears scheduling when confirmed', () => {
+  it('preserves the form time when mapping its calendar date and clears scheduling when confirmed', () => {
     expect(
-      buildTransactionInput({
-        ...baseValues,
-        scheduled: true,
-      }),
+      buildTransactionInput(
+        {
+          ...baseValues,
+          scheduled: true,
+        },
+        '2026-08-14T12:13:14.567Z',
+      ),
     ).toMatchObject({
-      date: '2026-08-15T00:00:00.000Z',
+      date: '2026-08-15T12:13:14.567Z',
       scheduled: false,
       status: 'confirmed',
     });
@@ -74,12 +77,32 @@ describe('Transaction accounting input', () => {
 
   it('preserves scheduling only for a Pending Transaction', () => {
     expect(
-      buildTransactionInput({
-        ...baseValues,
-        scheduled: true,
-        status: 'pending',
-      }),
-    ).toMatchObject({ scheduled: true, status: 'pending' });
+      buildTransactionInput(
+        {
+          ...baseValues,
+          scheduled: true,
+          status: 'pending',
+        },
+        '2026-08-15T12:59:59.999Z',
+      ),
+    ).toMatchObject({
+      date: '2026-08-15T13:00:00.000Z',
+      scheduled: true,
+      status: 'pending',
+    });
+  });
+
+  it('keeps a new scheduled Transaction in the future across a UTC day boundary', () => {
+    expect(
+      buildTransactionInput(
+        {
+          ...baseValues,
+          scheduled: true,
+          status: 'pending',
+        },
+        '2026-08-15T23:59:59.999Z',
+      ),
+    ).toMatchObject({ date: '2026-08-16T00:00:00.000Z' });
   });
 
   it('uses exact decimal VAT calculations for sale and inclusive purchase rates', () => {

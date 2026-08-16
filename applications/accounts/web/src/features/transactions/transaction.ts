@@ -120,6 +120,7 @@ export function calculatePurchaseVat(amount: string, vatRate: number): number {
 
 export function buildTransactionInput(
   values: TransactionFormValues,
+  referenceDateTime = new Date().toISOString(),
 ): TransactionInput {
   const value = transactionSchema.parse(values);
   const amount = new Decimal(value.amount).toDecimalPlaces(2);
@@ -131,12 +132,25 @@ export function buildTransactionInput(
     signedAmount = signedAmount.negated();
   }
 
+  const referenceDate = new Date(referenceDateTime);
+  let transactionDate = `${value.date}T${referenceDate.toISOString().slice(11)}`;
+
+  if (!value.id && value.status === 'pending' && value.scheduled) {
+    const scheduleDate = new Date(referenceDate);
+
+    scheduleDate.setUTCMinutes(scheduleDate.getUTCMinutes() + 1, 0, 0);
+    transactionDate =
+      value.date === referenceDate.toISOString().slice(0, 10)
+        ? scheduleDate.toISOString()
+        : `${value.date}T${scheduleDate.toISOString().slice(11)}`;
+  }
+
   return {
     amount: signedAmount.toNumber(),
     attachment: value.attachment,
     category: purchase ? value.category : SALES_CATEGORY,
     companyId: value.companyId,
-    date: new Date(`${value.date}T00:00:00.000Z`).toISOString(),
+    date: transactionDate,
     description: value.description,
     id: value.id,
     name: value.name,

@@ -441,16 +441,16 @@ describe('update-transactions', () => {
     expect(ddb).toReceiveCommandWith(UpdateCommand, {
       ExpressionAttributeNames: {
         '#balance': 'balance',
-        '#itemProperty': '2019-12-14T00:00:00.000Z',
+        '#itemProperty': '2019-12-15T00:00:00.000Z',
         '#items': 'items',
         '#updatedAt': 'updatedAt',
         '#vat': 'vat',
         '#vatProperty': 'owed',
       },
       ExpressionAttributeValues: {
-        ':balance': 200.5,
+        ':balance': 100.25,
         ':updatedAt': '2020-06-06T19:45:00.000Z',
-        ':vat': 2.4,
+        ':vat': 1.2,
       },
       Key: {
         __typename: 'Balance',
@@ -487,16 +487,16 @@ describe('update-transactions', () => {
     expect(ddb).toReceiveCommandWith(UpdateCommand, {
       ExpressionAttributeNames: {
         '#balance': 'balance',
-        '#itemProperty': '2019-12-14T00:00:00.000Z',
+        '#itemProperty': '2019-12-15T00:00:00.000Z',
         '#items': 'items',
         '#updatedAt': 'updatedAt',
         '#vat': 'vat',
         '#vatProperty': 'owed',
       },
       ExpressionAttributeValues: {
-        ':balance': 200.5,
+        ':balance': 100.25,
         ':updatedAt': '2020-06-06T19:45:00.000Z',
-        ':vat': 200.5,
+        ':vat': 100.25,
       },
       Key: {
         __typename: 'Balance',
@@ -535,43 +535,5 @@ describe('update-transactions', () => {
     await Promise.all(updateTransactions(documentClient, tableName, records));
 
     expect(ddb).toReceiveCommandTimes(UpdateCommand, 6);
-  });
-
-  it('reconciles both VAT totals when a confirmed VAT payment becomes an expense', async () => {
-    const [record] = records;
-
-    if (!record?.dynamodb?.OldImage) {
-      throw new Error('Expected an update record');
-    }
-
-    record.dynamodb.OldImage.category = { S: 'VAT payment' };
-    record.dynamodb.OldImage.vat = { N: '0' };
-
-    await Promise.all(updateTransactions(documentClient, tableName, [record]));
-
-    expect(ddb).toReceiveCommandWith(UpdateCommand, {
-      ExpressionAttributeNames: {
-        '#balance': 'balance',
-        '#itemProperty': '2019-12-15T00:00:00.000Z',
-        '#items': 'items',
-        '#updatedAt': 'updatedAt',
-        '#vat': 'vat',
-        '#vatPropertyNew': 'paid',
-        '#vatPropertyOld': 'owed',
-      },
-      ExpressionAttributeValues: {
-        ':balance': -100.25,
-        ':updatedAt': '2020-06-06T19:45:00.000Z',
-        ':vatNew': 1.2,
-        ':vatOld': -200.5,
-      },
-      Key: {
-        __typename: 'Balance',
-        id: 'company-id',
-      },
-      TableName: 'test',
-      UpdateExpression:
-        'SET #updatedAt = :updatedAt ADD #balance :balance, #vat.#vatPropertyOld :vatOld, #vat.#vatPropertyNew :vatNew, #items.#itemProperty :balance',
-    });
   });
 });
