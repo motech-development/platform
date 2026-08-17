@@ -167,7 +167,7 @@ export function AccountsPending() {
                   className="block h-[2.8rem] w-64 max-w-full"
                 />
               ) : (
-                t('Accounts', { ns: 'shell' })
+                t('Transactions', { ns: 'transactions' })
               )
             }
           />
@@ -193,7 +193,7 @@ export function AccountsPending() {
           description={t(
             'Review money in and out, attachments, and approval status.',
           )}
-          title={t('Accounts', { ns: 'shell' })}
+          title={t('Transactions', { ns: 'transactions' })}
         />
         <TransactionsContentSkeleton />
       </div>

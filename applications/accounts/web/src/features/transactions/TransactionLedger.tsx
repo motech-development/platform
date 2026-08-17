@@ -497,7 +497,7 @@ export function TransactionLedger({
         layout={compact ? 'grid' : 'responsiveGrid'}
       >
         <TransactionTableHeader compact={compact} pending={pending} />
-        {compact || pending ? (
+        {compact ? (
           <Table.Body>
             {transactions.map((transaction) => (
               <TransactionRow
@@ -532,26 +532,34 @@ export function TransactionLedger({
                   className={transactionSectionRowClassName}
                   id={`${day}-total`}
                   presentation="section"
-                  textValue={t('{{date}}, confirmed daily total {{total}}', {
-                    date,
-                    total,
-                  })}
+                  textValue={
+                    pending
+                      ? date
+                      : t('{{date}}, confirmed daily total {{total}}', {
+                          date,
+                          total,
+                        })
+                  }
                 >
                   <Table.Cell colSpan={2} column="direction">
                     <Typography as="span" level="label">
                       {date}
                     </Typography>
                   </Table.Cell>
-                  <Table.Cell column="category">
+                  <Table.Cell column={pending ? 'date' : 'category'}>
                     <span />
                   </Table.Cell>
                   <Table.Cell align="end" column="amount">
-                    <Typography as="span" level="label" tabularNumbers>
-                      <VisuallyHidden>
-                        {t('Confirmed daily total: ')}
-                      </VisuallyHidden>
-                      {total}
-                    </Typography>
+                    {pending ? (
+                      <span />
+                    ) : (
+                      <Typography as="span" level="label" tabularNumbers>
+                        <VisuallyHidden>
+                          {t('Confirmed daily total: ')}
+                        </VisuallyHidden>
+                        {total}
+                      </Typography>
+                    )}
                   </Table.Cell>
                   <Table.Cell column="actions">
                     <span />
@@ -564,7 +572,7 @@ export function TransactionLedger({
                     currencyCode={currencyCode}
                     key={transaction.id}
                     locale={i18n.language}
-                    pendingCollection={false}
+                    pendingCollection={pending}
                     transaction={transaction}
                   />
                 ))}

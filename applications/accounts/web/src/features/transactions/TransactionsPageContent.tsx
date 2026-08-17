@@ -126,7 +126,7 @@ export function TransactionsPageContent({
           )}
         </QueryRefreshAlert>
       ) : null}
-      {initiallyLoading ? <TransactionsContentSkeleton /> : null}
+      {initiallyLoading && !error ? <TransactionsContentSkeleton /> : null}
       {!initiallyLoading && hasTransactions && data ? (
         <div className="flex flex-col">
           {confirmed.data ? (

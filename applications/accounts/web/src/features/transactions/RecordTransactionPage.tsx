@@ -68,7 +68,6 @@ export function RecordTransactionPage({
   } = useTransactionForm({
     companyId,
     confirmedReturnTo: returnTo,
-    initialStatus: origin === 'pending' ? 'pending' : '',
   });
 
   return (

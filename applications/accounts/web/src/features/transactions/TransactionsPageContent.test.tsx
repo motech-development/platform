@@ -241,6 +241,7 @@ describe('TransactionsPageContent', () => {
     mocks.confirmedError = new Error('Confirmed unavailable');
     mocks.confirmedHasData = false;
     mocks.pendingHasData = false;
+    mocks.pendingLoading = true;
 
     render(
       <BreezeProvider locale="en-GB">
@@ -252,6 +253,9 @@ describe('TransactionsPageContent', () => {
       screen.getByRole('button', { name: 'Could not load' }),
     );
 
+    expect(
+      screen.queryByRole('status', { name: 'Loading transactions' }),
+    ).not.toBeInTheDocument();
     expect(mocks.confirmedRefetch).toHaveBeenCalledOnce();
     expect(mocks.pendingRefetch).toHaveBeenCalledOnce();
   });

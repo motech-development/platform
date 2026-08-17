@@ -205,6 +205,44 @@ describe('TransactionLedger', () => {
     });
   });
 
+  it('groups the Pending Transaction collection by day', () => {
+    render(
+      <BreezeProvider locale="en-GB">
+        <TransactionLedger
+          companyId="company-id"
+          currencyCode="GBP"
+          pending
+          transactions={[
+            {
+              amount: -120,
+              attachment: null,
+              category: 'Professional fees',
+              date: '2026-08-20T00:00:00.000Z',
+              description: 'Quarterly bookkeeping',
+              id: 'pending-1',
+              name: 'Oak & Co Accountants',
+              status: 'pending',
+            },
+            {
+              amount: -50,
+              attachment: null,
+              category: 'Travel',
+              date: '2026-08-19T00:00:00.000Z',
+              description: 'Train fare',
+              id: 'pending-2',
+              name: 'Rail supplier',
+              status: 'pending',
+            },
+          ]}
+        />
+      </BreezeProvider>,
+    );
+
+    expect(screen.getByRole('row', { name: '20 August 2026' })).toBeVisible();
+    expect(screen.getByRole('row', { name: '19 August 2026' })).toBeVisible();
+    expect(screen.queryByText('£0.00')).not.toBeInTheDocument();
+  });
+
   it('labels a compact ledger as recent transactions', () => {
     render(
       <BreezeProvider locale="en-GB">

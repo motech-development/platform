@@ -20,6 +20,9 @@ const PdfPreview = lazy(() =>
   import('./PdfPreview').then((module) => ({ default: module.PdfPreview })),
 );
 
+const generatedAttachmentName =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}(\.[^.]+)?$/iu;
+
 export function TransactionAttachment({
   companyId,
   disabled,
@@ -39,7 +42,11 @@ export function TransactionAttachment({
   const [file, setFile] = useState<Blob>();
   const [deleting, setDeleting] = useState(false);
   const [loading, setLoading] = useState(false);
-  const name = path.split('/').at(-1) ?? path;
+  const storedName = path.split('/').at(-1) ?? path;
+  const extension = /\.[^.]+$/u.exec(storedName)?.[0] ?? '';
+  const name = generatedAttachmentName.test(storedName)
+    ? `${t('Transaction attachment')}${extension}`
+    : storedName;
   const imageUrl = useMemo(
     () => (file?.type.startsWith('image/') ? URL.createObjectURL(file) : null),
     [file],

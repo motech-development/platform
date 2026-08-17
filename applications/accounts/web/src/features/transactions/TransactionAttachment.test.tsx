@@ -106,6 +106,41 @@ describe('TransactionAttachment', () => {
     expect(onDeleted).toHaveBeenCalledOnce();
   });
 
+  it('presents a nontechnical name for generated attachment storage keys', async () => {
+    const file = new Blob(['invoice'], { type: 'application/pdf' });
+
+    mocks.query.mockResolvedValue({
+      data: { requestDownload: { url: 'https://download/invoice' } },
+    });
+    mocks.download.mockResolvedValue(file);
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <TransactionAttachment
+          companyId="company-id"
+          onDeleted={() => true}
+          path="company-id/3456df4a-51f8-49af-a52e-c1a21b8ff087.pdf"
+        />
+      </BreezeProvider>,
+    );
+
+    expect(screen.getByText('Transaction attachment.pdf')).toBeVisible();
+    expect(
+      screen.queryByText('3456df4a-51f8-49af-a52e-c1a21b8ff087.pdf'),
+    ).not.toBeInTheDocument();
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Download file' }),
+    );
+
+    await waitFor(() =>
+      expect(mocks.saveAs).toHaveBeenCalledWith(
+        file,
+        'Transaction attachment.pdf',
+      ),
+    );
+  });
+
   it('opens a downloaded PDF and reuses it for the preview download', async () => {
     const file = new Blob(['invoice'], { type: 'application/pdf' });
 

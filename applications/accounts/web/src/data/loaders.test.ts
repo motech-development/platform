@@ -23,6 +23,7 @@ import {
   GET_COMPANY_SETTINGS,
   GET_CONFIRMED_TRANSACTIONS,
   GET_PENDING_TRANSACTIONS,
+  GET_TRANSACTION,
 } from './operations';
 
 const notFound = vi.hoisted(() =>
@@ -273,6 +274,11 @@ describe('primeTransaction', () => {
     await expect(
       primeTransaction(context(query), companyId, transactionId),
     ).resolves.toBeUndefined();
+    expect(query).toHaveBeenNthCalledWith(2, {
+      fetchPolicy: 'network-only',
+      query: GET_TRANSACTION,
+      variables: { transactionId },
+    });
   });
 
   it('rejects a non-confirmed transaction on the confirmed detail route', async () => {

@@ -1,5 +1,12 @@
 import { BreezeProvider } from '@motech-development/breeze-ui';
-import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { RecordTransactionPage } from './RecordTransactionPage';
@@ -137,14 +144,21 @@ describe('RecordTransactionPage', () => {
     ).toBeVisible();
   });
 
-  it('defaults a Pending Transaction entry to Pending and offers scheduling', () => {
+  it('keeps accounting status unset when opened from Pending Transactions', async () => {
     render(
       <BreezeProvider locale="en-GB">
         <RecordTransactionPage companyId="company-id" origin="pending" />
       </BreezeProvider>,
     );
 
-    expect(screen.getByLabelText('Pending')).toBeChecked();
+    expect(screen.getByLabelText('Confirmed')).not.toBeChecked();
+    expect(screen.getByLabelText('Pending')).not.toBeChecked();
+    expect(
+      screen.queryByRole('radiogroup', { name: 'Schedule transaction' }),
+    ).not.toBeInTheDocument();
+
+    await userEvent.click(screen.getByLabelText('Pending'));
+
     expect(
       screen.getByRole('radiogroup', { name: 'Schedule transaction' }),
     ).toBeVisible();
@@ -206,6 +220,7 @@ describe('RecordTransactionPage', () => {
       </BreezeProvider>,
     );
 
+    await user.click(screen.getByLabelText('Pending'));
     const schedule = screen.getByRole('radiogroup', {
       name: 'Schedule transaction',
     });
@@ -232,9 +247,10 @@ describe('RecordTransactionPage', () => {
 
   it('updates dates, refund meaning, and manually entered VAT', async () => {
     const user = userEvent.setup();
-    const tomorrow = new Date();
-
-    tomorrow.setDate(tomorrow.getDate() + 1);
+    const today = new Date();
+    const selectedDate = new Date(
+      Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 15, 12),
+    );
 
     render(
       <BreezeProvider locale="en-GB">
@@ -245,9 +261,10 @@ describe('RecordTransactionPage', () => {
     await user.click(screen.getByRole('button', { name: 'Calendar Date' }));
     await user.click(
       screen.getByRole('button', {
-        name: new Intl.DateTimeFormat('en-GB', { dateStyle: 'full' }).format(
-          tomorrow,
-        ),
+        name: new Intl.DateTimeFormat('en-GB', {
+          dateStyle: 'full',
+          timeZone: 'UTC',
+        }).format(selectedDate),
       }),
     );
     await user.click(
@@ -427,10 +444,12 @@ describe('RecordTransactionPage', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'Delete file' }));
 
-    expect(await screen.findByText('upload-id.pdf')).toBeVisible();
-    expect(mocks.toast.show).toHaveBeenCalledWith(
-      expect.objectContaining({ title: 'Attachment cleanup failed' }),
+    await waitFor(() =>
+      expect(mocks.toast.show).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Attachment cleanup failed' }),
+      ),
     );
+    expect(screen.getByText('upload-id.pdf')).toBeVisible();
   });
 
   it('returns to the upload control after removing an uploaded attachment', async () => {

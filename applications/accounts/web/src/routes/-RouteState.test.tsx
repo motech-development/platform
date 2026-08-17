@@ -54,7 +54,7 @@ beforeEach(() => {
 describe('AccountsPending', () => {
   it.each([
     ['/my-companies', 'My companies'],
-    ['/my-companies/accounts/company-id', 'Accounts'],
+    ['/my-companies/accounts/company-id', 'Transactions'],
     [
       '/my-companies/accounts/company-id/pending-transactions',
       'Pending Transactions',
@@ -67,10 +67,10 @@ describe('AccountsPending', () => {
       '/my-companies/accounts/company-id/pending-transactions/view-transaction/transaction-id',
       'Pending Transactions',
     ],
-    ['/my-companies/accounts/company-id/record-transaction', 'Accounts'],
+    ['/my-companies/accounts/company-id/record-transaction', 'Transactions'],
     [
       '/my-companies/accounts/company-id/view-transaction/transaction-id',
-      'Accounts',
+      'Transactions',
     ],
     ['/my-companies/dashboard/company-id', ''],
     ['/my-companies/clients/company-id', 'Clients'],
