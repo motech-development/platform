@@ -133,12 +133,27 @@ describe('RecordTransactionPage', () => {
     expect(screen.getByLabelText('Sale')).not.toBeChecked();
     expect(screen.getByLabelText('Confirmed')).not.toBeChecked();
     expect(screen.getByLabelText('Pending')).not.toBeChecked();
-    expect(screen.getByLabelText('No')).toBeChecked();
+    expect(
+      screen.queryByRole('combobox', { name: 'Supplier' }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('combobox', { name: 'Description' }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Date')).not.toBeInTheDocument();
     expect(screen.queryByLabelText('Category')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Amount')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('VAT')).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('radiogroup', { name: 'Refund' }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('region', { name: 'Invoice or receipt' }),
+    ).not.toBeInTheDocument();
 
     await userEvent.click(screen.getByLabelText('Purchase'));
 
     expect(screen.getByLabelText('Purchase')).toBeChecked();
+    expect(screen.getByLabelText('No')).toBeChecked();
     expect(screen.getByRole('combobox', { name: 'Supplier' })).toBeVisible();
     expect(screen.getByRole('combobox', { name: 'Description' })).toBeVisible();
     expect(screen.getByLabelText('Category')).toBeVisible();
@@ -265,6 +280,7 @@ describe('RecordTransactionPage', () => {
       </BreezeProvider>,
     );
 
+    await user.click(screen.getByLabelText('Purchase'));
     await user.click(screen.getByRole('button', { name: 'Calendar Date' }));
     await user.click(
       screen.getByRole('button', {
@@ -328,6 +344,7 @@ describe('RecordTransactionPage', () => {
       </BreezeProvider>,
     );
 
+    await userEvent.click(screen.getByLabelText('Purchase'));
     const amountInput = screen.getByLabelText('Amount');
 
     await act(async () => {
@@ -381,6 +398,7 @@ describe('RecordTransactionPage', () => {
       </BreezeProvider>,
     );
 
+    await userEvent.click(screen.getByLabelText('Purchase'));
     await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
 
     expect(mocks.query.refetch).toHaveBeenCalledOnce();
@@ -434,6 +452,7 @@ describe('RecordTransactionPage', () => {
       </BreezeProvider>,
     );
 
+    await userEvent.click(screen.getByLabelText('Purchase'));
     await userEvent.upload(
       document.querySelector('input[type="file"]') as HTMLInputElement,
       new File(['invoice'], 'invoice.pdf', { type: 'application/pdf' }),
@@ -459,6 +478,7 @@ describe('RecordTransactionPage', () => {
       </BreezeProvider>,
     );
 
+    await userEvent.click(screen.getByLabelText('Purchase'));
     await userEvent.upload(
       document.querySelector('input[type="file"]') as HTMLInputElement,
       new File(['invoice'], 'invoice.pdf', { type: 'application/pdf' }),
@@ -490,6 +510,7 @@ describe('RecordTransactionPage', () => {
       </BreezeProvider>,
     );
 
+    await userEvent.click(screen.getByLabelText('Purchase'));
     await userEvent.upload(
       document.querySelector('input[type="file"]') as HTMLInputElement,
       new File(['invoice'], 'invoice.pdf', { type: 'application/pdf' }),

@@ -80,8 +80,6 @@ function TransactionEditDrawer({
   });
   const pending = submissionPending || deleting;
   const deleteCurrentTransaction = async () => {
-    if (!(await discardStagedAttachment())) return false;
-
     try {
       const result = await deleteTransaction({
         update: (cache, mutation) => {
@@ -110,6 +108,7 @@ function TransactionEditDrawer({
       return false;
     }
 
+    await discardStagedAttachment().catch(() => false);
     toast.show({ title: t('Transaction deleted'), variant: 'success' });
     completeMutation();
     await navigate({ params: { companyId }, to: closeTo }).catch(

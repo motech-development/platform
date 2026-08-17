@@ -23,6 +23,7 @@ const transaction = {
 const mocks = vi.hoisted(() => ({
   deleteFile: vi.fn(),
   deleteTransaction: vi.fn(),
+  downloadQuery: vi.fn(),
   formQuery: {
     data: undefined as Record<string, unknown> | undefined,
     error: undefined as Error | undefined,
@@ -30,6 +31,7 @@ const mocks = vi.hoisted(() => ({
     refetch: vi.fn().mockResolvedValue(undefined),
   },
   navigate: vi.fn().mockResolvedValue(undefined),
+  requestUpload: vi.fn(),
   toast: { show: vi.fn() },
   transactionQuery: {
     data: undefined as undefined | { getTransaction: typeof transaction },
@@ -37,6 +39,7 @@ const mocks = vi.hoisted(() => ({
     loading: false,
     refetch: vi.fn().mockResolvedValue(undefined),
   },
+  uploadPresignedFile: vi.fn(),
 }));
 
 const formData = {
@@ -60,6 +63,7 @@ const formData = {
 
 vi.mock('@apollo/client/react', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@apollo/client/react')>()),
+  useApolloClient: () => ({ query: mocks.downloadQuery }),
   useMutation: (document: {
     definitions?: { name?: { value?: string } }[];
   }) => {
@@ -71,6 +75,9 @@ vi.mock('@apollo/client/react', async (importOriginal) => ({
     }
     if (operation === 'DeleteFile') {
       return [mocks.deleteFile, { loading: false }];
+    }
+    if (operation === 'RequestUpload') {
+      return [mocks.requestUpload, { loading: false }];
     }
     return [vi.fn(), { loading: false }];
   },
@@ -105,6 +112,11 @@ vi.mock('@tanstack/react-router', async (importOriginal) => ({
 
 vi.mock('../../pwa/connectivity', () => ({ useOnlineStatus: () => true }));
 
+vi.mock('../../data/presigned-transfer', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../../data/presigned-transfer')>()),
+  uploadPresignedFile: mocks.uploadPresignedFile,
+}));
+
 vi.mock('./PendingTransactionsPageContent', () => ({
   PendingTransactionsPageContent: () => <main>Pending Transactions</main>,
 }));
@@ -120,6 +132,7 @@ describe('TransactionEditPage', () => {
     mocks.formQuery.error = undefined;
     mocks.formQuery.loading = false;
     mocks.formQuery.refetch.mockResolvedValue(undefined);
+    mocks.downloadQuery.mockReset();
     mocks.deleteFile.mockResolvedValue({
       data: { deleteFile: { path: 'company-id/invoice.pdf' } },
     });
@@ -136,10 +149,12 @@ describe('TransactionEditPage', () => {
       return Promise.resolve(result);
     });
     mocks.navigate.mockResolvedValue(undefined);
+    mocks.requestUpload.mockReset();
     mocks.transactionQuery.data = undefined;
     mocks.transactionQuery.error = undefined;
     mocks.transactionQuery.loading = false;
     mocks.transactionQuery.refetch.mockResolvedValue(undefined);
+    mocks.uploadPresignedFile.mockReset();
   });
 
   it('announces the initial Transaction load inside the drawer', () => {
@@ -470,5 +485,50 @@ describe('TransactionEditPage', () => {
     );
     expect(screen.getByRole('alertdialog')).toBeVisible();
     expect(mocks.navigate).not.toHaveBeenCalled();
+  });
+
+  it('retains a staged replacement when Transaction deletion fails', async () => {
+    mocks.transactionQuery.data = { getTransaction: transaction };
+    mocks.formQuery.data = formData;
+    mocks.requestUpload.mockResolvedValue({
+      data: { requestUpload: { id: 'upload-id', url: 'https://upload' } },
+    });
+    mocks.uploadPresignedFile.mockResolvedValue(undefined);
+    mocks.deleteTransaction.mockRejectedValueOnce(new Error('Unavailable'));
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <TransactionEditPage
+          companyId="company-id"
+          origin="transactions"
+          transactionId="transaction-id"
+        />
+      </BreezeProvider>,
+    );
+
+    await userEvent.upload(
+      document.querySelector('input[type="file"]') as HTMLInputElement,
+      new File(['invoice'], 'invoice.pdf', { type: 'application/pdf' }),
+    );
+    expect(await screen.findByText('upload-id.pdf')).toBeVisible();
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Delete Transaction' }),
+    );
+    await userEvent.type(
+      screen.getByLabelText('Type Retainer to confirm'),
+      'Retainer',
+    );
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Permanently delete Transaction' }),
+    );
+
+    await waitFor(() =>
+      expect(mocks.toast.show).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Transaction could not be deleted' }),
+      ),
+    );
+    expect(mocks.deleteFile).not.toHaveBeenCalled();
+    expect(screen.getByText('upload-id.pdf')).toBeVisible();
   });
 });
