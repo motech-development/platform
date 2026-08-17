@@ -50,7 +50,7 @@ function defaultValues(
     refund: false,
     scheduled: false,
     status,
-    transactionType: 'purchase',
+    transactionType: '',
     vat: '',
   };
 }
@@ -92,6 +92,9 @@ export function useTransactionForm({
     Promise<AttachmentTransferResult> | undefined
   >(undefined);
   const stagedAttachmentPath = useRef<string | undefined>(undefined);
+  const successfulReturnTo = useRef<TransactionReturnRoute | undefined>(
+    undefined,
+  );
   const transactionDateTime = useRef(
     initialDateTime ?? new Date().toISOString(),
   );
@@ -103,6 +106,14 @@ export function useTransactionForm({
   const [addTransaction] = useMutation(ADD_TRANSACTION);
   const [deleteFile] = useMutation(DELETE_FILE);
   const [updateTransaction] = useMutation(UPDATE_TRANSACTION);
+  const navigateAfterSuccessfulSubmission = async (
+    returnTo: TransactionReturnRoute,
+  ) => {
+    navigationActions.current?.completeMutation();
+    await navigate({ params: { companyId }, to: returnTo }).catch(() => {
+      navigationActions.current?.restrictNavigation();
+    });
+  };
   const deleteAttachment = async (path: string, failureDescription: string) => {
     try {
       const deletion = await deleteFile({
@@ -152,6 +163,11 @@ export function useTransactionForm({
       initialValues ??
       defaultValues(companyId, initialStatus, transactionDateTime.current),
     onSubmit: async ({ value }) => {
+      if (successfulReturnTo.current) {
+        await navigateAfterSuccessfulSubmission(successfulReturnTo.current);
+        return;
+      }
+
       const transfer = await attachmentTransfer.current;
 
       if (transfer?.status === 'cancelled') {
@@ -241,15 +257,13 @@ export function useTransactionForm({
         title: editing ? t('Transaction updated') : t('Transaction recorded'),
         variant: 'success',
       });
-      navigationActions.current?.completeMutation();
       const returnTo =
         input.status === 'pending'
           ? '/my-companies/accounts/$companyId/pending-transactions'
           : confirmedReturnTo;
 
-      await navigate({ params: { companyId }, to: returnTo }).catch(
-        navigationActions.current?.restrictNavigation,
-      );
+      successfulReturnTo.current = returnTo;
+      await navigateAfterSuccessfulSubmission(returnTo);
     },
     validators: {
       onBlur: transactionSchema,

@@ -69,7 +69,9 @@ export const transactionSchema = z
         error: () => i18n.t('Choose a status', { ns: 'transactions' }),
       })
       .transform((value) => value),
-    transactionType: z.enum(['purchase', 'sale']),
+    transactionType: z.enum(['', 'purchase', 'sale']).refine(Boolean, {
+      error: () => i18n.t('Choose a transaction type', { ns: 'transactions' }),
+    }),
     vat: nonNegativeDecimal,
   })
   .superRefine((value, context) => {

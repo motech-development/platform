@@ -15,20 +15,27 @@ type RecordTransactionOrigin = 'dashboard' | 'pending' | 'transactions';
 const recordTransactionOrigins = {
   dashboard: {
     Background: DashboardPageContent,
+    closeTo: '/my-companies/dashboard/$companyId',
     returnTo: '/my-companies/dashboard/$companyId',
   },
   pending: {
     Background: PendingTransactionsPageContent,
+    closeTo: '/my-companies/accounts/$companyId/pending-transactions',
     returnTo: '/my-companies/accounts/$companyId',
   },
   transactions: {
     Background: TransactionsPageContent,
+    closeTo: '/my-companies/accounts/$companyId',
     returnTo: '/my-companies/accounts/$companyId',
   },
 } as const satisfies Record<
   RecordTransactionOrigin,
   {
     Background: typeof DashboardPageContent | typeof TransactionsPageContent;
+    closeTo:
+      | '/my-companies/accounts/$companyId'
+      | '/my-companies/accounts/$companyId/pending-transactions'
+      | '/my-companies/dashboard/$companyId';
     returnTo:
       | '/my-companies/accounts/$companyId'
       | '/my-companies/dashboard/$companyId';
@@ -43,7 +50,7 @@ export function RecordTransactionPage({
   origin: RecordTransactionOrigin;
 }>) {
   const { t } = useTranslation(['transactions', 'routing']);
-  const { Background, returnTo } = recordTransactionOrigins[origin];
+  const { Background, closeTo, returnTo } = recordTransactionOrigins[origin];
   const {
     blocker,
     categories,
@@ -66,6 +73,7 @@ export function RecordTransactionPage({
     trackAttachmentTransfer,
     vatRate,
   } = useTransactionForm({
+    closeTo,
     companyId,
     confirmedReturnTo: returnTo,
   });

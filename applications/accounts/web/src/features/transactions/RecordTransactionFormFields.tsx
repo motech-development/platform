@@ -185,10 +185,10 @@ export function RecordTransactionFormFields({
   ) => visibleValidationErrors(errors, blurred, form.state.submissionAttempts);
   const updateCalculatedVat = (
     amount: string,
-    transactionType: 'purchase' | 'sale',
+    transactionType: '' | 'purchase' | 'sale',
     category: string,
   ) => {
-    if (!amount || !Number.isFinite(Number(amount))) {
+    if (!transactionType || !amount || !Number.isFinite(Number(amount))) {
       form.setFieldValue('vat', '');
       return;
     }
@@ -223,36 +223,47 @@ export function RecordTransactionFormFields({
         title={t('Transaction details')}
       >
         <form.Field name="transactionType">
-          {(field) => (
-            <ControlledRadioGroup
-              onSelectionChange={(selection) => {
-                if (selection !== 'purchase' && selection !== 'sale') return;
+          {(field) => {
+            const errors = errorsFor(
+              field.state.meta.errors,
+              field.state.meta.isBlurred,
+            );
 
-                field.handleChange(selection);
-                form.setFieldValue('name', '');
-                form.setFieldValue('refund', false);
-                if (selection === 'sale') {
-                  form.setFieldValue('category', '');
-                }
-                updateCalculatedVat(
-                  form.getFieldValue('amount'),
-                  selection,
-                  form.getFieldValue('category'),
-                );
-                touch();
-              }}
-              readOnly={editing}
-              selection={field.state.value}
-            >
-              <RadioGroup.Label>{t('Transaction type')}</RadioGroup.Label>
-              <RadioOptions
-                labels={[
-                  { label: t('Purchase'), value: 'purchase' },
-                  { label: t('Sale'), value: 'sale' },
-                ]}
-              />
-            </ControlledRadioGroup>
-          )}
+            return (
+              <ControlledRadioGroup
+                invalid={errors.length > 0}
+                onSelectionChange={(selection) => {
+                  if (selection !== 'purchase' && selection !== 'sale') return;
+
+                  field.handleChange(selection);
+                  form.setFieldValue('name', '');
+                  form.setFieldValue('refund', false);
+                  if (selection === 'sale') {
+                    form.setFieldValue('category', '');
+                  }
+                  updateCalculatedVat(
+                    form.getFieldValue('amount'),
+                    selection,
+                    form.getFieldValue('category'),
+                  );
+                  touch();
+                }}
+                readOnly={editing}
+                selection={field.state.value || null}
+              >
+                <RadioGroup.Label>{t('Transaction type')}</RadioGroup.Label>
+                <RadioOptions
+                  labels={[
+                    { label: t('Purchase'), value: 'purchase' },
+                    { label: t('Sale'), value: 'sale' },
+                  ]}
+                />
+                <RadioGroup.Error>
+                  {validationMessage(errors, t('Check this value'))}
+                </RadioGroup.Error>
+              </ControlledRadioGroup>
+            );
+          }}
         </form.Field>
         <form.Subscribe selector={(state) => state.values.transactionType}>
           {(transactionType) => (

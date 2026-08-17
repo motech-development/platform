@@ -87,6 +87,7 @@ function Harness() {
           form.setFieldValue('refund', true);
           form.setFieldValue('scheduled', true);
           form.setFieldValue('status', 'pending');
+          form.setFieldValue('transactionType', 'purchase');
           form.setFieldValue('vat', '20');
           form.handleSubmit().catch(() => undefined);
         }}
@@ -184,6 +185,7 @@ function FailedTransferHarness() {
         form.setFieldValue('description', 'Quarterly bookkeeping');
         form.setFieldValue('name', 'Oak & Co');
         form.setFieldValue('status', 'confirmed');
+        form.setFieldValue('transactionType', 'purchase');
         form.setFieldValue('vat', '20');
         trackAttachmentTransfer(Promise.resolve({ status: 'failed' }));
         form.handleSubmit().catch(() => undefined);
@@ -215,6 +217,7 @@ function TransferSubmissionHarness({
         form.setFieldValue('description', 'Quarterly bookkeeping');
         form.setFieldValue('name', 'Oak & Co');
         form.setFieldValue('status', 'confirmed');
+        form.setFieldValue('transactionType', 'purchase');
         form.setFieldValue('vat', '20');
         trackAttachmentTransfer(transfer);
         form.handleSubmit().catch(() => undefined);
@@ -595,6 +598,26 @@ describe('useTransactionForm', () => {
     );
     expect(screen.getByText('Quarterly bookkeeping')).toBeVisible();
     expect(mocks.navigate).not.toHaveBeenCalled();
+  });
+
+  it('retries only navigation after a successful create cannot leave the form', async () => {
+    mocks.navigate.mockRejectedValueOnce(new Error('Navigation failed'));
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <Harness />
+      </BreezeProvider>,
+    );
+
+    const submit = screen.getByRole('button', { name: 'Submit valid refund' });
+
+    await userEvent.click(submit);
+    await waitFor(() => expect(mocks.navigate).toHaveBeenCalledOnce());
+    await userEvent.click(submit);
+
+    await waitFor(() => expect(mocks.navigate).toHaveBeenCalledTimes(2));
+    expect(mocks.add).toHaveBeenCalledOnce();
+    expect(mocks.update).not.toHaveBeenCalled();
   });
 
   it('updates an existing transaction and returns it to the confirmed collection', async () => {

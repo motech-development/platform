@@ -122,18 +122,23 @@ describe('RecordTransactionPage', () => {
     mocks.navigate.mockResolvedValue(undefined);
   });
 
-  it('exposes the complete accounting form with purchase defaults', () => {
+  it('requires an explicit Transaction type for a new record', async () => {
     render(
       <BreezeProvider locale="en-GB">
         <RecordTransactionPage companyId="company-id" origin="transactions" />
       </BreezeProvider>,
     );
 
-    expect(screen.getByLabelText('Purchase')).toBeChecked();
+    expect(screen.getByLabelText('Purchase')).not.toBeChecked();
     expect(screen.getByLabelText('Sale')).not.toBeChecked();
     expect(screen.getByLabelText('Confirmed')).not.toBeChecked();
     expect(screen.getByLabelText('Pending')).not.toBeChecked();
     expect(screen.getByLabelText('No')).toBeChecked();
+    expect(screen.queryByLabelText('Category')).not.toBeInTheDocument();
+
+    await userEvent.click(screen.getByLabelText('Purchase'));
+
+    expect(screen.getByLabelText('Purchase')).toBeChecked();
     expect(screen.getByRole('combobox', { name: 'Supplier' })).toBeVisible();
     expect(screen.getByRole('combobox', { name: 'Description' })).toBeVisible();
     expect(screen.getByLabelText('Category')).toBeVisible();
@@ -187,6 +192,8 @@ describe('RecordTransactionPage', () => {
         <RecordTransactionPage companyId="company-id" origin="transactions" />
       </BreezeProvider>,
     );
+
+    await user.click(screen.getByLabelText('Purchase'));
 
     const supplier = screen.getByRole('combobox', { name: 'Supplier' });
     const description = screen.getByRole('combobox', { name: 'Description' });
@@ -299,6 +306,21 @@ describe('RecordTransactionPage', () => {
     });
   });
 
+  it('closes a clean Pending record drawer to the Pending collection', async () => {
+    render(
+      <BreezeProvider locale="en-GB">
+        <RecordTransactionPage companyId="company-id" origin="pending" />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(screen.getByRole('button', { name: 'Close' }));
+
+    expect(mocks.navigate).toHaveBeenCalledWith({
+      params: { companyId: 'company-id' },
+      to: '/my-companies/accounts/$companyId/pending-transactions',
+    });
+  });
+
   it('clears calculated VAT when an amount has no applicable category rate', async () => {
     render(
       <BreezeProvider locale="en-GB">
@@ -327,6 +349,7 @@ describe('RecordTransactionPage', () => {
       </BreezeProvider>,
     );
 
+    await userEvent.click(screen.getByLabelText('Purchase'));
     await userEvent.click(screen.getByRole('button', { name: /Category/ }));
 
     expect(
