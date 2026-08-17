@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@apollo/client/react';
 import { useToast } from '@motech-development/breeze-ui';
-import { useForm, useStore } from '@tanstack/react-form';
+import { useForm, useSelector } from '@tanstack/react-form';
 import { useNavigate } from '@tanstack/react-router';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -256,7 +256,7 @@ export function useTransactionForm({
       onMount: transactionSchema,
     },
   });
-  const formSubmissionPending = useStore(
+  const formSubmissionPending = useSelector(
     form.store,
     (state) => state.isSubmitting,
   );

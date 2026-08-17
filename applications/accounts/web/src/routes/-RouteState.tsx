@@ -118,204 +118,239 @@ function ClientsPending({
   );
 }
 
-export function AccountsPending() {
-  const { t } = useTranslation([
-    'routing',
-    'companies',
-    'shell',
-    'transactions',
-  ]);
-  const location = useLocation();
-  const navigate = useNavigate();
-  const pendingView = accountsPendingView(location.pathname);
+function TransactionsCollectionPending() {
+  const { t } = useTranslation(['routing', 'transactions']);
 
-  if (
-    pendingView === 'clients' ||
-    pendingView === 'add-client' ||
-    pendingView === 'client-details'
-  ) {
-    return (
-      <ClientsPending pathname={location.pathname} pendingView={pendingView} />
-    );
-  }
-
-  if (
-    pendingView === 'record-transaction' ||
-    pendingView === 'transaction-details'
-  ) {
-    const openedFromDashboard = location.pathname.includes(
-      '/my-companies/dashboard/',
-    );
-
-    return (
-      <>
-        <div className="min-w-0">
-          <PageHeader
-            description={
-              openedFromDashboard
-                ? t(
-                    'Your financial position and the work that needs attention.',
-                  )
-                : t(
-                    'Review money in and out, attachments, and approval status.',
-                  )
-            }
-            title={
-              openedFromDashboard ? (
-                <Skeleton
-                  as="span"
-                  className="block h-[2.8rem] w-64 max-w-full"
-                />
-              ) : (
-                t('Transactions', { ns: 'transactions' })
-              )
-            }
-          />
-          {openedFromDashboard ? (
-            <OverviewContentSkeleton />
-          ) : (
-            <TransactionsContentSkeleton />
-          )}
-        </div>
-        {pendingView === 'record-transaction' ? (
-          <RecordTransactionDrawerSkeleton />
-        ) : (
-          <TransactionEditDrawerSkeleton />
+  return (
+    <div className="min-w-0">
+      <PageHeader
+        description={t(
+          'Review money in and out, attachments, and approval status.',
         )}
-      </>
-    );
-  }
+        title={t('Transactions', { ns: 'transactions' })}
+      />
+      <TransactionsContentSkeleton />
+    </div>
+  );
+}
 
-  if (pendingView === 'transactions') {
-    return (
+type TransactionDrawerPendingView = Extract<
+  AccountsPendingView,
+  'record-transaction' | 'transaction-details'
+>;
+
+function TransactionDrawerPending({
+  pathname,
+  pendingView,
+}: Readonly<{
+  pathname: string;
+  pendingView: TransactionDrawerPendingView;
+}>) {
+  const { t } = useTranslation(['routing', 'transactions']);
+  const openedFromDashboard = pathname.includes('/my-companies/dashboard/');
+
+  return (
+    <>
       <div className="min-w-0">
         <PageHeader
-          description={t(
-            'Review money in and out, attachments, and approval status.',
-          )}
-          title={t('Transactions', { ns: 'transactions' })}
-        />
-        <TransactionsContentSkeleton />
-      </div>
-    );
-  }
-
-  if (
-    pendingView === 'pending-transactions' ||
-    pendingView === 'pending-record-transaction' ||
-    pendingView === 'pending-transaction-details'
-  ) {
-    const companyId = /^\/my-companies\/accounts\/([^/]+)/u.exec(
-      location.pathname,
-    )?.[1];
-    const accountsHref = companyId
-      ? `/my-companies/accounts/${encodeURIComponent(companyId)}`
-      : '/my-companies';
-
-    return (
-      <>
-        <div className="min-w-0">
-          <PageHeader
-            back={
-              <LinkButton appearance="ghost" href={accountsHref}>
-                <ArrowLeftIcon />
-                {t('Back to Transactions', { ns: 'transactions' })}
-              </LinkButton>
-            }
-            description={t(
-              'Review transactions waiting to be confirmed or scheduled for publication.',
-              { ns: 'transactions' },
-            )}
-            title={t('Pending Transactions', { ns: 'transactions' })}
-          />
-          <LoadingSkeletonRegion
-            loadingLabel={t('Loading Pending Transactions', {
-              ns: 'transactions',
-            })}
-          >
-            <TransactionLedgerSkeleton pending />
-          </LoadingSkeletonRegion>
-        </div>
-        {pendingView === 'pending-record-transaction' && (
-          <RecordTransactionDrawerSkeleton />
-        )}
-        {pendingView === 'pending-transaction-details' && (
-          <TransactionEditDrawerSkeleton />
-        )}
-      </>
-    );
-  }
-
-  if (pendingView === 'dashboard') {
-    return (
-      <div className="min-w-0">
-        <PageHeader
-          description={t(
-            'Your financial position and the work that needs attention.',
-          )}
+          description={
+            openedFromDashboard
+              ? t('Your financial position and the work that needs attention.')
+              : t('Review money in and out, attachments, and approval status.')
+          }
           title={
-            <Skeleton as="span" className="block h-[2.8rem] w-64 max-w-full" />
+            openedFromDashboard ? (
+              <Skeleton
+                as="span"
+                className="block h-[2.8rem] w-64 max-w-full"
+              />
+            ) : (
+              t('Transactions', { ns: 'transactions' })
+            )
           }
         />
-        <OverviewContentSkeleton />
+        {openedFromDashboard ? (
+          <OverviewContentSkeleton />
+        ) : (
+          <TransactionsContentSkeleton />
+        )}
       </div>
-    );
-  }
+      {pendingView === 'record-transaction' ? (
+        <RecordTransactionDrawerSkeleton />
+      ) : (
+        <TransactionEditDrawerSkeleton />
+      )}
+    </>
+  );
+}
 
-  if (pendingView === 'add-company' || pendingView === 'companies') {
-    return (
-      <>
-        <div className="min-w-0">
-          <PageHeader
-            description={t('Select a company or add another business.', {
-              ns: 'companies',
-            })}
-            title={t('My companies', { ns: 'companies' })}
-          />
-          <CompaniesTableSkeleton />
-        </div>
-        {pendingView === 'add-company' ? (
-          <CompanyEnrolmentDrawerSkeleton
-            onClose={() => {
-              navigate({ to: '/my-companies' }).catch(() => undefined);
-            }}
-          />
-        ) : null}
-      </>
-    );
-  }
+type PendingTransactionsPendingView = Extract<
+  AccountsPendingView,
+  | 'pending-record-transaction'
+  | 'pending-transaction-details'
+  | 'pending-transactions'
+>;
 
-  if (pendingView === 'company-details') {
-    return (
-      <CompanyFormPending
+function PendingTransactionsPending({
+  pathname,
+  pendingView,
+}: Readonly<{
+  pathname: string;
+  pendingView: PendingTransactionsPendingView;
+}>) {
+  const { t } = useTranslation('transactions');
+  const companyId = /^\/my-companies\/accounts\/([^/]+)/u.exec(pathname)?.[1];
+  const accountsHref = companyId
+    ? `/my-companies/accounts/${encodeURIComponent(companyId)}`
+    : '/my-companies';
+
+  return (
+    <>
+      <div className="min-w-0">
+        <PageHeader
+          back={
+            <LinkButton appearance="ghost" href={accountsHref}>
+              <ArrowLeftIcon />
+              {t('Back to Transactions')}
+            </LinkButton>
+          }
+          description={t(
+            'Review transactions waiting to be confirmed or scheduled for publication.',
+          )}
+          title={t('Pending Transactions')}
+        />
+        <LoadingSkeletonRegion loadingLabel={t('Loading Pending Transactions')}>
+          <TransactionLedgerSkeleton pending />
+        </LoadingSkeletonRegion>
+      </div>
+      {pendingView === 'pending-record-transaction' ? (
+        <RecordTransactionDrawerSkeleton />
+      ) : null}
+      {pendingView === 'pending-transaction-details' ? (
+        <TransactionEditDrawerSkeleton />
+      ) : null}
+    </>
+  );
+}
+
+function DashboardPending() {
+  const { t } = useTranslation('routing');
+
+  return (
+    <div className="min-w-0">
+      <PageHeader
         description={t(
-          'Registered, contact, and bank details used across Accounts.',
-          { ns: 'companies' },
+          'Your financial position and the work that needs attention.',
         )}
-        loadingLabel={t('Loading company details', { ns: 'companies' })}
-        title={t('Company details', { ns: 'companies' })}
-      >
-        <CompanyDetailsFormSkeleton />
-      </CompanyFormPending>
-    );
-  }
+        title={
+          <Skeleton as="span" className="block h-[2.8rem] w-64 max-w-full" />
+        }
+      />
+      <OverviewContentSkeleton />
+    </div>
+  );
+}
 
-  if (pendingView === 'settings') {
-    return (
-      <CompanyFormPending
-        description={t(
-          'VAT, financial year, and transaction category defaults.',
-          { ns: 'companies' },
-        )}
-        loadingLabel={t('Loading settings', { ns: 'companies' })}
-        title={t('Settings', { ns: 'companies' })}
-      >
-        <SettingsFormSkeleton />
-      </CompanyFormPending>
-    );
-  }
+function CompaniesPending({ adding }: Readonly<{ adding: boolean }>) {
+  const { t } = useTranslation('companies');
+  const navigate = useNavigate();
 
-  return <AuthenticationPanel loading />;
+  return (
+    <>
+      <div className="min-w-0">
+        <PageHeader
+          description={t('Select a company or add another business.')}
+          title={t('My companies')}
+        />
+        <CompaniesTableSkeleton />
+      </div>
+      {adding ? (
+        <CompanyEnrolmentDrawerSkeleton
+          onClose={() => {
+            navigate({ to: '/my-companies' }).catch(() => undefined);
+          }}
+        />
+      ) : null}
+    </>
+  );
+}
+
+function CompanyDetailsPending() {
+  const { t } = useTranslation('companies');
+
+  return (
+    <CompanyFormPending
+      description={t(
+        'Registered, contact, and bank details used across Accounts.',
+      )}
+      loadingLabel={t('Loading company details')}
+      title={t('Company details')}
+    >
+      <CompanyDetailsFormSkeleton />
+    </CompanyFormPending>
+  );
+}
+
+function SettingsPending() {
+  const { t } = useTranslation('companies');
+
+  return (
+    <CompanyFormPending
+      description={t('VAT, financial year, and transaction category defaults.')}
+      loadingLabel={t('Loading settings')}
+      title={t('Settings')}
+    >
+      <SettingsFormSkeleton />
+    </CompanyFormPending>
+  );
+}
+
+export function AccountsPending() {
+  const location = useLocation();
+  const pendingView = accountsPendingView(location.pathname);
+
+  switch (pendingView) {
+    case 'add-client':
+    case 'client-details':
+    case 'clients':
+      return (
+        <ClientsPending
+          pathname={location.pathname}
+          pendingView={pendingView}
+        />
+      );
+    case 'record-transaction':
+    case 'transaction-details':
+      return (
+        <TransactionDrawerPending
+          pathname={location.pathname}
+          pendingView={pendingView}
+        />
+      );
+    case 'transactions':
+      return <TransactionsCollectionPending />;
+    case 'pending-record-transaction':
+    case 'pending-transaction-details':
+    case 'pending-transactions':
+      return (
+        <PendingTransactionsPending
+          pathname={location.pathname}
+          pendingView={pendingView}
+        />
+      );
+    case 'dashboard':
+      return <DashboardPending />;
+    case 'add-company':
+      return <CompaniesPending adding />;
+    case 'companies':
+      return <CompaniesPending adding={false} />;
+    case 'company-details':
+      return <CompanyDetailsPending />;
+    case 'settings':
+      return <SettingsPending />;
+    default:
+      return <AuthenticationPanel loading />;
+  }
 }
 
 export const RoutePending = AccountsPending;

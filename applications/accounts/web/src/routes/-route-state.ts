@@ -15,56 +15,81 @@ export type AccountsPendingView =
   | 'transaction-details'
   | 'transactions';
 
+interface PendingViewMatcher {
+  readonly matches: (pathname: string) => boolean;
+  readonly view: AccountsPendingView;
+}
+
+const includesPath = (segment: string) => (pathname: string) =>
+  pathname.includes(segment);
+
+// Keep specific drawer routes before their parent collection routes.
+const pendingViewMatchers: readonly PendingViewMatcher[] = [
+  {
+    matches: includesPath('/pending-transactions/record-transaction'),
+    view: 'pending-record-transaction',
+  },
+  {
+    matches: includesPath('/record-transaction'),
+    view: 'record-transaction',
+  },
+  {
+    matches: includesPath('/pending-transactions/view-transaction/'),
+    view: 'pending-transaction-details',
+  },
+  {
+    matches: includesPath('/view-transaction/'),
+    view: 'transaction-details',
+  },
+  {
+    matches: (pathname) =>
+      pathname.includes('/my-companies/clients/') &&
+      pathname.includes('/add-client'),
+    view: 'add-client',
+  },
+  {
+    matches: (pathname) =>
+      pathname.includes('/my-companies/clients/') &&
+      pathname.includes('/update-details/'),
+    view: 'client-details',
+  },
+  {
+    matches: includesPath('/my-companies/clients/'),
+    view: 'clients',
+  },
+  {
+    matches: includesPath('/pending-transactions'),
+    view: 'pending-transactions',
+  },
+  {
+    matches: includesPath('/my-companies/accounts/'),
+    view: 'transactions',
+  },
+  {
+    matches: includesPath('/my-companies/dashboard/'),
+    view: 'dashboard',
+  },
+  {
+    matches: includesPath('/my-companies/update-details/'),
+    view: 'company-details',
+  },
+  {
+    matches: includesPath('/my-companies/settings/'),
+    view: 'settings',
+  },
+  {
+    matches: (pathname) => pathname.startsWith('/my-companies/add-company'),
+    view: 'add-company',
+  },
+  {
+    matches: (pathname) => pathname === '/my-companies',
+    view: 'companies',
+  },
+];
+
 export function accountsPendingView(pathname: string): AccountsPendingView {
-  if (pathname.includes('/pending-transactions/record-transaction')) {
-    return 'pending-record-transaction';
-  }
-
-  if (pathname.includes('/record-transaction')) {
-    return 'record-transaction';
-  }
-
-  if (pathname.includes('/pending-transactions/view-transaction/')) {
-    return 'pending-transaction-details';
-  }
-
-  if (pathname.includes('/view-transaction/')) {
-    return 'transaction-details';
-  }
-
-  if (pathname.includes('/my-companies/clients/')) {
-    if (pathname.includes('/add-client')) return 'add-client';
-    if (pathname.includes('/update-details/')) return 'client-details';
-    return 'clients';
-  }
-
-  if (pathname.includes('/my-companies/accounts/')) {
-    if (pathname.includes('/pending-transactions')) {
-      return 'pending-transactions';
-    }
-
-    return 'transactions';
-  }
-
-  if (pathname.includes('/my-companies/dashboard/')) {
-    return 'dashboard';
-  }
-
-  if (pathname.includes('/my-companies/update-details/')) {
-    return 'company-details';
-  }
-
-  if (pathname.includes('/my-companies/settings/')) {
-    return 'settings';
-  }
-
-  if (pathname.startsWith('/my-companies/add-company')) {
-    return 'add-company';
-  }
-
-  if (pathname === '/my-companies') {
-    return 'companies';
-  }
-
-  return 'authentication';
+  return (
+    pendingViewMatchers.find(({ matches }) => matches(pathname))?.view ??
+    'authentication'
+  );
 }

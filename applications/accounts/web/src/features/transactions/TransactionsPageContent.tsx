@@ -18,6 +18,77 @@ import {
 } from './TransactionPagePresentation';
 import { useTransactionPageReconciliation } from './useTransactionPageReconciliation';
 
+function combineTransactions(
+  confirmedTransactions: readonly LedgerTransaction[] = [],
+  pendingTransactions: readonly LedgerTransaction[] = [],
+) {
+  // Pending is the explicit status-bearing snapshot and wins while the two
+  // eventually consistent status indexes overlap.
+  const transactionsById = new Map<string, LedgerTransaction>([
+    ...confirmedTransactions.map((transaction): [string, LedgerTransaction] => [
+      transaction.id,
+      {
+        ...transaction,
+        status: 'confirmed',
+      },
+    ]),
+    ...pendingTransactions.map((transaction): [string, LedgerTransaction] => [
+      transaction.id,
+      transaction,
+    ]),
+  ]);
+
+  return [...transactionsById.values()].sort((left, right) =>
+    right.date.localeCompare(left.date),
+  );
+}
+
+function TransactionsPagination({
+  confirmedFetchMore,
+  confirmedLoading,
+  confirmedNextToken,
+  pendingFetchMore,
+  pendingLoading,
+  pendingNextToken,
+}: Readonly<{
+  confirmedFetchMore: (options: {
+    variables: { nextToken: string };
+  }) => Promise<unknown>;
+  confirmedLoading: boolean;
+  confirmedNextToken?: string | null;
+  pendingFetchMore: (options: {
+    variables: { nextToken: string };
+  }) => Promise<unknown>;
+  pendingLoading: boolean;
+  pendingNextToken?: string | null;
+}>) {
+  const { t } = useTranslation('transactions');
+
+  if (!confirmedNextToken && !pendingNextToken) return null;
+
+  return (
+    <Button
+      appearance="text"
+      className="mt-4 self-center"
+      loading={confirmedLoading || pendingLoading}
+      onAction={() => {
+        Promise.all([
+          confirmedNextToken
+            ? confirmedFetchMore({
+                variables: { nextToken: confirmedNextToken },
+              })
+            : Promise.resolve(),
+          pendingNextToken
+            ? pendingFetchMore({ variables: { nextToken: pendingNextToken } })
+            : Promise.resolve(),
+        ]).catch(() => undefined);
+      }}
+    >
+      {t('Load more')}
+    </Button>
+  );
+}
+
 export function TransactionsPageContent({
   companyId,
 }: Readonly<{ companyId: string }>) {
@@ -46,28 +117,9 @@ export function TransactionsPageContent({
   const initiallyLoading =
     (confirmed.loading && !confirmed.data) ||
     (pending.loading && !pending.data);
-  // Pending is the explicit status-bearing snapshot and wins while the two
-  // eventually consistent status indexes overlap.
-  const transactionsById = new Map<string, LedgerTransaction>([
-    ...(confirmed.data?.getTransactions.items ?? []).map(
-      (transaction): [string, LedgerTransaction] => [
-        transaction.id,
-        {
-          ...transaction,
-          status: 'confirmed',
-        },
-      ],
-    ),
-    ...(pending.data?.getTransactions.items ?? []).map(
-      (transaction): [string, LedgerTransaction] => [
-        transaction.id,
-        transaction,
-      ],
-    ),
-  ]);
-
-  const transactions = [...transactionsById.values()].sort((left, right) =>
-    right.date.localeCompare(left.date),
+  const transactions = combineTransactions(
+    confirmed.data?.getTransactions.items,
+    pending.data?.getTransactions.items,
   );
   const hasTransactions = transactions.length > 0;
   const recordTransactionHref = `/my-companies/accounts/${encodeURIComponent(companyId)}/record-transaction`;
@@ -141,37 +193,16 @@ export function TransactionsPageContent({
             currencyCode={data.getBalance.currency}
             transactions={transactions}
           />
-          {confirmed.data?.getTransactions.nextToken ||
-          pending.data?.getTransactions.nextToken ? (
-            <Button
-              appearance="text"
-              className="mt-4 self-center"
-              loading={
-                confirmed.networkStatus === NetworkStatus.fetchMore ||
-                pending.networkStatus === NetworkStatus.fetchMore
-              }
-              onAction={() => {
-                Promise.all([
-                  confirmed.data?.getTransactions.nextToken
-                    ? confirmed.fetchMore({
-                        variables: {
-                          nextToken: confirmed.data.getTransactions.nextToken,
-                        },
-                      })
-                    : Promise.resolve(),
-                  pending.data?.getTransactions.nextToken
-                    ? pending.fetchMore({
-                        variables: {
-                          nextToken: pending.data.getTransactions.nextToken,
-                        },
-                      })
-                    : Promise.resolve(),
-                ]).catch(() => undefined);
-              }}
-            >
-              {t('Load more')}
-            </Button>
-          ) : null}
+          <TransactionsPagination
+            confirmedFetchMore={confirmed.fetchMore}
+            confirmedLoading={
+              confirmed.networkStatus === NetworkStatus.fetchMore
+            }
+            confirmedNextToken={confirmed.data?.getTransactions.nextToken}
+            pendingFetchMore={pending.fetchMore}
+            pendingLoading={pending.networkStatus === NetworkStatus.fetchMore}
+            pendingNextToken={pending.data?.getTransactions.nextToken}
+          />
         </div>
       ) : null}
       {!initiallyLoading &&
