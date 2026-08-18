@@ -78,6 +78,7 @@ test.describe('hosted Accounts foundation', () => {
     }
 
     await expect(recordTransactionHeading).toBeVisible();
+    await selectRadioOption(page, 'Transaction type', 'Purchase');
     const description = getFormInput(page, 'Description');
 
     await expect(description).toBeVisible();
