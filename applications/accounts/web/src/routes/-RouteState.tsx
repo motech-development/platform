@@ -2,10 +2,14 @@ import { CombinedGraphQLErrors } from '@apollo/client/errors';
 import {
   Button,
   Drawer,
+  IconTile,
   LinkButton,
   PageHeader,
   Skeleton,
+  Stack,
   StatePanel,
+  Surface,
+  Typography,
 } from '@motech-development/breeze-ui';
 import { ArrowLeftIcon } from '@motech-development/breeze-ui/icons';
 import type { ErrorComponentProps } from '@tanstack/react-router';
@@ -378,28 +382,39 @@ export function RouteError({ error, reset }: Readonly<ErrorComponentProps>) {
 }
 
 export function RouteNotFound() {
-  const { t } = useTranslation(['routing', 'shell']);
+  const { t } = useTranslation('routing');
 
   return (
-    <StatePanel
-      action={
-        <LinkButton href="/my-companies">
-          {t('Manage companies', { ns: 'shell' })}
-        </LinkButton>
-      }
-      description={t(
-        'This Accounts address does not match an available company screen.',
-      )}
-      icon={<span aria-hidden="true">?</span>}
-      title={t('Page not found')}
-    />
+    <main
+      className="grid min-h-screen place-items-center bg-[var(--breeze-shell)] p-6"
+      data-document-background="shell"
+    >
+      <Stack className="w-full max-w-md" gap="xl">
+        <Surface
+          border="none"
+          className="border-b-2 border-b-[var(--breeze-border-strong)] text-center"
+          padding="xxl"
+        >
+          <Stack align="center" gap="none">
+            <IconTile bordered={false} decorative={false} size="lg">
+              404
+            </IconTile>
+            <Typography align="center" as="h1" className="mb-2.5" level="h2">
+              {t('Page not found')}
+            </Typography>
+            <Typography align="center" className="mb-6" colour="muted">
+              {t('The page you requested does not exist or has moved.')}
+            </Typography>
+            <LinkButton href="/my-companies">
+              {t('Return to overview')}
+            </LinkButton>
+          </Stack>
+        </Surface>
+      </Stack>
+    </main>
   );
 }
 
 export function PublicRouteNotFound() {
-  return (
-    <main className="min-h-dvh p-6 sm:p-12">
-      <RouteNotFound />
-    </main>
-  );
+  return <RouteNotFound />;
 }

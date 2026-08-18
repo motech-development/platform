@@ -4,8 +4,9 @@
   "Try again": "Try again",
   "The requested Accounts screen could not be loaded. Your saved accounting data has not changed.": "The requested Accounts screen could not be loaded. Your saved accounting data has not changed.",
   "Something went wrong": "Something went wrong",
-  "This Accounts address does not match an available company screen.": "This Accounts address does not match an available company screen.",
+  "The page you requested does not exist or has moved.": "The page you requested does not exist or has moved.",
   "Page not found": "Page not found",
+  "Return to overview": "Return to overview",
   "Check your connection, then try again.": "Check your connection, then try again.",
   "Loading": "Loading"
 }

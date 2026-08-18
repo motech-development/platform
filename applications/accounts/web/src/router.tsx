@@ -28,6 +28,7 @@ export function getRouter() {
     defaultNotFoundComponent: PublicRouteNotFound,
     defaultPendingComponent: RoutePending,
     defaultPreload: 'intent',
+    notFoundMode: 'root',
     routeTree,
     scrollRestoration: true,
   });

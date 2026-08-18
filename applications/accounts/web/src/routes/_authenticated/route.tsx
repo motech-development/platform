@@ -1,7 +1,7 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router';
 import { AuthBoundary } from '../../auth/AuthBoundary';
 import { AccountsShell } from '../../shell/AccountsShell';
-import { AccountsPending, RouteNotFound } from '../-RouteState';
+import { AccountsPending } from '../-RouteState';
 
 function AuthenticatedPendingLayout() {
   return (
@@ -57,6 +57,5 @@ export const Route = createFileRoute('/_authenticated')({
     };
   },
   component: AuthenticatedLayout,
-  notFoundComponent: RouteNotFound,
   pendingComponent: AuthenticatedPendingLayout,
 });

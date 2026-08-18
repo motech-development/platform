@@ -246,9 +246,12 @@ test.describe('hosted Accounts foundation', () => {
 
       expect(offlineResponse?.ok()).toBe(true);
       await expect(page.locator('main')).toBeVisible();
-      await expect(page.getByText('Accounts').first()).toBeVisible();
+      await expect(page.getByText('404', { exact: true })).toBeVisible();
       await expect(
         page.getByRole('heading', { name: 'Page not found' }),
+      ).toBeVisible();
+      await expect(
+        page.getByRole('link', { name: 'Return to overview' }),
       ).toBeVisible();
     } finally {
       await page.context().setOffline(false);

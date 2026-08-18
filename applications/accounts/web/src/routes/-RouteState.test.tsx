@@ -256,15 +256,28 @@ describe('AccountsPending', () => {
 });
 
 describe('PublicRouteNotFound', () => {
-  it('keeps the public fallback inside the main landmark', () => {
+  it('matches the prototype recovery content in the main landmark', () => {
     render(
       <BreezeProvider locale="en-GB">
         <PublicRouteNotFound />
       </BreezeProvider>,
     );
 
-    expect(screen.getByRole('main')).toContainElement(
-      screen.getByRole('heading', { name: 'Page not found' }),
+    const main = screen.getByRole('main');
+
+    expect(main).toHaveAttribute('data-document-background', 'shell');
+    expect(screen.getByText('404')).toBeVisible();
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'Page not found' }),
+    ).toBeVisible();
+    expect(
+      screen.getByText('The page you requested does not exist or has moved.'),
+    ).toBeVisible();
+    expect(
+      screen.getByRole('link', { name: 'Return to overview' }),
+    ).toHaveAttribute('href', '/my-companies');
+    expect(main).toContainElement(
+      screen.getByRole('heading', { level: 1, name: 'Page not found' }),
     );
   });
 });
