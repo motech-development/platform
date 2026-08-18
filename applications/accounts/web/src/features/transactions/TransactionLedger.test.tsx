@@ -190,8 +190,8 @@ describe('TransactionLedger', () => {
     );
 
     expect(
-      screen.getByRole('img', { name: 'Scheduled transaction' }),
-    ).toBeVisible();
+      screen.getAllByRole('img', { name: 'Scheduled transaction' }),
+    ).toHaveLength(2);
     const pendingRow = screen.getByRole('row', {
       name: /Pending transaction: Oak & Co Accountants/u,
     });
@@ -205,7 +205,7 @@ describe('TransactionLedger', () => {
     });
   });
 
-  it('groups the Pending Transaction collection by day', () => {
+  it('keeps the Pending Transaction collection ungrouped', () => {
     render(
       <BreezeProvider locale="en-GB">
         <TransactionLedger
@@ -238,8 +238,13 @@ describe('TransactionLedger', () => {
       </BreezeProvider>,
     );
 
-    expect(screen.getByRole('row', { name: '20 August 2026' })).toBeVisible();
-    expect(screen.getByRole('row', { name: '19 August 2026' })).toBeVisible();
+    expect(
+      screen.queryByRole('row', { name: '20 August 2026' }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('row', { name: '19 August 2026' }),
+    ).not.toBeInTheDocument();
+    expect(screen.getAllByRole('row')).toHaveLength(3);
     expect(screen.queryByText('£0.00')).not.toBeInTheDocument();
   });
 
@@ -389,7 +394,7 @@ describe('TransactionLedger', () => {
 
   it.each([
     [false, 'No transactions yet'],
-    [true, 'No Pending Transactions'],
+    [true, 'No pending transactions'],
   ])('presents the correct empty state when pending=%s', (pending, title) => {
     render(
       <BreezeProvider locale="en-GB">

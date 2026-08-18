@@ -211,8 +211,12 @@ export function TransactionsPageContent({
       pending.data &&
       !hasTransactions ? (
         <StatePanel
-          action={<RecordTransactionLink href={recordTransactionHref} />}
-          description={t('Record a confirmed sale for the business.')}
+          action={
+            <RecordTransactionLink href={recordTransactionHref} icon={false} />
+          }
+          description={t(
+            'Record money coming in or going out of the business.',
+          )}
           icon={<ArrowRightIcon />}
           title={t('No transactions yet')}
         />

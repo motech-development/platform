@@ -634,7 +634,7 @@ export const test = base.extend<AccountsFixtures, AccountsWorkerFixtures>({
           await expect(page.getByLabel('Select file to upload')).toHaveCount(0);
         }
 
-        await page.getByRole('button', { name: 'Save' }).click();
+        await page.getByRole('button', { name: 'Save transaction' }).click();
         await expect(
           page.getByRole('heading', { name: 'Record transaction' }),
         ).toHaveCount(0);
@@ -643,7 +643,7 @@ export const test = base.extend<AccountsFixtures, AccountsWorkerFixtures>({
             exact: true,
             level: 1,
             name:
-              status === 'pending' ? 'Pending Transactions' : 'Transactions',
+              status === 'pending' ? 'Pending transactions' : 'Transactions',
           }),
         ).toBeVisible();
       },

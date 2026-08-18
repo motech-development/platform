@@ -258,8 +258,9 @@ export function TransactionsContentSkeleton() {
 
 function TransactionDrawerSkeleton({
   description,
+  editing = false,
   title,
-}: Readonly<{ description: string; title: string }>) {
+}: Readonly<{ description: string; editing?: boolean; title: string }>) {
   const { t } = useTranslation(['transactions', 'routing']);
 
   return (
@@ -272,7 +273,9 @@ function TransactionDrawerSkeleton({
           <div aria-hidden="true" className="grid gap-7" inert>
             <FormSection
               description={t(
-                'Identify who the transaction is with and when it occurred.',
+                editing
+                  ? 'Transaction type cannot be changed after creation.'
+                  : 'Identify who the transaction is with and when it occurred.',
               )}
               divided
               headingLevel={3}
@@ -286,11 +289,11 @@ function TransactionDrawerSkeleton({
               </div>
             </FormSection>
             <FormSection
-              description={t('Enter the confirmed sale amount and VAT.')}
+              description={t('Status determines when the balance is updated.')}
               divided
               headingLevel={3}
               layout="stacked"
-              title={t('Status and totals')}
+              title={t('Transaction amount')}
             >
               <div className="grid gap-5">
                 <Skeleton className="h-17" />
@@ -298,11 +301,15 @@ function TransactionDrawerSkeleton({
               </div>
             </FormSection>
             <FormSection
-              description={t('Attach an invoice to this transaction.')}
+              description={t(
+                editing
+                  ? 'View, replace, or delete the attached file.'
+                  : 'Attach an invoice or receipt to this transaction.',
+              )}
               divided
               headingLevel={3}
               layout="stacked"
-              title={t('Invoice')}
+              title={t('Invoice or receipt')}
             >
               <Skeleton className="h-32" />
             </FormSection>
@@ -322,7 +329,7 @@ export function RecordTransactionDrawerSkeleton() {
 
   return (
     <TransactionDrawerSkeleton
-      description={t('Record a confirmed sale.')}
+      description={t('Add money coming in or going out.')}
       title={t('Record transaction')}
     />
   );
@@ -333,7 +340,8 @@ export function TransactionEditDrawerSkeleton() {
 
   return (
     <TransactionDrawerSkeleton
-      description={t('Update this Transaction.')}
+      description={t('Update the transaction and its attachment.')}
+      editing
       title={t('Edit transaction')}
     />
   );

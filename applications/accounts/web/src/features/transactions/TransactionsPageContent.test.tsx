@@ -113,7 +113,12 @@ vi.mock('./TransactionLedger', () => ({
 }));
 
 vi.mock('./TransactionPagePresentation', () => ({
-  RecordTransactionLink: () => <a href="/record">Record transaction</a>,
+  RecordTransactionLink: ({ icon = true }: { icon?: boolean }) => (
+    <a href="/record">
+      {icon ? <svg aria-hidden="true" /> : null}
+      Record transaction
+    </a>
+  ),
   TransactionPageError: ({ onRetry }: { onRetry: () => Promise<unknown> }) => (
     <button
       onClick={() => {
@@ -345,7 +350,11 @@ describe('TransactionsPageContent', () => {
 
     expect(screen.getByText('No transactions yet')).toBeVisible();
     expect(
-      screen.getByRole('link', { name: 'Record transaction' }),
+      screen.getByText('Record money coming in or going out of the business.'),
     ).toBeVisible();
+    const action = screen.getByRole('link', { name: 'Record transaction' });
+
+    expect(action).toBeVisible();
+    expect(action.querySelector('svg')).not.toBeInTheDocument();
   });
 });

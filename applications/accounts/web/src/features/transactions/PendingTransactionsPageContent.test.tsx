@@ -110,11 +110,17 @@ describe('PendingTransactionsPageContent', () => {
     );
 
     expect(
-      screen.getByRole('heading', { level: 1, name: 'Pending Transactions' }),
+      screen.getByRole('heading', { level: 1, name: 'Pending transactions' }),
     ).toBeVisible();
+    expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
+      'href',
+      '/my-companies/accounts/company-id',
+    );
     expect(
-      screen.getByRole('link', { name: 'Back to Transactions' }),
-    ).toHaveAttribute('href', '/my-companies/accounts/company-id');
+      screen.getByText(
+        'Review transactions before they affect the confirmed balance.',
+      ),
+    ).toBeVisible();
     expect(
       screen.getByRole('link', { name: 'Record transaction' }),
     ).toHaveAttribute(
@@ -122,8 +128,8 @@ describe('PendingTransactionsPageContent', () => {
       '/my-companies/accounts/company-id/pending-transactions/record-transaction',
     );
     expect(
-      screen.getByRole('img', { name: 'Scheduled transaction' }),
-    ).toBeVisible();
+      screen.getAllByRole('img', { name: 'Scheduled transaction' }),
+    ).toHaveLength(2);
   });
 
   it('keeps cached Pending Transactions visible after a refresh failure', () => {
@@ -142,7 +148,7 @@ describe('PendingTransactionsPageContent', () => {
     ).toBeVisible();
     expect(screen.getByText('Quarterly bookkeeping')).toBeVisible();
     expect(
-      screen.queryByText('We could not load Pending Transactions'),
+      screen.queryByText('We could not load pending transactions'),
     ).not.toBeInTheDocument();
   });
 
@@ -157,10 +163,31 @@ describe('PendingTransactionsPageContent', () => {
     );
 
     expect(
-      screen.getByText('We could not load Pending Transactions'),
+      screen.getByText('We could not load pending transactions'),
     ).toBeVisible();
     await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
     expect(query.refetch).toHaveBeenCalledOnce();
+  });
+
+  it('owns the Record transaction action in the empty state panel', () => {
+    query.data.getTransactions.items = [];
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <PendingTransactionsPageContent companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    expect(
+      screen.getByRole('heading', { name: 'No pending transactions' }),
+    ).toBeVisible();
+    expect(
+      screen.getByText('All recorded transactions have been reviewed.'),
+    ).toBeVisible();
+    const action = screen.getByRole('link', { name: 'Record transaction' });
+
+    expect(action).toBeVisible();
+    expect(action.querySelector('svg')).not.toBeInTheDocument();
   });
 
   it('retries a failed refresh while retaining the current ledger', async () => {

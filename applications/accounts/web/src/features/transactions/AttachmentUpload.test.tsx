@@ -80,9 +80,7 @@ describe('AttachmentUpload', () => {
     const input = document.querySelector('input[type="file"]');
 
     expect(input).toBeInstanceOf(HTMLInputElement);
-    expect(
-      screen.getByText('Choose one PDF, GIF, JPG, or PNG file.'),
-    ).toBeVisible();
+    expect(screen.getByText('PDF, JPG or PNG')).toBeVisible();
     await user.upload(input as HTMLInputElement, firstFile);
     await waitFor(() => {
       expect(mocks.uploadPresignedFile).toHaveBeenCalledTimes(1);

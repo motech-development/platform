@@ -211,13 +211,13 @@ function PendingTransactionsPending({
           back={
             <LinkButton appearance="ghost" href={accountsHref}>
               <ArrowLeftIcon />
-              {t('Back to Transactions')}
+              {t('Back')}
             </LinkButton>
           }
           description={t(
-            'Review transactions waiting to be confirmed or scheduled for publication.',
+            'Review transactions before they affect the confirmed balance.',
           )}
-          title={t('Pending Transactions')}
+          title={t('Pending transactions')}
         />
         <LoadingSkeletonRegion loadingLabel={t('Loading Pending Transactions')}>
           <TransactionLedgerSkeleton pending />

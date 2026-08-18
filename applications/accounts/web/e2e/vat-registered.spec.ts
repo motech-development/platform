@@ -537,7 +537,7 @@ test.describe('VAT registered', () => {
       await page.getByRole('button', { name: 'Delete file' }).click();
       await page.getByLabel('Select file to upload').setInputFiles(invoice);
       await expect(page.getByLabel('Select file to upload')).toHaveCount(0);
-      await page.getByRole('button', { name: 'Save' }).click();
+      await page.getByRole('button', { name: 'Save transaction' }).click();
       await expect(
         page.getByRole('heading', { name: 'Edit transaction' }),
       ).toHaveCount(0);
@@ -562,7 +562,7 @@ test.describe('VAT registered', () => {
         .filter({ hasText: transaction.description })
         .filter({ hasText: format('ledger currency', accounts[6].amount) })
         .click();
-      await page.getByRole('button', { name: 'Delete Transaction' }).click();
+      await page.getByRole('button', { name: 'Delete transaction' }).click();
       await expectNoA11yViolations(
         page.getByRole('heading', {
           name: `Delete ${transaction.description}?`,
@@ -572,7 +572,7 @@ test.describe('VAT registered', () => {
         .getByLabel(`Type ${transaction.description} to confirm`)
         .fill(transaction.description);
       await page
-        .getByRole('button', { name: 'Permanently delete Transaction' })
+        .getByRole('button', { name: 'Permanently delete transaction' })
         .click();
       await expectFinancialSummary(page, {
         balance: '£290.40',
@@ -693,9 +693,7 @@ test.describe('VAT registered', () => {
       await expect(
         page.getByRole('heading', { name: 'Edit transaction' }),
       ).toBeVisible();
-      await expect(
-        page.getByText('Choose one PDF, GIF, JPG, or PNG file.'),
-      ).toBeVisible();
+      await expect(page.getByText('PDF, JPG or PNG')).toBeVisible();
     });
   });
 

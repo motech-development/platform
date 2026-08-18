@@ -8,7 +8,6 @@ vi.mock('@motech-development/breeze-ui/icons', async (importOriginal) => ({
     typeof import('@motech-development/breeze-ui/icons')
   >()),
   AddIcon: () => <span aria-hidden="true">+</span>,
-  CalendarIcon: () => <span aria-hidden="true">calendar</span>,
   WarningIcon: () => <span aria-hidden="true">!</span>,
 }));
 
@@ -47,7 +46,7 @@ describe('TransactionPageHeaderAction', () => {
     ).toHaveAttribute('href', '/record-transaction');
   });
 
-  it('matches the transaction action DOM order to its visual order', () => {
+  it('uses the prototype action copy and responsive visual order', () => {
     render(
       <BreezeProvider locale="en-GB">
         <TransactionPageHeaderAction
@@ -61,7 +60,9 @@ describe('TransactionPageHeaderAction', () => {
 
     const links = screen.getAllByRole('link');
 
-    expect(links[0]).toHaveAccessibleName('View Pending Transactions');
+    expect(links[0]).toHaveAccessibleName('View pending');
+    expect(links[0]).toHaveClass('order-2', 'lg:order-1');
     expect(links[1]).toHaveAccessibleName('Record transaction');
+    expect(links[1]).toHaveClass('order-1', 'lg:order-2');
   });
 });

@@ -133,7 +133,7 @@ function TransactionEditDrawer({
           size="wide"
         >
           <Drawer.Description>
-            {t('Update this Transaction.')}
+            {t('Update the transaction and its attachment.')}
           </Drawer.Description>
           <Drawer.Title>{t('Edit transaction')}</Drawer.Title>
           {(error || transactionRefreshFailed) && data ? (
@@ -205,10 +205,10 @@ function TransactionEditDrawer({
                         confirmationLabel={t('Type {{name}} to confirm', {
                           name: transaction.description,
                         })}
-                        confirmLabel={t('Permanently delete Transaction')}
+                        confirmLabel={t('Permanently delete transaction')}
                         deleting={deleting}
                         description={t(
-                          'This Transaction and its attachment will be permanently removed.',
+                          'This transaction and its attachment will be permanently removed.',
                         )}
                         disabled={!online || submissionPending}
                         entityName={transaction.description}
@@ -217,7 +217,7 @@ function TransactionEditDrawer({
                         title={t('Delete {{name}}?', {
                           name: transaction.description,
                         })}
-                        triggerLabel={t('Delete Transaction')}
+                        triggerLabel={t('Delete transaction')}
                       />
                     }
                     primary={
@@ -226,7 +226,9 @@ function TransactionEditDrawer({
                         loading={isSubmitting}
                         type="submit"
                       >
-                        {online ? t('Save') : t('Connection required')}
+                        {online
+                          ? t('Save transaction')
+                          : t('Connection required')}
                       </Button>
                     }
                   />

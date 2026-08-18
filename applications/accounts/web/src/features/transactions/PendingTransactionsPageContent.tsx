@@ -30,6 +30,7 @@ export function PendingTransactionsPageContent({
     },
   );
   const initiallyLoading = loading && !data;
+  const hasTransactions = (data?.getTransactions.items.length ?? 0) > 0;
   const accountsHref = `/my-companies/accounts/${encodeURIComponent(companyId)}`;
   const recordTransactionHref = `${accountsHref}/pending-transactions/record-transaction`;
 
@@ -46,25 +47,25 @@ export function PendingTransactionsPageContent({
     >
       <PageHeader
         actions={
-          initiallyLoading ? null : (
+          !initiallyLoading && hasTransactions ? (
             <RecordTransactionLink href={recordTransactionHref} />
-          )
+          ) : null
         }
         back={
           <LinkButton appearance="ghost" href={accountsHref}>
             <ArrowLeftIcon />
-            {t('Back to Transactions')}
+            {t('Back')}
           </LinkButton>
         }
         description={t(
-          'Review transactions waiting to be confirmed or scheduled for publication.',
+          'Review transactions before they affect the confirmed balance.',
         )}
-        title={t('Pending Transactions')}
+        title={t('Pending transactions')}
       />
       {error && !data ? (
         <TransactionPageError
           onRetry={refetch}
-          title={t('We could not load Pending Transactions')}
+          title={t('We could not load pending transactions')}
         />
       ) : null}
       {error && data ? (
@@ -89,6 +90,12 @@ export function PendingTransactionsPageContent({
           <TransactionLedger
             companyId={companyId}
             currencyCode={data.getBalance.currency}
+            emptyAction={
+              <RecordTransactionLink
+                href={recordTransactionHref}
+                icon={false}
+              />
+            }
             pending
             transactions={data.getTransactions.items}
           />

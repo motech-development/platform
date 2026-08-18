@@ -4,22 +4,19 @@ import {
   LinkButton,
   StatePanel,
 } from '@motech-development/breeze-ui';
-import {
-  AddIcon,
-  CalendarIcon,
-  WarningIcon,
-} from '@motech-development/breeze-ui/icons';
+import { AddIcon, WarningIcon } from '@motech-development/breeze-ui/icons';
 import { useTranslation } from 'react-i18next';
 
 export function RecordTransactionLink({
   className,
   href,
-}: Readonly<{ className?: string; href: string }>) {
+  icon = true,
+}: Readonly<{ className?: string; href: string; icon?: boolean }>) {
   const { t } = useTranslation('transactions');
 
   return (
     <LinkButton className={className} href={href}>
-      <AddIcon />
+      {icon ? <AddIcon /> : null}
       {t('Record transaction')}
     </LinkButton>
   );
@@ -47,14 +44,25 @@ export function TransactionPageHeaderAction({
   }
 
   return (
-    <Inline gap="sm" wrap>
+    <Inline
+      align="stretch"
+      className="w-full flex-col lg:w-auto lg:flex-row lg:items-center"
+      gap="compact"
+      wrap={false}
+    >
       {pendingTransactionsHref ? (
-        <LinkButton appearance="outline" href={pendingTransactionsHref}>
-          <CalendarIcon />
-          {t('View Pending Transactions')}
+        <LinkButton
+          appearance="outline"
+          className="order-2 w-full lg:order-1 lg:w-auto"
+          href={pendingTransactionsHref}
+        >
+          {t('View pending')}
         </LinkButton>
       ) : null}
-      <RecordTransactionLink href={recordTransactionHref} />
+      <RecordTransactionLink
+        className="order-1 w-full lg:order-2 lg:w-auto"
+        href={recordTransactionHref}
+      />
     </Inline>
   );
 }

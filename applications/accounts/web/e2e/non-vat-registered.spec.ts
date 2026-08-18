@@ -375,7 +375,7 @@ test.describe('Non-VAT registered', () => {
 
       await description.fill(updatedDescription);
       await description.press('Escape');
-      await page.getByRole('button', { name: 'Save' }).click();
+      await page.getByRole('button', { name: 'Save transaction' }).click();
       await expect(
         page.getByRole('heading', { name: 'Edit transaction' }),
       ).toHaveCount(0);
@@ -398,12 +398,12 @@ test.describe('Non-VAT registered', () => {
         .filter({ hasText: updatedDescription })
         .first()
         .click();
-      await page.getByRole('button', { name: 'Delete Transaction' }).click();
+      await page.getByRole('button', { name: 'Delete transaction' }).click();
       await page
         .getByLabel(`Type ${updatedDescription} to confirm`)
         .fill(updatedDescription);
       await page
-        .getByRole('button', { name: 'Permanently delete Transaction' })
+        .getByRole('button', { name: 'Permanently delete transaction' })
         .click();
       await expect(page.getByText(updatedDescription)).toHaveCount(0);
     });
@@ -443,7 +443,7 @@ test.describe('Non-VAT registered', () => {
         .filter({ hasText: transaction.description })
         .first()
         .click();
-      await page.getByRole('button', { name: 'Delete Transaction' }).click();
+      await page.getByRole('button', { name: 'Delete transaction' }).click();
       await expectNoA11yViolations(
         page.getByRole('heading', {
           name: `Delete ${transaction.description}?`,
@@ -453,7 +453,7 @@ test.describe('Non-VAT registered', () => {
         .getByLabel(`Type ${transaction.description} to confirm`)
         .fill(transaction.description);
       await page
-        .getByRole('button', { name: 'Permanently delete Transaction' })
+        .getByRole('button', { name: 'Permanently delete transaction' })
         .click();
       await expectFinancialSummary(page, { balance: '£1,922.40' });
     });
@@ -525,20 +525,18 @@ test.describe('Non-VAT registered', () => {
       const transaction = accounts[5];
 
       await openAccountsRoute('not-registered');
-      await page
-        .getByRole('link', { name: 'View Pending Transactions' })
-        .click();
+      await page.getByRole('link', { name: 'View pending' }).click();
       await page
         .getByRole('row')
         .filter({ hasText: transaction.description })
         .first()
         .click();
-      await page.getByRole('button', { name: 'Delete Transaction' }).click();
+      await page.getByRole('button', { name: 'Delete transaction' }).click();
       await page
         .getByLabel(`Type ${transaction.description} to confirm`)
         .fill(transaction.description);
       await page
-        .getByRole('button', { name: 'Permanently delete Transaction' })
+        .getByRole('button', { name: 'Permanently delete transaction' })
         .click();
       await expect(page.getByText(transaction.description)).toHaveCount(0);
     });

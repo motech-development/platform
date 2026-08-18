@@ -333,6 +333,18 @@ describe('TransactionEditPage', () => {
       </BreezeProvider>,
     );
 
+    expect(
+      screen.getByText('Update the transaction and its attachment.'),
+    ).toBeVisible();
+    expect(
+      screen.getByText('Transaction type cannot be changed after creation.'),
+    ).toBeVisible();
+    expect(
+      screen.getByRole('heading', { name: 'Transaction amount' }),
+    ).toBeVisible();
+    expect(
+      screen.getByText('Status determines when the balance is updated.'),
+    ).toBeVisible();
     expect(screen.getByLabelText('Sale')).toBeChecked();
     expect(
       screen.getByRole('radiogroup', { name: 'Transaction type' }),
@@ -340,6 +352,9 @@ describe('TransactionEditPage', () => {
     expect(screen.getByLabelText('No')).toBeChecked();
     expect(screen.getByLabelText('Amount')).toHaveValue('£75.00');
     expect(screen.getByLabelText('VAT')).toHaveValue('£15.00');
+    expect(
+      screen.getByRole('button', { name: 'Save transaction' }),
+    ).toBeVisible();
   });
 
   it('keeps the edit form available when saving returns no Transaction', async () => {
@@ -356,7 +371,9 @@ describe('TransactionEditPage', () => {
       </BreezeProvider>,
     );
 
-    await userEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Save transaction' }),
+    );
 
     await waitFor(() =>
       expect(mocks.toast.show).toHaveBeenCalledWith(
@@ -431,14 +448,14 @@ describe('TransactionEditPage', () => {
     );
 
     await userEvent.click(
-      screen.getByRole('button', { name: 'Delete Transaction' }),
+      screen.getByRole('button', { name: 'Delete transaction' }),
     );
     await userEvent.type(
       screen.getByLabelText('Type Retainer to confirm'),
       'Retainer',
     );
     await userEvent.click(
-      screen.getByRole('button', { name: 'Permanently delete Transaction' }),
+      screen.getByRole('button', { name: 'Permanently delete transaction' }),
     );
 
     await waitFor(() => expect(mocks.deleteTransaction).toHaveBeenCalledOnce());
@@ -468,14 +485,14 @@ describe('TransactionEditPage', () => {
     );
 
     await userEvent.click(
-      screen.getByRole('button', { name: 'Delete Transaction' }),
+      screen.getByRole('button', { name: 'Delete transaction' }),
     );
     await userEvent.type(
       screen.getByLabelText('Type Retainer to confirm'),
       'Retainer',
     );
     await userEvent.click(
-      screen.getByRole('button', { name: 'Permanently delete Transaction' }),
+      screen.getByRole('button', { name: 'Permanently delete transaction' }),
     );
 
     await waitFor(() =>
@@ -513,14 +530,14 @@ describe('TransactionEditPage', () => {
     expect(await screen.findByText('upload-id.pdf')).toBeVisible();
 
     await userEvent.click(
-      screen.getByRole('button', { name: 'Delete Transaction' }),
+      screen.getByRole('button', { name: 'Delete transaction' }),
     );
     await userEvent.type(
       screen.getByLabelText('Type Retainer to confirm'),
       'Retainer',
     );
     await userEvent.click(
-      screen.getByRole('button', { name: 'Permanently delete Transaction' }),
+      screen.getByRole('button', { name: 'Permanently delete transaction' }),
     );
 
     await waitFor(() =>

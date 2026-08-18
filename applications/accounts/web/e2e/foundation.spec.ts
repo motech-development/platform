@@ -287,7 +287,7 @@ test.describe('hosted Accounts foundation', () => {
 
       await route.fallback();
     });
-    await expect(save).toHaveAccessibleName('Save');
+    await expect(save).toHaveAccessibleName('Save transaction');
     await expect(save).toBeEnabled();
     await save.click();
     await expect(
@@ -307,7 +307,7 @@ test.describe('hosted Accounts foundation', () => {
       );
       await page.context().setOffline(false);
       await refetchAfterReconnect;
-      await expect(save).toHaveAccessibleName('Save');
+      await expect(save).toHaveAccessibleName('Save transaction');
       await expect(save).toBeEnabled();
 
       expect(mutationAttempts).toBe(mutationAttemptsBeforeReconnect);

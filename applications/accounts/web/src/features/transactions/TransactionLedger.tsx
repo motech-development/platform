@@ -15,7 +15,7 @@ import {
 } from '@motech-development/breeze-ui/icons';
 import { useNavigate } from '@tanstack/react-router';
 import Decimal from 'decimal.js';
-import { useState } from 'react';
+import { type ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { formatCurrency } from '../../formatting/currency';
 
@@ -266,9 +266,11 @@ function TransactionDirectionCell({
 }
 
 function TransactionIdentityCell({
+  locale,
   pendingCollection,
   transaction,
 }: Readonly<{
+  locale: string;
   pendingCollection: boolean;
   transaction: LedgerTransaction;
 }>) {
@@ -287,6 +289,12 @@ function TransactionIdentityCell({
         <Typography as="span" colour="muted" truncate>
           {transaction.description}
         </Typography>
+        {pendingCollection ? (
+          <span className="hidden items-center gap-2 text-[var(--breeze-ink-soft)] max-[680px]:flex">
+            <span>{dayLabel(transaction.date, locale)}</span>
+            {transaction.scheduled ? <ScheduledTransactionIndicator /> : null}
+          </span>
+        ) : null}
       </span>
     </Table.Cell>
   );
@@ -310,7 +318,7 @@ function TransactionContextCell({
   }
 
   return (
-    <Table.Cell column="date">
+    <Table.Cell className="max-[680px]:!hidden" column="date">
       <span className="flex items-center gap-2">
         <span>{dayLabel(transaction.date, locale)}</span>
         {transaction.scheduled ? <ScheduledTransactionIndicator /> : null}
@@ -391,6 +399,7 @@ function TransactionRow({
         transactionLabel={transactionLabel}
       />
       <TransactionIdentityCell
+        locale={locale}
         pendingCollection={pendingCollection}
         transaction={transaction}
       />
@@ -435,10 +444,16 @@ function LoadingTransactionRow({
         <div className="grid min-w-0 gap-1">
           <Skeleton className="h-5 w-36 max-w-full" />
           <Skeleton className="h-4 w-48 max-w-full" />
+          {pending ? (
+            <Skeleton className="hidden h-4 w-28 max-w-full max-[680px]:block" />
+          ) : null}
         </div>
       </Table.Cell>
       {compact ? null : (
-        <Table.Cell column={pending ? 'date' : 'category'}>
+        <Table.Cell
+          className={pending ? 'max-[680px]:!hidden' : undefined}
+          column={pending ? 'date' : 'category'}
+        >
           <Skeleton className="h-4 w-28 max-w-full" />
         </Table.Cell>
       )}
@@ -665,7 +680,7 @@ function TransactionBodies({
   pending: boolean;
   transactions: readonly LedgerTransaction[];
 }>) {
-  if (!compact) {
+  if (!compact && !pending) {
     return [...groupTransactionsByDay(transactions)].map(([day, items]) => (
       <TransactionDayBody
         companyId={companyId}
@@ -683,7 +698,7 @@ function TransactionBodies({
     <Table.Body>
       {transactions.map((transaction) => (
         <TransactionRow
-          compact
+          compact={compact}
           companyId={companyId}
           currencyCode={currencyCode}
           key={transaction.id}
@@ -700,12 +715,14 @@ export function TransactionLedger({
   compact = false,
   companyId,
   currencyCode,
+  emptyAction,
   pending = false,
   transactions,
 }: Readonly<{
   compact?: boolean;
   companyId: string;
   currencyCode: string;
+  emptyAction?: ReactNode;
   pending?: boolean;
   transactions: readonly LedgerTransaction[];
 }>) {
@@ -715,20 +732,21 @@ export function TransactionLedger({
   if (compact) {
     tableLabel = t('Recent transactions');
   } else if (pending) {
-    tableLabel = t('Pending Transactions');
+    tableLabel = t('Pending transactions');
   }
 
   if (transactions.length === 0) {
     return (
       <StatePanel
+        action={emptyAction}
         description={t(
           pending
-            ? 'Pending Transactions appear here until they are confirmed.'
+            ? 'All recorded transactions have been reviewed.'
             : 'Record a confirmed sale to start this transaction history.',
         )}
-        icon={<ArrowRightIcon />}
+        icon={pending ? <CalendarIcon /> : <ArrowRightIcon />}
         title={
-          pending ? t('No Pending Transactions') : t('No transactions yet')
+          pending ? t('No pending transactions') : t('No transactions yet')
         }
       />
     );

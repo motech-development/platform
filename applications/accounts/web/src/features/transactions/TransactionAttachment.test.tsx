@@ -129,6 +129,8 @@ describe('TransactionAttachment', () => {
       screen.queryByText('3456df4a-51f8-49af-a52e-c1a21b8ff087.pdf'),
     ).not.toBeInTheDocument();
 
+    await userEvent.click(screen.getByRole('button', { name: 'View file' }));
+    await screen.findByText('PDF preview: application/pdf');
     await userEvent.click(
       screen.getByRole('button', { name: 'Download file' }),
     );
@@ -165,7 +167,7 @@ describe('TransactionAttachment', () => {
       await screen.findByText('PDF preview: application/pdf'),
     ).toBeVisible();
     await userEvent.click(
-      screen.getAllByRole('button', { name: 'Download file' }).at(-1)!,
+      screen.getByRole('button', { name: 'Download file' }),
     );
     expect(mocks.saveAs).toHaveBeenCalledWith(file, 'invoice.pdf');
     expect(mocks.download).toHaveBeenCalledOnce();
@@ -206,65 +208,6 @@ describe('TransactionAttachment', () => {
     expect(mocks.revokeObjectUrl).toHaveBeenCalledWith(
       'blob:attachment-preview',
     );
-  });
-
-  it('downloads the attachment without opening its preview', async () => {
-    const file = new Blob(['invoice'], { type: 'application/pdf' });
-
-    mocks.query.mockResolvedValue({
-      data: { requestDownload: { url: 'https://download/invoice' } },
-    });
-    mocks.download.mockResolvedValue(file);
-
-    render(
-      <BreezeProvider locale="en-GB">
-        <TransactionAttachment
-          companyId="company-id"
-          onDeleted={() => true}
-          path="company-id/invoice.pdf"
-        />
-      </BreezeProvider>,
-    );
-
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Download file' }),
-    );
-
-    await waitFor(() =>
-      expect(mocks.saveAs).toHaveBeenCalledWith(file, 'invoice.pdf'),
-    );
-    expect(mocks.toast.show).toHaveBeenCalledWith({
-      title: 'The download has started',
-      variant: 'success',
-    });
-  });
-
-  it('reports a failed direct download without removing the attachment', async () => {
-    mocks.query.mockResolvedValue({
-      data: { requestDownload: { url: 'https://download/invoice' } },
-    });
-    mocks.download.mockRejectedValue(new Error('Download failed'));
-
-    render(
-      <BreezeProvider locale="en-GB">
-        <TransactionAttachment
-          companyId="company-id"
-          onDeleted={() => true}
-          path="company-id/invoice.pdf"
-        />
-      </BreezeProvider>,
-    );
-
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Download file' }),
-    );
-
-    await waitFor(() =>
-      expect(mocks.toast.show).toHaveBeenCalledWith(
-        expect.objectContaining({ title: 'Attachment unavailable' }),
-      ),
-    );
-    expect(screen.getByText('invoice.pdf')).toBeVisible();
   });
 
   it.each([
@@ -312,8 +255,8 @@ describe('TransactionAttachment', () => {
       screen.getByRole('button', { name: 'Connection required' }),
     ).toBeDisabled();
     expect(
-      screen.getByRole('button', { name: 'Download file' }),
-    ).toBeDisabled();
+      screen.queryByRole('button', { name: 'Download file' }),
+    ).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Delete file' })).toBeDisabled();
   });
 });

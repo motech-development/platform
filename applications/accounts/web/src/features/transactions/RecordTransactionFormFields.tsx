@@ -220,7 +220,9 @@ export function RecordTransactionFormFields({
     <>
       <FormSection
         description={t(
-          'Identify who the transaction is with and when it occurred.',
+          editing
+            ? 'Transaction type cannot be changed after creation.'
+            : 'Identify who the transaction is with and when it occurred.',
         )}
         divided
         headingLevel={3}
@@ -400,13 +402,11 @@ export function RecordTransactionFormFields({
         ) : null}
       </FormSection>
       <FormSection
-        description={t(
-          'Set its accounting state, amount, VAT, and refund meaning.',
-        )}
+        description={t('Status determines when the balance is updated.')}
         divided
         headingLevel={3}
         layout="stacked"
-        title={t('Status and totals')}
+        title={t('Transaction amount')}
       >
         <form.Field name="status">
           {(field) => {
@@ -668,52 +668,60 @@ export function RecordTransactionFormFields({
         </form.Subscribe>
       </FormSection>
       {selectedTransactionType ? (
-        <FormSection
-          description={t('Attach a PDF, GIF, JPG, or PNG invoice or receipt.')}
-          divided
-          headingLevel={3}
-          layout="stacked"
-          title={t('Invoice or receipt')}
-        >
-          <form.Subscribe selector={(state) => state.isSubmitting}>
-            {(isSubmitting) => (
-              <form.Field name="attachment">
-                {(field) =>
-                  field.state.value ? (
-                    <TransactionAttachment
-                      companyId={companyId}
-                      disabled={isSubmitting}
-                      onDeleted={async () => {
-                        const removed = await removeAttachment(
-                          field.state.value,
-                        );
+        <form.Subscribe selector={(state) => state.values.attachment}>
+          {(attachment) => (
+            <FormSection
+              description={t(
+                attachment
+                  ? 'View, replace, or delete the attached file.'
+                  : 'Attach an invoice or receipt to this transaction.',
+              )}
+              divided
+              headingLevel={3}
+              layout="stacked"
+              title={t('Invoice or receipt')}
+            >
+              <form.Subscribe selector={(state) => state.isSubmitting}>
+                {(isSubmitting) => (
+                  <form.Field name="attachment">
+                    {(field) =>
+                      field.state.value ? (
+                        <TransactionAttachment
+                          companyId={companyId}
+                          disabled={isSubmitting}
+                          onDeleted={async () => {
+                            const removed = await removeAttachment(
+                              field.state.value,
+                            );
 
-                        if (removed) {
-                          field.handleChange('');
-                          markDirty();
-                        }
+                            if (removed) {
+                              field.handleChange('');
+                              markDirty();
+                            }
 
-                        return removed;
-                      }}
-                      path={field.state.value}
-                    />
-                  ) : (
-                    <AttachmentUpload
-                      companyId={companyId}
-                      disabled={!online || isSubmitting}
-                      onTransfer={trackAttachmentTransfer}
-                      onUploaded={(path) => {
-                        field.handleChange(path);
-                        markDirty();
-                      }}
-                      transactionId={form.getFieldValue('id') || undefined}
-                    />
-                  )
-                }
-              </form.Field>
-            )}
-          </form.Subscribe>
-        </FormSection>
+                            return removed;
+                          }}
+                          path={field.state.value}
+                        />
+                      ) : (
+                        <AttachmentUpload
+                          companyId={companyId}
+                          disabled={!online || isSubmitting}
+                          onTransfer={trackAttachmentTransfer}
+                          onUploaded={(path) => {
+                            field.handleChange(path);
+                            markDirty();
+                          }}
+                          transactionId={form.getFieldValue('id') || undefined}
+                        />
+                      )
+                    }
+                  </form.Field>
+                )}
+              </form.Subscribe>
+            </FormSection>
+          )}
+        </form.Subscribe>
       ) : null}
     </>
   );

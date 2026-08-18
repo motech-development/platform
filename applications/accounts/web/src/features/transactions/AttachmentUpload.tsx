@@ -139,7 +139,7 @@ export function AttachmentUpload({
         guidance={
           disabled
             ? t('Connection required to attach a file.')
-            : t('Choose one PDF, GIF, JPG, or PNG file.')
+            : t('PDF, JPG or PNG')
         }
         label={loading ? t('Uploading PDF…') : t('No file selected')}
         onFiles={(files) => {

@@ -129,6 +129,7 @@ describe('RecordTransactionPage', () => {
       </BreezeProvider>,
     );
 
+    expect(screen.getByText('Add money coming in or going out.')).toBeVisible();
     expect(screen.getByLabelText('Purchase')).not.toBeChecked();
     expect(screen.getByLabelText('Sale')).not.toBeChecked();
     expect(screen.getByLabelText('Confirmed')).not.toBeChecked();
@@ -160,7 +161,17 @@ describe('RecordTransactionPage', () => {
     expect(screen.getByLabelText('Amount')).toBeVisible();
     expect(screen.getByLabelText('VAT')).toBeVisible();
     expect(
-      screen.getByText('Choose one PDF, GIF, JPG, or PNG file.'),
+      screen.getByRole('heading', { name: 'Transaction amount' }),
+    ).toBeVisible();
+    expect(
+      screen.getByText('Status determines when the balance is updated.'),
+    ).toBeVisible();
+    expect(
+      screen.getByText('Attach an invoice or receipt to this transaction.'),
+    ).toBeVisible();
+    expect(screen.getByText('PDF, JPG or PNG')).toBeVisible();
+    expect(
+      screen.getByRole('button', { name: 'Save transaction' }),
     ).toBeVisible();
   });
 

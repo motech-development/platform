@@ -124,27 +124,6 @@ export function TransactionAttachment({
                 : t('Connection required', { ns: 'transactions' })}
             </Button>
             <Button
-              appearance="outline"
-              disabled={!online || disabled || loading}
-              onAction={() => {
-                download()
-                  .then((downloaded) => {
-                    if (downloaded) saveDownload(downloaded);
-                  })
-                  .catch(() => {
-                    toast.show({
-                      description: t(
-                        'The file could not be opened. Try again.',
-                      ),
-                      title: t('Attachment unavailable'),
-                      variant: 'danger',
-                    });
-                  });
-              }}
-            >
-              {t('Download file')}
-            </Button>
-            <Button
               disabled={!online || disabled || deleting}
               loading={deleting}
               onAction={() => {

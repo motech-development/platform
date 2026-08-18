@@ -57,15 +57,15 @@ describe('AccountsPending', () => {
     ['/my-companies/accounts/company-id', 'Transactions'],
     [
       '/my-companies/accounts/company-id/pending-transactions',
-      'Pending Transactions',
+      'Pending transactions',
     ],
     [
       '/my-companies/accounts/company-id/pending-transactions/record-transaction',
-      'Pending Transactions',
+      'Pending transactions',
     ],
     [
       '/my-companies/accounts/company-id/pending-transactions/view-transaction/transaction-id',
-      'Pending Transactions',
+      'Pending transactions',
     ],
     ['/my-companies/accounts/company-id/record-transaction', 'Transactions'],
     [
@@ -89,17 +89,19 @@ describe('AccountsPending', () => {
   it('keeps the Pending Transactions back action visible while loading', () => {
     renderPending('/my-companies/accounts/company-id/pending-transactions');
 
-    expect(
-      screen.getByRole('link', { name: 'Back to Transactions' }),
-    ).toHaveAttribute('href', '/my-companies/accounts/company-id');
+    expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
+      'href',
+      '/my-companies/accounts/company-id',
+    );
   });
 
   it('uses the safe companies route when a Pending URL has no company identity', () => {
     renderPending('/my-companies/accounts//pending-transactions');
 
-    expect(
-      screen.getByRole('link', { name: 'Back to Transactions' }),
-    ).toHaveAttribute('href', '/my-companies');
+    expect(screen.getByRole('link', { name: 'Back' })).toHaveAttribute(
+      'href',
+      '/my-companies',
+    );
   });
 
   it('announces the Pending Transactions load and preserves its record drawer context', () => {

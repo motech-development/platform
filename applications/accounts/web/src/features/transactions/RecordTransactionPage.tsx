@@ -97,7 +97,7 @@ export function RecordTransactionPage({
           size="wide"
         >
           <Drawer.Description>
-            {t('Record a purchase, sale, refund, or Pending Transaction.')}
+            {t('Add money coming in or going out.')}
           </Drawer.Description>
           <Drawer.Title>{t('Record transaction')}</Drawer.Title>
           {error && data ? (
@@ -161,7 +161,9 @@ export function RecordTransactionPage({
                         loading={isSubmitting}
                         type="submit"
                       >
-                        {online ? t('Save') : t('Connection required')}
+                        {online
+                          ? t('Save transaction')
+                          : t('Connection required')}
                       </Button>
                     }
                   />
