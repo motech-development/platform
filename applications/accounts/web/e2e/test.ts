@@ -75,34 +75,24 @@ export async function expectFinancialSummary(
   }
 }
 
-async function completeAuthenticationForPage(
-  baseURL: string | undefined,
-  content: Locator,
-  page: Page,
-) {
+async function completeAuthenticationForPage(content: Locator, page: Page) {
   const consent = page.locator('button#allow');
   const email = page.getByLabel('Email address');
 
-  if (baseURL && new URL(page.url()).hostname === new URL(baseURL).hostname) {
-    await expect(content).toBeVisible();
-
-    return;
-  }
-
-  await expect(content.or(consent).or(email)).toBeVisible();
+  await expect(content.or(consent).or(email)).toBeVisible({ timeout: 0 });
 
   if (await email.isVisible()) {
     await email.fill(process.env.E2E_USERNAME!);
     await page.getByLabel('Password').fill(process.env.E2E_PASSWORD!);
     await page.getByRole('button', { name: 'Log in' }).click();
-    await expect(content.or(consent)).toBeVisible();
+    await expect(content.or(consent)).toBeVisible({ timeout: 0 });
   }
 
   if (await consent.isVisible()) {
     await consent.click();
   }
 
-  await expect(content).toBeVisible();
+  await expect(content).toBeVisible({ timeout: 0 });
 }
 
 type TransactionFixture = (typeof accountFixtures)[number];
@@ -194,11 +184,7 @@ export const test = base.extend<AccountsFixtures, AccountsWorkerFixtures>({
             await expect(companiesHeading.or(signIn)).toBeVisible();
             if (await signIn.isVisible()) {
               await signIn.click();
-              await completeAuthenticationForPage(
-                baseURL,
-                companiesHeading,
-                page,
-              );
+              await completeAuthenticationForPage(companiesHeading, page);
             }
           }
 
@@ -261,9 +247,9 @@ export const test = base.extend<AccountsFixtures, AccountsWorkerFixtures>({
     await use(clientFixtures);
   },
   companies: [async ({}, use) => use(companyFixtures), { scope: 'worker' }],
-  completeAuthentication: async ({ baseURL, page }, use) => {
+  completeAuthentication: async ({ page }, use) => {
     await use(async (content) => {
-      await completeAuthenticationForPage(baseURL, content, page);
+      await completeAuthenticationForPage(content, page);
     });
   },
   dismissNotifications: async ({ page }, use) => {
