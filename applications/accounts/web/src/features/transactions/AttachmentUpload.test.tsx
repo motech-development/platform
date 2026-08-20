@@ -149,6 +149,41 @@ describe('AttachmentUpload', () => {
     });
   });
 
+  it('reports an image upload failure with file-generic copy', async () => {
+    const user = userEvent.setup();
+    const file = new File(['image'], 'receipt.jpg', { type: 'image/jpeg' });
+
+    mocks.requestUpload.mockResolvedValue({
+      data: {
+        requestUpload: { id: 'upload-image', url: 'https://upload/image' },
+      },
+    });
+    mocks.uploadPresignedFile.mockRejectedValue(new Error('Transfer failed'));
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <AttachmentUpload
+          companyId="company-1"
+          onTransfer={vi.fn()}
+          onUploaded={vi.fn()}
+        />
+      </BreezeProvider>,
+    );
+
+    await user.upload(
+      document.querySelector('input[type="file"]') as HTMLInputElement,
+      file,
+    );
+
+    await waitFor(() =>
+      expect(mocks.toast.show).toHaveBeenCalledWith({
+        description: 'The file was not transferred. Retry when ready.',
+        title: 'Attachment upload failed',
+        variant: 'danger',
+      }),
+    );
+  });
+
   it('uses the media type extension when the selected filename has none', async () => {
     const user = userEvent.setup();
     const file = new File(['image'], 'receipt', { type: 'image/png' });

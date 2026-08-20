@@ -98,7 +98,7 @@ export function AttachmentUpload({
       } catch {
         setUploadFailed(true);
         toast.show({
-          description: t('The PDF was not transferred. Retry when ready.'),
+          description: t('The file was not transferred. Retry when ready.'),
           title: t('Attachment upload failed'),
           variant: 'danger',
         });
@@ -135,7 +135,7 @@ export function AttachmentUpload({
             ? t('Connection required to attach a file.')
             : t('PDF, JPG or PNG')
         }
-        label={loading ? t('Uploading PDF…') : t('No file selected')}
+        label={loading ? t('Uploading file…') : t('No file selected')}
         onFiles={(files) => {
           const [file] = files;
 

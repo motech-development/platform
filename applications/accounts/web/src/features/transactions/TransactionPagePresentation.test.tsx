@@ -123,5 +123,6 @@ describe('TransactionPageHeaderAction', () => {
 
     expect(wideLinks[0]).toHaveAccessibleName('View pending');
     expect(wideLinks[1]).toHaveAccessibleName('Record transaction');
+    expect(window.matchMedia).toHaveBeenCalledWith('(min-width: 73.8125rem)');
   });
 });

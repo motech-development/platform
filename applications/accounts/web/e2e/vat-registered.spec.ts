@@ -427,6 +427,12 @@ test.describe('VAT registered', () => {
   });
 
   test.describe('Accounts', () => {
+    test.afterEach(async ({ page }) => {
+      await expect(page).toHaveURL(
+        /my-companies\/accounts\/[0-9a-f-]+(?:\/.*)?$/,
+      );
+    });
+
     test('should add a confirmed sale', async ({
       accounts,
       invoice,

@@ -90,6 +90,15 @@ describe('Transaction accounting input', () => {
     ).toBe(-0.01);
   });
 
+  it.each(['amount', 'vat'] as const)(
+    'rejects a non-finite %s value',
+    (field) => {
+      expect(() =>
+        buildTransactionInput({ ...baseValues, [field]: 'Infinity' }),
+      ).toThrow();
+    },
+  );
+
   it('preserves the captured form time for a new scheduled Pending Transaction', () => {
     expect(
       buildTransactionInput(

@@ -8,7 +8,7 @@ import { AddIcon, WarningIcon } from '@motech-development/breeze-ui/icons';
 import { useSyncExternalStore } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const WIDE_ACTIONS_QUERY = '(min-width: 1181px)';
+const WIDE_ACTIONS_QUERY = '(min-width: 73.8125rem)';
 
 function getActionMediaQuery() {
   if (

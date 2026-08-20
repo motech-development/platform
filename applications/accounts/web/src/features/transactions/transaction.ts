@@ -24,7 +24,9 @@ const nonNegativeDecimal = z
   .refine(
     (value) => {
       try {
-        return new Decimal(value).greaterThanOrEqualTo(0);
+        const decimal = new Decimal(value);
+
+        return decimal.isFinite() && decimal.greaterThanOrEqualTo(0);
       } catch {
         return false;
       }
@@ -46,7 +48,9 @@ export const transactionSchema = z
       .refine(
         (value) => {
           try {
-            return new Decimal(value).toDecimalPlaces(2).greaterThan(0);
+            const decimal = new Decimal(value).toDecimalPlaces(2);
+
+            return decimal.isFinite() && decimal.greaterThan(0);
           } catch {
             return false;
           }
