@@ -530,7 +530,7 @@ test.describe('VAT registered', () => {
       await expect(
         page.getByRole('radiogroup', { name: 'Refund' }).getByLabel('No'),
       ).toBeChecked();
-      await page.getByLabel('Amount').fill(transaction.amount);
+      await getFormInput(page, 'Amount').fill(transaction.amount);
       await expect(page.getByLabel('VAT', { exact: true })).toHaveValue(
         format('currency', transaction.vat),
       );

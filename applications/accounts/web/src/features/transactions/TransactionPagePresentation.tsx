@@ -46,23 +46,16 @@ export function TransactionPageHeaderAction({
   return (
     <Inline
       align="stretch"
-      className="w-full flex-col lg:w-auto lg:flex-row lg:items-center"
+      className="w-full flex-col-reverse lg:w-auto lg:flex-row lg:items-center"
       gap="compact"
       wrap={false}
     >
       {pendingTransactionsHref ? (
-        <LinkButton
-          appearance="outline"
-          className="order-2 w-full lg:order-1 lg:w-auto"
-          href={pendingTransactionsHref}
-        >
+        <LinkButton appearance="outline" href={pendingTransactionsHref}>
           {t('View pending')}
         </LinkButton>
       ) : null}
-      <RecordTransactionLink
-        className="order-1 w-full lg:order-2 lg:w-auto"
-        href={recordTransactionHref}
-      />
+      <RecordTransactionLink href={recordTransactionHref} />
     </Inline>
   );
 }

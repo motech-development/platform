@@ -46,7 +46,7 @@ describe('TransactionPageHeaderAction', () => {
     ).toHaveAttribute('href', '/record-transaction');
   });
 
-  it('uses the prototype action copy and responsive visual order', () => {
+  it('uses the prototype action copy', () => {
     render(
       <BreezeProvider locale="en-GB">
         <TransactionPageHeaderAction
@@ -61,8 +61,6 @@ describe('TransactionPageHeaderAction', () => {
     const links = screen.getAllByRole('link');
 
     expect(links[0]).toHaveAccessibleName('View pending');
-    expect(links[0]).toHaveClass('order-2', 'lg:order-1');
     expect(links[1]).toHaveAccessibleName('Record transaction');
-    expect(links[1]).toHaveClass('order-1', 'lg:order-2');
   });
 });

@@ -622,7 +622,7 @@ export const test = base.extend<AccountsFixtures, AccountsWorkerFixtures>({
           );
         }
 
-        await page.getByLabel('Amount').fill(transaction.amount);
+        await getFormInput(page, 'Amount').fill(transaction.amount);
         await expect(page.getByLabel('VAT', { exact: true })).toHaveValue(
           format('currency', expectedVat),
         );

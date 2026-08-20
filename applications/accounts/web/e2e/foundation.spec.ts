@@ -89,11 +89,36 @@ test.describe('hosted Accounts foundation', () => {
         ),
       )
       .toBe(true);
-    expect(
-      await page.evaluate(
-        () => document.documentElement.scrollWidth <= window.innerWidth,
-      ),
-    ).toBe(true);
+    const overflowingElements = await page
+      .locator('body *')
+      .evaluateAll((elements) =>
+        elements.flatMap((element) => {
+          const bounds = element.getBoundingClientRect();
+
+          if (bounds.right <= window.innerWidth) {
+            return [];
+          }
+
+          return [
+            {
+              accessibleName:
+                element.getAttribute('aria-label') ??
+                element.getAttribute('aria-labelledby'),
+              bounds: {
+                left: bounds.left,
+                right: bounds.right,
+                width: bounds.width,
+              },
+              className: element.getAttribute('class'),
+              role: element.getAttribute('role'),
+              tagName: element.tagName,
+              text: element.textContent?.trim(),
+            },
+          ];
+        }),
+      );
+
+    expect(overflowingElements).toEqual([]);
     await expectNoA11yViolations(description);
   });
 
@@ -269,7 +294,7 @@ test.describe('hosted Accounts foundation', () => {
     await page.getByRole('option', { name: 'Motech Development' }).click();
     await getFormInput(page, 'Description').fill('Offline draft');
     await selectRadioOption(page, undefined, 'Confirmed');
-    await page.getByLabel('Amount').fill('100');
+    await getFormInput(page, 'Amount').fill('100');
     const save = page
       .getByRole('button', { name: /Connection required|Save/ })
       .and(page.locator('button[type="submit"]'));
