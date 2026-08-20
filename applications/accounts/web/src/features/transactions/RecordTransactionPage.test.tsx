@@ -223,6 +223,11 @@ describe('RecordTransactionPage', () => {
 
     const supplier = screen.getByRole('combobox', { name: 'Supplier' });
     const description = screen.getByRole('combobox', { name: 'Description' });
+    const amount = screen.getByLabelText('Amount');
+    const transactionVat = screen.getByLabelText('VAT');
+
+    expect(amount).toBeDisabled();
+    expect(transactionVat).toBeDisabled();
 
     await user.type(supplier, 'Oak & Co');
     await user.keyboard('{ArrowDown}{Enter}');
@@ -232,8 +237,10 @@ describe('RecordTransactionPage', () => {
     await user.click(
       await screen.findByRole('option', { name: 'Professional fees' }),
     );
-    await user.clear(screen.getByLabelText('Amount'));
-    await user.type(screen.getByLabelText('Amount'), '120');
+    expect(amount).toBeEnabled();
+    expect(transactionVat).toBeEnabled();
+    await user.clear(amount);
+    await user.type(amount, '120');
 
     expect(supplier).toHaveValue('Oak & Co');
     expect(description).toHaveValue('Bookkeeping');
@@ -292,6 +299,10 @@ describe('RecordTransactionPage', () => {
     );
 
     await user.click(screen.getByLabelText('Purchase'));
+    await user.click(screen.getByRole('button', { name: /Category/u }));
+    await user.click(
+      await screen.findByRole('option', { name: 'Professional fees' }),
+    );
     await user.click(screen.getByRole('button', { name: 'Calendar Date' }));
     await user.click(
       screen.getByRole('button', {

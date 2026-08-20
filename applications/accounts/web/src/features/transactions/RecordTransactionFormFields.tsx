@@ -15,7 +15,11 @@ import {
   type AttachmentTransferResult,
   AttachmentUpload,
 } from './AttachmentUpload';
-import { calculatePurchaseVat, calculateSaleVat } from './transaction';
+import {
+  calculatePurchaseVat,
+  calculateSaleVat,
+  isSaleTransactionCategory,
+} from './transaction';
 import { TransactionAttachment } from './TransactionAttachment';
 import type { TransactionForm } from './useTransactionForm';
 
@@ -179,6 +183,9 @@ export function RecordTransactionFormFields({
   const selectedTransactionType = useSelector(
     form.store,
     (state) => state.values.transactionType,
+  );
+  const purchaseCategories = categories.filter(
+    ({ name }) => !isSaleTransactionCategory(name),
   );
   const touch = () => {
     markDirty();
@@ -480,7 +487,7 @@ export function RecordTransactionFormFields({
                             </Select.Trigger>
                             <Select.Popover>
                               <Select.ListBox>
-                                {categories.map(({ name }) => (
+                                {purchaseCategories.map(({ name }) => (
                                   <Select.Item
                                     id={name}
                                     key={name}
@@ -518,6 +525,10 @@ export function RecordTransactionFormFields({
 
                         return (
                           <NumberField.Root
+                            disabled={
+                              selectedTransactionType === 'purchase' &&
+                              !category
+                            }
                             formatOptions={{ currency, style: 'currency' }}
                             invalid={errors.length > 0}
                             min={0.01}
@@ -586,6 +597,10 @@ export function RecordTransactionFormFields({
 
                         return (
                           <NumberField.Root
+                            disabled={
+                              selectedTransactionType === 'purchase' &&
+                              !category
+                            }
                             formatOptions={{ currency, style: 'currency' }}
                             invalid={errors.length > 0}
                             min={0}

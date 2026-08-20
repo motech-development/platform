@@ -624,6 +624,7 @@ test.describe('VAT registered', () => {
       const preview = page.getByRole('region', { name: 'PDF preview' });
 
       await expect(preview).toBeVisible();
+      await expect(preview.locator('.react-pdf__Document')).toBeVisible();
       const download = page.waitForEvent('download');
       const attachment = page.getByRole('dialog').filter({ has: preview });
 

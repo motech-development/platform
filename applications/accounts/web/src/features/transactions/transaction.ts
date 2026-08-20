@@ -4,6 +4,10 @@ import i18n from '../../i18n';
 
 const SALES_CATEGORY = 'Sales';
 
+export function isSaleTransactionCategory(category: string): boolean {
+  return category === SALES_CATEGORY;
+}
+
 const requiredText = (message: string) =>
   z
     .string()
@@ -75,7 +79,10 @@ export const transactionSchema = z
     vat: nonNegativeDecimal,
   })
   .superRefine((value, context) => {
-    if (value.transactionType === 'purchase' && !value.category.trim()) {
+    if (
+      value.transactionType === 'purchase' &&
+      (!value.category.trim() || isSaleTransactionCategory(value.category))
+    ) {
       context.addIssue({
         code: 'custom',
         message: i18n.t('Choose a category', { ns: 'transactions' }),
@@ -99,10 +106,6 @@ export interface TransactionInput {
   scheduled: boolean;
   status: 'confirmed' | 'pending';
   vat: number;
-}
-
-export function isSaleTransactionCategory(category: string): boolean {
-  return category === SALES_CATEGORY;
 }
 
 export function calculateSaleVat(amount: string, vatRate: number): number {

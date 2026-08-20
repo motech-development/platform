@@ -75,6 +75,12 @@ describe('Transaction accounting input', () => {
     });
   });
 
+  it('reserves the Sales category for sale transactions', () => {
+    expect(() =>
+      buildTransactionInput({ ...baseValues, category: 'Sales' }),
+    ).toThrow();
+  });
+
   it('preserves the captured form time for a new scheduled Pending Transaction', () => {
     expect(
       buildTransactionInput(
