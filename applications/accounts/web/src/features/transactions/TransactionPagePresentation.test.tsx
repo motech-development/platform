@@ -74,6 +74,26 @@ describe('TransactionPageHeaderAction', () => {
     ).toHaveAttribute('href', '/record-transaction');
   });
 
+  it('uses compact action order when media queries are unavailable', () => {
+    vi.stubGlobal('matchMedia', undefined);
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <TransactionPageHeaderAction
+          hasTransactions
+          initiallyLoading={false}
+          pendingTransactionsHref="/pending-transactions"
+          recordTransactionHref="/record-transaction"
+        />
+      </BreezeProvider>,
+    );
+
+    const links = screen.getAllByRole('link');
+
+    expect(links[0]).toHaveAccessibleName('Record transaction');
+    expect(links[1]).toHaveAccessibleName('View pending');
+  });
+
   it('keeps keyboard order aligned with each prototype layout', async () => {
     const user = userEvent.setup();
 

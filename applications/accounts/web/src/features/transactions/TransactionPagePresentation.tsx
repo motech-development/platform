@@ -10,8 +10,23 @@ import { useTranslation } from 'react-i18next';
 
 const WIDE_ACTIONS_QUERY = '(min-width: 1181px)';
 
+function getActionMediaQuery() {
+  if (
+    typeof window === 'undefined' ||
+    typeof window.matchMedia !== 'function'
+  ) {
+    return undefined;
+  }
+
+  return window.matchMedia(WIDE_ACTIONS_QUERY);
+}
+
 function subscribeToActionLayout(listener: () => void) {
-  const mediaQuery = window.matchMedia(WIDE_ACTIONS_QUERY);
+  const mediaQuery = getActionMediaQuery();
+
+  if (!mediaQuery) {
+    return () => undefined;
+  }
 
   mediaQuery.addEventListener('change', listener);
 
@@ -19,7 +34,7 @@ function subscribeToActionLayout(listener: () => void) {
 }
 
 function getWideActionLayout() {
-  return window.matchMedia(WIDE_ACTIONS_QUERY).matches;
+  return getActionMediaQuery()?.matches ?? false;
 }
 
 function getServerActionLayout() {
