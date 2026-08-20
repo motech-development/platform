@@ -5,7 +5,34 @@ import {
   StatePanel,
 } from '@motech-development/breeze-ui';
 import { AddIcon, WarningIcon } from '@motech-development/breeze-ui/icons';
+import { useSyncExternalStore } from 'react';
 import { useTranslation } from 'react-i18next';
+
+const WIDE_ACTIONS_QUERY = '(min-width: 1181px)';
+
+function subscribeToActionLayout(listener: () => void) {
+  const mediaQuery = window.matchMedia(WIDE_ACTIONS_QUERY);
+
+  mediaQuery.addEventListener('change', listener);
+
+  return () => mediaQuery.removeEventListener('change', listener);
+}
+
+function getWideActionLayout() {
+  return window.matchMedia(WIDE_ACTIONS_QUERY).matches;
+}
+
+function getServerActionLayout() {
+  return false;
+}
+
+function useWideActionLayout() {
+  return useSyncExternalStore(
+    subscribeToActionLayout,
+    getWideActionLayout,
+    getServerActionLayout,
+  );
+}
 
 export function RecordTransactionLink({
   className,
@@ -34,6 +61,7 @@ export function TransactionPageHeaderAction({
   recordTransactionHref: string;
 }>) {
   const { t } = useTranslation('transactions');
+  const wideActionLayout = useWideActionLayout();
 
   if (initiallyLoading) {
     return null;
@@ -43,19 +71,24 @@ export function TransactionPageHeaderAction({
     return null;
   }
 
+  const pendingTransactionsLink = pendingTransactionsHref ? (
+    <LinkButton appearance="outline" href={pendingTransactionsHref}>
+      {t('View pending')}
+    </LinkButton>
+  ) : null;
+  const recordTransactionLink = (
+    <RecordTransactionLink href={recordTransactionHref} />
+  );
+
   return (
     <Inline
       align="stretch"
-      className="w-full flex-col-reverse lg:w-auto lg:flex-row lg:items-center"
+      className="w-full flex-col lg:w-auto lg:flex-row lg:items-center"
       gap="compact"
       wrap={false}
     >
-      {pendingTransactionsHref ? (
-        <LinkButton appearance="outline" href={pendingTransactionsHref}>
-          {t('View pending')}
-        </LinkButton>
-      ) : null}
-      <RecordTransactionLink href={recordTransactionHref} />
+      {wideActionLayout ? pendingTransactionsLink : recordTransactionLink}
+      {wideActionLayout ? recordTransactionLink : pendingTransactionsLink}
     </Inline>
   );
 }

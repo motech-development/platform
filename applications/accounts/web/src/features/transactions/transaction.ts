@@ -46,7 +46,7 @@ export const transactionSchema = z
       .refine(
         (value) => {
           try {
-            return new Decimal(value).greaterThan(0);
+            return new Decimal(value).toDecimalPlaces(2).greaterThan(0);
           } catch {
             return false;
           }

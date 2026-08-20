@@ -7,6 +7,7 @@ import {
   useToast,
 } from '@motech-development/breeze-ui';
 import { useNavigate } from '@tanstack/react-router';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DELETE_TRANSACTION, GET_TRANSACTION } from '../../data/operations';
 import { DiscardChangesDialog } from '../companies/DiscardChangesDialog';
@@ -200,10 +201,10 @@ function TransactionEditDrawer({
                         cancelLabel={t('Cancel')}
                         closeLabel={t('Close delete confirmation')}
                         confirmationError={t(
-                          'The Transaction description must match exactly.',
+                          'The supplier or client name must match exactly.',
                         )}
                         confirmationLabel={t('Type {{name}} to confirm', {
-                          name: transaction.description,
+                          name: transaction.name,
                         })}
                         confirmLabel={t('Permanently delete transaction')}
                         deleting={deleting}
@@ -211,11 +212,11 @@ function TransactionEditDrawer({
                           'This transaction and its attachment will be permanently removed.',
                         )}
                         disabled={!online || submissionPending}
-                        entityName={transaction.description}
+                        entityName={transaction.name}
                         nested
                         onDelete={deleteCurrentTransaction}
                         title={t('Delete {{name}}?', {
-                          name: transaction.description,
+                          name: transaction.name,
                         })}
                         triggerLabel={t('Delete transaction')}
                       />
@@ -269,14 +270,34 @@ export function TransactionEditPage({
     nextFetchPolicy: 'cache-first',
     variables: { transactionId },
   });
-  const transaction =
+  const transactionForCompany =
     data?.getTransaction.companyId === companyId
       ? data.getTransaction
       : undefined;
+  const publishedPendingTransaction =
+    origin === 'pending' &&
+    transactionForCompany !== undefined &&
+    transactionForCompany.status !== 'pending';
+  const transaction = publishedPendingTransaction
+    ? undefined
+    : transactionForCompany;
   const Background =
     origin === 'pending'
       ? PendingTransactionsPageContent
       : TransactionsPageContent;
+
+  useEffect(() => {
+    if (publishedPendingTransaction) {
+      navigate({
+        params: { companyId },
+        to: '/my-companies/accounts/$companyId/pending-transactions',
+      }).catch(() => undefined);
+    }
+  }, [companyId, navigate, publishedPendingTransaction]);
+
+  if (publishedPendingTransaction) {
+    return <Background companyId={companyId} />;
+  }
 
   return (
     <>

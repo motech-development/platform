@@ -184,9 +184,10 @@ export function RecordTransactionFormFields({
     form.store,
     (state) => state.values.transactionType,
   );
-  const purchaseCategories = categories.filter(
-    ({ name }) => !isSaleTransactionCategory(name),
-  );
+  const purchaseCategories = categories
+    .map((category, sourceIndex) => ({ ...category, sourceIndex }))
+    .filter(({ name }) => !isSaleTransactionCategory(name))
+    .sort((left, right) => left.name.localeCompare(right.name));
   const touch = () => {
     markDirty();
     Promise.resolve(form.validate('blur')).catch(() => undefined);
@@ -487,15 +488,18 @@ export function RecordTransactionFormFields({
                             </Select.Trigger>
                             <Select.Popover>
                               <Select.ListBox>
-                                {purchaseCategories.map(({ name }) => (
-                                  <Select.Item
-                                    id={name}
-                                    key={name}
-                                    textValue={name}
-                                  >
-                                    {name}
-                                  </Select.Item>
-                                ))}
+                                {purchaseCategories.map(
+                                  ({ name, sourceIndex }) => (
+                                    <Select.Item
+                                      data-category-index={sourceIndex}
+                                      id={name}
+                                      key={name}
+                                      textValue={name}
+                                    >
+                                      {name}
+                                    </Select.Item>
+                                  ),
+                                )}
                               </Select.ListBox>
                             </Select.Popover>
                             <Select.Error>

@@ -381,7 +381,7 @@ describe('RecordTransactionPage', () => {
     expect(screen.getByLabelText('VAT')).toHaveValue('');
   });
 
-  it('preserves the accounting category order supplied by the API', async () => {
+  it('sorts purchase categories while preserving their source indexes', async () => {
     render(
       <BreezeProvider locale="en-GB">
         <RecordTransactionPage companyId="company-id" origin="transactions" />
@@ -391,9 +391,14 @@ describe('RecordTransactionPage', () => {
     await userEvent.click(screen.getByLabelText('Purchase'));
     await userEvent.click(screen.getByRole('button', { name: /Category/ }));
 
-    expect(
-      screen.getAllByRole('option').map((option) => option.textContent),
-    ).toEqual(['Travel', 'Professional fees']);
+    const options = screen.getAllByRole('option');
+
+    expect(options.map((option) => option.textContent)).toEqual([
+      'Professional fees',
+      'Travel',
+    ]);
+    expect(options[0]).toHaveAttribute('data-category-index', '1');
+    expect(options[1]).toHaveAttribute('data-category-index', '0');
   });
 
   it('retries the form query after it fails', async () => {

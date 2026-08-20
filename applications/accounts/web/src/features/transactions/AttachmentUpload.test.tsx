@@ -210,53 +210,13 @@ describe('AttachmentUpload', () => {
 
     await waitFor(() =>
       expect(mocks.toast.show).toHaveBeenCalledWith({
-        description: 'Choose one PDF, GIF, JPG, or PNG file.',
+        description: 'Choose one PDF, JPG, or PNG file.',
         title: 'File not accepted',
         variant: 'warning',
       }),
     );
     expect(transfer).not.toHaveBeenCalled();
     expect(mocks.requestUpload).not.toHaveBeenCalled();
-  });
-
-  it('preserves GIF attachments supported by the Transaction storage contract', async () => {
-    const user = userEvent.setup();
-    const file = new File(['image'], 'receipt.gif', { type: 'image/gif' });
-
-    mocks.requestUpload.mockResolvedValue({
-      data: {
-        requestUpload: { id: 'upload-gif', url: 'https://upload/gif' },
-      },
-    });
-    mocks.uploadPresignedFile.mockResolvedValue(undefined);
-
-    render(
-      <BreezeProvider locale="en-GB">
-        <AttachmentUpload
-          companyId="company-1"
-          onTransfer={vi.fn()}
-          onUploaded={vi.fn()}
-        />
-      </BreezeProvider>,
-    );
-
-    await user.upload(
-      document.querySelector('input[type="file"]') as HTMLInputElement,
-      file,
-    );
-
-    await waitFor(() => {
-      expect(mocks.requestUpload).toHaveBeenCalledWith({
-        variables: {
-          id: 'company-1',
-          input: {
-            contentType: 'image/gif',
-            extension: 'gif',
-            metadata: { typename: 'Transaction' },
-          },
-        },
-      });
-    });
   });
 
   it('preserves the selected PDF and retries it after transfer failure', async () => {

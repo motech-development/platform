@@ -100,7 +100,7 @@
   "Transaction details could not be refreshed. Your edits are unchanged.": "Transaction details could not be refreshed. Your edits are unchanged.",
   "Transaction settings could not be refreshed. Your edits are unchanged.": "Transaction settings could not be refreshed. Your edits are unchanged.",
   "Close delete confirmation": "Close delete confirmation",
-  "The Transaction description must match exactly.": "The Transaction description must match exactly.",
+  "The supplier or client name must match exactly.": "The supplier or client name must match exactly.",
   "Type {{name}} to confirm": "Type {{name}} to confirm",
   "Permanently delete transaction": "Permanently delete transaction",
   "This transaction and its attachment will be permanently removed.": "This transaction and its attachment will be permanently removed.",

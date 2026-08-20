@@ -406,8 +406,8 @@ test.describe('Non-VAT registered', () => {
         .click();
       await page.getByRole('button', { name: 'Delete transaction' }).click();
       await page
-        .getByLabel(`Type ${updatedDescription} to confirm`)
-        .fill(updatedDescription);
+        .getByLabel(`Type ${transaction.supplier} to confirm`)
+        .fill(transaction.supplier);
       await page
         .getByRole('button', { name: 'Permanently delete transaction' })
         .click();
@@ -452,12 +452,12 @@ test.describe('Non-VAT registered', () => {
       await page.getByRole('button', { name: 'Delete transaction' }).click();
       await expectNoA11yViolations(
         page.getByRole('heading', {
-          name: `Delete ${transaction.description}?`,
+          name: `Delete ${transaction.supplier}?`,
         }),
       );
       await page
-        .getByLabel(`Type ${transaction.description} to confirm`)
-        .fill(transaction.description);
+        .getByLabel(`Type ${transaction.supplier} to confirm`)
+        .fill(transaction.supplier);
       await page
         .getByRole('button', { name: 'Permanently delete transaction' })
         .click();
@@ -539,8 +539,8 @@ test.describe('Non-VAT registered', () => {
         .click();
       await page.getByRole('button', { name: 'Delete transaction' }).click();
       await page
-        .getByLabel(`Type ${transaction.description} to confirm`)
-        .fill(transaction.description);
+        .getByLabel(`Type ${transaction.supplier} to confirm`)
+        .fill(transaction.supplier);
       await page
         .getByRole('button', { name: 'Permanently delete transaction' })
         .click();

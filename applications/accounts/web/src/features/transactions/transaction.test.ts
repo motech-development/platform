@@ -81,6 +81,15 @@ describe('Transaction accounting input', () => {
     ).toThrow();
   });
 
+  it('rejects amounts that round to zero at the persisted precision', () => {
+    expect(() =>
+      buildTransactionInput({ ...baseValues, amount: '0.001' }),
+    ).toThrow();
+    expect(
+      buildTransactionInput({ ...baseValues, amount: '0.009' }).amount,
+    ).toBe(-0.01);
+  });
+
   it('preserves the captured form time for a new scheduled Pending Transaction', () => {
     expect(
       buildTransactionInput(

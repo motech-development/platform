@@ -407,6 +407,48 @@ describe('TransactionEditPage', () => {
     });
   });
 
+  it('closes a Pending edit when the Transaction is published', async () => {
+    mocks.transactionQuery.data = {
+      getTransaction: { ...transaction, scheduled: true, status: 'pending' },
+    };
+    mocks.formQuery.data = formData;
+
+    const view = render(
+      <BreezeProvider locale="en-GB">
+        <TransactionEditPage
+          companyId="company-id"
+          origin="pending"
+          transactionId="transaction-id"
+        />
+      </BreezeProvider>,
+    );
+
+    expect(
+      screen.getByRole('heading', { name: 'Edit transaction' }),
+    ).toBeVisible();
+
+    mocks.transactionQuery.data = { getTransaction: transaction };
+    view.rerender(
+      <BreezeProvider locale="en-GB">
+        <TransactionEditPage
+          companyId="company-id"
+          origin="pending"
+          transactionId="transaction-id"
+        />
+      </BreezeProvider>,
+    );
+
+    expect(
+      screen.queryByRole('heading', { name: 'Edit transaction' }),
+    ).not.toBeInTheDocument();
+    await waitFor(() =>
+      expect(mocks.navigate).toHaveBeenCalledWith({
+        params: { companyId: 'company-id' },
+        to: '/my-companies/accounts/$companyId/pending-transactions',
+      }),
+    );
+  });
+
   it('retries both transaction and form prerequisites after a refresh failure', async () => {
     mocks.transactionQuery.data = { getTransaction: transaction };
     mocks.transactionQuery.error = new Error('Transaction refresh failed');
@@ -451,8 +493,8 @@ describe('TransactionEditPage', () => {
       screen.getByRole('button', { name: 'Delete transaction' }),
     );
     await userEvent.type(
-      screen.getByLabelText('Type Retainer to confirm'),
-      'Retainer',
+      screen.getByLabelText('Type Known client to confirm'),
+      'Known client',
     );
     await userEvent.click(
       screen.getByRole('button', { name: 'Permanently delete transaction' }),
@@ -488,8 +530,8 @@ describe('TransactionEditPage', () => {
       screen.getByRole('button', { name: 'Delete transaction' }),
     );
     await userEvent.type(
-      screen.getByLabelText('Type Retainer to confirm'),
-      'Retainer',
+      screen.getByLabelText('Type Known client to confirm'),
+      'Known client',
     );
     await userEvent.click(
       screen.getByRole('button', { name: 'Permanently delete transaction' }),
@@ -533,8 +575,8 @@ describe('TransactionEditPage', () => {
       screen.getByRole('button', { name: 'Delete transaction' }),
     );
     await userEvent.type(
-      screen.getByLabelText('Type Retainer to confirm'),
-      'Retainer',
+      screen.getByLabelText('Type Known client to confirm'),
+      'Known client',
     );
     await userEvent.click(
       screen.getByRole('button', { name: 'Permanently delete transaction' }),

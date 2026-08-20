@@ -610,7 +610,11 @@ export const test = base.extend<AccountsFixtures, AccountsWorkerFixtures>({
           await page.getByRole('button', { name: /Category/ }).click();
           await page
             .getByRole('option')
-            .nth(Number(transaction.category))
+            .and(
+              page.locator(
+                `[data-category-index="${Number(transaction.category)}"]`,
+              ),
+            )
             .click();
         }
 

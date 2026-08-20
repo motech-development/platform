@@ -1,7 +1,11 @@
 import { BreezeProvider } from '@motech-development/breeze-ui';
-import { render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { act, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { TransactionPageHeaderAction } from './TransactionPagePresentation';
+
+let wideActionLayout = false;
+const actionLayoutListeners = new Set<() => void>();
 
 vi.mock('@motech-development/breeze-ui/icons', async (importOriginal) => ({
   ...(await importOriginal<
@@ -26,7 +30,31 @@ function renderAction({
   );
 }
 
+function setWideActionLayout(wide: boolean) {
+  wideActionLayout = wide;
+  act(() => {
+    actionLayoutListeners.forEach((listener) => listener());
+  });
+}
+
 describe('TransactionPageHeaderAction', () => {
+  beforeEach(() => {
+    wideActionLayout = false;
+    actionLayoutListeners.clear();
+    vi.stubGlobal(
+      'matchMedia',
+      vi.fn().mockImplementation(() => ({
+        addEventListener: (_event: string, listener: () => void) => {
+          actionLayoutListeners.add(listener);
+        },
+        matches: wideActionLayout,
+        removeEventListener: (_event: string, listener: () => void) => {
+          actionLayoutListeners.delete(listener);
+        },
+      })),
+    );
+  });
+
   it('omits the action while the initial query loads', () => {
     renderAction({
       hasTransactions: false,
@@ -46,7 +74,9 @@ describe('TransactionPageHeaderAction', () => {
     ).toHaveAttribute('href', '/record-transaction');
   });
 
-  it('uses the prototype action copy', () => {
+  it('keeps keyboard order aligned with each prototype layout', async () => {
+    const user = userEvent.setup();
+
     render(
       <BreezeProvider locale="en-GB">
         <TransactionPageHeaderAction
@@ -60,7 +90,18 @@ describe('TransactionPageHeaderAction', () => {
 
     const links = screen.getAllByRole('link');
 
-    expect(links[0]).toHaveAccessibleName('View pending');
-    expect(links[1]).toHaveAccessibleName('Record transaction');
+    expect(links[0]).toHaveAccessibleName('Record transaction');
+    expect(links[1]).toHaveAccessibleName('View pending');
+    await user.tab();
+    expect(links[0]).toHaveFocus();
+    await user.tab();
+    expect(links[1]).toHaveFocus();
+
+    setWideActionLayout(true);
+
+    const wideLinks = screen.getAllByRole('link');
+
+    expect(wideLinks[0]).toHaveAccessibleName('View pending');
+    expect(wideLinks[1]).toHaveAccessibleName('Record transaction');
   });
 });
