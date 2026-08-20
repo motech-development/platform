@@ -309,7 +309,7 @@ function DiscardStagedAttachmentHarness() {
       </button>
       <button
         onClick={() => {
-          discardChanges();
+          discardChanges().catch(() => undefined);
         }}
         type="button"
       >
@@ -398,7 +398,12 @@ function RejectingDiscardHarness() {
       >
         Start failed staged transfer
       </button>
-      <button onClick={discardChanges} type="button">
+      <button
+        onClick={() => {
+          discardChanges().catch(() => undefined);
+        }}
+        type="button"
+      >
         Discard failed transfer
       </button>
     </>

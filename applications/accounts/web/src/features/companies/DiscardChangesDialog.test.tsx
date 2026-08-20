@@ -1,5 +1,5 @@
 import { BreezeProvider } from '@motech-development/breeze-ui';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { DiscardChangesDialog } from './DiscardChangesDialog';
@@ -53,5 +53,40 @@ describe('DiscardChangesDialog', () => {
     expect(onDiscard).toHaveBeenCalledOnce();
     expect(blocker.proceed).toHaveBeenCalledOnce();
     expect(blocker.reset).not.toHaveBeenCalled();
+  });
+
+  it('waits for discard cleanup before proceeding with blocked navigation', async () => {
+    let finishCleanup: (discarded: boolean) => void = () => undefined;
+    const onDiscard = vi.fn(
+      () =>
+        new Promise<boolean>((resolve) => {
+          finishCleanup = resolve;
+        }),
+    );
+    const { blocker } = renderDialog({ onDiscard });
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Discard changes' }),
+    );
+
+    expect(onDiscard).toHaveBeenCalledOnce();
+    expect(blocker.proceed).not.toHaveBeenCalled();
+
+    finishCleanup(true);
+
+    await waitFor(() => expect(blocker.proceed).toHaveBeenCalledOnce());
+    expect(blocker.reset).not.toHaveBeenCalled();
+  });
+
+  it('cancels blocked navigation when discard cleanup fails', async () => {
+    const onDiscard = vi.fn().mockResolvedValue(false);
+    const { blocker } = renderDialog({ onDiscard });
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Discard changes' }),
+    );
+
+    await waitFor(() => expect(blocker.reset).toHaveBeenCalledOnce());
+    expect(blocker.proceed).not.toHaveBeenCalled();
   });
 });

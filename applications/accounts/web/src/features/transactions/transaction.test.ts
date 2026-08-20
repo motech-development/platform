@@ -79,6 +79,15 @@ describe('Transaction accounting input', () => {
     expect(() =>
       buildTransactionInput({ ...baseValues, category: 'Sales' }),
     ).toThrow();
+    expect(() =>
+      buildTransactionInput({ ...baseValues, category: ' Sales ' }),
+    ).toThrow();
+    expect(
+      buildTransactionInput({
+        ...baseValues,
+        category: ' Professional fees ',
+      }).category,
+    ).toBe('Professional fees');
   });
 
   it('rejects amounts that round to zero at the persisted precision', () => {
@@ -95,6 +104,20 @@ describe('Transaction accounting input', () => {
     (field) => {
       expect(() =>
         buildTransactionInput({ ...baseValues, [field]: 'Infinity' }),
+      ).toThrow();
+    },
+  );
+
+  it.each([
+    ['amount', '1e309'],
+    ['amount', '90071992547409.91'],
+    ['vat', '1e309'],
+    ['vat', '90071992547409.91'],
+  ] as const)(
+    'rejects a %s value of %s that GraphQL Float cannot preserve',
+    (field, value) => {
+      expect(() =>
+        buildTransactionInput({ ...baseValues, [field]: value }),
       ).toThrow();
     },
   );

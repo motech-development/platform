@@ -401,6 +401,36 @@ describe('RecordTransactionPage', () => {
     expect(options[1]).toHaveAttribute('data-category-index', '0');
   });
 
+  it('uses the VAT rate from the selected duplicate category', async () => {
+    mocks.query.data = {
+      ...successfulQueryData,
+      getSettings: {
+        categories: [
+          { name: 'Professional fees', vatRate: 20 },
+          { name: 'Professional fees', vatRate: 10 },
+        ],
+        id: 'company-id',
+        vat: { pay: 20 },
+      },
+    };
+    const user = userEvent.setup();
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <RecordTransactionPage companyId="company-id" origin="transactions" />
+      </BreezeProvider>,
+    );
+
+    await user.click(screen.getByLabelText('Purchase'));
+    await user.click(screen.getByRole('button', { name: /Category/u }));
+    await user.click(
+      screen.getAllByRole('option', { name: 'Professional fees' })[1],
+    );
+    await user.type(screen.getByLabelText('Amount'), '120');
+
+    expect(screen.getByLabelText('VAT')).toHaveValue('£10.91');
+  });
+
   it('retries the form query after it fails', async () => {
     mocks.query.error = new Error('failed');
     mocks.query.data = undefined;

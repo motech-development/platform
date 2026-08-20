@@ -4,6 +4,18 @@ import i18n from '../../i18n';
 
 const SALES_CATEGORY = 'Sales';
 
+function persistedDecimal(value: string): Decimal {
+  return new Decimal(value).toDecimalPlaces(2);
+}
+
+function isSafelyRepresentedAsNumber(value: Decimal): boolean {
+  const number = value.toNumber();
+
+  return (
+    Number.isFinite(number) && new Decimal(number.toString()).equals(value)
+  );
+}
+
 export function isSaleTransactionCategory(category: string): boolean {
   return category === SALES_CATEGORY;
 }
@@ -26,7 +38,11 @@ const nonNegativeDecimal = z
       try {
         const decimal = new Decimal(value);
 
-        return decimal.isFinite() && decimal.greaterThanOrEqualTo(0);
+        return (
+          decimal.isFinite() &&
+          decimal.greaterThanOrEqualTo(0) &&
+          isSafelyRepresentedAsNumber(decimal.toDecimalPlaces(2))
+        );
       } catch {
         return false;
       }
@@ -48,9 +64,13 @@ export const transactionSchema = z
       .refine(
         (value) => {
           try {
-            const decimal = new Decimal(value).toDecimalPlaces(2);
+            const decimal = persistedDecimal(value);
 
-            return decimal.isFinite() && decimal.greaterThan(0);
+            return (
+              decimal.isFinite() &&
+              decimal.greaterThan(0) &&
+              isSafelyRepresentedAsNumber(decimal)
+            );
           } catch {
             return false;
           }
@@ -63,7 +83,7 @@ export const transactionSchema = z
         },
       ),
     attachment: z.string(),
-    category: z.string(),
+    category: z.string().trim(),
     companyId: z.string().min(1),
     date: z.iso.date(),
     description: requiredText('Enter a description'),
@@ -132,8 +152,8 @@ export function buildTransactionInput(
   referenceDateTime = new Date().toISOString(),
 ): TransactionInput {
   const value = transactionSchema.parse(values);
-  const amount = new Decimal(value.amount).toDecimalPlaces(2);
-  const vat = new Decimal(value.vat).toDecimalPlaces(2);
+  const amount = persistedDecimal(value.amount);
+  const vat = persistedDecimal(value.vat);
   const purchase = value.transactionType === 'purchase';
   let signedAmount = purchase ? amount.negated() : amount;
 

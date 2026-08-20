@@ -8,7 +8,7 @@ import {
   Select,
 } from '@motech-development/breeze-ui';
 import { useSelector } from '@tanstack/react-form';
-import type { ReactNode } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { validationMessage, visibleValidationErrors } from '../form-errors';
 import {
@@ -184,6 +184,30 @@ export function RecordTransactionFormFields({
     form.store,
     (state) => state.values.transactionType,
   );
+  const selectedCategory = useSelector(
+    form.store,
+    (state) => state.values.category,
+  );
+  const [selectedCategorySourceIndex, setSelectedCategorySourceIndex] =
+    useState<number>();
+
+  useEffect(() => {
+    setSelectedCategorySourceIndex((current) => {
+      if (
+        current !== undefined &&
+        categories[current]?.name === selectedCategory
+      ) {
+        return current;
+      }
+
+      const sourceIndex = categories.findIndex(
+        ({ name }) => name === selectedCategory,
+      );
+
+      return sourceIndex >= 0 ? sourceIndex : undefined;
+    });
+  }, [categories, selectedCategory]);
+
   const purchaseCategories = categories
     .map((category, sourceIndex) => ({ ...category, sourceIndex }))
     .filter(({ name }) => !isSaleTransactionCategory(name))
@@ -200,16 +224,22 @@ export function RecordTransactionFormFields({
     amount: string,
     transactionType: '' | 'purchase' | 'sale',
     category: string,
+    categorySourceIndex = selectedCategorySourceIndex,
   ) => {
     if (!transactionType || !amount || !Number.isFinite(Number(amount))) {
       form.setFieldValue('vat', '');
       return;
     }
 
-    const rate =
-      transactionType === 'sale'
-        ? vatRate
-        : categories.find(({ name }) => name === category)?.vatRate;
+    let rate: number | undefined;
+
+    if (transactionType === 'sale') {
+      rate = vatRate;
+    } else if (categorySourceIndex === undefined) {
+      rate = categories.find(({ name }) => name === category)?.vatRate;
+    } else {
+      rate = categories[categorySourceIndex]?.vatRate;
+    }
 
     if (rate === undefined) {
       form.setFieldValue('vat', '');
@@ -468,19 +498,31 @@ export function RecordTransactionFormFields({
                             invalid={errors.length > 0}
                             onBlur={field.handleBlur}
                             onChange={(value) => {
-                              const nextCategory = String(value ?? '');
+                              const sourceIndex =
+                                value === null ? undefined : Number(value);
+                              const selected =
+                                sourceIndex === undefined
+                                  ? undefined
+                                  : categories[sourceIndex];
+                              const nextCategory = selected?.name ?? '';
 
+                              setSelectedCategorySourceIndex(
+                                selected ? sourceIndex : undefined,
+                              );
                               field.handleChange(nextCategory);
                               updateCalculatedVat(
                                 form.getFieldValue('amount'),
                                 'purchase',
                                 nextCategory,
+                                selected ? sourceIndex : undefined,
                               );
                               touch();
                             }}
                             placeholder={t('Select category')}
                             required
-                            value={field.state.value || null}
+                            value={
+                              selectedCategorySourceIndex?.toString() ?? null
+                            }
                           >
                             <Select.Label>{t('Category')}</Select.Label>
                             <Select.Trigger>
@@ -492,8 +534,8 @@ export function RecordTransactionFormFields({
                                   ({ name, sourceIndex }) => (
                                     <Select.Item
                                       data-category-index={sourceIndex}
-                                      id={name}
-                                      key={name}
+                                      id={sourceIndex.toString()}
+                                      key={sourceIndex}
                                       textValue={name}
                                     >
                                       {name}

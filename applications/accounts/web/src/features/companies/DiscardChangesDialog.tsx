@@ -23,7 +23,7 @@ export function DiscardChangesDialog({
   closeLabel: string;
   description: string;
   nested?: boolean;
-  onDiscard: () => void;
+  onDiscard: () => boolean | void | Promise<boolean | void>;
   onOpenChange: (open: boolean) => void;
   open: boolean;
   title: string;
@@ -31,6 +31,27 @@ export function DiscardChangesDialog({
 }>) {
   const { t } = useTranslation('companies');
   const discardConfirmed = useRef(false);
+  const confirmDiscard = () => {
+    discardConfirmed.current = true;
+
+    Promise.resolve()
+      .then(onDiscard)
+      .then((discarded) => {
+        if (discarded === false) {
+          discardConfirmed.current = false;
+          if (blocker.status === 'blocked') blocker.reset?.();
+          return;
+        }
+
+        if (blocker.status === 'blocked') {
+          blocker.proceed?.();
+        }
+      })
+      .catch(() => {
+        discardConfirmed.current = false;
+        if (blocker.status === 'blocked') blocker.reset?.();
+      });
+  };
 
   return (
     <span hidden>
@@ -40,13 +61,7 @@ export function DiscardChangesDialog({
         confirmLabel={t('Discard changes')}
         description={description}
         nested={nested}
-        onConfirm={() => {
-          discardConfirmed.current = true;
-          onDiscard();
-          if (blocker.status === 'blocked') {
-            blocker.proceed?.();
-          }
-        }}
+        onConfirm={confirmDiscard}
         onOpenChange={(nextOpen) => {
           onOpenChange(nextOpen);
           if (nextOpen) {

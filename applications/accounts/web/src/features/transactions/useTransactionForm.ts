@@ -302,12 +302,15 @@ export function useTransactionForm({
     clients: data?.getClients.items ?? [],
     currency: data?.getBalance?.currency ?? 'GBP',
     data,
-    discardChanges: () => {
-      discardStagedAttachment()
-        .then((discarded) => {
-          if (discarded) navigation.discardChanges();
-        })
-        .catch(() => undefined);
+    discardChanges: async () => {
+      try {
+        const discarded = await discardStagedAttachment();
+
+        if (discarded) navigation.discardChanges();
+        return discarded;
+      } catch {
+        return false;
+      }
     },
     discardStagedAttachment,
     error,
