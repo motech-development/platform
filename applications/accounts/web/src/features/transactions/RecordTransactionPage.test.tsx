@@ -122,7 +122,7 @@ describe('RecordTransactionPage', () => {
     mocks.navigate.mockResolvedValue(undefined);
   });
 
-  it('requires an explicit Transaction type for a new record', async () => {
+  it('matches the prototype initial purchase composition', () => {
     render(
       <BreezeProvider locale="en-GB">
         <RecordTransactionPage companyId="company-id" origin="transactions" />
@@ -130,36 +130,18 @@ describe('RecordTransactionPage', () => {
     );
 
     expect(screen.getByText('Add money coming in or going out.')).toBeVisible();
-    expect(screen.getByLabelText('Purchase')).not.toBeChecked();
+    expect(screen.getByLabelText('Purchase')).toBeChecked();
     expect(screen.getByLabelText('Sale')).not.toBeChecked();
     expect(screen.getByLabelText('Confirmed')).not.toBeChecked();
     expect(screen.getByLabelText('Pending')).not.toBeChecked();
-    expect(
-      screen.queryByRole('combobox', { name: 'Supplier' }),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole('combobox', { name: 'Description' }),
-    ).not.toBeInTheDocument();
-    expect(screen.queryByLabelText('Date')).not.toBeInTheDocument();
-    expect(screen.queryByLabelText('Category')).not.toBeInTheDocument();
-    expect(screen.queryByLabelText('Amount')).not.toBeInTheDocument();
-    expect(screen.queryByLabelText('VAT')).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole('radiogroup', { name: 'Refund' }),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole('region', { name: 'Invoice or receipt' }),
-    ).not.toBeInTheDocument();
-
-    await userEvent.click(screen.getByLabelText('Purchase'));
-
-    expect(screen.getByLabelText('Purchase')).toBeChecked();
     expect(screen.getByLabelText('No')).toBeChecked();
     expect(screen.getByRole('combobox', { name: 'Supplier' })).toBeVisible();
     expect(screen.getByRole('combobox', { name: 'Description' })).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Calendar Date' })).toBeVisible();
     expect(screen.getByLabelText('Category')).toBeVisible();
     expect(screen.getByLabelText('Amount')).toBeVisible();
     expect(screen.getByLabelText('VAT')).toBeVisible();
+    expect(screen.getByRole('radiogroup', { name: 'Refund' })).toBeVisible();
     expect(
       screen.getByRole('heading', { name: 'Transaction amount' }),
     ).toBeVisible();
@@ -168,6 +150,9 @@ describe('RecordTransactionPage', () => {
     ).toBeVisible();
     expect(
       screen.getByText('Attach an invoice or receipt to this transaction.'),
+    ).toBeVisible();
+    expect(
+      screen.getByRole('region', { name: 'Invoice or receipt' }),
     ).toBeVisible();
     expect(screen.getByText('PDF, JPG or PNG')).toBeVisible();
     expect(

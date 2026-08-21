@@ -54,7 +54,7 @@ function defaultValues(
     refund: false,
     scheduled: false,
     status,
-    transactionType: '',
+    transactionType: 'purchase',
     vat: '',
   };
 }
