@@ -161,6 +161,7 @@ export function useTransactionForm({
 
     if (!path) return true;
 
+    setAttachmentTransferPending(true);
     const deleted = await deleteAttachment(
       path,
       t(
@@ -169,6 +170,7 @@ export function useTransactionForm({
     );
 
     if (deleted) previousAttachmentCleanupPath.current = undefined;
+    setAttachmentTransferPending(false);
     return deleted;
   };
   const announceSuccessfulSubmission = () => {
@@ -413,6 +415,7 @@ export function useTransactionForm({
       setAttachmentTransferPending(false);
       return deleted;
     },
+    retryPreviousAttachmentCleanup: cleanUpPreviousAttachment,
     submissionPending,
     suggestions: data?.getTypeahead,
     trackAttachmentTransfer: (transfer: Promise<AttachmentTransferResult>) => {

@@ -71,6 +71,7 @@ function TransactionEditDrawer({
     removeAttachment,
     requestClose,
     restrictNavigation,
+    retryPreviousAttachmentCleanup,
     setDiscardOpen,
     submissionPending,
     suggestions,
@@ -86,6 +87,8 @@ function TransactionEditDrawer({
   });
   const pending = submissionPending || deleting;
   const deleteCurrentTransaction = async () => {
+    if (!(await retryPreviousAttachmentCleanup())) return false;
+
     if (!transactionDeletionCompleted.current) {
       try {
         const result = await deleteTransaction({

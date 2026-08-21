@@ -7,7 +7,7 @@ import { TransactionEditPage } from './TransactionEditPage';
 
 const transaction = {
   amount: 75,
-  attachment: null,
+  attachment: null as string | null,
   category: 'Sales',
   companyId: 'company-id',
   date: '2026-08-16T00:00:00.000Z',
@@ -42,6 +42,7 @@ const mocks = vi.hoisted(() => ({
     loading: false,
     refetch: vi.fn().mockResolvedValue(undefined),
   },
+  updateTransaction: vi.fn(),
   uploadPresignedFile: vi.fn(),
 }));
 
@@ -81,6 +82,9 @@ vi.mock('@apollo/client/react', async (importOriginal) => ({
     }
     if (operation === 'RequestUpload') {
       return [mocks.requestUpload, { loading: false }];
+    }
+    if (operation === 'UpdateTransaction') {
+      return [mocks.updateTransaction, { loading: false }];
     }
     return [vi.fn(), { loading: false }];
   },
@@ -158,6 +162,8 @@ describe('TransactionEditPage', () => {
     mocks.transactionQuery.error = undefined;
     mocks.transactionQuery.loading = false;
     mocks.transactionQuery.refetch.mockResolvedValue(undefined);
+    mocks.updateTransaction.mockReset();
+    mocks.updateTransaction.mockResolvedValue({ data: null });
     mocks.uploadPresignedFile.mockReset();
   });
 
@@ -609,6 +615,68 @@ describe('TransactionEditPage', () => {
       title: 'Transaction deleted',
       variant: 'success',
     });
+  });
+
+  it('retries obsolete attachment cleanup before deleting the Transaction', async () => {
+    const transactionWithAttachment = {
+      ...transaction,
+      attachment: 'company-id/old-invoice.pdf',
+    };
+
+    mocks.transactionQuery.data = {
+      getTransaction: transactionWithAttachment,
+    };
+    mocks.formQuery.data = formData;
+    mocks.updateTransaction.mockResolvedValue({
+      data: {
+        updateTransaction: {
+          ...transactionWithAttachment,
+          attachment: null,
+        },
+      },
+    });
+    mocks.deleteFile
+      .mockResolvedValueOnce({ data: null })
+      .mockResolvedValueOnce({
+        data: { deleteFile: { path: 'company-id/old-invoice.pdf' } },
+      });
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <TransactionEditPage
+          companyId="company-id"
+          origin="transactions"
+          transactionId="transaction-id"
+        />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(screen.getByRole('button', { name: 'Delete file' }));
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Save transaction' }),
+    );
+
+    await waitFor(() => expect(mocks.deleteFile).toHaveBeenCalledOnce());
+    expect(mocks.updateTransaction).toHaveBeenCalledOnce();
+    expect(mocks.deleteTransaction).not.toHaveBeenCalled();
+    expect(mocks.navigate).not.toHaveBeenCalled();
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Delete transaction' }),
+    );
+    await userEvent.type(
+      screen.getByLabelText('Type Known client to confirm'),
+      'Known client',
+    );
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Permanently delete transaction' }),
+    );
+
+    await waitFor(() => expect(mocks.deleteTransaction).toHaveBeenCalledOnce());
+    expect(mocks.deleteFile).toHaveBeenCalledTimes(2);
+    expect(mocks.deleteFile.mock.invocationCallOrder[1]).toBeLessThan(
+      mocks.deleteTransaction.mock.invocationCallOrder[0],
+    );
   });
 
   it('keeps deletion available for retry when no Transaction is returned', async () => {
