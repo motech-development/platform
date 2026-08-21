@@ -35,37 +35,24 @@ describe('AttachmentUpload', () => {
     vi.clearAllMocks();
   });
 
-  it('lets the latest file selection own the completed upload', async () => {
+  it('keeps the chooser disabled until the object transfer completes', async () => {
     const user = userEvent.setup();
     const onUploaded = vi.fn();
-    const firstFile = new File(['first'], 'first.pdf', {
+    const file = new File(['invoice'], 'invoice.pdf', {
       type: 'application/pdf',
     });
-    const secondFile = new File(['second'], 'second.pdf', {
-      type: 'application/pdf',
-    });
+    let finishUpload: () => void = () => undefined;
 
-    mocks.requestUpload
-      .mockResolvedValueOnce({
-        data: {
-          requestUpload: { id: 'upload-1', url: 'https://upload/first' },
-        },
-      })
-      .mockResolvedValueOnce({
-        data: {
-          requestUpload: { id: 'upload-2', url: 'https://upload/second' },
-        },
-      });
-    mocks.uploadPresignedFile
-      .mockImplementationOnce(
-        (_url: string, _file: File, signal: AbortSignal) =>
-          new Promise<void>((_resolve, reject) => {
-            signal.addEventListener('abort', () => {
-              reject(new DOMException('Superseded', 'AbortError'));
-            });
-          }),
-      )
-      .mockResolvedValueOnce(undefined);
+    mocks.requestUpload.mockResolvedValue({
+      data: {
+        requestUpload: { id: 'upload-1', url: 'https://upload/first' },
+      },
+    });
+    mocks.uploadPresignedFile.mockReturnValue(
+      new Promise<void>((resolve) => {
+        finishUpload = resolve;
+      }),
+    );
 
     render(
       <BreezeProvider locale="en-GB">
@@ -81,16 +68,18 @@ describe('AttachmentUpload', () => {
 
     expect(input).toBeInstanceOf(HTMLInputElement);
     expect(screen.getByText('PDF, JPG or PNG')).toBeVisible();
-    await user.upload(input as HTMLInputElement, firstFile);
+    await user.upload(input as HTMLInputElement, file);
     await waitFor(() => {
       expect(mocks.uploadPresignedFile).toHaveBeenCalledTimes(1);
     });
-    await user.upload(input as HTMLInputElement, secondFile);
+    expect(screen.getByRole('button', { name: 'Browse' })).toBeDisabled();
+
+    finishUpload();
 
     await waitFor(() => {
-      expect(onUploaded).toHaveBeenCalledWith('company-1/upload-2.pdf');
+      expect(onUploaded).toHaveBeenCalledWith('company-1/upload-1.pdf');
     });
-    expect(mocks.requestUpload).toHaveBeenNthCalledWith(2, {
+    expect(mocks.requestUpload).toHaveBeenCalledWith({
       variables: {
         id: 'company-1',
         input: {
@@ -100,10 +89,6 @@ describe('AttachmentUpload', () => {
         },
       },
     });
-    expect(onUploaded).toHaveBeenCalledTimes(1);
-    expect(mocks.toast.show).not.toHaveBeenCalledWith(
-      expect.objectContaining({ variant: 'danger' }),
-    );
   });
 
   it('preserves image type, extension, and Transaction metadata', async () => {

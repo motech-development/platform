@@ -28,6 +28,7 @@ export function AttachmentUpload({
   const { t } = useTranslation(['attachments', 'transactions']);
   const toast = useToast();
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [transferPending, setTransferPending] = useState(false);
   const [uploadFailed, setUploadFailed] = useState(false);
   const [uploaded, setUploaded] = useState(false);
   const runLatestTransfer = useLatestTransfer();
@@ -49,6 +50,7 @@ export function AttachmentUpload({
     }
 
     setSelectedFiles([file]);
+    setTransferPending(true);
     setUploadFailed(false);
     setUploaded(false);
 
@@ -104,6 +106,8 @@ export function AttachmentUpload({
         });
 
         return { status: 'failed' };
+      } finally {
+        setTransferPending(false);
       }
     })();
 
@@ -129,13 +133,17 @@ export function AttachmentUpload({
             ? t('Connection required', { ns: 'transactions' })
             : t('Browse')
         }
-        disabled={disabled || loading}
+        disabled={disabled || loading || transferPending}
         guidance={
           disabled
             ? t('Connection required to attach a file.')
             : t('PDF, JPG or PNG')
         }
-        label={loading ? t('Uploading file…') : t('No file selected')}
+        label={
+          loading || transferPending
+            ? t('Uploading file…')
+            : t('No file selected')
+        }
         onFiles={(files) => {
           const [file] = files;
 
@@ -154,7 +162,7 @@ export function AttachmentUpload({
       />
       {uploadFailed && selectedFiles[0] ? (
         <Button
-          disabled={disabled || loading}
+          disabled={disabled || loading || transferPending}
           onAction={() => {
             upload(selectedFiles[0]).catch(() => undefined);
           }}

@@ -1,4 +1,10 @@
-import { expect, expectFinancialSummary, getFormInput, test } from './test';
+import {
+  expect,
+  expectFinancialSummary,
+  getFormInput,
+  test,
+  waitForFiniteAnimations,
+} from './test';
 
 test.describe('VAT registered', () => {
   let companyCleanupRequired = false;
@@ -508,17 +514,22 @@ test.describe('VAT registered', () => {
       openAccountsRoute,
       page,
     }) => {
+      const originalTransaction = accounts[0];
       const transaction = accounts[6];
 
       await openAccountsRoute();
       await page
         .getByRole('row')
-        .filter({ hasText: transaction.description })
-        .filter({ hasText: format('ledger currency', accounts[0].amount) })
+        .filter({ hasText: originalTransaction.description })
+        .filter({
+          hasText: format('ledger currency', originalTransaction.amount),
+        })
         .click();
-      await expect(
-        page.getByRole('heading', { name: 'Edit transaction' }),
-      ).toBeVisible();
+      const drawer = page.getByRole('dialog', { name: 'Edit transaction' });
+
+      await expect(drawer).toBeVisible();
+      await expect(drawer.locator('form')).toBeVisible();
+      await waitForFiniteAnimations(drawer.locator('..'));
       await expectNoA11yViolations(
         page.getByRole('heading', { name: 'Edit transaction' }),
       );
@@ -562,12 +573,15 @@ test.describe('VAT registered', () => {
       page,
     }) => {
       const transaction = accounts[0];
+      const updatedTransaction = accounts[6];
 
       await openAccountsRoute();
       await page
         .getByRole('row')
         .filter({ hasText: transaction.description })
-        .filter({ hasText: format('ledger currency', accounts[6].amount) })
+        .filter({
+          hasText: format('ledger currency', updatedTransaction.amount),
+        })
         .click();
       await page.getByRole('button', { name: 'Delete transaction' }).click();
       await expectNoA11yViolations(

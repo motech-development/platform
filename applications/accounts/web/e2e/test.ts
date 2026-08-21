@@ -45,6 +45,19 @@ export async function selectRadioOption(
   await expect(option).toBeChecked();
 }
 
+export async function waitForFiniteAnimations(locator: Locator) {
+  await locator.evaluate(async (element) => {
+    await Promise.allSettled(
+      element
+        .getAnimations({ subtree: true })
+        .filter(
+          (animation) => animation.effect?.getTiming().iterations !== Infinity,
+        )
+        .map((animation) => animation.finished),
+    );
+  });
+}
+
 export async function expectFinancialSummary(
   page: Page,
   values: { balance: string; owed?: string; paid?: string },
@@ -553,13 +566,8 @@ export const test = base.extend<AccountsFixtures, AccountsWorkerFixtures>({
 
         await expect(drawer).toBeVisible();
         if (checkA11y) {
-          await drawer.locator('..').evaluate(async (overlay) => {
-            await Promise.allSettled(
-              overlay
-                .getAnimations({ subtree: true })
-                .map((animation) => animation.finished),
-            );
-          });
+          await expect(drawer.locator('form')).toBeVisible();
+          await waitForFiniteAnimations(drawer.locator('..'));
           await expectNoA11yViolations(
             page.getByRole('heading', { name: 'Record transaction' }),
           );

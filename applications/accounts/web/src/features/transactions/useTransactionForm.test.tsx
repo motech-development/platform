@@ -174,7 +174,7 @@ function EditHarness() {
 }
 
 function RemoveAttachmentHarness() {
-  const { form } = useTransactionForm({
+  const { form, requestClose } = useTransactionForm({
     companyId: 'company-id',
     confirmedReturnTo: '/my-companies/accounts/$companyId',
     initialValues: {
@@ -195,15 +195,20 @@ function RemoveAttachmentHarness() {
   });
 
   return (
-    <button
-      onClick={() => {
-        form.setFieldValue('attachment', '');
-        form.handleSubmit().catch(() => undefined);
-      }}
-      type="button"
-    >
-      Remove attachment
-    </button>
+    <>
+      <button
+        onClick={() => {
+          form.setFieldValue('attachment', '');
+          form.handleSubmit().catch(() => undefined);
+        }}
+        type="button"
+      >
+        Remove attachment
+      </button>
+      <button onClick={requestClose} type="button">
+        Close transaction
+      </button>
+    </>
   );
 }
 
@@ -853,6 +858,35 @@ describe('useTransactionForm', () => {
 
     await waitFor(() => expect(mocks.deleteFile).toHaveBeenCalledTimes(2));
     expect(mocks.update).toHaveBeenCalledOnce();
+    expect(mocks.navigate).toHaveBeenCalledOnce();
+  });
+
+  it('retries previous attachment cleanup before closing the form', async () => {
+    mocks.deleteFile
+      .mockResolvedValueOnce({ data: null })
+      .mockResolvedValueOnce({
+        data: { deleteFile: { path: 'company-id/invoice.pdf' } },
+      });
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <RemoveAttachmentHarness />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Remove attachment' }),
+    );
+    await waitFor(() => expect(mocks.deleteFile).toHaveBeenCalledOnce());
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Close transaction' }),
+    );
+
+    await waitFor(() => expect(mocks.deleteFile).toHaveBeenCalledTimes(2));
+    expect(mocks.update).toHaveBeenCalledOnce();
+    expect(mocks.deleteFile.mock.invocationCallOrder[1]).toBeLessThan(
+      mocks.navigate.mock.invocationCallOrder[0] ?? 0,
+    );
     expect(mocks.navigate).toHaveBeenCalledOnce();
   });
 

@@ -358,6 +358,9 @@ export function useTransactionForm({
       if (!(await discardStagedAttachment())) {
         throw new Error('Staged attachment cleanup failed');
       }
+      if (!(await cleanUpPreviousAttachment())) {
+        throw new Error('Previous attachment cleanup failed');
+      }
 
       return navigate({
         params: { companyId },

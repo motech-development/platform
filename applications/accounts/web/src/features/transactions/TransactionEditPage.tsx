@@ -13,6 +13,7 @@ import { DELETE_TRANSACTION, GET_TRANSACTION } from '../../data/operations';
 import { DiscardChangesDialog } from '../companies/DiscardChangesDialog';
 import { EntityDeleteDialog } from '../forms/EntityDeleteDialog';
 import { SubmittingForm } from '../forms/SubmittingForm';
+import { TransactionEditDrawerSkeleton } from '../loading/AccountsPageSkeletons';
 import { QueryRefreshAlert } from '../QueryRefreshAlert';
 import { PendingTransactionsPageContent } from './PendingTransactionsPageContent';
 import { RecordTransactionFormFields } from './RecordTransactionFormFields';
@@ -86,6 +87,11 @@ function TransactionEditDrawer({
     initialValues: editableTransaction(transaction),
   });
   const pending = submissionPending || deleting;
+
+  if (loading && !data) {
+    return <TransactionEditDrawerSkeleton />;
+  }
+
   const deleteCurrentTransaction = async () => {
     if (!(await retryPreviousAttachmentCleanup())) return false;
 
@@ -194,9 +200,6 @@ function TransactionEditDrawer({
                 );
               }}
             />
-          ) : null}
-          {loading && !data ? (
-            <p aria-live="polite">{t('Preparing transaction form…')}</p>
           ) : null}
           {data ? (
             <SubmittingForm

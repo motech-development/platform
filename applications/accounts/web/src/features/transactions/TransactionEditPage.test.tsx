@@ -309,7 +309,7 @@ describe('TransactionEditPage', () => {
     expect(screen.getByText('Transaction form unavailable')).toBeVisible();
   });
 
-  it('announces form preparation after the Transaction has loaded', () => {
+  it('renders the form skeleton after the Transaction has loaded', () => {
     mocks.transactionQuery.data = { getTransaction: transaction };
     mocks.formQuery.loading = true;
 
@@ -323,10 +323,12 @@ describe('TransactionEditPage', () => {
       </BreezeProvider>,
     );
 
-    expect(screen.getByText('Preparing transaction form…')).toHaveAttribute(
-      'aria-live',
-      'polite',
-    );
+    expect(
+      screen.getByRole('status', { name: 'Loading transaction form' }),
+    ).toBeVisible();
+    expect(
+      screen.getByRole('dialog', { name: 'Edit transaction' }),
+    ).toBeVisible();
   });
 
   it('presents the saved accounting values as an edit form', () => {
