@@ -162,6 +162,21 @@ export function useTransactionForm({
     setAttachmentTransferPending(false);
     return deleted;
   };
+  const attachmentTransferCanSubmit = (
+    transfer: AttachmentTransferResult | undefined,
+  ) => {
+    if (transfer?.status === 'cancelled') return false;
+    if (transfer?.status !== 'failed') return true;
+
+    toast.show({
+      description: t('Retry the attachment, then save again.', {
+        ns: 'attachments',
+      }),
+      title: t('Attachment upload failed', { ns: 'attachments' }),
+      variant: 'danger',
+    });
+    return false;
+  };
   const form = useForm({
     defaultValues:
       initialValues ??
@@ -174,20 +189,7 @@ export function useTransactionForm({
 
       const transfer = await attachmentTransfer.current;
 
-      if (transfer?.status === 'cancelled') {
-        return;
-      }
-
-      if (transfer?.status === 'failed') {
-        toast.show({
-          description: t('Retry the attachment, then save again.', {
-            ns: 'attachments',
-          }),
-          title: t('Attachment upload failed', { ns: 'attachments' }),
-          variant: 'danger',
-        });
-        return;
-      }
+      if (!attachmentTransferCanSubmit(transfer)) return;
 
       const input = buildTransactionInput(
         {

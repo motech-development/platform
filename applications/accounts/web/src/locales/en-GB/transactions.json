@@ -110,6 +110,8 @@
   "Nothing was deleted. Check your connection and try again.": "Nothing was deleted. Check your connection and try again.",
   "Transaction could not be deleted": "Transaction could not be deleted",
   "Transaction deleted": "Transaction deleted",
+  "Transaction list could not be opened": "Transaction list could not be opened",
+  "The transaction was deleted. Try again.": "The transaction was deleted. Try again.",
   "The unsaved Transaction changes will be lost.": "The unsaved Transaction changes will be lost.",
   "Discard Transaction changes?": "Discard Transaction changes?",
   "Discard Transaction changes": "Discard Transaction changes"

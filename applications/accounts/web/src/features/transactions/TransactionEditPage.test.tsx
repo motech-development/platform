@@ -453,6 +453,48 @@ describe('TransactionEditPage', () => {
     );
   });
 
+  it('closes a mixed-ledger Pending edit when the Transaction is published', async () => {
+    mocks.transactionQuery.data = {
+      getTransaction: { ...transaction, scheduled: true, status: 'pending' },
+    };
+    mocks.formQuery.data = formData;
+
+    const view = render(
+      <BreezeProvider locale="en-GB">
+        <TransactionEditPage
+          companyId="company-id"
+          origin="transactions"
+          transactionId="transaction-id"
+        />
+      </BreezeProvider>,
+    );
+
+    expect(
+      screen.getByRole('heading', { name: 'Edit transaction' }),
+    ).toBeVisible();
+
+    mocks.transactionQuery.data = { getTransaction: transaction };
+    view.rerender(
+      <BreezeProvider locale="en-GB">
+        <TransactionEditPage
+          companyId="company-id"
+          origin="transactions"
+          transactionId="transaction-id"
+        />
+      </BreezeProvider>,
+    );
+
+    expect(
+      screen.queryByRole('heading', { name: 'Edit transaction' }),
+    ).not.toBeInTheDocument();
+    await waitFor(() =>
+      expect(mocks.navigate).toHaveBeenCalledWith({
+        params: { companyId: 'company-id' },
+        to: '/my-companies/accounts/$companyId',
+      }),
+    );
+  });
+
   it('retries both transaction and form prerequisites after a refresh failure', async () => {
     mocks.transactionQuery.data = { getTransaction: transaction };
     mocks.transactionQuery.error = new Error('Transaction refresh failed');
@@ -481,7 +523,6 @@ describe('TransactionEditPage', () => {
   it('deletes the Transaction after exact confirmation', async () => {
     mocks.transactionQuery.data = { getTransaction: transaction };
     mocks.formQuery.data = formData;
-    mocks.navigate.mockRejectedValueOnce(new Error('Navigation failed'));
 
     render(
       <BreezeProvider locale="en-GB">
@@ -509,6 +550,61 @@ describe('TransactionEditPage', () => {
       params: { companyId: 'company-id' },
       to: '/my-companies/accounts/$companyId',
     });
+    expect(mocks.toast.show).toHaveBeenCalledWith({
+      title: 'Transaction deleted',
+      variant: 'success',
+    });
+  });
+
+  it('retries navigation after the Transaction has been deleted', async () => {
+    mocks.transactionQuery.data = { getTransaction: transaction };
+    mocks.formQuery.data = formData;
+    mocks.navigate.mockRejectedValueOnce(new Error('Navigation failed'));
+    const evictTransaction = vi.spyOn(mocks.transactionCache, 'evict');
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <TransactionEditPage
+          companyId="company-id"
+          origin="transactions"
+          transactionId="transaction-id"
+        />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Delete transaction' }),
+    );
+    await userEvent.type(
+      screen.getByLabelText('Type Known client to confirm'),
+      'Known client',
+    );
+    const confirmDeletion = screen.getByRole('button', {
+      name: 'Permanently delete transaction',
+    });
+
+    await userEvent.click(confirmDeletion);
+
+    await waitFor(() =>
+      expect(mocks.toast.show).toHaveBeenCalledWith({
+        description: 'The transaction was deleted. Try again.',
+        title: 'Transaction list could not be opened',
+        variant: 'danger',
+      }),
+    );
+    expect(mocks.deleteTransaction).toHaveBeenCalledOnce();
+    expect(evictTransaction).not.toHaveBeenCalled();
+    expect(screen.getByRole('alertdialog')).toBeVisible();
+    expect(mocks.toast.show).not.toHaveBeenCalledWith({
+      title: 'Transaction deleted',
+      variant: 'success',
+    });
+
+    await userEvent.click(confirmDeletion);
+
+    await waitFor(() => expect(mocks.navigate).toHaveBeenCalledTimes(2));
+    expect(mocks.deleteTransaction).toHaveBeenCalledOnce();
+    expect(evictTransaction).toHaveBeenCalledOnce();
     expect(mocks.toast.show).toHaveBeenCalledWith({
       title: 'Transaction deleted',
       variant: 'success',

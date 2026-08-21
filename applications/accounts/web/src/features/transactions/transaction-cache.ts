@@ -197,7 +197,7 @@ export function removeTransactionFromCache(
   companyId: string,
   transactionId: string,
 ) {
-  updateLoadedCollections(cache, companyId, transactionId, undefined);
+  updateLoadedCollections(cache, companyId, transactionId);
   cache.evict({
     id: cache.identify({ __typename: 'Transaction', id: transactionId }),
   });

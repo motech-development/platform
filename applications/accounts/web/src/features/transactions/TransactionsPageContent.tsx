@@ -89,6 +89,53 @@ function TransactionsPagination({
   );
 }
 
+function TransactionsRefreshAlert({
+  hasTransactions,
+  onRetry,
+}: Readonly<{
+  hasTransactions: boolean;
+  onRetry: () => void;
+}>) {
+  const { t } = useTranslation(['transactions', 'routing']);
+
+  return (
+    <QueryRefreshAlert
+      onRetry={onRetry}
+      retryLabel={t('Try again', { ns: 'routing' })}
+    >
+      {hasTransactions
+        ? t(
+            'Transactions could not be refreshed. Existing results are still shown.',
+          )
+        : t(
+            'Transactions could not be refreshed. Check your connection, then try again.',
+          )}
+    </QueryRefreshAlert>
+  );
+}
+
+function canShowEmptyState({
+  confirmedLoaded,
+  dataAvailable,
+  hasError,
+  hasTransactions,
+  initiallyLoading,
+  pendingLoaded,
+}: Readonly<{
+  confirmedLoaded: boolean;
+  dataAvailable: boolean;
+  hasError: boolean;
+  hasTransactions: boolean;
+  initiallyLoading: boolean;
+  pendingLoaded: boolean;
+}>) {
+  return (
+    !initiallyLoading &&
+    !hasTransactions &&
+    ((confirmedLoaded && pendingLoaded) || (hasError && dataAvailable))
+  );
+}
+
 export function TransactionsPageContent({
   companyId,
 }: Readonly<{ companyId: string }>) {
@@ -126,6 +173,14 @@ export function TransactionsPageContent({
   const pendingTransactionsHref = `/my-companies/accounts/${encodeURIComponent(companyId)}/pending-transactions`;
   const data = confirmed.data ?? pending.data;
   const error = confirmed.error ?? pending.error;
+  const showEmptyState = canShowEmptyState({
+    confirmedLoaded: Boolean(confirmed.data),
+    dataAvailable: Boolean(data),
+    hasError: Boolean(error),
+    hasTransactions,
+    initiallyLoading,
+    pendingLoaded: Boolean(pending.data),
+  });
 
   useTransactionPageReconciliation({
     fetchMore: confirmed.fetchMore,
@@ -165,22 +220,14 @@ export function TransactionsPageContent({
         />
       ) : null}
       {error && data ? (
-        <QueryRefreshAlert
+        <TransactionsRefreshAlert
+          hasTransactions={hasTransactions}
           onRetry={() => {
             Promise.all([confirmed.refetch(), pending.refetch()]).catch(
               () => undefined,
             );
           }}
-          retryLabel={t('Try again', { ns: 'routing' })}
-        >
-          {hasTransactions
-            ? t(
-                'Transactions could not be refreshed. Existing results are still shown.',
-              )
-            : t(
-                'Transactions could not be refreshed. Check your connection, then try again.',
-              )}
-        </QueryRefreshAlert>
+        />
       ) : null}
       {initiallyLoading && !error ? <TransactionsContentSkeleton /> : null}
       {!initiallyLoading && hasTransactions && data ? (
@@ -209,9 +256,7 @@ export function TransactionsPageContent({
           />
         </div>
       ) : null}
-      {!initiallyLoading &&
-      ((confirmed.data && pending.data) || (error && data)) &&
-      !hasTransactions ? (
+      {showEmptyState ? (
         <StatePanel
           action={
             <RecordTransactionLink href={recordTransactionHref} icon={false} />

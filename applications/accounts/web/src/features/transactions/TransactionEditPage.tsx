@@ -7,7 +7,7 @@ import {
   useToast,
 } from '@motech-development/breeze-ui';
 import { useNavigate } from '@tanstack/react-router';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DELETE_TRANSACTION, GET_TRANSACTION } from '../../data/operations';
 import { DiscardChangesDialog } from '../companies/DiscardChangesDialog';
@@ -70,6 +70,7 @@ function TransactionEditDrawer({
     refetch,
     removeAttachment,
     requestClose,
+    restrictNavigation,
     setDiscardOpen,
     submissionPending,
     suggestions,
@@ -127,13 +128,24 @@ function TransactionEditDrawer({
 
     if (!stagedAttachmentDiscarded) return false;
 
+    completeMutation();
+    const navigated = await navigate({ params: { companyId }, to: closeTo })
+      .then(() => true)
+      .catch(() => {
+        restrictNavigation();
+        toast.show({
+          description: t('The transaction was deleted. Try again.'),
+          title: t('Transaction list could not be opened'),
+          variant: 'danger',
+        });
+        return false;
+      });
+
+    if (!navigated) return false;
+
     finalizeTransactionDeletion.current?.();
     finalizeTransactionDeletion.current = undefined;
     toast.show({ title: t('Transaction deleted'), variant: 'success' });
-    completeMutation();
-    await navigate({ params: { companyId }, to: closeTo }).catch(
-      () => undefined,
-    );
     return true;
   };
 
@@ -293,9 +305,20 @@ export function TransactionEditPage({
     data?.getTransaction.companyId === companyId
       ? data.getTransaction
       : undefined;
+  const [openedTransaction, setOpenedTransaction] = useState<
+    | {
+        id: string;
+        status: 'confirmed' | 'pending';
+      }
+    | undefined
+  >(undefined);
+  const openedTransactionStatus =
+    openedTransaction?.id === transactionId
+      ? openedTransaction.status
+      : undefined;
   const publishedPendingTransaction =
-    origin === 'pending' &&
     transactionForCompany !== undefined &&
+    (origin === 'pending' || openedTransactionStatus === 'pending') &&
     transactionForCompany.status !== 'pending';
   const transaction = publishedPendingTransaction
     ? undefined
@@ -304,15 +327,28 @@ export function TransactionEditPage({
     origin === 'pending'
       ? PendingTransactionsPageContent
       : TransactionsPageContent;
+  const collectionRoute =
+    origin === 'pending'
+      ? '/my-companies/accounts/$companyId/pending-transactions'
+      : '/my-companies/accounts/$companyId';
+
+  useEffect(() => {
+    if (transactionForCompany && openedTransaction?.id !== transactionId) {
+      setOpenedTransaction({
+        id: transactionId,
+        status: transactionForCompany.status,
+      });
+    }
+  }, [openedTransaction?.id, transactionForCompany, transactionId]);
 
   useEffect(() => {
     if (publishedPendingTransaction) {
       navigate({
         params: { companyId },
-        to: '/my-companies/accounts/$companyId/pending-transactions',
+        to: collectionRoute,
       }).catch(() => undefined);
     }
-  }, [companyId, navigate, publishedPendingTransaction]);
+  }, [collectionRoute, companyId, navigate, publishedPendingTransaction]);
 
   if (publishedPendingTransaction) {
     return <Background companyId={companyId} />;
