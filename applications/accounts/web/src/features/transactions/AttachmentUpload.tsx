@@ -1,6 +1,6 @@
 import { useMutation } from '@apollo/client/react';
 import { Button, FileUpload, useToast } from '@motech-development/breeze-ui';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { REQUEST_UPLOAD } from '../../data/operations';
 import { uploadPresignedFile } from '../../data/presigned-transfer';
@@ -31,6 +31,7 @@ export function AttachmentUpload({
   const [transferPending, setTransferPending] = useState(false);
   const [uploadFailed, setUploadFailed] = useState(false);
   const [uploaded, setUploaded] = useState(false);
+  const activeTransfer = useRef<symbol | undefined>(undefined);
   const runLatestTransfer = useLatestTransfer();
   const [requestUpload, { loading }] = useMutation(REQUEST_UPLOAD);
 
@@ -49,6 +50,9 @@ export function AttachmentUpload({
       return Promise.resolve({ status: 'failed' } as const);
     }
 
+    const transferId = Symbol('attachment-transfer');
+
+    activeTransfer.current = transferId;
     setSelectedFiles([file]);
     setTransferPending(true);
     setUploadFailed(false);
@@ -107,7 +111,10 @@ export function AttachmentUpload({
 
         return { status: 'failed' };
       } finally {
-        setTransferPending(false);
+        if (activeTransfer.current === transferId) {
+          activeTransfer.current = undefined;
+          setTransferPending(false);
+        }
       }
     })();
 
@@ -139,11 +146,7 @@ export function AttachmentUpload({
             ? t('Connection required to attach a file.')
             : t('PDF, JPG or PNG')
         }
-        label={
-          loading || transferPending
-            ? t('Uploading file…')
-            : t('No file selected')
-        }
+        label={t('No file selected')}
         onFiles={(files) => {
           const [file] = files;
 
@@ -160,6 +163,11 @@ export function AttachmentUpload({
         }}
         selectedFiles={selectedFiles}
       />
+      {transferPending && selectedFiles[0] ? (
+        <p role="status">
+          {t('Uploading file…')}: {selectedFiles[0].name}
+        </p>
+      ) : null}
       {uploadFailed && selectedFiles[0] ? (
         <Button
           disabled={disabled || loading || transferPending}

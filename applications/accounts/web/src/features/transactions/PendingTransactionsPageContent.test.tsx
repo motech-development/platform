@@ -169,6 +169,25 @@ describe('PendingTransactionsPageContent', () => {
     expect(query.refetch).toHaveBeenCalledOnce();
   });
 
+  it('keeps recovery visible while an initial retry is loading', () => {
+    query.data = undefined as never;
+    query.error = new Error('Initial load failed');
+    query.loading = true;
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <PendingTransactionsPageContent companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    expect(
+      screen.getByText('We could not load pending transactions'),
+    ).toBeVisible();
+    expect(
+      screen.queryByRole('status', { name: 'Loading Pending Transactions' }),
+    ).not.toBeInTheDocument();
+  });
+
   it('owns the Record transaction action in the empty state panel', () => {
     query.data.getTransactions.items = [];
 

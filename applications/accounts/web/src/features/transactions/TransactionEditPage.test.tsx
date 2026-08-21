@@ -141,9 +141,11 @@ describe('TransactionEditPage', () => {
     mocks.formQuery.loading = false;
     mocks.formQuery.refetch.mockResolvedValue(undefined);
     mocks.downloadQuery.mockReset();
+    mocks.deleteFile.mockReset();
     mocks.deleteFile.mockResolvedValue({
       data: { deleteFile: { path: 'company-id/invoice.pdf' } },
     });
+    mocks.deleteTransaction.mockReset();
     mocks.deleteTransaction.mockImplementation((options: unknown) => {
       const result = { data: { deleteTransaction: transaction } };
       const { update } = options as {
@@ -309,7 +311,7 @@ describe('TransactionEditPage', () => {
     expect(screen.getByText('Transaction form unavailable')).toBeVisible();
   });
 
-  it('renders the form skeleton after the Transaction has loaded', () => {
+  it('renders a dismissible form skeleton after the Transaction has loaded', async () => {
     mocks.transactionQuery.data = { getTransaction: transaction };
     mocks.formQuery.loading = true;
 
@@ -329,6 +331,13 @@ describe('TransactionEditPage', () => {
     expect(
       screen.getByRole('dialog', { name: 'Edit transaction' }),
     ).toBeVisible();
+    await userEvent.click(screen.getByRole('button', { name: 'Close' }));
+    await waitFor(() =>
+      expect(mocks.navigate).toHaveBeenCalledWith({
+        params: { companyId: 'company-id' },
+        to: '/my-companies/accounts/$companyId',
+      }),
+    );
   });
 
   it('presents the saved accounting values as an edit form', () => {
@@ -595,7 +604,8 @@ describe('TransactionEditPage', () => {
 
     await waitFor(() =>
       expect(mocks.toast.show).toHaveBeenCalledWith({
-        description: 'The transaction was deleted. Try again.',
+        description:
+          'The transaction was deleted. Try opening the transaction list again.',
         title: 'Transaction list could not be opened',
         variant: 'danger',
       }),

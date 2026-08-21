@@ -739,11 +739,11 @@ export function TransactionLedger({
     return (
       <StatePanel
         action={emptyAction}
-        description={t(
+        description={
           pending
-            ? 'All recorded transactions have been reviewed.'
-            : 'Record a confirmed sale to start this transaction history.',
-        )}
+            ? t('All recorded transactions have been reviewed.')
+            : t('Record a confirmed sale to start this transaction history.')
+        }
         icon={pending ? <CalendarIcon /> : <ArrowRightIcon />}
         title={
           pending ? t('No pending transactions') : t('No transactions yet')

@@ -40,7 +40,7 @@ function TransactionEditDrawer({
   transactionRefreshFailed: boolean;
   transactionId: string;
 }>) {
-  const { t } = useTranslation('transactions');
+  const { t } = useTranslation(['transactions', 'routing']);
   const navigate = useNavigate();
   const toast = useToast();
   const closeTo =
@@ -89,7 +89,13 @@ function TransactionEditDrawer({
   const pending = submissionPending || deleting;
 
   if (loading && !data) {
-    return <TransactionEditDrawerSkeleton />;
+    return (
+      <TransactionEditDrawerSkeleton
+        onOpenChange={(open) => {
+          if (!open) requestClose();
+        }}
+      />
+    );
   }
 
   const deleteCurrentTransaction = async () => {
@@ -143,7 +149,9 @@ function TransactionEditDrawer({
       .catch(() => {
         restrictNavigation();
         toast.show({
-          description: t('The transaction was deleted. Try again.'),
+          description: t(
+            'The transaction was deleted. Try opening the transaction list again.',
+          ),
           title: t('Transaction list could not be opened'),
           variant: 'danger',
         });

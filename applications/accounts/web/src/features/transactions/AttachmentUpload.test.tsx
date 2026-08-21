@@ -33,6 +33,8 @@ vi.mock('../../data/presigned-transfer', async (importOriginal) => ({
 describe('AttachmentUpload', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mocks.requestUpload.mockReset();
+    mocks.uploadPresignedFile.mockReset();
   });
 
   it('keeps the chooser disabled until the object transfer completes', async () => {
@@ -73,6 +75,9 @@ describe('AttachmentUpload', () => {
       expect(mocks.uploadPresignedFile).toHaveBeenCalledTimes(1);
     });
     expect(screen.getByRole('button', { name: 'Browse' })).toBeDisabled();
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Uploading file…: invoice.pdf',
+    );
 
     finishUpload();
 

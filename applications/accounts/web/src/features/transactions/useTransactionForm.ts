@@ -156,6 +156,9 @@ export function useTransactionForm({
       return false;
     }
   };
+  const resetAttachmentTransferPending = () => {
+    if (!attachmentTransfer.current) setAttachmentTransferPending(false);
+  };
   const cleanUpPreviousAttachment = async () => {
     const path = previousAttachmentCleanupPath.current;
 
@@ -170,7 +173,7 @@ export function useTransactionForm({
     );
 
     if (deleted) previousAttachmentCleanupPath.current = undefined;
-    setAttachmentTransferPending(false);
+    resetAttachmentTransferPending();
     return deleted;
   };
   const announceSuccessfulSubmission = () => {
@@ -180,9 +183,6 @@ export function useTransactionForm({
 
     toast.show({ title, variant: 'success' });
     successfulSubmissionTitle.current = undefined;
-  };
-  const resetAttachmentTransferPending = () => {
-    if (!attachmentTransfer.current) setAttachmentTransferPending(false);
   };
   const discardStagedAttachment = async () => {
     const transfer = attachmentTransfer.current;

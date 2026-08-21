@@ -259,12 +259,18 @@ export function TransactionsContentSkeleton() {
 function TransactionDrawerSkeleton({
   description,
   editing = false,
+  onOpenChange = () => undefined,
   title,
-}: Readonly<{ description: string; editing?: boolean; title: string }>) {
+}: Readonly<{
+  description: string;
+  editing?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  title: string;
+}>) {
   const { t } = useTranslation(['transactions', 'routing']);
 
   return (
-    <Drawer.Root onOpenChange={() => undefined} open triggerless>
+    <Drawer.Root onOpenChange={onOpenChange} open triggerless>
       <Drawer.Content placement={{ base: 'bottom', md: 'end' }} size="wide">
         <Drawer.Description>{description}</Drawer.Description>
         <Drawer.Title>{title}</Drawer.Title>
@@ -335,13 +341,16 @@ export function RecordTransactionDrawerSkeleton() {
   );
 }
 
-export function TransactionEditDrawerSkeleton() {
+export function TransactionEditDrawerSkeleton({
+  onOpenChange,
+}: Readonly<{ onOpenChange?: (open: boolean) => void }>) {
   const { t } = useTranslation('transactions');
 
   return (
     <TransactionDrawerSkeleton
       description={t('Update the transaction and its attachment.')}
       editing
+      onOpenChange={onOpenChange}
       title={t('Edit transaction')}
     />
   );

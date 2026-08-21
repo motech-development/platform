@@ -430,6 +430,24 @@ describe('RecordTransactionPage', () => {
     expect(mocks.query.refetch).toHaveBeenCalledOnce();
   });
 
+  it('keeps the unavailable state visible while a retry is loading', () => {
+    mocks.query.data = undefined;
+    mocks.query.error = new Error('failed');
+    mocks.query.loading = true;
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <RecordTransactionPage companyId="company-id" origin="transactions" />
+      </BreezeProvider>,
+    );
+
+    expect(screen.getByText('Transaction form unavailable')).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Try again' })).toBeDisabled();
+    expect(
+      screen.queryByRole('status', { name: 'Loading transaction form' }),
+    ).not.toBeInTheDocument();
+  });
+
   it('retains the form while a failed background refresh is retried', async () => {
     mocks.query.error = new Error('failed');
     mocks.query.refetch.mockRejectedValueOnce(new Error('still failed'));

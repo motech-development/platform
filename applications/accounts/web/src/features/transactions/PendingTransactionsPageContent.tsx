@@ -80,7 +80,7 @@ export function PendingTransactionsPageContent({
           )}
         </QueryRefreshAlert>
       ) : null}
-      {initiallyLoading ? (
+      {initiallyLoading && !error ? (
         <LoadingSkeletonRegion loadingLabel={t('Loading Pending Transactions')}>
           <TransactionLedgerSkeleton pending />
         </LoadingSkeletonRegion>

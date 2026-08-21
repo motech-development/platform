@@ -79,7 +79,7 @@ export function RecordTransactionPage({
     confirmedReturnTo: returnTo,
   });
 
-  if (loading && !data) {
+  if (loading && !data && !error) {
     return (
       <>
         <Background companyId={companyId} />
