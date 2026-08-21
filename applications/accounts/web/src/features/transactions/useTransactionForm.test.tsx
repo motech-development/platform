@@ -70,7 +70,7 @@ vi.mock('@tanstack/react-router', async (importOriginal) => ({
 vi.mock('../../pwa/connectivity', () => ({ useOnlineStatus: () => true }));
 
 function Harness() {
-  const { form } = useTransactionForm({
+  const { form, markDirty } = useTransactionForm({
     companyId: 'company-id',
     confirmedReturnTo: '/my-companies/accounts/$companyId',
     initialDateTime: '2026-08-15T12:13:14.567Z',
@@ -95,8 +95,28 @@ function Harness() {
       >
         Submit valid refund
       </button>
+      <button
+        onClick={() => {
+          form.setFieldValue('description', 'Revised quarterly bookkeeping');
+          markDirty();
+          form.handleSubmit().catch(() => undefined);
+        }}
+        type="button"
+      >
+        Change saved transaction
+      </button>
       <form.Subscribe selector={(state) => state.values.description}>
         {(description) => <output>{description}</output>}
+      </form.Subscribe>
+      <form.Subscribe selector={(state) => state.values.id}>
+        {(id) => <output data-testid="transaction-id">{id}</output>}
+      </form.Subscribe>
+      <form.Subscribe selector={(state) => state.isSubmitting}>
+        {(isSubmitting) => (
+          <output data-testid="submission-state">
+            {isSubmitting ? 'Submission pending' : 'Submission settled'}
+          </output>
+        )}
       </form.Subscribe>
     </>
   );
@@ -657,6 +677,37 @@ describe('useTransactionForm', () => {
     expect(mocks.update).not.toHaveBeenCalled();
   });
 
+  it('updates a successfully created Transaction when it is edited after navigation fails', async () => {
+    mocks.navigate.mockRejectedValueOnce(new Error('Navigation failed'));
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <Harness />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Submit valid refund' }),
+    );
+    await waitFor(() => expect(mocks.navigate).toHaveBeenCalledOnce());
+    await waitFor(() =>
+      expect(screen.getByTestId('submission-state')).toHaveTextContent(
+        'Submission settled',
+      ),
+    );
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Change saved transaction' }),
+    );
+
+    await waitFor(() => expect(mocks.update).toHaveBeenCalledOnce());
+    expect(mocks.add).toHaveBeenCalledOnce();
+    expect(mutationInput(mocks.update)).toMatchObject({
+      description: 'Revised quarterly bookkeeping',
+      id: 'transaction-id',
+    });
+    expect(mocks.navigate).toHaveBeenCalledTimes(2);
+  });
+
   it('updates an existing transaction and returns it to the confirmed collection', async () => {
     render(
       <BreezeProvider locale="en-GB">
@@ -722,6 +773,35 @@ describe('useTransactionForm', () => {
 
     await waitFor(() => expect(mocks.update).toHaveBeenCalledOnce());
     expect(mocks.deleteFile).not.toHaveBeenCalled();
+  });
+
+  it('retries previous attachment cleanup without updating the Transaction twice', async () => {
+    mocks.deleteFile
+      .mockResolvedValueOnce({ data: null })
+      .mockResolvedValueOnce({
+        data: { deleteFile: { path: 'company-id/invoice.pdf' } },
+      });
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <RemoveAttachmentHarness />
+      </BreezeProvider>,
+    );
+
+    const removeAttachment = screen.getByRole('button', {
+      name: 'Remove attachment',
+    });
+
+    await userEvent.click(removeAttachment);
+    await waitFor(() => expect(mocks.deleteFile).toHaveBeenCalledOnce());
+    expect(mocks.update).toHaveBeenCalledOnce();
+    expect(mocks.navigate).not.toHaveBeenCalled();
+
+    await userEvent.click(removeAttachment);
+
+    await waitFor(() => expect(mocks.deleteFile).toHaveBeenCalledTimes(2));
+    expect(mocks.update).toHaveBeenCalledOnce();
+    expect(mocks.navigate).toHaveBeenCalledOnce();
   });
 
   it('deletes a staged attachment when it is removed before submission', async () => {

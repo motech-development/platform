@@ -116,23 +116,17 @@ function TransactionsRefreshAlert({
 
 function canShowEmptyState({
   confirmedLoaded,
-  dataAvailable,
-  hasError,
   hasTransactions,
   initiallyLoading,
   pendingLoaded,
 }: Readonly<{
   confirmedLoaded: boolean;
-  dataAvailable: boolean;
-  hasError: boolean;
   hasTransactions: boolean;
   initiallyLoading: boolean;
   pendingLoaded: boolean;
 }>) {
   return (
-    !initiallyLoading &&
-    !hasTransactions &&
-    ((confirmedLoaded && pendingLoaded) || (hasError && dataAvailable))
+    !initiallyLoading && !hasTransactions && confirmedLoaded && pendingLoaded
   );
 }
 
@@ -175,8 +169,6 @@ export function TransactionsPageContent({
   const error = confirmed.error ?? pending.error;
   const showEmptyState = canShowEmptyState({
     confirmedLoaded: Boolean(confirmed.data),
-    dataAvailable: Boolean(data),
-    hasError: Boolean(error),
     hasTransactions,
     initiallyLoading,
     pendingLoaded: Boolean(pending.data),

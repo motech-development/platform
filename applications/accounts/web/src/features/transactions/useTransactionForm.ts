@@ -15,10 +15,14 @@ import { useFormNavigation } from '../forms/useFormNavigation';
 import type { AttachmentTransferResult } from './AttachmentUpload';
 import {
   buildTransactionInput,
+  editableTransaction,
   type TransactionFormValues,
   transactionSchema,
 } from './transaction';
-import { reconcileTransactionInCache } from './transaction-cache';
+import {
+  reconcileTransactionInCache,
+  type TransactionCacheValue,
+} from './transaction-cache';
 
 export type TransactionReturnRoute =
   | '/my-companies/accounts/$companyId'
@@ -92,16 +96,30 @@ export function useTransactionForm({
     Promise<AttachmentTransferResult> | undefined
   >(undefined);
   const stagedAttachmentPath = useRef<string | undefined>(undefined);
+  const previousAttachmentCleanupPath = useRef<string | undefined>(undefined);
+  const persistedAttachmentPath = useRef(
+    initialValues?.attachment || undefined,
+  );
   const successfulReturnTo = useRef<TransactionReturnRoute | undefined>(
     undefined,
   );
-  const initialTransactionStatus =
+  const successfulSubmissionTitle = useRef<string | undefined>(undefined);
+  const persistedTransactionStatus = useRef<
+    'confirmed' | 'pending' | undefined
+  >(
     initialValues?.status === 'confirmed' || initialValues?.status === 'pending'
       ? initialValues.status
-      : undefined;
+      : undefined,
+  );
   const transactionDateTime = useRef(
     initialDateTime ?? new Date().toISOString(),
   );
+  const [persistedFormValues, setPersistedFormValues] =
+    useState<TransactionFormValues>(
+      () =>
+        initialValues ??
+        defaultValues(companyId, initialStatus, transactionDateTime.current),
+    );
   const { data, error, loading, refetch } = useQuery(GET_RECORD_TRANSACTION, {
     fetchPolicy: 'cache-and-network',
     nextFetchPolicy: 'cache-first',
@@ -137,6 +155,29 @@ export function useTransactionForm({
       });
       return false;
     }
+  };
+  const cleanUpPreviousAttachment = async () => {
+    const path = previousAttachmentCleanupPath.current;
+
+    if (!path) return true;
+
+    const deleted = await deleteAttachment(
+      path,
+      t(
+        'The Transaction was saved, but the previous attachment could not be deleted.',
+      ),
+    );
+
+    if (deleted) previousAttachmentCleanupPath.current = undefined;
+    return deleted;
+  };
+  const announceSuccessfulSubmission = () => {
+    const title = successfulSubmissionTitle.current;
+
+    if (!title) return;
+
+    toast.show({ title, variant: 'success' });
+    successfulSubmissionTitle.current = undefined;
   };
   const discardStagedAttachment = async () => {
     const transfer = attachmentTransfer.current;
@@ -178,11 +219,12 @@ export function useTransactionForm({
     return false;
   };
   const form = useForm({
-    defaultValues:
-      initialValues ??
-      defaultValues(companyId, initialStatus, transactionDateTime.current),
+    defaultValues: persistedFormValues,
     onSubmit: async ({ value }) => {
+      if (!(await cleanUpPreviousAttachment())) return;
+
       if (successfulReturnTo.current) {
+        announceSuccessfulSubmission();
         await navigateAfterSuccessfulSubmission(successfulReturnTo.current);
         return;
       }
@@ -200,6 +242,8 @@ export function useTransactionForm({
         transactionDateTime.current,
       );
       const editing = Boolean(input.id);
+      let savedTransaction: TransactionCacheValue;
+      const previousAttachment = persistedAttachmentPath.current;
 
       try {
         if (editing) {
@@ -209,7 +253,7 @@ export function useTransactionForm({
                 reconcileTransactionInCache(
                   cache,
                   mutation.data.updateTransaction,
-                  initialTransactionStatus,
+                  persistedTransactionStatus.current,
                 );
               }
             },
@@ -219,17 +263,7 @@ export function useTransactionForm({
           if (!result.data?.updateTransaction) {
             throw new Error(t('No transaction was returned'));
           }
-
-          const previousAttachment = initialValues?.attachment;
-
-          if (previousAttachment && previousAttachment !== input.attachment) {
-            await deleteAttachment(
-              previousAttachment,
-              t(
-                'The Transaction was saved, but the previous attachment could not be deleted.',
-              ),
-            );
-          }
+          savedTransaction = result.data.updateTransaction;
         } else {
           const result = await addTransaction({
             update: (cache, mutation) => {
@@ -246,6 +280,7 @@ export function useTransactionForm({
           if (!result.data?.addTransaction) {
             throw new Error(t('No transaction was returned'));
           }
+          savedTransaction = result.data.addTransaction;
         }
       } catch {
         toast.show({
@@ -260,16 +295,36 @@ export function useTransactionForm({
 
       attachmentTransfer.current = undefined;
       stagedAttachmentPath.current = undefined;
-      toast.show({
-        title: editing ? t('Transaction updated') : t('Transaction recorded'),
-        variant: 'success',
+      persistedAttachmentPath.current =
+        savedTransaction.attachment || undefined;
+      persistedTransactionStatus.current = savedTransaction.status;
+      transactionDateTime.current = savedTransaction.date;
+      const savedValues = editableTransaction({
+        ...savedTransaction,
+        attachment: savedTransaction.attachment ?? '',
       });
+
+      setPersistedFormValues(savedValues);
+      form.reset(savedValues);
       const returnTo =
-        input.status === 'pending'
+        savedTransaction.status === 'pending'
           ? '/my-companies/accounts/$companyId/pending-transactions'
           : confirmedReturnTo;
 
       successfulReturnTo.current = returnTo;
+      successfulSubmissionTitle.current = editing
+        ? t('Transaction updated')
+        : t('Transaction recorded');
+
+      if (
+        previousAttachment &&
+        previousAttachment !== persistedAttachmentPath.current
+      ) {
+        previousAttachmentCleanupPath.current = previousAttachment;
+        if (!(await cleanUpPreviousAttachment())) return;
+      }
+
+      announceSuccessfulSubmission();
       await navigateAfterSuccessfulSubmission(returnTo);
     },
     validators: {
@@ -323,6 +378,11 @@ export function useTransactionForm({
     error,
     form,
     loading,
+    markDirty: () => {
+      successfulReturnTo.current = undefined;
+      successfulSubmissionTitle.current = undefined;
+      navigation.markDirty();
+    },
     online,
     refetch,
     removeAttachment: async (path: string) => {

@@ -6,8 +6,18 @@ import {
 } from './transaction-cache';
 
 const transactionsQuery = gql`
-  query TestTransactions($count: Int, $id: ID!, $status: TransactionStatus!) {
-    getTransactions(count: $count, id: $id, status: $status) {
+  query TestTransactions(
+    $count: Int
+    $id: ID!
+    $nextToken: String
+    $status: TransactionStatus!
+  ) {
+    getTransactions(
+      count: $count
+      id: $id
+      nextToken: $nextToken
+      status: $status
+    ) {
       id
       items {
         amount
@@ -25,6 +35,7 @@ const transactionsQuery = gql`
       }
       nextToken
       status
+      transactionLoadedPageCount @client
     }
   }
 `;
@@ -76,6 +87,7 @@ function writeCollection(
         items,
         nextToken: null,
         status,
+        transactionLoadedPageCount: 1,
       },
     },
     query: transactionsQuery,
@@ -242,6 +254,54 @@ describe('Transaction cache reconciliation', () => {
       'existing-1',
       'existing-2',
       'existing-3',
+    ]);
+  });
+
+  it('preserves the extent of every loaded page during reconciliation', () => {
+    const cache = createAccountsCache();
+    const existing = Array.from({ length: 4 }, (_, index) =>
+      transaction({
+        date: `2026-08-${(19 - index).toString().padStart(2, '0')}T00:00:00.000Z`,
+        id: `existing-${index}`,
+        status: 'confirmed',
+      }),
+    );
+
+    writeCollection(cache, 'confirmed', 2, existing.slice(0, 2));
+    cache.writeQuery({
+      data: {
+        getTransactions: {
+          __typename: 'Transactions',
+          id: companyId,
+          items: existing.slice(2),
+          nextToken: null,
+          status: 'confirmed',
+          transactionLoadedPageCount: 2,
+        },
+      },
+      query: transactionsQuery,
+      variables: {
+        count: 2,
+        id: companyId,
+        nextToken: 'page-2',
+        status: 'confirmed',
+      },
+    });
+
+    reconcileTransactionInCache(
+      cache,
+      transaction({
+        date: '2026-08-20T00:00:00.000Z',
+        id: 'newest',
+        status: 'confirmed',
+      }),
+    );
+
+    expect(ids(cache, 'confirmed', 2)).toEqual([
+      'newest',
+      'existing-0',
+      'existing-1',
+      'existing-2',
     ]);
   });
 

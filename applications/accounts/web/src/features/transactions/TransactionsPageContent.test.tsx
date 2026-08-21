@@ -209,7 +209,7 @@ describe('TransactionsPageContent', () => {
     expect(screen.queryByText('Could not load')).not.toBeInTheDocument();
   });
 
-  it('keeps the empty collection action when one source fails initially', () => {
+  it('does not claim the collection is empty when one source fails initially', () => {
     mocks.confirmedHasItems = false;
     mocks.confirmedNextToken = null;
     mocks.pendingError = new Error('Pending unavailable');
@@ -221,15 +221,15 @@ describe('TransactionsPageContent', () => {
       </BreezeProvider>,
     );
 
-    expect(screen.getByText('No transactions yet')).toBeVisible();
+    expect(screen.queryByText('No transactions yet')).not.toBeInTheDocument();
     expect(
       screen.getByText(
         'Transactions could not be refreshed. Check your connection, then try again.',
       ),
     ).toBeVisible();
     expect(
-      screen.getByRole('link', { name: 'Record transaction' }),
-    ).toBeVisible();
+      screen.queryByRole('link', { name: 'Record transaction' }),
+    ).not.toBeInTheDocument();
   });
 
   it('shows only the loading layout until both transaction sources have initial data', () => {
