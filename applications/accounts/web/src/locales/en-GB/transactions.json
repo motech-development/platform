@@ -13,6 +13,7 @@
   "View, replace, or delete the attached file.": "View, replace, or delete the attached file.",
   "We could not load transactions": "We could not load transactions",
   "Transactions could not be refreshed. Existing results are still shown.": "Transactions could not be refreshed. Existing results are still shown.",
+  "Transactions could not be refreshed. Check your connection, then try again.": "Transactions could not be refreshed. Check your connection, then try again.",
   "Record money coming in or going out of the business.": "Record money coming in or going out of the business.",
   "No transactions yet": "No transactions yet",
   "Load more": "Load more",

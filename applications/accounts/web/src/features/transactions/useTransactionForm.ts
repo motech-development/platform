@@ -95,6 +95,10 @@ export function useTransactionForm({
   const successfulReturnTo = useRef<TransactionReturnRoute | undefined>(
     undefined,
   );
+  const initialTransactionStatus =
+    initialValues?.status === 'confirmed' || initialValues?.status === 'pending'
+      ? initialValues.status
+      : undefined;
   const transactionDateTime = useRef(
     initialDateTime ?? new Date().toISOString(),
   );
@@ -203,6 +207,7 @@ export function useTransactionForm({
                 reconcileTransactionInCache(
                   cache,
                   mutation.data.updateTransaction,
+                  initialTransactionStatus,
                 );
               }
             },

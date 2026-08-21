@@ -38,6 +38,12 @@ const typeaheadQuery = gql`
     }
   }
 `;
+const transactionStatusFragment = gql`
+  fragment TestTransactionStatus on Transaction {
+    id
+    status
+  }
+`;
 const companyId = 'company-1';
 const transaction = (overrides: Record<string, unknown> = {}) => ({
   __typename: 'Transaction' as const,
@@ -99,16 +105,18 @@ describe('Transaction cache reconciliation', () => {
     writeCollection(cache, 'confirmed', 100, []);
     writeCollection(cache, 'pending', undefined, [pending]);
 
-    reconcileTransactionInCache(cache, {
+    const confirmed = {
       ...pending,
       scheduled: false,
-      status: 'confirmed',
+      status: 'confirmed' as const,
+    };
+
+    cache.writeFragment({
+      data: confirmed,
+      fragment: transactionStatusFragment,
     });
-    reconcileTransactionInCache(cache, {
-      ...pending,
-      scheduled: false,
-      status: 'confirmed',
-    });
+    reconcileTransactionInCache(cache, confirmed, 'pending');
+    reconcileTransactionInCache(cache, confirmed, 'pending');
 
     expect(ids(cache, 'confirmed', 5)).toEqual(['transaction-1']);
     expect(ids(cache, 'confirmed', 100)).toEqual(['transaction-1']);
@@ -191,10 +199,14 @@ describe('Transaction cache reconciliation', () => {
     writeCollection(cache, 'confirmed', 5, latest);
     writeCollection(cache, 'confirmed', 100, [...latest, older]);
 
-    reconcileTransactionInCache(cache, {
-      ...older,
-      attachment: '',
-    });
+    reconcileTransactionInCache(
+      cache,
+      {
+        ...older,
+        attachment: '',
+      },
+      'confirmed',
+    );
 
     expect(ids(cache, 'confirmed', 5)).toEqual(latest.map(({ id }) => id));
     expect(ids(cache, 'confirmed', 100)).toEqual([
@@ -345,9 +357,7 @@ describe('Transaction cache reconciliation', () => {
 
   it('does not modify collections when Apollo cannot create a Transaction reference', () => {
     const cache = {
-      identify: vi.fn(() => 'Transaction:transaction-1'),
       modify: vi.fn(),
-      readFragment: vi.fn(() => null),
       writeFragment: vi.fn(() => undefined),
     };
 
@@ -375,7 +385,6 @@ describe('Transaction cache reconciliation', () => {
           expect(fields.suppliers?.(unresolved)).toBe(unresolved);
         },
       ),
-      readFragment: vi.fn(() => null),
       writeFragment: vi.fn(() => ({ __ref: 'Transaction:transaction-1' })),
     };
 

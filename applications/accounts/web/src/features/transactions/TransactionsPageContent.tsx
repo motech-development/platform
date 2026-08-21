@@ -173,9 +173,13 @@ export function TransactionsPageContent({
           }}
           retryLabel={t('Try again', { ns: 'routing' })}
         >
-          {t(
-            'Transactions could not be refreshed. Existing results are still shown.',
-          )}
+          {hasTransactions
+            ? t(
+                'Transactions could not be refreshed. Existing results are still shown.',
+              )
+            : t(
+                'Transactions could not be refreshed. Check your connection, then try again.',
+              )}
         </QueryRefreshAlert>
       ) : null}
       {initiallyLoading && !error ? <TransactionsContentSkeleton /> : null}
@@ -206,9 +210,7 @@ export function TransactionsPageContent({
         </div>
       ) : null}
       {!initiallyLoading &&
-      !error &&
-      confirmed.data &&
-      pending.data &&
+      ((confirmed.data && pending.data) || (error && data)) &&
       !hasTransactions ? (
         <StatePanel
           action={

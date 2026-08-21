@@ -39,12 +39,6 @@ const transactionFragment = gql`
   }
 `;
 
-const transactionStatusFragment = gql`
-  fragment TransactionCacheStatus on Transaction {
-    status
-  }
-`;
-
 function sortedUnique(values: readonly string[], incoming: string) {
   return values.some(
     (value) =>
@@ -176,17 +170,8 @@ function updateLoadedCollections(
 export function reconcileTransactionInCache(
   cache: ApolloCache,
   transaction: TransactionCacheValue,
+  previousStatus?: 'confirmed' | 'pending',
 ) {
-  const transactionId = cache.identify({
-    __typename: 'Transaction',
-    id: transaction.id,
-  });
-  const previous = transactionId
-    ? cache.readFragment<{ status: 'confirmed' | 'pending' }>({
-        fragment: transactionStatusFragment,
-        id: transactionId,
-      })
-    : null;
   const reference = cache.writeFragment({
     data: { ...transaction, __typename: 'Transaction' },
     fragment: transactionFragment,
@@ -198,7 +183,7 @@ export function reconcileTransactionInCache(
     cache,
     transaction.companyId,
     transaction.id,
-    previous?.status,
+    previousStatus,
     {
       reference,
       status: transaction.status,
