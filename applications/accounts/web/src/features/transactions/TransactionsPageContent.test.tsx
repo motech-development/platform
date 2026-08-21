@@ -134,6 +134,11 @@ vi.mock('./TransactionPagePresentation', () => ({
 
 describe('TransactionsPageContent', () => {
   beforeEach(() => {
+    vi.resetAllMocks();
+    mocks.confirmedFetchMore.mockResolvedValue(undefined);
+    mocks.confirmedRefetch.mockResolvedValue(undefined);
+    mocks.pendingFetchMore.mockResolvedValue(undefined);
+    mocks.pendingRefetch.mockResolvedValue(undefined);
     mocks.confirmedError = undefined;
     mocks.confirmedHasData = true;
     mocks.confirmedHasItems = true;
@@ -152,7 +157,6 @@ describe('TransactionsPageContent', () => {
     mocks.pendingLoadedPageCount = 1;
     mocks.pendingRefreshGeneration = 0;
     mocks.pendingRequestedPageCount = 1;
-    vi.clearAllMocks();
   });
 
   it('combines Pending and Confirmed Transactions newest first and paginates each source', async () => {

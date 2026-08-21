@@ -9,7 +9,10 @@ vi.mock('pdfjs-dist/build/pdf.worker.min.mjs?url', () => ({
   default: 'pdf-worker.js',
 }));
 
-vi.mock('@motech-development/breeze-ui/icons', () => ({
+vi.mock('@motech-development/breeze-ui/icons', async (importOriginal) => ({
+  ...(await importOriginal<
+    typeof import('@motech-development/breeze-ui/icons')
+  >()),
   RotateIcon: () => <svg aria-hidden="true" />,
   ZoomInIcon: () => <svg aria-hidden="true" />,
   ZoomOutIcon: () => <svg aria-hidden="true" />,

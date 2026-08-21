@@ -57,27 +57,6 @@ function isStringArray(value: unknown): value is readonly string[] {
   );
 }
 
-function fieldCount(storeFieldName: string) {
-  const start = storeFieldName.indexOf('{');
-  const end = storeFieldName.lastIndexOf('}');
-
-  if (start === -1 || end <= start) return undefined;
-
-  try {
-    const parsedArguments = JSON.parse(
-      storeFieldName.slice(start, end + 1),
-    ) as {
-      count?: unknown;
-    };
-
-    return typeof parsedArguments.count === 'number'
-      ? parsedArguments.count
-      : undefined;
-  } catch {
-    return undefined;
-  }
-}
-
 function updateSuggestions(
   cache: ApolloCache,
   transaction: TransactionCacheValue,
@@ -137,7 +116,7 @@ function updateLoadedCollections(
     fields: {
       getTransactions(
         existing: Reference | StoreObject | undefined,
-        { readField, storeFieldName },
+        { readField },
       ) {
         if (!existing || readField<string>('id', existing) !== companyId) {
           return existing;
@@ -166,18 +145,9 @@ function updateLoadedCollections(
             ? leftDate.localeCompare(rightDate)
             : rightDate.localeCompare(leftDate);
         });
-        const count = fieldCount(storeFieldName);
-        const loadedPageCount =
-          readField<number>('transactionLoadedPageCount', existing) ?? 1;
-        const loadedItemLimit =
-          count === undefined ? undefined : count * loadedPageCount;
-
         return {
           ...existing,
-          items:
-            loadedItemLimit === undefined
-              ? next
-              : next.slice(0, loadedItemLimit),
+          items: next,
         };
       },
     },

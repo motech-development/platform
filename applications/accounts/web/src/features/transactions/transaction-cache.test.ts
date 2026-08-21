@@ -78,6 +78,7 @@ function writeCollection(
   status: 'confirmed' | 'pending',
   count: number | undefined,
   items: ReturnType<typeof transaction>[],
+  nextToken: string | null = null,
 ) {
   cache.writeQuery({
     data: {
@@ -85,7 +86,7 @@ function writeCollection(
         __typename: 'Transactions',
         id: companyId,
         items,
-        nextToken: null,
+        nextToken,
         status,
         transactionLoadedPageCount: 1,
       },
@@ -227,7 +228,7 @@ describe('Transaction cache reconciliation', () => {
     ]);
   });
 
-  it('keeps a newly added Transaction within each loaded collection limit', () => {
+  it('preserves the pagination boundary when adding a Transaction to a full page', () => {
     const cache = createAccountsCache();
     const existing = Array.from({ length: 5 }, (_, index) =>
       transaction({
@@ -237,7 +238,7 @@ describe('Transaction cache reconciliation', () => {
       }),
     );
 
-    writeCollection(cache, 'confirmed', 5, existing);
+    writeCollection(cache, 'confirmed', 5, existing, 'page-2');
 
     reconcileTransactionInCache(
       cache,
@@ -254,7 +255,15 @@ describe('Transaction cache reconciliation', () => {
       'existing-1',
       'existing-2',
       'existing-3',
+      'existing-4',
     ]);
+
+    expect(
+      cache.readQuery<{ getTransactions: { nextToken: string } }>({
+        query: transactionsQuery,
+        variables: { count: 5, id: companyId, status: 'confirmed' },
+      })?.getTransactions.nextToken,
+    ).toBe('page-2');
   });
 
   it('preserves the extent of every loaded page during reconciliation', () => {
@@ -302,6 +311,7 @@ describe('Transaction cache reconciliation', () => {
       'existing-0',
       'existing-1',
       'existing-2',
+      'existing-3',
     ]);
   });
 
