@@ -172,6 +172,67 @@ describe('Transaction cache reconciliation', () => {
     expect(ids(cache, 'confirmed', 100)).toEqual(['transaction-1', 'older']);
   });
 
+  it('keeps same-status edits out of loaded pages that do not contain them', () => {
+    const cache = createAccountsCache();
+    const latest = Array.from({ length: 5 }, (_, index) =>
+      transaction({
+        date: `2026-08-${(20 - index).toString().padStart(2, '0')}T00:00:00.000Z`,
+        id: `latest-${index}`,
+        status: 'confirmed',
+      }),
+    );
+    const older = transaction({
+      attachment: 'receipt.pdf',
+      date: '2026-08-14T00:00:00.000Z',
+      id: 'older',
+      status: 'confirmed',
+    });
+
+    writeCollection(cache, 'confirmed', 5, latest);
+    writeCollection(cache, 'confirmed', 100, [...latest, older]);
+
+    reconcileTransactionInCache(cache, {
+      ...older,
+      attachment: '',
+    });
+
+    expect(ids(cache, 'confirmed', 5)).toEqual(latest.map(({ id }) => id));
+    expect(ids(cache, 'confirmed', 100)).toEqual([
+      ...latest.map(({ id }) => id),
+      'older',
+    ]);
+  });
+
+  it('keeps a newly added Transaction within each loaded collection limit', () => {
+    const cache = createAccountsCache();
+    const existing = Array.from({ length: 5 }, (_, index) =>
+      transaction({
+        date: `2026-08-${(19 - index).toString().padStart(2, '0')}T00:00:00.000Z`,
+        id: `existing-${index}`,
+        status: 'confirmed',
+      }),
+    );
+
+    writeCollection(cache, 'confirmed', 5, existing);
+
+    reconcileTransactionInCache(
+      cache,
+      transaction({
+        date: '2026-08-20T00:00:00.000Z',
+        id: 'newest',
+        status: 'confirmed',
+      }),
+    );
+
+    expect(ids(cache, 'confirmed', 5)).toEqual([
+      'newest',
+      'existing-0',
+      'existing-1',
+      'existing-2',
+      'existing-3',
+    ]);
+  });
+
   it('adds purchase suggestions without duplicates', () => {
     const cache = createAccountsCache();
 
@@ -284,7 +345,9 @@ describe('Transaction cache reconciliation', () => {
 
   it('does not modify collections when Apollo cannot create a Transaction reference', () => {
     const cache = {
+      identify: vi.fn(() => 'Transaction:transaction-1'),
       modify: vi.fn(),
+      readFragment: vi.fn(() => null),
       writeFragment: vi.fn(() => undefined),
     };
 
@@ -312,6 +375,7 @@ describe('Transaction cache reconciliation', () => {
           expect(fields.suppliers?.(unresolved)).toBe(unresolved);
         },
       ),
+      readFragment: vi.fn(() => null),
       writeFragment: vi.fn(() => ({ __ref: 'Transaction:transaction-1' })),
     };
 

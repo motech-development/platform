@@ -7,7 +7,7 @@ import {
   useToast,
 } from '@motech-development/breeze-ui';
 import { useNavigate } from '@tanstack/react-router';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DELETE_TRANSACTION, GET_TRANSACTION } from '../../data/operations';
 import { DiscardChangesDialog } from '../companies/DiscardChangesDialog';
@@ -48,6 +48,10 @@ function TransactionEditDrawer({
       : '/my-companies/accounts/$companyId';
   const [deleteTransaction, { loading: deleting }] =
     useMutation(DELETE_TRANSACTION);
+  const finalizeTransactionDeletion = useRef<(() => void) | undefined>(
+    undefined,
+  );
+  const transactionDeletionCompleted = useRef(false);
   const {
     blocker,
     categories,
@@ -81,35 +85,50 @@ function TransactionEditDrawer({
   });
   const pending = submissionPending || deleting;
   const deleteCurrentTransaction = async () => {
-    try {
-      const result = await deleteTransaction({
-        update: (cache, mutation) => {
-          if (mutation.data?.deleteTransaction) {
-            removeTransactionFromCache(
-              cache,
-              mutation.data.deleteTransaction.companyId,
-              mutation.data.deleteTransaction.id,
-            );
-          }
-        },
-        variables: { id: transactionId },
-      });
+    if (!transactionDeletionCompleted.current) {
+      try {
+        const result = await deleteTransaction({
+          update: (cache, mutation) => {
+            const deletedTransaction = mutation.data?.deleteTransaction;
 
-      if (!result.data?.deleteTransaction) {
-        throw new Error('No deleted Transaction returned');
+            if (deletedTransaction) {
+              finalizeTransactionDeletion.current = () => {
+                removeTransactionFromCache(
+                  cache,
+                  deletedTransaction.companyId,
+                  deletedTransaction.id,
+                );
+              };
+            }
+          },
+          variables: { id: transactionId },
+        });
+
+        if (!result.data?.deleteTransaction) {
+          throw new Error('No deleted Transaction returned');
+        }
+
+        transactionDeletionCompleted.current = true;
+      } catch {
+        toast.show({
+          description: t(
+            'Nothing was deleted. Check your connection and try again.',
+          ),
+          title: t('Transaction could not be deleted'),
+          variant: 'danger',
+        });
+        return false;
       }
-    } catch {
-      toast.show({
-        description: t(
-          'Nothing was deleted. Check your connection and try again.',
-        ),
-        title: t('Transaction could not be deleted'),
-        variant: 'danger',
-      });
-      return false;
     }
 
-    await discardStagedAttachment().catch(() => false);
+    const stagedAttachmentDiscarded = await discardStagedAttachment().catch(
+      () => false,
+    );
+
+    if (!stagedAttachmentDiscarded) return false;
+
+    finalizeTransactionDeletion.current?.();
+    finalizeTransactionDeletion.current = undefined;
     toast.show({ title: t('Transaction deleted'), variant: 'success' });
     completeMutation();
     await navigate({ params: { companyId }, to: closeTo }).catch(

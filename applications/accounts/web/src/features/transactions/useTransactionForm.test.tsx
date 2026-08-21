@@ -2,7 +2,7 @@ import { BreezeProvider } from '@motech-development/breeze-ui';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createAccountsCache } from '../../data/cache';
 import { useTransactionForm } from './useTransactionForm';
 
@@ -73,7 +73,7 @@ function Harness() {
   const { form } = useTransactionForm({
     companyId: 'company-id',
     confirmedReturnTo: '/my-companies/accounts/$companyId',
-    initialDateTime: '2026-08-15T23:13:14.567Z',
+    initialDateTime: '2026-08-15T12:13:14.567Z',
   });
 
   return (
@@ -99,6 +99,22 @@ function Harness() {
         {(description) => <output>{description}</output>}
       </form.Subscribe>
     </>
+  );
+}
+
+function DefaultDateHarness({
+  initialDateTime,
+}: Readonly<{ initialDateTime: string }>) {
+  const { form } = useTransactionForm({
+    companyId: 'company-id',
+    confirmedReturnTo: '/my-companies/accounts/$companyId',
+    initialDateTime,
+  });
+
+  return (
+    <form.Subscribe selector={(state) => state.values.date}>
+      {(date) => <output>{date}</output>}
+    </form.Subscribe>
   );
 }
 
@@ -502,6 +518,10 @@ function mutationInput(mock: typeof mocks.add) {
 }
 
 describe('useTransactionForm', () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.shouldBlockFn = undefined;
@@ -576,11 +596,23 @@ describe('useTransactionForm', () => {
       status: 'pending',
       vat: -20,
     });
-    expect(mutationInput(mocks.add).date).toBe('2026-08-15T23:13:14.567Z');
+    expect(mutationInput(mocks.add).date).toBe('2026-08-15T12:13:14.567Z');
     expect(mocks.navigate).toHaveBeenCalledWith({
       params: { companyId: 'company-id' },
       to: '/my-companies/accounts/$companyId/pending-transactions',
     });
+  });
+
+  it('seeds a new Transaction with the browser-local calendar date', () => {
+    vi.stubEnv('TZ', 'Europe/London');
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <DefaultDateHarness initialDateTime="2026-08-20T23:30:00.000Z" />
+      </BreezeProvider>,
+    );
+
+    expect(screen.getByText('2026-08-21')).toBeVisible();
   });
 
   it('preserves entered values and stays put after a mutation failure', async () => {

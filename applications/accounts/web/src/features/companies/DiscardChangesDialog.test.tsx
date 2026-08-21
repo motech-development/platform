@@ -55,7 +55,7 @@ describe('DiscardChangesDialog', () => {
     expect(blocker.reset).not.toHaveBeenCalled();
   });
 
-  it('waits for discard cleanup before proceeding with blocked navigation', async () => {
+  it('runs discard cleanup once before proceeding with blocked navigation', async () => {
     let finishCleanup: (discarded: boolean) => void = () => undefined;
     const onDiscard = vi.fn(
       () =>
@@ -65,6 +65,9 @@ describe('DiscardChangesDialog', () => {
     );
     const { blocker } = renderDialog({ onDiscard });
 
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Discard changes' }),
+    );
     await userEvent.click(
       screen.getByRole('button', { name: 'Discard changes' }),
     );

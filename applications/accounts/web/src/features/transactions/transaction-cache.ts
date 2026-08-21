@@ -39,6 +39,12 @@ const transactionFragment = gql`
   }
 `;
 
+const transactionStatusFragment = gql`
+  fragment TransactionCacheStatus on Transaction {
+    status
+  }
+`;
+
 function sortedUnique(values: readonly string[], incoming: string) {
   return values.some(
     (value) =>
@@ -106,6 +112,7 @@ function updateLoadedCollections(
   cache: ApolloCache,
   companyId: string,
   transactionId: string,
+  previousStatus?: 'confirmed' | 'pending',
   target?: Readonly<{
     reference: Reference;
     status: 'confirmed' | 'pending';
@@ -115,7 +122,7 @@ function updateLoadedCollections(
     fields: {
       getTransactions(
         existing: Reference | StoreObject | undefined,
-        { readField },
+        { readField, storeFieldName },
       ) {
         if (!existing || readField<string>('id', existing) !== companyId) {
           return existing;
@@ -126,12 +133,15 @@ function updateLoadedCollections(
         const retained = items.filter(
           (item) => readField<string>('id', item) !== transactionId,
         );
+        const included = retained.length !== items.length;
 
         if (!target || status !== target.status) {
           return retained.length === items.length
             ? existing
             : { ...existing, items: retained };
         }
+
+        if (previousStatus === target.status && !included) return existing;
 
         const next = [...retained, target.reference].sort((left, right) => {
           const leftDate = readField<string>('date', left) ?? '';
@@ -141,8 +151,22 @@ function updateLoadedCollections(
             ? leftDate.localeCompare(rightDate)
             : rightDate.localeCompare(leftDate);
         });
+        const separator = storeFieldName.indexOf(':');
+        const fieldArguments =
+          separator === -1
+            ? undefined
+            : (JSON.parse(storeFieldName.slice(separator + 1)) as {
+                count?: unknown;
+              });
+        const count =
+          typeof fieldArguments?.count === 'number'
+            ? fieldArguments.count
+            : undefined;
 
-        return { ...existing, items: next };
+        return {
+          ...existing,
+          items: count === undefined ? next : next.slice(0, count),
+        };
       },
     },
     id: 'ROOT_QUERY',
@@ -153,6 +177,16 @@ export function reconcileTransactionInCache(
   cache: ApolloCache,
   transaction: TransactionCacheValue,
 ) {
+  const transactionId = cache.identify({
+    __typename: 'Transaction',
+    id: transaction.id,
+  });
+  const previous = transactionId
+    ? cache.readFragment<{ status: 'confirmed' | 'pending' }>({
+        fragment: transactionStatusFragment,
+        id: transactionId,
+      })
+    : null;
   const reference = cache.writeFragment({
     data: { ...transaction, __typename: 'Transaction' },
     fragment: transactionFragment,
@@ -160,10 +194,16 @@ export function reconcileTransactionInCache(
 
   if (!reference) return;
 
-  updateLoadedCollections(cache, transaction.companyId, transaction.id, {
-    reference,
-    status: transaction.status,
-  });
+  updateLoadedCollections(
+    cache,
+    transaction.companyId,
+    transaction.id,
+    previous?.status,
+    {
+      reference,
+      status: transaction.status,
+    },
+  );
   updateSuggestions(cache, transaction);
 }
 
@@ -172,7 +212,7 @@ export function removeTransactionFromCache(
   companyId: string,
   transactionId: string,
 ) {
-  updateLoadedCollections(cache, companyId, transactionId);
+  updateLoadedCollections(cache, companyId, transactionId, undefined);
   cache.evict({
     id: cache.identify({ __typename: 'Transaction', id: transactionId }),
   });

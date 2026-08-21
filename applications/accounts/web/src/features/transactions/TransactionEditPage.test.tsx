@@ -33,6 +33,9 @@ const mocks = vi.hoisted(() => ({
   navigate: vi.fn().mockResolvedValue(undefined),
   requestUpload: vi.fn(),
   toast: { show: vi.fn() },
+  transactionCache: undefined as unknown as ReturnType<
+    typeof createAccountsCache
+  >,
   transactionQuery: {
     data: undefined as undefined | { getTransaction: typeof transaction },
     error: undefined as Error | undefined,
@@ -128,6 +131,7 @@ vi.mock('./TransactionsPageContent', () => ({
 describe('TransactionEditPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mocks.transactionCache = createAccountsCache();
     mocks.formQuery.data = undefined;
     mocks.formQuery.error = undefined;
     mocks.formQuery.loading = false;
@@ -145,7 +149,7 @@ describe('TransactionEditPage', () => {
         ) => void;
       };
 
-      update?.(createAccountsCache(), result);
+      update?.(mocks.transactionCache, result);
       return Promise.resolve(result);
     });
     mocks.navigate.mockResolvedValue(undefined);
@@ -589,5 +593,68 @@ describe('TransactionEditPage', () => {
     );
     expect(mocks.deleteFile).not.toHaveBeenCalled();
     expect(screen.getByText('upload-id.pdf')).toBeVisible();
+  });
+
+  it('retries staged replacement cleanup without deleting the Transaction twice', async () => {
+    mocks.transactionQuery.data = { getTransaction: transaction };
+    mocks.formQuery.data = formData;
+    mocks.requestUpload.mockResolvedValue({
+      data: { requestUpload: { id: 'upload-id', url: 'https://upload' } },
+    });
+    mocks.uploadPresignedFile.mockResolvedValue(undefined);
+    mocks.deleteFile
+      .mockResolvedValueOnce({ data: null })
+      .mockResolvedValueOnce({
+        data: { deleteFile: { path: 'company-id/upload-id.pdf' } },
+      });
+    const evictTransaction = vi.spyOn(mocks.transactionCache, 'evict');
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <TransactionEditPage
+          companyId="company-id"
+          origin="transactions"
+          transactionId="transaction-id"
+        />
+      </BreezeProvider>,
+    );
+
+    await userEvent.upload(
+      document.querySelector('input[type="file"]') as HTMLInputElement,
+      new File(['invoice'], 'invoice.pdf', { type: 'application/pdf' }),
+    );
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Delete transaction' }),
+    );
+    await userEvent.type(
+      screen.getByLabelText('Type Known client to confirm'),
+      'Known client',
+    );
+    const confirmDeletion = screen.getByRole('button', {
+      name: 'Permanently delete transaction',
+    });
+
+    await userEvent.click(confirmDeletion);
+
+    await waitFor(() => expect(mocks.deleteFile).toHaveBeenCalledOnce());
+    expect(mocks.deleteTransaction).toHaveBeenCalledOnce();
+    expect(evictTransaction).not.toHaveBeenCalled();
+    expect(mocks.navigate).not.toHaveBeenCalled();
+    expect(mocks.toast.show).not.toHaveBeenCalledWith({
+      title: 'Transaction deleted',
+      variant: 'success',
+    });
+    expect(screen.getByRole('alertdialog')).toBeVisible();
+
+    await userEvent.click(confirmDeletion);
+
+    await waitFor(() => expect(mocks.navigate).toHaveBeenCalledOnce());
+    expect(mocks.deleteTransaction).toHaveBeenCalledOnce();
+    expect(mocks.deleteFile).toHaveBeenCalledTimes(2);
+    expect(evictTransaction).toHaveBeenCalledOnce();
+    expect(mocks.toast.show).toHaveBeenCalledWith({
+      title: 'Transaction deleted',
+      variant: 'success',
+    });
   });
 });

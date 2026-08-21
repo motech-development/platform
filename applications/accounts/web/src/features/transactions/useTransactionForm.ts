@@ -25,11 +25,11 @@ export type TransactionReturnRoute =
   | '/my-companies/dashboard/$companyId'
   | '/my-companies/accounts/$companyId/pending-transactions';
 
-function utcCalendarDate(date: Date) {
+function localCalendarDate(date: Date) {
   return [
-    date.getUTCFullYear().toString().padStart(4, '0'),
-    (date.getUTCMonth() + 1).toString().padStart(2, '0'),
-    date.getUTCDate().toString().padStart(2, '0'),
+    date.getFullYear().toString().padStart(4, '0'),
+    (date.getMonth() + 1).toString().padStart(2, '0'),
+    date.getDate().toString().padStart(2, '0'),
   ].join('-');
 }
 
@@ -43,7 +43,7 @@ function defaultValues(
     attachment: '',
     category: '',
     companyId,
-    date: utcCalendarDate(new Date(dateTime)),
+    date: localCalendarDate(new Date(dateTime)),
     description: '',
     id: '',
     name: '',

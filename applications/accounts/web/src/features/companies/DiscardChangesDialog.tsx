@@ -32,6 +32,8 @@ export function DiscardChangesDialog({
   const { t } = useTranslation('companies');
   const discardConfirmed = useRef(false);
   const confirmDiscard = () => {
+    if (discardConfirmed.current) return;
+
     discardConfirmed.current = true;
 
     Promise.resolve()
