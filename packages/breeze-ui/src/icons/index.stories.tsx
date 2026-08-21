@@ -27,6 +27,7 @@ import {
   MenuIcon,
   MoreIcon,
   PaperclipIcon,
+  RotateIcon,
   SearchIcon,
   SettingsIcon,
   SignOutIcon,
@@ -35,6 +36,8 @@ import {
   UsersIcon,
   WalletIcon,
   WarningIcon,
+  ZoomInIcon,
+  ZoomOutIcon,
 } from './index';
 
 const icons = [
@@ -62,6 +65,7 @@ const icons = [
   { Icon: MenuIcon, name: 'MenuIcon' },
   { Icon: MoreIcon, name: 'MoreIcon' },
   { Icon: PaperclipIcon, name: 'PaperclipIcon' },
+  { Icon: RotateIcon, name: 'RotateIcon' },
   { Icon: SearchIcon, name: 'SearchIcon' },
   { Icon: SettingsIcon, name: 'SettingsIcon' },
   { Icon: SignOutIcon, name: 'SignOutIcon' },
@@ -70,6 +74,8 @@ const icons = [
   { Icon: UsersIcon, name: 'UsersIcon' },
   { Icon: WalletIcon, name: 'WalletIcon' },
   { Icon: WarningIcon, name: 'WarningIcon' },
+  { Icon: ZoomInIcon, name: 'ZoomInIcon' },
+  { Icon: ZoomOutIcon, name: 'ZoomOutIcon' },
 ] as const;
 
 const meta = {
