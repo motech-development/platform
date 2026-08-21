@@ -1,4 +1,5 @@
 import type { ApolloClient } from '@apollo/client';
+import { rootRouteId } from '@tanstack/react-router';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AccountsOwnerId } from '../auth/owner';
 import type { AuthenticatedAccountsRouterContext } from '../auth/router';
@@ -169,7 +170,10 @@ describe('company route priming', () => {
     await expect(
       primeCompanyDetails(context(query), companyId),
     ).rejects.toThrow('Not found');
-    expect(notFound).toHaveBeenCalledWith({ throw: true });
+    expect(notFound).toHaveBeenCalledWith({
+      routeId: rootRouteId,
+      throw: true,
+    });
   });
 
   it('accepts a company found on a continuation page', async () => {
@@ -298,7 +302,10 @@ describe('primeTransaction', () => {
       2,
       expect.objectContaining({ fetchPolicy: 'network-only' }),
     );
-    expect(notFound).toHaveBeenCalledWith({ throw: true });
+    expect(notFound).toHaveBeenCalledWith({
+      routeId: rootRouteId,
+      throw: true,
+    });
   });
 });
 
@@ -322,7 +329,10 @@ describe('primeClient', () => {
     await expect(
       primeClient(context(query), companyId, clientId),
     ).rejects.toThrow('Not found');
-    expect(notFound).toHaveBeenCalledWith({ throw: true });
+    expect(notFound).toHaveBeenCalledWith({
+      routeId: rootRouteId,
+      throw: true,
+    });
     expect(query).toHaveBeenNthCalledWith(2, {
       query: GET_CLIENT,
       variables: { id: clientId },
@@ -368,6 +378,9 @@ describe('primeClient', () => {
     await expect(
       primeClient(context(query), companyId, clientId),
     ).rejects.toThrow('Not found');
-    expect(notFound).toHaveBeenCalledWith({ throw: true });
+    expect(notFound).toHaveBeenCalledWith({
+      routeId: rootRouteId,
+      throw: true,
+    });
   });
 });

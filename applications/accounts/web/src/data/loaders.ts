@@ -1,4 +1,4 @@
-import { notFound } from '@tanstack/react-router';
+import { notFound, rootRouteId } from '@tanstack/react-router';
 import { z } from 'zod';
 import type { AuthenticatedAccountsRouterContext } from '../auth/router';
 import {
@@ -16,9 +16,13 @@ import {
 type RouterContext = AuthenticatedAccountsRouterContext;
 const resourceIdSchema = z.uuid();
 
+function throwRootNotFound() {
+  notFound({ routeId: rootRouteId, throw: true });
+}
+
 function requireResourceId(id: string) {
   if (!resourceIdSchema.safeParse(id).success) {
-    notFound({ throw: true });
+    throwRootNotFound();
   }
 }
 
@@ -75,7 +79,7 @@ async function verifyOwnedCompany(context: RouterContext, companyId: string) {
   requireResourceId(companyId);
 
   if (!(await isOwnedCompany(context, companyId))) {
-    notFound({ throw: true });
+    throwRootNotFound();
   }
 }
 
@@ -138,7 +142,7 @@ export async function primeClient(
   }
 
   if (result.data?.getClient.companyId !== companyId) {
-    notFound({ throw: true });
+    throwRootNotFound();
   }
 }
 
@@ -254,6 +258,6 @@ export async function primeTransaction(
     (expectedStatus !== undefined &&
       result.data.getTransaction.status !== expectedStatus)
   ) {
-    notFound({ throw: true });
+    throwRootNotFound();
   }
 }
