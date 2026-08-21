@@ -5,10 +5,13 @@ import {
   BuildingIcon,
   ChartIcon,
   FileTextIcon,
+  RotateIcon,
   SignOutIcon,
   UsersIcon,
   WalletIcon,
   WarningIcon,
+  ZoomInIcon,
+  ZoomOutIcon,
 } from './index';
 
 describe('curated icons', () => {
@@ -19,10 +22,13 @@ describe('curated icons', () => {
         <BuildingIcon />
         <ChartIcon />
         <FileTextIcon />
+        <RotateIcon />
         <SignOutIcon />
         <UsersIcon />
         <WalletIcon />
         <WarningIcon aria-label="Warning" />
+        <ZoomInIcon />
+        <ZoomOutIcon />
       </>,
     );
 
@@ -43,8 +49,11 @@ describe('curated icons', () => {
       container.querySelector('.lucide-chart-no-axes-combined'),
     ).toBeVisible();
     expect(container.querySelector('.lucide-file-text')).toBeVisible();
+    expect(container.querySelector('.lucide-rotate-cw')).toBeVisible();
     expect(container.querySelector('.lucide-users')).toBeVisible();
     expect(container.querySelector('.lucide-wallet')).toBeVisible();
+    expect(container.querySelector('.lucide-zoom-in')).toBeVisible();
+    expect(container.querySelector('.lucide-zoom-out')).toBeVisible();
   });
 
   it('treats empty and whitespace-only accessible labels as absent', () => {

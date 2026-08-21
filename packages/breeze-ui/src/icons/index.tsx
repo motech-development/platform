@@ -23,6 +23,7 @@ import {
   Paperclip,
   Pencil,
   Plus,
+  RotateCw,
   Search,
   Settings,
   Trash2,
@@ -32,6 +33,8 @@ import {
   Users,
   Wallet,
   X,
+  ZoomIn,
+  ZoomOut,
 } from 'lucide-react';
 import type { ComponentType, SVGAttributes } from 'react';
 import { createElement } from 'react';
@@ -133,6 +136,8 @@ export const MenuIcon = createIcon(Menu, 'MenuIcon');
 export const MoreIcon = createIcon(Ellipsis, 'MoreIcon');
 /** Paperclip icon for file attachments. */
 export const PaperclipIcon = createIcon(Paperclip, 'PaperclipIcon');
+/** Clockwise rotation icon for turning content. */
+export const RotateIcon = createIcon(RotateCw, 'RotateIcon');
 /** Search icon for query interfaces. */
 export const SearchIcon = createIcon(Search, 'SearchIcon');
 /** Sign-out icon for ending an authenticated session. */
@@ -149,3 +154,7 @@ export const UsersIcon = createIcon(Users, 'UsersIcon');
 export const WalletIcon = createIcon(Wallet, 'WalletIcon');
 /** Warning icon for cautionary notices. */
 export const WarningIcon = createIcon(TriangleAlert, 'WarningIcon');
+/** Magnifying-glass icon for increasing content scale. */
+export const ZoomInIcon = createIcon(ZoomIn, 'ZoomInIcon');
+/** Magnifying-glass icon for decreasing content scale. */
+export const ZoomOutIcon = createIcon(ZoomOut, 'ZoomOutIcon');
