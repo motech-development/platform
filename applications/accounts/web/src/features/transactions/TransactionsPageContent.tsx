@@ -10,38 +10,14 @@ import {
 import { TransactionsContentSkeleton } from '../loading/AccountsPageSkeletons';
 import { QueryRefreshAlert } from '../QueryRefreshAlert';
 import { FinancialSummary } from './FinancialSummary';
-import { type LedgerTransaction, TransactionLedger } from './TransactionLedger';
+import { combineTransactions } from './transaction-list';
+import { TransactionLedger } from './TransactionLedger';
 import {
   RecordTransactionLink,
   TransactionPageError,
   TransactionPageHeaderAction,
 } from './TransactionPagePresentation';
 import { useTransactionPageReconciliation } from './useTransactionPageReconciliation';
-
-function combineTransactions(
-  confirmedTransactions: readonly LedgerTransaction[] = [],
-  pendingTransactions: readonly LedgerTransaction[] = [],
-) {
-  // Pending is the explicit status-bearing snapshot and wins while the two
-  // eventually consistent status indexes overlap.
-  const transactionsById = new Map<string, LedgerTransaction>([
-    ...confirmedTransactions.map((transaction): [string, LedgerTransaction] => [
-      transaction.id,
-      {
-        ...transaction,
-        status: 'confirmed',
-      },
-    ]),
-    ...pendingTransactions.map((transaction): [string, LedgerTransaction] => [
-      transaction.id,
-      transaction,
-    ]),
-  ]);
-
-  return [...transactionsById.values()].sort((left, right) =>
-    right.date.localeCompare(left.date),
-  );
-}
 
 function TransactionsPagination({
   confirmedFetchMore,

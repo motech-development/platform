@@ -22,6 +22,7 @@ import { GET_COMPANY_DASHBOARD } from '../../data/operations';
 import { OverviewContentSkeleton } from '../loading/AccountsPageSkeletons';
 import { CompanyTransactionSubscription } from './CompanyTransactionSubscription';
 import { FinancialSummary } from './FinancialSummary';
+import { combineTransactions } from './transaction-list';
 import { TransactionLedger } from './TransactionLedger';
 import {
   RecordTransactionLink,
@@ -30,20 +31,10 @@ import {
 } from './TransactionPagePresentation';
 
 function OverviewAttentionPanel({
-  missingAttachmentCount,
-}: Readonly<{ missingAttachmentCount: number }>) {
+  companyId,
+  hasPendingTransactions,
+}: Readonly<{ companyId: string; hasPendingTransactions: boolean }>) {
   const { t } = useTranslation('overview');
-  const needsAttention = missingAttachmentCount > 0;
-  let attentionDescription = t('Recent transactions have source documents');
-
-  if (needsAttention) {
-    attentionDescription = t(
-      missingAttachmentCount === 1
-        ? '{{count}} recent transaction has no invoice or receipt'
-        : '{{count}} recent transactions have no invoice or receipt',
-      { count: missingAttachmentCount },
-    );
-  }
 
   return (
     <aside
@@ -51,28 +42,37 @@ function OverviewAttentionPanel({
       className="self-start bg-[var(--breeze-shell)] text-[var(--breeze-ink-inverse)]"
     >
       <div className="flex items-start gap-4 px-5 pb-4 pt-5">
-        <IconTile size="md" variant={needsAttention ? 'warning' : 'success'}>
-          {needsAttention ? <WarningIcon /> : <CheckIcon />}
+        <IconTile
+          size="md"
+          variant={hasPendingTransactions ? 'warning' : 'success'}
+        >
+          {hasPendingTransactions ? <WarningIcon /> : <CheckIcon />}
         </IconTile>
         <div className="grid gap-1">
           <Typography as="h2" colour="inverse" level="h3">
             {t('Needs attention')}
           </Typography>
-          <Typography colour="inverse-muted">{attentionDescription}</Typography>
+          <Typography colour="inverse-muted">
+            {hasPendingTransactions
+              ? t('Pending transactions are waiting for review')
+              : t('No pending transactions are waiting for review')}
+          </Typography>
         </div>
       </div>
-      <div className="grid gap-1 border-t border-[var(--breeze-shell-soft)] px-5 py-4">
+      <Link
+        className="grid gap-1 border-t border-[var(--breeze-shell-soft)] px-5 py-4 text-[var(--breeze-ink-inverse)] no-underline hover:bg-[var(--breeze-shell-soft)]"
+        params={{ companyId }}
+        to="/my-companies/accounts/$companyId/pending-transactions"
+      >
         <Typography as="strong" colour="inverse" weight="semibold">
-          {needsAttention
-            ? t('Review source documents')
-            : t('Recent records are complete')}
+          {t('View pending transactions')}
         </Typography>
         <Typography as="span" colour="inverse-muted">
-          {needsAttention
-            ? t('Missing evidence is marked in the transaction list')
-            : t('No missing evidence in this overview')}
+          {hasPendingTransactions
+            ? t('Review them before they affect your balance')
+            : t('All recorded transactions have been reviewed')}
         </Typography>
-      </div>
+      </Link>
     </aside>
   );
 }
@@ -86,10 +86,19 @@ export function DashboardPageContent({
   const { data, error, loading, refetch } = useQuery(GET_COMPANY_DASHBOARD, {
     fetchPolicy: 'cache-and-network',
     nextFetchPolicy: 'cache-first',
-    variables: { count: 5, id: companyId, status: 'confirmed' },
+    variables: {
+      count: 5,
+      id: companyId,
+      pendingStatus: 'pending',
+      status: 'confirmed',
+    },
   });
   const initiallyLoading = loading && !data;
-  const hasTransactions = Boolean(data?.getTransactions.items.length);
+  const transactions = combineTransactions(
+    data?.getTransactions.items,
+    data?.pendingTransactions.items,
+  ).slice(0, 5);
+  const hasTransactions = transactions.length > 0;
   const firstName =
     user?.given_name || user?.name?.trim().split(/\s+/)[0] || t('there');
   const recordTransactionHref = `/my-companies/dashboard/${encodeURIComponent(companyId)}/record-transaction`;
@@ -131,9 +140,7 @@ export function DashboardPageContent({
           />
         ) : null}
         {initiallyLoading ? <OverviewContentSkeleton /> : null}
-        {!initiallyLoading &&
-        !error &&
-        data?.getTransactions.items.length === 0 ? (
+        {!initiallyLoading && !error && !hasTransactions ? (
           <StatePanel
             action={<RecordTransactionLink href={recordTransactionHref} />}
             description={t(
@@ -143,7 +150,7 @@ export function DashboardPageContent({
             title={t('No financial activity yet')}
           />
         ) : null}
-        {data?.getTransactions.items.length ? (
+        {data && hasTransactions ? (
           <div className="grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[minmax(0,3fr)_minmax(18rem,1fr)]">
             <div className="flex min-w-0 flex-col">
               <FinancialSummary
@@ -164,23 +171,20 @@ export function DashboardPageContent({
                       <ArrowRightIcon />
                     </Link>
                   }
-                  description={t('Latest confirmed activity')}
+                  description={t('Latest confirmed and pending activity')}
                   title={t('Recent transactions')}
                 />
                 <TransactionLedger
                   compact
                   companyId={companyId}
                   currencyCode={data.getBalance.currency}
-                  transactions={data.getTransactions.items.slice(0, 5)}
+                  transactions={transactions}
                 />
               </Surface>
             </div>
             <OverviewAttentionPanel
-              missingAttachmentCount={
-                data.getTransactions.items.filter(
-                  (transaction) => !transaction.attachment,
-                ).length
-              }
+              companyId={companyId}
+              hasPendingTransactions={data.pendingTransactions.items.length > 0}
             />
           </div>
         ) : null}

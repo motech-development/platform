@@ -1,5 +1,5 @@
 import { BreezeProvider } from '@motech-development/breeze-ui';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
@@ -76,8 +76,18 @@ describe('PdfPreview', () => {
     expect(screen.getByText('110%')).toBeVisible();
     expect(firstPage).toHaveAttribute('data-scale', '1.1');
 
+    const zoomIn = screen.getByRole('button', { name: 'Zoom in' });
+
+    for (let zoom = 120; zoom <= 200; zoom += 10) {
+      fireEvent.click(zoomIn);
+    }
+
+    expect(screen.getByText('200%')).toBeVisible();
+    expect(firstPage).toHaveAttribute('data-scale', '2');
+    expect(zoomIn).toBeDisabled();
+
     await user.click(screen.getByRole('button', { name: 'Zoom out' }));
-    expect(screen.getByText('100%')).toBeVisible();
+    expect(screen.getByText('190%')).toBeVisible();
 
     await user.click(screen.getByRole('button', { name: 'Rotate clockwise' }));
     expect(firstPage).toHaveAttribute('data-rotate', '90');

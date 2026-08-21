@@ -36,6 +36,7 @@ vi.mock('@motech-development/breeze-ui/icons', async (importOriginal) => ({
   >()),
   AddIcon: () => <svg aria-hidden="true" />,
   ArrowRightIcon: () => <svg aria-hidden="true" />,
+  CalendarIcon: () => <svg aria-hidden="true" />,
   CheckIcon: () => <svg aria-hidden="true" />,
   InfoIcon: () => <svg aria-hidden="true" />,
   WarningIcon: () => <svg aria-hidden="true" />,
@@ -43,8 +44,8 @@ vi.mock('@motech-development/breeze-ui/icons', async (importOriginal) => ({
 
 vi.mock('@tanstack/react-router', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@tanstack/react-router')>()),
-  Link: ({ children }: Readonly<{ children: ReactNode }>) => (
-    <a href="/transactions">{children}</a>
+  Link: ({ children, to }: Readonly<{ children: ReactNode; to: string }>) => (
+    <a href={to}>{children}</a>
   ),
 }));
 
@@ -70,6 +71,7 @@ const transaction = {
 
 function dashboardData(
   items: DashboardQuery['getTransactions']['items'],
+  pendingItems: DashboardQuery['pendingTransactions']['items'] = [],
 ): DashboardQuery {
   return {
     getBalance: {
@@ -88,6 +90,12 @@ function dashboardData(
       items,
       nextToken: null,
       status: 'confirmed',
+    },
+    pendingTransactions: {
+      id: 'company-id',
+      items: pendingItems,
+      nextToken: null,
+      status: 'pending',
     },
   };
 }
@@ -128,7 +136,42 @@ describe('DashboardPageContent', () => {
     expect(screen.queryByText('VAT summary')).not.toBeInTheDocument();
   });
 
-  it('identifies a recent transaction that needs a source document', () => {
+  it('links the attention panel to Pending transactions that need review', () => {
+    queryState.current.data = dashboardData(
+      [transaction],
+      [
+        {
+          ...transaction,
+          attachment: null,
+          id: 'pending-transaction-id',
+          scheduled: true,
+          status: 'pending',
+        },
+      ],
+    );
+    queryState.current.loading = false;
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <DashboardPageContent companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    expect(
+      screen.getByText('Pending transactions are waiting for review'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: /View pending transactions/u }),
+    ).toHaveAttribute(
+      'href',
+      '/my-companies/accounts/$companyId/pending-transactions',
+    );
+    expect(
+      screen.queryByText(/recent transaction has no invoice or receipt/u),
+    ).not.toBeInTheDocument();
+  });
+
+  it('shows a completed review state when there are no Pending transactions', () => {
     queryState.current.data = dashboardData([
       { ...transaction, attachment: null },
     ]);
@@ -141,13 +184,28 @@ describe('DashboardPageContent', () => {
     );
 
     expect(
-      screen.getByText('1 recent transaction has no invoice or receipt'),
+      screen.getByText('No pending transactions are waiting for review'),
     ).toBeInTheDocument();
-    expect(screen.getByText('Review source documents')).toBeInTheDocument();
+    expect(
+      screen.getByText('All recorded transactions have been reviewed'),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText(/recent transaction has no invoice or receipt/u),
+    ).not.toBeInTheDocument();
   });
 
-  it('confirms when recent transactions have their source documents', () => {
-    queryState.current.data = dashboardData([transaction]);
+  it('includes Pending transactions in recent activity', () => {
+    queryState.current.data = dashboardData(
+      [],
+      [
+        {
+          ...transaction,
+          id: 'pending-transaction-id',
+          scheduled: true,
+          status: 'pending',
+        },
+      ],
+    );
     queryState.current.loading = false;
 
     render(
@@ -157,9 +215,14 @@ describe('DashboardPageContent', () => {
     );
 
     expect(
-      screen.getByText('Recent transactions have source documents'),
+      screen.queryByRole('heading', { name: 'No financial activity yet' }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('row', { name: /Pending transaction: Example client/u }),
     ).toBeInTheDocument();
-    expect(screen.getByText('Recent records are complete')).toBeInTheDocument();
+    expect(
+      screen.getByText('Latest confirmed and pending activity'),
+    ).toBeInTheDocument();
   });
 
   it('offers to retry when the overview cannot be loaded', async () => {

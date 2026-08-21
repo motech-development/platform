@@ -131,7 +131,12 @@ describe('company route priming', () => {
     [
       primeDashboard,
       GET_COMPANY_DASHBOARD,
-      { count: 5, id: companyId, status: 'confirmed' },
+      {
+        count: 5,
+        id: companyId,
+        pendingStatus: 'pending',
+        status: 'confirmed',
+      },
     ],
     [
       primeTransactions,

@@ -181,29 +181,38 @@ export function useTransactionForm({
     toast.show({ title, variant: 'success' });
     successfulSubmissionTitle.current = undefined;
   };
+  const resetAttachmentTransferPending = () => {
+    if (!attachmentTransfer.current) setAttachmentTransferPending(false);
+  };
   const discardStagedAttachment = async () => {
     const transfer = attachmentTransfer.current;
 
     attachmentTransfer.current = undefined;
-    const transferResult = await transfer;
-    const path =
-      transferResult?.status === 'uploaded'
-        ? transferResult.path
-        : stagedAttachmentPath.current;
 
-    if (!path) return true;
+    try {
+      const transferResult = await transfer;
+      const path =
+        transferResult?.status === 'uploaded'
+          ? transferResult.path
+          : stagedAttachmentPath.current;
 
-    setAttachmentTransferPending(true);
-    const deleted = await deleteAttachment(
-      path,
-      t('The staged attachment could not be deleted. Try again.', {
-        ns: 'attachments',
-      }),
-    );
+      if (!path) return true;
 
-    if (deleted) stagedAttachmentPath.current = undefined;
-    setAttachmentTransferPending(false);
-    return deleted;
+      stagedAttachmentPath.current = path;
+
+      setAttachmentTransferPending(true);
+      const deleted = await deleteAttachment(
+        path,
+        t('The staged attachment could not be deleted. Try again.', {
+          ns: 'attachments',
+        }),
+      );
+
+      if (deleted) stagedAttachmentPath.current = undefined;
+      return deleted;
+    } finally {
+      resetAttachmentTransferPending();
+    }
   };
   const attachmentTransferCanSubmit = (
     transfer: AttachmentTransferResult | undefined,
@@ -395,25 +404,29 @@ export function useTransactionForm({
       const transfer = attachmentTransfer.current;
 
       attachmentTransfer.current = undefined;
-      const transferResult = await transfer;
-      const stagedPath =
-        transferResult?.status === 'uploaded'
-          ? transferResult.path
-          : stagedAttachmentPath.current;
 
-      if (stagedPath !== path) return true;
+      try {
+        const transferResult = await transfer;
+        const stagedPath =
+          transferResult?.status === 'uploaded'
+            ? transferResult.path
+            : stagedAttachmentPath.current;
 
-      setAttachmentTransferPending(true);
-      const deleted = await deleteAttachment(
-        path,
-        t('Nothing was deleted. Try again.', {
-          ns: 'attachments',
-        }),
-      );
+        if (stagedPath !== path) return true;
 
-      if (deleted) stagedAttachmentPath.current = undefined;
-      setAttachmentTransferPending(false);
-      return deleted;
+        setAttachmentTransferPending(true);
+        const deleted = await deleteAttachment(
+          path,
+          t('Nothing was deleted. Try again.', {
+            ns: 'attachments',
+          }),
+        );
+
+        if (deleted) stagedAttachmentPath.current = undefined;
+        return deleted;
+      } finally {
+        resetAttachmentTransferPending();
+      }
     },
     retryPreviousAttachmentCleanup: cleanUpPreviousAttachment,
     submissionPending,

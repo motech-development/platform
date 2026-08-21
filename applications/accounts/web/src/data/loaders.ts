@@ -169,7 +169,12 @@ export async function primeDashboard(
   await verifyOwnedCompany(context, companyId);
   await context.apolloClient.query({
     query: GET_COMPANY_DASHBOARD,
-    variables: { count: 5, id: companyId, status: 'confirmed' },
+    variables: {
+      count: 5,
+      id: companyId,
+      pendingStatus: 'pending',
+      status: 'confirmed',
+    },
   });
 }
 

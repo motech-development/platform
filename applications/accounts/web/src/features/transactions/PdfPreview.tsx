@@ -14,6 +14,7 @@ import 'react-pdf/dist/Page/TextLayer.css';
 pdfjs.GlobalWorkerOptions.workerSrc = pdfWorker;
 
 const maximumPageWidth = 720;
+const maximumZoom = 200;
 const minimumZoom = 10;
 const zoomStep = 10;
 
@@ -51,7 +52,10 @@ export function PdfPreview({ file }: Readonly<{ file: Blob }>) {
       <Toolbar aria-label={t('PDF controls')} className="justify-center">
         <IconButton
           aria-label={t('Zoom in')}
-          onAction={() => setZoom((current) => current + zoomStep)}
+          disabled={zoom === maximumZoom}
+          onAction={() =>
+            setZoom((current) => Math.min(maximumZoom, current + zoomStep))
+          }
         >
           <ZoomInIcon />
         </IconButton>

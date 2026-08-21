@@ -1,5 +1,5 @@
 import { BreezeProvider } from '@motech-development/breeze-ui';
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -322,12 +322,59 @@ function StagedAttachmentHarness() {
   );
 }
 
-function DiscardStagedAttachmentHarness() {
-  const { discardChanges, markDirty, trackAttachmentTransfer } =
+function PendingNonMatchingAttachmentHarness({
+  transfer,
+}: Readonly<{
+  transfer: Promise<{ path: string; status: 'uploaded' }>;
+}>) {
+  const [removed, setRemoved] = useState(false);
+  const { removeAttachment, submissionPending, trackAttachmentTransfer } =
     useTransactionForm({
       companyId: 'company-id',
       confirmedReturnTo: '/my-companies/accounts/$companyId',
     });
+
+  return (
+    <>
+      <button onClick={() => trackAttachmentTransfer(transfer)} type="button">
+        Start non-matching attachment transfer
+      </button>
+      <button
+        onClick={() => {
+          removeAttachment('company-id/different-file.pdf')
+            .then(setRemoved)
+            .catch(() => undefined);
+        }}
+        type="button"
+      >
+        Remove different attachment
+      </button>
+      {removed ? <p>Different attachment retained</p> : null}
+      <output>
+        {submissionPending
+          ? 'Attachment transfer pending'
+          : 'Attachment transfer settled'}
+      </output>
+    </>
+  );
+}
+
+function DiscardStagedAttachmentHarness({
+  transfer,
+}: Readonly<{
+  transfer?: Promise<
+    { path: string; status: 'uploaded' } | { status: 'cancelled' }
+  >;
+}>) {
+  const {
+    discardChanges,
+    markDirty,
+    submissionPending,
+    trackAttachmentTransfer,
+  } = useTransactionForm({
+    companyId: 'company-id',
+    confirmedReturnTo: '/my-companies/accounts/$companyId',
+  });
   const path = 'company-id/staged-invoice.pdf';
 
   return (
@@ -336,7 +383,7 @@ function DiscardStagedAttachmentHarness() {
         onClick={() => {
           markDirty();
           trackAttachmentTransfer(
-            Promise.resolve({ path, status: 'uploaded' }),
+            transfer ?? Promise.resolve({ path, status: 'uploaded' }),
           );
         }}
         type="button"
@@ -351,6 +398,11 @@ function DiscardStagedAttachmentHarness() {
       >
         Discard changes
       </button>
+      <output>
+        {submissionPending
+          ? 'Attachment cleanup pending'
+          : 'Attachment cleanup settled'}
+      </output>
     </>
   );
 }
@@ -978,6 +1030,125 @@ describe('useTransactionForm', () => {
       ),
     );
     expect(mocks.navigate).not.toHaveBeenCalled();
+  });
+
+  it('retries cleanup when a pending upload finishes during discard', async () => {
+    let finishUpload: (result: {
+      path: string;
+      status: 'uploaded';
+    }) => void = () => undefined;
+    const transfer = new Promise<{ path: string; status: 'uploaded' }>(
+      (resolve) => {
+        finishUpload = resolve;
+      },
+    );
+
+    mocks.deleteFile
+      .mockResolvedValueOnce({ data: null })
+      .mockResolvedValueOnce({
+        data: {
+          deleteFile: { path: 'company-id/staged-invoice.pdf' },
+        },
+      });
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <DiscardStagedAttachmentHarness transfer={transfer} />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Stage attachment' }),
+    );
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Discard changes' }),
+    );
+    act(() => {
+      finishUpload({
+        path: 'company-id/staged-invoice.pdf',
+        status: 'uploaded',
+      });
+    });
+
+    await waitFor(() => expect(mocks.deleteFile).toHaveBeenCalledOnce());
+    expect(mocks.navigate).not.toHaveBeenCalled();
+    expect(await screen.findByText('Attachment cleanup settled')).toBeVisible();
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Discard changes' }),
+    );
+
+    await waitFor(() => expect(mocks.deleteFile).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(mocks.navigate).toHaveBeenCalledOnce());
+  });
+
+  it('settles a cancelled upload when discard has cleared its transfer', async () => {
+    let cancelUpload: (result: { status: 'cancelled' }) => void = () =>
+      undefined;
+    const transfer = new Promise<{ status: 'cancelled' }>((resolve) => {
+      cancelUpload = resolve;
+    });
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <DiscardStagedAttachmentHarness transfer={transfer} />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Stage attachment' }),
+    );
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Discard changes' }),
+    );
+    act(() => cancelUpload({ status: 'cancelled' }));
+
+    expect(await screen.findByText('Attachment cleanup settled')).toBeVisible();
+    expect(mocks.deleteFile).not.toHaveBeenCalled();
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Discard changes' }),
+    );
+    await waitFor(() => expect(mocks.navigate).toHaveBeenCalledOnce());
+  });
+
+  it('settles an upload when removing a different staged path', async () => {
+    let finishUpload: (result: {
+      path: string;
+      status: 'uploaded';
+    }) => void = () => undefined;
+    const transfer = new Promise<{ path: string; status: 'uploaded' }>(
+      (resolve) => {
+        finishUpload = resolve;
+      },
+    );
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <PendingNonMatchingAttachmentHarness transfer={transfer} />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Start non-matching attachment transfer',
+      }),
+    );
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Remove different attachment' }),
+    );
+    act(() => {
+      finishUpload({
+        path: 'company-id/staged-invoice.pdf',
+        status: 'uploaded',
+      });
+    });
+
+    expect(
+      await screen.findByText('Different attachment retained'),
+    ).toBeVisible();
+    expect(screen.getByText('Attachment transfer settled')).toBeVisible();
+    expect(mocks.deleteFile).not.toHaveBeenCalled();
   });
 
   it('keeps the form open when close-time staged attachment cleanup fails', async () => {

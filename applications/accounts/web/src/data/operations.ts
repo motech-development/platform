@@ -255,7 +255,12 @@ export const UPDATE_SETTINGS = graphql(`
 `);
 
 export const GET_COMPANY_DASHBOARD = graphql(`
-  query Dashboard($id: ID!, $status: TransactionStatus!, $count: Int) {
+  query Dashboard(
+    $id: ID!
+    $status: TransactionStatus!
+    $pendingStatus: TransactionStatus!
+    $count: Int
+  ) {
     getCompany(id: $id) {
       id
       name
@@ -281,6 +286,26 @@ export const GET_COMPANY_DASHBOARD = graphql(`
         date
         description
         name
+      }
+      nextToken
+    }
+    pendingTransactions: getTransactions(
+      id: $id
+      status: $pendingStatus
+      count: $count
+    ) {
+      id
+      status
+      items {
+        id
+        amount
+        attachment
+        category
+        date
+        description
+        name
+        scheduled
+        status
       }
       nextToken
     }
