@@ -132,6 +132,11 @@ export interface TransactionInput {
   vat: number;
 }
 
+type EditableTransaction = Omit<TransactionInput, 'refund' | 'scheduled'> & {
+  readonly refund?: boolean | null;
+  readonly scheduled?: boolean | null;
+};
+
 export function calculateSaleVat(amount: string, vatRate: number): number {
   return new Decimal(amount)
     .times(vatRate)
@@ -161,8 +166,11 @@ export function buildTransactionInput(
     signedAmount = signedAmount.negated();
   }
 
+  const scheduled = value.status === 'pending' && value.scheduled;
   const referenceDate = new Date(referenceDateTime);
-  const transactionDate = `${value.date}T${referenceDate.toISOString().slice(11)}`;
+  const transactionDate = scheduled
+    ? `${value.date}T00:00:00.000Z`
+    : `${value.date}T${referenceDate.toISOString().slice(11)}`;
 
   return {
     amount: signedAmount.toNumber(),
@@ -174,14 +182,14 @@ export function buildTransactionInput(
     id: value.id,
     name: value.name,
     refund: value.refund,
-    scheduled: value.status === 'pending' && value.scheduled,
+    scheduled,
     status: value.status,
     vat: (value.refund ? vat.negated() : vat).toNumber(),
   };
 }
 
 export function editableTransaction(
-  transaction: TransactionInput,
+  transaction: EditableTransaction,
 ): TransactionFormValues {
   return {
     amount: new Decimal(transaction.amount).abs().toString(),
@@ -194,8 +202,9 @@ export function editableTransaction(
     description: transaction.description,
     id: transaction.id,
     name: transaction.name,
-    refund: transaction.refund,
-    scheduled: transaction.status === 'pending' && transaction.scheduled,
+    refund: transaction.refund ?? false,
+    scheduled:
+      transaction.status === 'pending' && (transaction.scheduled ?? false),
     status: transaction.status,
     transactionType: isSaleTransactionCategory(transaction.category)
       ? 'sale'

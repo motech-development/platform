@@ -122,7 +122,7 @@ describe('Transaction accounting input', () => {
     },
   );
 
-  it('preserves the captured form time for a new scheduled Pending Transaction', () => {
+  it('stores a new scheduled Pending Transaction at UTC midnight', () => {
     expect(
       buildTransactionInput(
         {
@@ -133,13 +133,13 @@ describe('Transaction accounting input', () => {
         '2026-08-15T12:59:59.999Z',
       ),
     ).toMatchObject({
-      date: '2026-08-15T12:59:59.999Z',
+      date: '2026-08-15T00:00:00.000Z',
       scheduled: true,
       status: 'pending',
     });
   });
 
-  it('combines a scheduled Transaction calendar date with the captured form time', () => {
+  it('keeps a moved scheduled Transaction at UTC midnight', () => {
     expect(
       buildTransactionInput(
         {
@@ -150,7 +150,7 @@ describe('Transaction accounting input', () => {
         },
         '2026-08-15T23:59:59.999Z',
       ),
-    ).toMatchObject({ date: '2026-08-16T23:59:59.999Z' });
+    ).toMatchObject({ date: '2026-08-16T00:00:00.000Z' });
   });
 
   it('uses exact decimal VAT calculations for sale and inclusive purchase rates', () => {
@@ -199,6 +199,22 @@ describe('Transaction accounting input', () => {
       }).scheduled,
     ).toBe(false);
   });
+
+  it.each([null, undefined])(
+    'normalizes legacy %s boolean flags before editing',
+    (legacyFlag) => {
+      expect(
+        editableTransaction({
+          ...buildTransactionInput({
+            ...baseValues,
+            status: 'pending',
+          }),
+          refund: legacyFlag,
+          scheduled: legacyFlag,
+        }),
+      ).toMatchObject({ refund: false, scheduled: false });
+    },
+  );
 
   it('requires a status and purchase category while allowing a sale category to be derived', () => {
     expect(
