@@ -218,6 +218,45 @@ export function useTransactionForm({
     });
     return false;
   };
+  const saveTransaction = async (
+    input: ReturnType<typeof buildTransactionInput>,
+  ): Promise<TransactionCacheValue> => {
+    if (input.id) {
+      const result = await updateTransaction({
+        update: (cache, mutation) => {
+          if (mutation.data?.updateTransaction) {
+            reconcileTransactionInCache(
+              cache,
+              mutation.data.updateTransaction,
+              persistedTransactionStatus.current,
+            );
+          }
+        },
+        variables: { input },
+      });
+
+      if (!result.data?.updateTransaction) {
+        throw new Error(t('No transaction was returned'));
+      }
+
+      return result.data.updateTransaction;
+    }
+
+    const result = await addTransaction({
+      update: (cache, mutation) => {
+        if (mutation.data?.addTransaction) {
+          reconcileTransactionInCache(cache, mutation.data.addTransaction);
+        }
+      },
+      variables: { input },
+    });
+
+    if (!result.data?.addTransaction) {
+      throw new Error(t('No transaction was returned'));
+    }
+
+    return result.data.addTransaction;
+  };
   const form = useForm({
     defaultValues: persistedFormValues,
     onSubmit: async ({ value }) => {
@@ -246,42 +285,7 @@ export function useTransactionForm({
       const previousAttachment = persistedAttachmentPath.current;
 
       try {
-        if (editing) {
-          const result = await updateTransaction({
-            update: (cache, mutation) => {
-              if (mutation.data?.updateTransaction) {
-                reconcileTransactionInCache(
-                  cache,
-                  mutation.data.updateTransaction,
-                  persistedTransactionStatus.current,
-                );
-              }
-            },
-            variables: { input },
-          });
-
-          if (!result.data?.updateTransaction) {
-            throw new Error(t('No transaction was returned'));
-          }
-          savedTransaction = result.data.updateTransaction;
-        } else {
-          const result = await addTransaction({
-            update: (cache, mutation) => {
-              if (mutation.data?.addTransaction) {
-                reconcileTransactionInCache(
-                  cache,
-                  mutation.data.addTransaction,
-                );
-              }
-            },
-            variables: { input },
-          });
-
-          if (!result.data?.addTransaction) {
-            throw new Error(t('No transaction was returned'));
-          }
-          savedTransaction = result.data.addTransaction;
-        }
+        savedTransaction = await saveTransaction(input);
       } catch {
         toast.show({
           description: t(
