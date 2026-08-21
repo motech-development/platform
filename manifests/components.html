@@ -594,7 +594,7 @@
 <main>
   <div class="wrap">
     <div class="note ok" style="margin-bottom: 16px;">
-              Using <code>react-docgen-typescript</code>. Generation took <strong>5.0s</strong>.
+              Using <code>react-docgen-typescript</code>. Generation took <strong>3.4s</strong>.
             </div>
     <h2 class="section-title">Components</h2>
     <div class="grid" role="list">
@@ -687,18 +687,18 @@
                 <span class="badge ok">doc ok</span>
               </div>
               <div class="hint">./src/icons/Icons.mdx</div>
-              <div>Curated catalogue of all 32 Breeze icon exports, with sizing and accessibility guidance.</div>
+              <div>Curated catalogue of all 35 Breeze icon exports, with sizing and accessibility guidance.</div>
               <div class="mdx-content"><pre><code>import { Canvas, Meta } from &#39;@storybook/addon-docs/blocks&#39;;
 import * as Stories from &#39;./index.stories&#39;;
 
 &lt;Meta
   of={Stories}
-  summary=&quot;Curated catalogue of all 32 Breeze icon exports, with sizing and accessibility guidance.&quot;
+  summary=&quot;Curated catalogue of all 35 Breeze icon exports, with sizing and accessibility guidance.&quot;
 /&gt;
 
 # Icons
 
-Breeze exports a curated set of 32 interface icons through its dedicated `/icons` subpath. Each wrapper has a stable Breeze name, inherits the surrounding text colour, and is decorative by default.
+Breeze exports a curated set of 35 interface icons through its dedicated `/icons` subpath. Each wrapper has a stable Breeze name, inherits the surrounding text colour, and is decorative by default.
 
 ## Import
 
@@ -772,6 +772,7 @@ export function AddItemButton() {
 | `MenuIcon`         | Open compact navigation or a menu surface.                       |
 | `MoreIcon`         | Additional actions or options.                                   |
 | `PaperclipIcon`    | File attachment.                                                 |
+| `RotateIcon`       | Rotate content clockwise.                                        |
 | `SearchIcon`       | Search or query.                                                 |
 | `SettingsIcon`     | Settings or configuration.                                       |
 | `SignOutIcon`      | End an authenticated session.                                    |
@@ -780,6 +781,8 @@ export function AddItemButton() {
 | `UsersIcon`        | Group, team, or collection of people.                            |
 | `WalletIcon`       | Money, wallet, or transaction context.                           |
 | `WarningIcon`      | Caution, risk, or warning state.                                 |
+| `ZoomInIcon`       | Increase the scale of content.                                   |
+| `ZoomOutIcon`      | Decrease the scale of content.                                   |
 
 Names express the stable public contract; the underlying artwork may evolve. Directional meanings are literal. In a right-to-left interface, choose the arrow or chevron matching the intended physical or navigation direction rather than assuming automatic mirroring.
 
@@ -31769,7 +31772,7 @@ Use a valid BCP 47 locale. Add `timeZone`, `router`, `messages`, `direction` or 
 | Import                                     | Purpose                                        |
 | ------------------------------------------ | ---------------------------------------------- |
 | `@motech-development/breeze-ui`            | Components, patterns and public types          |
-| `@motech-development/breeze-ui/icons`      | The 32 curated icon components and `IconProps` |
+| `@motech-development/breeze-ui/icons`      | The 35 curated icon components and `IconProps` |
 | `@motech-development/breeze-ui/styles.css` | Required compiled styles                       |
 | `@motech-development/breeze-ui/reset.css`  | Optional global reset                          |
 
@@ -32705,7 +32708,7 @@ Do not use an icon as the only indication of status, error or selection. Pair me
 
 ## Catalogue and selection
 
-The attached [Icons catalogue](?path=/docs/foundation-icons--docs) literally documents all 32 exports and the intended meaning of each. Reuse the closest curated semantic icon. If no icon fits, first reconsider whether text is clearer; expanding the public icon catalogue is a library decision rather than an application deep-import workaround.
+The attached [Icons catalogue](?path=/docs/foundation-icons--docs) literally documents all 35 exports and the intended meaning of each. Reuse the closest curated semantic icon. If no icon fits, first reconsider whether text is clearer; expanding the public icon catalogue is a library decision rather than an application deep-import workaround.
 </code></pre>
           </div>
         </div>
