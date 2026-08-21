@@ -2,6 +2,7 @@ import { Button, Drawer, FormActions } from '@motech-development/breeze-ui';
 import { useTranslation } from 'react-i18next';
 import { DiscardChangesDialog } from '../companies/DiscardChangesDialog';
 import { SubmittingForm } from '../forms/SubmittingForm';
+import { RecordTransactionDrawerSkeleton } from '../loading/AccountsPageSkeletons';
 import { QueryRefreshAlert } from '../QueryRefreshAlert';
 import { DashboardPageContent } from './DashboardPageContent';
 import { PendingTransactionsPageContent } from './PendingTransactionsPageContent';
@@ -78,6 +79,15 @@ export function RecordTransactionPage({
     confirmedReturnTo: returnTo,
   });
 
+  if (loading && !data) {
+    return (
+      <>
+        <Background companyId={companyId} />
+        <RecordTransactionDrawerSkeleton />
+      </>
+    );
+  }
+
   return (
     <>
       <Background companyId={companyId} />
@@ -119,9 +129,6 @@ export function RecordTransactionPage({
                 refetch().catch(() => undefined);
               }}
             />
-          ) : null}
-          {loading && !data ? (
-            <p aria-live="polite">{t('Preparing transaction form…')}</p>
           ) : null}
           {data ? (
             <SubmittingForm

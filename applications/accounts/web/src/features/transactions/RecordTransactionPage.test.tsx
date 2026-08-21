@@ -447,7 +447,7 @@ describe('RecordTransactionPage', () => {
     expect(screen.getByRole('combobox', { name: 'Supplier' })).toBeVisible();
   });
 
-  it('announces preparation while the form has no initial data', () => {
+  it('renders the form skeleton while the form has no initial data', () => {
     mocks.query.data = undefined;
     mocks.query.loading = true;
 
@@ -457,10 +457,12 @@ describe('RecordTransactionPage', () => {
       </BreezeProvider>,
     );
 
-    expect(screen.getByText('Preparing transaction form…')).toHaveAttribute(
-      'aria-live',
-      'polite',
-    );
+    expect(
+      screen.getByRole('status', { name: 'Loading transaction form' }),
+    ).toBeVisible();
+    expect(
+      screen.getByRole('dialog', { name: 'Record transaction' }),
+    ).toBeVisible();
   });
 
   it('keeps an invalid browser form submission open', () => {

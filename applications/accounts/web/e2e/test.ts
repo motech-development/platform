@@ -133,6 +133,7 @@ export interface AccountsFixtures {
   openCompanySettings: (companyName: string) => Promise<void>;
   recordTransaction: (options: {
     attachment?: AttachmentFixture;
+    attachmentTiming?: 'after-type' | 'after-fields';
     checkA11y?: boolean;
     date?: 'tomorrow';
     expectedVat?: string;
@@ -531,6 +532,7 @@ export const test = base.extend<AccountsFixtures, AccountsWorkerFixtures>({
     await use(
       async ({
         attachment,
+        attachmentTiming = 'after-fields',
         checkA11y = false,
         date,
         transaction,
@@ -545,7 +547,19 @@ export const test = base.extend<AccountsFixtures, AccountsWorkerFixtures>({
           );
         }
         await page.getByRole('link', { name: 'Record transaction' }).click();
+        const drawer = page.getByRole('dialog', {
+          name: 'Record transaction',
+        });
+
+        await expect(drawer).toBeVisible();
         if (checkA11y) {
+          await drawer.locator('..').evaluate(async (overlay) => {
+            await Promise.allSettled(
+              overlay
+                .getAnimations({ subtree: true })
+                .map((animation) => animation.finished),
+            );
+          });
           await expectNoA11yViolations(
             page.getByRole('heading', { name: 'Record transaction' }),
           );
@@ -557,6 +571,20 @@ export const test = base.extend<AccountsFixtures, AccountsWorkerFixtures>({
           'Transaction type',
           sale ? 'Sale' : 'Purchase',
         );
+
+        const uploadAttachment = async () => {
+          if (!attachment) return;
+
+          await page
+            .getByLabel('Select file to upload')
+            .setInputFiles(attachment);
+          await expect(page.getByLabel('Select file to upload')).toHaveCount(0);
+        };
+
+        if (attachmentTiming === 'after-type') {
+          await uploadAttachment();
+        }
+
         if (sale) {
           await page.getByRole('button', { name: /Client/ }).click();
           await page
@@ -617,11 +645,8 @@ export const test = base.extend<AccountsFixtures, AccountsWorkerFixtures>({
           format('currency', expectedVat),
         );
 
-        if (attachment) {
-          await page
-            .getByLabel('Select file to upload')
-            .setInputFiles(attachment);
-          await expect(page.getByLabel('Select file to upload')).toHaveCount(0);
+        if (attachmentTiming === 'after-fields') {
+          await uploadAttachment();
         }
 
         await page.getByRole('button', { name: 'Save transaction' }).click();

@@ -442,6 +442,7 @@ test.describe('VAT registered', () => {
       await openAccountsRoute();
       await recordTransaction({
         attachment: invoice,
+        attachmentTiming: 'after-type',
         checkA11y: true,
         transaction: accounts[0],
       });
@@ -700,6 +701,7 @@ test.describe('VAT registered', () => {
       await expect(
         page.getByRole('heading', { name: 'Edit transaction' }),
       ).toBeVisible();
+      await expect(page.getByLabel('Select file to upload')).toBeVisible();
       await expect(page.getByText('PDF, JPG or PNG')).toBeVisible();
     });
   });
