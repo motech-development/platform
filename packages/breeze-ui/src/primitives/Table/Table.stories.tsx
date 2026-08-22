@@ -321,7 +321,6 @@ export const ResponsiveGridColumnVariant: Story = {
     const actionHeading = canvas.getByRole('columnheader', { name: 'Action' });
     const mediaCell = canvas.getByRole('gridcell', { name: 'AC' });
     const primaryCell = canvas.getByRole('rowheader', { name: 'Acme' });
-    const secondaryCell = canvas.getByRole('gridcell', { name: '123' });
 
     await expect(mediaHeading.getBoundingClientRect().width).toBeCloseTo(36, 1);
     await expect(actionHeading.getBoundingClientRect().width).toBeCloseTo(
@@ -342,10 +341,7 @@ export const ResponsiveGridColumnVariant: Story = {
       primaryHeading.getBoundingClientRect().left,
       1,
     );
-    await expect(secondaryCell).toHaveAttribute(
-      'data-breeze-compact-hidden',
-      '',
-    );
+    await expect(mediaCell).toHaveAttribute('data-breeze-compact-hidden', '');
   },
   render: () => (
     <Table.Root
@@ -354,15 +350,13 @@ export const ResponsiveGridColumnVariant: Story = {
       layout="responsiveGrid"
     >
       <Table.Header>
-        <Table.Column compactLabel={false} id="media">
+        <Table.Column compactHidden compactLabel={false} id="media">
           Media
         </Table.Column>
         <Table.Column id="name" rowHeader>
           Name
         </Table.Column>
-        <Table.Column compactHidden id="number">
-          Number
-        </Table.Column>
+        <Table.Column id="number">Number</Table.Column>
         <Table.Column id="contact">Contact</Table.Column>
         <Table.Column compactLabel={false} id="action">
           Action
