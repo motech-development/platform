@@ -112,9 +112,9 @@ export const TriggerlessControlled: Story = {
 
     await userEvent.click(externalTrigger);
     const body = within(canvasElement.ownerDocument.body);
-    await expect(
-      body.getByRole('alertdialog', { name: 'Discard changes?' }),
-    ).toBeVisible();
+    const dialog = body.getByRole('alertdialog', { name: 'Discard changes?' });
+
+    await waitFor(() => expect(dialog).toBeVisible());
     await userEvent.click(body.getByRole('button', { name: 'Keep editing' }));
     await waitFor(() => expect(externalTrigger).toHaveFocus());
   },

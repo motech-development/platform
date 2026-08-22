@@ -174,15 +174,21 @@ describe('Table', () => {
   });
 
   it.each([
-    { colSpan: 1.5, gridColumn: '', normalisedColSpan: 1 },
+    {
+      colSpan: 1.5,
+      gridColumn: '',
+      normalisedColSpan: 1,
+      span: '',
+    },
     {
       colSpan: 1001,
-      gridColumn: 'span 1000 / span 1000',
+      gridColumn: 'var(--breeze-table-compact-column-span)',
       normalisedColSpan: 1000,
+      span: 'span 1000 / span 1000',
     },
   ])(
     'normalises a $colSpan column span for native and grid geometry',
-    ({ colSpan, gridColumn, normalisedColSpan }) => {
+    ({ colSpan, gridColumn, normalisedColSpan, span }) => {
       const columns = Array.from(
         { length: normalisedColSpan },
         (_, index) => `column-${index}`,
@@ -211,6 +217,12 @@ describe('Table', () => {
 
       expect(cell).toHaveAttribute('colspan', String(normalisedColSpan));
       expect(cell.style.gridColumn).toBe(gridColumn);
+      expect(cell.style.getPropertyValue('--breeze-table-column-span')).toBe(
+        span,
+      );
+      expect(
+        cell.style.getPropertyValue('--breeze-table-compact-column-span'),
+      ).toBe(span);
     },
   );
 
@@ -324,14 +336,56 @@ describe('Table', () => {
 
     expect(dateCell).toHaveAttribute('data-breeze-compact-hidden', '');
     expect(nameCell).not.toHaveAttribute('data-breeze-compact-hidden');
-    expect(dateCell).toHaveClass(
-      'max-[680px]:data-[breeze-compact-hidden]:!hidden',
-    );
+    expect(dateCell).toHaveClass('max-sm:data-[breeze-compact-hidden]:!hidden');
     await waitFor(() => {
       expect(table).toHaveStyle(
         '--breeze-table-columns: minmax(0, 1fr) minmax(0, 1fr); --breeze-table-compact-columns: minmax(0, 1fr)',
       );
     });
+  });
+
+  it('scopes responsive metadata to the owning table', async () => {
+    renderBreeze(
+      <Table.Root aria-label="Outer records" layout="grid">
+        <Table.Header>
+          <Table.Column id="name" rowHeader>
+            Outer name
+          </Table.Column>
+          <Table.Column id="details" width="2fr">
+            Outer details
+          </Table.Column>
+        </Table.Header>
+        <Table.Body>
+          <Table.Row id="outer" textValue="Outer Nested">
+            <Table.Cell column="name">Outer</Table.Cell>
+            <Table.Cell column="details">
+              <Table.Root aria-label="Nested records" layout="grid">
+                <Table.Header>
+                  <Table.Column id="name" rowHeader width="10rem">
+                    Nested name
+                  </Table.Column>
+                </Table.Header>
+                <Table.Body>
+                  <Table.Row id="nested" textValue="Nested">
+                    <Table.Cell column="name">Nested</Table.Cell>
+                  </Table.Row>
+                </Table.Body>
+              </Table.Root>
+            </Table.Cell>
+          </Table.Row>
+        </Table.Body>
+      </Table.Root>,
+    );
+
+    const outerTable = screen.getByRole('grid', { name: 'Outer records' });
+    const outerName = screen.getByRole('rowheader', { name: 'Outer' });
+
+    await waitFor(() => {
+      expect(outerTable).toHaveStyle(
+        '--breeze-table-columns: minmax(0, 1fr) 2fr',
+      );
+    });
+    expect(outerName).toHaveAttribute('data-label', 'Outer name:');
   });
 
   it('includes compact-hidden cells in server-rendered markup', () => {

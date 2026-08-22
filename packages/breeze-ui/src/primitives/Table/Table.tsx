@@ -37,6 +37,7 @@ import VirtualizedCollection, {
   collectionViewportStyle,
 } from '../../internal/collections/VirtualizedCollection';
 import useForwardedRef from '../../internal/hooks/useForwardedRef';
+import breezeSmallBreakpoint from '../../internal/styling/breakpoints';
 import type {
   BreezeCollectionItem,
   CollectionContentProps,
@@ -178,7 +179,7 @@ const tableRow = tv({
 });
 
 const tableCell = tv({
-  base: 'grid min-w-0 grid-cols-[minmax(5rem,auto)_minmax(0,1fr)] gap-4 border-b border-[var(--breeze-border)] px-4 py-2 text-start [overflow-wrap:anywhere] last:border-b-0 before:me-1 before:hidden before:font-[family-name:var(--breeze-font-display)] before:text-base before:leading-[1.4] before:font-bold before:text-[var(--breeze-ink-muted)] data-[label]:before:inline-block data-[label]:before:content-[attr(data-label)] max-[680px]:data-[breeze-compact-hidden]:!hidden sm:table-cell sm:border-b sm:border-[var(--breeze-border)] sm:px-4 sm:py-3 sm:last:border-b sm:data-[label]:before:hidden [&>*]:min-w-0',
+  base: 'grid min-w-0 grid-cols-[minmax(5rem,auto)_minmax(0,1fr)] gap-4 border-b border-[var(--breeze-border)] px-4 py-2 text-start [overflow-wrap:anywhere] last:border-b-0 before:me-1 before:hidden before:font-[family-name:var(--breeze-font-display)] before:text-base before:leading-[1.4] before:font-bold before:text-[var(--breeze-ink-muted)] data-[label]:before:inline-block data-[label]:before:content-[attr(data-label)] max-sm:data-[breeze-compact-hidden]:!hidden sm:table-cell sm:border-b sm:border-[var(--breeze-border)] sm:px-4 sm:py-3 sm:last:border-b sm:data-[label]:before:hidden sm:[grid-column:var(--breeze-table-column-span)] [&>*]:min-w-0',
   defaultVariants: {
     align: 'start',
   },
@@ -474,6 +475,11 @@ interface ResponsiveColumnMetadata {
   track: string;
 }
 
+interface TableCellSpanStyle extends CSSProperties {
+  '--breeze-table-column-span': string;
+  '--breeze-table-compact-column-span': string;
+}
+
 const emptyCompactHiddenColumns: readonly CollectionKey[] = [];
 const emptyCompactHiddenColumnKeys: ReadonlySet<string> = new Set();
 const compactHiddenColumnsContext = createContext<ReadonlySet<string>>(
@@ -490,8 +496,11 @@ function readResponsiveColumnMetadata(
   }
 
   return new Map(
-    [...root.querySelectorAll<HTMLElement>('[data-breeze-column]')].flatMap(
-      (heading, index): [string, ResponsiveColumnMetadata][] => {
+    [...root.querySelectorAll<HTMLElement>('[data-breeze-column]')]
+      .filter((heading) =>
+        heading.closest('[data-breeze-table]')?.isSameNode(root),
+      )
+      .flatMap((heading, index): [string, ResponsiveColumnMetadata][] => {
         const column = heading.dataset.breezeColumn;
 
         if (column === undefined) {
@@ -519,12 +528,33 @@ function readResponsiveColumnMetadata(
             },
           ],
         ];
-      },
-    ),
+      }),
   );
 }
 
-function syncResponsiveCellLabels(
+function compactColumnSpan(
+  columnKey: string,
+  colSpan: number,
+  columns: Map<string, ResponsiveColumnMetadata>,
+): number {
+  const orderedColumns = [...columns.entries()];
+  const firstColumnIndex = orderedColumns.findIndex(
+    ([key]) => key === columnKey,
+  );
+
+  if (firstColumnIndex < 0) {
+    return colSpan;
+  }
+
+  return Math.max(
+    orderedColumns
+      .slice(firstColumnIndex, firstColumnIndex + colSpan)
+      .filter(([, metadata]) => !metadata.compactHidden).length,
+    1,
+  );
+}
+
+function syncResponsiveCells(
   root: HTMLElement | null,
   columns = readResponsiveColumnMetadata(root),
 ): void {
@@ -533,16 +563,30 @@ function syncResponsiveCellLabels(
   }
 
   root
-    .querySelectorAll<HTMLElement>('[data-breeze-cell-column]')
+    .querySelectorAll<HTMLTableCellElement>('[data-breeze-cell-column]')
     .forEach((cell) => {
+      if (!cell.closest('[data-breeze-table]')?.isSameNode(root)) {
+        return;
+      }
+
       const { dataset } = cell;
-      const column = columns.get(dataset.breezeCellColumn ?? '');
+      const columnKey = dataset.breezeCellColumn ?? '';
+      const column = columns.get(columnKey);
       const label = column?.label;
 
       if (label !== undefined && label.length > 0) {
         dataset.label = label;
       } else {
         delete dataset.label;
+      }
+
+      if (cell.colSpan > 1) {
+        const compactSpan = compactColumnSpan(columnKey, cell.colSpan, columns);
+
+        cell.style.setProperty(
+          '--breeze-table-compact-column-span',
+          `span ${compactSpan} / span ${compactSpan}`,
+        );
       }
     });
 }
@@ -577,12 +621,78 @@ function syncResponsiveTableMetadata(
     compactHiddenColumns,
   );
 
-  syncResponsiveCellLabels(root, columns);
+  syncResponsiveCells(root, columns);
 
   return {
     compact: serializeResponsiveGridTracks(columns, true),
     full: serializeResponsiveGridTracks(columns),
   };
+}
+
+function handleCompactHorizontalNavigation(
+  event: KeyboardEvent,
+  root: HTMLElement,
+): void {
+  if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') {
+    return;
+  }
+
+  const view = root.ownerDocument.defaultView;
+
+  if (view === null || view.innerWidth >= breezeSmallBreakpoint) {
+    return;
+  }
+
+  const targetCell =
+    event.target instanceof view.Element
+      ? event.target.closest<HTMLElement>('[data-breeze-cell-column]')
+      : null;
+  const currentCell =
+    targetCell ??
+    (root.ownerDocument.activeElement instanceof view.Element
+      ? root.ownerDocument.activeElement.closest<HTMLElement>(
+          '[data-breeze-cell-column]',
+        )
+      : null);
+
+  if (
+    currentCell === null ||
+    !currentCell.closest('[data-breeze-table]')?.isSameNode(root)
+  ) {
+    return;
+  }
+
+  const cells = [...(currentCell.parentElement?.children ?? [])].filter(
+    (cell): cell is HTMLElement =>
+      cell instanceof view.HTMLElement &&
+      cell.hasAttribute('data-breeze-cell-column'),
+  );
+  const currentIndex = cells.indexOf(currentCell);
+  const forwardsKey =
+    view.getComputedStyle(root).direction === 'rtl'
+      ? 'ArrowLeft'
+      : 'ArrowRight';
+  const increment = event.key === forwardsKey ? 1 : -1;
+  const adjacentCell = cells[currentIndex + increment];
+
+  if (!adjacentCell?.hasAttribute('data-breeze-compact-hidden')) {
+    return;
+  }
+
+  event.preventDefault();
+
+  for (
+    let index = currentIndex + increment;
+    index >= 0 && index < cells.length;
+    index += increment
+  ) {
+    const cell = cells[index];
+
+    if (!cell?.hasAttribute('data-breeze-compact-hidden')) {
+      view.queueMicrotask(() => cell?.focus());
+      return;
+    }
+  }
 }
 
 /** Coordinates semantic table navigation, row state, sorting, and responsive labels. */
@@ -623,12 +733,25 @@ export function Root({
     onSelectionChange !== undefined ||
     selection !== undefined;
   const resolvedSort = sort ?? internalSort;
+  const compactNavigationListener = useCallback((event: KeyboardEvent) => {
+    const root = rootRef.current;
+
+    if (root !== null) {
+      handleCompactHorizontalNavigation(event, root);
+    }
+  }, []);
   const tableRef = useCallback(
     (element: HTMLElement | null) => {
+      rootRef.current?.removeEventListener(
+        'keydown',
+        compactNavigationListener,
+        true,
+      );
       rootRef.current = element;
+      element?.addEventListener('keydown', compactNavigationListener, true);
       forwardedRef(element);
     },
-    [forwardedRef],
+    [compactNavigationListener, forwardedRef],
   );
 
   useLayoutEffect(() => {
@@ -737,6 +860,7 @@ export function Root({
       : createElement(
           VirtualizedCollection,
           {
+            compactHiddenColumns: compactHiddenColumnKeys,
             configuration: virtualization,
             kind: 'table',
           },
@@ -938,16 +1062,22 @@ export function Cell({
   const compactHiddenColumns = useContext(compactHiddenColumnsContext);
   const forwardedRef = useForwardedRef(ref);
   const normalisedColSpan = normaliseColumnSpan(colSpan);
-  const spanStyle: CSSProperties | undefined =
+  const spanStyle: TableCellSpanStyle | undefined =
     normalisedColSpan === undefined || normalisedColSpan <= 1
       ? undefined
-      : {
-          gridColumn: `span ${normalisedColSpan} / span ${normalisedColSpan}`,
-        };
+      : (() => {
+          const span = `span ${normalisedColSpan} / span ${normalisedColSpan}`;
+
+          return {
+            '--breeze-table-column-span': span,
+            '--breeze-table-compact-column-span': span,
+            gridColumn: 'var(--breeze-table-compact-column-span)',
+          };
+        })();
   const cellRef = useCallback(
     (element: HTMLTableCellElement | null) => {
       forwardedRef(element);
-      syncResponsiveCellLabels(
+      syncResponsiveCells(
         element?.closest<HTMLElement>('[data-breeze-table]') ?? null,
       );
     },

@@ -13,19 +13,28 @@ import {
   TableLayout,
   Virtualizer as AriaVirtualizer,
 } from 'react-aria-components/Virtualizer';
+import breezeSmallBreakpoint from '../styling/breakpoints';
 import type {
   CollectionKey,
   CollectionVirtualization,
 } from '../types/collection';
 
-const compactTableBreakpoint = 681;
 const compactTableCellGap = 8;
 const compactTableMeasurementAllowance = 1;
 const compactTableRowBorder = 1;
 const compactTableRowPadding = 34;
+const emptyCompactHiddenColumns: ReadonlySet<string> = new Set();
+
+function tableLayoutColumnKey(node: unknown): string | undefined {
+  const key = (node as { column?: { key?: CollectionKey } } | undefined)?.column
+    ?.key;
+
+  return key === undefined ? undefined : String(key);
+}
 
 interface VirtualizedCollectionProps {
   children?: ReactNode;
+  compactHiddenColumns?: ReadonlySet<string>;
   configuration: CollectionVirtualization;
   kind: 'grid' | 'list' | 'table';
   direction?: 'ltr' | 'rtl';
@@ -87,12 +96,19 @@ class BreezeListLayout extends ListLayout<unknown, LayoutOptions> {
 }
 
 class BreezeTableLayout extends TableLayout<unknown, TableOptions> {
+  readonly #compactHiddenColumns: ReadonlySet<string>;
+
   readonly #overscan: number;
 
   readonly #compactCellHeights = new Map<CollectionKey, number>();
 
-  constructor(options: TableOptions, overscan: number) {
+  constructor(
+    options: TableOptions,
+    overscan: number,
+    compactHiddenColumns: ReadonlySet<string>,
+  ) {
     super(options);
+    this.#compactHiddenColumns = compactHiddenColumns;
     this.#overscan = overscan;
   }
 
@@ -103,7 +119,7 @@ class BreezeTableLayout extends TableLayout<unknown, TableOptions> {
   override updateItemSize(key: CollectionKey, size: Size): boolean {
     const layoutNode = this.layoutNodes.get(key);
     const compact =
-      (this.virtualizer?.size.width ?? Infinity) < compactTableBreakpoint;
+      (this.virtualizer?.size.width ?? Infinity) < breezeSmallBreakpoint;
 
     if (
       !compact ||
@@ -118,20 +134,32 @@ class BreezeTableLayout extends TableLayout<unknown, TableOptions> {
 
     const row = this.layoutNodes.get(layoutNode.layoutInfo.parentKey);
     const cells = row?.children ?? [];
+    const visibleCells = cells.filter(
+      (cell) =>
+        !this.#compactHiddenColumns.has(tableLayoutColumnKey(cell.node) ?? ''),
+    );
 
-    if (cells.length === 0) {
+    if (visibleCells.length === 0) {
       return super.updateItemSize(key, size);
     }
 
+    if (
+      this.#compactHiddenColumns.has(
+        tableLayoutColumnKey(layoutNode.node) ?? '',
+      )
+    ) {
+      return false;
+    }
+
     const measuredHeight = Math.ceil(
-      cells.reduce(
+      visibleCells.reduce(
         (height, cell) =>
           height +
           (this.#compactCellHeights.get(cell.layoutInfo.key) ?? size.height),
         compactTableRowBorder +
           compactTableMeasurementAllowance +
           compactTableRowPadding +
-          compactTableCellGap * (cells.length - 1),
+          compactTableCellGap * (visibleCells.length - 1),
       ),
     );
 
@@ -183,6 +211,7 @@ export function collectionViewportStyle(
 
 export default function VirtualizedCollection({
   children,
+  compactHiddenColumns = emptyCompactHiddenColumns,
   configuration,
   direction = 'ltr',
   kind,
@@ -235,6 +264,7 @@ export default function VirtualizedCollection({
           rowHeight,
         },
         overscan,
+        compactHiddenColumns,
       );
     }
 
@@ -259,6 +289,7 @@ export default function VirtualizedCollection({
     gap,
     kind,
     loadingRowHeight,
+    compactHiddenColumns,
     orientation,
     overscan,
     rowHeight,
