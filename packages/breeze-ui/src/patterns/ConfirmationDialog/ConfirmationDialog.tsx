@@ -21,8 +21,6 @@ interface ConfirmationDialogSharedProps {
   onConfirm: () => void;
   /** Dialog heading. */
   title: ReactNode;
-  /** Visual treatment for the trigger. Defaults to `solid`. */
-  triggerAppearance?: VisualAppearance;
   /** Semantic confirming action colour. Defaults to `danger`. */
   variant?: 'danger' | 'warning' | 'primary';
 }
@@ -57,6 +55,8 @@ interface UncontrolledConfirmationDialogProps {
 interface TriggeredConfirmationDialogProps {
   /** Semantic action content that opens the dialog. */
   trigger: ReactNode;
+  /** Visual treatment for the trigger. Defaults to `solid`. */
+  triggerAppearance?: VisualAppearance;
   /** Uses the pattern's semantic trigger to coordinate dialog state. */
   triggerless?: false;
 }
@@ -69,6 +69,7 @@ interface TriggerlessConfirmationDialogProps {
   open: boolean;
   readOnly?: never;
   trigger?: never;
+  triggerAppearance?: never;
   /** Omits the pattern trigger for state controlled by an external action. */
   triggerless: true;
 }
