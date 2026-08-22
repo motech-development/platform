@@ -346,11 +346,12 @@ export const ResponsiveGridColumnVariant: Story = {
   render: () => (
     <Table.Root
       aria-label="Responsive company records"
+      compactHiddenColumns={['media']}
       desktopColumns="mediaDetailsAction"
       layout="responsiveGrid"
     >
       <Table.Header>
-        <Table.Column compactHidden compactLabel={false} id="media">
+        <Table.Column compactLabel={false} id="media">
           Media
         </Table.Column>
         <Table.Column id="name" rowHeader>
@@ -369,6 +370,63 @@ export const ResponsiveGridColumnVariant: Story = {
           <Table.Cell column="number">123</Table.Cell>
           <Table.Cell column="contact">contact@example.test</Table.Cell>
           <Table.Cell column="action">View</Table.Cell>
+        </Table.Row>
+      </Table.Body>
+    </Table.Root>
+  ),
+};
+
+/**
+ * Removes a supporting desktop-only column and its grid track at the compact
+ * breakpoint without shifting the following amount into the date track.
+ *
+ * @summary compact grid omits hidden tracks
+ */
+export const CompactGridColumns: Story = {
+  args: { 'aria-label': 'Compact scheduled records', children: null },
+  globals: { viewport: { value: 'mobile1' } },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const table = canvas.getByRole('grid', {
+      name: 'Compact scheduled records',
+    });
+    const row = canvas.getByRole('row', { name: 'Subscription' });
+    const name = canvas.getByRole('rowheader', { name: 'Subscription' });
+    const date = canvas.getByText('12 August');
+    const amount = canvas.getByRole('gridcell', { name: '£20' });
+    const tracks = getComputedStyle(table).gridTemplateColumns.split(' ');
+
+    await expect(tracks).toHaveLength(2);
+    await expect(date.getBoundingClientRect().width).toBe(0);
+    await expect(name.getBoundingClientRect().right).toBeLessThanOrEqual(
+      amount.getBoundingClientRect().left,
+    );
+    await expect(row.getBoundingClientRect().width).toBeGreaterThan(0);
+  },
+  render: () => (
+    <Table.Root
+      aria-label="Compact scheduled records"
+      compactHiddenColumns={['date']}
+      layout="grid"
+    >
+      <Table.Header>
+        <Table.Column id="name" rowHeader>
+          Name
+        </Table.Column>
+        <Table.Column id="date" width="max-content">
+          Date
+        </Table.Column>
+        <Table.Column align="end" id="amount" width="max-content">
+          Amount
+        </Table.Column>
+      </Table.Header>
+      <Table.Body>
+        <Table.Row id="subscription" textValue="Subscription 12 August £20">
+          <Table.Cell column="name">Subscription</Table.Cell>
+          <Table.Cell column="date">12 August</Table.Cell>
+          <Table.Cell align="end" column="amount">
+            £20
+          </Table.Cell>
         </Table.Row>
       </Table.Body>
     </Table.Root>

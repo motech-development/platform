@@ -9,10 +9,13 @@ import type {
 } from 'react';
 import {
   Children,
+  createContext,
   createElement,
   isValidElement,
   useCallback,
+  useContext,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -96,7 +99,7 @@ const tableRoot = tv({
       mediaDetailsAction: '',
     },
     layout: {
-      grid: '!grid grid-cols-[var(--breeze-table-columns)] [&>thead]:col-span-full [&>thead]:grid-cols-subgrid sm:[&>thead]:grid [&>tbody]:col-span-full [&>tbody]:grid [&>tbody]:grid-cols-subgrid [&>tfoot]:col-span-full [&>tfoot]:grid [&>tfoot]:grid-cols-subgrid sm:[&>thead>tr]:col-span-full sm:[&>thead>tr]:grid sm:[&>thead>tr]:min-h-11 sm:[&>thead>tr]:grid-cols-subgrid sm:[&>thead>tr]:items-center sm:[&>thead>tr]:px-6 [&>tbody>tr]:col-span-full [&>tbody>tr]:grid [&>tbody>tr]:min-h-11 [&>tbody>tr]:grid-cols-subgrid [&>tbody>tr]:items-center [&>tbody>tr]:px-4 sm:[&>tbody>tr]:px-6 [&>tfoot>tr]:col-span-full [&>tfoot>tr]:grid [&>tfoot>tr]:min-h-11 [&>tfoot>tr]:grid-cols-subgrid [&>tfoot>tr]:items-center [&>tfoot>tr]:px-4 sm:[&>tfoot>tr]:px-6 sm:[&>thead>tr>th]:block sm:[&>thead>tr>th]:!p-0 [&>tbody>tr>td]:block [&>tbody>tr>td]:!p-0 [&>tfoot>tr>td]:block [&>tfoot>tr>td]:!p-0 sm:[&>thead>tr]:border-b sm:[&>thead>tr]:border-[var(--breeze-border)] sm:[&>thead>tr>th]:border-0 [&>tbody>tr]:border-b [&>tbody>tr]:border-[var(--breeze-border)] [&>tbody>tr>td]:border-0 [&>tfoot>tr>td]:border-0 sm:[&>tbody>tr>td]:!border-0 sm:[&>tfoot>tr>td]:!border-0',
+      grid: '!grid grid-cols-[var(--breeze-table-compact-columns)] sm:grid-cols-[var(--breeze-table-columns)] [&>thead]:col-span-full [&>thead]:grid-cols-subgrid sm:[&>thead]:grid [&>tbody]:col-span-full [&>tbody]:grid [&>tbody]:grid-cols-subgrid [&>tfoot]:col-span-full [&>tfoot]:grid [&>tfoot]:grid-cols-subgrid sm:[&>thead>tr]:col-span-full sm:[&>thead>tr]:grid sm:[&>thead>tr]:min-h-11 sm:[&>thead>tr]:grid-cols-subgrid sm:[&>thead>tr]:items-center sm:[&>thead>tr]:px-6 [&>tbody>tr]:col-span-full [&>tbody>tr]:grid [&>tbody>tr]:min-h-11 [&>tbody>tr]:grid-cols-subgrid [&>tbody>tr]:items-center [&>tbody>tr]:px-4 sm:[&>tbody>tr]:px-6 [&>tfoot>tr]:col-span-full [&>tfoot>tr]:grid [&>tfoot>tr]:min-h-11 [&>tfoot>tr]:grid-cols-subgrid [&>tfoot>tr]:items-center [&>tfoot>tr]:px-4 sm:[&>tfoot>tr]:px-6 sm:[&>thead>tr>th]:block sm:[&>thead>tr>th]:!p-0 [&>tbody>tr>td]:block [&>tbody>tr>td]:!p-0 [&>tfoot>tr>td]:block [&>tfoot>tr>td]:!p-0 sm:[&>thead>tr]:border-b sm:[&>thead>tr]:border-[var(--breeze-border)] sm:[&>thead>tr>th]:border-0 [&>tbody>tr]:border-b [&>tbody>tr]:border-[var(--breeze-border)] [&>tbody>tr>td]:border-0 [&>tfoot>tr>td]:border-0 sm:[&>tbody>tr>td]:!border-0 sm:[&>tfoot>tr>td]:!border-0',
       responsive: responsiveTableLayout,
       responsiveGrid: responsiveGridTableLayout,
     },
@@ -229,6 +232,8 @@ interface TableRootSharedProps extends TableRootNativeProps {
   boundary?: TableBoundary;
   /** Ordered header, body, and optional footer sections. */
   children: ReactNode;
+  /** Column keys omitted below the Breeze small breakpoint. */
+  compactHiddenColumns?: Iterable<CollectionKey>;
   /** Keys whose rows cannot receive focus, selection, or actions. */
   disabledKeys?: Iterable<CollectionKey>;
   /** Typed desktop column arrangement for `responsiveGrid` layout. Defaults to `equal`. */
@@ -323,8 +328,6 @@ export interface TableColumnProps
   children: ReactNode;
   /** Derives a compact record label from this heading. Defaults to `true`. */
   compactLabel?: boolean;
-  /** Omits the corresponding cell below the Breeze small breakpoint. Defaults to `false`. */
-  compactHidden?: boolean;
   /** Stable string or number column key. */
   id: CollectionKey;
   /** Marks this heading as the row label announced during cell navigation. Defaults to `false`. */
@@ -471,9 +474,16 @@ interface ResponsiveColumnMetadata {
   track: string;
 }
 
+const emptyCompactHiddenColumns: readonly CollectionKey[] = [];
+const emptyCompactHiddenColumnKeys: ReadonlySet<string> = new Set();
+const compactHiddenColumnsContext = createContext<ReadonlySet<string>>(
+  emptyCompactHiddenColumnKeys,
+);
+
 function readResponsiveColumnMetadata(
   root: HTMLElement | null,
   desktopColumns: TableDesktopColumns = 'equal',
+  compactHiddenColumns: ReadonlySet<string> = emptyCompactHiddenColumnKeys,
 ): Map<string, ResponsiveColumnMetadata> {
   if (root === null) {
     return new Map();
@@ -497,8 +507,7 @@ function readResponsiveColumnMetadata(
           [
             column,
             {
-              compactHidden:
-                heading.dataset.breezeColumnCompactHidden === 'true',
+              compactHidden: compactHiddenColumns.has(column),
               label:
                 compactLabel === undefined || compactLabel.length === 0
                   ? undefined
@@ -535,34 +544,45 @@ function syncResponsiveCellLabels(
       } else {
         delete dataset.label;
       }
-
-      if (column?.compactHidden === true) {
-        dataset.breezeCompactHidden = '';
-      } else {
-        delete dataset.breezeCompactHidden;
-      }
     });
 }
 
 function serializeResponsiveGridTracks(
   columns: Map<string, ResponsiveColumnMetadata>,
+  compact = false,
 ): string | undefined {
   if (columns.size === 0) {
     return undefined;
   }
 
-  return [...columns.values()].map(({ track }) => track).join(' ');
+  return [...columns.values()]
+    .filter(({ compactHidden }) => !compact || !compactHidden)
+    .map(({ track }) => track)
+    .join(' ');
+}
+
+interface ResponsiveGridTracks {
+  compact: string | undefined;
+  full: string | undefined;
 }
 
 function syncResponsiveTableMetadata(
   root: HTMLElement | null,
   desktopColumns: TableDesktopColumns,
-): string | undefined {
-  const columns = readResponsiveColumnMetadata(root, desktopColumns);
+  compactHiddenColumns: ReadonlySet<string>,
+): ResponsiveGridTracks {
+  const columns = readResponsiveColumnMetadata(
+    root,
+    desktopColumns,
+    compactHiddenColumns,
+  );
 
   syncResponsiveCellLabels(root, columns);
 
-  return serializeResponsiveGridTracks(columns);
+  return {
+    compact: serializeResponsiveGridTracks(columns, true),
+    full: serializeResponsiveGridTracks(columns),
+  };
 }
 
 /** Coordinates semantic table navigation, row state, sorting, and responsive labels. */
@@ -570,6 +590,7 @@ export function Root({
   boundary = 'none',
   children,
   className,
+  compactHiddenColumns = emptyCompactHiddenColumns,
   defaultSelection,
   defaultSort,
   desktopColumns = 'equal',
@@ -590,7 +611,12 @@ export function Root({
   const forwardedRef = useForwardedRef(ref);
   const rootRef = useRef<HTMLElement | null>(null);
   const [internalSort, setInternalSort] = useState(defaultSort);
-  const [gridTemplateColumns, setGridTemplateColumns] = useState<string>();
+  const [gridTemplateColumns, setGridTemplateColumns] =
+    useState<ResponsiveGridTracks>({ compact: undefined, full: undefined });
+  const compactHiddenColumnKeys = useMemo(
+    () => new Set([...compactHiddenColumns].map(String)),
+    [compactHiddenColumns],
+  );
   const selectionEnabled =
     defaultSelection !== undefined ||
     multiple ||
@@ -616,10 +642,13 @@ export function Root({
       const nextGridTemplateColumns = syncResponsiveTableMetadata(
         root,
         desktopColumns,
+        compactHiddenColumnKeys,
       );
 
       setGridTemplateColumns((currentGridTemplateColumns) =>
-        currentGridTemplateColumns === nextGridTemplateColumns
+        currentGridTemplateColumns.compact ===
+          nextGridTemplateColumns.compact &&
+        currentGridTemplateColumns.full === nextGridTemplateColumns.full
           ? currentGridTemplateColumns
           : nextGridTemplateColumns,
       );
@@ -632,7 +661,6 @@ export function Root({
     observer.observe(root, {
       attributeFilter: [
         'data-breeze-column-width',
-        'data-breeze-column-compact-hidden',
         'data-breeze-compact-label',
         'data-breeze-compact-label-text',
       ],
@@ -642,15 +670,16 @@ export function Root({
     });
 
     return () => observer.disconnect();
-  }, [children, desktopColumns]);
+  }, [children, compactHiddenColumnKeys, desktopColumns]);
 
   const viewportStyle = collectionViewportStyle(virtualization);
   const tableStyle =
-    gridTemplateColumns === undefined && viewportStyle === undefined
+    gridTemplateColumns.full === undefined && viewportStyle === undefined
       ? undefined
       : ({
           ...viewportStyle,
-          '--breeze-table-columns': gridTemplateColumns,
+          '--breeze-table-columns': gridTemplateColumns.full,
+          '--breeze-table-compact-columns': gridTemplateColumns.compact,
         } as CSSProperties);
 
   const table = createElement(AriaTable, {
@@ -702,23 +731,29 @@ export function Root({
     style: tableStyle,
   } as unknown as ComponentProps<typeof AriaTable>);
 
-  return virtualization === undefined
-    ? table
-    : createElement(
-        VirtualizedCollection,
-        {
-          configuration: virtualization,
-          kind: 'table',
-        },
-        table,
-      );
+  const renderedTable =
+    virtualization === undefined
+      ? table
+      : createElement(
+          VirtualizedCollection,
+          {
+            configuration: virtualization,
+            kind: 'table',
+          },
+          table,
+        );
+
+  return createElement(
+    compactHiddenColumnsContext.Provider,
+    { value: compactHiddenColumnKeys },
+    renderedTable,
+  );
 }
 
 function renderTableColumn({
   align = 'start',
   children,
   className,
-  compactHidden = false,
   compactLabel = true,
   id,
   ref,
@@ -744,7 +779,6 @@ function renderTableColumn({
       class: className,
     }),
     'data-breeze-column': String(id),
-    'data-breeze-column-compact-hidden': compactHidden ? 'true' : undefined,
     'data-breeze-column-width': serializedWidth,
     'data-breeze-compact-label': String(compactLabel),
     'data-breeze-compact-label-text': compactLabelText,
@@ -901,6 +935,7 @@ export function Cell({
   textValue,
   ...props
 }: Readonly<TableCellProps>): ReactElement {
+  const compactHiddenColumns = useContext(compactHiddenColumnsContext);
   const forwardedRef = useForwardedRef(ref);
   const normalisedColSpan = normaliseColumnSpan(colSpan);
   const spanStyle: CSSProperties | undefined =
@@ -924,6 +959,9 @@ export function Cell({
     className: tableCell({ align, class: className, presentation }),
     colSpan: normalisedColSpan,
     'data-breeze-cell-column': String(column),
+    'data-breeze-compact-hidden': compactHiddenColumns.has(String(column))
+      ? ''
+      : undefined,
     ref: cellRef,
     style: spanStyle,
     textValue,

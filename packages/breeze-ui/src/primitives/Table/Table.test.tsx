@@ -1,9 +1,11 @@
 import { act, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
 import renderBreeze from '../../../test/render';
 import stubIntersectionObserver from '../../../test/stubIntersectionObserver';
+import { BreezeProvider } from '../../provider/BreezeProvider';
 import { Button } from '../Button/Button';
 import { Table } from './Table';
 
@@ -294,16 +296,18 @@ describe('Table', () => {
     );
   });
 
-  it('propagates compact column visibility to matching cells', async () => {
+  it('renders compact column visibility and removes its compact grid track', async () => {
     renderBreeze(
-      <Table.Root aria-label="Scheduled records" layout="grid">
+      <Table.Root
+        aria-label="Scheduled records"
+        compactHiddenColumns={['date']}
+        layout="grid"
+      >
         <Table.Header>
           <Table.Column id="name" rowHeader>
             Name
           </Table.Column>
-          <Table.Column compactHidden id="date">
-            Date
-          </Table.Column>
+          <Table.Column id="date">Date</Table.Column>
         </Table.Header>
         <Table.Body>
           <Table.Row id="subscription" textValue="Subscription 12 August">
@@ -316,13 +320,46 @@ describe('Table', () => {
 
     const nameCell = screen.getByRole('rowheader', { name: 'Subscription' });
     const dateCell = screen.getByRole('gridcell', { name: '12 August' });
+    const table = screen.getByRole('grid', { name: 'Scheduled records' });
 
-    await waitFor(() => {
-      expect(dateCell).toHaveAttribute('data-breeze-compact-hidden', '');
-    });
+    expect(dateCell).toHaveAttribute('data-breeze-compact-hidden', '');
     expect(nameCell).not.toHaveAttribute('data-breeze-compact-hidden');
     expect(dateCell).toHaveClass(
       'max-[680px]:data-[breeze-compact-hidden]:!hidden',
+    );
+    await waitFor(() => {
+      expect(table).toHaveStyle(
+        '--breeze-table-columns: minmax(0, 1fr) minmax(0, 1fr); --breeze-table-compact-columns: minmax(0, 1fr)',
+      );
+    });
+  });
+
+  it('includes compact-hidden cells in server-rendered markup', () => {
+    const markup = renderToStaticMarkup(
+      <BreezeProvider locale="en-GB" portalContainer={null}>
+        <Table.Root
+          aria-label="Server scheduled records"
+          compactHiddenColumns={['date']}
+          layout="grid"
+        >
+          <Table.Header>
+            <Table.Column id="name" rowHeader>
+              Name
+            </Table.Column>
+            <Table.Column id="date">Date</Table.Column>
+          </Table.Header>
+          <Table.Body>
+            <Table.Row id="subscription" textValue="Subscription 12 August">
+              <Table.Cell column="name">Subscription</Table.Cell>
+              <Table.Cell column="date">12 August</Table.Cell>
+            </Table.Row>
+          </Table.Body>
+        </Table.Root>
+      </BreezeProvider>,
+    );
+
+    expect(markup).toContain(
+      'data-breeze-cell-column="date" data-breeze-compact-hidden=""',
     );
   });
 
