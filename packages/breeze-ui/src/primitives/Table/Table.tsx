@@ -175,7 +175,7 @@ const tableRow = tv({
 });
 
 const tableCell = tv({
-  base: 'grid min-w-0 grid-cols-[minmax(5rem,auto)_minmax(0,1fr)] gap-4 border-b border-[var(--breeze-border)] px-4 py-2 text-start [overflow-wrap:anywhere] last:border-b-0 before:me-1 before:hidden before:font-[family-name:var(--breeze-font-display)] before:text-base before:leading-[1.4] before:font-bold before:text-[var(--breeze-ink-muted)] data-[label]:before:inline-block data-[label]:before:content-[attr(data-label)] sm:table-cell sm:border-b sm:border-[var(--breeze-border)] sm:px-4 sm:py-3 sm:last:border-b sm:data-[label]:before:hidden [&>*]:min-w-0',
+  base: 'grid min-w-0 grid-cols-[minmax(5rem,auto)_minmax(0,1fr)] gap-4 border-b border-[var(--breeze-border)] px-4 py-2 text-start [overflow-wrap:anywhere] last:border-b-0 before:me-1 before:hidden before:font-[family-name:var(--breeze-font-display)] before:text-base before:leading-[1.4] before:font-bold before:text-[var(--breeze-ink-muted)] data-[label]:before:inline-block data-[label]:before:content-[attr(data-label)] max-[680px]:data-[breeze-compact-hidden]:!hidden sm:table-cell sm:border-b sm:border-[var(--breeze-border)] sm:px-4 sm:py-3 sm:last:border-b sm:data-[label]:before:hidden [&>*]:min-w-0',
   defaultVariants: {
     align: 'start',
   },
@@ -323,6 +323,8 @@ export interface TableColumnProps
   children: ReactNode;
   /** Derives a compact record label from this heading. Defaults to `true`. */
   compactLabel?: boolean;
+  /** Omits the corresponding cell below the Breeze small breakpoint. Defaults to `false`. */
+  compactHidden?: boolean;
   /** Stable string or number column key. */
   id: CollectionKey;
   /** Marks this heading as the row label announced during cell navigation. Defaults to `false`. */
@@ -464,6 +466,7 @@ function resolveSelectionMode(
 }
 
 interface ResponsiveColumnMetadata {
+  compactHidden: boolean;
   label: string | undefined;
   track: string;
 }
@@ -494,6 +497,8 @@ function readResponsiveColumnMetadata(
           [
             column,
             {
+              compactHidden:
+                heading.dataset.breezeColumnCompactHidden === 'true',
               label:
                 compactLabel === undefined || compactLabel.length === 0
                   ? undefined
@@ -522,12 +527,19 @@ function syncResponsiveCellLabels(
     .querySelectorAll<HTMLElement>('[data-breeze-cell-column]')
     .forEach((cell) => {
       const { dataset } = cell;
-      const label = columns.get(dataset.breezeCellColumn ?? '')?.label;
+      const column = columns.get(dataset.breezeCellColumn ?? '');
+      const label = column?.label;
 
       if (label !== undefined && label.length > 0) {
         dataset.label = label;
       } else {
         delete dataset.label;
+      }
+
+      if (column?.compactHidden === true) {
+        dataset.breezeCompactHidden = '';
+      } else {
+        delete dataset.breezeCompactHidden;
       }
     });
 }
@@ -620,6 +632,7 @@ export function Root({
     observer.observe(root, {
       attributeFilter: [
         'data-breeze-column-width',
+        'data-breeze-column-compact-hidden',
         'data-breeze-compact-label',
         'data-breeze-compact-label-text',
       ],
@@ -705,6 +718,7 @@ function renderTableColumn({
   align = 'start',
   children,
   className,
+  compactHidden = false,
   compactLabel = true,
   id,
   ref,
@@ -730,6 +744,7 @@ function renderTableColumn({
       class: className,
     }),
     'data-breeze-column': String(id),
+    'data-breeze-column-compact-hidden': compactHidden ? 'true' : undefined,
     'data-breeze-column-width': serializedWidth,
     'data-breeze-compact-label': String(compactLabel),
     'data-breeze-compact-label-text': compactLabelText,
