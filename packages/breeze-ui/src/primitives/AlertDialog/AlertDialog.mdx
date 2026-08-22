@@ -62,7 +62,7 @@ Put every decision in `Actions`. On compact layouts actions fill the width and v
 
 ## State and dismissal
 
-Use `defaultOpen`, controlled `open` with `onOpenChange`, or immutable `open` with `readOnly`. `onOpenChange` receives the complete next Boolean. Outside pointer interaction never dismisses AlertDialog. Escape dismisses by default; `keyboardDismissDisabled` removes that path, so an enabled explicit action is mandatory.
+Use `defaultOpen`, controlled `open` with `onOpenChange`, or immutable `open` with `readOnly`. For an application-owned trigger outside the compound root, set `triggerless`, `open`, and `onOpenChange`; `defaultOpen` and read-only mode are unavailable. `onOpenChange` receives the complete next Boolean. Outside pointer interaction never dismisses AlertDialog. Escape dismisses by default; `keyboardDismissDisabled` removes that path, so an enabled explicit action is mandatory.
 
 Loading, disabled, invalid, empty, and error behaviour belongs to the decision actions or content. A loading destructive action should remain clearly labelled and must not leave the dialog with no usable cancellation path.
 

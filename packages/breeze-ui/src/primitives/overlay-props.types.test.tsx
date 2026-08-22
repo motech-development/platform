@@ -19,6 +19,17 @@ import { Tooltip } from './Tooltip/Tooltip';
 </Dialog.Root>;
 
 <AlertDialog.Root defaultOpen>Alert</AlertDialog.Root>;
+<AlertDialog.Root triggerless open onOpenChange={() => undefined}>
+  Alert
+</AlertDialog.Root>;
+// @ts-expect-error triggerless alert dialogs require a controlled state callback
+<AlertDialog.Root triggerless open>
+  Alert
+</AlertDialog.Root>;
+// @ts-expect-error triggerless alert dialogs cannot own uncontrolled state
+<AlertDialog.Root defaultOpen triggerless open onOpenChange={() => undefined}>
+  Alert
+</AlertDialog.Root>;
 <AlertDialog.Actions aria-label="Decision actions" className="actions">
   Actions
 </AlertDialog.Actions>;

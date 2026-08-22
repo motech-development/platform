@@ -1,5 +1,5 @@
 import type { HTMLAttributes, ReactElement, ReactNode, Ref } from 'react';
-import { createElement } from 'react';
+import { createContext, createElement, useContext } from 'react';
 import { DialogTrigger as AriaDialogTrigger } from 'react-aria-components/Dialog';
 import { tv } from 'tailwind-variants';
 import useForwardedRef from '../../internal/hooks/useForwardedRef';
@@ -44,13 +44,29 @@ interface UncontrolledAlertDialogRootProps {
   open?: never;
   readOnly?: false;
 }
+interface TriggeredAlertDialogRootProps extends AlertDialogRootSharedProps {
+  /** Uses a compound trigger to coordinate alert-dialog state. */
+  triggerless?: false;
+}
+interface TriggerlessAlertDialogRootProps extends AlertDialogRootSharedProps {
+  defaultOpen?: never;
+  /** Called with the next externally controlled open state. */
+  onOpenChange: (open: boolean) => void;
+  /** Current externally controlled open state. */
+  open: boolean;
+  readOnly?: never;
+  /** Omits a compound trigger for state controlled by an external action. */
+  triggerless: true;
+}
 /** Props for controlled, read-only, or uncontrolled alert-dialog state. */ export type AlertDialogRootProps =
-  AlertDialogRootSharedProps &
-    (
-      | ControlledAlertDialogRootProps
-      | ReadOnlyAlertDialogRootProps
-      | UncontrolledAlertDialogRootProps
-    );
+
+    | (TriggeredAlertDialogRootProps &
+        (
+          | ControlledAlertDialogRootProps
+          | ReadOnlyAlertDialogRootProps
+          | UncontrolledAlertDialogRootProps
+        ))
+    | TriggerlessAlertDialogRootProps;
 /** Props for the alert-dialog trigger. */ export type AlertDialogTriggerProps =
   SharedOverlayTriggerProps;
 /** Props for alert-dialog content requiring explicit action. */ export type AlertDialogContentProps =
@@ -70,28 +86,53 @@ export interface AlertDialogActionsProps
   ref?: Ref<HTMLDivElement>;
 }
 
+interface AlertDialogModalState {
+  onOpenChange: (open: boolean) => void;
+  open: boolean;
+}
+
+const AlertDialogModalStateContext = createContext<
+  AlertDialogModalState | undefined
+>(undefined);
+
 /** Coordinates an accessible modal decision that requires acknowledgement. */
-export function Root({
-  defaultOpen,
-  onOpenChange,
-  open,
-  readOnly: _readOnly,
-  ...props
-}: Readonly<AlertDialogRootProps>): ReactElement {
+export function Root(props: Readonly<AlertDialogRootProps>): ReactElement {
   useBreezeContext();
-  return createElement(AriaDialogTrigger, {
-    ...props,
-    defaultOpen,
-    isOpen: open,
-    onOpenChange,
-  });
+  const { children, triggerless } = props;
+
+  if (triggerless) {
+    const { onOpenChange, open } = props;
+
+    return createElement(
+      AlertDialogModalStateContext.Provider,
+      { value: { onOpenChange, open } },
+      children,
+    );
+  }
+
+  const { defaultOpen, onOpenChange, open } = props;
+
+  return createElement(
+    AlertDialogModalStateContext.Provider,
+    { value: undefined },
+    <AriaDialogTrigger
+      defaultOpen={defaultOpen}
+      isOpen={open}
+      onOpenChange={onOpenChange}
+    >
+      {children}
+    </AriaDialogTrigger>,
+  );
 }
 export function Content(
   props: Readonly<AlertDialogContentProps>,
 ): ReactElement {
+  const modalState = useContext(AlertDialogModalStateContext);
+
   return createElement(SharedModalContent, {
     ...props,
     dismissible: false,
+    modalState,
     role: 'alertdialog',
   });
 }
