@@ -116,6 +116,10 @@ describe('PendingTransactionsPageContent', () => {
       'href',
       '/my-companies/accounts/company-id',
     );
+    expect(screen.getByRole('link', { name: 'Back' })).not.toHaveClass(
+      'breeze-action',
+    );
+    expect(screen.getByRole('link', { name: 'Back' })).toHaveClass('underline');
     expect(
       screen.getByText(
         'Review transactions before they affect the confirmed balance.',

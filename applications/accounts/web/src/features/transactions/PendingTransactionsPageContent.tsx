@@ -1,11 +1,11 @@
 import { NetworkStatus } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
-import { Button, LinkButton, PageHeader } from '@motech-development/breeze-ui';
-import { ArrowLeftIcon } from '@motech-development/breeze-ui/icons';
+import { Button } from '@motech-development/breeze-ui';
 import { useTranslation } from 'react-i18next';
 import { GET_PENDING_TRANSACTIONS } from '../../data/operations';
 import { LoadingSkeletonRegion } from '../loading/AccountsPageSkeletons';
 import { QueryRefreshAlert } from '../QueryRefreshAlert';
+import { PendingTransactionsPageHeader } from './PendingTransactionsPageHeader';
 import {
   TransactionLedger,
   TransactionLedgerSkeleton,
@@ -45,22 +45,13 @@ export function PendingTransactionsPageContent({
       className="min-w-0"
       data-testid={data ? 'connected-content' : undefined}
     >
-      <PageHeader
+      <PendingTransactionsPageHeader
         actions={
           !initiallyLoading && hasTransactions ? (
             <RecordTransactionLink href={recordTransactionHref} />
           ) : null
         }
-        back={
-          <LinkButton appearance="ghost" href={accountsHref}>
-            <ArrowLeftIcon />
-            {t('Back')}
-          </LinkButton>
-        }
-        description={t(
-          'Review transactions before they affect the confirmed balance.',
-        )}
-        title={t('Pending transactions')}
+        backHref={accountsHref}
       />
       {error && !data ? (
         <TransactionPageError

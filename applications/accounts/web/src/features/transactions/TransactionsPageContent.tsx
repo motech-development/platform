@@ -181,13 +181,13 @@ export function TransactionsPageContent({
         )}
         title={t('Transactions')}
       />
-      {error && !data ? (
+      {error && !data && !initiallyLoading ? (
         <TransactionPageError
           onRetry={() => Promise.all([confirmed.refetch(), pending.refetch()])}
           title={t('We could not load transactions')}
         />
       ) : null}
-      {error && data ? (
+      {error && data && !initiallyLoading ? (
         <TransactionsRefreshAlert
           hasTransactions={hasTransactions}
           onRetry={() => {
@@ -197,7 +197,7 @@ export function TransactionsPageContent({
           }}
         />
       ) : null}
-      {initiallyLoading && !error ? <TransactionsContentSkeleton /> : null}
+      {initiallyLoading ? <TransactionsContentSkeleton /> : null}
       {!initiallyLoading && hasTransactions && data ? (
         <div className="flex flex-col">
           {confirmed.data ? (

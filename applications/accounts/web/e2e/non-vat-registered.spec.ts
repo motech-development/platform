@@ -1,4 +1,28 @@
+import type { Locator } from '@playwright/test';
 import { expect, expectFinancialSummary, getFormInput, test } from './test';
+
+async function expectPendingRowOnOneLine(row: Locator) {
+  const amountCell = row.locator('[data-breeze-cell-column="amount"]');
+  const actionCell = row.locator('[data-breeze-cell-column="actions"]');
+
+  await expect(amountCell.locator('span')).toHaveCSS('white-space', 'nowrap');
+  await expect
+    .poll(async () => {
+      const [actionBox, amountBox] = await Promise.all([
+        actionCell.boundingBox(),
+        amountCell.boundingBox(),
+      ]);
+
+      if (!actionBox || !amountBox) return Number.POSITIVE_INFINITY;
+
+      return Math.abs(
+        actionBox.y +
+          actionBox.height / 2 -
+          (amountBox.y + amountBox.height / 2),
+      );
+    })
+    .toBeLessThan(1);
+}
 
 test.describe('Non-VAT registered', () => {
   let companyCleanupRequired = false;
@@ -530,13 +554,30 @@ test.describe('Non-VAT registered', () => {
     }) => {
       const transaction = accounts[5];
 
+      await page.setViewportSize({ height: 900, width: 680 });
       await openAccountsRoute('not-registered');
       await page.getByRole('link', { name: 'View pending' }).click();
-      await page
+      const pendingRow = page
         .getByRole('row')
         .filter({ hasText: transaction.description })
-        .first()
-        .click();
+        .first();
+      const dateCell = pendingRow.locator('[data-breeze-cell-column="date"]');
+      const compactDate = pendingRow.locator(
+        '[data-breeze-cell-column="transaction"] > span > span:last-child',
+      );
+
+      await expect(dateCell).toBeHidden();
+      await expect(compactDate).toBeVisible();
+      await expect(compactDate).toContainText(/\d{1,2} [A-Z][a-z]+ \d{4}/u);
+      await expect(compactDate.locator('svg.lucide-calendar')).toBeVisible();
+      await expectPendingRowOnOneLine(pendingRow);
+
+      await page.setViewportSize({ height: 900, width: 681 });
+      await expect(dateCell).toBeVisible();
+      await expect(compactDate).toBeHidden();
+      await expect(dateCell.locator('svg.lucide-calendar')).toBeVisible();
+      await expectPendingRowOnOneLine(pendingRow);
+      await pendingRow.click();
       await page.getByRole('button', { name: 'Delete transaction' }).click();
       await page
         .getByLabel(`Type ${transaction.supplier} to confirm`)

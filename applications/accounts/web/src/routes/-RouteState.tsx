@@ -11,7 +11,6 @@ import {
   Surface,
   Typography,
 } from '@motech-development/breeze-ui';
-import { ArrowLeftIcon } from '@motech-development/breeze-ui/icons';
 import type { ErrorComponentProps } from '@tanstack/react-router';
 import { useLocation, useNavigate } from '@tanstack/react-router';
 import { type ReactNode, useEffect } from 'react';
@@ -32,6 +31,7 @@ import {
   TransactionEditDrawerSkeleton,
   TransactionsContentSkeleton,
 } from '../features/loading/AccountsPageSkeletons';
+import { PendingTransactionsPageHeader } from '../features/transactions/PendingTransactionsPageHeader';
 import { TransactionLedgerSkeleton } from '../features/transactions/TransactionLedger';
 import { captureRouteFailure } from '../observability';
 import { type AccountsPendingView, accountsPendingView } from './-route-state';
@@ -211,18 +211,7 @@ function PendingTransactionsPending({
   return (
     <>
       <div className="min-w-0">
-        <PageHeader
-          back={
-            <LinkButton appearance="ghost" href={accountsHref}>
-              <ArrowLeftIcon />
-              {t('Back')}
-            </LinkButton>
-          }
-          description={t(
-            'Review transactions before they affect the confirmed balance.',
-          )}
-          title={t('Pending transactions')}
-        />
+        <PendingTransactionsPageHeader backHref={accountsHref} />
         <LoadingSkeletonRegion loadingLabel={t('Loading Pending Transactions')}>
           <TransactionLedgerSkeleton pending />
         </LoadingSkeletonRegion>

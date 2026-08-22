@@ -302,6 +302,10 @@ describe('TransactionLedger', () => {
     expect(
       screen.queryByRole('img', { name: 'Scheduled transaction' }),
     ).not.toBeInTheDocument();
+    expect(screen.getAllByText('15 August 2026')).toHaveLength(2);
+    screen.getAllByText('15 August 2026').forEach((date) => {
+      expect(date.parentElement?.querySelector('svg')).toBeInTheDocument();
+    });
   });
 
   it('reveals and dismisses Transaction indicator explanations', async () => {

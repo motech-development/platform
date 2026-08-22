@@ -35,7 +35,7 @@ const compactTransactionTableClassName =
   'gap-x-4 [&>tbody>tr]:px-0 [&>tbody>tr]:py-3 [&>tbody>tr>td:first-child]:!ps-4 [&>tbody>tr>td:last-child]:!w-full [&>tbody>tr>td:last-child]:!pe-4 sm:[&>tbody>tr]:px-0';
 
 const groupedTransactionTableClassName =
-  '[&>tbody>tr]:!grid [&>tbody>tr]:grid-cols-[3.25rem_minmax(0,1fr)_max-content_2.25rem] [&>tbody>tr]:items-center [&>tbody>tr]:!gap-x-4 [&>tbody>tr]:!gap-y-0 [&>tbody>tr]:px-0 [&>tbody>tr]:py-3 [&>tbody>tr>td]:!flex [&>tbody>tr>td]:!border-0 [&>tbody>tr>td]:!p-0 [&>tbody>tr>td[data-breeze-cell-column=amount]]:justify-end [&>tbody>tr>td[data-breeze-cell-column=category]]:!hidden [&>tbody>tr>td:first-child]:!ps-4 [&>tbody>tr>td:last-child]:!w-full [&>tbody>tr>td:last-child]:justify-end [&>tbody>tr>td:last-child]:!pe-4 min-[681px]:[&>tbody>tr>td[data-breeze-cell-column=category]]:!flex min-[681px]:[&>tbody>tr>td:first-child]:!ps-0 min-[681px]:[&>tbody>tr>td:last-child]:!pe-0 min-[681px]:[&>thead>tr>th[data-breeze-column=amount]]:justify-end';
+  '[&>tbody>tr]:!grid [&>tbody>tr]:grid-cols-[3.25rem_minmax(0,1fr)_max-content_2.25rem] [&>tbody>tr]:items-center [&>tbody>tr]:!gap-x-4 [&>tbody>tr]:!gap-y-0 [&>tbody>tr]:px-0 [&>tbody>tr]:py-3 [&>tbody>tr>td]:!flex [&>tbody>tr>td]:!border-0 [&>tbody>tr>td]:!p-0 [&>tbody>tr>td[data-breeze-cell-column=amount]]:justify-end [&>tbody>tr>td[data-breeze-cell-column=category]]:!hidden [&>tbody>tr>td[data-breeze-cell-column=date]]:!hidden [&>tbody>tr>td:first-child]:!ps-4 [&>tbody>tr>td:last-child]:!w-full [&>tbody>tr>td:last-child]:justify-end [&>tbody>tr>td:last-child]:!pe-4 min-[681px]:[&>tbody>tr]:grid-cols-[var(--breeze-table-columns)] min-[681px]:[&>tbody>tr>td[data-breeze-cell-column=category]]:!flex min-[681px]:[&>tbody>tr>td[data-breeze-cell-column=date]]:!flex min-[681px]:[&>tbody>tr>td:first-child]:!ps-0 min-[681px]:[&>tbody>tr>td:last-child]:!pe-0 min-[681px]:[&>thead>tr>th[data-breeze-column=amount]]:justify-end';
 
 const transactionSectionRowClassName = '!py-2 [&>td:first-child]:col-span-2';
 
@@ -115,6 +115,27 @@ function ScheduledTransactionIndicator() {
   );
 }
 
+function PendingTransactionDate({
+  date,
+  locale,
+  scheduled,
+}: Readonly<{ date: string; locale: string; scheduled: boolean }>) {
+  return (
+    <span className="flex items-center gap-2 text-[var(--breeze-ink-soft)]">
+      <span>{dayLabel(date, locale)}</span>
+      {scheduled ? (
+        <ScheduledTransactionIndicator />
+      ) : (
+        <CalendarIcon
+          aria-hidden="true"
+          className="text-[var(--breeze-primary)]"
+          size="1rem"
+        />
+      )}
+    </span>
+  );
+}
+
 function TransactionHeaderLabel({
   label,
   loading,
@@ -161,7 +182,7 @@ function TransactionTableHeader({
   const { t } = useTranslation('transactions');
 
   return (
-    <Table.Header className={compact ? 'sr-only' : 'max-[680px]:!hidden'}>
+    <Table.Header className={compact ? 'sr-only' : 'max-[681px]:!hidden'}>
       <Table.Column
         compactLabel={false}
         id="direction"
@@ -290,9 +311,12 @@ function TransactionIdentityCell({
           {transaction.description}
         </Typography>
         {pendingCollection ? (
-          <span className="hidden items-center gap-2 text-[var(--breeze-ink-soft)] max-[680px]:flex">
-            <span>{dayLabel(transaction.date, locale)}</span>
-            {transaction.scheduled ? <ScheduledTransactionIndicator /> : null}
+          <span className="max-[681px]:block! hidden">
+            <PendingTransactionDate
+              date={transaction.date}
+              locale={locale}
+              scheduled={transaction.scheduled === true}
+            />
           </span>
         ) : null}
       </span>
@@ -318,11 +342,12 @@ function TransactionContextCell({
   }
 
   return (
-    <Table.Cell className="max-[680px]:!hidden" column="date">
-      <span className="flex items-center gap-2">
-        <span>{dayLabel(transaction.date, locale)}</span>
-        {transaction.scheduled ? <ScheduledTransactionIndicator /> : null}
-      </span>
+    <Table.Cell column="date">
+      <PendingTransactionDate
+        date={transaction.date}
+        locale={locale}
+        scheduled={transaction.scheduled === true}
+      />
     </Table.Cell>
   );
 }
@@ -340,6 +365,7 @@ function TransactionAmountCell({
     <Table.Cell align="end" column="amount">
       <Typography
         as="span"
+        className="whitespace-nowrap"
         colour={incoming ? 'success' : 'default'}
         tabularNumbers
         weight="semibold"
@@ -445,15 +471,12 @@ function LoadingTransactionRow({
           <Skeleton className="h-5 w-36 max-w-full" />
           <Skeleton className="h-4 w-48 max-w-full" />
           {pending ? (
-            <Skeleton className="hidden h-4 w-28 max-w-full max-[680px]:block" />
+            <Skeleton className="max-[681px]:block! hidden h-4 w-28 max-w-full" />
           ) : null}
         </div>
       </Table.Cell>
       {compact ? null : (
-        <Table.Cell
-          className={pending ? 'max-[680px]:!hidden' : undefined}
-          column={pending ? 'date' : 'category'}
-        >
+        <Table.Cell column={pending ? 'date' : 'category'}>
           <Skeleton className="h-4 w-28 max-w-full" />
         </Table.Cell>
       )}

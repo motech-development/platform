@@ -237,6 +237,7 @@ describe('TransactionsPageContent', () => {
   });
 
   it('shows only the loading layout until both transaction sources have initial data', () => {
+    mocks.confirmedError = new Error('Confirmed refresh failed');
     mocks.pendingHasData = false;
     mocks.pendingLoading = true;
 
@@ -251,6 +252,11 @@ describe('TransactionsPageContent', () => {
     ).toBeVisible();
     expect(screen.queryByText('confirmed-id')).not.toBeInTheDocument();
     expect(screen.queryByText('Financial summary')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        'Transactions could not be refreshed. Existing results are still shown.',
+      ),
+    ).not.toBeInTheDocument();
   });
 
   it('waits for Confirmed Transactions when Pending data arrives first', () => {
@@ -272,8 +278,8 @@ describe('TransactionsPageContent', () => {
   it('offers recovery when neither transaction source has initial data', async () => {
     mocks.confirmedError = new Error('Confirmed unavailable');
     mocks.confirmedHasData = false;
+    mocks.pendingError = new Error('Pending unavailable');
     mocks.pendingHasData = false;
-    mocks.pendingLoading = true;
 
     render(
       <BreezeProvider locale="en-GB">
@@ -290,6 +296,24 @@ describe('TransactionsPageContent', () => {
     ).not.toBeInTheDocument();
     expect(mocks.confirmedRefetch).toHaveBeenCalledOnce();
     expect(mocks.pendingRefetch).toHaveBeenCalledOnce();
+  });
+
+  it('keeps loading when one source fails before the other settles', () => {
+    mocks.confirmedError = new Error('Confirmed unavailable');
+    mocks.confirmedHasData = false;
+    mocks.pendingHasData = false;
+    mocks.pendingLoading = true;
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <TransactionsPageContent companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    expect(
+      screen.getByRole('status', { name: 'Loading transactions' }),
+    ).toBeVisible();
+    expect(screen.queryByText('Could not load')).not.toBeInTheDocument();
   });
 
   it('retries both sources after a failed partial refresh', async () => {

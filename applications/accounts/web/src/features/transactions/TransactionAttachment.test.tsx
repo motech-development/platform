@@ -238,6 +238,70 @@ describe('TransactionAttachment', () => {
     },
   );
 
+  it('restores the delete action when deletion throws synchronously', async () => {
+    const onDeleted = vi.fn(() => {
+      throw new Error('Delete failed');
+    });
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <TransactionAttachment
+          companyId="company-id"
+          onDeleted={onDeleted}
+          path="company-id/invoice.pdf"
+        />
+      </BreezeProvider>,
+    );
+
+    const deleteButton = screen.getByRole('button', { name: 'Delete file' });
+
+    await userEvent.click(deleteButton);
+    await waitFor(() => expect(deleteButton).toBeEnabled());
+    expect(screen.getByText('invoice.pdf')).toBeVisible();
+  });
+
+  it('does not overlap attachment view and delete operations', async () => {
+    const file = new Blob(['invoice'], { type: 'application/pdf' });
+    let resolveDeletion!: (deleted: boolean) => void;
+    let resolveDownload!: (file: Blob) => void;
+    const deletion = new Promise<boolean>((resolve) => {
+      resolveDeletion = resolve;
+    });
+    const download = new Promise<Blob>((resolve) => {
+      resolveDownload = resolve;
+    });
+
+    mocks.query.mockResolvedValue({
+      data: { requestDownload: { url: 'https://download/invoice' } },
+    });
+    mocks.download.mockReturnValue(download);
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <TransactionAttachment
+          companyId="company-id"
+          onDeleted={() => deletion}
+          path="company-id/invoice.pdf"
+        />
+      </BreezeProvider>,
+    );
+
+    const deleteButton = screen.getByRole('button', { name: 'Delete file' });
+    const viewButton = screen.getByRole('button', { name: 'View file' });
+
+    await userEvent.click(viewButton);
+    expect(deleteButton).toBeDisabled();
+    resolveDownload(file);
+    await screen.findByText('PDF preview: application/pdf');
+    await userEvent.click(screen.getByRole('button', { name: 'Close' }));
+    await waitFor(() => expect(deleteButton).toBeEnabled());
+
+    await userEvent.click(deleteButton);
+    expect(viewButton).toBeDisabled();
+    resolveDeletion(false);
+    await waitFor(() => expect(viewButton).toBeEnabled());
+  });
+
   it('requires a connection before attachment actions are available', () => {
     mocks.online = false;
 

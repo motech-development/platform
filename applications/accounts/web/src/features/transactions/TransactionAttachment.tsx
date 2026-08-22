@@ -113,7 +113,7 @@ export function TransactionAttachment({
           <>
             <Button
               appearance="outline"
-              disabled={!online || disabled || loading}
+              disabled={!online || disabled || loading || deleting}
               loading={loading}
               onAction={() => {
                 getFile().catch(() => undefined);
@@ -124,11 +124,12 @@ export function TransactionAttachment({
                 : t('Connection required', { ns: 'transactions' })}
             </Button>
             <Button
-              disabled={!online || disabled || deleting}
+              disabled={!online || disabled || deleting || loading}
               loading={deleting}
               onAction={() => {
                 setDeleting(true);
-                Promise.resolve(onDeleted())
+                Promise.resolve()
+                  .then(onDeleted)
                   .then((deleted) => {
                     if (deleted) setFile(undefined);
                   })
