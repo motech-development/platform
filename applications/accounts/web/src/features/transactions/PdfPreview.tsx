@@ -13,6 +13,11 @@ import 'react-pdf/dist/Page/TextLayer.css';
 
 pdfjs.GlobalWorkerOptions.workerSrc = pdfWorker;
 
+const pdfDocumentOptions = {
+  cMapPacked: true,
+  cMapUrl: `${import.meta.env.BASE_URL}cmaps/`,
+  standardFontDataUrl: `${import.meta.env.BASE_URL}standard_fonts/`,
+};
 const maximumPageWidth = 720;
 const maximumZoom = 200;
 const minimumZoom = 10;
@@ -84,12 +89,12 @@ export function PdfPreview({ file }: Readonly<{ file: Blob }>) {
           file={file}
           loading={<p>{t('Opening PDF…')}</p>}
           onLoadSuccess={({ numPages }) => setPages(numPages)}
+          options={pdfDocumentOptions}
         >
           {Array.from({ length: pages }, (_, index) => (
             <Page
               key={`page-${index + 1}`}
               pageNumber={index + 1}
-              renderAnnotationLayer={false}
               rotate={rotation}
               scale={zoom / 100}
               width={pageWidth}

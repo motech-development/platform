@@ -174,9 +174,11 @@ describe('AttachmentUpload', () => {
     );
   });
 
-  it('uses the media type extension when the selected filename has none', async () => {
+  it('does not upload a selected filename without an extension', async () => {
     const user = userEvent.setup();
     const file = new File(['image'], 'receipt', { type: 'image/png' });
+    const onTransfer = vi.fn();
+    const onUploaded = vi.fn();
 
     mocks.requestUpload.mockResolvedValue({
       data: {
@@ -189,8 +191,8 @@ describe('AttachmentUpload', () => {
       <BreezeProvider locale="en-GB">
         <AttachmentUpload
           companyId="company-1"
-          onTransfer={vi.fn()}
-          onUploaded={vi.fn()}
+          onTransfer={onTransfer}
+          onUploaded={onUploaded}
         />
       </BreezeProvider>,
     );
@@ -200,18 +202,10 @@ describe('AttachmentUpload', () => {
       file,
     );
 
-    await waitFor(() => {
-      expect(mocks.requestUpload).toHaveBeenCalledWith({
-        variables: {
-          id: 'company-1',
-          input: {
-            contentType: 'image/png',
-            extension: 'png',
-            metadata: { typename: 'Transaction' },
-          },
-        },
-      });
-    });
+    expect(mocks.requestUpload).not.toHaveBeenCalled();
+    expect(mocks.uploadPresignedFile).not.toHaveBeenCalled();
+    expect(onTransfer).not.toHaveBeenCalled();
+    expect(onUploaded).not.toHaveBeenCalled();
   });
 
   it('rejects a file outside the attachment media contract', async () => {

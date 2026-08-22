@@ -1,13 +1,26 @@
+import { createRequire } from 'node:module';
+import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { sentryTanstackStart } from '@sentry/tanstackstart-react/vite';
 import tailwindcss from '@tailwindcss/vite';
 import { tanstackStart } from '@tanstack/react-start/plugin/vite';
 import react from '@vitejs/plugin-react';
-import { defineConfig, loadEnv } from 'vite';
+import { defineConfig, loadEnv, normalizePath } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
+import { viteStaticCopy } from 'vite-plugin-static-copy';
 import authentication from './src/locales/en-GB/authentication.json';
 import shell from './src/locales/en-GB/shell.json';
 
+const require = createRequire(import.meta.url);
+const pdfDistributionDirectory = dirname(
+  require.resolve('pdfjs-dist/package.json'),
+);
+const pdfCMapsDirectory = normalizePath(
+  join(pdfDistributionDirectory, 'cmaps'),
+);
+const pdfStandardFontsDirectory = normalizePath(
+  join(pdfDistributionDirectory, 'standard_fonts'),
+);
 const ssrInlinedReactDependencies = [
   'lucide-react',
   'react-aria',
@@ -87,6 +100,20 @@ export default defineConfig(({ mode }) => {
         },
       }),
       react(),
+      viteStaticCopy({
+        targets: [
+          {
+            dest: 'cmaps',
+            rename: { stripBase: true },
+            src: `${pdfCMapsDirectory}/*`,
+          },
+          {
+            dest: 'standard_fonts',
+            rename: { stripBase: true },
+            src: `${pdfStandardFontsDirectory}/*`,
+          },
+        ],
+      }),
       VitePWA({
         devOptions: {
           enabled: false,

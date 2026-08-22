@@ -41,10 +41,12 @@ export function AttachmentUpload({
       'image/jpeg': ['jpg', 'jpeg'],
       'image/png': ['png'],
     }[file.type];
-    const requestedExtension = file.name.split('.').at(-1)?.toLowerCase();
-    const extension =
-      extensions?.find((value) => value === requestedExtension) ??
-      extensions?.[0];
+    const extensionIndex = file.name.lastIndexOf('.');
+    const requestedExtension =
+      extensionIndex > 0
+        ? file.name.slice(extensionIndex + 1).toLowerCase()
+        : undefined;
+    const extension = extensions?.find((value) => value === requestedExtension);
 
     if (!extension) {
       return Promise.resolve({ status: 'failed' } as const);

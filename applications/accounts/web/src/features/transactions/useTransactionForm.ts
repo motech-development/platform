@@ -214,6 +214,8 @@ export function useTransactionForm({
       resetAttachmentTransferPending();
     }
   };
+  const cleanUpAttachmentsForDiscard = async () =>
+    (await discardStagedAttachment()) && (await cleanUpPreviousAttachment());
   const attachmentTransferCanSubmit = (
     transfer: AttachmentTransferResult | undefined,
   ) => {
@@ -355,11 +357,8 @@ export function useTransactionForm({
   const navigation = useFormNavigation({
     blockPendingNavigation: submissionPending || additionalPending,
     onClose: async () => {
-      if (!(await discardStagedAttachment())) {
-        throw new Error('Staged attachment cleanup failed');
-      }
-      if (!(await cleanUpPreviousAttachment())) {
-        throw new Error('Previous attachment cleanup failed');
+      if (!(await cleanUpAttachmentsForDiscard())) {
+        throw new Error('Attachment cleanup failed');
       }
 
       return navigate({
@@ -384,9 +383,16 @@ export function useTransactionForm({
     data,
     discardChanges: async () => {
       try {
-        const discarded = await discardStagedAttachment();
+        const resumeBlockedNavigation = navigation.blocker.status === 'blocked';
+        const discarded = await cleanUpAttachmentsForDiscard();
 
-        if (discarded) navigation.discardChanges();
+        if (discarded) {
+          if (resumeBlockedNavigation) {
+            navigation.completeMutation({ resumeBlockedNavigation: true });
+          } else {
+            navigation.discardChanges();
+          }
+        }
         return discarded;
       } catch {
         return false;

@@ -8,8 +8,11 @@ import { useTransactionForm } from './useTransactionForm';
 
 const mocks = vi.hoisted(() => ({
   add: vi.fn(),
+  blockerStatus: 'idle',
   deleteFile: vi.fn(),
   navigate: vi.fn().mockResolvedValue(undefined),
+  proceed: vi.fn(),
+  reset: vi.fn(),
   shouldBlockFn: undefined as undefined | (() => boolean),
   toast: { show: vi.fn() },
   update: vi.fn(),
@@ -62,7 +65,11 @@ vi.mock('@tanstack/react-router', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@tanstack/react-router')>()),
   useBlocker: ({ shouldBlockFn }: { shouldBlockFn: () => boolean }) => {
     mocks.shouldBlockFn = shouldBlockFn;
-    return { proceed: vi.fn(), reset: vi.fn(), status: 'idle' };
+    return {
+      proceed: mocks.proceed,
+      reset: mocks.reset,
+      status: mocks.blockerStatus,
+    };
   },
   useNavigate: () => mocks.navigate,
 }));
@@ -174,7 +181,7 @@ function EditHarness() {
 }
 
 function RemoveAttachmentHarness() {
-  const { form, requestClose } = useTransactionForm({
+  const { discardChanges, form, requestClose } = useTransactionForm({
     companyId: 'company-id',
     confirmedReturnTo: '/my-companies/accounts/$companyId',
     initialValues: {
@@ -208,6 +215,19 @@ function RemoveAttachmentHarness() {
       <button onClick={requestClose} type="button">
         Close transaction
       </button>
+      <button
+        onClick={() => {
+          discardChanges().catch(() => undefined);
+        }}
+        type="button"
+      >
+        Discard transaction changes
+      </button>
+      <form.Subscribe selector={(state) => state.isSubmitting}>
+        {(isSubmitting) => (
+          <output>{isSubmitting ? 'Update pending' : 'Update settled'}</output>
+        )}
+      </form.Subscribe>
     </>
   );
 }
@@ -601,6 +621,7 @@ describe('useTransactionForm', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mocks.blockerStatus = 'idle';
     mocks.shouldBlockFn = undefined;
     mocks.navigate.mockResolvedValue(undefined);
     const addResult = {
@@ -878,6 +899,9 @@ describe('useTransactionForm', () => {
       screen.getByRole('button', { name: 'Remove attachment' }),
     );
     await waitFor(() => expect(mocks.deleteFile).toHaveBeenCalledOnce());
+    await waitFor(() =>
+      expect(screen.getByText('Update settled')).toBeVisible(),
+    );
     await userEvent.click(
       screen.getByRole('button', { name: 'Close transaction' }),
     );
@@ -888,6 +912,39 @@ describe('useTransactionForm', () => {
       mocks.navigate.mock.invocationCallOrder[0] ?? 0,
     );
     expect(mocks.navigate).toHaveBeenCalledOnce();
+  });
+
+  it('retries previous attachment cleanup before proceeding with blocked navigation', async () => {
+    mocks.blockerStatus = 'blocked';
+    mocks.deleteFile
+      .mockResolvedValueOnce({ data: null })
+      .mockResolvedValueOnce({
+        data: { deleteFile: { path: 'company-id/invoice.pdf' } },
+      });
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <RemoveAttachmentHarness />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Remove attachment' }),
+    );
+    await waitFor(() => expect(mocks.deleteFile).toHaveBeenCalledOnce());
+    await waitFor(() =>
+      expect(screen.getByText('Update settled')).toBeVisible(),
+    );
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Discard transaction changes' }),
+    );
+
+    await waitFor(() => expect(mocks.deleteFile).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(mocks.proceed).toHaveBeenCalledOnce());
+    expect(mocks.deleteFile.mock.invocationCallOrder[1]).toBeLessThan(
+      mocks.proceed.mock.invocationCallOrder[0] ?? 0,
+    );
+    expect(mocks.navigate).not.toHaveBeenCalled();
   });
 
   it('deletes a staged attachment when it is removed before submission', async () => {

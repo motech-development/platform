@@ -23,12 +23,23 @@ vi.mock('react-pdf', () => ({
     children,
     loading,
     onLoadSuccess,
+    options,
   }: Readonly<{
     children: ReactNode;
     loading: ReactNode;
     onLoadSuccess: (document: { numPages: number }) => void;
+    options: {
+      cMapPacked: boolean;
+      cMapUrl: string;
+      standardFontDataUrl: string;
+    };
   }>) => (
-    <div>
+    <div
+      data-cmap-packed={options.cMapPacked}
+      data-cmap-url={options.cMapUrl}
+      data-standard-font-data-url={options.standardFontDataUrl}
+      data-testid="pdf-document"
+    >
       {loading}
       <button onClick={() => onLoadSuccess({ numPages: 2 })} type="button">
         Finish loading PDF
@@ -38,10 +49,20 @@ vi.mock('react-pdf', () => ({
   ),
   Page: ({
     pageNumber,
+    renderAnnotationLayer,
     rotate,
     scale,
-  }: Readonly<{ pageNumber: number; rotate: number; scale: number }>) => (
-    <p data-rotate={rotate} data-scale={scale}>
+  }: Readonly<{
+    pageNumber: number;
+    renderAnnotationLayer?: boolean;
+    rotate: number;
+    scale: number;
+  }>) => (
+    <p
+      data-annotation-layer={renderAnnotationLayer !== false}
+      data-rotate={rotate}
+      data-scale={scale}
+    >
       PDF page {pageNumber}
     </p>
   ),
@@ -61,6 +82,14 @@ describe('PdfPreview', () => {
     expect(screen.getByText('Opening PDF…')).toBeInTheDocument();
     expect(screen.getByRole('toolbar', { name: 'PDF controls' })).toBeVisible();
     expect(screen.getByText('100%')).toBeVisible();
+    expect(screen.getByTestId('pdf-document')).toHaveAttribute(
+      'data-cmap-url',
+      '/cmaps/',
+    );
+    expect(screen.getByTestId('pdf-document')).toHaveAttribute(
+      'data-standard-font-data-url',
+      '/standard_fonts/',
+    );
 
     await user.click(
       screen.getByRole('button', { name: 'Finish loading PDF' }),
@@ -70,6 +99,7 @@ describe('PdfPreview', () => {
 
     expect(firstPage).toHaveAttribute('data-rotate', '0');
     expect(firstPage).toHaveAttribute('data-scale', '1');
+    expect(firstPage).toHaveAttribute('data-annotation-layer', 'true');
     expect(screen.getByText('PDF page 2')).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'Zoom in' }));
