@@ -1,6 +1,6 @@
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { createElement } from 'react';
+import { createElement, useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import renderBreeze from '../../../test/render';
 import {
@@ -9,6 +9,49 @@ import {
 } from './ConfirmationDialog';
 
 describe('ConfirmationDialog', () => {
+  it('supports externally controlled triggerless confirmation', async () => {
+    const user = userEvent.setup();
+
+    function ControlledConfirmation() {
+      const [open, setOpen] = useState(false);
+
+      return (
+        <>
+          <button onClick={() => setOpen(true)} type="button">
+            Leave editor
+          </button>
+          <ConfirmationDialog
+            cancelLabel="Keep editing"
+            closeLabel="Close confirmation"
+            confirmLabel="Discard changes"
+            description="Unsaved changes will be lost."
+            onConfirm={() => undefined}
+            onOpenChange={setOpen}
+            open={open}
+            title="Discard changes?"
+            triggerless
+            variant="warning"
+          />
+        </>
+      );
+    }
+
+    renderBreeze(<ControlledConfirmation />);
+
+    const externalTrigger = screen.getByRole('button', {
+      name: 'Leave editor',
+    });
+
+    await user.click(externalTrigger);
+    expect(
+      screen.getByRole('alertdialog', { name: 'Discard changes?' }),
+    ).toBeVisible();
+    await user.click(screen.getByRole('button', { name: 'Keep editing' }));
+
+    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
+    await waitFor(() => expect(externalTrigger).toHaveFocus());
+  });
+
   it('reports confirmation, closes, and restores trigger focus', async () => {
     const user = userEvent.setup();
     const onConfirm = vi.fn();

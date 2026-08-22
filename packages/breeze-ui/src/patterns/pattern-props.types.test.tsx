@@ -49,6 +49,28 @@ const missingConfirmationTrigger: ConfirmationDialogProps = {
   onConfirm: () => undefined,
   title: 'Title',
 };
+const triggerlessConfirmation: ConfirmationDialogProps = {
+  cancelLabel: 'Cancel',
+  closeLabel: 'Close confirmation',
+  confirmLabel: 'Confirm',
+  description: 'Description',
+  onConfirm: () => undefined,
+  onOpenChange: () => undefined,
+  open: true,
+  title: 'Title',
+  triggerless: true,
+};
+// @ts-expect-error triggerless confirmations require a controlled state callback
+const invalidTriggerlessConfirmation: ConfirmationDialogProps = {
+  cancelLabel: 'Cancel',
+  closeLabel: 'Close confirmation',
+  confirmLabel: 'Confirm',
+  description: 'Description',
+  onConfirm: () => undefined,
+  open: true,
+  title: 'Title',
+  triggerless: true,
+};
 // @ts-expect-error controlled user-menu state requires a change callback
 const invalidUserMenu: UserMenuProps = {
   actions: [],
@@ -65,6 +87,12 @@ describe('pattern public prop contracts', () => {
     expectTypeOf(invalidConfirmation).toMatchTypeOf<ConfirmationDialogProps>();
     expectTypeOf(
       missingConfirmationTrigger,
+    ).toMatchTypeOf<ConfirmationDialogProps>();
+    expectTypeOf(
+      triggerlessConfirmation,
+    ).toMatchTypeOf<ConfirmationDialogProps>();
+    expectTypeOf(
+      invalidTriggerlessConfirmation,
     ).toMatchTypeOf<ConfirmationDialogProps>();
     expectTypeOf(invalidPassword).toMatchTypeOf<PasswordFieldProps>();
     expectTypeOf(invalidSegmented).toMatchTypeOf<SegmentedControlProps>();

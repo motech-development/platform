@@ -1,11 +1,53 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { createRef } from 'react';
+import { createRef, useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import renderBreeze from '../../../test/render';
 import { AlertDialog } from './AlertDialog';
 
 describe('AlertDialog', () => {
+  it('supports controlled triggerless state and restores external focus', async () => {
+    const user = userEvent.setup();
+
+    function ControlledAlertDialog() {
+      const [open, setOpen] = useState(false);
+
+      return (
+        <>
+          <button onClick={() => setOpen(true)} type="button">
+            Remove selected record
+          </button>
+          <AlertDialog.Root onOpenChange={setOpen} open={open} triggerless>
+            <AlertDialog.Content>
+              <AlertDialog.Title>Remove selected record?</AlertDialog.Title>
+              <AlertDialog.Description>
+                The record will no longer be available.
+              </AlertDialog.Description>
+              <AlertDialog.Actions>
+                <AlertDialog.Close>Keep record</AlertDialog.Close>
+              </AlertDialog.Actions>
+            </AlertDialog.Content>
+          </AlertDialog.Root>
+        </>
+      );
+    }
+
+    renderBreeze(<ControlledAlertDialog />);
+
+    const externalTrigger = screen.getByRole('button', {
+      name: 'Remove selected record',
+    });
+
+    await user.click(externalTrigger);
+    expect(
+      screen.getByRole('alertdialog', { name: 'Remove selected record?' }),
+    ).toBeVisible();
+    await user.click(screen.getByRole('button', { name: 'Keep record' }));
+
+    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
+    await waitFor(() => expect(externalTrigger).toHaveFocus());
+  });
+
   it('requires explicit action rather than outside dismissal', async () => {
     const user = userEvent.setup();
     const onAction = vi.fn();

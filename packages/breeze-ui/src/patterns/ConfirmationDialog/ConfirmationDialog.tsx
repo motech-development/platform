@@ -21,8 +21,6 @@ interface ConfirmationDialogSharedProps {
   onConfirm: () => void;
   /** Dialog heading. */
   title: ReactNode;
-  /** Semantic action content that opens the dialog. */
-  trigger: ReactNode;
   /** Visual treatment for the trigger. Defaults to `solid`. */
   triggerAppearance?: VisualAppearance;
   /** Semantic confirming action colour. Defaults to `danger`. */
@@ -56,12 +54,35 @@ interface UncontrolledConfirmationDialogProps {
   readOnly?: false;
 }
 
+interface TriggeredConfirmationDialogProps {
+  /** Semantic action content that opens the dialog. */
+  trigger: ReactNode;
+  /** Uses the pattern's semantic trigger to coordinate dialog state. */
+  triggerless?: false;
+}
+
+interface TriggerlessConfirmationDialogProps {
+  defaultOpen?: never;
+  /** Called with the next externally controlled open state. */
+  onOpenChange: (open: boolean) => void;
+  /** Current externally controlled open state. */
+  open: boolean;
+  readOnly?: never;
+  trigger?: never;
+  /** Omits the pattern trigger for state controlled by an external action. */
+  triggerless: true;
+}
+
 /** Props for a controlled, read-only, or uncontrolled confirmation dialog. */
 export type ConfirmationDialogProps = ConfirmationDialogSharedProps &
   (
-    | ControlledConfirmationDialogProps
-    | ReadOnlyConfirmationDialogProps
-    | UncontrolledConfirmationDialogProps
+    | (TriggeredConfirmationDialogProps &
+        (
+          | ControlledConfirmationDialogProps
+          | ReadOnlyConfirmationDialogProps
+          | UncontrolledConfirmationDialogProps
+        ))
+    | TriggerlessConfirmationDialogProps
   );
 
 /**
@@ -84,13 +105,16 @@ export function ConfirmationDialog({
   title,
   trigger,
   triggerAppearance,
+  triggerless = false,
   variant = 'danger',
 }: Readonly<ConfirmationDialogProps>): ReactElement {
   const content = (
     <>
-      <AlertDialog.Trigger appearance={triggerAppearance} variant={variant}>
-        {trigger}
-      </AlertDialog.Trigger>
+      {triggerless ? null : (
+        <AlertDialog.Trigger appearance={triggerAppearance} variant={variant}>
+          {trigger}
+        </AlertDialog.Trigger>
+      )}
       <AlertDialog.Content
         className="breeze-confirmation-dialog max-h-[calc(100dvh-2rem)] w-full max-w-md border-0 border-b-2 border-b-[var(--breeze-border-strong)] p-0 shadow-[0_8px_0_rgb(6_12_24_/_22%)]"
         overlayClassName={`p-5 ${nested ? 'bg-transparent forced-colors:bg-transparent' : ''}`}
@@ -141,6 +165,20 @@ export function ConfirmationDialog({
       </AlertDialog.Content>
     </>
   );
+
+  if (triggerless) {
+    if (open === undefined || onOpenChange === undefined) {
+      throw new Error(
+        'Triggerless ConfirmationDialog requires controlled open state.',
+      );
+    }
+
+    return (
+      <AlertDialog.Root onOpenChange={onOpenChange} open={open} triggerless>
+        {content}
+      </AlertDialog.Root>
+    );
+  }
 
   if (open === undefined) {
     return (

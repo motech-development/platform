@@ -1,5 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { useState } from 'react';
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test';
+import { Button } from '../../primitives/Button/Button';
 import { ConfirmationDialog } from './ConfirmationDialog';
 
 const meta = {
@@ -9,6 +11,28 @@ const meta = {
 
 export default meta;
 type Story = StoryObj<typeof meta>;
+
+function TriggerlessConfirmationExample() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <Button onAction={() => setOpen(true)}>Leave editor</Button>
+      <ConfirmationDialog
+        cancelLabel="Keep editing"
+        closeLabel="Close confirmation"
+        confirmLabel="Discard changes"
+        description="Your unsaved changes will be lost."
+        onConfirm={() => undefined}
+        onOpenChange={setOpen}
+        open={open}
+        title="Discard changes?"
+        triggerless
+        variant="warning"
+      />
+    </>
+  );
+}
 
 /**
  * Opens an uncontrolled destructive confirmation, activates the explicit
@@ -60,6 +84,41 @@ export const ControlledOpen: Story = {
     trigger: 'Archive item',
     variant: 'warning',
   },
+};
+
+/**
+ * Opens a controlled warning confirmation from an application-owned action
+ * outside the fixed pattern and restores focus there after cancellation.
+ *
+ * @summary externally triggered controlled confirmation
+ */
+export const TriggerlessControlled: Story = {
+  args: {
+    cancelLabel: 'Keep editing',
+    closeLabel: 'Close confirmation',
+    confirmLabel: 'Discard changes',
+    description: 'Your unsaved changes will be lost.',
+    onConfirm: fn(),
+    onOpenChange: fn(),
+    open: false,
+    title: 'Discard changes?',
+    triggerless: true,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const externalTrigger = canvas.getByRole('button', {
+      name: 'Leave editor',
+    });
+
+    await userEvent.click(externalTrigger);
+    const body = within(canvasElement.ownerDocument.body);
+    await expect(
+      body.getByRole('alertdialog', { name: 'Discard changes?' }),
+    ).toBeVisible();
+    await userEvent.click(body.getByRole('button', { name: 'Keep editing' }));
+    await waitFor(() => expect(externalTrigger).toHaveFocus());
+  },
+  render: TriggerlessConfirmationExample,
 };
 
 /**
