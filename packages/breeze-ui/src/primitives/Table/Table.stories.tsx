@@ -384,7 +384,17 @@ export const ResponsiveGridColumnVariant: Story = {
  */
 export const CompactGridColumns: Story = {
   args: { 'aria-label': 'Compact scheduled records', children: null },
-  globals: { viewport: { value: 'mobile1' } },
+  globals: { viewport: { value: 'compactBoundary' } },
+  parameters: {
+    viewport: {
+      options: {
+        compactBoundary: {
+          name: 'Compact boundary',
+          styles: { height: '800px', width: '680px' },
+        },
+      },
+    },
+  },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const table = canvas.getByRole('grid', {
@@ -394,6 +404,11 @@ export const CompactGridColumns: Story = {
     const name = canvas.getByRole('rowheader', { name: 'Subscription' });
     const date = canvas.getByText('12 August');
     const amount = canvas.getByRole('gridcell', { name: '£20' });
+    const summaryRow = canvas.getByRole('row', { name: 'Summary' });
+    const summary = canvas.getByRole('rowheader', { name: 'Summary' });
+    const summaryAmount = within(summaryRow).getByRole('gridcell', {
+      name: '£40',
+    });
     const tracks = getComputedStyle(table).gridTemplateColumns.split(' ');
 
     await expect(tracks).toHaveLength(2);
@@ -402,6 +417,16 @@ export const CompactGridColumns: Story = {
       amount.getBoundingClientRect().left,
     );
     await expect(row.getBoundingClientRect().width).toBeGreaterThan(0);
+    await expect(summary.getBoundingClientRect().right).toBeLessThanOrEqual(
+      summaryAmount.getBoundingClientRect().left,
+    );
+
+    await userEvent.click(name);
+    await expect(name).toHaveFocus();
+    await userEvent.keyboard('{ArrowRight}');
+    await expect(amount).toHaveFocus();
+    await userEvent.keyboard('{ArrowLeft}');
+    await expect(name).toHaveFocus();
   },
   render: () => (
     <Table.Root
@@ -426,6 +451,14 @@ export const CompactGridColumns: Story = {
           <Table.Cell column="date">12 August</Table.Cell>
           <Table.Cell align="end" column="amount">
             £20
+          </Table.Cell>
+        </Table.Row>
+        <Table.Row id="summary" textValue="Summary £40">
+          <Table.Cell colSpan={2} column="name">
+            Summary
+          </Table.Cell>
+          <Table.Cell align="end" column="amount">
+            £40
           </Table.Cell>
         </Table.Row>
       </Table.Body>
@@ -817,10 +850,13 @@ export const ReadOnlyAndEmpty: Story = {
   ),
 };
 
-function VirtualizedTable() {
+function VirtualizedTable({
+  compactHiddenState = false,
+}: Readonly<{ compactHiddenState?: boolean }>) {
   return (
     <Table.Root
       aria-label="Virtual data"
+      compactHiddenColumns={compactHiddenState ? ['state'] : undefined}
       virtualization={{
         estimatedRowHeight: 52,
         mode: 'variable',
@@ -855,13 +891,18 @@ function VirtualizedTable() {
   );
 }
 
-async function expectVirtualizedTableGeometry(canvasElement: HTMLElement) {
+async function expectVirtualizedTableGeometry(
+  canvasElement: HTMLElement,
+  compactHiddenState = false,
+) {
   const canvas = within(canvasElement);
   const table = canvas.getByRole('grid', { name: 'Virtual data' });
   const firstRow = canvas.getByRole('row', { name: 'Alpha' });
   const secondRow = canvas.getByRole('row', { name: 'Beta' });
   const firstCell = canvas.getByRole('rowheader', { name: 'Alpha' });
-  const secondCell = canvas.getByRole('gridcell', { name: 'Ready' });
+  const secondCell = compactHiddenState
+    ? canvas.getByText('Ready')
+    : canvas.getByRole('gridcell', { name: 'Ready' });
   const firstRowRectangle = firstRow.getBoundingClientRect();
   const firstCellRectangle = firstCell.getBoundingClientRect();
   const secondCellRectangle = secondCell.getBoundingClientRect();
@@ -877,12 +918,19 @@ async function expectVirtualizedTableGeometry(canvasElement: HTMLElement) {
   if (compact) {
     const secondRowRectangle = secondRow.getBoundingClientRect();
 
-    await expect(firstCellRectangle.width).toBe(secondCellRectangle.width);
-    await expect(firstCellRectangle.x).toBe(secondCellRectangle.x);
-    await expect(secondCellRectangle.y).toBeGreaterThan(firstCellRectangle.y);
-    await expect(firstRowRectangle.bottom).toBeLessThanOrEqual(
-      secondRowRectangle.y,
-    );
+    if (compactHiddenState) {
+      await expect(secondCellRectangle.width).toBe(0);
+      await expect(firstRowRectangle.bottom).toBeGreaterThanOrEqual(
+        secondRowRectangle.y,
+      );
+    } else {
+      await expect(firstCellRectangle.width).toBe(secondCellRectangle.width);
+      await expect(firstCellRectangle.x).toBe(secondCellRectangle.x);
+      await expect(secondCellRectangle.y).toBeGreaterThan(firstCellRectangle.y);
+      await expect(firstRowRectangle.bottom).toBeLessThanOrEqual(
+        secondRowRectangle.y,
+      );
+    }
     await expect(table.scrollWidth).toBe(table.clientWidth);
 
     return;
@@ -912,7 +960,7 @@ export const VariableVirtualizationAndLoading: Story = {
   args: { 'aria-label': 'Virtual data', children: null },
   play: async ({ canvasElement }) =>
     expectVirtualizedTableGeometry(canvasElement),
-  render: VirtualizedTable,
+  render: () => <VirtualizedTable />,
 };
 
 /**
@@ -925,8 +973,8 @@ export const VariableVirtualizationAndLoadingCompact: Story = {
   args: { 'aria-label': 'Virtual data', children: null },
   globals: { viewport: { value: 'mobile1' } },
   play: async ({ canvasElement }) =>
-    expectVirtualizedTableGeometry(canvasElement),
-  render: () => <VirtualizedTable />,
+    expectVirtualizedTableGeometry(canvasElement, true),
+  render: () => <VirtualizedTable compactHiddenState />,
 };
 
 /**
