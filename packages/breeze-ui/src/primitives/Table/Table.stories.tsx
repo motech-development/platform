@@ -4,6 +4,7 @@ import { expect, userEvent, within } from 'storybook/test';
 import type { CollectionSelection } from '../../internal/types/collection';
 import { Button } from '../Button/Button';
 import { Stack } from '../Stack/Stack';
+import { TextField } from '../TextField/TextField';
 import {
   Body,
   Cell,
@@ -376,9 +377,69 @@ export const ResponsiveGridColumnVariant: Story = {
   ),
 };
 
+function GridColumnSpanTable() {
+  return (
+    <Table.Root
+      aria-label="Compact scheduled records"
+      compactHiddenColumns={['marker', 'date', 'actions']}
+      layout="grid"
+    >
+      <Table.Header>
+        <Table.Column id="marker" width="max-content">
+          Marker
+        </Table.Column>
+        <Table.Column id="name" rowHeader>
+          Name
+        </Table.Column>
+        <Table.Column id="date" width="max-content">
+          Date
+        </Table.Column>
+        <Table.Column align="end" id="amount" width="max-content">
+          Amount
+        </Table.Column>
+        <Table.Column id="actions" width="max-content">
+          Actions
+        </Table.Column>
+      </Table.Header>
+      <Table.Body>
+        <Table.Row id="subscription" textValue="Subscription 12 August £20">
+          <Table.Cell column="marker">Marker</Table.Cell>
+          <Table.Cell column="name">Subscription</Table.Cell>
+          <Table.Cell column="date">12 August</Table.Cell>
+          <Table.Cell align="end" column="amount">
+            £20
+          </Table.Cell>
+          <Table.Cell column="actions">Actions</Table.Cell>
+        </Table.Row>
+        <Table.Row id="summary" textValue="Summary £40">
+          <Table.Cell column="marker">Summary marker</Table.Cell>
+          <Table.Cell colSpan={2} column="name">
+            Summary
+          </Table.Cell>
+          <Table.Cell align="end" column="amount">
+            £40
+          </Table.Cell>
+          <Table.Cell column="actions">Summary actions</Table.Cell>
+        </Table.Row>
+        <Table.Row id="editable" textValue="Editable reference">
+          <Table.Cell column="marker">Editable marker</Table.Cell>
+          <Table.Cell column="name">
+            <TextField.Root aria-label="Reference" defaultValue="AB">
+              <TextField.Input />
+            </TextField.Root>
+          </Table.Cell>
+          <Table.Cell column="date">Editable date</Table.Cell>
+          <Table.Cell column="amount">Editable amount</Table.Cell>
+          <Table.Cell column="actions">Editable actions</Table.Cell>
+        </Table.Row>
+      </Table.Body>
+    </Table.Root>
+  );
+}
+
 /**
- * Removes a supporting desktop-only column and its grid track at the compact
- * breakpoint without shifting the following amount into the date track.
+ * Removes supporting desktop-only columns and their grid tracks at the compact
+ * breakpoint while preserving spanning and keyboard geometry.
  *
  * @summary compact grid omits hidden tracks
  */
@@ -427,43 +488,53 @@ export const CompactGridColumns: Story = {
     await expect(amount).toHaveFocus();
     await userEvent.keyboard('{ArrowLeft}');
     await expect(name).toHaveFocus();
+    await userEvent.keyboard('{End}');
+    await expect(amount).toHaveFocus();
+    await userEvent.keyboard('{Home}');
+    await expect(name).toHaveFocus();
+
+    const reference = canvas.getByRole<HTMLInputElement>('textbox', {
+      name: 'Reference',
+    });
+
+    await userEvent.click(reference);
+    await userEvent.keyboard('{ArrowRight}');
+    await expect(reference).toHaveFocus();
   },
-  render: () => (
-    <Table.Root
-      aria-label="Compact scheduled records"
-      compactHiddenColumns={['date']}
-      layout="grid"
-    >
-      <Table.Header>
-        <Table.Column id="name" rowHeader>
-          Name
-        </Table.Column>
-        <Table.Column id="date" width="max-content">
-          Date
-        </Table.Column>
-        <Table.Column align="end" id="amount" width="max-content">
-          Amount
-        </Table.Column>
-      </Table.Header>
-      <Table.Body>
-        <Table.Row id="subscription" textValue="Subscription 12 August £20">
-          <Table.Cell column="name">Subscription</Table.Cell>
-          <Table.Cell column="date">12 August</Table.Cell>
-          <Table.Cell align="end" column="amount">
-            £20
-          </Table.Cell>
-        </Table.Row>
-        <Table.Row id="summary" textValue="Summary £40">
-          <Table.Cell colSpan={2} column="name">
-            Summary
-          </Table.Cell>
-          <Table.Cell align="end" column="amount">
-            £40
-          </Table.Cell>
-        </Table.Row>
-      </Table.Body>
-    </Table.Root>
-  ),
+  render: GridColumnSpanTable,
+};
+
+/**
+ * Restores the native multi-column span when compact-only columns are visible
+ * above the small breakpoint.
+ *
+ * @summary desktop grid preserves full spans
+ */
+export const DesktopGridColumnSpan: Story = {
+  args: { 'aria-label': 'Compact scheduled records', children: null },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const table = canvas.getByRole('grid', {
+      name: 'Compact scheduled records',
+    });
+    const summaryRow = canvas.getByRole('row', { name: 'Summary' });
+    const summary = canvas.getByRole('rowheader', { name: 'Summary' });
+    const summaryAmount = within(summaryRow).getByRole('gridcell', {
+      name: '£40',
+    });
+    const nameHeading = canvas.getByRole('columnheader', { name: 'Name' });
+    const tracks = getComputedStyle(table).gridTemplateColumns.split(' ');
+
+    await expect(tracks).toHaveLength(5);
+    await expect(getComputedStyle(summary).gridColumn).toBe('span 2 / span 2');
+    await expect(summary.getBoundingClientRect().left).toBe(
+      nameHeading.getBoundingClientRect().left,
+    );
+    await expect(summary.getBoundingClientRect().right).toBe(
+      summaryAmount.getBoundingClientRect().left,
+    );
+  },
+  render: GridColumnSpanTable,
 };
 
 /**
@@ -852,7 +923,15 @@ export const ReadOnlyAndEmpty: Story = {
 
 function VirtualizedTable({
   compactHiddenState = false,
-}: Readonly<{ compactHiddenState?: boolean }>) {
+  expandedState = false,
+}: Readonly<{
+  compactHiddenState?: boolean;
+  expandedState?: boolean;
+}>) {
+  const firstState = expandedState
+    ? 'Ready with a detailed status that wraps onto several lines'
+    : 'Ready';
+
   return (
     <Table.Root
       aria-label="Virtual data"
@@ -871,9 +950,9 @@ function VirtualizedTable({
         <Table.Column id="state">State</Table.Column>
       </Table.Header>
       <Table.Body>
-        <Table.Row id={1} textValue="Alpha Ready">
+        <Table.Row id={1} textValue={`Alpha ${firstState}`}>
           <Table.Cell column="name">Alpha</Table.Cell>
-          <Table.Cell column="state">Ready</Table.Cell>
+          <Table.Cell column="state">{firstState}</Table.Cell>
         </Table.Row>
         <Table.Row id={2} textValue="Beta In review">
           <Table.Cell column="name">Beta</Table.Cell>
@@ -901,7 +980,7 @@ async function expectVirtualizedTableGeometry(
   const secondRow = canvas.getByRole('row', { name: 'Beta' });
   const firstCell = canvas.getByRole('rowheader', { name: 'Alpha' });
   const secondCell = compactHiddenState
-    ? canvas.getByText('Ready')
+    ? canvas.getByText(/Ready/)
     : canvas.getByRole('gridcell', { name: 'Ready' });
   const firstRowRectangle = firstRow.getBoundingClientRect();
   const firstCellRectangle = firstCell.getBoundingClientRect();
@@ -940,10 +1019,14 @@ async function expectVirtualizedTableGeometry(
   const secondHeading = canvas.getByRole('columnheader', { name: 'State' });
   const firstHeadingRectangle = firstHeading.getBoundingClientRect();
   const secondHeadingRectangle = secondHeading.getBoundingClientRect();
+  const secondRowRectangle = secondRow.getBoundingClientRect();
 
   await expect(firstCellRectangle.width).toBe(firstHeadingRectangle.width);
   await expect(secondCellRectangle.width).toBe(secondHeadingRectangle.width);
   await expect(firstCellRectangle.right).toBe(secondCellRectangle.left);
+  await expect(firstRowRectangle.bottom).toBeLessThanOrEqual(
+    secondRowRectangle.y,
+  );
   await expect(view?.getComputedStyle(firstCell).borderBottomWidth).toBe('1px');
   await expect(view?.getComputedStyle(secondCell).borderBottomWidth).toBe(
     '1px',
@@ -975,6 +1058,23 @@ export const VariableVirtualizationAndLoadingCompact: Story = {
   play: async ({ canvasElement }) =>
     expectVirtualizedTableGeometry(canvasElement, true),
   render: () => <VirtualizedTable compactHiddenState />,
+};
+
+/**
+ * Keeps desktop row measurement aligned with viewport-driven responsive CSS
+ * when the virtualized table itself is narrower than the small breakpoint.
+ *
+ * @summary narrow desktop virtualization keeps visible cells in measurement
+ */
+export const VariableVirtualizationNarrowDesktop: Story = {
+  args: { 'aria-label': 'Virtual data', children: null },
+  play: async ({ canvasElement }) =>
+    expectVirtualizedTableGeometry(canvasElement, true),
+  render: () => (
+    <div style={{ width: 320 }}>
+      <VirtualizedTable compactHiddenState expandedState />
+    </div>
+  ),
 };
 
 /**

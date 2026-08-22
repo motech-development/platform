@@ -119,7 +119,8 @@ class BreezeTableLayout extends TableLayout<unknown, TableOptions> {
   override updateItemSize(key: CollectionKey, size: Size): boolean {
     const layoutNode = this.layoutNodes.get(key);
     const compact =
-      (this.virtualizer?.size.width ?? Infinity) < breezeSmallBreakpoint;
+      typeof window !== 'undefined' &&
+      window.innerWidth < breezeSmallBreakpoint;
 
     if (
       !compact ||

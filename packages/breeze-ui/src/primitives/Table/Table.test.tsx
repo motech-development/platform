@@ -182,7 +182,7 @@ describe('Table', () => {
     },
     {
       colSpan: 1001,
-      gridColumn: 'var(--breeze-table-compact-column-span)',
+      gridColumn: '',
       normalisedColSpan: 1000,
       span: 'span 1000 / span 1000',
     },

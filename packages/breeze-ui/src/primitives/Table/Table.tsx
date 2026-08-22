@@ -179,7 +179,7 @@ const tableRow = tv({
 });
 
 const tableCell = tv({
-  base: 'grid min-w-0 grid-cols-[minmax(5rem,auto)_minmax(0,1fr)] gap-4 border-b border-[var(--breeze-border)] px-4 py-2 text-start [overflow-wrap:anywhere] last:border-b-0 before:me-1 before:hidden before:font-[family-name:var(--breeze-font-display)] before:text-base before:leading-[1.4] before:font-bold before:text-[var(--breeze-ink-muted)] data-[label]:before:inline-block data-[label]:before:content-[attr(data-label)] max-sm:data-[breeze-compact-hidden]:!hidden sm:table-cell sm:border-b sm:border-[var(--breeze-border)] sm:px-4 sm:py-3 sm:last:border-b sm:data-[label]:before:hidden sm:[grid-column:var(--breeze-table-column-span)] [&>*]:min-w-0',
+  base: 'grid min-w-0 grid-cols-[minmax(5rem,auto)_minmax(0,1fr)] gap-4 border-b border-[var(--breeze-border)] px-4 py-2 text-start [grid-column:var(--breeze-table-compact-column-span)] [overflow-wrap:anywhere] last:border-b-0 before:me-1 before:hidden before:font-[family-name:var(--breeze-font-display)] before:text-base before:leading-[1.4] before:font-bold before:text-[var(--breeze-ink-muted)] data-[label]:before:inline-block data-[label]:before:content-[attr(data-label)] max-sm:data-[breeze-compact-hidden]:!hidden sm:table-cell sm:border-b sm:border-[var(--breeze-border)] sm:px-4 sm:py-3 sm:last:border-b sm:data-[label]:before:hidden sm:[grid-column:var(--breeze-table-column-span)] [&>*]:min-w-0',
   defaultVariants: {
     align: 'start',
   },
@@ -633,7 +633,12 @@ function handleCompactHorizontalNavigation(
   event: KeyboardEvent,
   root: HTMLElement,
 ): void {
-  if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') {
+  if (
+    event.key !== 'ArrowLeft' &&
+    event.key !== 'ArrowRight' &&
+    event.key !== 'Home' &&
+    event.key !== 'End'
+  ) {
     return;
   }
 
@@ -643,20 +648,28 @@ function handleCompactHorizontalNavigation(
     return;
   }
 
-  const targetCell =
-    event.target instanceof view.Element
-      ? event.target.closest<HTMLElement>('[data-breeze-cell-column]')
+  const eventElement =
+    event.target instanceof view.Element ? event.target : null;
+  const activeElement =
+    root.ownerDocument.activeElement instanceof view.Element
+      ? root.ownerDocument.activeElement
       : null;
-  const currentCell =
-    targetCell ??
-    (root.ownerDocument.activeElement instanceof view.Element
-      ? root.ownerDocument.activeElement.closest<HTMLElement>(
-          '[data-breeze-cell-column]',
-        )
-      : null);
+  const targetCell = eventElement?.closest<HTMLElement>(
+    '[data-breeze-cell-column]',
+  );
+  const activeCell = activeElement?.closest<HTMLElement>(
+    '[data-breeze-cell-column]',
+  );
+  const currentCell = targetCell ?? activeCell;
+  const navigationOrigin =
+    targetCell === null || targetCell === undefined
+      ? activeElement
+      : eventElement;
 
   if (
     currentCell === null ||
+    currentCell === undefined ||
+    navigationOrigin !== currentCell ||
     !currentCell.closest('[data-breeze-table]')?.isSameNode(root)
   ) {
     return;
@@ -668,6 +681,41 @@ function handleCompactHorizontalNavigation(
       cell.hasAttribute('data-breeze-cell-column'),
   );
   const currentIndex = cells.indexOf(currentCell);
+  const home = event.key === 'Home';
+  const end = event.key === 'End';
+
+  if (home || end) {
+    const globally = event.ctrlKey || event.metaKey;
+    const candidateCells = globally
+      ? [
+          ...root.querySelectorAll<HTMLElement>('[data-breeze-cell-column]'),
+        ].filter((cell) =>
+          cell.closest('[data-breeze-table]')?.isSameNode(root),
+        )
+      : cells;
+    const boundaryCell = home
+      ? candidateCells[0]
+      : candidateCells[candidateCells.length - 1];
+
+    if (!boundaryCell?.hasAttribute('data-breeze-compact-hidden')) {
+      return;
+    }
+
+    const visibleCells = candidateCells.filter(
+      (cell) => !cell.hasAttribute('data-breeze-compact-hidden'),
+    );
+    const nextCell = home
+      ? visibleCells[0]
+      : visibleCells[visibleCells.length - 1];
+
+    if (nextCell !== undefined) {
+      event.preventDefault();
+      view.queueMicrotask(() => nextCell.focus());
+    }
+
+    return;
+  }
+
   const forwardsKey =
     view.getComputedStyle(root).direction === 'rtl'
       ? 'ArrowLeft'
@@ -1071,7 +1119,6 @@ export function Cell({
           return {
             '--breeze-table-column-span': span,
             '--breeze-table-compact-column-span': span,
-            gridColumn: 'var(--breeze-table-compact-column-span)',
           };
         })();
   const cellRef = useCallback(
