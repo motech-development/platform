@@ -18,6 +18,7 @@ import type {
   CollectionKey,
   CollectionVirtualization,
 } from '../types/collection';
+import encodeCollectionKey from './collectionKey';
 
 const compactTableCellGap = 8;
 const compactTableMeasurementAllowance = 1;
@@ -29,7 +30,7 @@ function tableLayoutColumnKey(node: unknown): string | undefined {
   const key = (node as { column?: { key?: CollectionKey } } | undefined)?.column
     ?.key;
 
-  return key === undefined ? undefined : String(key);
+  return key === undefined ? undefined : encodeCollectionKey(key);
 }
 
 interface VirtualizedCollectionProps {

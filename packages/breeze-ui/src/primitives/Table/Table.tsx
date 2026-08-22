@@ -31,6 +31,7 @@ import {
 } from 'react-aria-components/Table';
 import { tv } from 'tailwind-variants';
 import { ArrowRightIcon } from '../../icons';
+import encodeCollectionKey from '../../internal/collections/collectionKey';
 import useCollectionEmptyContent from '../../internal/collections/useCollectionEmptyContent';
 import useLoadMoreHandler from '../../internal/collections/useLoadMoreHandler';
 import VirtualizedCollection, {
@@ -501,7 +502,7 @@ function readResponsiveColumnMetadata(
         heading.closest('[data-breeze-table]')?.isSameNode(root),
       )
       .flatMap((heading, index): [string, ResponsiveColumnMetadata][] => {
-        const column = heading.dataset.breezeColumn;
+        const column = heading.dataset.breezeColumnKey;
 
         if (column === undefined) {
           return [];
@@ -570,7 +571,7 @@ function syncResponsiveCells(
       }
 
       const { dataset } = cell;
-      const columnKey = dataset.breezeCellColumn ?? '';
+      const columnKey = dataset.breezeCellColumnKey ?? '';
       const column = columns.get(columnKey);
       const label = column?.label;
 
@@ -629,17 +630,153 @@ function syncResponsiveTableMetadata(
   };
 }
 
+const compactHorizontalNavigationKeys = new Set([
+  'ArrowLeft',
+  'ArrowRight',
+  'End',
+  'Home',
+]);
+
+type BrowserWindow = Window & typeof globalThis;
+
+function isOwnedTableElement(element: HTMLElement, root: HTMLElement): boolean {
+  return element.closest('[data-breeze-table]')?.isSameNode(root) ?? false;
+}
+
+function closestTableCell(element: Element | null): HTMLElement | null {
+  return element?.closest<HTMLElement>('[data-breeze-cell-column]') ?? null;
+}
+
+function navigationCell(
+  event: KeyboardEvent,
+  root: HTMLElement,
+  view: BrowserWindow,
+): HTMLElement | null {
+  const eventElement =
+    event.target instanceof view.Element ? event.target : null;
+  const activeElement =
+    root.ownerDocument.activeElement instanceof view.Element
+      ? root.ownerDocument.activeElement
+      : null;
+  const targetCell = closestTableCell(eventElement);
+  const currentCell = targetCell ?? closestTableCell(activeElement);
+  const origin = targetCell === null ? activeElement : eventElement;
+
+  return currentCell !== null &&
+    origin === currentCell &&
+    isOwnedTableElement(currentCell, root)
+    ? currentCell
+    : null;
+}
+
+function rowTableCells(cell: HTMLElement, view: BrowserWindow): HTMLElement[] {
+  return [...(cell.parentElement?.children ?? [])].filter(
+    (candidate): candidate is HTMLElement =>
+      candidate instanceof view.HTMLElement &&
+      candidate.dataset.breezeCellColumn !== undefined,
+  );
+}
+
+function ownedTableCells(root: HTMLElement): HTMLElement[] {
+  return [
+    ...root.querySelectorAll<HTMLElement>('[data-breeze-cell-column]'),
+  ].filter((cell) => isOwnedTableElement(cell, root));
+}
+
+function isCompactHiddenCell(cell: HTMLElement | undefined): boolean {
+  return cell?.dataset.breezeCompactHidden !== undefined;
+}
+
+function boundaryTableCell(
+  cells: HTMLElement[],
+  home: boolean,
+): HTMLElement | undefined {
+  return home ? cells[0] : cells.at(-1);
+}
+
+function visibleBoundaryTableCell(
+  cells: HTMLElement[],
+  home: boolean,
+): HTMLElement | undefined {
+  return boundaryTableCell(
+    cells.filter((cell) => !isCompactHiddenCell(cell)),
+    home,
+  );
+}
+
+function focusVirtualizedBoundary(
+  root: HTMLElement,
+  view: BrowserWindow,
+  home: boolean,
+): void {
+  view.requestAnimationFrame(() => {
+    visibleBoundaryTableCell(ownedTableCells(root), home)?.focus();
+  });
+}
+
+function handleCompactBoundaryNavigation(
+  event: KeyboardEvent,
+  root: HTMLElement,
+  view: BrowserWindow,
+  rowCells: HTMLElement[],
+  virtualized: boolean,
+): void {
+  const home = event.key === 'Home';
+  const globally = event.ctrlKey || event.metaKey;
+
+  if (globally && virtualized) {
+    focusVirtualizedBoundary(root, view, home);
+    return;
+  }
+
+  const candidateCells = globally ? ownedTableCells(root) : rowCells;
+
+  if (!isCompactHiddenCell(boundaryTableCell(candidateCells, home))) {
+    return;
+  }
+
+  const nextCell = visibleBoundaryTableCell(candidateCells, home);
+
+  if (nextCell !== undefined) {
+    event.preventDefault();
+    view.queueMicrotask(() => nextCell.focus());
+  }
+}
+
+function handleCompactArrowNavigation(
+  event: KeyboardEvent,
+  root: HTMLElement,
+  view: BrowserWindow,
+  currentCell: HTMLElement,
+  cells: HTMLElement[],
+): void {
+  const forwardsKey =
+    view.getComputedStyle(root).direction === 'rtl'
+      ? 'ArrowLeft'
+      : 'ArrowRight';
+  const increment = event.key === forwardsKey ? 1 : -1;
+  const currentIndex = cells.indexOf(currentCell);
+
+  if (!isCompactHiddenCell(cells[currentIndex + increment])) {
+    return;
+  }
+
+  const followingCells =
+    increment > 0
+      ? cells.slice(currentIndex + 1)
+      : cells.slice(0, currentIndex).reverse();
+  const nextCell = followingCells.find((cell) => !isCompactHiddenCell(cell));
+
+  event.preventDefault();
+  view.queueMicrotask(() => nextCell?.focus());
+}
+
 function handleCompactHorizontalNavigation(
   event: KeyboardEvent,
   root: HTMLElement,
   virtualized: boolean,
 ): void {
-  if (
-    event.key !== 'ArrowLeft' &&
-    event.key !== 'ArrowRight' &&
-    event.key !== 'Home' &&
-    event.key !== 'End'
-  ) {
+  if (!compactHorizontalNavigationKeys.has(event.key)) {
     return;
   }
 
@@ -649,119 +786,20 @@ function handleCompactHorizontalNavigation(
     return;
   }
 
-  const eventElement =
-    event.target instanceof view.Element ? event.target : null;
-  const activeElement =
-    root.ownerDocument.activeElement instanceof view.Element
-      ? root.ownerDocument.activeElement
-      : null;
-  const targetCell = eventElement?.closest<HTMLElement>(
-    '[data-breeze-cell-column]',
-  );
-  const activeCell = activeElement?.closest<HTMLElement>(
-    '[data-breeze-cell-column]',
-  );
-  const currentCell = targetCell ?? activeCell;
-  const navigationOrigin =
-    targetCell === null || targetCell === undefined
-      ? activeElement
-      : eventElement;
+  const currentCell = navigationCell(event, root, view);
 
-  if (
-    currentCell === null ||
-    currentCell === undefined ||
-    navigationOrigin !== currentCell ||
-    !currentCell.closest('[data-breeze-table]')?.isSameNode(root)
-  ) {
+  if (currentCell === null) {
     return;
   }
 
-  const cells = [...(currentCell.parentElement?.children ?? [])].filter(
-    (cell): cell is HTMLElement =>
-      cell instanceof view.HTMLElement &&
-      cell.hasAttribute('data-breeze-cell-column'),
-  );
-  const currentIndex = cells.indexOf(currentCell);
-  const home = event.key === 'Home';
-  const end = event.key === 'End';
+  const cells = rowTableCells(currentCell, view);
 
-  if (home || end) {
-    const globally = event.ctrlKey || event.metaKey;
-
-    if (globally && virtualized) {
-      view.requestAnimationFrame(() => {
-        const mountedCells = [
-          ...root.querySelectorAll<HTMLElement>('[data-breeze-cell-column]'),
-        ].filter(
-          (cell) =>
-            cell.closest('[data-breeze-table]')?.isSameNode(root) &&
-            !cell.hasAttribute('data-breeze-compact-hidden'),
-        );
-        const boundaryCell = home
-          ? mountedCells[0]
-          : mountedCells[mountedCells.length - 1];
-
-        boundaryCell?.focus();
-      });
-
-      return;
-    }
-
-    const candidateCells = globally
-      ? [
-          ...root.querySelectorAll<HTMLElement>('[data-breeze-cell-column]'),
-        ].filter((cell) =>
-          cell.closest('[data-breeze-table]')?.isSameNode(root),
-        )
-      : cells;
-    const boundaryCell = home
-      ? candidateCells[0]
-      : candidateCells[candidateCells.length - 1];
-
-    if (!boundaryCell?.hasAttribute('data-breeze-compact-hidden')) {
-      return;
-    }
-
-    const visibleCells = candidateCells.filter(
-      (cell) => !cell.hasAttribute('data-breeze-compact-hidden'),
-    );
-    const nextCell = home
-      ? visibleCells[0]
-      : visibleCells[visibleCells.length - 1];
-
-    if (nextCell !== undefined) {
-      event.preventDefault();
-      view.queueMicrotask(() => nextCell.focus());
-    }
-
+  if (event.key === 'Home' || event.key === 'End') {
+    handleCompactBoundaryNavigation(event, root, view, cells, virtualized);
     return;
   }
 
-  const forwardsKey =
-    view.getComputedStyle(root).direction === 'rtl'
-      ? 'ArrowLeft'
-      : 'ArrowRight';
-  const increment = event.key === forwardsKey ? 1 : -1;
-  const adjacentCell = cells[currentIndex + increment];
-
-  if (!adjacentCell?.hasAttribute('data-breeze-compact-hidden')) {
-    return;
-  }
-
-  event.preventDefault();
-
-  for (
-    let index = currentIndex + increment;
-    index >= 0 && index < cells.length;
-    index += increment
-  ) {
-    const cell = cells[index];
-
-    if (!cell?.hasAttribute('data-breeze-compact-hidden')) {
-      view.queueMicrotask(() => cell?.focus());
-      return;
-    }
-  }
+  handleCompactArrowNavigation(event, root, view, currentCell, cells);
 }
 
 /** Coordinates semantic table navigation, row state, sorting, and responsive labels. */
@@ -793,7 +831,7 @@ export function Root({
   const [gridTemplateColumns, setGridTemplateColumns] =
     useState<ResponsiveGridTracks>({ compact: undefined, full: undefined });
   const compactHiddenColumnKeys = useMemo(
-    () => new Set([...compactHiddenColumns].map(String)),
+    () => new Set([...compactHiddenColumns].map(encodeCollectionKey)),
     [compactHiddenColumns],
   );
   const selectionEnabled =
@@ -979,6 +1017,7 @@ function renderTableColumn({
       class: className,
     }),
     'data-breeze-column': String(id),
+    'data-breeze-column-key': encodeCollectionKey(id),
     'data-breeze-column-width': serializedWidth,
     'data-breeze-compact-label': String(compactLabel),
     'data-breeze-compact-label-text': compactLabelText,
@@ -1164,7 +1203,10 @@ export function Cell({
     className: tableCell({ align, class: className, presentation }),
     colSpan: normalisedColSpan,
     'data-breeze-cell-column': String(column),
-    'data-breeze-compact-hidden': compactHiddenColumns.has(String(column))
+    'data-breeze-cell-column-key': encodeCollectionKey(column),
+    'data-breeze-compact-hidden': compactHiddenColumns.has(
+      encodeCollectionKey(column),
+    )
       ? ''
       : undefined,
     ref: cellRef,

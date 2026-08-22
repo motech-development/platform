@@ -413,8 +413,57 @@ describe('Table', () => {
     );
 
     expect(markup).toContain(
-      'data-breeze-cell-column="date" data-breeze-compact-hidden=""',
+      'data-breeze-cell-column-key="string:date" data-breeze-compact-hidden=""',
     );
+  });
+
+  it('preserves typed column key identity in compact visibility', async () => {
+    renderBreeze(
+      <Table.Root
+        aria-label="Typed keys"
+        compactHiddenColumns={[1]}
+        layout="grid"
+      >
+        <Table.Header>
+          <Table.Column id={1} rowHeader width="2rem">
+            Numeric
+          </Table.Column>
+          <Table.Column id="1" width="3rem">
+            String
+          </Table.Column>
+        </Table.Header>
+        <Table.Body>
+          <Table.Row id="entry" textValue="Numeric value String value">
+            <Table.Cell column={1}>Numeric value</Table.Cell>
+            <Table.Cell column="1">String value</Table.Cell>
+          </Table.Row>
+        </Table.Body>
+      </Table.Root>,
+    );
+
+    const numericCell = screen.getByRole('rowheader', {
+      name: 'Numeric value',
+    });
+    const stringCell = screen.getByRole('gridcell', { name: 'String value' });
+    const table = screen.getByRole('grid', { name: 'Typed keys' });
+
+    expect(numericCell).toHaveAttribute('data-breeze-compact-hidden', '');
+    expect(stringCell).not.toHaveAttribute('data-breeze-compact-hidden');
+    expect(numericCell).toHaveAttribute('data-breeze-cell-column', '1');
+    expect(stringCell).toHaveAttribute('data-breeze-cell-column', '1');
+    expect(numericCell).toHaveAttribute(
+      'data-breeze-cell-column-key',
+      'number:1',
+    );
+    expect(stringCell).toHaveAttribute(
+      'data-breeze-cell-column-key',
+      'string:1',
+    );
+    await waitFor(() => {
+      expect(table).toHaveStyle(
+        '--breeze-table-columns: 2rem 3rem; --breeze-table-compact-columns: 3rem',
+      );
+    });
   });
 
   it('owns grid row dividers and constrained action-column widths', () => {
