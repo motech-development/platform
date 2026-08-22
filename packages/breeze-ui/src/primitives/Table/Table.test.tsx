@@ -294,6 +294,38 @@ describe('Table', () => {
     );
   });
 
+  it('propagates compact column visibility to matching cells', async () => {
+    renderBreeze(
+      <Table.Root aria-label="Scheduled records" layout="grid">
+        <Table.Header>
+          <Table.Column id="name" rowHeader>
+            Name
+          </Table.Column>
+          <Table.Column compactHidden id="date">
+            Date
+          </Table.Column>
+        </Table.Header>
+        <Table.Body>
+          <Table.Row id="subscription" textValue="Subscription 12 August">
+            <Table.Cell column="name">Subscription</Table.Cell>
+            <Table.Cell column="date">12 August</Table.Cell>
+          </Table.Row>
+        </Table.Body>
+      </Table.Root>,
+    );
+
+    const nameCell = screen.getByRole('rowheader', { name: 'Subscription' });
+    const dateCell = screen.getByRole('gridcell', { name: '12 August' });
+
+    await waitFor(() => {
+      expect(dateCell).toHaveAttribute('data-breeze-compact-hidden', '');
+    });
+    expect(nameCell).not.toHaveAttribute('data-breeze-compact-hidden');
+    expect(dateCell).toHaveClass(
+      'max-[680px]:data-[breeze-compact-hidden]:!hidden',
+    );
+  });
+
   it('owns grid row dividers and constrained action-column widths', () => {
     renderBreeze(
       <Table.Root aria-label="Reports" layout="grid">
