@@ -13,7 +13,7 @@ import {
   TableLayout,
   Virtualizer as AriaVirtualizer,
 } from 'react-aria-components/Virtualizer';
-import breezeSmallBreakpoint from '../styling/breakpoints';
+import isBreezeSmallViewport from '../styling/breakpoints';
 import type {
   CollectionKey,
   CollectionVirtualization,
@@ -119,8 +119,7 @@ class BreezeTableLayout extends TableLayout<unknown, TableOptions> {
   override updateItemSize(key: CollectionKey, size: Size): boolean {
     const layoutNode = this.layoutNodes.get(key);
     const compact =
-      typeof window !== 'undefined' &&
-      window.innerWidth < breezeSmallBreakpoint;
+      typeof window !== 'undefined' && isBreezeSmallViewport(window);
 
     if (
       !compact ||

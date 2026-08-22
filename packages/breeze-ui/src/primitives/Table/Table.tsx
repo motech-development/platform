@@ -37,7 +37,7 @@ import VirtualizedCollection, {
   collectionViewportStyle,
 } from '../../internal/collections/VirtualizedCollection';
 import useForwardedRef from '../../internal/hooks/useForwardedRef';
-import breezeSmallBreakpoint from '../../internal/styling/breakpoints';
+import isBreezeSmallViewport from '../../internal/styling/breakpoints';
 import type {
   BreezeCollectionItem,
   CollectionContentProps,
@@ -632,6 +632,7 @@ function syncResponsiveTableMetadata(
 function handleCompactHorizontalNavigation(
   event: KeyboardEvent,
   root: HTMLElement,
+  virtualized: boolean,
 ): void {
   if (
     event.key !== 'ArrowLeft' &&
@@ -644,7 +645,7 @@ function handleCompactHorizontalNavigation(
 
   const view = root.ownerDocument.defaultView;
 
-  if (view === null || view.innerWidth >= breezeSmallBreakpoint) {
+  if (view === null || !isBreezeSmallViewport(view)) {
     return;
   }
 
@@ -686,6 +687,26 @@ function handleCompactHorizontalNavigation(
 
   if (home || end) {
     const globally = event.ctrlKey || event.metaKey;
+
+    if (globally && virtualized) {
+      view.requestAnimationFrame(() => {
+        const mountedCells = [
+          ...root.querySelectorAll<HTMLElement>('[data-breeze-cell-column]'),
+        ].filter(
+          (cell) =>
+            cell.closest('[data-breeze-table]')?.isSameNode(root) &&
+            !cell.hasAttribute('data-breeze-compact-hidden'),
+        );
+        const boundaryCell = home
+          ? mountedCells[0]
+          : mountedCells[mountedCells.length - 1];
+
+        boundaryCell?.focus();
+      });
+
+      return;
+    }
+
     const candidateCells = globally
       ? [
           ...root.querySelectorAll<HTMLElement>('[data-breeze-cell-column]'),
@@ -781,13 +802,20 @@ export function Root({
     onSelectionChange !== undefined ||
     selection !== undefined;
   const resolvedSort = sort ?? internalSort;
-  const compactNavigationListener = useCallback((event: KeyboardEvent) => {
-    const root = rootRef.current;
+  const compactNavigationListener = useCallback(
+    (event: KeyboardEvent) => {
+      const root = rootRef.current;
 
-    if (root !== null) {
-      handleCompactHorizontalNavigation(event, root);
-    }
-  }, []);
+      if (root !== null) {
+        handleCompactHorizontalNavigation(
+          event,
+          root,
+          virtualization !== undefined,
+        );
+      }
+    },
+    [virtualization],
+  );
   const tableRef = useCallback(
     (element: HTMLElement | null) => {
       rootRef.current?.removeEventListener(

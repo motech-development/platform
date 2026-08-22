@@ -1,6 +1,6 @@
 import type { Decorator, Meta, StoryObj } from '@storybook/react-vite';
 import { useState } from 'react';
-import { expect, userEvent, within } from 'storybook/test';
+import { expect, fireEvent, userEvent, waitFor, within } from 'storybook/test';
 import type { CollectionSelection } from '../../internal/types/collection';
 import { Button } from '../Button/Button';
 import { Stack } from '../Stack/Stack';
@@ -970,6 +970,47 @@ function VirtualizedTable({
   );
 }
 
+const virtualizedBoundaryRows = Array.from({ length: 20 }, (_, index) => ({
+  amount: `£${index + 1}`,
+  id: index + 1,
+  name: `Record ${index + 1}`,
+}));
+
+function VirtualizedBoundaryTable() {
+  return (
+    <Table.Root
+      aria-label="Virtual boundary records"
+      compactHiddenColumns={['marker', 'actions']}
+      layout="grid"
+      virtualization={{
+        estimatedRowHeight: 52,
+        mode: 'variable',
+        overscan: 0,
+        viewportHeight: 156,
+      }}
+    >
+      <Table.Header>
+        <Table.Column id="marker">Marker</Table.Column>
+        <Table.Column id="name" rowHeader>
+          Name
+        </Table.Column>
+        <Table.Column id="amount">Amount</Table.Column>
+        <Table.Column id="actions">Actions</Table.Column>
+      </Table.Header>
+      <Table.Body items={virtualizedBoundaryRows}>
+        {(row) => (
+          <Table.Row id={row.id} textValue={`${row.name} ${row.amount}`}>
+            <Table.Cell column="marker">Marker {row.id}</Table.Cell>
+            <Table.Cell column="name">{row.name}</Table.Cell>
+            <Table.Cell column="amount">{row.amount}</Table.Cell>
+            <Table.Cell column="actions">Actions {row.id}</Table.Cell>
+          </Table.Row>
+        )}
+      </Table.Body>
+    </Table.Root>
+  );
+}
+
 async function expectVirtualizedTableGeometry(
   canvasElement: HTMLElement,
   compactHiddenState = false,
@@ -1075,6 +1116,42 @@ export const VariableVirtualizationNarrowDesktop: Story = {
       <VirtualizedTable compactHiddenState expandedState />
     </div>
   ),
+};
+
+/**
+ * Preserves collection-wide modified Home and End navigation while compact
+ * boundary columns are hidden and rows are windowed.
+ *
+ * @summary virtualized compact navigation reaches collection boundaries
+ */
+export const VariableVirtualizationCompactBoundaries: Story = {
+  args: { 'aria-label': 'Virtual boundary records', children: null },
+  globals: { viewport: { value: 'mobile1' } },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const firstName = canvas.getByRole('rowheader', { name: 'Record 1' });
+
+    await userEvent.click(firstName);
+    await fireEvent.keyDown(firstName, {
+      ctrlKey: true,
+      key: 'End',
+      metaKey: true,
+    });
+    await waitFor(() =>
+      expect(canvas.getByRole('gridcell', { name: '£20' })).toHaveFocus(),
+    );
+    const lastAmount = canvas.getByRole('gridcell', { name: '£20' });
+
+    await fireEvent.keyDown(lastAmount, {
+      ctrlKey: true,
+      key: 'Home',
+      metaKey: true,
+    });
+    await waitFor(() =>
+      expect(canvas.getByRole('rowheader', { name: 'Record 1' })).toHaveFocus(),
+    );
+  },
+  render: VirtualizedBoundaryTable,
 };
 
 /**
