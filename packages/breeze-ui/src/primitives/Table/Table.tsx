@@ -612,6 +612,12 @@ function materializeTableHeaderItems(
     return items as readonly BreezeCollectionItem[];
   }
 
+  const iterator = items[Symbol.iterator]();
+
+  if (!Object.is(iterator, items[Symbol.iterator]())) {
+    return Array.from(items);
+  }
+
   const cacheKey = items as object;
   const cachedItems = materializedTableHeaderItems.get(cacheKey);
 
@@ -950,30 +956,50 @@ function isCompactHiddenCell(cell: HTMLElement | undefined): boolean {
   return cell?.dataset.breezeCompactHidden !== undefined;
 }
 
-function boundaryTableCell(
-  cells: HTMLElement[],
-  home: boolean,
+type TableCellSelector = (
+  cells: readonly HTMLElement[],
+) => HTMLElement | undefined;
+
+function firstTableCell(
+  cells: readonly HTMLElement[],
 ): HTMLElement | undefined {
-  return home ? cells[0] : cells.at(-1);
+  return cells[0];
 }
 
-function visibleBoundaryTableCell(
-  cells: HTMLElement[],
-  home: boolean,
-): HTMLElement | undefined {
-  return boundaryTableCell(
-    cells.filter((cell) => !isCompactHiddenCell(cell)),
-    home,
-  );
+function lastTableCell(cells: readonly HTMLElement[]): HTMLElement | undefined {
+  return cells.at(-1);
 }
+
+function firstVisibleTableCell(
+  cells: readonly HTMLElement[],
+): HTMLElement | undefined {
+  return cells.find((cell) => !isCompactHiddenCell(cell));
+}
+
+function lastVisibleTableCell(
+  cells: readonly HTMLElement[],
+): HTMLElement | undefined {
+  return cells.findLast((cell) => !isCompactHiddenCell(cell));
+}
+
+const tableCellSelectorsByBoundary = {
+  End: {
+    boundary: lastTableCell,
+    visibleBoundary: lastVisibleTableCell,
+  },
+  Home: {
+    boundary: firstTableCell,
+    visibleBoundary: firstVisibleTableCell,
+  },
+};
 
 function focusVirtualizedBoundary(
   root: HTMLElement,
   view: BrowserWindow,
-  home: boolean,
+  selectVisibleBoundary: TableCellSelector,
 ): void {
   view.requestAnimationFrame(() => {
-    visibleBoundaryTableCell(ownedTableCells(root), home)?.focus();
+    selectVisibleBoundary(ownedTableCells(root))?.focus();
   });
 }
 
@@ -983,22 +1009,25 @@ function handleCompactBoundaryNavigation(
   view: BrowserWindow,
   rowCells: HTMLElement[],
   virtualized: boolean,
+  selectors: Readonly<{
+    boundary: TableCellSelector;
+    visibleBoundary: TableCellSelector;
+  }>,
 ): void {
-  const home = event.key === 'Home';
   const globally = event.ctrlKey || event.metaKey;
 
   if (globally && virtualized) {
-    focusVirtualizedBoundary(root, view, home);
+    focusVirtualizedBoundary(root, view, selectors.visibleBoundary);
     return;
   }
 
   const candidateCells = globally ? ownedTableCells(root) : rowCells;
 
-  if (!isCompactHiddenCell(boundaryTableCell(candidateCells, home))) {
+  if (!isCompactHiddenCell(selectors.boundary(candidateCells))) {
     return;
   }
 
-  const nextCell = visibleBoundaryTableCell(candidateCells, home);
+  const nextCell = selectors.visibleBoundary(candidateCells);
 
   if (nextCell !== undefined) {
     event.preventDefault();
@@ -1058,7 +1087,14 @@ function handleCompactHorizontalNavigation(
   const cells = rowTableCells(currentCell, root, view);
 
   if (event.key === 'Home' || event.key === 'End') {
-    handleCompactBoundaryNavigation(event, root, view, cells, virtualized);
+    handleCompactBoundaryNavigation(
+      event,
+      root,
+      view,
+      cells,
+      virtualized,
+      tableCellSelectorsByBoundary[event.key],
+    );
     return;
   }
 
@@ -1412,6 +1448,8 @@ export function Cell({
     },
     [compactHiddenColumns, forwardedRef],
   );
+  const isCompactHidden =
+    (compactSpan === null ? compactHidden : compactSpan.compactHidden) === true;
 
   return createElement(AriaCell, {
     ...props,
@@ -1419,11 +1457,7 @@ export function Cell({
     colSpan: normalisedColSpan,
     'data-breeze-cell-column': String(column),
     'data-breeze-cell-column-key': encodeCollectionKey(column),
-    'data-breeze-compact-hidden':
-      (compactSpan === null ? compactHidden : compactSpan.compactHidden) ===
-      true
-        ? ''
-        : undefined,
+    'data-breeze-compact-hidden': isCompactHidden ? '' : undefined,
     ref: cellRef,
     style: spanStyle,
     textValue,

@@ -12,6 +12,7 @@ import { Table } from './Table';
 let toggleVisibleColumns: () => void = () => undefined;
 let expandCompactSpan: () => void = () => undefined;
 let changeCellColumn: () => void = () => undefined;
+let removeSetBackedRoleColumn: () => void = () => undefined;
 
 const tableRows = [{ id: 'ada', name: 'Ada', role: 'Engineer' }];
 const tableColumns = [
@@ -60,6 +61,39 @@ function ReorderedColumnsHarness() {
         {(row) => (
           <Table.Row id={row.id} textValue={`${row.role} ${row.name}`}>
             {columns.map((column) => (
+              <Table.Cell column={column.id} key={column.id}>
+                {row[column.id as 'name' | 'role']}
+              </Table.Cell>
+            ))}
+          </Table.Row>
+        )}
+      </Table.Body>
+    </Table.Root>
+  );
+}
+
+function SetBackedColumnsHarness() {
+  const [columns] = useState(() => new Set(tableColumns));
+  const [, setRevision] = useState(0);
+
+  removeSetBackedRoleColumn = () => {
+    columns.delete(tableColumns[0]);
+    setRevision((value) => value + 1);
+  };
+
+  return (
+    <Table.Root aria-label="Set-backed people">
+      <Table.Header items={columns}>
+        {(column) => (
+          <Table.Column id={column.id} rowHeader={column.rowHeader}>
+            {column.label}
+          </Table.Column>
+        )}
+      </Table.Header>
+      <Table.Body items={tableRows}>
+        {(row) => (
+          <Table.Row id={row.id} textValue={`${row.role} ${row.name}`}>
+            {Array.from(columns, (column) => (
               <Table.Cell column={column.id} key={column.id}>
                 {row[column.id as 'name' | 'role']}
               </Table.Cell>
@@ -670,6 +704,24 @@ describe('Table', () => {
     expect(
       screen.getByRole('gridcell', { name: 'Date value' }),
     ).toHaveAttribute('data-breeze-compact-hidden', '');
+  });
+
+  it('refreshes stable reusable header iterables after mutation', () => {
+    renderBreeze(<SetBackedColumnsHarness />);
+
+    expect(screen.getByRole('columnheader', { name: 'Role' })).toBeVisible();
+    expect(screen.getByRole('gridcell', { name: 'Engineer' })).toBeVisible();
+
+    act(() => removeSetBackedRoleColumn());
+
+    expect(
+      screen.queryByRole('columnheader', { name: 'Role' }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('gridcell', { name: 'Engineer' }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole('columnheader', { name: 'Name' })).toBeVisible();
+    expect(screen.getByRole('rowheader', { name: 'Ada' })).toBeVisible();
   });
 
   it('preserves typed column key identity in compact visibility', async () => {
