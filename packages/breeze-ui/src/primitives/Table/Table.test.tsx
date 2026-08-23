@@ -10,6 +10,7 @@ import { Button } from '../Button/Button';
 import { Table } from './Table';
 
 let toggleVisibleColumns: () => void = () => undefined;
+let expandCompactSpan: () => void = () => undefined;
 
 const tableRows = [{ id: 'ada', name: 'Ada', role: 'Engineer' }];
 const tableColumns = [
@@ -44,6 +45,23 @@ function ReorderedColumnsHarness() {
         )}
       </Table.Body>
     </Table.Root>
+  );
+}
+
+function StatefulCompactSpanRow() {
+  const [colSpan, setColSpan] = useState(2);
+
+  expandCompactSpan = () => setColSpan(3);
+
+  return (
+    <Table.Row id="total" textValue="Total">
+      <Table.Cell colSpan={colSpan} column="column-0">
+        Total
+      </Table.Cell>
+      {colSpan === 2 ? (
+        <Table.Cell column="column-2">Remainder</Table.Cell>
+      ) : null}
+    </Table.Row>
   );
 }
 
@@ -171,6 +189,44 @@ describe('Table', () => {
     });
 
     expect(dateCell).toHaveAttribute('colspan', '3');
+  });
+
+  it('recomputes compact spans after a mounted cell span changes', async () => {
+    renderBreeze(
+      <Table.Root
+        aria-label="Changing spans"
+        compactHiddenColumns={['column-1']}
+        layout="grid"
+      >
+        <Table.Header>
+          <Table.Column id="column-0" rowHeader>
+            First
+          </Table.Column>
+          <Table.Column id="column-1">Second</Table.Column>
+          <Table.Column id="column-2">Third</Table.Column>
+        </Table.Header>
+        <Table.Body>
+          <StatefulCompactSpanRow />
+        </Table.Body>
+      </Table.Root>,
+    );
+
+    const cell = screen.getByRole('rowheader', { name: 'Total' });
+
+    await waitFor(() => {
+      expect(
+        cell.style.getPropertyValue('--breeze-table-compact-column-span'),
+      ).toBe('span 1 / span 1');
+    });
+
+    act(() => expandCompactSpan());
+
+    await waitFor(() => {
+      expect(cell).toHaveAttribute('colspan', '3');
+      expect(
+        cell.style.getPropertyValue('--breeze-table-compact-column-span'),
+      ).toBe('span 2 / span 2');
+    });
   });
 
   it.each([
@@ -462,6 +518,39 @@ describe('Table', () => {
     await waitFor(() => {
       expect(table).toHaveStyle(
         '--breeze-table-columns: 2rem 3rem; --breeze-table-compact-columns: 3rem',
+      );
+    });
+  });
+
+  it('treats a bare string compact-hidden value as one column key', async () => {
+    renderBreeze(
+      <Table.Root
+        aria-label="String hidden key"
+        compactHiddenColumns="date"
+        layout="grid"
+      >
+        <Table.Header>
+          <Table.Column id="name" rowHeader>
+            Name
+          </Table.Column>
+          <Table.Column id="date">Date</Table.Column>
+        </Table.Header>
+        <Table.Body>
+          <Table.Row id="entry" textValue="Entry 12 August">
+            <Table.Cell column="name">Entry</Table.Cell>
+            <Table.Cell column="date">12 August</Table.Cell>
+          </Table.Row>
+        </Table.Body>
+      </Table.Root>,
+    );
+
+    const dateCell = screen.getByRole('gridcell', { name: '12 August' });
+    const table = screen.getByRole('grid', { name: 'String hidden key' });
+
+    expect(dateCell).toHaveAttribute('data-breeze-compact-hidden', '');
+    await waitFor(() => {
+      expect(table).toHaveStyle(
+        '--breeze-table-compact-columns: minmax(0, 1fr)',
       );
     });
   });

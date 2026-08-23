@@ -31,7 +31,9 @@ import {
 } from 'react-aria-components/Table';
 import { tv } from 'tailwind-variants';
 import { ArrowRightIcon } from '../../icons';
-import encodeCollectionKey from '../../internal/collections/collectionKey';
+import encodeCollectionKey, {
+  encodeCollectionKeys,
+} from '../../internal/collections/collectionKey';
 import useCollectionEmptyContent from '../../internal/collections/useCollectionEmptyContent';
 import useLoadMoreHandler from '../../internal/collections/useLoadMoreHandler';
 import VirtualizedCollection, {
@@ -831,7 +833,7 @@ export function Root({
   const [gridTemplateColumns, setGridTemplateColumns] =
     useState<ResponsiveGridTracks>({ compact: undefined, full: undefined });
   const compactHiddenColumnKeys = useMemo(
-    () => new Set([...compactHiddenColumns].map(encodeCollectionKey)),
+    () => encodeCollectionKeys(compactHiddenColumns),
     [compactHiddenColumns],
   );
   const selectionEnabled =
@@ -897,6 +899,7 @@ export function Root({
 
     observer.observe(root, {
       attributeFilter: [
+        'colspan',
         'data-breeze-column-width',
         'data-breeze-compact-label',
         'data-breeze-compact-label-text',
@@ -1191,11 +1194,14 @@ export function Cell({
   const cellRef = useCallback(
     (element: HTMLTableCellElement | null) => {
       forwardedRef(element);
+      const root = element?.closest<HTMLElement>('[data-breeze-table]') ?? null;
+
       syncResponsiveCells(
-        element?.closest<HTMLElement>('[data-breeze-table]') ?? null,
+        root,
+        readResponsiveColumnMetadata(root, undefined, compactHiddenColumns),
       );
     },
-    [forwardedRef],
+    [compactHiddenColumns, forwardedRef],
   );
 
   return createElement(AriaCell, {
