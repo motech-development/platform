@@ -229,6 +229,45 @@ describe('Table', () => {
     });
   });
 
+  it('hides a spanning cell only when every covered column is compact-hidden', async () => {
+    renderBreeze(
+      <Table.Root
+        aria-label="Spanning visibility"
+        compactHiddenColumns={['hidden-a', 'hidden-c', 'hidden-d']}
+        layout="grid"
+      >
+        <Table.Header>
+          <Table.Column id="hidden-a" rowHeader>
+            Hidden A
+          </Table.Column>
+          <Table.Column id="visible-b">Visible B</Table.Column>
+          <Table.Column id="hidden-c">Hidden C</Table.Column>
+          <Table.Column id="hidden-d">Hidden D</Table.Column>
+          <Table.Column id="visible-e">Visible E</Table.Column>
+        </Table.Header>
+        <Table.Body>
+          <Table.Row id="entry" textValue="Mixed Hidden Remainder">
+            <Table.Cell colSpan={2} column="hidden-a">
+              Mixed
+            </Table.Cell>
+            <Table.Cell colSpan={2} column="hidden-c">
+              Hidden
+            </Table.Cell>
+            <Table.Cell column="visible-e">Remainder</Table.Cell>
+          </Table.Row>
+        </Table.Body>
+      </Table.Root>,
+    );
+
+    const mixedCell = screen.getByRole('rowheader', { name: 'Mixed' });
+    const hiddenCell = screen.getByRole('gridcell', { name: 'Hidden' });
+
+    await waitFor(() => {
+      expect(mixedCell).not.toHaveAttribute('data-breeze-compact-hidden');
+      expect(hiddenCell).toHaveAttribute('data-breeze-compact-hidden', '');
+    });
+  });
+
   it.each([
     {
       colSpan: 1.5,
