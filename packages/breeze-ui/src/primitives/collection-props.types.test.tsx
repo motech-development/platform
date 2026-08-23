@@ -188,6 +188,18 @@ describe('collection public contracts', () => {
     expectTypeOf<'minmax(0, 2fr) minmax(0, 1fr)'>().not.toMatchTypeOf<
       NonNullable<TableRootProps['desktopColumns']>
     >();
+    expectTypeOf<string>().toMatchTypeOf<
+      NonNullable<TableRootProps['compactHiddenColumns']>
+    >();
+    expectTypeOf<readonly (string | number)[]>().toMatchTypeOf<
+      NonNullable<TableRootProps['compactHiddenColumns']>
+    >();
+    expectTypeOf<ReadonlySet<string | number>>().toMatchTypeOf<
+      NonNullable<TableRootProps['compactHiddenColumns']>
+    >();
+    expectTypeOf<Generator<string>>().not.toMatchTypeOf<
+      NonNullable<TableRootProps['compactHiddenColumns']>
+    >();
   });
 });
 

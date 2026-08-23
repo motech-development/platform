@@ -231,13 +231,18 @@ type TableRootNativeProps = Omit<
   'children' | 'defaultValue' | 'onChange' | 'style'
 >;
 
+type CompactHiddenColumns =
+  | CollectionKey
+  | readonly CollectionKey[]
+  | ReadonlySet<CollectionKey>;
+
 interface TableRootSharedProps extends TableRootNativeProps {
   /** Optional visual treatment for the table's lower edge. Defaults to `none`. */
   boundary?: TableBoundary;
   /** Ordered header, body, and optional footer sections. */
   children: ReactNode;
-  /** Column keys omitted below the Breeze small breakpoint. */
-  compactHiddenColumns?: Iterable<CollectionKey>;
+  /** One key or reusable key collection omitted below the Breeze small breakpoint. */
+  compactHiddenColumns?: CompactHiddenColumns;
   /** Keys whose rows cannot receive focus, selection, or actions. */
   disabledKeys?: Iterable<CollectionKey>;
   /** Typed desktop column arrangement for `responsiveGrid` layout. Defaults to `equal`. */
@@ -535,26 +540,36 @@ function readResponsiveColumnMetadata(
   );
 }
 
-function compactColumnSpan(
+interface CompactSpanMetadata {
+  compactHidden: boolean | undefined;
+  span: number;
+}
+
+function compactSpanMetadata(
   columnKey: string,
   colSpan: number,
   columns: Map<string, ResponsiveColumnMetadata>,
-): number {
+): CompactSpanMetadata {
   const orderedColumns = [...columns.entries()];
   const firstColumnIndex = orderedColumns.findIndex(
     ([key]) => key === columnKey,
   );
 
   if (firstColumnIndex < 0) {
-    return colSpan;
+    return { compactHidden: undefined, span: colSpan };
   }
 
-  return Math.max(
-    orderedColumns
-      .slice(firstColumnIndex, firstColumnIndex + colSpan)
-      .filter(([, metadata]) => !metadata.compactHidden).length,
-    1,
-  );
+  const coveredColumns = orderedColumns
+    .slice(firstColumnIndex, firstColumnIndex + colSpan)
+    .map(([, metadata]) => metadata);
+  const visibleColumns = coveredColumns.filter(
+    ({ compactHidden }) => !compactHidden,
+  ).length;
+
+  return {
+    compactHidden: visibleColumns === 0,
+    span: Math.max(visibleColumns, 1),
+  };
 }
 
 function syncResponsiveCells(
@@ -576,6 +591,20 @@ function syncResponsiveCells(
       const columnKey = dataset.breezeCellColumnKey ?? '';
       const column = columns.get(columnKey);
       const label = column?.label;
+      const spanMetadata =
+        cell.colSpan > 1
+          ? compactSpanMetadata(columnKey, cell.colSpan, columns)
+          : null;
+      const compactHidden =
+        spanMetadata === null
+          ? column?.compactHidden
+          : spanMetadata.compactHidden;
+
+      if (compactHidden === true) {
+        dataset.breezeCompactHidden = '';
+      } else if (compactHidden === false) {
+        delete dataset.breezeCompactHidden;
+      }
 
       if (label !== undefined && label.length > 0) {
         dataset.label = label;
@@ -583,12 +612,10 @@ function syncResponsiveCells(
         delete dataset.label;
       }
 
-      if (cell.colSpan > 1) {
-        const compactSpan = compactColumnSpan(columnKey, cell.colSpan, columns);
-
+      if (spanMetadata !== null) {
         cell.style.setProperty(
           '--breeze-table-compact-column-span',
-          `span ${compactSpan} / span ${compactSpan}`,
+          `span ${spanMetadata.span} / span ${spanMetadata.span}`,
         );
       }
     });
@@ -1180,6 +1207,7 @@ export function Cell({
   const compactHiddenColumns = useContext(compactHiddenColumnsContext);
   const forwardedRef = useForwardedRef(ref);
   const normalisedColSpan = normaliseColumnSpan(colSpan);
+  const compactHidden = compactHiddenColumns.has(encodeCollectionKey(column));
   const spanStyle: TableCellSpanStyle | undefined =
     normalisedColSpan === undefined || normalisedColSpan <= 1
       ? undefined
@@ -1210,11 +1238,8 @@ export function Cell({
     colSpan: normalisedColSpan,
     'data-breeze-cell-column': String(column),
     'data-breeze-cell-column-key': encodeCollectionKey(column),
-    'data-breeze-compact-hidden': compactHiddenColumns.has(
-      encodeCollectionKey(column),
-    )
-      ? ''
-      : undefined,
+    'data-breeze-compact-hidden':
+      (normalisedColSpan ?? 1) <= 1 && compactHidden ? '' : undefined,
     ref: cellRef,
     style: spanStyle,
     textValue,
