@@ -1,6 +1,6 @@
 import { act, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { useState } from 'react';
+import { StrictMode, useState } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
 import renderBreeze from '../../../test/render';
@@ -18,6 +18,16 @@ const tableColumns = [
   { id: 'role', label: 'Role', rowHeader: false },
   { id: 'name', label: 'Name', rowHeader: true },
 ];
+
+function* generatedTableColumns(
+  columns: readonly {
+    id: string;
+    label: string;
+    rowHeader: boolean;
+  }[],
+) {
+  yield* columns;
+}
 
 function ReorderedColumnsHarness() {
   const [showRole, setShowRole] = useState(true);
@@ -567,7 +577,87 @@ describe('Table', () => {
     );
 
     expect(mixedCell).not.toHaveAttribute('data-breeze-compact-hidden');
+    expect(mixedCell).toHaveStyle(
+      '--breeze-table-compact-column-span: span 1 / span 1',
+    );
     expect(hiddenCell).toHaveAttribute('data-breeze-compact-hidden', '');
+  });
+
+  it('preserves generator-backed header items in server-rendered span metadata', () => {
+    const columns = generatedTableColumns([
+      { id: 'hidden-a', label: 'Hidden A', rowHeader: true },
+      { id: 'hidden-b', label: 'Hidden B', rowHeader: false },
+    ]);
+    const markup = renderToStaticMarkup(
+      <BreezeProvider locale="en-GB" portalContainer={null}>
+        <Table.Root
+          aria-label="Server generator columns"
+          compactHiddenColumns={['hidden-a', 'hidden-b']}
+          layout="grid"
+        >
+          <Table.Header items={columns}>
+            {(column) => (
+              <Table.Column id={column.id} rowHeader={column.rowHeader}>
+                {column.label}
+              </Table.Column>
+            )}
+          </Table.Header>
+          <Table.Body>
+            <Table.Row id="entry" textValue="Hidden span">
+              <Table.Cell colSpan={2} column="hidden-a">
+                Hidden span
+              </Table.Cell>
+            </Table.Row>
+          </Table.Body>
+        </Table.Root>
+      </BreezeProvider>,
+    );
+    const container = document.createElement('div');
+
+    container.innerHTML = markup;
+
+    expect(container.querySelectorAll('th')).toHaveLength(2);
+    expect(
+      container.querySelector(
+        '[data-breeze-cell-column-key="string:hidden-a"]',
+      ),
+    ).toHaveAttribute('data-breeze-compact-hidden', '');
+  });
+
+  it('replays generator-backed header items across Strict Mode renders', () => {
+    const columns = generatedTableColumns([
+      { id: 'name', label: 'Name', rowHeader: true },
+      { id: 'date', label: 'Date', rowHeader: false },
+    ]);
+
+    renderBreeze(
+      <StrictMode>
+        <Table.Root
+          aria-label="Strict generator columns"
+          compactHiddenColumns="date"
+          layout="grid"
+        >
+          <Table.Header items={columns}>
+            {(column) => (
+              <Table.Column id={column.id} rowHeader={column.rowHeader}>
+                {column.label}
+              </Table.Column>
+            )}
+          </Table.Header>
+          <Table.Body>
+            <Table.Row id="entry" textValue="Value Date value">
+              <Table.Cell column="name">Value</Table.Cell>
+              <Table.Cell column="date">Date value</Table.Cell>
+            </Table.Row>
+          </Table.Body>
+        </Table.Root>
+      </StrictMode>,
+    );
+
+    expect(screen.getAllByRole('columnheader')).toHaveLength(2);
+    expect(
+      screen.getByRole('gridcell', { name: 'Date value' }),
+    ).toHaveAttribute('data-breeze-compact-hidden', '');
   });
 
   it('preserves typed column key identity in compact visibility', async () => {

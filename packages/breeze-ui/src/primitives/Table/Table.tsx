@@ -9,6 +9,7 @@ import type {
 } from 'react';
 import {
   Children,
+  cloneElement,
   createContext,
   createElement,
   Fragment,
@@ -572,6 +573,10 @@ interface TableCellSpanStyle extends CSSProperties {
 const emptyCompactHiddenColumns: readonly CollectionKey[] = [];
 const emptyCompactHiddenColumnKeys: ReadonlySet<string> = new Set();
 const emptyTableColumnKeys: readonly string[] = [];
+const materializedTableHeaderItems = new WeakMap<
+  object,
+  readonly BreezeCollectionItem[]
+>();
 const compactHiddenColumnsContext = createContext<ReadonlySet<string>>(
   emptyCompactHiddenColumnKeys,
 );
@@ -600,6 +605,78 @@ function staticTableColumnKeys(children: ReactNode): string[] {
   return keys;
 }
 
+function reusableTableHeaderItems(
+  items: Iterable<BreezeCollectionItem>,
+): Iterable<BreezeCollectionItem> {
+  const iterator = items[Symbol.iterator]();
+
+  if (!Object.is(iterator, items)) {
+    return items;
+  }
+
+  const cacheKey = items as object;
+  const cachedItems = materializedTableHeaderItems.get(cacheKey);
+
+  if (cachedItems !== undefined) {
+    return cachedItems;
+  }
+
+  const materializedItems = Array.from(items);
+
+  materializedTableHeaderItems.set(cacheKey, materializedItems);
+
+  return materializedItems;
+}
+
+function normaliseTableHeaderItems(children: ReactNode): ReactNode {
+  let changed = false;
+  const normalisedChildren = Children.map(children, (child) => {
+    if (!isValidElement(child)) {
+      return child;
+    }
+
+    if (child.type === Header) {
+      const header = child as ReactElement<TableHeaderProps>;
+      const { items } = header.props;
+
+      if (items === undefined) {
+        return child;
+      }
+
+      const reusableItems = reusableTableHeaderItems(items);
+
+      if (Object.is(reusableItems, items)) {
+        return child;
+      }
+
+      changed = true;
+
+      return cloneElement(header, { items: reusableItems });
+    }
+
+    if (child.type === Fragment) {
+      const fragment = child as ReactElement<{ children?: ReactNode }>;
+      const normalisedFragmentChildren = normaliseTableHeaderItems(
+        fragment.props.children,
+      );
+
+      if (Object.is(normalisedFragmentChildren, fragment.props.children)) {
+        return child;
+      }
+
+      changed = true;
+
+      return cloneElement(fragment, {
+        children: normalisedFragmentChildren,
+      });
+    }
+
+    return child;
+  });
+
+  return changed ? normalisedChildren : children;
+}
+
 function tableHeaderColumnKeys(
   header: ReactElement<TableHeaderProps>,
 ): string[] {
@@ -607,10 +684,6 @@ function tableHeaderColumnKeys(
 
   if (items === undefined) {
     return staticTableColumnKeys(children);
-  }
-
-  if (Object.is(items[Symbol.iterator](), items)) {
-    return [];
   }
 
   return Array.from(items, ({ id }) => encodeCollectionKey(id));
@@ -1026,9 +1099,13 @@ export function Root({
     () => encodeCollectionKeys(compactHiddenColumns),
     [compactHiddenColumns],
   );
-  const tableColumnKeys = useMemo(
-    () => authoredTableColumnKeys(children),
+  const tableChildren = useMemo(
+    () => normaliseTableHeaderItems(children),
     [children],
+  );
+  const tableColumnKeys = useMemo(
+    () => authoredTableColumnKeys(tableChildren),
+    [tableChildren],
   );
   const selectionEnabled =
     defaultSelection !== undefined ||
@@ -1105,7 +1182,7 @@ export function Root({
     });
 
     return () => observer.disconnect();
-  }, [children, compactHiddenColumnKeys, desktopColumns]);
+  }, [tableChildren, compactHiddenColumnKeys, desktopColumns]);
 
   const viewportStyle = collectionViewportStyle(virtualization);
   const tableStyle =
@@ -1120,7 +1197,7 @@ export function Root({
   const table = createElement(AriaTable, {
     ...props,
     'aria-readonly': readOnly || undefined,
-    children,
+    children: tableChildren,
     className: tableRoot({
       boundary,
       class: className,
@@ -1315,10 +1392,14 @@ export function Cell({
       ? undefined
       : (() => {
           const span = `span ${normalisedColSpan} / span ${normalisedColSpan}`;
+          const compactSpanValue =
+            compactSpan === null
+              ? span
+              : `span ${compactSpan.span} / span ${compactSpan.span}`;
 
           return {
             '--breeze-table-column-span': span,
-            '--breeze-table-compact-column-span': span,
+            '--breeze-table-compact-column-span': compactSpanValue,
           };
         })();
   const cellRef = useCallback(
