@@ -588,13 +588,13 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">93 components ok</span><span class="filter-pill ok" aria-disabled="true">334 stories ok</span><a class="filter-pill ok" data-k="docs" href="#filter-docs">105 docs ok</a></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">93 components ok</span><span class="filter-pill ok" aria-disabled="true">340 stories ok</span><a class="filter-pill ok" data-k="docs" href="#filter-docs">105 docs ok</a></div>
   </div>
 </header>
 <main>
   <div class="wrap">
     <div class="note ok" style="margin-bottom: 16px;">
-              Using <code>react-docgen-typescript</code>. Generation took <strong>3.4s</strong>.
+              Using <code>react-docgen-typescript</code>. Generation took <strong>4.9s</strong>.
             </div>
     <h2 class="section-title">Components</h2>
     <div class="grid" role="list">
@@ -3158,9 +3158,9 @@ Use `StatePanel` for a standard empty/error composition, `Spinner` for announced
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> ConfirmationDialog</h2>
       <div class="badges">
-        <label for="c-9-patterns-actions-confirmationdialog-props" class="badge ok as-toggle">15 prop types</label>
+        <label for="c-9-patterns-actions-confirmationdialog-props" class="badge ok as-toggle">16 prop types</label>
         
-        <label for="c-9-patterns-actions-confirmationdialog-stories" class="badge ok as-toggle">4 stories</label>
+        <label for="c-9-patterns-actions-confirmationdialog-stories" class="badge ok as-toggle">5 stories</label>
         <label for="c-9-patterns-actions-confirmationdialog-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
@@ -3187,7 +3187,7 @@ Use `StatePanel` for a standard empty/error composition, `Spinner` for announced
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
-              <span class="badge ok">15 prop types</span>
+              <span class="badge ok">16 prop types</span>
             </div>
             <pre><code>Component: src/patterns/ConfirmationDialog/ConfirmationDialog.tsx::ConfirmationDialog</code></pre>
             <pre><code>Props:</code></pre>
@@ -3232,11 +3232,13 @@ nested?: boolean = false
 onConfirm: () =&gt; void
 
 /**
+ * Called with the next externally controlled open state.
  * Called with the next open state.
  */
-onOpenChange?: ((open: boolean) =&gt; void) | ((open: boolean) =&gt; void)
+onOpenChange?: ((open: boolean) =&gt; void) | ((open: boolean) =&gt; void) | ((open: boolean) =&gt; void)
 
 /**
+ * Current externally controlled open state.
  * Current open state.
  * Current immutable open state.
  */
@@ -3255,12 +3257,18 @@ title: ReactNode
 /**
  * Semantic action content that opens the dialog.
  */
-trigger: ReactNode
+trigger?: ReactNode
 
 /**
  * Visual treatment for the trigger. Defaults to `solid`.
  */
 triggerAppearance?: VisualAppearance
+
+/**
+ * Omits the pattern trigger for state controlled by an external action.
+ * Uses the pattern&#39;s semantic trigger to coordinate dialog state.
+ */
+triggerless?: boolean = false
 
 /**
  * Semantic confirming action colour. Defaults to `danger`.
@@ -3315,6 +3323,35 @@ variant?: &quot;danger&quot; | &quot;primary&quot; | &quot;warning&quot; = dange
     title=&quot;Archive this item?&quot;
     trigger=&quot;Archive item&quot;
     variant=&quot;warning&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Triggerless Controlled</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              <div>externally triggered controlled confirmation</div>
+              <div class="hint">Opens a controlled warning confirmation from an application-owned action outside the fixed pattern and restores focus there after cancellation.</div>
+              <pre><code>function TriggerlessControlled() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    &lt;&gt;
+      &lt;Button onAction={() =&gt; setOpen(true)}&gt;Leave editor&lt;/Button&gt;
+      &lt;ConfirmationDialog
+        cancelLabel=&quot;Keep editing&quot;
+        closeLabel=&quot;Close confirmation&quot;
+        confirmLabel=&quot;Discard changes&quot;
+        description=&quot;Your unsaved changes will be lost.&quot;
+        onConfirm={() =&gt; undefined}
+        onOpenChange={setOpen}
+        open={open}
+        title=&quot;Discard changes?&quot;
+        triggerless
+        variant=&quot;warning&quot;
+      /&gt;
+    &lt;/&gt;
+  );
+}</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -3403,12 +3440,12 @@ import { ConfirmationDialog } from &#39;@motech-development/breeze-ui&#39;;
 
 ConfirmationDialog is a fixed composition rather than a public compound namespace.
 
-| Region      | Responsibility                                                            |
-| ----------- | ------------------------------------------------------------------------- |
-| Trigger     | A semantic Breeze button that opens the alert dialog.                     |
-| Header      | Variant-coloured warning icon, required title and icon-only close action. |
-| Description | Required consequence or decision context and the accessible description.  |
-| Actions     | A cancel action focused on open and a confirming action.                  |
+| Region      | Responsibility                                                                               |
+| ----------- | -------------------------------------------------------------------------------------------- |
+| Trigger     | A semantic Breeze button that opens the alert dialog, unless external state owns activation. |
+| Header      | Variant-coloured warning icon, required title and icon-only close action.                    |
+| Description | Required consequence or decision context and the accessible description.                     |
+| Actions     | A cancel action focused on open and a confirming action.                                     |
 
 The icon is supplementary; meaning must be present in the title, description and action labels. On compact screens the actions stack in a safe visual order. The complete structure is deliberately not replaceable through slots.
 
@@ -3425,15 +3462,16 @@ Set `nested` only when the confirmation opens above an existing modal layer, suc
 - **Uncontrolled:** omit `open`; use optional `defaultOpen` and `onOpenChange`.
 - **Controlled:** provide `open` and `onOpenChange`. The callback receives the complete next Boolean after trigger activation, confirmation, cancellation, the close action or Escape.
 - **Read-only:** provide `open` with `readOnly`. Requests cannot change the immutable state; this is useful for a fixed presentation, not a normal decision flow.
+- **External trigger:** set `triggerless`, `open`, and `onOpenChange` when application state opens the confirmation from an action outside the fixed pattern. `trigger` is then omitted, and focus returns to the previously focused external action after closure.
 
 `onConfirm` takes no event and runs once when the enabled confirming action is explicitly activated. That action also requests the dialog to close. The application owns the mutation, optimistic state, persistence, server errors and recovery. Do not combine `defaultOpen` with `open`. Providing mutable `open` without `onOpenChange` fails the TypeScript contract and throws at runtime.
 
 ## Keyboard, focus and accessibility
 
-- Enter or Space activates the trigger and action buttons.
+- Enter or Space activates the pattern trigger, an application-owned external trigger, and action buttons.
 - Opening moves focus to Cancel. Tab and Shift+Tab remain contained within the modal surface.
 - Escape requests closure. Outside pointer interaction does not dismiss the alert dialog.
-- Closing restores focus to the trigger when it remains mounted.
+- Closing restores focus to the pattern trigger or the previously focused external trigger when it remains mounted.
 - `title` must name the decision. `description` must explain the consequence rather than repeat the title. Prefer specific labels such as “Delete item” and “Keep item” over “Yes” and “No”.
 - Keep a usable non-confirming route. Never focus the destructive action initially or rely on colour to convey risk.
 
@@ -3445,7 +3483,7 @@ All visible decision copy and the icon-only `closeLabel` are application-owned a
 
 ## Common mistakes and related components
 
-Do not start the destructive operation from the trigger, use confirmation as an error message, hide the consequence in vague copy, disable every escape route, or treat `variant` as a severity value for business logic. Use `AlertDialog` for bespoke decisions, `Dialog` for non-consequential modal work, and `FormActions` to place the trigger in a form layout.
+Do not start the destructive operation from the trigger, hide the pattern trigger to emulate external state, use confirmation as an error message, hide the consequence in vague copy, disable every escape route, or treat `variant` as a severity value for business logic. Use `AlertDialog` for bespoke decisions, `Dialog` for non-consequential modal work, and `FormActions` to place the trigger in a form layout.
 </code></pre></div>
             </div>
         </div>
@@ -9168,7 +9206,7 @@ ref?: Ref&lt;HTMLButtonElement&gt;</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Root</h2>
       <div class="badges">
-        <label for="c-35-primitives-overlays-alertdialog-props" class="badge ok as-toggle">5 prop types</label>
+        <label for="c-35-primitives-overlays-alertdialog-props" class="badge ok as-toggle">6 prop types</label>
         
         <label for="c-35-primitives-overlays-alertdialog-stories" class="badge ok as-toggle">4 stories</label>
         <label for="c-35-primitives-overlays-alertdialog-docs" class="badge ok as-toggle">1 doc</label>
@@ -9197,7 +9235,7 @@ ref?: Ref&lt;HTMLButtonElement&gt;</code></pre>
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
-              <span class="badge ok">5 prop types</span>
+              <span class="badge ok">6 prop types</span>
             </div>
             <pre><code>Component: src/primitives/AlertDialog/AlertDialog.tsx::Root</code></pre>
             <pre><code>Props:</code></pre>
@@ -9212,11 +9250,13 @@ children: ReactNode
 defaultOpen?: boolean
 
 /**
+ * Called with the next externally controlled open state.
  * Called with the next open state.
  */
-onOpenChange?: ((open: boolean) =&gt; void) | ((open: boolean) =&gt; void)
+onOpenChange?: ((open: boolean) =&gt; void) | ((open: boolean) =&gt; void) | ((open: boolean) =&gt; void)
 
 /**
+ * Current externally controlled open state.
  * Current open state.
  * Current immutable open state.
  */
@@ -9225,7 +9265,13 @@ open?: boolean
 /**
  * Marks controlled state immutable.
  */
-readOnly?: boolean</code></pre>
+readOnly?: boolean
+
+/**
+ * Omits a compound trigger for state controlled by an external action.
+ * Uses a compound trigger to coordinate alert-dialog state.
+ */
+triggerless?: boolean</code></pre>
           </div>
         </div>
     
@@ -9382,7 +9428,7 @@ Put every decision in `Actions`. On compact layouts actions fill the width and v
 
 ## State and dismissal
 
-Use `defaultOpen`, controlled `open` with `onOpenChange`, or immutable `open` with `readOnly`. `onOpenChange` receives the complete next Boolean. Outside pointer interaction never dismisses AlertDialog. Escape dismisses by default; `keyboardDismissDisabled` removes that path, so an enabled explicit action is mandatory.
+Use `defaultOpen`, controlled `open` with `onOpenChange`, or immutable `open` with `readOnly`. For an application-owned trigger outside the compound root, set `triggerless`, `open`, and `onOpenChange`; `defaultOpen` and read-only mode are unavailable. `onOpenChange` receives the complete next Boolean. Outside pointer interaction never dismisses AlertDialog. Escape dismisses by default; `keyboardDismissDisabled` removes that path, so an enabled explicit action is mandatory.
 
 Loading, disabled, invalid, empty, and error behaviour belongs to the decision actions or content. A loading destructive action should remain clearly labelled and must not leave the dialog with no usable cancellation path.
 
@@ -23921,9 +23967,9 @@ size?: ControlSize</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Root</h2>
       <div class="badges">
-        <label for="c-68-collections-table-props" class="badge ok as-toggle">15 prop types</label>
+        <label for="c-68-collections-table-props" class="badge ok as-toggle">16 prop types</label>
         
-        <label for="c-68-collections-table-stories" class="badge ok as-toggle">16 stories</label>
+        <label for="c-68-collections-table-stories" class="badge ok as-toggle">21 stories</label>
         <label for="c-68-collections-table-docs" class="badge ok as-toggle">1 doc</label>
         <label for="c-68-collections-table-subcomponents" class="badge ok as-toggle">8 subcomponents</label>
       </div>
@@ -23950,7 +23996,7 @@ size?: ControlSize</code></pre>
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
-              <span class="badge ok">15 prop types</span>
+              <span class="badge ok">16 prop types</span>
             </div>
             <pre><code>Component: src/primitives/Table/Table.tsx::Root</code></pre>
             <pre><code>Props:</code></pre>
@@ -23963,6 +24009,11 @@ boundary?: TableBoundary = none
  * Ordered header, body, and optional footer sections.
  */
 children: ReactNode
+
+/**
+ * One key or reusable key collection omitted below the Breeze small breakpoint.
+ */
+compactHiddenColumns?: CompactHiddenColumns = []
 
 /**
  * Excluded when selection is controlled.
@@ -24222,6 +24273,7 @@ virtualization?: CollectionVirtualization</code></pre>
               <pre><code>const ResponsiveGridColumnVariant = () =&gt; (
   &lt;Table.Root
     aria-label=&quot;Responsive company records&quot;
+    compactHiddenColumns={[&#39;media&#39;]}
     desktopColumns=&quot;mediaDetailsAction&quot;
     layout=&quot;responsiveGrid&quot;
   &gt;
@@ -24249,6 +24301,178 @@ virtualization?: CollectionVirtualization</code></pre>
     &lt;/Table.Body&gt;
   &lt;/Table.Root&gt;
 );</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Compact Grid Columns</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              <div>compact grid omits hidden tracks</div>
+              <div class="hint">Removes supporting desktop-only columns and their grid tracks at the compact breakpoint while preserving spanning and keyboard geometry.</div>
+              <pre><code>function CompactGridColumns() {
+  return (
+    &lt;Table.Root
+      aria-label=&quot;Compact scheduled records&quot;
+      compactHiddenColumns={[&#39;marker&#39;, &#39;date&#39;, &#39;actions&#39;]}
+      layout=&quot;grid&quot;
+    &gt;
+      &lt;Table.Header&gt;
+        &lt;Table.Column id=&quot;marker&quot; width=&quot;max-content&quot;&gt;
+          Marker
+        &lt;/Table.Column&gt;
+        &lt;Table.Column id=&quot;name&quot; rowHeader&gt;
+          Name
+        &lt;/Table.Column&gt;
+        &lt;Table.Column id=&quot;date&quot; width=&quot;max-content&quot;&gt;
+          Date
+        &lt;/Table.Column&gt;
+        &lt;Table.Column align=&quot;end&quot; id=&quot;amount&quot; width=&quot;max-content&quot;&gt;
+          Amount
+        &lt;/Table.Column&gt;
+        &lt;Table.Column id=&quot;actions&quot; width=&quot;max-content&quot;&gt;
+          Actions
+        &lt;/Table.Column&gt;
+      &lt;/Table.Header&gt;
+      &lt;Table.Body&gt;
+        &lt;Table.Row id=&quot;subscription&quot; textValue=&quot;Subscription 12 August £20&quot;&gt;
+          &lt;Table.Cell column=&quot;marker&quot;&gt;Marker&lt;/Table.Cell&gt;
+          &lt;Table.Cell column=&quot;name&quot;&gt;Subscription&lt;/Table.Cell&gt;
+          &lt;Table.Cell column=&quot;date&quot;&gt;12 August&lt;/Table.Cell&gt;
+          &lt;Table.Cell align=&quot;end&quot; column=&quot;amount&quot;&gt;
+            £20
+          &lt;/Table.Cell&gt;
+          &lt;Table.Cell column=&quot;actions&quot;&gt;Actions&lt;/Table.Cell&gt;
+        &lt;/Table.Row&gt;
+        &lt;Table.Row id=&quot;summary&quot; textValue=&quot;Summary £40&quot;&gt;
+          &lt;Table.Cell column=&quot;marker&quot;&gt;Summary marker&lt;/Table.Cell&gt;
+          &lt;Table.Cell colSpan={2} column=&quot;name&quot;&gt;
+            Summary
+          &lt;/Table.Cell&gt;
+          &lt;Table.Cell align=&quot;end&quot; column=&quot;amount&quot;&gt;
+            £40
+          &lt;/Table.Cell&gt;
+          &lt;Table.Cell column=&quot;actions&quot;&gt;Summary actions&lt;/Table.Cell&gt;
+        &lt;/Table.Row&gt;
+        &lt;Table.Row id=&quot;editable&quot; textValue=&quot;Editable reference&quot;&gt;
+          &lt;Table.Cell column=&quot;marker&quot;&gt;Editable marker&lt;/Table.Cell&gt;
+          &lt;Table.Cell column=&quot;name&quot;&gt;
+            &lt;TextField.Root aria-label=&quot;Reference&quot; defaultValue=&quot;AB&quot;&gt;
+              &lt;TextField.Input /&gt;
+            &lt;/TextField.Root&gt;
+          &lt;/Table.Cell&gt;
+          &lt;Table.Cell column=&quot;date&quot;&gt;Editable date&lt;/Table.Cell&gt;
+          &lt;Table.Cell column=&quot;amount&quot;&gt;Editable amount&lt;/Table.Cell&gt;
+          &lt;Table.Cell column=&quot;actions&quot;&gt;Editable actions&lt;/Table.Cell&gt;
+        &lt;/Table.Row&gt;
+      &lt;/Table.Body&gt;
+    &lt;/Table.Root&gt;
+  );
+}</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Compact Grid Spanning Visibility</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              <div>compact spans follow covered column visibility</div>
+              <div class="hint">Keeps a span visible when any covered column remains in the compact grid and removes it when every covered column is compact-hidden.</div>
+              <pre><code>function CompactGridSpanningVisibility() {
+  return (
+    &lt;Table.Root
+      aria-label=&quot;Spanning visibility&quot;
+      compactHiddenColumns={[&#39;hidden-a&#39;, &#39;hidden-c&#39;, &#39;hidden-d&#39;]}
+      layout=&quot;grid&quot;
+    &gt;
+      &lt;Table.Header&gt;
+        &lt;Table.Column id=&quot;hidden-a&quot; rowHeader&gt;
+          Hidden A
+        &lt;/Table.Column&gt;
+        &lt;Table.Column id=&quot;visible-b&quot;&gt;Visible B&lt;/Table.Column&gt;
+        &lt;Table.Column id=&quot;hidden-c&quot;&gt;Hidden C&lt;/Table.Column&gt;
+        &lt;Table.Column id=&quot;hidden-d&quot;&gt;Hidden D&lt;/Table.Column&gt;
+        &lt;Table.Column id=&quot;visible-e&quot;&gt;Visible E&lt;/Table.Column&gt;
+      &lt;/Table.Header&gt;
+      &lt;Table.Body&gt;
+        &lt;Table.Row id=&quot;entry&quot; textValue=&quot;Mixed Hidden Remainder&quot;&gt;
+          &lt;Table.Cell colSpan={2} column=&quot;hidden-a&quot;&gt;
+            Mixed
+          &lt;/Table.Cell&gt;
+          &lt;Table.Cell colSpan={2} column=&quot;hidden-c&quot;&gt;
+            Hidden
+          &lt;/Table.Cell&gt;
+          &lt;Table.Cell column=&quot;visible-e&quot;&gt;Remainder&lt;/Table.Cell&gt;
+        &lt;/Table.Row&gt;
+      &lt;/Table.Body&gt;
+    &lt;/Table.Root&gt;
+  );
+}</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Desktop Grid Column Span</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              <div>desktop grid preserves full spans</div>
+              <div class="hint">Restores the native multi-column span when compact-only columns are visible above the small breakpoint.</div>
+              <pre><code>function DesktopGridColumnSpan() {
+  return (
+    &lt;Table.Root
+      aria-label=&quot;Compact scheduled records&quot;
+      compactHiddenColumns={[&#39;marker&#39;, &#39;date&#39;, &#39;actions&#39;]}
+      layout=&quot;grid&quot;
+    &gt;
+      &lt;Table.Header&gt;
+        &lt;Table.Column id=&quot;marker&quot; width=&quot;max-content&quot;&gt;
+          Marker
+        &lt;/Table.Column&gt;
+        &lt;Table.Column id=&quot;name&quot; rowHeader&gt;
+          Name
+        &lt;/Table.Column&gt;
+        &lt;Table.Column id=&quot;date&quot; width=&quot;max-content&quot;&gt;
+          Date
+        &lt;/Table.Column&gt;
+        &lt;Table.Column align=&quot;end&quot; id=&quot;amount&quot; width=&quot;max-content&quot;&gt;
+          Amount
+        &lt;/Table.Column&gt;
+        &lt;Table.Column id=&quot;actions&quot; width=&quot;max-content&quot;&gt;
+          Actions
+        &lt;/Table.Column&gt;
+      &lt;/Table.Header&gt;
+      &lt;Table.Body&gt;
+        &lt;Table.Row id=&quot;subscription&quot; textValue=&quot;Subscription 12 August £20&quot;&gt;
+          &lt;Table.Cell column=&quot;marker&quot;&gt;Marker&lt;/Table.Cell&gt;
+          &lt;Table.Cell column=&quot;name&quot;&gt;Subscription&lt;/Table.Cell&gt;
+          &lt;Table.Cell column=&quot;date&quot;&gt;12 August&lt;/Table.Cell&gt;
+          &lt;Table.Cell align=&quot;end&quot; column=&quot;amount&quot;&gt;
+            £20
+          &lt;/Table.Cell&gt;
+          &lt;Table.Cell column=&quot;actions&quot;&gt;Actions&lt;/Table.Cell&gt;
+        &lt;/Table.Row&gt;
+        &lt;Table.Row id=&quot;summary&quot; textValue=&quot;Summary £40&quot;&gt;
+          &lt;Table.Cell column=&quot;marker&quot;&gt;Summary marker&lt;/Table.Cell&gt;
+          &lt;Table.Cell colSpan={2} column=&quot;name&quot;&gt;
+            Summary
+          &lt;/Table.Cell&gt;
+          &lt;Table.Cell align=&quot;end&quot; column=&quot;amount&quot;&gt;
+            £40
+          &lt;/Table.Cell&gt;
+          &lt;Table.Cell column=&quot;actions&quot;&gt;Summary actions&lt;/Table.Cell&gt;
+        &lt;/Table.Row&gt;
+        &lt;Table.Row id=&quot;editable&quot; textValue=&quot;Editable reference&quot;&gt;
+          &lt;Table.Cell column=&quot;marker&quot;&gt;Editable marker&lt;/Table.Cell&gt;
+          &lt;Table.Cell column=&quot;name&quot;&gt;
+            &lt;TextField.Root aria-label=&quot;Reference&quot; defaultValue=&quot;AB&quot;&gt;
+              &lt;TextField.Input /&gt;
+            &lt;/TextField.Root&gt;
+          &lt;/Table.Cell&gt;
+          &lt;Table.Cell column=&quot;date&quot;&gt;Editable date&lt;/Table.Cell&gt;
+          &lt;Table.Cell column=&quot;amount&quot;&gt;Editable amount&lt;/Table.Cell&gt;
+          &lt;Table.Cell column=&quot;actions&quot;&gt;Editable actions&lt;/Table.Cell&gt;
+        &lt;/Table.Row&gt;
+      &lt;/Table.Body&gt;
+    &lt;/Table.Root&gt;
+  );
+}</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -24439,43 +24663,7 @@ virtualization?: CollectionVirtualization</code></pre>
               </div>
               <div>variable-height virtualized rows with loading sentinel</div>
               <div class="hint">Windows variable-height rows inside a bounded viewport and renders a loading sentinel while preserving desktop heading and cell geometry.</div>
-              <pre><code>function VariableVirtualizationAndLoading() {
-  return (
-    &lt;Table.Root
-      aria-label=&quot;Virtual data&quot;
-      virtualization={{
-        estimatedRowHeight: 52,
-        mode: &#39;variable&#39;,
-        overscan: 80,
-        viewportHeight: 156,
-      }}
-    &gt;
-      &lt;Table.Header&gt;
-        &lt;Table.Column id=&quot;name&quot; rowHeader&gt;
-          Name
-        &lt;/Table.Column&gt;
-        &lt;Table.Column id=&quot;state&quot;&gt;State&lt;/Table.Column&gt;
-      &lt;/Table.Header&gt;
-      &lt;Table.Body&gt;
-        &lt;Table.Row id={1} textValue=&quot;Alpha Ready&quot;&gt;
-          &lt;Table.Cell column=&quot;name&quot;&gt;Alpha&lt;/Table.Cell&gt;
-          &lt;Table.Cell column=&quot;state&quot;&gt;Ready&lt;/Table.Cell&gt;
-        &lt;/Table.Row&gt;
-        &lt;Table.Row id={2} textValue=&quot;Beta In review&quot;&gt;
-          &lt;Table.Cell column=&quot;name&quot;&gt;Beta&lt;/Table.Cell&gt;
-          &lt;Table.Cell column=&quot;state&quot;&gt;In review&lt;/Table.Cell&gt;
-        &lt;/Table.Row&gt;
-        &lt;Table.Row id={3} textValue=&quot;Gamma Draft&quot;&gt;
-          &lt;Table.Cell column=&quot;name&quot;&gt;Gamma&lt;/Table.Cell&gt;
-          &lt;Table.Cell column=&quot;state&quot;&gt;Draft&lt;/Table.Cell&gt;
-        &lt;/Table.Row&gt;
-        &lt;Table.LoadMore loading onLoadMore={() =&gt; undefined}&gt;
-          Loading more items
-        &lt;/Table.LoadMore&gt;
-      &lt;/Table.Body&gt;
-    &lt;/Table.Root&gt;
-  );
-}</code></pre>
+              <pre><code>const VariableVirtualizationAndLoading = () =&gt; &lt;VirtualizedTable /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -24484,7 +24672,64 @@ virtualization?: CollectionVirtualization</code></pre>
               </div>
               <div>compact variable-height virtualized table</div>
               <div class="hint">Verifies variable-height row windowing and the loading sentinel against the stacked compact record presentation without horizontal overflow.</div>
-              <pre><code>const VariableVirtualizationAndLoadingCompact = () =&gt; &lt;VirtualizedTable /&gt;;</code></pre>
+              <pre><code>const VariableVirtualizationAndLoadingCompact = () =&gt; &lt;VirtualizedTable compactHiddenState /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Variable Virtualization Narrow Desktop</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              <div>narrow desktop virtualization keeps visible cells in measurement</div>
+              <div class="hint">Keeps desktop row measurement aligned with viewport-driven responsive CSS when the virtualized table itself is narrower than the small breakpoint.</div>
+              <pre><code>const VariableVirtualizationNarrowDesktop = () =&gt; (
+  &lt;div style={{ width: 320 }}&gt;
+    &lt;VirtualizedTable compactHiddenState expandedState /&gt;
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Variable Virtualization Compact Boundaries</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              <div>virtualized compact navigation reaches collection boundaries</div>
+              <div class="hint">Preserves collection-wide modified Home and End navigation while compact boundary columns are hidden and rows are windowed.</div>
+              <pre><code>function VariableVirtualizationCompactBoundaries() {
+  return (
+    &lt;Table.Root
+      aria-label=&quot;Virtual boundary records&quot;
+      compactHiddenColumns={[&#39;marker&#39;, &#39;support&#39;, &#39;actions&#39;]}
+      layout=&quot;grid&quot;
+      virtualization={{
+        estimatedRowHeight: 52,
+        mode: &#39;variable&#39;,
+        overscan: 0,
+        viewportHeight: 156,
+      }}
+    &gt;
+      &lt;Table.Header&gt;
+        &lt;Table.Column id=&quot;marker&quot;&gt;Marker&lt;/Table.Column&gt;
+        &lt;Table.Column id=&quot;name&quot; rowHeader&gt;
+          Name
+        &lt;/Table.Column&gt;
+        &lt;Table.Column id=&quot;support&quot;&gt;Support&lt;/Table.Column&gt;
+        &lt;Table.Column id=&quot;amount&quot;&gt;Amount&lt;/Table.Column&gt;
+        &lt;Table.Column id=&quot;actions&quot;&gt;Actions&lt;/Table.Column&gt;
+      &lt;/Table.Header&gt;
+      &lt;Table.Body items={virtualizedBoundaryRows}&gt;
+        {(row) =&gt; (
+          &lt;Table.Row id={row.id} textValue={`${row.name} ${row.amount}`}&gt;
+            &lt;Table.Cell column=&quot;marker&quot;&gt;Marker {row.id}&lt;/Table.Cell&gt;
+            &lt;Table.Cell column=&quot;name&quot;&gt;{row.name}&lt;/Table.Cell&gt;
+            &lt;Table.Cell column=&quot;support&quot;&gt;Support {row.id}&lt;/Table.Cell&gt;
+            &lt;Table.Cell column=&quot;amount&quot;&gt;{row.amount}&lt;/Table.Cell&gt;
+            &lt;Table.Cell column=&quot;actions&quot;&gt;Actions {row.id}&lt;/Table.Cell&gt;
+          &lt;/Table.Row&gt;
+        )}
+      &lt;/Table.Body&gt;
+    &lt;/Table.Root&gt;
+  );
+}</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -24603,7 +24848,7 @@ Column, row, and section identifiers are stable `string | number` keys. Do not u
 
 `layout=&quot;responsive&quot;` is the default. It presents compact labelled records below the Breeze small breakpoint and native table columns at wider sizes. `responsiveGrid` keeps the same compact treatment but uses explicit grid tracks at wider sizes. Its `desktopColumns` variant defaults to `equal`; use `desktopColumns=&quot;mediaDetailsAction&quot;` for a five-column media, primary detail, secondary detail, tertiary detail, and trailing action arrangement. `grid` keeps CSS grid structure at all sizes. Use `responsiveGrid` or `grid` only when aligned custom geometry fits the content.
 
-`Table.Column compactLabel` defaults to `true`; a literal string heading becomes the compact label. When the heading contains formatting, icons, or other React nodes, provide explicit `textValue`. Set `compactLabel` to `false` for a disclosure or control column that should not label compact cells. `align` is `start`, `center`, or `end` and defaults to `start`. `width` accepts a CSS width or grid-track size such as `&quot;12rem&quot;`, `&quot;max-content&quot;`, or `&quot;minmax(8rem, 1fr)&quot;`; numbers are pixels. Omitted columns share the remaining width in an equal `responsiveGrid`. `boundary=&quot;strong&quot;` adds a stronger lower edge; `none` is the default.
+`Table.Column compactLabel` defaults to `true`; a literal string heading becomes the compact label. When the heading contains formatting, icons, or other React nodes, provide explicit `textValue`. Set `compactLabel` to `false` for a disclosure or control column that should not label compact cells. Set `Table.Root compactHiddenColumns` to one stable key, a readonly array, or a `ReadonlySet` of supporting desktop columns intentionally represented inside another compact cell; one-shot iterators are not supported. Matching cells and grid tracks are omitted below the Breeze small breakpoint while remaining available at wider widths. Declaring this at the root ensures the compact state is present in server-rendered markup. `align` is `start`, `center`, or `end` and defaults to `start`. `width` accepts a CSS width or grid-track size such as `&quot;12rem&quot;`, `&quot;max-content&quot;`, or `&quot;minmax(8rem, 1fr)&quot;`; numbers are pixels. Omitted columns share the remaining width in an equal `responsiveGrid`. `boundary=&quot;strong&quot;` adds a stronger lower edge; `none` is the default.
 
 `Table.Cell colSpan` follows native table semantics and spans the same number of CSS-grid tracks in `grid` and `responsiveGrid` layouts. Use a positive integer, start the cell in the first column it covers, and omit the covered cells from that row.
 
