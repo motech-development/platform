@@ -562,20 +562,25 @@ test.describe('Non-VAT registered', () => {
         .filter({ hasText: transaction.description })
         .first();
       const dateCell = pendingRow.locator('[data-breeze-cell-column="date"]');
-      const compactDate = pendingRow
-        .locator('[data-breeze-cell-column="transaction"]')
-        .getByText(/\d{1,2} [A-Z][a-z]+ \d{4}/u);
+      const transactionCell = pendingRow.locator(
+        '[data-breeze-cell-column="transaction"]',
+      );
+      const compactDate = transactionCell.getByText(
+        /\d{1,2} [A-Z][a-z]+ \d{4}/u,
+      );
 
       await expect(dateCell).toBeHidden();
       await expect(compactDate).toBeVisible();
       await expect(compactDate).toContainText(/\d{1,2} [A-Z][a-z]+ \d{4}/u);
-      await expect(compactDate.locator('svg.lucide-calendar')).toBeVisible();
+      await expect(
+        transactionCell.getByTestId('transaction-date-icon'),
+      ).toBeVisible();
       await expectPendingRowOnOneLine(pendingRow);
 
       await page.setViewportSize({ height: 900, width: 681 });
       await expect(dateCell).toBeVisible();
       await expect(compactDate).toBeHidden();
-      await expect(dateCell.locator('svg.lucide-calendar')).toBeVisible();
+      await expect(dateCell.getByTestId('transaction-date-icon')).toBeVisible();
       await expectPendingRowOnOneLine(pendingRow);
       await pendingRow.click();
       await page.getByRole('button', { name: 'Delete transaction' }).click();

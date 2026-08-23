@@ -1,5 +1,7 @@
 const compactCellClassName = 'max-[681px]:border-0! max-[681px]:p-0!';
 
+export const compactTableOnlyClassName = 'min-[681px]:hidden!';
+
 export const responsiveEntityTableClassNames = {
   body: 'max-[681px]:block!',
   cells: {

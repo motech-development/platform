@@ -20,6 +20,7 @@ import Decimal from 'decimal.js';
 import { type ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { formatCurrency } from '../../formatting/currency';
+import { compactTableOnlyClassName } from '../tableLayout';
 
 export interface LedgerTransaction {
   amount: number;
@@ -136,6 +137,7 @@ function PendingTransactionDate({
         <CalendarIcon
           aria-hidden="true"
           className="text-[var(--breeze-primary)]"
+          data-testid="transaction-date-icon"
           size="1rem"
         />
       )}
@@ -327,7 +329,7 @@ function TransactionIdentityCell({
         </Typography>
         {pendingCollection ? (
           <PendingTransactionDate
-            className="sm:!hidden"
+            className={compactTableOnlyClassName}
             date={transaction.date}
             locale={locale}
             scheduled={transaction.scheduled === true}
@@ -486,7 +488,9 @@ function LoadingTransactionRow({
           <Skeleton className="h-5 w-36 max-w-full" />
           <Skeleton className="h-4 w-48 max-w-full" />
           {pending ? (
-            <Skeleton className="h-4 w-28 max-w-full sm:!hidden" />
+            <Skeleton
+              className={`h-4 w-28 max-w-full ${compactTableOnlyClassName}`}
+            />
           ) : null}
         </Stack>
       </Table.Cell>
