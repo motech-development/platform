@@ -93,7 +93,16 @@ Once a batch is validated:
 - push the PR branch;
 - confirm the remote PR head equals the pushed commit;
 - apply the permitted thread resolutions;
-- wait for required checks and review bots on that head.
+- wait for the entire current-head pipeline and review-bot cycle to reach
+  terminal states before starting another fix batch or creating another commit.
+
+Findings that arrive while the current head is still being tested are queued, not
+acted on immediately. Do not push a newer commit merely because a review bot
+finishes before CI: doing so cancels or obscures evidence for the previous head.
+Once the pipeline and review bots have finished, audit their results together
+and, when necessary, produce one newly validated batch for the next commit.
+Classify genuinely external or paid checks that cannot run under the pause
+conditions below; do not treat an ordinary running required check as terminal.
 
 When CI fails, inspect the failing job and logs, reproduce it locally when
 feasible, and form a falsifiable root-cause hypothesis before editing code. Do not
