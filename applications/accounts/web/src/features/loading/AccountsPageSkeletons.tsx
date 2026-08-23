@@ -330,12 +330,15 @@ function TransactionDrawerSkeleton({
   );
 }
 
-export function RecordTransactionDrawerSkeleton() {
+export function RecordTransactionDrawerSkeleton({
+  onOpenChange,
+}: Readonly<{ onOpenChange?: (open: boolean) => void }>) {
   const { t } = useTranslation('transactions');
 
   return (
     <TransactionDrawerSkeleton
       description={t('Add money coming in or going out.')}
+      onOpenChange={onOpenChange}
       title={t('Record transaction')}
     />
   );

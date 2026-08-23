@@ -472,7 +472,7 @@ describe('RecordTransactionPage', () => {
     expect(screen.getByRole('combobox', { name: 'Supplier' })).toBeVisible();
   });
 
-  it('renders the form skeleton while the form has no initial data', () => {
+  it('renders a dismissible form skeleton while the form has no initial data', async () => {
     mocks.query.data = undefined;
     mocks.query.loading = true;
 
@@ -488,6 +488,13 @@ describe('RecordTransactionPage', () => {
     expect(
       screen.getByRole('dialog', { name: 'Record transaction' }),
     ).toBeVisible();
+    await userEvent.click(screen.getByRole('button', { name: 'Close' }));
+    await waitFor(() =>
+      expect(mocks.navigate).toHaveBeenCalledWith({
+        params: { companyId: 'company-id' },
+        to: '/my-companies/accounts/$companyId',
+      }),
+    );
   });
 
   it('keeps an invalid browser form submission open', () => {

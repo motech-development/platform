@@ -27,6 +27,7 @@ import { Route as AuthenticatedMyCompaniesDashboardCompanyIdRecordTransactionInd
 import { Route as AuthenticatedMyCompaniesAccountsCompanyIdPendingTransactionsRecordTransactionIndexRouteImport } from './routes/_authenticated/my-companies/accounts/$companyId/pending-transactions/record-transaction/index';
 import { Route as AuthenticatedMyCompaniesAccountsCompanyIdViewTransactionTransactionIdIndexRouteImport } from './routes/_authenticated/my-companies/accounts/$companyId/view-transaction/$transactionId/index';
 import { Route as AuthenticatedMyCompaniesClientsCompanyIdUpdateDetailsClientIdIndexRouteImport } from './routes/_authenticated/my-companies/clients/$companyId/update-details/$clientId/index';
+import { Route as AuthenticatedMyCompaniesDashboardCompanyIdViewTransactionTransactionIdIndexRouteImport } from './routes/_authenticated/my-companies/dashboard/$companyId/view-transaction/$transactionId/index';
 import { Route as AuthenticatedMyCompaniesAccountsCompanyIdPendingTransactionsViewTransactionTransactionIdIndexRouteImport } from './routes/_authenticated/my-companies/accounts/$companyId/pending-transactions/view-transaction/$transactionId/index';
 
 const IndexRoute = IndexRouteImport.update({
@@ -146,6 +147,14 @@ const AuthenticatedMyCompaniesClientsCompanyIdUpdateDetailsClientIdIndexRoute =
       getParentRoute: () => AuthenticatedMyCompaniesRouteRoute,
     } as any,
   );
+const AuthenticatedMyCompaniesDashboardCompanyIdViewTransactionTransactionIdIndexRoute =
+  AuthenticatedMyCompaniesDashboardCompanyIdViewTransactionTransactionIdIndexRouteImport.update(
+    {
+      id: '/dashboard/$companyId/view-transaction/$transactionId/',
+      path: '/dashboard/$companyId/view-transaction/$transactionId/',
+      getParentRoute: () => AuthenticatedMyCompaniesRouteRoute,
+    } as any,
+  );
 const AuthenticatedMyCompaniesAccountsCompanyIdPendingTransactionsViewTransactionTransactionIdIndexRoute =
   AuthenticatedMyCompaniesAccountsCompanyIdPendingTransactionsViewTransactionTransactionIdIndexRouteImport.update(
     {
@@ -173,6 +182,7 @@ export interface FileRoutesByFullPath {
   '/my-companies/accounts/$companyId/pending-transactions/record-transaction/': typeof AuthenticatedMyCompaniesAccountsCompanyIdPendingTransactionsRecordTransactionIndexRoute;
   '/my-companies/accounts/$companyId/view-transaction/$transactionId/': typeof AuthenticatedMyCompaniesAccountsCompanyIdViewTransactionTransactionIdIndexRoute;
   '/my-companies/clients/$companyId/update-details/$clientId/': typeof AuthenticatedMyCompaniesClientsCompanyIdUpdateDetailsClientIdIndexRoute;
+  '/my-companies/dashboard/$companyId/view-transaction/$transactionId/': typeof AuthenticatedMyCompaniesDashboardCompanyIdViewTransactionTransactionIdIndexRoute;
   '/my-companies/accounts/$companyId/pending-transactions/view-transaction/$transactionId/': typeof AuthenticatedMyCompaniesAccountsCompanyIdPendingTransactionsViewTransactionTransactionIdIndexRoute;
 }
 export interface FileRoutesByTo {
@@ -191,6 +201,7 @@ export interface FileRoutesByTo {
   '/my-companies/accounts/$companyId/pending-transactions/record-transaction': typeof AuthenticatedMyCompaniesAccountsCompanyIdPendingTransactionsRecordTransactionIndexRoute;
   '/my-companies/accounts/$companyId/view-transaction/$transactionId': typeof AuthenticatedMyCompaniesAccountsCompanyIdViewTransactionTransactionIdIndexRoute;
   '/my-companies/clients/$companyId/update-details/$clientId': typeof AuthenticatedMyCompaniesClientsCompanyIdUpdateDetailsClientIdIndexRoute;
+  '/my-companies/dashboard/$companyId/view-transaction/$transactionId': typeof AuthenticatedMyCompaniesDashboardCompanyIdViewTransactionTransactionIdIndexRoute;
   '/my-companies/accounts/$companyId/pending-transactions/view-transaction/$transactionId': typeof AuthenticatedMyCompaniesAccountsCompanyIdPendingTransactionsViewTransactionTransactionIdIndexRoute;
 }
 export interface FileRoutesById {
@@ -213,6 +224,7 @@ export interface FileRoutesById {
   '/_authenticated/my-companies/accounts/$companyId/pending-transactions/record-transaction/': typeof AuthenticatedMyCompaniesAccountsCompanyIdPendingTransactionsRecordTransactionIndexRoute;
   '/_authenticated/my-companies/accounts/$companyId/view-transaction/$transactionId/': typeof AuthenticatedMyCompaniesAccountsCompanyIdViewTransactionTransactionIdIndexRoute;
   '/_authenticated/my-companies/clients/$companyId/update-details/$clientId/': typeof AuthenticatedMyCompaniesClientsCompanyIdUpdateDetailsClientIdIndexRoute;
+  '/_authenticated/my-companies/dashboard/$companyId/view-transaction/$transactionId/': typeof AuthenticatedMyCompaniesDashboardCompanyIdViewTransactionTransactionIdIndexRoute;
   '/_authenticated/my-companies/accounts/$companyId/pending-transactions/view-transaction/$transactionId/': typeof AuthenticatedMyCompaniesAccountsCompanyIdPendingTransactionsViewTransactionTransactionIdIndexRoute;
 }
 export interface FileRouteTypes {
@@ -235,6 +247,7 @@ export interface FileRouteTypes {
     | '/my-companies/accounts/$companyId/pending-transactions/record-transaction/'
     | '/my-companies/accounts/$companyId/view-transaction/$transactionId/'
     | '/my-companies/clients/$companyId/update-details/$clientId/'
+    | '/my-companies/dashboard/$companyId/view-transaction/$transactionId/'
     | '/my-companies/accounts/$companyId/pending-transactions/view-transaction/$transactionId/';
   fileRoutesByTo: FileRoutesByTo;
   to:
@@ -253,6 +266,7 @@ export interface FileRouteTypes {
     | '/my-companies/accounts/$companyId/pending-transactions/record-transaction'
     | '/my-companies/accounts/$companyId/view-transaction/$transactionId'
     | '/my-companies/clients/$companyId/update-details/$clientId'
+    | '/my-companies/dashboard/$companyId/view-transaction/$transactionId'
     | '/my-companies/accounts/$companyId/pending-transactions/view-transaction/$transactionId';
   id:
     | '__root__'
@@ -274,6 +288,7 @@ export interface FileRouteTypes {
     | '/_authenticated/my-companies/accounts/$companyId/pending-transactions/record-transaction/'
     | '/_authenticated/my-companies/accounts/$companyId/view-transaction/$transactionId/'
     | '/_authenticated/my-companies/clients/$companyId/update-details/$clientId/'
+    | '/_authenticated/my-companies/dashboard/$companyId/view-transaction/$transactionId/'
     | '/_authenticated/my-companies/accounts/$companyId/pending-transactions/view-transaction/$transactionId/';
   fileRoutesById: FileRoutesById;
 }
@@ -410,6 +425,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMyCompaniesClientsCompanyIdUpdateDetailsClientIdIndexRouteImport;
       parentRoute: typeof AuthenticatedMyCompaniesRouteRoute;
     };
+    '/_authenticated/my-companies/dashboard/$companyId/view-transaction/$transactionId/': {
+      id: '/_authenticated/my-companies/dashboard/$companyId/view-transaction/$transactionId/';
+      path: '/dashboard/$companyId/view-transaction/$transactionId';
+      fullPath: '/my-companies/dashboard/$companyId/view-transaction/$transactionId/';
+      preLoaderRoute: typeof AuthenticatedMyCompaniesDashboardCompanyIdViewTransactionTransactionIdIndexRouteImport;
+      parentRoute: typeof AuthenticatedMyCompaniesRouteRoute;
+    };
     '/_authenticated/my-companies/accounts/$companyId/pending-transactions/view-transaction/$transactionId/': {
       id: '/_authenticated/my-companies/accounts/$companyId/pending-transactions/view-transaction/$transactionId/';
       path: '/pending-transactions/view-transaction/$transactionId';
@@ -461,6 +483,7 @@ interface AuthenticatedMyCompaniesRouteRouteChildren {
   AuthenticatedMyCompaniesClientsCompanyIdAddClientIndexRoute: typeof AuthenticatedMyCompaniesClientsCompanyIdAddClientIndexRoute;
   AuthenticatedMyCompaniesDashboardCompanyIdRecordTransactionIndexRoute: typeof AuthenticatedMyCompaniesDashboardCompanyIdRecordTransactionIndexRoute;
   AuthenticatedMyCompaniesClientsCompanyIdUpdateDetailsClientIdIndexRoute: typeof AuthenticatedMyCompaniesClientsCompanyIdUpdateDetailsClientIdIndexRoute;
+  AuthenticatedMyCompaniesDashboardCompanyIdViewTransactionTransactionIdIndexRoute: typeof AuthenticatedMyCompaniesDashboardCompanyIdViewTransactionTransactionIdIndexRoute;
 }
 
 const AuthenticatedMyCompaniesRouteRouteChildren: AuthenticatedMyCompaniesRouteRouteChildren =
@@ -484,6 +507,8 @@ const AuthenticatedMyCompaniesRouteRouteChildren: AuthenticatedMyCompaniesRouteR
       AuthenticatedMyCompaniesDashboardCompanyIdRecordTransactionIndexRoute,
     AuthenticatedMyCompaniesClientsCompanyIdUpdateDetailsClientIdIndexRoute:
       AuthenticatedMyCompaniesClientsCompanyIdUpdateDetailsClientIdIndexRoute,
+    AuthenticatedMyCompaniesDashboardCompanyIdViewTransactionTransactionIdIndexRoute:
+      AuthenticatedMyCompaniesDashboardCompanyIdViewTransactionTransactionIdIndexRoute,
   };
 
 const AuthenticatedMyCompaniesRouteRouteWithChildren =

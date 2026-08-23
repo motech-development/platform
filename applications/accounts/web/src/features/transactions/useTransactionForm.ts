@@ -111,14 +111,15 @@ export function useTransactionForm({
       ? initialValues.status
       : undefined,
   );
-  const transactionDateTime = useRef(
-    initialDateTime ?? new Date().toISOString(),
-  );
   const [persistedFormValues, setPersistedFormValues] =
     useState<TransactionFormValues>(
       () =>
         initialValues ??
-        defaultValues(companyId, initialStatus, transactionDateTime.current),
+        defaultValues(
+          companyId,
+          initialStatus,
+          initialDateTime ?? new Date().toISOString(),
+        ),
     );
   const { data, error, loading, refetch } = useQuery(GET_RECORD_TRANSACTION, {
     fetchPolicy: 'cache-and-network',
@@ -285,14 +286,11 @@ export function useTransactionForm({
 
       if (!attachmentTransferCanSubmit(transfer)) return;
 
-      const input = buildTransactionInput(
-        {
-          ...value,
-          attachment:
-            transfer?.status === 'uploaded' ? transfer.path : value.attachment,
-        },
-        transactionDateTime.current,
-      );
+      const input = buildTransactionInput({
+        ...value,
+        attachment:
+          transfer?.status === 'uploaded' ? transfer.path : value.attachment,
+      });
       const editing = Boolean(input.id);
       let savedTransaction: TransactionCacheValue;
       const previousAttachment = persistedAttachmentPath.current;
@@ -315,7 +313,6 @@ export function useTransactionForm({
       persistedAttachmentPath.current =
         savedTransaction.attachment || undefined;
       persistedTransactionStatus.current = savedTransaction.status;
-      transactionDateTime.current = savedTransaction.date;
       const savedValues = editableTransaction({
         ...savedTransaction,
         attachment: savedTransaction.attachment ?? '',

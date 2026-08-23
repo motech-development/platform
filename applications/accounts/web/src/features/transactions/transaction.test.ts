@@ -59,17 +59,14 @@ describe('Transaction accounting input', () => {
     },
   );
 
-  it('preserves the form time when mapping its calendar date and clears scheduling when confirmed', () => {
+  it('stores a confirmed Transaction Date at UTC midnight and clears scheduling', () => {
     expect(
-      buildTransactionInput(
-        {
-          ...baseValues,
-          scheduled: true,
-        },
-        '2026-08-14T12:13:14.567Z',
-      ),
+      buildTransactionInput({
+        ...baseValues,
+        scheduled: true,
+      }),
     ).toMatchObject({
-      date: '2026-08-15T12:13:14.567Z',
+      date: '2026-08-15T00:00:00.000Z',
       scheduled: false,
       status: 'confirmed',
     });
@@ -124,14 +121,11 @@ describe('Transaction accounting input', () => {
 
   it('stores a new scheduled Pending Transaction at UTC midnight', () => {
     expect(
-      buildTransactionInput(
-        {
-          ...baseValues,
-          scheduled: true,
-          status: 'pending',
-        },
-        '2026-08-15T12:59:59.999Z',
-      ),
+      buildTransactionInput({
+        ...baseValues,
+        scheduled: true,
+        status: 'pending',
+      }),
     ).toMatchObject({
       date: '2026-08-15T00:00:00.000Z',
       scheduled: true,
@@ -141,15 +135,12 @@ describe('Transaction accounting input', () => {
 
   it('keeps a moved scheduled Transaction at UTC midnight', () => {
     expect(
-      buildTransactionInput(
-        {
-          ...baseValues,
-          date: '2026-08-16',
-          scheduled: true,
-          status: 'pending',
-        },
-        '2026-08-15T23:59:59.999Z',
-      ),
+      buildTransactionInput({
+        ...baseValues,
+        date: '2026-08-16',
+        scheduled: true,
+        status: 'pending',
+      }),
     ).toMatchObject({ date: '2026-08-16T00:00:00.000Z' });
   });
 

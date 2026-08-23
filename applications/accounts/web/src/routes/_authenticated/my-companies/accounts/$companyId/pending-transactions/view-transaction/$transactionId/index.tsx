@@ -20,11 +20,6 @@ export const Route = createFileRoute(
 )({
   component: PendingTransactionPage,
   loader: ({ context, params }) =>
-    primeTransaction(
-      context,
-      params.companyId,
-      params.transactionId,
-      'pending',
-    ),
+    primeTransaction(context, params.companyId, params.transactionId),
   pendingComponent: AccountsPending,
 });

@@ -182,6 +182,7 @@ export function DashboardPageContent({
                   compact
                   companyId={companyId}
                   currencyCode={data.getBalance.currency}
+                  origin="dashboard"
                   transactions={transactions}
                 />
               </Surface>

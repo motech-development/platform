@@ -208,6 +208,33 @@ describe('AttachmentUpload', () => {
     expect(onUploaded).not.toHaveBeenCalled();
   });
 
+  it('reports an accepted media type with an unsupported filename extension', async () => {
+    const user = userEvent.setup();
+    const file = new File(['image'], 'photo.jfif', { type: 'image/jpeg' });
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <AttachmentUpload
+          companyId="company-1"
+          onTransfer={vi.fn()}
+          onUploaded={vi.fn()}
+        />
+      </BreezeProvider>,
+    );
+
+    await user.upload(
+      document.querySelector('input[type="file"]') as HTMLInputElement,
+      file,
+    );
+
+    expect(mocks.toast.show).toHaveBeenCalledWith({
+      description: 'Choose one PDF, JPG, or PNG file.',
+      title: 'File not accepted',
+      variant: 'warning',
+    });
+    expect(mocks.requestUpload).not.toHaveBeenCalled();
+  });
+
   it('rejects a file outside the attachment media contract', async () => {
     const transfer = vi.fn();
     const file = new File(['notes'], 'notes.txt', { type: 'text/plain' });

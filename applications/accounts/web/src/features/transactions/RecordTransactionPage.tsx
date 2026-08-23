@@ -83,7 +83,11 @@ export function RecordTransactionPage({
     return (
       <>
         <Background companyId={companyId} />
-        <RecordTransactionDrawerSkeleton />
+        <RecordTransactionDrawerSkeleton
+          onOpenChange={(open) => {
+            if (!open) requestClose();
+          }}
+        />
       </>
     );
   }

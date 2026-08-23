@@ -39,6 +39,13 @@ export function AttachmentUpload({
   const activeTransfer = useRef<symbol | undefined>(undefined);
   const runLatestTransfer = useLatestTransfer();
   const [requestUpload, { loading }] = useMutation(REQUEST_UPLOAD);
+  const showRejectedFileToast = () => {
+    toast.show({
+      description: t('Choose one PDF, JPG, or PNG file.'),
+      title: t('File not accepted'),
+      variant: 'warning',
+    });
+  };
 
   const upload = (file: File) => {
     const extensions = {
@@ -54,6 +61,7 @@ export function AttachmentUpload({
     const extension = extensions?.find((value) => value === requestedExtension);
 
     if (!extension) {
+      if (requestedExtension) showRejectedFileToast();
       return Promise.resolve({ status: 'failed' } as const);
     }
 
@@ -161,13 +169,7 @@ export function AttachmentUpload({
             upload(file).catch(() => undefined);
           }
         }}
-        onReject={() => {
-          toast.show({
-            description: t('Choose one PDF, JPG, or PNG file.'),
-            title: t('File not accepted'),
-            variant: 'warning',
-          });
-        }}
+        onReject={showRejectedFileToast}
         selectedFiles={selectedFiles}
       />
       {transferPending && selectedFiles[0] ? (

@@ -255,10 +255,21 @@ function transactionRowClassName(pending: boolean, pendingCollection: boolean) {
     : 'py-3';
 }
 
-function transactionRoute(pendingCollection: boolean) {
-  return pendingCollection
-    ? '/my-companies/accounts/$companyId/pending-transactions/view-transaction/$transactionId'
-    : '/my-companies/accounts/$companyId/view-transaction/$transactionId';
+type TransactionLedgerOrigin = 'dashboard' | 'transactions';
+
+function transactionRoute(
+  origin: TransactionLedgerOrigin,
+  pendingCollection: boolean,
+) {
+  if (pendingCollection) {
+    return '/my-companies/accounts/$companyId/pending-transactions/view-transaction/$transactionId';
+  }
+
+  if (origin === 'dashboard') {
+    return '/my-companies/dashboard/$companyId/view-transaction/$transactionId';
+  }
+
+  return '/my-companies/accounts/$companyId/view-transaction/$transactionId';
 }
 
 function TransactionDirectionCell({
@@ -397,6 +408,7 @@ function TransactionRow({
   companyId,
   currencyCode,
   locale,
+  origin,
   pendingCollection,
   transaction,
 }: Readonly<{
@@ -404,6 +416,7 @@ function TransactionRow({
   companyId: string;
   currencyCode: string;
   locale: string;
+  origin: TransactionLedgerOrigin;
   pendingCollection: boolean;
   transaction: LedgerTransaction;
 }>) {
@@ -428,7 +441,7 @@ function TransactionRow({
             companyId,
             transactionId: transaction.id,
           },
-          to: transactionRoute(pendingCollection),
+          to: transactionRoute(origin, pendingCollection),
         }).catch(() => undefined);
       }}
       textValue={`${transactionLabel} ${transaction.category}`}
@@ -643,6 +656,7 @@ function TransactionDayBody({
   day,
   items,
   locale,
+  origin,
   pending,
 }: Readonly<{
   companyId: string;
@@ -650,6 +664,7 @@ function TransactionDayBody({
   day: string;
   items: readonly LedgerTransaction[];
   locale: string;
+  origin: TransactionLedgerOrigin;
   pending: boolean;
 }>) {
   const { t } = useTranslation('transactions');
@@ -692,6 +707,7 @@ function TransactionDayBody({
           currencyCode={currencyCode}
           key={transaction.id}
           locale={locale}
+          origin={origin}
           pendingCollection={pending}
           transaction={transaction}
         />
@@ -705,6 +721,7 @@ function TransactionBodies({
   companyId,
   currencyCode,
   locale,
+  origin,
   pending,
   transactions,
 }: Readonly<{
@@ -712,6 +729,7 @@ function TransactionBodies({
   companyId: string;
   currencyCode: string;
   locale: string;
+  origin: TransactionLedgerOrigin;
   pending: boolean;
   transactions: readonly LedgerTransaction[];
 }>) {
@@ -724,6 +742,7 @@ function TransactionBodies({
         items={items}
         key={day}
         locale={locale}
+        origin={origin}
         pending={pending}
       />
     ));
@@ -738,6 +757,7 @@ function TransactionBodies({
           currencyCode={currencyCode}
           key={transaction.id}
           locale={locale}
+          origin={origin}
           pendingCollection={pending}
           transaction={transaction}
         />
@@ -751,6 +771,7 @@ export function TransactionLedger({
   companyId,
   currencyCode,
   emptyAction,
+  origin = 'transactions',
   pending = false,
   transactions,
 }: Readonly<{
@@ -758,6 +779,7 @@ export function TransactionLedger({
   companyId: string;
   currencyCode: string;
   emptyAction?: ReactNode;
+  origin?: TransactionLedgerOrigin;
   pending?: boolean;
   transactions: readonly LedgerTransaction[];
 }>) {
@@ -808,6 +830,7 @@ export function TransactionLedger({
         companyId={companyId}
         currencyCode={currencyCode}
         locale={i18n.language}
+        origin={origin}
         pending={pending}
         transactions={transactions}
       />

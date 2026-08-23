@@ -205,6 +205,42 @@ describe('TransactionLedger', () => {
     });
   });
 
+  it('opens an Overview transaction over its originating dashboard', async () => {
+    render(
+      <BreezeProvider locale="en-GB">
+        <TransactionLedger
+          compact
+          companyId="company-id"
+          currencyCode="GBP"
+          origin="dashboard"
+          transactions={[
+            {
+              amount: -120,
+              attachment: null,
+              category: 'Professional fees',
+              date: '2026-08-20T00:00:00.000Z',
+              description: 'Quarterly bookkeeping',
+              id: 'pending-id',
+              name: 'Oak & Co Accountants',
+              status: 'pending',
+            },
+          ]}
+        />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(
+      screen.getByRole('row', {
+        name: /Pending transaction: Oak & Co Accountants/u,
+      }),
+    );
+
+    expect(mocks.navigate).toHaveBeenCalledWith({
+      params: { companyId: 'company-id', transactionId: 'pending-id' },
+      to: '/my-companies/dashboard/$companyId/view-transaction/$transactionId',
+    });
+  });
+
   it('keeps the Pending Transaction collection ungrouped', () => {
     render(
       <BreezeProvider locale="en-GB">

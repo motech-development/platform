@@ -17,6 +17,7 @@ import { EntityDeleteDialog } from '../forms/EntityDeleteDialog';
 import { SubmittingForm } from '../forms/SubmittingForm';
 import { TransactionEditDrawerSkeleton } from '../loading/AccountsPageSkeletons';
 import { QueryRefreshAlert } from '../QueryRefreshAlert';
+import { DashboardPageContent } from './DashboardPageContent';
 import { PendingTransactionsPageContent } from './PendingTransactionsPageContent';
 import { RecordTransactionFormFields } from './RecordTransactionFormFields';
 import { editableTransaction } from './transaction';
@@ -25,7 +26,25 @@ import { TransactionFormUnavailable } from './TransactionPagePresentation';
 import { TransactionsPageContent } from './TransactionsPageContent';
 import { useTransactionForm } from './useTransactionForm';
 
-type TransactionEditOrigin = 'pending' | 'transactions';
+type TransactionEditOrigin = 'dashboard' | 'pending' | 'transactions';
+
+const transactionEditOrigins = {
+  dashboard: {
+    Background: DashboardPageContent,
+    closeTo: '/my-companies/dashboard/$companyId',
+    confirmedReturnTo: '/my-companies/dashboard/$companyId',
+  },
+  pending: {
+    Background: PendingTransactionsPageContent,
+    closeTo: '/my-companies/accounts/$companyId/pending-transactions',
+    confirmedReturnTo: '/my-companies/accounts/$companyId',
+  },
+  transactions: {
+    Background: TransactionsPageContent,
+    closeTo: '/my-companies/accounts/$companyId',
+    confirmedReturnTo: '/my-companies/accounts/$companyId',
+  },
+} as const;
 
 function TransactionEditDrawer({
   companyId,
@@ -45,10 +64,7 @@ function TransactionEditDrawer({
   const { t } = useTranslation(['transactions', 'routing']);
   const navigate = useNavigate();
   const toast = useToast();
-  const closeTo =
-    origin === 'pending'
-      ? '/my-companies/accounts/$companyId/pending-transactions'
-      : '/my-companies/accounts/$companyId';
+  const { closeTo, confirmedReturnTo } = transactionEditOrigins[origin];
   const [deleteTransaction, { loading: deleting }] =
     useMutation(DELETE_TRANSACTION);
   const finalizeTransactionDeletion = useRef<(() => void) | undefined>(
@@ -84,7 +100,7 @@ function TransactionEditDrawer({
     additionalPending: deleting,
     closeTo,
     companyId,
-    confirmedReturnTo: '/my-companies/accounts/$companyId',
+    confirmedReturnTo,
     initialDateTime: transaction.date,
     initialValues: editableTransaction(transaction),
   });
@@ -338,14 +354,7 @@ export function TransactionEditPage({
   const transaction = publishedPendingTransaction
     ? undefined
     : transactionForCompany;
-  const Background =
-    origin === 'pending'
-      ? PendingTransactionsPageContent
-      : TransactionsPageContent;
-  const collectionRoute =
-    origin === 'pending'
-      ? '/my-companies/accounts/$companyId/pending-transactions'
-      : '/my-companies/accounts/$companyId';
+  const { Background, closeTo } = transactionEditOrigins[origin];
 
   useEffect(() => {
     if (transactionForCompany && openedTransaction?.id !== transactionId) {
@@ -360,10 +369,10 @@ export function TransactionEditPage({
     if (publishedPendingTransaction) {
       navigate({
         params: { companyId },
-        to: collectionRoute,
+        to: closeTo,
       }).catch(() => undefined);
     }
-  }, [collectionRoute, companyId, navigate, publishedPendingTransaction]);
+  }, [closeTo, companyId, navigate, publishedPendingTransaction]);
 
   if (publishedPendingTransaction) {
     return <Background companyId={companyId} />;
@@ -390,10 +399,7 @@ export function TransactionEditPage({
             if (!open) {
               navigate({
                 params: { companyId },
-                to:
-                  origin === 'pending'
-                    ? '/my-companies/accounts/$companyId/pending-transactions'
-                    : '/my-companies/accounts/$companyId',
+                to: closeTo,
               }).catch(() => undefined);
             }
           }}

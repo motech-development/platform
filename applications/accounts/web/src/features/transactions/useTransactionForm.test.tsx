@@ -801,7 +801,7 @@ describe('useTransactionForm', () => {
     expect(mocks.add).not.toHaveBeenCalled();
     expect(mutationInput(mocks.update)).toMatchObject({
       category: 'Sales',
-      date: '2026-08-16T14:35:12.345Z',
+      date: '2026-08-16T00:00:00.000Z',
       id: 'transaction-id',
       scheduled: false,
       status: 'confirmed',

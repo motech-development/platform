@@ -128,6 +128,10 @@ vi.mock('./PendingTransactionsPageContent', () => ({
   PendingTransactionsPageContent: () => <main>Pending Transactions</main>,
 }));
 
+vi.mock('./DashboardPageContent', () => ({
+  DashboardPageContent: () => <main>Dashboard</main>,
+}));
+
 vi.mock('./TransactionsPageContent', () => ({
   TransactionsPageContent: () => <main>Transactions</main>,
 }));
@@ -204,6 +208,7 @@ describe('TransactionEditPage', () => {
   });
 
   it.each([
+    ['dashboard', '/my-companies/dashboard/$companyId'],
     ['pending', '/my-companies/accounts/$companyId/pending-transactions'],
     ['transactions', '/my-companies/accounts/$companyId'],
   ] as const)(
@@ -425,6 +430,31 @@ describe('TransactionEditPage', () => {
     expect(mocks.navigate).toHaveBeenCalledWith({
       params: { companyId: 'company-id' },
       to: '/my-companies/accounts/$companyId/pending-transactions',
+    });
+  });
+
+  it('preserves the dashboard behind an Overview edit', async () => {
+    mocks.transactionQuery.data = {
+      getTransaction: { ...transaction, status: 'pending' },
+    };
+    mocks.formQuery.data = formData;
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <TransactionEditPage
+          companyId="company-id"
+          origin="dashboard"
+          transactionId="transaction-id"
+        />
+      </BreezeProvider>,
+    );
+
+    expect(screen.getByText('Dashboard')).toBeVisible();
+    await userEvent.click(screen.getByRole('button', { name: 'Close' }));
+
+    expect(mocks.navigate).toHaveBeenCalledWith({
+      params: { companyId: 'company-id' },
+      to: '/my-companies/dashboard/$companyId',
     });
   });
 
