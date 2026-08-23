@@ -568,7 +568,6 @@ function SettingsForm({
               onOpenChange={navigation.setDiscardOpen}
               open={navigation.discardOpen && !submissionPending}
               title={t('Discard settings changes?')}
-              trigger={t('Discard settings changes')}
             />
           </fieldset>
         )}

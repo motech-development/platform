@@ -221,7 +221,6 @@ export function CompanyDetailsPage({
         onOpenChange={navigation.setDiscardOpen}
         open={navigation.discardOpen && !savePending && !deleting}
         title={t('Discard company changes?')}
-        trigger={t('Discard company changes')}
       />
     </div>
   );

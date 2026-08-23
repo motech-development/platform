@@ -4,8 +4,10 @@ import {
   Drawer,
   FormActions,
   StatePanel,
+  Typography,
   useToast,
 } from '@motech-development/breeze-ui';
+import { WarningIcon } from '@motech-development/breeze-ui/icons';
 import { useNavigate } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -293,7 +295,6 @@ function TransactionEditDrawer({
         onOpenChange={setDiscardOpen}
         open={discardOpen && !pending}
         title={t('Discard Transaction changes?')}
-        trigger={t('Discard Transaction changes')}
       />
     </>
   );
@@ -415,12 +416,14 @@ export function TransactionEditPage({
                   </Button>
                 }
                 description={t('The Transaction could not be loaded.')}
-                icon={<span aria-hidden="true">!</span>}
+                icon={<WarningIcon />}
                 title={t('Transaction unavailable')}
                 variant="danger"
               />
             ) : (
-              <p aria-live="polite">{t('Loading Transaction…')}</p>
+              <Typography aria-live="polite">
+                {t('Loading Transaction…')}
+              </Typography>
             )}
           </Drawer.Content>
         </Drawer.Root>

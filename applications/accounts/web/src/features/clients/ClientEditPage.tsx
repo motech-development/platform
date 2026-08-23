@@ -232,7 +232,6 @@ export function ClientEditPage({
         onOpenChange={navigation.setDiscardOpen}
         open={navigation.discardOpen && !savePending && !deleting}
         title={t('Discard client changes?')}
-        trigger={t('Discard client changes')}
       />
     </>
   );

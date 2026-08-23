@@ -191,7 +191,6 @@ export function RecordTransactionPage({
         onOpenChange={setDiscardOpen}
         open={discardOpen && !submissionPending}
         title={t('Discard these transaction changes?')}
-        trigger={t('Discard changes')}
       />
     </>
   );

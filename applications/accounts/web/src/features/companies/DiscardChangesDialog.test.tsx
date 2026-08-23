@@ -23,7 +23,6 @@ function renderDialog({
         onOpenChange={onOpenChange}
         open
         title="Discard changes?"
-        trigger="Discard changes"
       />
     </BreezeProvider>,
   );

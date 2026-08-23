@@ -1,6 +1,8 @@
 import {
   IconTile,
+  Inline,
   Skeleton,
+  Stack,
   StatePanel,
   Table,
   Tooltip,
@@ -31,13 +33,10 @@ export interface LedgerTransaction {
   status?: 'confirmed' | 'pending';
 }
 
-const compactTransactionTableClassName =
-  'gap-x-4 [&>tbody>tr]:px-0 [&>tbody>tr]:py-3 [&>tbody>tr>td:first-child]:!ps-4 [&>tbody>tr>td:last-child]:!w-full [&>tbody>tr>td:last-child]:!pe-4 sm:[&>tbody>tr]:px-0';
+const compactTransactionTableClassName = 'gap-x-4';
 
 const groupedTransactionTableClassName =
-  '[&>tbody>tr]:!grid [&>tbody>tr]:grid-cols-[3.25rem_minmax(0,1fr)_max-content_2.25rem] [&>tbody>tr]:items-center [&>tbody>tr]:!gap-x-4 [&>tbody>tr]:!gap-y-0 [&>tbody>tr]:px-0 [&>tbody>tr]:py-3 [&>tbody>tr>td]:!flex [&>tbody>tr>td]:!border-0 [&>tbody>tr>td]:!p-0 [&>tbody>tr>td[data-breeze-cell-column=amount]]:justify-end [&>tbody>tr>td[data-breeze-cell-column=category]]:!hidden [&>tbody>tr>td[data-breeze-cell-column=date]]:!hidden [&>tbody>tr>td:first-child]:!ps-4 [&>tbody>tr>td:last-child]:!w-full [&>tbody>tr>td:last-child]:justify-end [&>tbody>tr>td:last-child]:!pe-4 min-[681px]:[&>tbody>tr]:grid-cols-[var(--breeze-table-columns)] min-[681px]:[&>tbody>tr>td[data-breeze-cell-column=category]]:!flex min-[681px]:[&>tbody>tr>td[data-breeze-cell-column=date]]:!flex min-[681px]:[&>tbody>tr>td:first-child]:!ps-0 min-[681px]:[&>tbody>tr>td:last-child]:!pe-0 min-[681px]:[&>thead>tr>th[data-breeze-column=amount]]:justify-end';
-
-const transactionSectionRowClassName = '!py-2 [&>td:first-child]:col-span-2';
+  'grid-cols-[3.25rem_minmax(0,1fr)_max-content_2.25rem] gap-x-4 sm:grid-cols-[var(--breeze-table-columns)]';
 
 function dayLabel(date: string, locale: string) {
   return new Intl.DateTimeFormat(locale, {
@@ -116,13 +115,21 @@ function ScheduledTransactionIndicator() {
 }
 
 function PendingTransactionDate({
+  className,
   date,
   locale,
   scheduled,
-}: Readonly<{ date: string; locale: string; scheduled: boolean }>) {
+}: Readonly<{
+  className?: string;
+  date: string;
+  locale: string;
+  scheduled: boolean;
+}>) {
   return (
-    <span className="flex items-center gap-2 text-[var(--breeze-ink-soft)]">
-      <span>{dayLabel(date, locale)}</span>
+    <Inline className={className} gap="sm">
+      <Typography as="span" colour="muted">
+        {dayLabel(date, locale)}
+      </Typography>
       {scheduled ? (
         <ScheduledTransactionIndicator />
       ) : (
@@ -132,7 +139,7 @@ function PendingTransactionDate({
           size="1rem"
         />
       )}
-    </span>
+    </Inline>
   );
 }
 
@@ -148,8 +155,14 @@ function TransactionHeaderLabel({
   return loading ? (
     <Skeleton className={skeletonClassName} />
   ) : (
-    <span>{label}</span>
+    <Typography as="span" weight="bold">
+      {label}
+    </Typography>
   );
+}
+
+function transactionContextColumn(pending: boolean): 'category' | 'date' {
+  return pending ? 'date' : 'category';
 }
 
 function TransactionContextColumn({
@@ -162,7 +175,7 @@ function TransactionContextColumn({
   return (
     <Table.Column
       compactLabel={false}
-      id={pending ? 'date' : 'category'}
+      id={transactionContextColumn(pending)}
       textValue={label}
     >
       <TransactionHeaderLabel
@@ -182,7 +195,7 @@ function TransactionTableHeader({
   const { t } = useTranslation('transactions');
 
   return (
-    <Table.Header className={compact ? 'sr-only' : 'max-[681px]:!hidden'}>
+    <Table.Header className={compact ? 'sr-only' : undefined}>
       <Table.Column
         compactLabel={false}
         id="direction"
@@ -236,8 +249,8 @@ function TransactionTableHeader({
 
 function transactionRowClassName(pending: boolean, pendingCollection: boolean) {
   return pending && !pendingCollection
-    ? 'bg-[var(--breeze-surface-subtle)]'
-    : undefined;
+    ? 'bg-[var(--breeze-surface-subtle)] py-3'
+    : 'py-3';
 }
 
 function transactionRoute(pendingCollection: boolean) {
@@ -267,7 +280,9 @@ function TransactionDirectionCell({
         {pending ? <>{t('Pending transaction:')} </> : null}
         {transaction.name} {transaction.description}
         {compact ? null : (
-          <span className="min-[681px]:hidden">, {transaction.category}</span>
+          <Typography as="span" className="sm:hidden">
+            , {transaction.category}
+          </Typography>
         )}
       </VisuallyHidden>
       <IconTile
@@ -297,8 +312,8 @@ function TransactionIdentityCell({
 }>) {
   return (
     <Table.Cell column="transaction">
-      <span className="grid min-w-0 gap-0">
-        <span className="flex min-w-0 items-center gap-2">
+      <Stack className="min-w-0" gap="none">
+        <Inline className="min-w-0" gap="sm" wrap={false}>
           <Typography as="strong" level="body" truncate weight="semibold">
             {transaction.name}
           </Typography>
@@ -306,20 +321,19 @@ function TransactionIdentityCell({
           {!pendingCollection && transaction.scheduled ? (
             <ScheduledTransactionIndicator />
           ) : null}
-        </span>
+        </Inline>
         <Typography as="span" colour="muted" truncate>
           {transaction.description}
         </Typography>
         {pendingCollection ? (
-          <span className="max-[681px]:block! hidden">
-            <PendingTransactionDate
-              date={transaction.date}
-              locale={locale}
-              scheduled={transaction.scheduled === true}
-            />
-          </span>
+          <PendingTransactionDate
+            className="sm:!hidden"
+            date={transaction.date}
+            locale={locale}
+            scheduled={transaction.scheduled === true}
+          />
         ) : null}
-      </span>
+      </Stack>
     </Table.Cell>
   );
 }
@@ -454,6 +468,7 @@ function LoadingTransactionRow({
 
   return (
     <Table.Row
+      className="py-3"
       id={`loading-transaction-${index}`}
       textValue={t('Loading transaction {{count}}', { count: index + 1 })}
     >
@@ -467,16 +482,16 @@ function LoadingTransactionRow({
         <Skeleton className="size-9 shrink-0 rounded-full" />
       </Table.Cell>
       <Table.Cell column="transaction">
-        <div className="grid min-w-0 gap-1">
+        <Stack className="min-w-0" gap="xs">
           <Skeleton className="h-5 w-36 max-w-full" />
           <Skeleton className="h-4 w-48 max-w-full" />
           {pending ? (
-            <Skeleton className="max-[681px]:block! hidden h-4 w-28 max-w-full" />
+            <Skeleton className="h-4 w-28 max-w-full sm:!hidden" />
           ) : null}
-        </div>
+        </Stack>
       </Table.Cell>
       {compact ? null : (
-        <Table.Cell column={pending ? 'date' : 'category'}>
+        <Table.Cell column={transactionContextColumn(pending)}>
           <Skeleton className="h-4 w-28 max-w-full" />
         </Table.Cell>
       )}
@@ -495,7 +510,6 @@ function LoadingSectionRow({ index }: Readonly<{ index: number }>) {
 
   return (
     <Table.Row
-      className={transactionSectionRowClassName}
       id={`loading-transaction-section-${index}`}
       presentation="section"
       textValue={t('Loading transaction group {{count}}', {
@@ -505,15 +519,11 @@ function LoadingSectionRow({ index }: Readonly<{ index: number }>) {
       <Table.Cell colSpan={2} column="direction">
         <Skeleton className="h-4 w-28" />
       </Table.Cell>
-      <Table.Cell column="category">
-        <span />
-      </Table.Cell>
+      <Table.Cell column="category">{null}</Table.Cell>
       <Table.Cell align="end" column="amount">
         <Skeleton className="h-4 w-24" />
       </Table.Cell>
-      <Table.Cell column="actions">
-        <span />
-      </Table.Cell>
+      <Table.Cell column="actions">{null}</Table.Cell>
     </Table.Row>
   );
 }
@@ -542,8 +552,11 @@ export function TransactionLedgerSkeleton({
             ? compactTransactionTableClassName
             : groupedTransactionTableClassName
         }
+        compactHiddenColumns={
+          compact ? undefined : transactionContextColumn(pending)
+        }
         desktopColumns={compact ? undefined : 'mediaDetailsAction'}
-        layout={compact ? 'grid' : 'responsiveGrid'}
+        layout="grid"
         tabIndex={-1}
       >
         <TransactionTableHeader compact={compact} loading pending={pending} />
@@ -642,7 +655,6 @@ function TransactionDayBody({
   return (
     <Table.Body id={day}>
       <Table.Row
-        className={transactionSectionRowClassName}
         id={`${day}-total`}
         presentation="section"
         textValue={
@@ -656,22 +668,18 @@ function TransactionDayBody({
             {date}
           </Typography>
         </Table.Cell>
-        <Table.Cell column={pending ? 'date' : 'category'}>
-          <span />
+        <Table.Cell column={transactionContextColumn(pending)}>
+          {null}
         </Table.Cell>
         <Table.Cell align="end" column="amount">
-          {pending ? (
-            <span />
-          ) : (
+          {pending ? null : (
             <Typography as="span" level="label" tabularNumbers>
               <VisuallyHidden>{t('Confirmed daily total: ')}</VisuallyHidden>
               {total}
             </Typography>
           )}
         </Table.Cell>
-        <Table.Cell column="actions">
-          <span />
-        </Table.Cell>
+        <Table.Cell column="actions">{null}</Table.Cell>
       </Table.Row>
       {items.map((transaction) => (
         <TransactionRow
@@ -776,28 +784,29 @@ export function TransactionLedger({
   }
 
   return (
-    <div>
-      <Table.Root
-        aria-label={tableLabel}
-        boundary={compact ? 'none' : 'strong'}
-        className={
-          compact
-            ? compactTransactionTableClassName
-            : groupedTransactionTableClassName
-        }
-        desktopColumns={compact ? undefined : 'mediaDetailsAction'}
-        layout={compact ? 'grid' : 'responsiveGrid'}
-      >
-        <TransactionTableHeader compact={compact} pending={pending} />
-        <TransactionBodies
-          compact={compact}
-          companyId={companyId}
-          currencyCode={currencyCode}
-          locale={i18n.language}
-          pending={pending}
-          transactions={transactions}
-        />
-      </Table.Root>
-    </div>
+    <Table.Root
+      aria-label={tableLabel}
+      boundary={compact ? 'none' : 'strong'}
+      className={
+        compact
+          ? compactTransactionTableClassName
+          : groupedTransactionTableClassName
+      }
+      compactHiddenColumns={
+        compact ? undefined : transactionContextColumn(pending)
+      }
+      desktopColumns={compact ? undefined : 'mediaDetailsAction'}
+      layout="grid"
+    >
+      <TransactionTableHeader compact={compact} pending={pending} />
+      <TransactionBodies
+        compact={compact}
+        companyId={companyId}
+        currencyCode={currencyCode}
+        locale={i18n.language}
+        pending={pending}
+        transactions={transactions}
+      />
+    </Table.Root>
   );
 }

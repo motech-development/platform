@@ -17,7 +17,6 @@ export function DiscardChangesDialog({
   onOpenChange,
   open,
   title,
-  trigger,
 }: Readonly<{
   blocker: NavigationBlocker;
   closeLabel: string;
@@ -27,7 +26,6 @@ export function DiscardChangesDialog({
   onOpenChange: (open: boolean) => void;
   open: boolean;
   title: string;
-  trigger: string;
 }>) {
   const { t } = useTranslation('companies');
   const discardConfirmed = useRef(false);
@@ -56,32 +54,30 @@ export function DiscardChangesDialog({
   };
 
   return (
-    <span hidden>
-      <ConfirmationDialog
-        cancelLabel={t('Keep editing')}
-        closeLabel={closeLabel}
-        confirmLabel={t('Discard changes')}
-        description={description}
-        nested={nested}
-        onConfirm={confirmDiscard}
-        onOpenChange={(nextOpen) => {
-          onOpenChange(nextOpen);
-          if (nextOpen) {
-            discardConfirmed.current = false;
-            return;
-          }
+    <ConfirmationDialog
+      cancelLabel={t('Keep editing')}
+      closeLabel={closeLabel}
+      confirmLabel={t('Discard changes')}
+      description={description}
+      nested={nested}
+      onConfirm={confirmDiscard}
+      onOpenChange={(nextOpen) => {
+        onOpenChange(nextOpen);
+        if (nextOpen) {
+          discardConfirmed.current = false;
+          return;
+        }
 
-          queueMicrotask(() => {
-            if (!discardConfirmed.current && blocker.status === 'blocked') {
-              blocker.reset?.();
-            }
-          });
-        }}
-        open={open}
-        title={title}
-        trigger={trigger}
-        variant="warning"
-      />
-    </span>
+        queueMicrotask(() => {
+          if (!discardConfirmed.current && blocker.status === 'blocked') {
+            blocker.reset?.();
+          }
+        });
+      }}
+      open={open}
+      title={title}
+      triggerless
+      variant="warning"
+    />
   );
 }

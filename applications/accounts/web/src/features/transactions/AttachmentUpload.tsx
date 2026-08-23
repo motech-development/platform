@@ -1,5 +1,10 @@
 import { useMutation } from '@apollo/client/react';
-import { Button, FileUpload, useToast } from '@motech-development/breeze-ui';
+import {
+  Button,
+  FileUpload,
+  Typography,
+  useToast,
+} from '@motech-development/breeze-ui';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { REQUEST_UPLOAD } from '../../data/operations';
@@ -127,9 +132,9 @@ export function AttachmentUpload({
 
   if (uploaded) {
     return (
-      <p role="status">
+      <Typography role="status">
         {t('File attached')}: {selectedFiles[0]?.name}
-      </p>
+      </Typography>
     );
   }
 
@@ -166,9 +171,9 @@ export function AttachmentUpload({
         selectedFiles={selectedFiles}
       />
       {transferPending && selectedFiles[0] ? (
-        <p role="status">
+        <Typography role="status">
           {t('Uploading file…')}: {selectedFiles[0].name}
-        </p>
+        </Typography>
       ) : null}
       {uploadFailed && selectedFiles[0] ? (
         <Button

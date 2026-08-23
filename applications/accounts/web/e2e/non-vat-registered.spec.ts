@@ -562,9 +562,9 @@ test.describe('Non-VAT registered', () => {
         .filter({ hasText: transaction.description })
         .first();
       const dateCell = pendingRow.locator('[data-breeze-cell-column="date"]');
-      const compactDate = pendingRow.locator(
-        '[data-breeze-cell-column="transaction"] > span > span:last-child',
-      );
+      const compactDate = pendingRow
+        .locator('[data-breeze-cell-column="transaction"]')
+        .getByText(/\d{1,2} [A-Z][a-z]+ \d{4}/u);
 
       await expect(dateCell).toBeHidden();
       await expect(compactDate).toBeVisible();

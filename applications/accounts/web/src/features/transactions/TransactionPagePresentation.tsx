@@ -122,7 +122,7 @@ export function TransactionFormUnavailable({
         </Button>
       }
       description={t('Transaction settings could not be loaded.')}
-      icon={<span aria-hidden="true">!</span>}
+      icon={<WarningIcon />}
       title={t('Transaction form unavailable')}
       variant="danger"
     />

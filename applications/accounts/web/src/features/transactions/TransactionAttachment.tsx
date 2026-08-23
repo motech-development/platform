@@ -5,6 +5,7 @@ import {
   FileAttachment,
   Inline,
   Surface,
+  Typography,
   useToast,
 } from '@motech-development/breeze-ui';
 import { saveAs } from 'file-saver';
@@ -186,7 +187,11 @@ export function TransactionAttachment({
                 </div>
               ) : (
                 <section aria-label={t('PDF preview')} className="p-6">
-                  <Suspense fallback={<p>{t('Opening PDF viewer…')}</p>}>
+                  <Suspense
+                    fallback={
+                      <Typography>{t('Opening PDF viewer…')}</Typography>
+                    }
+                  >
                     <PdfPreview file={file} />
                   </Suspense>
                 </section>

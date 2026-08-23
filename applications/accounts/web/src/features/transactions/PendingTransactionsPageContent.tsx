@@ -1,6 +1,6 @@
 import { NetworkStatus } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
-import { Button } from '@motech-development/breeze-ui';
+import { Button, Center } from '@motech-development/breeze-ui';
 import { useTranslation } from 'react-i18next';
 import { GET_PENDING_TRANSACTIONS } from '../../data/operations';
 import { LoadingSkeletonRegion } from '../loading/AccountsPageSkeletons';
@@ -91,7 +91,7 @@ export function PendingTransactionsPageContent({
             transactions={data.getTransactions.items}
           />
           {data.getTransactions.nextToken ? (
-            <div className="flex justify-center pt-4">
+            <Center className="pt-4">
               <Button
                 appearance="text"
                 loading={networkStatus === NetworkStatus.fetchMore}
@@ -103,7 +103,7 @@ export function PendingTransactionsPageContent({
               >
                 {t('Load more')}
               </Button>
-            </div>
+            </Center>
           ) : null}
         </>
       ) : null}

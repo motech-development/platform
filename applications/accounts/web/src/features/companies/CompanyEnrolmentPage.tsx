@@ -165,7 +165,6 @@ export function CompanyEnrolmentPage({ owner }: Readonly<{ owner: string }>) {
         onOpenChange={navigation.setDiscardOpen}
         open={navigation.discardOpen}
         title={t('Discard this company?')}
-        trigger={t('Discard company')}
       />
     </>
   );

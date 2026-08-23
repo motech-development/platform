@@ -136,7 +136,6 @@ export function ClientCreatePage({
         onOpenChange={navigation.setDiscardOpen}
         open={navigation.discardOpen}
         title={t('Discard this client?')}
-        trigger={t('Discard client')}
       />
     </>
   );

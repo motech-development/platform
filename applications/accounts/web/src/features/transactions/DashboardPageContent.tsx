@@ -2,9 +2,12 @@ import { useQuery } from '@apollo/client/react';
 import { useAuth0 } from '@auth0/auth0-react';
 import {
   IconTile,
+  Inline,
+  Link,
   PageHeader,
   SectionHeader,
   Skeleton,
+  Stack,
   StatePanel,
   Surface,
   Typography,
@@ -15,7 +18,6 @@ import {
   InfoIcon,
   WarningIcon,
 } from '@motech-development/breeze-ui/icons';
-import { Link } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import { useAccountsOwnerId } from '../../auth/owner';
 import { GET_COMPANY_DASHBOARD } from '../../data/operations';
@@ -35,20 +37,21 @@ function OverviewAttentionPanel({
   hasPendingTransactions,
 }: Readonly<{ companyId: string; hasPendingTransactions: boolean }>) {
   const { t } = useTranslation('overview');
+  const pendingTransactionsHref = `/my-companies/accounts/${encodeURIComponent(companyId)}/pending-transactions`;
 
   return (
     <aside
       aria-label={t('Needs attention')}
       className="self-start bg-[var(--breeze-shell)] text-[var(--breeze-ink-inverse)]"
     >
-      <div className="flex items-start gap-4 px-5 pb-4 pt-5">
+      <Inline align="start" className="px-5 pb-4 pt-5" gap="md">
         <IconTile
           size="md"
           variant={hasPendingTransactions ? 'warning' : 'success'}
         >
           {hasPendingTransactions ? <WarningIcon /> : <CheckIcon />}
         </IconTile>
-        <div className="grid gap-1">
+        <Stack gap="xs">
           <Typography as="h2" colour="inverse" level="h3">
             {t('Needs attention')}
           </Typography>
@@ -57,21 +60,23 @@ function OverviewAttentionPanel({
               ? t('Pending transactions are waiting for review')
               : t('No pending transactions are waiting for review')}
           </Typography>
-        </div>
-      </div>
+        </Stack>
+      </Inline>
       <Link
-        className="grid gap-1 border-t border-[var(--breeze-shell-soft)] px-5 py-4 text-[var(--breeze-ink-inverse)] no-underline hover:bg-[var(--breeze-shell-soft)]"
-        params={{ companyId }}
-        to="/my-companies/accounts/$companyId/pending-transactions"
+        className="block border-t border-[var(--breeze-shell-soft)] px-5 py-4 hover:bg-[var(--breeze-shell-soft)]"
+        href={pendingTransactionsHref}
+        variant="inverse"
       >
-        <Typography as="strong" colour="inverse" weight="semibold">
-          {t('View pending transactions')}
-        </Typography>
-        <Typography as="span" colour="inverse-muted">
-          {hasPendingTransactions
-            ? t('Review them before they affect your balance')
-            : t('All recorded transactions have been reviewed')}
-        </Typography>
+        <Stack gap="xs">
+          <Typography as="strong" colour="inverse" weight="semibold">
+            {t('View pending transactions')}
+          </Typography>
+          <Typography as="span" colour="inverse-muted">
+            {hasPendingTransactions
+              ? t('Review them before they affect your balance')
+              : t('All recorded transactions have been reviewed')}
+          </Typography>
+        </Stack>
       </Link>
     </aside>
   );
@@ -152,7 +157,7 @@ export function DashboardPageContent({
         ) : null}
         {data && hasTransactions ? (
           <div className="grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[minmax(0,3fr)_minmax(18rem,1fr)]">
-            <div className="flex min-w-0 flex-col">
+            <Stack className="min-w-0" gap="none">
               <FinancialSummary
                 balance={data.getBalance.balance}
                 currencyCode={data.getBalance.currency}
@@ -163,9 +168,8 @@ export function DashboardPageContent({
                 <SectionHeader
                   action={
                     <Link
-                      className="inline-flex items-center gap-1.5 font-bold text-[var(--breeze-primary)] underline decoration-1 underline-offset-[0.2em]"
-                      params={{ companyId }}
-                      to="/my-companies/accounts/$companyId"
+                      className="inline-flex items-center gap-1.5 font-bold"
+                      href={`/my-companies/accounts/${encodeURIComponent(companyId)}`}
                     >
                       {t('View all')}
                       <ArrowRightIcon />
@@ -181,7 +185,7 @@ export function DashboardPageContent({
                   transactions={transactions}
                 />
               </Surface>
-            </div>
+            </Stack>
             <OverviewAttentionPanel
               companyId={companyId}
               hasPendingTransactions={data.pendingTransactions.items.length > 0}

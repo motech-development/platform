@@ -11,6 +11,7 @@ import {
   Surface,
   Typography,
 } from '@motech-development/breeze-ui';
+import { WarningIcon } from '@motech-development/breeze-ui/icons';
 import type { ErrorComponentProps } from '@tanstack/react-router';
 import { useLocation, useNavigate } from '@tanstack/react-router';
 import { type ReactNode, useEffect } from 'react';
@@ -363,7 +364,7 @@ export function RouteError({ error, reset }: Readonly<ErrorComponentProps>) {
       description={t(
         'The requested Accounts screen could not be loaded. Your saved accounting data has not changed.',
       )}
-      icon={<span aria-hidden="true">!</span>}
+      icon={<WarningIcon />}
       title={t('Something went wrong')}
       variant="danger"
     />

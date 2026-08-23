@@ -44,9 +44,7 @@ vi.mock('@motech-development/breeze-ui/icons', async (importOriginal) => ({
 
 vi.mock('@tanstack/react-router', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@tanstack/react-router')>()),
-  Link: ({ children, to }: Readonly<{ children: ReactNode; to: string }>) => (
-    <a href={to}>{children}</a>
-  ),
+  useNavigate: () => vi.fn(),
 }));
 
 vi.mock('../../auth/owner', () => ({
@@ -164,7 +162,7 @@ describe('DashboardPageContent', () => {
       screen.getByRole('link', { name: /View pending transactions/u }),
     ).toHaveAttribute(
       'href',
-      '/my-companies/accounts/$companyId/pending-transactions',
+      '/my-companies/accounts/company-id/pending-transactions',
     );
     expect(
       screen.queryByText(/recent transaction has no invoice or receipt/u),

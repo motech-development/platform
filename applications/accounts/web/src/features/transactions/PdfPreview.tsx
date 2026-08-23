@@ -1,4 +1,9 @@
-import { IconButton, Toolbar } from '@motech-development/breeze-ui';
+import {
+  IconButton,
+  Stack,
+  Toolbar,
+  Typography,
+} from '@motech-development/breeze-ui';
 import {
   RotateIcon,
   ZoomInIcon,
@@ -53,7 +58,7 @@ export function PdfPreview({ file }: Readonly<{ file: Blob }>) {
   }, []);
 
   return (
-    <div className="mx-auto flex w-full max-w-[45rem] flex-col gap-4">
+    <Stack className="mx-auto w-full max-w-[45rem]" gap="md">
       <Toolbar aria-label={t('PDF controls')} className="justify-center">
         <IconButton
           aria-label={t('Zoom in')}
@@ -64,9 +69,15 @@ export function PdfPreview({ file }: Readonly<{ file: Blob }>) {
         >
           <ZoomInIcon />
         </IconButton>
-        <span aria-live="polite" className="min-w-16 text-center tabular-nums">
+        <Typography
+          align="center"
+          aria-live="polite"
+          as="span"
+          className="min-w-16"
+          tabularNumbers
+        >
           {zoom}%
-        </span>
+        </Typography>
         <IconButton
           aria-label={t('Zoom out')}
           disabled={zoom === minimumZoom}
@@ -87,7 +98,7 @@ export function PdfPreview({ file }: Readonly<{ file: Blob }>) {
         <Document
           className="flex flex-col items-center gap-5"
           file={file}
-          loading={<p>{t('Opening PDF…')}</p>}
+          loading={<Typography>{t('Opening PDF…')}</Typography>}
           onLoadSuccess={({ numPages }) => setPages(numPages)}
           options={pdfDocumentOptions}
         >
@@ -102,6 +113,6 @@ export function PdfPreview({ file }: Readonly<{ file: Blob }>) {
           ))}
         </Document>
       </div>
-    </div>
+    </Stack>
   );
 }

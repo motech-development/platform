@@ -25,6 +25,7 @@ vi.mock('@motech-development/breeze-ui/icons', async (importOriginal) => ({
   >()),
   AddIcon: () => <span aria-hidden="true">+</span>,
   ArrowLeftIcon: () => <span aria-hidden="true">←</span>,
+  WarningIcon: () => <span aria-hidden="true">warning</span>,
 }));
 
 vi.mock('@tanstack/react-router', async (importOriginal) => ({

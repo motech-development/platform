@@ -81,6 +81,13 @@ vi.mock('@motech-development/breeze-ui', async (importOriginal) => ({
   useToast: () => mocks.toast,
 }));
 
+vi.mock('@motech-development/breeze-ui/icons', async (importOriginal) => ({
+  ...(await importOriginal<
+    typeof import('@motech-development/breeze-ui/icons')
+  >()),
+  WarningIcon: () => <svg aria-hidden="true" />,
+}));
+
 vi.mock('@tanstack/react-router', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@tanstack/react-router')>()),
   useBlocker: () => ({ proceed: vi.fn(), reset: vi.fn(), status: 'idle' }),
