@@ -605,13 +605,11 @@ function staticTableColumnKeys(children: ReactNode): string[] {
   return keys;
 }
 
-function reusableTableHeaderItems(
+function materializeTableHeaderItems(
   items: Iterable<BreezeCollectionItem>,
-): Iterable<BreezeCollectionItem> {
-  const iterator = items[Symbol.iterator]();
-
-  if (!Object.is(iterator, items)) {
-    return items;
+): readonly BreezeCollectionItem[] {
+  if (Array.isArray(items)) {
+    return items as readonly BreezeCollectionItem[];
   }
 
   const cacheKey = items as object;
@@ -643,15 +641,15 @@ function normaliseTableHeaderItems(children: ReactNode): ReactNode {
         return child;
       }
 
-      const reusableItems = reusableTableHeaderItems(items);
+      const materializedItems = materializeTableHeaderItems(items);
 
-      if (Object.is(reusableItems, items)) {
+      if (Object.is(materializedItems, items)) {
         return child;
       }
 
       changed = true;
 
-      return cloneElement(header, { items: reusableItems });
+      return cloneElement(header, { items: materializedItems });
     }
 
     if (child.type === Fragment) {
