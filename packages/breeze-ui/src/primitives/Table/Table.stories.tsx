@@ -437,6 +437,37 @@ function GridColumnSpanTable() {
   );
 }
 
+function CompactSpanningVisibilityTable() {
+  return (
+    <Table.Root
+      aria-label="Spanning visibility"
+      compactHiddenColumns={['hidden-a', 'hidden-c', 'hidden-d']}
+      layout="grid"
+    >
+      <Table.Header>
+        <Table.Column id="hidden-a" rowHeader>
+          Hidden A
+        </Table.Column>
+        <Table.Column id="visible-b">Visible B</Table.Column>
+        <Table.Column id="hidden-c">Hidden C</Table.Column>
+        <Table.Column id="hidden-d">Hidden D</Table.Column>
+        <Table.Column id="visible-e">Visible E</Table.Column>
+      </Table.Header>
+      <Table.Body>
+        <Table.Row id="entry" textValue="Mixed Hidden Remainder">
+          <Table.Cell colSpan={2} column="hidden-a">
+            Mixed
+          </Table.Cell>
+          <Table.Cell colSpan={2} column="hidden-c">
+            Hidden
+          </Table.Cell>
+          <Table.Cell column="visible-e">Remainder</Table.Cell>
+        </Table.Row>
+      </Table.Body>
+    </Table.Root>
+  );
+}
+
 /**
  * Removes supporting desktop-only columns and their grid tracks at the compact
  * breakpoint while preserving spanning and keyboard geometry.
@@ -502,6 +533,26 @@ export const CompactGridColumns: Story = {
     await expect(reference).toHaveFocus();
   },
   render: GridColumnSpanTable,
+};
+
+/**
+ * Keeps a span visible when any covered column remains in the compact grid and
+ * removes it when every covered column is compact-hidden.
+ *
+ * @summary compact spans follow covered column visibility
+ */
+export const CompactGridSpanningVisibility: Story = {
+  args: { 'aria-label': 'Spanning visibility', children: null },
+  globals: { viewport: { value: 'mobile1' } },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const mixed = canvas.getByText('Mixed');
+    const hidden = canvas.getByText('Hidden');
+
+    await expect(mixed.getBoundingClientRect().width).toBeGreaterThan(0);
+    await expect(hidden.getBoundingClientRect().width).toBe(0);
+  },
+  render: CompactSpanningVisibilityTable,
 };
 
 /**
@@ -980,7 +1031,7 @@ function VirtualizedBoundaryTable() {
   return (
     <Table.Root
       aria-label="Virtual boundary records"
-      compactHiddenColumns={['marker', 'actions']}
+      compactHiddenColumns={['marker', 'support', 'actions']}
       layout="grid"
       virtualization={{
         estimatedRowHeight: 52,
@@ -994,6 +1045,7 @@ function VirtualizedBoundaryTable() {
         <Table.Column id="name" rowHeader>
           Name
         </Table.Column>
+        <Table.Column id="support">Support</Table.Column>
         <Table.Column id="amount">Amount</Table.Column>
         <Table.Column id="actions">Actions</Table.Column>
       </Table.Header>
@@ -1002,6 +1054,7 @@ function VirtualizedBoundaryTable() {
           <Table.Row id={row.id} textValue={`${row.name} ${row.amount}`}>
             <Table.Cell column="marker">Marker {row.id}</Table.Cell>
             <Table.Cell column="name">{row.name}</Table.Cell>
+            <Table.Cell column="support">Support {row.id}</Table.Cell>
             <Table.Cell column="amount">{row.amount}</Table.Cell>
             <Table.Cell column="actions">Actions {row.id}</Table.Cell>
           </Table.Row>
@@ -1130,8 +1183,13 @@ export const VariableVirtualizationCompactBoundaries: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const firstName = canvas.getByRole('rowheader', { name: 'Record 1' });
+    const firstAmount = canvas.getByRole('gridcell', { name: '£1' });
 
     await userEvent.click(firstName);
+    await userEvent.keyboard('{ArrowRight}');
+    await expect(firstAmount).toHaveFocus();
+    await userEvent.keyboard('{ArrowLeft}');
+    await expect(firstName).toHaveFocus();
     await fireEvent.keyDown(firstName, {
       ctrlKey: true,
       key: 'End',

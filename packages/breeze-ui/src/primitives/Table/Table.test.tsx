@@ -11,6 +11,7 @@ import { Table } from './Table';
 
 let toggleVisibleColumns: () => void = () => undefined;
 let expandCompactSpan: () => void = () => undefined;
+let changeCellColumn: () => void = () => undefined;
 
 const tableRows = [{ id: 'ada', name: 'Ada', role: 'Engineer' }];
 const tableColumns = [
@@ -63,6 +64,14 @@ function StatefulCompactSpanRow() {
       ) : null}
     </Table.Row>
   );
+}
+
+function StatefulColumnCell() {
+  const [column, setColumn] = useState<'date' | 'name'>('name');
+
+  changeCellColumn = () => setColumn('date');
+
+  return <Table.Cell column={column}>Value</Table.Cell>;
 }
 
 describe('Table', () => {
@@ -229,42 +238,45 @@ describe('Table', () => {
     });
   });
 
-  it('hides a spanning cell only when every covered column is compact-hidden', async () => {
+  it('resynchronises metadata when a mounted cell changes columns', async () => {
     renderBreeze(
       <Table.Root
-        aria-label="Spanning visibility"
-        compactHiddenColumns={['hidden-a', 'hidden-c', 'hidden-d']}
+        aria-label="Changing cell columns"
+        compactHiddenColumns="date"
         layout="grid"
       >
         <Table.Header>
-          <Table.Column id="hidden-a" rowHeader>
-            Hidden A
+          <Table.Column id="name" rowHeader>
+            Name
           </Table.Column>
-          <Table.Column id="visible-b">Visible B</Table.Column>
-          <Table.Column id="hidden-c">Hidden C</Table.Column>
-          <Table.Column id="hidden-d">Hidden D</Table.Column>
-          <Table.Column id="visible-e">Visible E</Table.Column>
+          <Table.Column id="date">Date</Table.Column>
         </Table.Header>
         <Table.Body>
-          <Table.Row id="entry" textValue="Mixed Hidden Remainder">
-            <Table.Cell colSpan={2} column="hidden-a">
-              Mixed
-            </Table.Cell>
-            <Table.Cell colSpan={2} column="hidden-c">
-              Hidden
-            </Table.Cell>
-            <Table.Cell column="visible-e">Remainder</Table.Cell>
+          <Table.Row id="entry" textValue="Value Date value">
+            <StatefulColumnCell />
+            <Table.Cell column="date">Date value</Table.Cell>
           </Table.Row>
         </Table.Body>
       </Table.Root>,
     );
 
-    const mixedCell = screen.getByRole('rowheader', { name: 'Mixed' });
-    const hiddenCell = screen.getByRole('gridcell', { name: 'Hidden' });
+    const cell = screen.getByText('Value').closest('td');
+
+    expect(cell).not.toBeNull();
 
     await waitFor(() => {
-      expect(mixedCell).not.toHaveAttribute('data-breeze-compact-hidden');
-      expect(hiddenCell).toHaveAttribute('data-breeze-compact-hidden', '');
+      expect(cell).toHaveAttribute('data-label', 'Name:');
+    });
+
+    act(() => changeCellColumn());
+
+    await waitFor(() => {
+      expect(cell).toHaveAttribute(
+        'data-breeze-cell-column-key',
+        'string:date',
+      );
+      expect(cell).toHaveAttribute('data-label', 'Date:');
+      expect(cell).toHaveAttribute('data-breeze-compact-hidden', '');
     });
   });
 
@@ -510,6 +522,52 @@ describe('Table', () => {
     expect(markup).toContain(
       'data-breeze-cell-column-key="string:date" data-breeze-compact-hidden=""',
     );
+  });
+
+  it('distinguishes fully hidden and mixed spans in server-rendered markup', () => {
+    const markup = renderToStaticMarkup(
+      <BreezeProvider locale="en-GB" portalContainer={null}>
+        <Table.Root
+          aria-label="Server spanning visibility"
+          compactHiddenColumns={['hidden-a', 'hidden-c', 'hidden-d']}
+          layout="grid"
+        >
+          <Table.Header>
+            <Table.Column id="hidden-a" rowHeader>
+              Hidden A
+            </Table.Column>
+            <Table.Column id="visible-b">Visible B</Table.Column>
+            <Table.Column id="hidden-c">Hidden C</Table.Column>
+            <Table.Column id="hidden-d">Hidden D</Table.Column>
+            <Table.Column id="visible-e">Visible E</Table.Column>
+          </Table.Header>
+          <Table.Body>
+            <Table.Row id="entry" textValue="Mixed Hidden Remainder">
+              <Table.Cell colSpan={2} column="hidden-a">
+                Mixed
+              </Table.Cell>
+              <Table.Cell colSpan={2} column="hidden-c">
+                Hidden
+              </Table.Cell>
+              <Table.Cell column="visible-e">Remainder</Table.Cell>
+            </Table.Row>
+          </Table.Body>
+        </Table.Root>
+      </BreezeProvider>,
+    );
+    const container = document.createElement('div');
+
+    container.innerHTML = markup;
+
+    const mixedCell = container.querySelector(
+      '[data-breeze-cell-column-key="string:hidden-a"]',
+    );
+    const hiddenCell = container.querySelector(
+      '[data-breeze-cell-column-key="string:hidden-c"]',
+    );
+
+    expect(mixedCell).not.toHaveAttribute('data-breeze-compact-hidden');
+    expect(hiddenCell).toHaveAttribute('data-breeze-compact-hidden', '');
   });
 
   it('preserves typed column key identity in compact visibility', async () => {

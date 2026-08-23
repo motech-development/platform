@@ -11,6 +11,7 @@ import {
   Children,
   createContext,
   createElement,
+  Fragment,
   isValidElement,
   useCallback,
   useContext,
@@ -466,6 +467,86 @@ function serializeColumnWidth(
   return typeof width === 'number' ? `${width}px` : width;
 }
 
+function renderTableColumn({
+  align = 'start',
+  children,
+  className,
+  compactLabel = true,
+  id,
+  ref,
+  rowHeader = false,
+  sortable = false,
+  textValue,
+  width,
+  ...props
+}: TableColumnProps): ReactElement {
+  const serializedWidth = serializeColumnWidth(width);
+  const inferredCompactLabel =
+    typeof children === 'string' ? children.trim() : undefined;
+  const compactLabelText = compactLabel
+    ? textValue ?? inferredCompactLabel
+    : undefined;
+
+  return createElement(AriaColumn, {
+    ...props,
+    allowsSorting: sortable,
+    children,
+    className: tableColumn({
+      align,
+      class: className,
+    }),
+    'data-breeze-column': String(id),
+    'data-breeze-column-key': encodeCollectionKey(id),
+    'data-breeze-column-width': serializedWidth,
+    'data-breeze-compact-label': String(compactLabel),
+    'data-breeze-compact-label-text': compactLabelText,
+    id,
+    isRowHeader: rowHeader,
+    ref,
+    style: serializedWidth === undefined ? undefined : { width },
+    textValue,
+  } as unknown as ComponentProps<typeof AriaColumn>);
+}
+
+/** Renders one accessible heading that can optionally request sorting. */
+export function Column(props: Readonly<TableColumnProps>): ReactElement {
+  return renderTableColumn(props);
+}
+
+function normaliseColumnElement(element: ReactNode): ReactNode {
+  if (isValidElement<TableColumnProps>(element) && element.type === Column) {
+    return renderTableColumn(element.props);
+  }
+
+  return element;
+}
+
+/** Renders static or generic accessible column headings. */
+export function Header<Column extends BreezeCollectionItem>({
+  children,
+  className,
+  id,
+  items,
+  ref,
+  ...props
+}: Readonly<TableHeaderProps<Column>>): ReactElement {
+  const forwardedRef = useForwardedRef(ref);
+  const renderedChildren =
+    typeof children === 'function'
+      ? (column: Column) => normaliseColumnElement(children(column))
+      : Children.map(children, normaliseColumnElement);
+
+  return createElement(AriaTableHeader, {
+    ...props,
+    children: renderedChildren,
+    className: tableHeader({ class: className }),
+    columns: items,
+    'data-section-key': id,
+    dependencies: [children],
+    ref: forwardedRef,
+  } as unknown as ComponentProps<typeof AriaTableHeader>);
+}
+
 function resolveSelectionMode(
   enabled: boolean,
   multiple: boolean,
@@ -490,9 +571,74 @@ interface TableCellSpanStyle extends CSSProperties {
 
 const emptyCompactHiddenColumns: readonly CollectionKey[] = [];
 const emptyCompactHiddenColumnKeys: ReadonlySet<string> = new Set();
+const emptyTableColumnKeys: readonly string[] = [];
 const compactHiddenColumnsContext = createContext<ReadonlySet<string>>(
   emptyCompactHiddenColumnKeys,
 );
+const tableColumnKeysContext =
+  createContext<readonly string[]>(emptyTableColumnKeys);
+
+function staticTableColumnKeys(children: ReactNode): string[] {
+  const keys: string[] = [];
+
+  Children.forEach(children, (child) => {
+    if (!isValidElement(child)) {
+      return;
+    }
+
+    if (child.type === Column) {
+      keys.push(encodeCollectionKey((child.props as TableColumnProps).id));
+    } else if (child.type === Fragment) {
+      keys.push(
+        ...staticTableColumnKeys(
+          (child.props as { children?: ReactNode }).children,
+        ),
+      );
+    }
+  });
+
+  return keys;
+}
+
+function tableHeaderColumnKeys(
+  header: ReactElement<TableHeaderProps>,
+): string[] {
+  const { children, items } = header.props;
+
+  if (items === undefined) {
+    return staticTableColumnKeys(children);
+  }
+
+  if (Object.is(items[Symbol.iterator](), items)) {
+    return [];
+  }
+
+  return Array.from(items, ({ id }) => encodeCollectionKey(id));
+}
+
+function authoredTableColumnKeys(children: ReactNode): string[] {
+  let keys: string[] = [];
+
+  Children.forEach(children, (child) => {
+    if (!isValidElement(child)) {
+      return;
+    }
+
+    if (child.type === Header) {
+      keys = tableHeaderColumnKeys(child as ReactElement<TableHeaderProps>);
+    } else if (child.type === Fragment) {
+      const nestedKeys = authoredTableColumnKeys(
+        (child.props as { children?: ReactNode }).children,
+      );
+
+      if (nestedKeys.length > 0) {
+        keys = nestedKeys;
+      }
+    }
+  });
+
+  return keys;
+}
 
 function readResponsiveColumnMetadata(
   root: HTMLElement | null,
@@ -548,23 +694,18 @@ interface CompactSpanMetadata {
 function compactSpanMetadata(
   columnKey: string,
   colSpan: number,
-  columns: Map<string, ResponsiveColumnMetadata>,
+  orderedColumns: readonly string[],
+  isCompactHidden: (key: string) => boolean,
 ): CompactSpanMetadata {
-  const orderedColumns = [...columns.entries()];
-  const firstColumnIndex = orderedColumns.findIndex(
-    ([key]) => key === columnKey,
-  );
+  const firstColumnIndex = orderedColumns.indexOf(columnKey);
 
   if (firstColumnIndex < 0) {
     return { compactHidden: undefined, span: colSpan };
   }
 
-  const coveredColumns = orderedColumns
+  const visibleColumns = orderedColumns
     .slice(firstColumnIndex, firstColumnIndex + colSpan)
-    .map(([, metadata]) => metadata);
-  const visibleColumns = coveredColumns.filter(
-    ({ compactHidden }) => !compactHidden,
-  ).length;
+    .filter((key) => !isCompactHidden(key)).length;
 
   return {
     compactHidden: visibleColumns === 0,
@@ -580,6 +721,10 @@ function syncResponsiveCells(
     return;
   }
 
+  const orderedColumns = [...columns.keys()];
+  const isCompactHidden = (key: string) =>
+    columns.get(key)?.compactHidden ?? false;
+
   root
     .querySelectorAll<HTMLTableCellElement>('[data-breeze-cell-column]')
     .forEach((cell) => {
@@ -593,7 +738,12 @@ function syncResponsiveCells(
       const label = column?.label;
       const spanMetadata =
         cell.colSpan > 1
-          ? compactSpanMetadata(columnKey, cell.colSpan, columns)
+          ? compactSpanMetadata(
+              columnKey,
+              cell.colSpan,
+              orderedColumns,
+              isCompactHidden,
+            )
           : null;
       const compactHidden =
         spanMetadata === null
@@ -698,11 +848,24 @@ function navigationCell(
     : null;
 }
 
-function rowTableCells(cell: HTMLElement, view: BrowserWindow): HTMLElement[] {
-  return [...(cell.parentElement?.children ?? [])].filter(
-    (candidate): candidate is HTMLElement =>
+function rowTableCells(
+  cell: HTMLElement,
+  root: HTMLElement,
+  view: BrowserWindow,
+): HTMLElement[] {
+  const row = cell.closest<HTMLElement>('[role="row"]');
+
+  if (row === null) {
+    return [];
+  }
+
+  return [
+    ...row.querySelectorAll<HTMLElement>('[data-breeze-cell-column]'),
+  ].filter(
+    (candidate) =>
       candidate instanceof view.HTMLElement &&
-      candidate.dataset.breezeCellColumn !== undefined,
+      candidate.closest('[role="row"]')?.isSameNode(row) === true &&
+      isOwnedTableElement(candidate, root),
   );
 }
 
@@ -821,7 +984,7 @@ function handleCompactHorizontalNavigation(
     return;
   }
 
-  const cells = rowTableCells(currentCell, view);
+  const cells = rowTableCells(currentCell, root, view);
 
   if (event.key === 'Home' || event.key === 'End') {
     handleCompactBoundaryNavigation(event, root, view, cells, virtualized);
@@ -862,6 +1025,10 @@ export function Root({
   const compactHiddenColumnKeys = useMemo(
     () => encodeCollectionKeys(compactHiddenColumns),
     [compactHiddenColumns],
+  );
+  const tableColumnKeys = useMemo(
+    () => authoredTableColumnKeys(children),
+    [children],
   );
   const selectionEnabled =
     defaultSelection !== undefined ||
@@ -927,6 +1094,7 @@ export function Root({
     observer.observe(root, {
       attributeFilter: [
         'colspan',
+        'data-breeze-cell-column-key',
         'data-breeze-column-width',
         'data-breeze-compact-label',
         'data-breeze-compact-label-text',
@@ -1014,88 +1182,12 @@ export function Root({
   return createElement(
     compactHiddenColumnsContext.Provider,
     { value: compactHiddenColumnKeys },
-    renderedTable,
+    createElement(
+      tableColumnKeysContext.Provider,
+      { value: tableColumnKeys },
+      renderedTable,
+    ),
   );
-}
-
-function renderTableColumn({
-  align = 'start',
-  children,
-  className,
-  compactLabel = true,
-  id,
-  ref,
-  rowHeader = false,
-  sortable = false,
-  textValue,
-  width,
-  ...props
-}: TableColumnProps): ReactElement {
-  const serializedWidth = serializeColumnWidth(width);
-  const inferredCompactLabel =
-    typeof children === 'string' ? children.trim() : undefined;
-  const compactLabelText = compactLabel
-    ? textValue ?? inferredCompactLabel
-    : undefined;
-
-  return createElement(AriaColumn, {
-    ...props,
-    allowsSorting: sortable,
-    children,
-    className: tableColumn({
-      align,
-      class: className,
-    }),
-    'data-breeze-column': String(id),
-    'data-breeze-column-key': encodeCollectionKey(id),
-    'data-breeze-column-width': serializedWidth,
-    'data-breeze-compact-label': String(compactLabel),
-    'data-breeze-compact-label-text': compactLabelText,
-    id,
-    isRowHeader: rowHeader,
-    ref,
-    style: serializedWidth === undefined ? undefined : { width },
-    textValue,
-  } as unknown as ComponentProps<typeof AriaColumn>);
-}
-
-/** Renders one accessible heading that can optionally request sorting. */
-export function Column(props: Readonly<TableColumnProps>): ReactElement {
-  return renderTableColumn(props);
-}
-
-function normaliseColumnElement(element: ReactNode): ReactNode {
-  if (isValidElement<TableColumnProps>(element) && element.type === Column) {
-    return renderTableColumn(element.props);
-  }
-
-  return element;
-}
-
-/** Renders static or generic accessible column headings. */
-export function Header<Column extends BreezeCollectionItem>({
-  children,
-  className,
-  id,
-  items,
-  ref,
-  ...props
-}: Readonly<TableHeaderProps<Column>>): ReactElement {
-  const forwardedRef = useForwardedRef(ref);
-  const renderedChildren =
-    typeof children === 'function'
-      ? (column: Column) => normaliseColumnElement(children(column))
-      : Children.map(children, normaliseColumnElement);
-
-  return createElement(AriaTableHeader, {
-    ...props,
-    children: renderedChildren,
-    className: tableHeader({ class: className }),
-    columns: items,
-    'data-section-key': id,
-    dependencies: [children],
-    ref: forwardedRef,
-  } as unknown as ComponentProps<typeof AriaTableHeader>);
 }
 
 /** Renders a stable ordered table body with static or generic rows. */
@@ -1205,9 +1297,19 @@ export function Cell({
   ...props
 }: Readonly<TableCellProps>): ReactElement {
   const compactHiddenColumns = useContext(compactHiddenColumnsContext);
+  const tableColumnKeys = useContext(tableColumnKeysContext);
   const forwardedRef = useForwardedRef(ref);
   const normalisedColSpan = normaliseColumnSpan(colSpan);
   const compactHidden = compactHiddenColumns.has(encodeCollectionKey(column));
+  const compactSpan =
+    normalisedColSpan !== undefined && normalisedColSpan > 1
+      ? compactSpanMetadata(
+          encodeCollectionKey(column),
+          normalisedColSpan,
+          tableColumnKeys,
+          (key) => compactHiddenColumns.has(key),
+        )
+      : null;
   const spanStyle: TableCellSpanStyle | undefined =
     normalisedColSpan === undefined || normalisedColSpan <= 1
       ? undefined
@@ -1239,7 +1341,10 @@ export function Cell({
     'data-breeze-cell-column': String(column),
     'data-breeze-cell-column-key': encodeCollectionKey(column),
     'data-breeze-compact-hidden':
-      (normalisedColSpan ?? 1) <= 1 && compactHidden ? '' : undefined,
+      (compactSpan === null ? compactHidden : compactSpan.compactHidden) ===
+      true
+        ? ''
+        : undefined,
     ref: cellRef,
     style: spanStyle,
     textValue,
