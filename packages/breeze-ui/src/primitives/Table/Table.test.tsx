@@ -29,6 +29,18 @@ function* generatedTableColumns(
   yield* columns;
 }
 
+function oneShotTableColumns(
+  columns: readonly {
+    id: string;
+    label: string;
+    rowHeader: boolean;
+  }[],
+) {
+  const iterator = generatedTableColumns(columns);
+
+  return { [Symbol.iterator]: () => iterator };
+}
+
 function ReorderedColumnsHarness() {
   const [showRole, setShowRole] = useState(true);
   const columns = showRole ? tableColumns : tableColumns.slice(1);
@@ -584,7 +596,7 @@ describe('Table', () => {
   });
 
   it('preserves generator-backed header items in server-rendered span metadata', () => {
-    const columns = generatedTableColumns([
+    const columns = oneShotTableColumns([
       { id: 'hidden-a', label: 'Hidden A', rowHeader: true },
       { id: 'hidden-b', label: 'Hidden B', rowHeader: false },
     ]);
@@ -625,7 +637,7 @@ describe('Table', () => {
   });
 
   it('replays generator-backed header items across Strict Mode renders', () => {
-    const columns = generatedTableColumns([
+    const columns = oneShotTableColumns([
       { id: 'name', label: 'Name', rowHeader: true },
       { id: 'date', label: 'Date', rowHeader: false },
     ]);
