@@ -39,6 +39,8 @@ const compactTransactionTableClassName = 'gap-x-4';
 const groupedTransactionTableClassName =
   'grid-cols-[3.25rem_minmax(0,1fr)_max-content_2.25rem] gap-x-4 sm:grid-cols-[var(--breeze-table-columns)]';
 
+const transactionDataRowClassName = 'py-3 sm:py-3!';
+
 function dayLabel(date: string, locale: string) {
   return new Intl.DateTimeFormat(locale, {
     day: 'numeric',
@@ -254,8 +256,8 @@ function TransactionTableHeader({
 
 function transactionRowClassName(pending: boolean, pendingCollection: boolean) {
   return pending && !pendingCollection
-    ? 'bg-[var(--breeze-surface-subtle)] py-3'
-    : 'py-3';
+    ? `${transactionDataRowClassName} bg-[var(--breeze-surface-subtle)]`
+    : transactionDataRowClassName;
 }
 
 type TransactionLedgerOrigin = 'dashboard' | 'transactions';
@@ -486,7 +488,7 @@ function LoadingTransactionRow({
 
   return (
     <Table.Row
-      className="py-3"
+      className={transactionDataRowClassName}
       id={`loading-transaction-${index}`}
       textValue={t('Loading transaction {{count}}', { count: index + 1 })}
     >
