@@ -17,9 +17,9 @@ const externalPackages = Object.keys({
   ...packageJson.peerDependencies,
 });
 
-function cabinAssetsPlugin(): Plugin {
+function distributionAssetsPlugin(): Plugin {
   return {
-    name: 'breeze-cabin-assets',
+    name: 'breeze-distribution-assets',
     writeBundle(outputOptions) {
       if (
         !outputOptions.dir ||
@@ -32,6 +32,10 @@ function cabinAssetsPlugin(): Plugin {
       copyFileSync(
         resolve(cabinPackageDirectory, 'LICENSE'),
         resolve(distributionDirectory, 'Cabin-LICENSE.txt'),
+      );
+      copyFileSync(
+        resolve(import.meta.dirname, 'src/styles/theme.css'),
+        resolve(distributionDirectory, 'theme.css'),
       );
     },
   };
@@ -74,5 +78,5 @@ export default defineConfig({
     },
     sourcemap: true,
   },
-  plugins: [tailwindcss(), react(), cabinAssetsPlugin()],
+  plugins: [tailwindcss(), react(), distributionAssetsPlugin()],
 });

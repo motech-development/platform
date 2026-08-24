@@ -31,6 +31,7 @@
       "import": "./lib/icons.js"
     },
     "./styles.css": "./lib/styles.css",
+    "./theme.css": "./lib/theme.css",
     "./reset.css": "./lib/reset.css"
   },
   "sideEffects": [
