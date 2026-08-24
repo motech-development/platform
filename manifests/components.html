@@ -588,13 +588,13 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">93 components ok</span><span class="filter-pill ok" aria-disabled="true">340 stories ok</span><a class="filter-pill ok" data-k="docs" href="#filter-docs">105 docs ok</a></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">93 components ok</span><span class="filter-pill ok" aria-disabled="true">341 stories ok</span><a class="filter-pill ok" data-k="docs" href="#filter-docs">105 docs ok</a></div>
   </div>
 </header>
 <main>
   <div class="wrap">
     <div class="note ok" style="margin-bottom: 16px;">
-              Using <code>react-docgen-typescript</code>. Generation took <strong>4.9s</strong>.
+              Using <code>react-docgen-typescript</code>. Generation took <strong>5.0s</strong>.
             </div>
     <h2 class="section-title">Components</h2>
     <div class="grid" role="list">
@@ -23969,7 +23969,7 @@ size?: ControlSize</code></pre>
       <div class="badges">
         <label for="c-68-collections-table-props" class="badge ok as-toggle">16 prop types</label>
         
-        <label for="c-68-collections-table-stories" class="badge ok as-toggle">21 stories</label>
+        <label for="c-68-collections-table-stories" class="badge ok as-toggle">22 stories</label>
         <label for="c-68-collections-table-docs" class="badge ok as-toggle">1 doc</label>
         <label for="c-68-collections-table-subcomponents" class="badge ok as-toggle">8 subcomponents</label>
       </div>
@@ -24368,6 +24368,44 @@ virtualization?: CollectionVirtualization</code></pre>
     &lt;/Table.Root&gt;
   );
 }</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Compact Consumer Grid Placement</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              <div>compact grid honours consumer cell placement</div>
+              <div class="hint">Preserves consumer-owned compact grid placement for cells that do not use the compound API&#39;s `colSpan` contract.</div>
+              <pre><code>const CompactConsumerGridPlacement = () =&gt; (
+  &lt;Table.Root aria-label=&quot;Compact consumer records&quot; layout=&quot;responsiveGrid&quot;&gt;
+    &lt;Table.Header className=&quot;max-[681px]:hidden!&quot;&gt;
+      &lt;Table.Column id=&quot;name&quot; rowHeader&gt;
+        Name
+      &lt;/Table.Column&gt;
+      &lt;Table.Column id=&quot;status&quot;&gt;Status&lt;/Table.Column&gt;
+    &lt;/Table.Header&gt;
+    &lt;Table.Body className=&quot;max-[681px]:block!&quot;&gt;
+      &lt;Table.Row
+        className=&quot;max-[681px]:grid! max-[681px]:grid-cols-[2.25rem_minmax(0,1fr)_2.25rem]&quot;
+        id=&quot;acme&quot;
+        textValue=&quot;Acme Ready&quot;
+      &gt;
+        &lt;Table.Cell
+          className=&quot;max-[681px]:col-start-2 max-[681px]:row-start-1&quot;
+          column=&quot;name&quot;
+        &gt;
+          Acme
+        &lt;/Table.Cell&gt;
+        &lt;Table.Cell
+          className=&quot;max-[681px]:col-span-3 max-[681px]:row-start-2&quot;
+          column=&quot;status&quot;
+        &gt;
+          Ready
+        &lt;/Table.Cell&gt;
+      &lt;/Table.Row&gt;
+    &lt;/Table.Body&gt;
+  &lt;/Table.Root&gt;
+);</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -24852,7 +24890,7 @@ Column, row, and section identifiers are stable `string | number` keys. Do not u
 
 `Table.Cell colSpan` follows native table semantics and spans the same number of CSS-grid tracks in `grid` and `responsiveGrid` layouts. Use a positive integer, start the cell in the first column it covers, and omit the covered cells from that row.
 
-Columns and cells expose `data-breeze-column=&quot;&lt;id&gt;&quot;` and `data-breeze-cell-column=&quot;&lt;id&gt;&quot;` as stable styling hooks. Use them from `Table.Root className` when a responsive composition needs consumer-owned column visibility or alignment beyond the standard layouts.
+Columns and cells expose `data-breeze-column=&quot;&lt;id&gt;&quot;` and `data-breeze-cell-column=&quot;&lt;id&gt;&quot;` as stable styling hooks. Use them from `Table.Root className` when a responsive composition needs consumer-owned column visibility or alignment beyond the standard layouts. Cells without `colSpan` leave CSS-grid placement to consumer `className` styles; cells with `colSpan` own their spanned tracks in both compact and wider layouts.
 
 &lt;Canvas of={Stories.ResponsiveGroupedSections} /&gt;
 
@@ -32711,6 +32749,16 @@ Keep authored DOM order meaningful. Responsive layout changes visual arrangement
 ## Responsive values
 
 Responsive layout props accept either a scalar or a mobile-first object with a required `base` value. Breakpoints are `sm` at 681px, `md` at 901px and `lg` at 1181px.
+
+Applications that compile their own Tailwind utilities must reference Breeze&#39;s
+raw theme before using the same-named breakpoints:
+
+```css
+@reference &#39;@motech-development/breeze-ui/theme.css&#39;;
+```
+
+This keeps application utilities aligned with Breeze without reproducing
+breakpoint values.
 
 ```tsx
 import { Grid, Stack, Surface } from &#39;@motech-development/breeze-ui&#39;;
