@@ -27,6 +27,16 @@ Keep authored DOM order meaningful. Responsive layout changes visual arrangement
 
 Responsive layout props accept either a scalar or a mobile-first object with a required `base` value. Breakpoints are `sm` at 681px, `md` at 901px and `lg` at 1181px.
 
+Applications that compile their own Tailwind utilities must reference Breeze's
+raw theme before using the same named breakpoints:
+
+```css
+@reference '@motech-development/breeze-ui/theme.css';
+```
+
+This keeps application utilities aligned with Breeze without reproducing
+breakpoint values.
+
 ```tsx
 import { Grid, Stack, Surface } from '@motech-development/breeze-ui';
 

@@ -1,9 +1,3 @@
-@theme {
-  --breakpoint-sm: 42.5625rem;
-  --breakpoint-md: 56.3125rem;
-  --breakpoint-lg: 73.8125rem;
-}
-
 @layer theme {
   :where([data-breeze-root]) {
     --breeze-font-display: 'Cabin Variable', sans-serif;
