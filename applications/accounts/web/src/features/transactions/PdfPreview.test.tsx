@@ -108,16 +108,26 @@ describe('PdfPreview', () => {
 
     const zoomIn = screen.getByRole('button', { name: 'Zoom in' });
 
-    for (let zoom = 120; zoom <= 200; zoom += 10) {
+    for (let zoom = 120; zoom <= 210; zoom += 10) {
       fireEvent.click(zoomIn);
     }
 
-    expect(screen.getByText('200%')).toBeVisible();
-    expect(firstPage).toHaveAttribute('data-scale', '2');
-    expect(zoomIn).toBeDisabled();
+    expect(screen.getByText('210%')).toBeVisible();
+    expect(firstPage).toHaveAttribute('data-scale', '2.1');
+    expect(zoomIn).toBeEnabled();
 
-    await user.click(screen.getByRole('button', { name: 'Zoom out' }));
-    expect(screen.getByText('190%')).toBeVisible();
+    const zoomOut = screen.getByRole('button', { name: 'Zoom out' });
+
+    await user.click(zoomOut);
+    expect(screen.getByText('200%')).toBeVisible();
+
+    for (let zoom = 190; zoom >= 10; zoom -= 10) {
+      fireEvent.click(zoomOut);
+    }
+
+    expect(screen.getByText('10%')).toBeVisible();
+    expect(firstPage).toHaveAttribute('data-scale', '0.1');
+    expect(zoomOut).toBeDisabled();
 
     await user.click(screen.getByRole('button', { name: 'Rotate clockwise' }));
     expect(firstPage).toHaveAttribute('data-rotate', '90');

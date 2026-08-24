@@ -164,20 +164,18 @@ export function OwnerNotificationProvider({
         const connected = handleSubscriptionConnection(
           subscriptionData,
           reconcileNotifications,
-          { reconcileInitialConnection: true },
+          {
+            reconcileInitialConnection: true,
+            subscriptionPayloadPresent: incoming !== undefined,
+          },
         );
 
-        // Apollo's subscription hook omits result extensions, but still delivers
-        // the AppSync connection control result without the subscription field.
-        if (connected || incoming === undefined) {
+        if (connected) {
           subscriptionRestartPending.current = false;
-
-          if (!connected) {
-            reconcileNotifications();
-          }
-
           return;
         }
+
+        if (incoming === undefined) return;
 
         if (incoming?.owner !== owner) {
           return;

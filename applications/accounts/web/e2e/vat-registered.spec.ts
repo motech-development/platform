@@ -716,7 +716,7 @@ test.describe('VAT registered', () => {
         page.getByRole('heading', { name: 'Edit transaction' }),
       ).toBeVisible();
       await expect(page.getByLabel('Select file to upload')).toBeVisible();
-      await expect(page.getByText('PDF, JPG or PNG')).toBeVisible();
+      await expect(page.getByText('PDF, JPG, PNG or GIF')).toBeVisible();
     });
   });
 

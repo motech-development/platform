@@ -69,7 +69,7 @@ describe('AttachmentUpload', () => {
     const input = document.querySelector('input[type="file"]');
 
     expect(input).toBeInstanceOf(HTMLInputElement);
-    expect(screen.getByText('PDF, JPG or PNG')).toBeVisible();
+    expect(screen.getByText('PDF, JPG, PNG or GIF')).toBeVisible();
     await user.upload(input as HTMLInputElement, file);
     await waitFor(() => {
       expect(mocks.uploadPresignedFile).toHaveBeenCalledTimes(1);
@@ -134,6 +134,48 @@ describe('AttachmentUpload', () => {
           contentType: 'image/jpeg',
           extension: 'jpg',
           metadata: { id: 'transaction-1', typename: 'Transaction' },
+        },
+      },
+    });
+  });
+
+  it('uploads a GIF supported by the existing storage contract', async () => {
+    const user = userEvent.setup();
+    const file = new File(['image'], 'receipt.gif', { type: 'image/gif' });
+    const onUploaded = vi.fn();
+
+    mocks.requestUpload.mockResolvedValue({
+      data: {
+        requestUpload: { id: 'upload-gif', url: 'https://upload/image' },
+      },
+    });
+    mocks.uploadPresignedFile.mockResolvedValue(undefined);
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <AttachmentUpload
+          companyId="company-1"
+          onTransfer={vi.fn()}
+          onUploaded={onUploaded}
+        />
+      </BreezeProvider>,
+    );
+
+    await user.upload(
+      document.querySelector('input[type="file"]') as HTMLInputElement,
+      file,
+    );
+
+    await waitFor(() => {
+      expect(onUploaded).toHaveBeenCalledWith('company-1/upload-gif.gif');
+    });
+    expect(mocks.requestUpload).toHaveBeenCalledWith({
+      variables: {
+        id: 'company-1',
+        input: {
+          contentType: 'image/gif',
+          extension: 'gif',
+          metadata: { typename: 'Transaction' },
         },
       },
     });
@@ -228,7 +270,7 @@ describe('AttachmentUpload', () => {
     );
 
     expect(mocks.toast.show).toHaveBeenCalledWith({
-      description: 'Choose one PDF, JPG, or PNG file.',
+      description: 'Choose one PDF, JPG, PNG, or GIF file.',
       title: 'File not accepted',
       variant: 'warning',
     });
@@ -256,7 +298,7 @@ describe('AttachmentUpload', () => {
 
     await waitFor(() =>
       expect(mocks.toast.show).toHaveBeenCalledWith({
-        description: 'Choose one PDF, JPG, or PNG file.',
+        description: 'Choose one PDF, JPG, PNG, or GIF file.',
         title: 'File not accepted',
         variant: 'warning',
       }),

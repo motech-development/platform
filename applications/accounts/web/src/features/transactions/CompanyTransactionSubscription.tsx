@@ -20,15 +20,19 @@ export function CompanyTransactionSubscription({
       controlMessages: { [CONTROL_EVENTS_KEY]: true },
     },
     onData: ({ client, data }) => {
+      const incoming = data.data?.onTransaction;
+
       if (
-        handleSubscriptionConnection(data, () => {
-          client.refetchQueries({ include: 'active' }).catch(() => undefined);
-        })
+        handleSubscriptionConnection(
+          data,
+          () => {
+            client.refetchQueries({ include: 'active' }).catch(() => undefined);
+          },
+          { subscriptionPayloadPresent: incoming !== undefined },
+        )
       ) {
         return;
       }
-
-      const incoming = data.data?.onTransaction;
 
       if (!incoming) {
         return;

@@ -16,9 +16,9 @@ import {
   AttachmentUpload,
 } from './AttachmentUpload';
 import {
-  calculatePurchaseVat,
-  calculateSaleVat,
   isSaleTransactionCategory,
+  type TransactionType,
+  transactionTypePolicy,
 } from './transaction';
 import { TransactionAttachment } from './TransactionAttachment';
 import type { TransactionForm } from './useTransactionForm';
@@ -184,6 +184,9 @@ export function RecordTransactionFormFields({
     form.store,
     (state) => state.values.transactionType,
   );
+  const selectedTransactionPolicy = selectedTransactionType
+    ? transactionTypePolicy(selectedTransactionType)
+    : undefined;
   const selectedCategory = useSelector(
     form.store,
     (state) => state.values.category,
@@ -222,7 +225,7 @@ export function RecordTransactionFormFields({
   ) => visibleValidationErrors(errors, blurred, form.state.submissionAttempts);
   const updateCalculatedVat = (
     amount: string,
-    transactionType: '' | 'purchase' | 'sale',
+    transactionType: '' | TransactionType,
     category: string,
     categorySourceIndex = selectedCategorySourceIndex,
   ) => {
@@ -231,9 +234,10 @@ export function RecordTransactionFormFields({
       return;
     }
 
+    const policy = transactionTypePolicy(transactionType);
     let rate: number | undefined;
 
-    if (transactionType === 'sale') {
+    if (policy.vatRate === 'company') {
       rate = vatRate;
     } else if (categorySourceIndex === undefined) {
       rate = categories.find(({ name }) => name === category)?.vatRate;
@@ -246,10 +250,7 @@ export function RecordTransactionFormFields({
       return;
     }
 
-    const vat =
-      transactionType === 'sale'
-        ? calculateSaleVat(amount, rate)
-        : calculatePurchaseVat(amount, rate);
+    const vat = policy.calculateVat(amount, rate);
 
     form.setFieldValue('vat', vat.toFixed(2));
   };
@@ -283,7 +284,7 @@ export function RecordTransactionFormFields({
                   field.handleChange(selection);
                   form.setFieldValue('name', '');
                   form.setFieldValue('refund', false);
-                  if (selection === 'sale') {
+                  if (transactionTypePolicy(selection).category === 'fixed') {
                     form.setFieldValue('category', '');
                   }
                   updateCalculatedVat(
@@ -310,7 +311,7 @@ export function RecordTransactionFormFields({
             );
           }}
         </form.Field>
-        {selectedTransactionType ? (
+        {selectedTransactionPolicy ? (
           <>
             <form.Field name="name">
               {(field) => {
@@ -319,7 +320,7 @@ export function RecordTransactionFormFields({
                   field.state.meta.isBlurred,
                 );
 
-                return selectedTransactionType === 'sale' ? (
+                return selectedTransactionPolicy.counterparty === 'client' ? (
                   <Select.Root
                     invalid={errors.length > 0}
                     onBlur={field.handleBlur}
@@ -394,9 +395,9 @@ export function RecordTransactionFormFields({
                     onCommit={touch}
                     placeholder={t('What was this for?')}
                     suggestions={
-                      (selectedTransactionType === 'sale'
-                        ? suggestions?.sales
-                        : suggestions?.purchases) ?? []
+                      suggestions?.[
+                        selectedTransactionPolicy.descriptionSuggestions
+                      ] ?? []
                     }
                     value={field.state.value}
                   />
@@ -480,12 +481,12 @@ export function RecordTransactionFormFields({
             );
           }}
         </form.Field>
-        {selectedTransactionType ? (
+        {selectedTransactionPolicy ? (
           <>
             <form.Subscribe selector={(state) => state.values.category}>
               {(category) => (
                 <>
-                  {selectedTransactionType === 'purchase' ? (
+                  {selectedTransactionPolicy.category === 'selected' ? (
                     <form.Field name="category">
                       {(field) => {
                         const errors = errorsFor(
@@ -512,7 +513,7 @@ export function RecordTransactionFormFields({
                               field.handleChange(nextCategory);
                               updateCalculatedVat(
                                 form.getFieldValue('amount'),
-                                'purchase',
+                                selectedTransactionType,
                                 nextCategory,
                                 selected ? sourceIndex : undefined,
                               );
@@ -572,8 +573,8 @@ export function RecordTransactionFormFields({
                         return (
                           <NumberField.Root
                             disabled={
-                              selectedTransactionType === 'purchase' &&
-                              !category
+                              selectedTransactionPolicy.category ===
+                                'selected' && !category
                             }
                             formatOptions={{ currency, style: 'currency' }}
                             invalid={errors.length > 0}
@@ -644,8 +645,8 @@ export function RecordTransactionFormFields({
                         return (
                           <NumberField.Root
                             disabled={
-                              selectedTransactionType === 'purchase' &&
-                              !category
+                              selectedTransactionPolicy.category ===
+                                'selected' && !category
                             }
                             formatOptions={{ currency, style: 'currency' }}
                             invalid={errors.length > 0}

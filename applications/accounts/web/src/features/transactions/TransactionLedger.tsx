@@ -59,14 +59,21 @@ function stopTransactionRowKeyboardPropagation(event: {
   if (event.key === 'Enter') event.stopPropagation();
 }
 
-function MissingAttachmentWarning() {
-  const { t } = useTranslation('transactions');
+function TransactionIndicator({
+  icon,
+  label,
+  variant,
+}: Readonly<{
+  icon: ReactNode;
+  label: string;
+  variant: 'danger' | 'primary';
+}>) {
   const [open, setOpen] = useState(false);
 
   return (
     <Tooltip.Root onOpenChange={setOpen} open={open}>
       <Tooltip.IconTrigger
-        aria-label={t('No invoice or receipt')}
+        aria-label={label}
         className="relative z-[2]"
         onBlur={() => setOpen(false)}
         onClick={stopTransactionRowPropagation}
@@ -76,42 +83,38 @@ function MissingAttachmentWarning() {
         onMouseLeave={() => setOpen(false)}
         onPointerDown={stopTransactionRowPropagation}
         onPointerUp={stopTransactionRowPropagation}
-        variant="danger"
+        variant={variant}
       >
-        <WarningIcon size="1rem" />
+        {icon}
       </Tooltip.IconTrigger>
-      <Tooltip.Content placement="right" variant="danger">
-        {t('No invoice or receipt')}
+      <Tooltip.Content placement="right" variant={variant}>
+        {label}
       </Tooltip.Content>
     </Tooltip.Root>
   );
 }
 
-function ScheduledTransactionIndicator() {
+function MissingAttachmentWarning() {
   const { t } = useTranslation('transactions');
-  const [open, setOpen] = useState(false);
 
   return (
-    <Tooltip.Root onOpenChange={setOpen} open={open}>
-      <Tooltip.IconTrigger
-        aria-label={t('Scheduled transaction')}
-        className="relative z-[2]"
-        onBlur={() => setOpen(false)}
-        onClick={stopTransactionRowPropagation}
-        onFocus={() => setOpen(true)}
-        onKeyDown={stopTransactionRowKeyboardPropagation}
-        onMouseEnter={() => setOpen(true)}
-        onMouseLeave={() => setOpen(false)}
-        onPointerDown={stopTransactionRowPropagation}
-        onPointerUp={stopTransactionRowPropagation}
-        variant="primary"
-      >
-        <CalendarIcon size="1rem" />
-      </Tooltip.IconTrigger>
-      <Tooltip.Content placement="right" variant="primary">
-        {t('Scheduled transaction')}
-      </Tooltip.Content>
-    </Tooltip.Root>
+    <TransactionIndicator
+      icon={<WarningIcon size="1rem" />}
+      label={t('No invoice or receipt')}
+      variant="danger"
+    />
+  );
+}
+
+function ScheduledTransactionIndicator() {
+  const { t } = useTranslation('transactions');
+
+  return (
+    <TransactionIndicator
+      icon={<CalendarIcon size="1rem" />}
+      label={t('Scheduled transaction')}
+      variant="primary"
+    />
   );
 }
 

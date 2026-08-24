@@ -161,7 +161,7 @@ describe('RecordTransactionPage', () => {
     expect(
       screen.getByRole('region', { name: 'Invoice or receipt' }),
     ).toBeVisible();
-    expect(screen.getByText('PDF, JPG or PNG')).toBeVisible();
+    expect(screen.getByText('PDF, JPG, PNG or GIF')).toBeVisible();
     expect(
       screen.getByRole('button', { name: 'Save transaction' }),
     ).toBeVisible();

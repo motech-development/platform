@@ -12,6 +12,14 @@ import { uploadPresignedFile } from '../../data/presigned-transfer';
 import { capturePresignedTransferFailure } from '../../observability';
 import { useLatestTransfer } from './useLatestTransfer';
 
+const attachmentExtensions: Readonly<Record<string, readonly string[]>> = {
+  'application/pdf': ['pdf'],
+  'image/gif': ['gif'],
+  'image/jpeg': ['jpg', 'jpeg'],
+  'image/png': ['png'],
+};
+const acceptedFileTypes = Object.keys(attachmentExtensions);
+
 export type AttachmentTransferResult =
   | Readonly<{ status: 'cancelled' }>
   | Readonly<{ status: 'failed' }>
@@ -41,18 +49,14 @@ export function AttachmentUpload({
   const [requestUpload, { loading }] = useMutation(REQUEST_UPLOAD);
   const showRejectedFileToast = () => {
     toast.show({
-      description: t('Choose one PDF, JPG, or PNG file.'),
+      description: t('Choose one PDF, JPG, PNG, or GIF file.'),
       title: t('File not accepted'),
       variant: 'warning',
     });
   };
 
   const upload = (file: File) => {
-    const extensions = {
-      'application/pdf': ['pdf'],
-      'image/jpeg': ['jpg', 'jpeg'],
-      'image/png': ['png'],
-    }[file.type];
+    const extensions = attachmentExtensions[file.type];
     const extensionIndex = file.name.lastIndexOf('.');
     const requestedExtension =
       extensionIndex > 0
@@ -149,7 +153,7 @@ export function AttachmentUpload({
   return (
     <>
       <FileUpload
-        acceptedFileTypes={['application/pdf', 'image/jpeg', 'image/png']}
+        acceptedFileTypes={acceptedFileTypes}
         browseLabel={
           disabled
             ? t('Connection required', { ns: 'transactions' })
@@ -159,7 +163,7 @@ export function AttachmentUpload({
         guidance={
           disabled
             ? t('Connection required to attach a file.')
-            : t('PDF, JPG or PNG')
+            : t('PDF, JPG, PNG or GIF')
         }
         label={t('No file selected')}
         onFiles={(files) => {

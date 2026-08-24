@@ -24,8 +24,6 @@ const pdfDocumentOptions = {
   standardFontDataUrl: `${import.meta.env.BASE_URL}standard_fonts/`,
 };
 const maximumPageWidth = 720;
-const maximumZoom = 200;
-const minimumZoom = 10;
 const zoomStep = 10;
 
 export function PdfPreview({ file }: Readonly<{ file: Blob }>) {
@@ -62,10 +60,7 @@ export function PdfPreview({ file }: Readonly<{ file: Blob }>) {
       <Toolbar aria-label={t('PDF controls')} className="justify-center">
         <IconButton
           aria-label={t('Zoom in')}
-          disabled={zoom === maximumZoom}
-          onAction={() =>
-            setZoom((current) => Math.min(maximumZoom, current + zoomStep))
-          }
+          onAction={() => setZoom((current) => current + zoomStep)}
         >
           <ZoomInIcon />
         </IconButton>
@@ -80,9 +75,9 @@ export function PdfPreview({ file }: Readonly<{ file: Blob }>) {
         </Typography>
         <IconButton
           aria-label={t('Zoom out')}
-          disabled={zoom === minimumZoom}
+          disabled={zoom === zoomStep}
           onAction={() =>
-            setZoom((current) => Math.max(minimumZoom, current - zoomStep))
+            setZoom((current) => Math.max(zoomStep, current - zoomStep))
           }
         >
           <ZoomOutIcon />

@@ -47,6 +47,29 @@ describe('CompanyTransactionSubscription', () => {
     expect(refetchQueries).toHaveBeenCalledWith({ include: 'active' });
   });
 
+  it('recognizes an extensionless AppSync reconnect acknowledgement', () => {
+    const refetchQueries = vi.fn().mockResolvedValue(undefined);
+
+    render(
+      <CompanyTransactionSubscription companyId="company-id" owner={ownerId}>
+        <p>Transactions</p>
+      </CompanyTransactionSubscription>,
+    );
+
+    mocks.options?.onData?.({
+      client: { refetchQueries },
+      data: { extensions: { controlMsgType: 'CONNECTED' } },
+    });
+    mocks.options?.onData?.({
+      client: { refetchQueries },
+      data: { data: {} },
+    });
+
+    expect(refetchQueries).toHaveBeenCalledExactlyOnceWith({
+      include: 'active',
+    });
+  });
+
   it('refreshes active collections after an ordinary Transaction event', () => {
     const modify = vi.fn();
     const refetchQueries = vi.fn().mockResolvedValue(undefined);

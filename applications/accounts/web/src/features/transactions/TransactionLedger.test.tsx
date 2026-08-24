@@ -120,9 +120,6 @@ describe('TransactionLedger', () => {
     });
 
     expect(pendingIdentity).toBeVisible();
-    expect(pendingIdentity.closest('[role="row"]')).toHaveClass(
-      'bg-[var(--breeze-surface-subtle)]',
-    );
     expect(
       screen.getByRole('img', { name: 'Scheduled transaction' }),
     ).toBeVisible();
@@ -196,7 +193,6 @@ describe('TransactionLedger', () => {
       name: /Pending transaction: Oak & Co Accountants/u,
     });
 
-    expect(pendingRow).not.toHaveClass('bg-[var(--breeze-surface-subtle)]');
     await userEvent.click(pendingRow);
 
     expect(mocks.navigate).toHaveBeenCalledWith({

@@ -1,53 +1,11 @@
 import {
   Button,
-  Inline,
+  ButtonGroup,
   LinkButton,
   StatePanel,
 } from '@motech-development/breeze-ui';
 import { AddIcon, WarningIcon } from '@motech-development/breeze-ui/icons';
-import { useSyncExternalStore } from 'react';
 import { useTranslation } from 'react-i18next';
-
-const WIDE_ACTIONS_QUERY = '(min-width: 73.8125rem)';
-
-function getActionMediaQuery() {
-  if (
-    typeof window === 'undefined' ||
-    typeof window.matchMedia !== 'function'
-  ) {
-    return undefined;
-  }
-
-  return window.matchMedia(WIDE_ACTIONS_QUERY);
-}
-
-function subscribeToActionLayout(listener: () => void) {
-  const mediaQuery = getActionMediaQuery();
-
-  if (!mediaQuery) {
-    return () => undefined;
-  }
-
-  mediaQuery.addEventListener('change', listener);
-
-  return () => mediaQuery.removeEventListener('change', listener);
-}
-
-function getWideActionLayout() {
-  return getActionMediaQuery()?.matches ?? false;
-}
-
-function getServerActionLayout() {
-  return false;
-}
-
-function useWideActionLayout() {
-  return useSyncExternalStore(
-    subscribeToActionLayout,
-    getWideActionLayout,
-    getServerActionLayout,
-  );
-}
 
 export function RecordTransactionLink({
   className,
@@ -76,7 +34,6 @@ export function TransactionPageHeaderAction({
   recordTransactionHref: string;
 }>) {
   const { t } = useTranslation('transactions');
-  const wideActionLayout = useWideActionLayout();
 
   if (initiallyLoading) {
     return null;
@@ -96,15 +53,13 @@ export function TransactionPageHeaderAction({
   );
 
   return (
-    <Inline
-      align="stretch"
-      className="w-full flex-col lg:w-auto lg:flex-row lg:items-center"
-      gap="compact"
-      wrap={false}
+    <ButtonGroup
+      className="w-full sm:w-auto"
+      orientation={{ base: 'verticalReverse', sm: 'horizontal' }}
     >
-      {wideActionLayout ? pendingTransactionsLink : recordTransactionLink}
-      {wideActionLayout ? recordTransactionLink : pendingTransactionsLink}
-    </Inline>
+      {pendingTransactionsLink}
+      {recordTransactionLink}
+    </ButtonGroup>
   );
 }
 

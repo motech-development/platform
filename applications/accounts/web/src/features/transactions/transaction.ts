@@ -4,6 +4,8 @@ import i18n from '../../i18n';
 
 const SALES_CATEGORY = 'Sales';
 
+export type TransactionType = 'purchase' | 'sale';
+
 function persistedDecimal(value: string): Decimal {
   return new Decimal(value).toDecimalPlaces(2);
 }
@@ -18,6 +20,58 @@ function isSafelyRepresentedAsNumber(value: Decimal): boolean {
 
 export function isSaleTransactionCategory(category: string): boolean {
   return category === SALES_CATEGORY;
+}
+
+export function calculateSaleVat(amount: string, vatRate: number): number {
+  return new Decimal(amount)
+    .times(vatRate)
+    .dividedBy(100)
+    .toDecimalPlaces(2)
+    .toNumber();
+}
+
+export function calculatePurchaseVat(amount: string, vatRate: number): number {
+  const total = new Decimal(amount);
+  const divisor = new Decimal(vatRate).dividedBy(100).plus(1);
+
+  return total.minus(total.dividedBy(divisor)).toDecimalPlaces(2).toNumber();
+}
+
+interface TransactionTypePolicy {
+  amountSign: -1 | 1;
+  calculateVat: (amount: string, vatRate: number) => number;
+  category: 'fixed' | 'selected';
+  counterparty: 'client' | 'supplier';
+  descriptionSuggestions: 'purchases' | 'sales';
+  vatRate: 'category' | 'company';
+}
+
+const transactionTypePolicies: Record<TransactionType, TransactionTypePolicy> =
+  {
+    purchase: {
+      amountSign: -1,
+      calculateVat: calculatePurchaseVat,
+      category: 'selected',
+      counterparty: 'supplier',
+      descriptionSuggestions: 'purchases',
+      vatRate: 'category',
+    },
+    sale: {
+      amountSign: 1,
+      calculateVat: calculateSaleVat,
+      category: 'fixed',
+      counterparty: 'client',
+      descriptionSuggestions: 'sales',
+      vatRate: 'company',
+    },
+  };
+
+export function transactionTypePolicy(type: TransactionType) {
+  return transactionTypePolicies[type];
+}
+
+function transactionTypeForCategory(category: string): TransactionType {
+  return isSaleTransactionCategory(category) ? 'sale' : 'purchase';
 }
 
 const requiredText = (message: string) =>
@@ -103,8 +157,12 @@ export const transactionSchema = z
     vat: nonNegativeDecimal,
   })
   .superRefine((value, context) => {
+    const policy = value.transactionType
+      ? transactionTypePolicy(value.transactionType)
+      : undefined;
+
     if (
-      value.transactionType === 'purchase' &&
+      policy?.category === 'selected' &&
       (!value.category.trim() || isSaleTransactionCategory(value.category))
     ) {
       context.addIssue({
@@ -137,29 +195,19 @@ type EditableTransaction = Omit<TransactionInput, 'refund' | 'scheduled'> & {
   readonly scheduled?: boolean | null;
 };
 
-export function calculateSaleVat(amount: string, vatRate: number): number {
-  return new Decimal(amount)
-    .times(vatRate)
-    .dividedBy(100)
-    .toDecimalPlaces(2)
-    .toNumber();
-}
-
-export function calculatePurchaseVat(amount: string, vatRate: number): number {
-  const total = new Decimal(amount);
-  const divisor = new Decimal(vatRate).dividedBy(100).plus(1);
-
-  return total.minus(total.dividedBy(divisor)).toDecimalPlaces(2).toNumber();
-}
-
 export function buildTransactionInput(
   values: TransactionFormValues,
 ): TransactionInput {
   const value = transactionSchema.parse(values);
   const amount = persistedDecimal(value.amount);
   const vat = persistedDecimal(value.vat);
-  const purchase = value.transactionType === 'purchase';
-  let signedAmount = purchase ? amount.negated() : amount;
+
+  if (!value.transactionType) {
+    throw new TypeError('Validated Transaction type is missing');
+  }
+
+  const policy = transactionTypePolicy(value.transactionType);
+  let signedAmount = amount.times(policy.amountSign);
 
   if (value.refund) {
     signedAmount = signedAmount.negated();
@@ -170,7 +218,7 @@ export function buildTransactionInput(
   return {
     amount: signedAmount.toNumber(),
     attachment: value.attachment,
-    category: purchase ? value.category : SALES_CATEGORY,
+    category: policy.category === 'fixed' ? SALES_CATEGORY : value.category,
     companyId: value.companyId,
     date: `${value.date}T00:00:00.000Z`,
     description: value.description,
@@ -186,12 +234,13 @@ export function buildTransactionInput(
 export function editableTransaction(
   transaction: EditableTransaction,
 ): TransactionFormValues {
+  const transactionType = transactionTypeForCategory(transaction.category);
+  const policy = transactionTypePolicy(transactionType);
+
   return {
     amount: new Decimal(transaction.amount).abs().toString(),
     attachment: transaction.attachment,
-    category: isSaleTransactionCategory(transaction.category)
-      ? ''
-      : transaction.category,
+    category: policy.category === 'fixed' ? '' : transaction.category,
     companyId: transaction.companyId,
     date: transaction.date.substring(0, 10),
     description: transaction.description,
@@ -201,9 +250,7 @@ export function editableTransaction(
     scheduled:
       transaction.status === 'pending' && (transaction.scheduled ?? false),
     status: transaction.status,
-    transactionType: isSaleTransactionCategory(transaction.category)
-      ? 'sale'
-      : 'purchase',
+    transactionType,
     vat: new Decimal(transaction.vat).abs().toString(),
   };
 }

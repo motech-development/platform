@@ -24,9 +24,20 @@ export function useAppSyncSubscriptionConnection() {
       onReconnect: () => void,
       {
         reconcileInitialConnection = false,
-      }: Readonly<{ reconcileInitialConnection?: boolean }> = {},
+        subscriptionPayloadPresent = true,
+      }: Readonly<{
+        reconcileInitialConnection?: boolean;
+        subscriptionPayloadPresent?: boolean;
+      }> = {},
     ) => {
-      if (subscriptionControlMessage(result) !== 'CONNECTED') {
+      const controlMessage = subscriptionControlMessage(result);
+      const extensionlessConnectionAcknowledgement =
+        controlMessage === undefined && !subscriptionPayloadPresent;
+
+      if (
+        controlMessage !== 'CONNECTED' &&
+        !extensionlessConnectionAcknowledgement
+      ) {
         return false;
       }
 

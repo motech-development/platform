@@ -132,7 +132,7 @@ components:
   drawer:
     backgroundColor: '{colors.surface}'
     textColor: '{colors.ink}'
-    width: '610px'
+    width: '48rem'
     rounded: '{rounded.none}'
   state-icon:
     backgroundColor: '{colors.primary-soft}'
@@ -323,7 +323,7 @@ Full-page drawers and dialogs use the Overlay token. The attachment preview must
 
 ### Drawers, Attachments, and Dialogs
 
-- Standard desktop drawers are 610px wide; wide company drawers are 760px. Headers use the dark shell, a description, title, and 44px close button.
+- Transaction and multi-step company drawers use the Breeze `wide` size (48rem). Client, report, and attachment-preview drawers use the Breeze `medium` size (38rem). Headers use the dark shell, a description, title, and 44px close button.
 - At 900px and below, drawers become full-width bottom sheets and animate vertically like an iOS modal.
 - Drawers animate both in and out over 180ms using the approved ease-out curve. Backdrops fade over the same duration.
 - Attachment previews open in a secondary drawer beside the parent form on desktop. The overlay covers only the form drawer. On mobile the preview uses the same bottom-sheet model.

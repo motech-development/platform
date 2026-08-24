@@ -556,7 +556,32 @@ test.describe('Non-VAT registered', () => {
 
       await page.setViewportSize({ height: 900, width: 680 });
       await openAccountsRoute('not-registered');
-      await page.getByRole('link', { name: 'View pending' }).click();
+      const viewPending = page.getByRole('link', { name: 'View pending' });
+      const recordTransaction = page.getByRole('link', {
+        name: 'Record transaction',
+      });
+      const compactViewPendingBox = await viewPending.boundingBox();
+      const compactRecordTransactionBox = await recordTransaction.boundingBox();
+
+      if (!compactViewPendingBox || !compactRecordTransactionBox) {
+        throw new Error('Compact Transaction actions were not visible');
+      }
+      expect(compactRecordTransactionBox.y).toBeLessThan(
+        compactViewPendingBox.y,
+      );
+
+      await page.setViewportSize({ height: 900, width: 681 });
+      const wideViewPendingBox = await viewPending.boundingBox();
+      const wideRecordTransactionBox = await recordTransaction.boundingBox();
+
+      if (!wideViewPendingBox || !wideRecordTransactionBox) {
+        throw new Error('Wide Transaction actions were not visible');
+      }
+      expect(wideViewPendingBox.y).toBe(wideRecordTransactionBox.y);
+      expect(wideViewPendingBox.x).toBeLessThan(wideRecordTransactionBox.x);
+
+      await page.setViewportSize({ height: 900, width: 680 });
+      await viewPending.click();
       const pendingRow = page
         .getByRole('row')
         .filter({ hasText: transaction.description })

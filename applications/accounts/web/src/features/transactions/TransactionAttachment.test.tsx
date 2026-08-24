@@ -181,8 +181,8 @@ describe('TransactionAttachment', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('opens an image preview and releases its object URL when closed', async () => {
-    const file = new Blob(['image'], { type: 'image/png' });
+  it('opens a GIF preview and releases its object URL when closed', async () => {
+    const file = new Blob(['image'], { type: 'image/gif' });
 
     mocks.query.mockResolvedValue({
       data: { requestDownload: { url: 'https://download/receipt' } },
@@ -194,7 +194,7 @@ describe('TransactionAttachment', () => {
         <TransactionAttachment
           companyId="company-id"
           onDeleted={() => true}
-          path="company-id/receipt.png"
+          path="company-id/receipt.gif"
         />
       </BreezeProvider>,
     );
@@ -202,7 +202,7 @@ describe('TransactionAttachment', () => {
     await userEvent.click(screen.getByRole('button', { name: 'View file' }));
 
     expect(
-      await screen.findByRole('img', { name: 'receipt.png' }),
+      await screen.findByRole('img', { name: 'receipt.gif' }),
     ).toHaveAttribute('src', 'blob:attachment-preview');
     view.unmount();
     expect(mocks.revokeObjectUrl).toHaveBeenCalledWith(
