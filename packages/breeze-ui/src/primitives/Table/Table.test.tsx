@@ -256,6 +256,31 @@ describe('Table', () => {
     expect(dateCell).toHaveAttribute('colspan', '3');
   });
 
+  it('leaves grid placement to consumers for cells without a column span', () => {
+    renderBreeze(
+      <Table.Root aria-label="Consumer grid placement" layout="grid">
+        <Table.Header>
+          <Table.Column id="name" rowHeader>
+            Name
+          </Table.Column>
+        </Table.Header>
+        <Table.Body>
+          <Table.Row id="acme" textValue="Acme">
+            <Table.Cell className="col-span-3" column="name">
+              Acme
+            </Table.Cell>
+          </Table.Row>
+        </Table.Body>
+      </Table.Root>,
+    );
+
+    const cell = screen.getByRole('rowheader', { name: 'Acme' });
+
+    expect(cell).toHaveClass('col-span-3');
+    expect(cell.className).not.toContain('--breeze-table-column-span');
+    expect(cell.className).not.toContain('--breeze-table-compact-column-span');
+  });
+
   it('recomputes compact spans after a mounted cell span changes', async () => {
     renderBreeze(
       <Table.Root

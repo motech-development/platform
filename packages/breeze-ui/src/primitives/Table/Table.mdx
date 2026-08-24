@@ -79,7 +79,7 @@ Column, row, and section identifiers are stable `string | number` keys. Do not u
 
 `Table.Cell colSpan` follows native table semantics and spans the same number of CSS-grid tracks in `grid` and `responsiveGrid` layouts. Use a positive integer, start the cell in the first column it covers, and omit the covered cells from that row.
 
-Columns and cells expose `data-breeze-column="<id>"` and `data-breeze-cell-column="<id>"` as stable styling hooks. Use them from `Table.Root className` when a responsive composition needs consumer-owned column visibility or alignment beyond the standard layouts.
+Columns and cells expose `data-breeze-column="<id>"` and `data-breeze-cell-column="<id>"` as stable styling hooks. Use them from `Table.Root className` when a responsive composition needs consumer-owned column visibility or alignment beyond the standard layouts. Cells without `colSpan` leave CSS-grid placement to consumer `className` styles; cells with `colSpan` own their spanned tracks in both compact and wider layouts.
 
 <Canvas of={Stories.ResponsiveGroupedSections} />
 
