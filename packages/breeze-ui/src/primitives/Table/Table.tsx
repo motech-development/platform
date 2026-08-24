@@ -184,7 +184,7 @@ const tableRow = tv({
 });
 
 const tableCell = tv({
-  base: 'grid min-w-0 grid-cols-[minmax(5rem,auto)_minmax(0,1fr)] gap-4 border-b border-[var(--breeze-border)] px-4 py-2 text-start [grid-column:var(--breeze-table-compact-column-span)] [overflow-wrap:anywhere] last:border-b-0 before:me-1 before:hidden before:font-[family-name:var(--breeze-font-display)] before:text-base before:leading-[1.4] before:font-bold before:text-[var(--breeze-ink-muted)] data-[label]:before:inline-block data-[label]:before:content-[attr(data-label)] max-sm:data-[breeze-compact-hidden]:!hidden sm:table-cell sm:border-b sm:border-[var(--breeze-border)] sm:px-4 sm:py-3 sm:last:border-b sm:data-[label]:before:hidden sm:[grid-column:var(--breeze-table-column-span)] [&>*]:min-w-0',
+  base: 'grid min-w-0 grid-cols-[minmax(5rem,auto)_minmax(0,1fr)] gap-4 border-b border-[var(--breeze-border)] px-4 py-2 text-start [overflow-wrap:anywhere] last:border-b-0 before:me-1 before:hidden before:font-[family-name:var(--breeze-font-display)] before:text-base before:leading-[1.4] before:font-bold before:text-[var(--breeze-ink-muted)] data-[label]:before:inline-block data-[label]:before:content-[attr(data-label)] max-sm:data-[breeze-compact-hidden]:!hidden sm:table-cell sm:border-b sm:border-[var(--breeze-border)] sm:px-4 sm:py-3 sm:last:border-b sm:data-[label]:before:hidden [&>*]:min-w-0',
   defaultVariants: {
     align: 'start',
   },
@@ -198,6 +198,9 @@ const tableCell = tv({
       data: '',
       disclosure:
         'absolute end-4 top-6 h-4 w-4 text-[var(--breeze-ink-muted)] sm:static sm:h-auto sm:w-5 sm:self-stretch sm:text-end [&>*]:ms-auto [&>svg]:size-4',
+    },
+    spanning: {
+      true: '[grid-column:var(--breeze-table-compact-column-span)] sm:[grid-column:var(--breeze-table-column-span)]',
     },
   },
 });
@@ -1411,21 +1414,25 @@ export function Cell({
   const tableColumnKeys = useContext(tableColumnKeysContext);
   const forwardedRef = useForwardedRef(ref);
   const normalisedColSpan = normaliseColumnSpan(colSpan);
+  const spanningColumnCount =
+    normalisedColSpan !== undefined && normalisedColSpan > 1
+      ? normalisedColSpan
+      : undefined;
   const compactHidden = compactHiddenColumns.has(encodeCollectionKey(column));
   const compactSpan =
-    normalisedColSpan !== undefined && normalisedColSpan > 1
-      ? compactSpanMetadata(
+    spanningColumnCount === undefined
+      ? null
+      : compactSpanMetadata(
           encodeCollectionKey(column),
-          normalisedColSpan,
+          spanningColumnCount,
           tableColumnKeys,
           (key) => compactHiddenColumns.has(key),
-        )
-      : null;
+        );
   const spanStyle: TableCellSpanStyle | undefined =
-    normalisedColSpan === undefined || normalisedColSpan <= 1
+    spanningColumnCount === undefined
       ? undefined
       : (() => {
-          const span = `span ${normalisedColSpan} / span ${normalisedColSpan}`;
+          const span = `span ${spanningColumnCount} / span ${spanningColumnCount}`;
           const compactSpanValue =
             compactSpan === null
               ? span
@@ -1453,7 +1460,12 @@ export function Cell({
 
   return createElement(AriaCell, {
     ...props,
-    className: tableCell({ align, class: className, presentation }),
+    className: tableCell({
+      align,
+      class: className,
+      presentation,
+      spanning: spanningColumnCount !== undefined,
+    }),
     colSpan: normalisedColSpan,
     'data-breeze-cell-column': String(column),
     'data-breeze-cell-column-key': encodeCollectionKey(column),

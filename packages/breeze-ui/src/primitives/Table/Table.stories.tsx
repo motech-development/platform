@@ -53,6 +53,20 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
+const compactBoundaryViewport = {
+  globals: { viewport: { value: 'compactBoundary' } },
+  parameters: {
+    viewport: {
+      options: {
+        compactBoundary: {
+          name: 'Compact boundary',
+          styles: { height: '800px', width: '680px' },
+        },
+      },
+    },
+  },
+} as const;
+
 function ControlledTable() {
   const [selection, setSelection] = useState<CollectionSelection>([1]);
   const [sort, setSort] = useState<TableSort>({
@@ -476,17 +490,7 @@ function CompactSpanningVisibilityTable() {
  */
 export const CompactGridColumns: Story = {
   args: { 'aria-label': 'Compact scheduled records', children: null },
-  globals: { viewport: { value: 'compactBoundary' } },
-  parameters: {
-    viewport: {
-      options: {
-        compactBoundary: {
-          name: 'Compact boundary',
-          styles: { height: '800px', width: '680px' },
-        },
-      },
-    },
-  },
+  ...compactBoundaryViewport,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const table = canvas.getByRole('grid', {
@@ -533,6 +537,63 @@ export const CompactGridColumns: Story = {
     await expect(reference).toHaveFocus();
   },
   render: GridColumnSpanTable,
+};
+
+/**
+ * Preserves consumer-owned compact grid placement for cells that do not use
+ * the compound API's `colSpan` contract.
+ *
+ * @summary compact grid honours consumer cell placement
+ */
+export const CompactConsumerGridPlacement: Story = {
+  args: { 'aria-label': 'Compact consumer records', children: null },
+  ...compactBoundaryViewport,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const row = canvas.getByRole('row', { name: 'Acme' });
+    const status = canvas.getByRole('gridcell', { name: 'Ready' });
+    const view = canvasElement.ownerDocument.defaultView;
+    const rowStyle = view?.getComputedStyle(row);
+    const rowContentWidth =
+      row.getBoundingClientRect().width -
+      Number.parseFloat(rowStyle?.paddingLeft ?? '0') -
+      Number.parseFloat(rowStyle?.paddingRight ?? '0');
+
+    await expect(view?.getComputedStyle(status).gridColumn).toBe(
+      'span 3 / span 3',
+    );
+    await expect(status.getBoundingClientRect().width).toBe(rowContentWidth);
+  },
+  render: () => (
+    <Table.Root aria-label="Compact consumer records" layout="responsiveGrid">
+      <Table.Header className="max-[681px]:hidden!">
+        <Table.Column id="name" rowHeader>
+          Name
+        </Table.Column>
+        <Table.Column id="status">Status</Table.Column>
+      </Table.Header>
+      <Table.Body className="max-[681px]:block!">
+        <Table.Row
+          className="max-[681px]:grid! max-[681px]:grid-cols-[2.25rem_minmax(0,1fr)_2.25rem]"
+          id="acme"
+          textValue="Acme Ready"
+        >
+          <Table.Cell
+            className="max-[681px]:col-start-2 max-[681px]:row-start-1"
+            column="name"
+          >
+            Acme
+          </Table.Cell>
+          <Table.Cell
+            className="max-[681px]:col-span-3 max-[681px]:row-start-2"
+            column="status"
+          >
+            Ready
+          </Table.Cell>
+        </Table.Row>
+      </Table.Body>
+    </Table.Root>
+  ),
 };
 
 /**
