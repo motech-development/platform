@@ -1,17 +1,17 @@
-const compactCellClassName = 'max-[681px]:border-0! max-[681px]:p-0!';
+const compactCellClassName = 'max-sm:border-0! max-sm:p-0!';
 
-export const compactTableOnlyClassName = 'min-[681px]:hidden!';
+export const compactTableOnlyClassName = 'sm:hidden!';
 
 export const responsiveEntityTableClassNames = {
-  body: 'max-[681px]:block!',
+  body: 'max-sm:block!',
   cells: {
-    actions: `${compactCellClassName} max-[681px]:col-start-3 max-[681px]:row-start-1 max-[681px]:flex! max-[681px]:justify-end`,
-    identity: `${compactCellClassName} max-[681px]:col-start-1 max-[681px]:row-start-1 max-[681px]:flex!`,
-    primary: `${compactCellClassName} max-[681px]:col-start-2 max-[681px]:row-start-1 max-[681px]:flex!`,
-    secondary: `${compactCellClassName} max-[681px]:col-span-3 max-[681px]:row-start-2 max-[681px]:block! max-[681px]:before:inline-block!`,
-    tertiary: `${compactCellClassName} max-[681px]:col-span-3 max-[681px]:row-start-3 max-[681px]:block! max-[681px]:before:inline-block!`,
+    actions: `${compactCellClassName} max-sm:col-start-3! max-sm:row-start-1 max-sm:flex! max-sm:justify-end`,
+    identity: `${compactCellClassName} max-sm:col-start-1! max-sm:row-start-1 max-sm:flex!`,
+    primary: `${compactCellClassName} max-sm:col-start-2! max-sm:row-start-1 max-sm:flex!`,
+    secondary: `${compactCellClassName} max-sm:col-span-3! max-sm:row-start-2 max-sm:block! max-sm:before:inline-block!`,
+    tertiary: `${compactCellClassName} max-sm:col-span-3! max-sm:row-start-3 max-sm:block! max-sm:before:inline-block!`,
   },
-  header: 'max-[681px]:hidden!',
-  root: 'max-[681px]:block!',
-  row: 'max-[681px]:grid! max-[681px]:grid-cols-[2.25rem_minmax(0,1fr)_2.25rem] max-[681px]:items-center! max-[681px]:gap-x-3! max-[681px]:gap-y-2! max-[681px]:px-4 max-[681px]:py-4',
+  header: 'max-sm:hidden!',
+  root: 'max-sm:block!',
+  row: 'max-sm:grid! max-sm:grid-cols-[2.25rem_minmax(0,1fr)_2.25rem] max-sm:items-center! max-sm:gap-x-3! max-sm:gap-y-2! max-sm:px-4 max-sm:py-4',
 } as const;
