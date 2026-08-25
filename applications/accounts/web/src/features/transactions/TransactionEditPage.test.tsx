@@ -383,6 +383,92 @@ describe('TransactionEditPage', () => {
     ).toBeVisible();
   });
 
+  it('refreshes a pristine edit form from the authoritative Transaction', async () => {
+    mocks.transactionQuery.data = { getTransaction: transaction };
+    mocks.formQuery.data = formData;
+
+    const view = render(
+      <BreezeProvider locale="en-GB">
+        <TransactionEditPage
+          companyId="company-id"
+          origin="transactions"
+          transactionId="transaction-id"
+        />
+      </BreezeProvider>,
+    );
+
+    mocks.transactionQuery.data = {
+      getTransaction: { ...transaction, amount: 90 },
+    };
+    view.rerender(
+      <BreezeProvider locale="en-GB">
+        <TransactionEditPage
+          companyId="company-id"
+          origin="transactions"
+          transactionId="transaction-id"
+        />
+      </BreezeProvider>,
+    );
+
+    await waitFor(() =>
+      expect(screen.getByLabelText('Amount')).toHaveValue('£90.00'),
+    );
+  });
+
+  it('requires a dirty edit form to reload a concurrent Transaction update', async () => {
+    mocks.transactionQuery.data = { getTransaction: transaction };
+    mocks.formQuery.data = formData;
+
+    const view = render(
+      <BreezeProvider locale="en-GB">
+        <TransactionEditPage
+          companyId="company-id"
+          origin="transactions"
+          transactionId="transaction-id"
+        />
+      </BreezeProvider>,
+    );
+
+    const amount = screen.getByLabelText('Amount');
+
+    await userEvent.clear(amount);
+    await userEvent.type(amount, '80');
+
+    mocks.transactionQuery.data = {
+      getTransaction: { ...transaction, amount: 90 },
+    };
+    view.rerender(
+      <BreezeProvider locale="en-GB">
+        <TransactionEditPage
+          companyId="company-id"
+          origin="transactions"
+          transactionId="transaction-id"
+        />
+      </BreezeProvider>,
+    );
+
+    expect(
+      await screen.findByText(
+        'This transaction changed elsewhere. Reload the latest details before continuing.',
+      ),
+    ).toBeVisible();
+    expect(amount).toHaveValue('80');
+    expect(
+      screen.getByRole('button', { name: 'Save transaction' }),
+    ).toBeDisabled();
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Reload latest' }),
+    );
+
+    await waitFor(() => expect(amount).toHaveValue('£90.00'));
+    expect(
+      screen.queryByText(
+        'This transaction changed elsewhere. Reload the latest details before continuing.',
+      ),
+    ).not.toBeInTheDocument();
+  });
+
   it('keeps the edit form available when saving returns no Transaction', async () => {
     mocks.transactionQuery.data = { getTransaction: transaction };
     mocks.formQuery.data = formData;

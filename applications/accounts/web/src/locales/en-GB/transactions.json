@@ -100,6 +100,8 @@
   "Loading Transaction…": "Loading transaction…",
   "Update the transaction and its attachment.": "Update the transaction and its attachment.",
   "Transaction details could not be refreshed. Your edits are unchanged.": "Transaction details could not be refreshed. Your edits are unchanged.",
+  "This transaction changed elsewhere. Reload the latest details before continuing.": "This transaction changed elsewhere. Reload the latest details before continuing.",
+  "Reload latest": "Reload latest",
   "Transaction settings could not be refreshed. Your edits are unchanged.": "Transaction settings could not be refreshed. Your edits are unchanged.",
   "Close delete confirmation": "Close delete confirmation",
   "The supplier or client name must match exactly.": "The supplier or client name must match exactly.",

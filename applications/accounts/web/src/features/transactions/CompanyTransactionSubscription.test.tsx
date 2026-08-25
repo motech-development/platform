@@ -26,7 +26,7 @@ describe('CompanyTransactionSubscription', () => {
     mocks.options = undefined;
   });
 
-  it('refetches active queries after an established AppSync subscription reconnects', () => {
+  it('refetches active queries when AppSync connects and reconnects', () => {
     const refetchQueries = vi.fn().mockResolvedValue(undefined);
 
     render(
@@ -41,10 +41,12 @@ describe('CompanyTransactionSubscription', () => {
     };
 
     mocks.options?.onData?.(connected);
-    expect(refetchQueries).not.toHaveBeenCalled();
+    expect(refetchQueries).toHaveBeenCalledExactlyOnceWith({
+      include: 'active',
+    });
 
     mocks.options?.onData?.(connected);
-    expect(refetchQueries).toHaveBeenCalledWith({ include: 'active' });
+    expect(refetchQueries).toHaveBeenCalledTimes(2);
   });
 
   it('recognizes an extensionless AppSync reconnect acknowledgement', () => {
@@ -65,7 +67,8 @@ describe('CompanyTransactionSubscription', () => {
       data: { data: {} },
     });
 
-    expect(refetchQueries).toHaveBeenCalledExactlyOnceWith({
+    expect(refetchQueries).toHaveBeenCalledTimes(2);
+    expect(refetchQueries).toHaveBeenLastCalledWith({
       include: 'active',
     });
   });

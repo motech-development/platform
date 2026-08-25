@@ -81,11 +81,13 @@ function TransactionEditDrawer({
     discardPersistedAttachment,
     discardStagedAttachment,
     error,
+    externalUpdateAvailable,
     form,
     loading,
     markDirty,
     online,
     refetch,
+    reloadLatestTransaction,
     removeAttachment,
     requestClose,
     restrictNavigation,
@@ -201,6 +203,18 @@ function TransactionEditDrawer({
             {t('Update the transaction and its attachment.')}
           </Drawer.Description>
           <Drawer.Title>{t('Edit transaction')}</Drawer.Title>
+          {externalUpdateAvailable ? (
+            <QueryRefreshAlert
+              onRetry={() => {
+                reloadLatestTransaction().catch(() => undefined);
+              }}
+              retryLabel={t('Reload latest')}
+            >
+              {t(
+                'This transaction changed elsewhere. Reload the latest details before continuing.',
+              )}
+            </QueryRefreshAlert>
+          ) : null}
           {(error || transactionRefreshFailed) && data ? (
             <QueryRefreshAlert
               onRetry={() => {
@@ -286,7 +300,12 @@ function TransactionEditDrawer({
                     }
                     primary={
                       <Button
-                        disabled={!online || !canSubmit || pending}
+                        disabled={
+                          !online ||
+                          !canSubmit ||
+                          pending ||
+                          externalUpdateAvailable
+                        }
                         loading={isSubmitting}
                         type="submit"
                       >

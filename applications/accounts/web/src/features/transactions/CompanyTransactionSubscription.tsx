@@ -28,7 +28,10 @@ export function CompanyTransactionSubscription({
           () => {
             client.refetchQueries({ include: 'active' }).catch(() => undefined);
           },
-          { subscriptionPayloadPresent: incoming !== undefined },
+          {
+            reconcileInitialConnection: true,
+            subscriptionPayloadPresent: incoming !== undefined,
+          },
         )
       ) {
         return;

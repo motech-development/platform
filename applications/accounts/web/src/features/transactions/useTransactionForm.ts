@@ -2,7 +2,7 @@ import { useMutation, useQuery } from '@apollo/client/react';
 import { useToast } from '@motech-development/breeze-ui';
 import { useForm, useSelector } from '@tanstack/react-form';
 import { useNavigate } from '@tanstack/react-router';
-import { useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ADD_TRANSACTION,
@@ -59,6 +59,18 @@ function defaultValues(
   };
 }
 
+function transactionFormValuesEqual(
+  left: TransactionFormValues,
+  right: TransactionFormValues,
+) {
+  const fields = Object.keys(left) as (keyof TransactionFormValues)[];
+
+  return (
+    fields.length === Object.keys(right).length &&
+    fields.every((field) => left[field] === right[field])
+  );
+}
+
 export function useTransactionForm({
   companyId,
   closeTo,
@@ -104,6 +116,9 @@ export function useTransactionForm({
     undefined,
   );
   const successfulSubmissionTitle = useRef<string | undefined>(undefined);
+  const observedInitialValues = useRef(initialValues);
+  const latestInitialValues = useRef(initialValues);
+  const [externalUpdateAvailable, setExternalUpdateAvailable] = useState(false);
   const persistedTransactionStatus = useRef<
     'confirmed' | 'pending' | undefined
   >(
@@ -393,6 +408,45 @@ export function useTransactionForm({
 
   navigationActions.current = navigation;
 
+  const acceptAuthoritativeValues = useCallback(
+    (values: TransactionFormValues) => {
+      persistedAttachmentPath.current = values.attachment || undefined;
+      persistedTransactionStatus.current =
+        values.status === 'confirmed' || values.status === 'pending'
+          ? values.status
+          : undefined;
+      successfulReturnTo.current = undefined;
+      successfulSubmissionTitle.current = undefined;
+      setPersistedFormValues(values);
+      form.reset(values);
+      setExternalUpdateAvailable(false);
+    },
+    [form],
+  );
+
+  useEffect(() => {
+    if (
+      !initialValues ||
+      (observedInitialValues.current &&
+        transactionFormValuesEqual(
+          initialValues,
+          observedInitialValues.current,
+        ))
+    ) {
+      return;
+    }
+
+    observedInitialValues.current = initialValues;
+    latestInitialValues.current = initialValues;
+
+    if (navigation.dirty) {
+      setExternalUpdateAvailable(true);
+      return;
+    }
+
+    acceptAuthoritativeValues(initialValues);
+  }, [acceptAuthoritativeValues, initialValues, navigation.dirty]);
+
   return {
     ...navigation,
     categories: data?.getSettings.categories ?? [],
@@ -419,6 +473,7 @@ export function useTransactionForm({
     discardPersistedAttachment,
     discardStagedAttachment,
     error,
+    externalUpdateAvailable,
     form,
     loading,
     markDirty: () => {
@@ -428,6 +483,16 @@ export function useTransactionForm({
     },
     online,
     refetch,
+    reloadLatestTransaction: async () => {
+      const values = latestInitialValues.current;
+
+      if (!values || !(await cleanUpAttachmentsForDiscard())) return false;
+
+      acceptAuthoritativeValues(values);
+      navigation.completeMutation();
+      navigation.restrictNavigation();
+      return true;
+    },
     removeAttachment: async (path: string) => {
       const transfer = attachmentTransfer.current;
 
