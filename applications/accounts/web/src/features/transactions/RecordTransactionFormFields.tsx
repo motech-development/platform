@@ -150,6 +150,95 @@ function SuggestionField({
   );
 }
 
+function TransactionAttachmentField({
+  attachmentPath,
+  companyId,
+  discardStagedAttachment,
+  isSubmitting,
+  markDirty,
+  onChange,
+  online,
+  removeAttachment,
+  trackAttachmentTransfer,
+  transactionId,
+}: Readonly<{
+  attachmentPath: string;
+  companyId: string;
+  discardStagedAttachment: () => Promise<boolean>;
+  isSubmitting: boolean;
+  markDirty: () => void;
+  onChange: (path: string) => void;
+  online: boolean;
+  removeAttachment: (path: string) => Promise<boolean>;
+  trackAttachmentTransfer: (
+    transfer: Promise<AttachmentTransferResult>,
+  ) => void;
+  transactionId?: string;
+}>) {
+  const [replacementState, setReplacementState] = useState<
+    'cleaning' | 'idle' | 'ready'
+  >('idle');
+  const [stagedAttachmentName, setStagedAttachmentName] = useState<string>();
+  const upload = (
+    <AttachmentUpload
+      companyId={companyId}
+      disabled={!online || isSubmitting}
+      onDiscardFailed={discardStagedAttachment}
+      onTransfer={trackAttachmentTransfer}
+      onUploaded={(path, name) => {
+        setStagedAttachmentName(name);
+        setReplacementState('idle');
+        onChange(path);
+        markDirty();
+      }}
+      transactionId={transactionId}
+    />
+  );
+
+  if (!attachmentPath) return upload;
+
+  const clearAttachment = async () => {
+    const removed = await removeAttachment(attachmentPath);
+
+    if (removed) {
+      onChange('');
+      setReplacementState('idle');
+      setStagedAttachmentName(undefined);
+      markDirty();
+    } else {
+      setReplacementState('idle');
+    }
+
+    return removed;
+  };
+  const startReplacement = () => {
+    if (!stagedAttachmentName) {
+      setReplacementState('ready');
+      return;
+    }
+
+    setReplacementState('cleaning');
+    clearAttachment().catch(() => {
+      setReplacementState('idle');
+    });
+  };
+
+  return (
+    <Stack gap="compact">
+      <TransactionAttachment
+        companyId={companyId}
+        displayName={stagedAttachmentName}
+        disabled={isSubmitting || replacementState === 'cleaning'}
+        onDeleted={clearAttachment}
+        onReplace={startReplacement}
+        path={attachmentPath}
+        replacing={replacementState !== 'idle'}
+      />
+      {replacementState === 'ready' ? upload : null}
+    </Stack>
+  );
+}
+
 export function RecordTransactionFormFields({
   categories,
   clients,
@@ -199,10 +288,6 @@ export function RecordTransactionFormFields({
   );
   const [selectedCategorySourceIndex, setSelectedCategorySourceIndex] =
     useState<number>();
-  const [attachmentReplacementState, setAttachmentReplacementState] = useState<
-    'cleaning' | 'idle' | 'ready'
-  >('idle');
-  const [stagedAttachmentName, setStagedAttachmentName] = useState<string>();
 
   useEffect(() => {
     setSelectedCategorySourceIndex((current) => {
@@ -797,72 +882,20 @@ export function RecordTransactionFormFields({
               <form.Subscribe selector={(state) => state.isSubmitting}>
                 {(isSubmitting) => (
                   <form.Field name="attachment">
-                    {(field) => {
-                      const upload = (
-                        <AttachmentUpload
-                          companyId={companyId}
-                          disabled={!online || isSubmitting}
-                          onDiscardFailed={discardStagedAttachment}
-                          onTransfer={trackAttachmentTransfer}
-                          onUploaded={(path, name) => {
-                            setStagedAttachmentName(name);
-                            setAttachmentReplacementState('idle');
-                            field.handleChange(path);
-                            markDirty();
-                          }}
-                          transactionId={form.getFieldValue('id') || undefined}
-                        />
-                      );
-
-                      if (!field.state.value) return upload;
-
-                      const attachmentPath = field.state.value;
-                      const clearAttachment = async () => {
-                        const removed = await removeAttachment(attachmentPath);
-
-                        if (removed) {
-                          field.handleChange('');
-                          setAttachmentReplacementState('idle');
-                          setStagedAttachmentName(undefined);
-                          markDirty();
-                        } else {
-                          setAttachmentReplacementState('idle');
-                        }
-
-                        return removed;
-                      };
-                      const startReplacement = () => {
-                        if (!stagedAttachmentName) {
-                          setAttachmentReplacementState('ready');
-                          return;
-                        }
-
-                        setAttachmentReplacementState('cleaning');
-                        clearAttachment().catch(() => {
-                          setAttachmentReplacementState('idle');
-                        });
-                      };
-
-                      return (
-                        <Stack gap="compact">
-                          <TransactionAttachment
-                            companyId={companyId}
-                            displayName={stagedAttachmentName}
-                            disabled={
-                              isSubmitting ||
-                              attachmentReplacementState === 'cleaning'
-                            }
-                            onDeleted={clearAttachment}
-                            onReplace={startReplacement}
-                            path={attachmentPath}
-                            replacing={attachmentReplacementState !== 'idle'}
-                          />
-                          {attachmentReplacementState === 'ready'
-                            ? upload
-                            : null}
-                        </Stack>
-                      );
-                    }}
+                    {(field) => (
+                      <TransactionAttachmentField
+                        attachmentPath={field.state.value}
+                        companyId={companyId}
+                        discardStagedAttachment={discardStagedAttachment}
+                        isSubmitting={isSubmitting}
+                        markDirty={markDirty}
+                        onChange={field.handleChange}
+                        online={online}
+                        removeAttachment={removeAttachment}
+                        trackAttachmentTransfer={trackAttachmentTransfer}
+                        transactionId={form.getFieldValue('id') || undefined}
+                      />
+                    )}
                   </form.Field>
                 )}
               </form.Subscribe>
