@@ -328,7 +328,7 @@ describe('AuthBoundary', () => {
     ).toHaveBeenCalledExactlyOnceWith(failure);
   });
 
-  it('disposes owner notifications before terminal renewal recovery renders', async () => {
+  it('disposes owner notifications during terminal renewal recovery', async () => {
     const unsubscribeOwnerNotifications = vi.fn();
 
     mocks.auth.getAccessTokenSilently.mockRejectedValueOnce(
@@ -352,7 +352,9 @@ describe('AuthBoundary', () => {
     expect(
       await screen.findByRole('heading', { name: 'Sign-in failed' }),
     ).toBeVisible();
-    expect(unsubscribeOwnerNotifications).toHaveBeenCalledOnce();
+    await waitFor(() => {
+      expect(unsubscribeOwnerNotifications).toHaveBeenCalledOnce();
+    });
     expect(
       screen.queryByRole('button', { name: /Notifications/u }),
     ).not.toBeInTheDocument();
