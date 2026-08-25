@@ -70,7 +70,7 @@ describe('AttachmentUpload', () => {
     const input = document.querySelector('input[type="file"]');
 
     expect(input).toBeInstanceOf(HTMLInputElement);
-    expect(screen.getByText('PDF or image')).toBeVisible();
+    expect(screen.getByText('PDF, JPG, PNG or GIF')).toBeVisible();
     await user.upload(input as HTMLInputElement, file);
     await waitFor(() => {
       expect(mocks.uploadPresignedFile).toHaveBeenCalledTimes(1);
@@ -267,7 +267,7 @@ describe('AttachmentUpload', () => {
     expect(onTransfer).not.toHaveBeenCalled();
     expect(onUploaded).not.toHaveBeenCalled();
     expect(mocks.toast.show).toHaveBeenCalledWith({
-      description: 'Choose one PDF or image file.',
+      description: 'Choose one PDF, JPG, PNG, or GIF file.',
       title: 'File not accepted',
       variant: 'warning',
     });
@@ -341,7 +341,7 @@ describe('AttachmentUpload', () => {
 
     await waitFor(() =>
       expect(mocks.toast.show).toHaveBeenCalledWith({
-        description: 'Choose one PDF or image file.',
+        description: 'Choose one PDF, JPG, PNG, or GIF file.',
         title: 'File not accepted',
         variant: 'warning',
       }),

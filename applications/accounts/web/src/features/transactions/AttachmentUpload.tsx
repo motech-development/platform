@@ -60,7 +60,7 @@ export function AttachmentUpload({
   const [requestUpload, { loading }] = useMutation(REQUEST_UPLOAD);
   const showRejectedFileToast = () => {
     toast.show({
-      description: t('Choose one PDF or image file.'),
+      description: t('Choose one PDF, JPG, PNG, or GIF file.'),
       title: t('File not accepted'),
       variant: 'warning',
     });
@@ -168,7 +168,7 @@ export function AttachmentUpload({
         guidance={
           disabled
             ? t('Connection required to attach a file.')
-            : t('PDF or image')
+            : t('PDF, JPG, PNG or GIF')
         }
         label={t('No file selected')}
         onFiles={(files) => {
