@@ -4,6 +4,7 @@ import {
   isLocalBaseUrl,
   selectRadioOption,
   test,
+  waitForFiniteAnimations,
 } from './test';
 
 interface PersistedState {
@@ -78,6 +79,7 @@ test.describe('hosted Accounts foundation', () => {
     }
 
     await expect(recordTransactionHeading).toBeVisible();
+    await waitForFiniteAnimations(page.getByRole('dialog'));
     await selectRadioOption(page, 'Transaction type', 'Purchase');
     const description = getFormInput(page, 'Description');
 

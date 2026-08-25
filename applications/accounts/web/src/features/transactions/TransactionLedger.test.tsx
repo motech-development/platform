@@ -116,7 +116,7 @@ describe('TransactionLedger', () => {
 
     expect(screen.getByText('£0.30')).toBeVisible();
     const pendingIdentity = screen.getByRole('rowheader', {
-      name: /Pending transaction: Oak & Co Accountants/,
+      name: 'Pending transaction: Oak & Co AccountantsNo invoice or receiptScheduled transaction Quarterly bookkeeping',
     });
 
     expect(pendingIdentity).toBeVisible();
