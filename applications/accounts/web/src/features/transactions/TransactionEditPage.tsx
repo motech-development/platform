@@ -67,9 +67,6 @@ function TransactionEditDrawer({
   const { closeTo, confirmedReturnTo } = transactionEditOrigins[origin];
   const [deleteTransaction, { loading: deleting }] =
     useMutation(DELETE_TRANSACTION);
-  const finalizeTransactionDeletion = useRef<(() => void) | undefined>(
-    undefined,
-  );
   const transactionDeletionCompleted = useRef(false);
   const {
     blocker,
@@ -126,13 +123,11 @@ function TransactionEditDrawer({
             const deletedTransaction = mutation.data?.deleteTransaction;
 
             if (deletedTransaction) {
-              finalizeTransactionDeletion.current = () => {
-                removeTransactionFromCache(
-                  cache,
-                  deletedTransaction.companyId,
-                  deletedTransaction.id,
-                );
-              };
+              removeTransactionFromCache(
+                cache,
+                deletedTransaction.companyId,
+                deletedTransaction.id,
+              );
             }
           },
           variables: { id: transactionId },
@@ -178,8 +173,6 @@ function TransactionEditDrawer({
 
     if (!navigated) return false;
 
-    finalizeTransactionDeletion.current?.();
-    finalizeTransactionDeletion.current = undefined;
     toast.show({ title: t('Transaction deleted'), variant: 'success' });
     return true;
   };
@@ -238,6 +231,7 @@ function TransactionEditDrawer({
                 clients={clients}
                 companyId={companyId}
                 currency={currency}
+                discardStagedAttachment={discardStagedAttachment}
                 editing
                 form={form}
                 markDirty={markDirty}

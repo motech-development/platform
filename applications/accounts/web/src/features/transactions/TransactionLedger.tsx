@@ -254,11 +254,16 @@ function transactionRowClassName(pending: boolean, pendingCollection: boolean) {
 
 type TransactionLedgerOrigin = 'dashboard' | 'transactions';
 
-function transactionRoute(
-  origin: TransactionLedgerOrigin,
-  pendingCollection: boolean,
-) {
-  if (pendingCollection) {
+function transactionRoute({
+  origin,
+  pending,
+  pendingCollection,
+}: Readonly<{
+  origin: TransactionLedgerOrigin;
+  pending: boolean;
+  pendingCollection: boolean;
+}>) {
+  if (pendingCollection || pending) {
     return '/my-companies/accounts/$companyId/pending-transactions/view-transaction/$transactionId';
   }
 
@@ -272,26 +277,35 @@ function transactionRoute(
 function TransactionIdentityCell({
   incoming,
   locale,
-  pending,
   pendingCollection,
   transaction,
   transactionLabel,
 }: Readonly<{
   incoming: boolean;
   locale: string;
-  pending: boolean;
   pendingCollection: boolean;
   transaction: LedgerTransaction;
   transactionLabel: string;
 }>) {
   const { t } = useTranslation('transactions');
+  const accessibleLabel = [
+    transactionLabel,
+    transaction.attachment ? null : t('No invoice or receipt'),
+    !pendingCollection && transaction.scheduled
+      ? t('Scheduled transaction')
+      : null,
+  ]
+    .filter((label): label is string => Boolean(label))
+    .join('. ');
 
   return (
     <Table.Cell column="transaction" textValue={transactionLabel}>
-      {pending ? (
-        <VisuallyHidden>{t('Pending transaction:')} </VisuallyHidden>
-      ) : null}
-      <Inline className="min-w-0" gap="md" wrap={false}>
+      <Inline
+        aria-label={accessibleLabel}
+        className="min-w-0"
+        gap="md"
+        wrap={false}
+      >
         <IconTile
           aria-hidden="true"
           bordered={false}
@@ -422,7 +436,7 @@ function TransactionRow({
             companyId,
             transactionId: transaction.id,
           },
-          to: transactionRoute(origin, pendingCollection),
+          to: transactionRoute({ origin, pending, pendingCollection }),
         }).catch(() => undefined);
       }}
       textValue={`${transactionLabel} ${transaction.category}`}
@@ -430,7 +444,6 @@ function TransactionRow({
       <TransactionIdentityCell
         incoming={incoming}
         locale={locale}
-        pending={pending}
         pendingCollection={pendingCollection}
         transaction={transaction}
         transactionLabel={transactionLabel}
@@ -496,7 +509,10 @@ function LoadingTransactionRow({
   );
 }
 
-function LoadingSectionRow({ index }: Readonly<{ index: number }>) {
+function LoadingSectionRow({
+  index,
+  pending,
+}: Readonly<{ index: number; pending: boolean }>) {
   const { t } = useTranslation('transactions');
 
   return (
@@ -510,7 +526,7 @@ function LoadingSectionRow({ index }: Readonly<{ index: number }>) {
       <Table.Cell column="transaction">
         <Skeleton className="h-4 w-28" />
       </Table.Cell>
-      <Table.Cell column="category">{null}</Table.Cell>
+      <Table.Cell column={transactionContextColumn(pending)}>{null}</Table.Cell>
       <Table.Cell align="end" column="amount">
         <Skeleton className="h-4 w-24" />
       </Table.Cell>
@@ -553,7 +569,7 @@ export function TransactionLedgerSkeleton({
         {grouped ? (
           <>
             <Table.Body id="loading-transaction-group-1">
-              <LoadingSectionRow index={0} />
+              <LoadingSectionRow index={0} pending={pending} />
               {rowIndexes.slice(0, 2).map((index) => (
                 <LoadingTransactionRow
                   compact={compact}
@@ -564,7 +580,7 @@ export function TransactionLedgerSkeleton({
               ))}
             </Table.Body>
             <Table.Body id="loading-transaction-group-2">
-              <LoadingSectionRow index={1} />
+              <LoadingSectionRow index={1} pending={pending} />
               {rowIndexes.slice(2).map((index) => (
                 <LoadingTransactionRow
                   compact={compact}
@@ -618,7 +634,7 @@ function confirmedDailyTotal(
         (dailyTotal, transaction) => dailyTotal.plus(transaction.amount),
         new Decimal(0),
       )
-      .toNumber(),
+      .toString() as Intl.StringNumericLiteral,
     currencyCode,
   );
 }

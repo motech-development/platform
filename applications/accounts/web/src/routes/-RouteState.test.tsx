@@ -133,6 +133,51 @@ describe('AccountsPending', () => {
   });
 
   it.each([
+    [
+      '/my-companies/accounts/company-id/record-transaction',
+      '/my-companies/accounts/$companyId',
+    ],
+    [
+      '/my-companies/accounts/company-id/view-transaction/transaction-id',
+      '/my-companies/accounts/$companyId',
+    ],
+    [
+      '/my-companies/dashboard/company-id/record-transaction',
+      '/my-companies/dashboard/$companyId',
+    ],
+    [
+      '/my-companies/dashboard/company-id/view-transaction/transaction-id',
+      '/my-companies/dashboard/$companyId',
+    ],
+  ])(
+    'closes the pending drawer at %s to its stable parent',
+    async (path, to) => {
+      renderPending(path);
+
+      await userEvent.click(screen.getByRole('button', { name: 'Close' }));
+
+      expect(mocks.navigate).toHaveBeenCalledWith({
+        params: { companyId: 'company-id' },
+        to,
+      });
+    },
+  );
+
+  it.each([
+    '/my-companies/accounts/company-id/pending-transactions/record-transaction',
+    '/my-companies/accounts/company-id/pending-transactions/view-transaction/transaction-id',
+  ])('closes the Pending drawer at %s to its stable parent', async (path) => {
+    renderPending(path);
+
+    await userEvent.click(screen.getByRole('button', { name: 'Close' }));
+
+    expect(mocks.navigate).toHaveBeenCalledWith({
+      params: { companyId: 'company-id' },
+      to: '/my-companies/accounts/$companyId/pending-transactions',
+    });
+  });
+
+  it.each([
     ['/my-companies/update-details/company-id', 'Loading company details'],
     ['/my-companies/settings/company-id', 'Loading settings'],
   ])('labels the %s form skeleton while loading', (pathname, label) => {

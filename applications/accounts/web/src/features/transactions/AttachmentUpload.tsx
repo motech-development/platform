@@ -1,6 +1,7 @@
 import { useMutation } from '@apollo/client/react';
 import {
   Button,
+  ButtonGroup,
   FileUpload,
   Typography,
   useToast,
@@ -12,13 +13,21 @@ import { uploadPresignedFile } from '../../data/presigned-transfer';
 import { capturePresignedTransferFailure } from '../../observability';
 import { useLatestTransfer } from './useLatestTransfer';
 
-const attachmentExtensions: Readonly<Record<string, readonly string[]>> = {
-  'application/pdf': ['pdf'],
-  'image/gif': ['gif'],
-  'image/jpeg': ['jpg', 'jpeg'],
-  'image/png': ['png'],
-};
-const acceptedFileTypes = Object.keys(attachmentExtensions);
+const acceptedFileTypes = ['application/pdf', 'image/*'];
+
+function attachmentExtension(file: File) {
+  const extensionIndex = file.name.lastIndexOf('.');
+  const extension =
+    extensionIndex > 0
+      ? file.name.slice(extensionIndex + 1).toLowerCase()
+      : undefined;
+
+  if (!extension) return undefined;
+  if (file.type === 'application/pdf') {
+    return extension === 'pdf' ? extension : undefined;
+  }
+  return file.type.startsWith('image/') ? extension : undefined;
+}
 
 export type AttachmentTransferResult =
   | Readonly<{ status: 'cancelled' }>
@@ -28,14 +37,16 @@ export type AttachmentTransferResult =
 export function AttachmentUpload({
   companyId,
   disabled,
+  onDiscardFailed,
   onTransfer,
   onUploaded,
   transactionId,
 }: Readonly<{
   companyId: string;
   disabled?: boolean;
+  onDiscardFailed: () => boolean | Promise<boolean>;
   onTransfer: (transfer: Promise<AttachmentTransferResult>) => void;
-  onUploaded: (path: string) => void;
+  onUploaded: (path: string, name: string) => void;
   transactionId?: string;
 }>) {
   const { t } = useTranslation(['attachments', 'transactions']);
@@ -49,23 +60,17 @@ export function AttachmentUpload({
   const [requestUpload, { loading }] = useMutation(REQUEST_UPLOAD);
   const showRejectedFileToast = () => {
     toast.show({
-      description: t('Choose one PDF, JPG, PNG, or GIF file.'),
+      description: t('Choose one PDF or image file.'),
       title: t('File not accepted'),
       variant: 'warning',
     });
   };
 
   const upload = (file: File) => {
-    const extensions = attachmentExtensions[file.type];
-    const extensionIndex = file.name.lastIndexOf('.');
-    const requestedExtension =
-      extensionIndex > 0
-        ? file.name.slice(extensionIndex + 1).toLowerCase()
-        : undefined;
-    const extension = extensions?.find((value) => value === requestedExtension);
+    const extension = attachmentExtension(file);
 
     if (!extension) {
-      if (requestedExtension) showRejectedFileToast();
+      showRejectedFileToast();
       return Promise.resolve({ status: 'failed' } as const);
     }
 
@@ -111,7 +116,7 @@ export function AttachmentUpload({
           return result;
         }
 
-        onUploaded(result.value);
+        onUploaded(result.value, file.name);
         setUploaded(true);
         toast.show({
           description: file.name,
@@ -163,7 +168,7 @@ export function AttachmentUpload({
         guidance={
           disabled
             ? t('Connection required to attach a file.')
-            : t('PDF, JPG, PNG or GIF')
+            : t('PDF or image')
         }
         label={t('No file selected')}
         onFiles={(files) => {
@@ -182,14 +187,32 @@ export function AttachmentUpload({
         </Typography>
       ) : null}
       {uploadFailed && selectedFiles[0] ? (
-        <Button
-          disabled={disabled || loading || transferPending}
-          onAction={() => {
-            upload(selectedFiles[0]).catch(() => undefined);
-          }}
-        >
-          {t('Retry upload')}
-        </Button>
+        <ButtonGroup>
+          <Button
+            disabled={disabled || loading || transferPending}
+            onAction={() => {
+              upload(selectedFiles[0]).catch(() => undefined);
+            }}
+          >
+            {t('Retry upload')}
+          </Button>
+          <Button
+            appearance="outline"
+            disabled={disabled || loading || transferPending}
+            onAction={() => {
+              Promise.resolve(onDiscardFailed())
+                .then((discarded) => {
+                  if (discarded) {
+                    setSelectedFiles([]);
+                    setUploadFailed(false);
+                  }
+                })
+                .catch(() => undefined);
+            }}
+          >
+            {t('Remove file')}
+          </Button>
+        </ButtonGroup>
       ) : null}
     </>
   );

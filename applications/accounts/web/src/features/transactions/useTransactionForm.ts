@@ -292,6 +292,7 @@ export function useTransactionForm({
           transfer?.status === 'uploaded' ? transfer.path : value.attachment,
       });
       const editing = Boolean(input.id);
+      const previousStatus = persistedTransactionStatus.current;
       let savedTransaction: TransactionCacheValue;
       const previousAttachment = persistedAttachmentPath.current;
 
@@ -320,10 +321,13 @@ export function useTransactionForm({
 
       setPersistedFormValues(savedValues);
       form.reset(savedValues);
-      const returnTo =
-        savedTransaction.status === 'pending'
-          ? '/my-companies/accounts/$companyId/pending-transactions'
-          : confirmedReturnTo;
+      let returnTo: TransactionReturnRoute = confirmedReturnTo;
+
+      if (editing && savedTransaction.status === previousStatus && closeTo) {
+        returnTo = closeTo;
+      } else if (savedTransaction.status === 'pending') {
+        returnTo = '/my-companies/accounts/$companyId/pending-transactions';
+      }
 
       successfulReturnTo.current = returnTo;
       successfulSubmissionTitle.current = editing

@@ -152,7 +152,19 @@ function TransactionDrawerPending({
   pendingView: TransactionDrawerPendingView;
 }>) {
   const { t } = useTranslation(['routing', 'transactions']);
+  const navigate = useNavigate();
   const openedFromDashboard = pathname.includes('/my-companies/dashboard/');
+  const companyId = /^\/my-companies\/(?:accounts|dashboard)\/([^/]+)/u.exec(
+    pathname,
+  )?.[1];
+  const closeTo = openedFromDashboard
+    ? '/my-companies/dashboard/$companyId'
+    : '/my-companies/accounts/$companyId';
+  const closeDrawer = (open: boolean) => {
+    if (!open && companyId) {
+      navigate({ params: { companyId }, to: closeTo }).catch(() => undefined);
+    }
+  };
 
   return (
     <>
@@ -181,9 +193,9 @@ function TransactionDrawerPending({
         )}
       </div>
       {pendingView === 'record-transaction' ? (
-        <RecordTransactionDrawerSkeleton />
+        <RecordTransactionDrawerSkeleton onOpenChange={closeDrawer} />
       ) : (
-        <TransactionEditDrawerSkeleton />
+        <TransactionEditDrawerSkeleton onOpenChange={closeDrawer} />
       )}
     </>
   );
@@ -204,10 +216,19 @@ function PendingTransactionsPending({
   pendingView: PendingTransactionsPendingView;
 }>) {
   const { t } = useTranslation('transactions');
+  const navigate = useNavigate();
   const companyId = /^\/my-companies\/accounts\/([^/]+)/u.exec(pathname)?.[1];
   const accountsHref = companyId
     ? `/my-companies/accounts/${encodeURIComponent(companyId)}`
     : '/my-companies';
+  const closeDrawer = (open: boolean) => {
+    if (!open && companyId) {
+      navigate({
+        params: { companyId },
+        to: '/my-companies/accounts/$companyId/pending-transactions',
+      }).catch(() => undefined);
+    }
+  };
 
   return (
     <>
@@ -218,10 +239,10 @@ function PendingTransactionsPending({
         </LoadingSkeletonRegion>
       </div>
       {pendingView === 'pending-record-transaction' ? (
-        <RecordTransactionDrawerSkeleton />
+        <RecordTransactionDrawerSkeleton onOpenChange={closeDrawer} />
       ) : null}
       {pendingView === 'pending-transaction-details' ? (
-        <TransactionEditDrawerSkeleton />
+        <TransactionEditDrawerSkeleton onOpenChange={closeDrawer} />
       ) : null}
     </>
   );

@@ -59,6 +59,7 @@ export function RecordTransactionPage({
     currency,
     data,
     discardChanges,
+    discardStagedAttachment,
     discardOpen,
     error,
     form,
@@ -145,6 +146,7 @@ export function RecordTransactionPage({
                 clients={clients}
                 companyId={companyId}
                 currency={currency}
+                discardStagedAttachment={discardStagedAttachment}
                 editing={false}
                 form={form}
                 markDirty={markDirty}

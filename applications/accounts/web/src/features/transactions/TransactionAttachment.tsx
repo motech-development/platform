@@ -26,11 +26,13 @@ const generatedAttachmentName =
 
 export function TransactionAttachment({
   companyId,
+  displayName,
   disabled,
   onDeleted,
   path,
 }: Readonly<{
   companyId: string;
+  displayName?: string;
   disabled?: boolean;
   onDeleted: () => boolean | Promise<boolean>;
   path: string;
@@ -45,9 +47,11 @@ export function TransactionAttachment({
   const [loading, setLoading] = useState(false);
   const storedName = path.split('/').at(-1) ?? path;
   const extension = /\.[^.]+$/u.exec(storedName)?.[0] ?? '';
-  const name = generatedAttachmentName.test(storedName)
-    ? `${t('Transaction attachment')}${extension}`
-    : storedName;
+  const name =
+    displayName ??
+    (generatedAttachmentName.test(storedName)
+      ? `${t('Transaction attachment')}${extension}`
+      : storedName);
   const imageUrl = useMemo(
     () => (file?.type.startsWith('image/') ? URL.createObjectURL(file) : null),
     [file],

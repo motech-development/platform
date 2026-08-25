@@ -151,6 +151,7 @@ export function RecordTransactionFormFields({
   clients,
   companyId,
   currency,
+  discardStagedAttachment,
   editing,
   form,
   markDirty,
@@ -164,6 +165,7 @@ export function RecordTransactionFormFields({
   clients: readonly { id: string; name: string }[];
   companyId: string;
   currency: string;
+  discardStagedAttachment: () => Promise<boolean>;
   editing: boolean;
   form: TransactionForm;
   markDirty: () => void;
@@ -193,6 +195,7 @@ export function RecordTransactionFormFields({
   );
   const [selectedCategorySourceIndex, setSelectedCategorySourceIndex] =
     useState<number>();
+  const [stagedAttachmentName, setStagedAttachmentName] = useState<string>();
 
   useEffect(() => {
     setSelectedCategorySourceIndex((current) => {
@@ -750,6 +753,7 @@ export function RecordTransactionFormFields({
                       field.state.value ? (
                         <TransactionAttachment
                           companyId={companyId}
+                          displayName={stagedAttachmentName}
                           disabled={isSubmitting}
                           onDeleted={async () => {
                             const removed = await removeAttachment(
@@ -758,6 +762,7 @@ export function RecordTransactionFormFields({
 
                             if (removed) {
                               field.handleChange('');
+                              setStagedAttachmentName(undefined);
                               markDirty();
                             }
 
@@ -769,8 +774,10 @@ export function RecordTransactionFormFields({
                         <AttachmentUpload
                           companyId={companyId}
                           disabled={!online || isSubmitting}
+                          onDiscardFailed={discardStagedAttachment}
                           onTransfer={trackAttachmentTransfer}
-                          onUploaded={(path) => {
+                          onUploaded={(path, name) => {
+                            setStagedAttachmentName(name);
                             field.handleChange(path);
                             markDirty();
                           }}

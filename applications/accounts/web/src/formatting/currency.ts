@@ -1,5 +1,5 @@
 export function formatCurrency(
-  value: number,
+  value: number | Intl.StringNumericLiteral,
   currency: string,
   signDisplay: 'auto' | 'always' = 'auto',
 ) {

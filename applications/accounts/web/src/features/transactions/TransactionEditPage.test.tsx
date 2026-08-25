@@ -641,7 +641,7 @@ describe('TransactionEditPage', () => {
       }),
     );
     expect(mocks.deleteTransaction).toHaveBeenCalledOnce();
-    expect(evictTransaction).not.toHaveBeenCalled();
+    expect(evictTransaction).toHaveBeenCalledOnce();
     expect(screen.getByRole('alertdialog')).toBeVisible();
     expect(mocks.toast.show).not.toHaveBeenCalledWith({
       title: 'Transaction deleted',
@@ -779,7 +779,7 @@ describe('TransactionEditPage', () => {
       document.querySelector('input[type="file"]') as HTMLInputElement,
       new File(['invoice'], 'invoice.pdf', { type: 'application/pdf' }),
     );
-    expect(await screen.findByText('upload-id.pdf')).toBeVisible();
+    expect(await screen.findByText('invoice.pdf')).toBeVisible();
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Delete transaction' }),
@@ -798,7 +798,7 @@ describe('TransactionEditPage', () => {
       ),
     );
     expect(mocks.deleteFile).not.toHaveBeenCalled();
-    expect(screen.getByText('upload-id.pdf')).toBeVisible();
+    expect(screen.getByText('invoice.pdf')).toBeVisible();
   });
 
   it('retries staged replacement cleanup without deleting the Transaction twice', async () => {
@@ -844,7 +844,7 @@ describe('TransactionEditPage', () => {
 
     await waitFor(() => expect(mocks.deleteFile).toHaveBeenCalledOnce());
     expect(mocks.deleteTransaction).toHaveBeenCalledOnce();
-    expect(evictTransaction).not.toHaveBeenCalled();
+    expect(evictTransaction).toHaveBeenCalledOnce();
     expect(mocks.navigate).not.toHaveBeenCalled();
     expect(mocks.toast.show).not.toHaveBeenCalledWith({
       title: 'Transaction deleted',

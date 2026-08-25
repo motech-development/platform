@@ -60,6 +60,7 @@ describe('AttachmentUpload', () => {
       <BreezeProvider locale="en-GB">
         <AttachmentUpload
           companyId="company-1"
+          onDiscardFailed={() => true}
           onTransfer={vi.fn()}
           onUploaded={onUploaded}
         />
@@ -69,7 +70,7 @@ describe('AttachmentUpload', () => {
     const input = document.querySelector('input[type="file"]');
 
     expect(input).toBeInstanceOf(HTMLInputElement);
-    expect(screen.getByText('PDF, JPG, PNG or GIF')).toBeVisible();
+    expect(screen.getByText('PDF or image')).toBeVisible();
     await user.upload(input as HTMLInputElement, file);
     await waitFor(() => {
       expect(mocks.uploadPresignedFile).toHaveBeenCalledTimes(1);
@@ -82,7 +83,10 @@ describe('AttachmentUpload', () => {
     finishUpload();
 
     await waitFor(() => {
-      expect(onUploaded).toHaveBeenCalledWith('company-1/upload-1.pdf');
+      expect(onUploaded).toHaveBeenCalledWith(
+        'company-1/upload-1.pdf',
+        'invoice.pdf',
+      );
     });
     expect(mocks.requestUpload).toHaveBeenCalledWith({
       variables: {
@@ -112,6 +116,7 @@ describe('AttachmentUpload', () => {
       <BreezeProvider locale="en-GB">
         <AttachmentUpload
           companyId="company-1"
+          onDiscardFailed={() => true}
           onTransfer={vi.fn()}
           onUploaded={onUploaded}
           transactionId="transaction-1"
@@ -125,7 +130,10 @@ describe('AttachmentUpload', () => {
     );
 
     await waitFor(() => {
-      expect(onUploaded).toHaveBeenCalledWith('company-1/upload-image.jpg');
+      expect(onUploaded).toHaveBeenCalledWith(
+        'company-1/upload-image.jpg',
+        'receipt.jpg',
+      );
     });
     expect(mocks.requestUpload).toHaveBeenCalledWith({
       variables: {
@@ -155,6 +163,7 @@ describe('AttachmentUpload', () => {
       <BreezeProvider locale="en-GB">
         <AttachmentUpload
           companyId="company-1"
+          onDiscardFailed={() => true}
           onTransfer={vi.fn()}
           onUploaded={onUploaded}
         />
@@ -167,7 +176,10 @@ describe('AttachmentUpload', () => {
     );
 
     await waitFor(() => {
-      expect(onUploaded).toHaveBeenCalledWith('company-1/upload-gif.gif');
+      expect(onUploaded).toHaveBeenCalledWith(
+        'company-1/upload-gif.gif',
+        'receipt.gif',
+      );
     });
     expect(mocks.requestUpload).toHaveBeenCalledWith({
       variables: {
@@ -184,6 +196,7 @@ describe('AttachmentUpload', () => {
   it('reports an image upload failure with file-generic copy', async () => {
     const user = userEvent.setup();
     const file = new File(['image'], 'receipt.jpg', { type: 'image/jpeg' });
+    const onDiscardFailed = vi.fn().mockResolvedValue(true);
 
     mocks.requestUpload.mockResolvedValue({
       data: {
@@ -196,6 +209,7 @@ describe('AttachmentUpload', () => {
       <BreezeProvider locale="en-GB">
         <AttachmentUpload
           companyId="company-1"
+          onDiscardFailed={onDiscardFailed}
           onTransfer={vi.fn()}
           onUploaded={vi.fn()}
         />
@@ -214,6 +228,9 @@ describe('AttachmentUpload', () => {
         variant: 'danger',
       }),
     );
+    await user.click(screen.getByRole('button', { name: 'Remove file' }));
+    await waitFor(() => expect(onDiscardFailed).toHaveBeenCalledOnce());
+    expect(screen.getByText('No file selected')).toBeVisible();
   });
 
   it('does not upload a selected filename without an extension', async () => {
@@ -233,6 +250,7 @@ describe('AttachmentUpload', () => {
       <BreezeProvider locale="en-GB">
         <AttachmentUpload
           companyId="company-1"
+          onDiscardFailed={() => true}
           onTransfer={onTransfer}
           onUploaded={onUploaded}
         />
@@ -248,18 +266,32 @@ describe('AttachmentUpload', () => {
     expect(mocks.uploadPresignedFile).not.toHaveBeenCalled();
     expect(onTransfer).not.toHaveBeenCalled();
     expect(onUploaded).not.toHaveBeenCalled();
+    expect(mocks.toast.show).toHaveBeenCalledWith({
+      description: 'Choose one PDF or image file.',
+      title: 'File not accepted',
+      variant: 'warning',
+    });
   });
 
-  it('reports an accepted media type with an unsupported filename extension', async () => {
+  it('preserves image extensions accepted by the legacy wildcard contract', async () => {
     const user = userEvent.setup();
     const file = new File(['image'], 'photo.jfif', { type: 'image/jpeg' });
+    const onUploaded = vi.fn();
+
+    mocks.requestUpload.mockResolvedValue({
+      data: {
+        requestUpload: { id: 'upload-image', url: 'https://upload/image' },
+      },
+    });
+    mocks.uploadPresignedFile.mockResolvedValue(undefined);
 
     render(
       <BreezeProvider locale="en-GB">
         <AttachmentUpload
           companyId="company-1"
+          onDiscardFailed={() => true}
           onTransfer={vi.fn()}
-          onUploaded={vi.fn()}
+          onUploaded={onUploaded}
         />
       </BreezeProvider>,
     );
@@ -269,12 +301,22 @@ describe('AttachmentUpload', () => {
       file,
     );
 
-    expect(mocks.toast.show).toHaveBeenCalledWith({
-      description: 'Choose one PDF, JPG, PNG, or GIF file.',
-      title: 'File not accepted',
-      variant: 'warning',
+    await waitFor(() => {
+      expect(onUploaded).toHaveBeenCalledWith(
+        'company-1/upload-image.jfif',
+        'photo.jfif',
+      );
     });
-    expect(mocks.requestUpload).not.toHaveBeenCalled();
+    expect(mocks.requestUpload).toHaveBeenCalledWith({
+      variables: {
+        id: 'company-1',
+        input: {
+          contentType: 'image/jpeg',
+          extension: 'jfif',
+          metadata: { typename: 'Transaction' },
+        },
+      },
+    });
   });
 
   it('rejects a file outside the attachment media contract', async () => {
@@ -285,6 +327,7 @@ describe('AttachmentUpload', () => {
       <BreezeProvider locale="en-GB">
         <AttachmentUpload
           companyId="company-1"
+          onDiscardFailed={() => true}
           onTransfer={transfer}
           onUploaded={vi.fn()}
         />
@@ -298,7 +341,7 @@ describe('AttachmentUpload', () => {
 
     await waitFor(() =>
       expect(mocks.toast.show).toHaveBeenCalledWith({
-        description: 'Choose one PDF, JPG, PNG, or GIF file.',
+        description: 'Choose one PDF or image file.',
         title: 'File not accepted',
         variant: 'warning',
       }),
@@ -333,6 +376,7 @@ describe('AttachmentUpload', () => {
       <BreezeProvider locale="en-GB">
         <AttachmentUpload
           companyId="company-1"
+          onDiscardFailed={() => true}
           onTransfer={vi.fn()}
           onUploaded={onUploaded}
         />
@@ -350,7 +394,10 @@ describe('AttachmentUpload', () => {
     await user.click(retry);
 
     await waitFor(() => {
-      expect(onUploaded).toHaveBeenCalledWith('company-1/upload-2.pdf');
+      expect(onUploaded).toHaveBeenCalledWith(
+        'company-1/upload-2.pdf',
+        'invoice.pdf',
+      );
     });
     expect(mocks.uploadPresignedFile).toHaveBeenNthCalledWith(
       2,
@@ -372,6 +419,7 @@ describe('AttachmentUpload', () => {
       <BreezeProvider locale="en-GB">
         <AttachmentUpload
           companyId="company-1"
+          onDiscardFailed={() => true}
           onTransfer={vi.fn()}
           onUploaded={vi.fn()}
         />

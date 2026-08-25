@@ -116,7 +116,7 @@ describe('TransactionLedger', () => {
 
     expect(screen.getByText('£0.30')).toBeVisible();
     const pendingIdentity = screen.getByRole('rowheader', {
-      name: 'Pending transaction: Oak & Co AccountantsNo invoice or receiptScheduled transaction Quarterly bookkeeping',
+      name: 'Pending transaction: Oak & Co Accountants Quarterly bookkeeping. No invoice or receipt. Scheduled transaction',
     });
 
     expect(pendingIdentity).toBeVisible();
@@ -201,7 +201,7 @@ describe('TransactionLedger', () => {
     });
   });
 
-  it('opens an Overview transaction over its originating dashboard', async () => {
+  it('opens an Overview Pending transaction through its lifecycle route', async () => {
     render(
       <BreezeProvider locale="en-GB">
         <TransactionLedger
@@ -233,8 +233,41 @@ describe('TransactionLedger', () => {
 
     expect(mocks.navigate).toHaveBeenCalledWith({
       params: { companyId: 'company-id', transactionId: 'pending-id' },
-      to: '/my-companies/dashboard/$companyId/view-transaction/$transactionId',
+      to: '/my-companies/accounts/$companyId/pending-transactions/view-transaction/$transactionId',
     });
+  });
+
+  it('keeps exact decimal precision in large confirmed daily totals', () => {
+    render(
+      <BreezeProvider locale="en-GB">
+        <TransactionLedger
+          companyId="company-id"
+          currencyCode="GBP"
+          transactions={[
+            {
+              amount: 1_000_000_000_000_000,
+              attachment: 'invoice.pdf',
+              category: 'Sales',
+              date: '2026-08-15T00:00:00.000Z',
+              description: 'Large sale',
+              id: 'large-sale',
+              name: 'Large client',
+            },
+            {
+              amount: 0.01,
+              attachment: 'invoice.pdf',
+              category: 'Sales',
+              date: '2026-08-15T00:00:00.000Z',
+              description: 'Adjustment',
+              id: 'adjustment',
+              name: 'Large client',
+            },
+          ]}
+        />
+      </BreezeProvider>,
+    );
+
+    expect(screen.getByText('£1,000,000,000,000,000.01')).toBeVisible();
   });
 
   it('keeps the Pending Transaction collection ungrouped', () => {

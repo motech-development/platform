@@ -161,7 +161,7 @@ describe('RecordTransactionPage', () => {
     expect(
       screen.getByRole('region', { name: 'Invoice or receipt' }),
     ).toBeVisible();
-    expect(screen.getByText('PDF, JPG, PNG or GIF')).toBeVisible();
+    expect(screen.getByText('PDF or image')).toBeVisible();
     expect(
       screen.getByRole('button', { name: 'Save transaction' }),
     ).toBeVisible();
@@ -559,7 +559,7 @@ describe('RecordTransactionPage', () => {
       document.querySelector('input[type="file"]') as HTMLInputElement,
       new File(['invoice'], 'invoice.pdf', { type: 'application/pdf' }),
     );
-    expect(await screen.findByText('upload-id.pdf')).toBeVisible();
+    expect(await screen.findByText('invoice.pdf')).toBeVisible();
 
     await userEvent.click(screen.getByRole('button', { name: 'Delete file' }));
 
@@ -568,7 +568,7 @@ describe('RecordTransactionPage', () => {
         expect.objectContaining({ title: 'Attachment cleanup failed' }),
       ),
     );
-    expect(screen.getByText('upload-id.pdf')).toBeVisible();
+    expect(screen.getByText('invoice.pdf')).toBeVisible();
   });
 
   it('returns to the upload control after removing an uploaded attachment', async () => {

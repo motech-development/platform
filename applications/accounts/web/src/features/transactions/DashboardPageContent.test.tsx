@@ -244,4 +244,45 @@ describe('DashboardPageContent', () => {
 
     expect(queryState.current.refetch).toHaveBeenCalledOnce();
   });
+
+  it('retains cached Pending activity with compact refresh recovery', async () => {
+    const user = userEvent.setup();
+
+    queryState.current.data = dashboardData(
+      [],
+      [
+        {
+          ...transaction,
+          id: 'pending-transaction-id',
+          scheduled: false,
+          status: 'pending',
+        },
+      ],
+    );
+    queryState.current.error = new Error('Refresh failed');
+    queryState.current.loading = false;
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <DashboardPageContent companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    expect(
+      screen.getByText(
+        'Overview could not be refreshed. Existing results are still shown.',
+      ),
+    ).toBeVisible();
+    expect(
+      screen.getByRole('row', { name: /Pending transaction: Example client/u }),
+    ).toBeVisible();
+    expect(
+      screen.queryByRole('heading', {
+        name: 'We could not load your overview',
+      }),
+    ).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Try again' }));
+    expect(queryState.current.refetch).toHaveBeenCalledOnce();
+  });
 });

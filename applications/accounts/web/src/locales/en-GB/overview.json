@@ -14,6 +14,7 @@
   "Good afternoon, {{firstName}}": "Good afternoon, {{firstName}}",
   "there": "there",
   "We could not load your overview": "We could not load your overview",
+  "Overview could not be refreshed. Existing results are still shown.": "Overview could not be refreshed. Existing results are still shown.",
   "Record your first transaction to start building your financial overview.": "Record your first transaction to start building your financial overview.",
   "No financial activity yet": "No financial activity yet",
   "View all": "View all",

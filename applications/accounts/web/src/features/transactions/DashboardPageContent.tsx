@@ -22,6 +22,7 @@ import { useTranslation } from 'react-i18next';
 import { useAccountsOwnerId } from '../../auth/owner';
 import { GET_COMPANY_DASHBOARD } from '../../data/operations';
 import { OverviewContentSkeleton } from '../loading/AccountsPageSkeletons';
+import { QueryRefreshAlert } from '../QueryRefreshAlert';
 import { CompanyTransactionSubscription } from './CompanyTransactionSubscription';
 import { FinancialSummary } from './FinancialSummary';
 import { combineTransactions } from './transaction-list';
@@ -138,14 +139,26 @@ export function DashboardPageContent({
             )
           }
         />
-        {error ? (
+        {error && !data ? (
           <TransactionPageError
             onRetry={refetch}
             title={t('We could not load your overview')}
           />
         ) : null}
+        {error && data ? (
+          <QueryRefreshAlert
+            onRetry={() => {
+              refetch().catch(() => undefined);
+            }}
+            retryLabel={t('Try again', { ns: 'routing' })}
+          >
+            {t(
+              'Overview could not be refreshed. Existing results are still shown.',
+            )}
+          </QueryRefreshAlert>
+        ) : null}
         {initiallyLoading ? <OverviewContentSkeleton /> : null}
-        {!initiallyLoading && !error && !hasTransactions ? (
+        {!initiallyLoading && !hasTransactions ? (
           <StatePanel
             action={<RecordTransactionLink href={recordTransactionHref} />}
             description={t(

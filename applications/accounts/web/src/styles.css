@@ -1,9 +1,9 @@
 @layer theme, base, components, utilities;
 
-@reference '@motech-development/breeze-ui/theme.css';
-
 @import 'tailwindcss/theme.css' layer(theme);
 @import 'tailwindcss/utilities.css' layer(utilities);
+
+@reference '@motech-development/breeze-ui/theme.css';
 
 @source './**/*.{ts,tsx}';
 

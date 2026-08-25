@@ -180,6 +180,41 @@ function EditHarness() {
   );
 }
 
+function PendingDashboardEditHarness() {
+  const { form } = useTransactionForm({
+    closeTo: '/my-companies/dashboard/$companyId',
+    companyId: 'company-id',
+    confirmedReturnTo: '/my-companies/dashboard/$companyId',
+    initialValues: {
+      amount: '75',
+      attachment: '',
+      category: 'Sales',
+      companyId: 'company-id',
+      date: '2026-08-16',
+      description: 'Retainer',
+      id: 'transaction-id',
+      name: 'Known client',
+      refund: false,
+      scheduled: false,
+      status: 'pending',
+      transactionType: 'sale',
+      vat: '15',
+    },
+  });
+
+  return (
+    <button
+      onClick={() => {
+        form.setFieldValue('description', 'Updated retainer');
+        form.handleSubmit().catch(() => undefined);
+      }}
+      type="button"
+    >
+      Update Pending transaction
+    </button>
+  );
+}
+
 function RemoveAttachmentHarness() {
   const { discardChanges, form, requestClose } = useTransactionForm({
     companyId: 'company-id',
@@ -809,6 +844,48 @@ describe('useTransactionForm', () => {
     expect(mocks.navigate).toHaveBeenCalledWith({
       params: { companyId: 'company-id' },
       to: '/my-companies/accounts/$companyId',
+    });
+  });
+
+  it('returns a same-status Pending edit to its Dashboard origin', async () => {
+    const pendingUpdateResult = {
+      data: {
+        updateTransaction: {
+          amount: 75,
+          attachment: '',
+          category: 'Sales',
+          companyId: 'company-id',
+          date: '2026-08-16T00:00:00.000Z',
+          description: 'Updated retainer',
+          id: 'transaction-id',
+          name: 'Known client',
+          refund: false,
+          scheduled: false,
+          status: 'pending',
+          vat: 15,
+        },
+      },
+    };
+
+    mocks.update.mockImplementation((options) => {
+      runMutationUpdate(options, pendingUpdateResult);
+      return Promise.resolve(pendingUpdateResult);
+    });
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <PendingDashboardEditHarness />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Update Pending transaction' }),
+    );
+
+    await waitFor(() => expect(mocks.update).toHaveBeenCalledOnce());
+    expect(mocks.navigate).toHaveBeenCalledWith({
+      params: { companyId: 'company-id' },
+      to: '/my-companies/dashboard/$companyId',
     });
   });
 
