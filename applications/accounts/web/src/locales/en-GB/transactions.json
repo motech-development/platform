@@ -92,6 +92,7 @@
   "Transaction updated": "Transaction updated",
   "Attachment cleanup failed": "Attachment cleanup failed",
   "The Transaction was saved, but the previous attachment could not be deleted.": "The transaction was saved, but the previous attachment could not be deleted.",
+  "The Transaction was deleted, but its attachment could not be deleted. Try again.": "The transaction was deleted, but its attachment could not be deleted. Try again.",
   "Transaction recorded": "Transaction recorded",
   "Edit transaction": "Edit transaction",
   "The Transaction could not be loaded.": "The transaction could not be loaded.",

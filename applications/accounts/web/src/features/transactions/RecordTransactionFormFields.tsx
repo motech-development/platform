@@ -24,6 +24,8 @@ import {
 import { TransactionAttachment } from './TransactionAttachment';
 import type { TransactionForm } from './useTransactionForm';
 
+const retainedClientSelection = '__retained_transaction_client__';
+
 function representsSameAmount(current: string, next: string) {
   if (current === next) return true;
 
@@ -196,7 +198,9 @@ export function RecordTransactionFormFields({
   );
   const [selectedCategorySourceIndex, setSelectedCategorySourceIndex] =
     useState<number>();
-  const [replacingAttachment, setReplacingAttachment] = useState(false);
+  const [attachmentReplacementState, setAttachmentReplacementState] = useState<
+    'cleaning' | 'idle' | 'ready'
+  >('idle');
   const [stagedAttachmentName, setStagedAttachmentName] = useState<string>();
 
   useEffect(() => {
@@ -324,6 +328,13 @@ export function RecordTransactionFormFields({
                   field.state.meta.errors,
                   field.state.meta.isBlurred,
                 );
+                const selectedClient = clients.find(
+                  ({ name }) => name === field.state.value,
+                );
+                const retainedClientName =
+                  editing && field.state.value && !selectedClient
+                    ? field.state.value
+                    : undefined;
 
                 return selectedTransactionPolicy.counterparty === 'client' ? (
                   <Select.Root
@@ -331,15 +342,18 @@ export function RecordTransactionFormFields({
                     onBlur={field.handleBlur}
                     onChange={(clientId) => {
                       field.handleChange(
-                        clients.find(({ id }) => id === clientId)?.name ?? '',
+                        clientId === retainedClientSelection
+                          ? retainedClientName ?? ''
+                          : clients.find(({ id }) => id === clientId)?.name ??
+                              '',
                       );
                       touch();
                     }}
                     placeholder={t('Select client')}
                     required
                     value={
-                      clients.find(({ name }) => name === field.state.value)
-                        ?.id ?? null
+                      selectedClient?.id ??
+                      (retainedClientName ? retainedClientSelection : null)
                     }
                   >
                     <Select.Label>{t('Client')}</Select.Label>
@@ -348,6 +362,14 @@ export function RecordTransactionFormFields({
                     </Select.Trigger>
                     <Select.Popover>
                       <Select.ListBox>
+                        {retainedClientName ? (
+                          <Select.Item
+                            id={retainedClientSelection}
+                            textValue={retainedClientName}
+                          >
+                            {retainedClientName}
+                          </Select.Item>
+                        ) : null}
                         {clients.map((client) => (
                           <Select.Item
                             id={client.id}
@@ -760,7 +782,7 @@ export function RecordTransactionFormFields({
                           onTransfer={trackAttachmentTransfer}
                           onUploaded={(path, name) => {
                             setStagedAttachmentName(name);
-                            setReplacingAttachment(false);
+                            setAttachmentReplacementState('idle');
                             field.handleChange(path);
                             markDirty();
                           }}
@@ -776,24 +798,24 @@ export function RecordTransactionFormFields({
 
                         if (removed) {
                           field.handleChange('');
-                          setReplacingAttachment(false);
+                          setAttachmentReplacementState('idle');
                           setStagedAttachmentName(undefined);
                           markDirty();
                         } else {
-                          setReplacingAttachment(false);
+                          setAttachmentReplacementState('idle');
                         }
 
                         return removed;
                       };
                       const startReplacement = () => {
                         if (!stagedAttachmentName) {
-                          setReplacingAttachment(true);
+                          setAttachmentReplacementState('ready');
                           return;
                         }
 
-                        setReplacingAttachment(true);
+                        setAttachmentReplacementState('cleaning');
                         clearAttachment().catch(() => {
-                          setReplacingAttachment(false);
+                          setAttachmentReplacementState('idle');
                         });
                       };
 
@@ -802,13 +824,18 @@ export function RecordTransactionFormFields({
                           <TransactionAttachment
                             companyId={companyId}
                             displayName={stagedAttachmentName}
-                            disabled={isSubmitting}
+                            disabled={
+                              isSubmitting ||
+                              attachmentReplacementState === 'cleaning'
+                            }
                             onDeleted={clearAttachment}
                             onReplace={startReplacement}
                             path={attachmentPath}
-                            replacing={replacingAttachment}
+                            replacing={attachmentReplacementState !== 'idle'}
                           />
-                          {replacingAttachment ? upload : null}
+                          {attachmentReplacementState === 'ready'
+                            ? upload
+                            : null}
                         </Stack>
                       );
                     }}

@@ -77,6 +77,7 @@ function TransactionEditDrawer({
     data,
     discardChanges,
     discardOpen,
+    discardPersistedAttachment,
     discardStagedAttachment,
     error,
     form,
@@ -149,6 +150,8 @@ function TransactionEditDrawer({
         return false;
       }
     }
+
+    if (!(await discardPersistedAttachment())) return false;
 
     const stagedAttachmentDiscarded = await discardStagedAttachment().catch(
       () => false,

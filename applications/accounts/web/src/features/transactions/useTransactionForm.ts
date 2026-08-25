@@ -160,23 +160,40 @@ export function useTransactionForm({
   const resetAttachmentTransferPending = () => {
     if (!attachmentTransfer.current) setAttachmentTransferPending(false);
   };
-  const cleanUpPreviousAttachment = async () => {
-    const path = previousAttachmentCleanupPath.current;
-
+  const cleanUpTrackedAttachment = async (
+    path: string | undefined,
+    failureDescription: string,
+    clearPath: () => void,
+  ) => {
     if (!path) return true;
 
     setAttachmentTransferPending(true);
-    const deleted = await deleteAttachment(
-      path,
-      t(
-        'The Transaction was saved, but the previous attachment could not be deleted.',
-      ),
-    );
+    const deleted = await deleteAttachment(path, failureDescription);
 
-    if (deleted) previousAttachmentCleanupPath.current = undefined;
+    if (deleted) clearPath();
     resetAttachmentTransferPending();
     return deleted;
   };
+  const cleanUpPreviousAttachment = () =>
+    cleanUpTrackedAttachment(
+      previousAttachmentCleanupPath.current,
+      t(
+        'The Transaction was saved, but the previous attachment could not be deleted.',
+      ),
+      () => {
+        previousAttachmentCleanupPath.current = undefined;
+      },
+    );
+  const discardPersistedAttachment = () =>
+    cleanUpTrackedAttachment(
+      persistedAttachmentPath.current,
+      t(
+        'The Transaction was deleted, but its attachment could not be deleted. Try again.',
+      ),
+      () => {
+        persistedAttachmentPath.current = undefined;
+      },
+    );
   const announceSuccessfulSubmission = () => {
     const title = successfulSubmissionTitle.current;
 
@@ -399,6 +416,7 @@ export function useTransactionForm({
         return false;
       }
     },
+    discardPersistedAttachment,
     discardStagedAttachment,
     error,
     form,

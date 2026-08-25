@@ -1,5 +1,5 @@
 import { BreezeProvider } from '@motech-development/breeze-ui';
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createAccountsCache } from '../../data/cache';
@@ -567,6 +567,28 @@ describe('TransactionEditPage', () => {
     expect(screen.getByLabelText('Amount')).toHaveValue('£75.00');
   });
 
+  it('keeps a persisted sale client visible after it leaves the client list', () => {
+    mocks.transactionQuery.data = { getTransaction: transaction };
+    mocks.formQuery.data = {
+      ...formData,
+      getClients: { ...formData.getClients, items: [] },
+    };
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <TransactionEditPage
+          companyId="company-id"
+          origin="transactions"
+          transactionId="transaction-id"
+        />
+      </BreezeProvider>,
+    );
+
+    expect(
+      screen.getByRole('button', { name: 'Known client Client' }),
+    ).toBeVisible();
+  });
+
   it('deletes the Transaction after exact confirmation', async () => {
     mocks.transactionQuery.data = { getTransaction: transaction };
     mocks.formQuery.data = formData;
@@ -601,6 +623,48 @@ describe('TransactionEditPage', () => {
       title: 'Transaction deleted',
       variant: 'success',
     });
+  });
+
+  it('deletes a persisted attachment after deleting its Transaction', async () => {
+    mocks.transactionQuery.data = {
+      getTransaction: {
+        ...transaction,
+        attachment: 'company-id/old-invoice.pdf',
+      },
+    };
+    mocks.formQuery.data = formData;
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <TransactionEditPage
+          companyId="company-id"
+          origin="transactions"
+          transactionId="transaction-id"
+        />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Delete transaction' }),
+    );
+    await userEvent.type(
+      screen.getByLabelText('Type Known client to confirm'),
+      'Known client',
+    );
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Permanently delete transaction' }),
+    );
+
+    await waitFor(() => expect(mocks.deleteFile).toHaveBeenCalledOnce());
+    expect(mocks.deleteFile).toHaveBeenCalledWith({
+      variables: {
+        id: 'company-id',
+        path: 'company-id/old-invoice.pdf',
+      },
+    });
+    expect(mocks.deleteTransaction.mock.invocationCallOrder[0]).toBeLessThan(
+      mocks.deleteFile.mock.invocationCallOrder[0],
+    );
   });
 
   it('retries navigation after the Transaction has been deleted', async () => {
@@ -660,6 +724,15 @@ describe('TransactionEditPage', () => {
   });
 
   it('offers to replace an attachment without removing the current file', async () => {
+    let finishDeletion!: (result: {
+      data: { deleteFile: { path: string } };
+    }) => void;
+    const deletion = new Promise<{
+      data: { deleteFile: { path: string } };
+    }>((resolve) => {
+      finishDeletion = resolve;
+    });
+
     mocks.transactionQuery.data = {
       getTransaction: {
         ...transaction,
@@ -699,16 +772,27 @@ describe('TransactionEditPage', () => {
     expect(await screen.findByText('replacement.pdf')).toBeVisible();
     expect(mocks.deleteFile).not.toHaveBeenCalled();
 
+    mocks.deleteFile.mockReturnValueOnce(deletion);
     await userEvent.click(screen.getByRole('button', { name: 'Replace file' }));
 
     await waitFor(() => expect(mocks.deleteFile).toHaveBeenCalledOnce());
+    expect(screen.queryByText('No file selected')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Replace file' })).toBeDisabled();
+    await act(async () => {
+      finishDeletion({
+        data: {
+          deleteFile: { path: 'company-id/replacement-id.pdf' },
+        },
+      });
+      await deletion;
+    });
     expect(mocks.deleteFile).toHaveBeenCalledWith({
       variables: {
         id: 'company-id',
         path: 'company-id/replacement-id.pdf',
       },
     });
-    expect(screen.getByText('No file selected')).toBeVisible();
+    expect(await screen.findByText('No file selected')).toBeVisible();
   });
 
   it('retries obsolete attachment cleanup before deleting the Transaction', async () => {
