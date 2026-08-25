@@ -4,7 +4,6 @@ import {
   isLocalBaseUrl,
   selectRadioOption,
   test,
-  waitForFiniteAnimations,
 } from './test';
 
 interface PersistedState {
@@ -79,7 +78,6 @@ test.describe('hosted Accounts foundation', () => {
     }
 
     await expect(recordTransactionHeading).toBeVisible();
-    await waitForFiniteAnimations(page.getByRole('dialog'));
     await selectRadioOption(page, 'Transaction type', 'Purchase');
     const description = getFormInput(page, 'Description');
 
@@ -91,36 +89,36 @@ test.describe('hosted Accounts foundation', () => {
         ),
       )
       .toBe(true);
-    const overflowingElements = await page
-      .locator('body *')
-      .evaluateAll((elements) =>
-        elements.flatMap((element) => {
-          const bounds = element.getBoundingClientRect();
+    await expect
+      .poll(() =>
+        page.locator('body *').evaluateAll((elements) =>
+          elements.flatMap((element) => {
+            const bounds = element.getBoundingClientRect();
 
-          if (bounds.right <= window.innerWidth) {
-            return [];
-          }
+            if (bounds.right <= window.innerWidth) {
+              return [];
+            }
 
-          return [
-            {
-              accessibleName:
-                element.getAttribute('aria-label') ??
-                element.getAttribute('aria-labelledby'),
-              bounds: {
-                left: bounds.left,
-                right: bounds.right,
-                width: bounds.width,
+            return [
+              {
+                accessibleName:
+                  element.getAttribute('aria-label') ??
+                  element.getAttribute('aria-labelledby'),
+                bounds: {
+                  left: bounds.left,
+                  right: bounds.right,
+                  width: bounds.width,
+                },
+                className: element.getAttribute('class'),
+                role: element.getAttribute('role'),
+                tagName: element.tagName,
+                text: element.textContent?.trim(),
               },
-              className: element.getAttribute('class'),
-              role: element.getAttribute('role'),
-              tagName: element.tagName,
-              text: element.textContent?.trim(),
-            },
-          ];
-        }),
-      );
-
-    expect(overflowingElements).toEqual([]);
+            ];
+          }),
+        ),
+      )
+      .toEqual([]);
     await expectNoA11yViolations(description);
   });
 
