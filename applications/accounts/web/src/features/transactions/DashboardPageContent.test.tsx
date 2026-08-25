@@ -239,6 +239,9 @@ describe('DashboardPageContent', () => {
         name: 'We could not load your overview',
       }),
     ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('heading', { name: 'No financial activity yet' }),
+    ).not.toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'Try again' }));
 

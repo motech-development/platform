@@ -659,6 +659,58 @@ describe('TransactionEditPage', () => {
     });
   });
 
+  it('offers to replace an attachment without removing the current file', async () => {
+    mocks.transactionQuery.data = {
+      getTransaction: {
+        ...transaction,
+        attachment: 'company-id/old-invoice.pdf',
+      },
+    };
+    mocks.formQuery.data = formData;
+    mocks.requestUpload.mockResolvedValue({
+      data: { requestUpload: { id: 'replacement-id', url: 'https://upload' } },
+    });
+    mocks.uploadPresignedFile.mockResolvedValue(undefined);
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <TransactionEditPage
+          companyId="company-id"
+          origin="transactions"
+          transactionId="transaction-id"
+        />
+      </BreezeProvider>,
+    );
+
+    expect(screen.getByText('old-invoice.pdf')).toBeVisible();
+    expect(screen.queryByText('No file selected')).not.toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Replace file' }));
+
+    expect(screen.getByText('old-invoice.pdf')).toBeVisible();
+    expect(screen.getByText('No file selected')).toBeVisible();
+
+    await userEvent.upload(
+      document.querySelector('input[type="file"]') as HTMLInputElement,
+      new File(['replacement'], 'replacement.pdf', {
+        type: 'application/pdf',
+      }),
+    );
+    expect(await screen.findByText('replacement.pdf')).toBeVisible();
+    expect(mocks.deleteFile).not.toHaveBeenCalled();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Replace file' }));
+
+    await waitFor(() => expect(mocks.deleteFile).toHaveBeenCalledOnce());
+    expect(mocks.deleteFile).toHaveBeenCalledWith({
+      variables: {
+        id: 'company-id',
+        path: 'company-id/replacement-id.pdf',
+      },
+    });
+    expect(screen.getByText('No file selected')).toBeVisible();
+  });
+
   it('retries obsolete attachment cleanup before deleting the Transaction', async () => {
     const transactionWithAttachment = {
       ...transaction,

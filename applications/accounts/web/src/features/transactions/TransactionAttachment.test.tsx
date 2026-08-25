@@ -67,6 +67,7 @@ describe('TransactionAttachment', () => {
         <TransactionAttachment
           companyId="company-id"
           onDeleted={() => true}
+          onReplace={() => undefined}
           path="company-id/invoice.pdf"
         />
       </BreezeProvider>,
@@ -96,6 +97,7 @@ describe('TransactionAttachment', () => {
         <TransactionAttachment
           companyId="company-id"
           onDeleted={onDeleted}
+          onReplace={() => undefined}
           path="company-id/receipt.png"
         />
       </BreezeProvider>,
@@ -119,6 +121,7 @@ describe('TransactionAttachment', () => {
         <TransactionAttachment
           companyId="company-id"
           onDeleted={() => true}
+          onReplace={() => undefined}
           path="company-id/3456df4a-51f8-49af-a52e-c1a21b8ff087.pdf"
         />
       </BreezeProvider>,
@@ -156,6 +159,7 @@ describe('TransactionAttachment', () => {
         <TransactionAttachment
           companyId="company-id"
           onDeleted={() => true}
+          onReplace={() => undefined}
           path="company-id/invoice.pdf"
         />
       </BreezeProvider>,
@@ -194,6 +198,7 @@ describe('TransactionAttachment', () => {
         <TransactionAttachment
           companyId="company-id"
           onDeleted={() => true}
+          onReplace={() => undefined}
           path="company-id/receipt.gif"
         />
       </BreezeProvider>,
@@ -225,6 +230,7 @@ describe('TransactionAttachment', () => {
           <TransactionAttachment
             companyId="company-id"
             onDeleted={onDeleted}
+            onReplace={() => undefined}
             path="company-id/invoice.pdf"
           />
         </BreezeProvider>,
@@ -248,6 +254,7 @@ describe('TransactionAttachment', () => {
         <TransactionAttachment
           companyId="company-id"
           onDeleted={onDeleted}
+          onReplace={() => undefined}
           path="company-id/invoice.pdf"
         />
       </BreezeProvider>,
@@ -281,6 +288,7 @@ describe('TransactionAttachment', () => {
         <TransactionAttachment
           companyId="company-id"
           onDeleted={() => deletion}
+          onReplace={() => undefined}
           path="company-id/invoice.pdf"
         />
       </BreezeProvider>,
@@ -310,6 +318,7 @@ describe('TransactionAttachment', () => {
         <TransactionAttachment
           companyId="company-id"
           onDeleted={() => true}
+          onReplace={() => undefined}
           path="company-id/invoice.pdf"
         />
       </BreezeProvider>,

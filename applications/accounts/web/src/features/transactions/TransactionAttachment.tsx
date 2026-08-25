@@ -29,13 +29,17 @@ export function TransactionAttachment({
   displayName,
   disabled,
   onDeleted,
+  onReplace,
   path,
+  replacing = false,
 }: Readonly<{
   companyId: string;
   displayName?: string;
   disabled?: boolean;
   onDeleted: () => boolean | Promise<boolean>;
+  onReplace: () => void;
   path: string;
+  replacing?: boolean;
 }>) {
   const { t } = useTranslation(['attachments', 'transactions']);
   const apolloClient = useApolloClient();
@@ -127,6 +131,13 @@ export function TransactionAttachment({
               {online
                 ? t('View file')
                 : t('Connection required', { ns: 'transactions' })}
+            </Button>
+            <Button
+              appearance="outline"
+              disabled={!online || disabled || deleting || loading || replacing}
+              onAction={onReplace}
+            >
+              {t('Replace file')}
             </Button>
             <Button
               disabled={!online || disabled || deleting || loading}

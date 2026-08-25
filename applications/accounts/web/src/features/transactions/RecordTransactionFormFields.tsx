@@ -6,6 +6,7 @@ import {
   NumberField,
   RadioGroup,
   Select,
+  Stack,
 } from '@motech-development/breeze-ui';
 import { useSelector } from '@tanstack/react-form';
 import { type ReactNode, useEffect, useState } from 'react';
@@ -195,6 +196,7 @@ export function RecordTransactionFormFields({
   );
   const [selectedCategorySourceIndex, setSelectedCategorySourceIndex] =
     useState<number>();
+  const [replacingAttachment, setReplacingAttachment] = useState(false);
   const [stagedAttachmentName, setStagedAttachmentName] = useState<string>();
 
   useEffect(() => {
@@ -749,28 +751,8 @@ export function RecordTransactionFormFields({
               <form.Subscribe selector={(state) => state.isSubmitting}>
                 {(isSubmitting) => (
                   <form.Field name="attachment">
-                    {(field) =>
-                      field.state.value ? (
-                        <TransactionAttachment
-                          companyId={companyId}
-                          displayName={stagedAttachmentName}
-                          disabled={isSubmitting}
-                          onDeleted={async () => {
-                            const removed = await removeAttachment(
-                              field.state.value,
-                            );
-
-                            if (removed) {
-                              field.handleChange('');
-                              setStagedAttachmentName(undefined);
-                              markDirty();
-                            }
-
-                            return removed;
-                          }}
-                          path={field.state.value}
-                        />
-                      ) : (
+                    {(field) => {
+                      const upload = (
                         <AttachmentUpload
                           companyId={companyId}
                           disabled={!online || isSubmitting}
@@ -778,13 +760,58 @@ export function RecordTransactionFormFields({
                           onTransfer={trackAttachmentTransfer}
                           onUploaded={(path, name) => {
                             setStagedAttachmentName(name);
+                            setReplacingAttachment(false);
                             field.handleChange(path);
                             markDirty();
                           }}
                           transactionId={form.getFieldValue('id') || undefined}
                         />
-                      )
-                    }
+                      );
+
+                      if (!field.state.value) return upload;
+
+                      const attachmentPath = field.state.value;
+                      const clearAttachment = async () => {
+                        const removed = await removeAttachment(attachmentPath);
+
+                        if (removed) {
+                          field.handleChange('');
+                          setReplacingAttachment(false);
+                          setStagedAttachmentName(undefined);
+                          markDirty();
+                        } else {
+                          setReplacingAttachment(false);
+                        }
+
+                        return removed;
+                      };
+                      const startReplacement = () => {
+                        if (!stagedAttachmentName) {
+                          setReplacingAttachment(true);
+                          return;
+                        }
+
+                        setReplacingAttachment(true);
+                        clearAttachment().catch(() => {
+                          setReplacingAttachment(false);
+                        });
+                      };
+
+                      return (
+                        <Stack gap="compact">
+                          <TransactionAttachment
+                            companyId={companyId}
+                            displayName={stagedAttachmentName}
+                            disabled={isSubmitting}
+                            onDeleted={clearAttachment}
+                            onReplace={startReplacement}
+                            path={attachmentPath}
+                            replacing={replacingAttachment}
+                          />
+                          {replacingAttachment ? upload : null}
+                        </Stack>
+                      );
+                    }}
                   </form.Field>
                 )}
               </form.Subscribe>

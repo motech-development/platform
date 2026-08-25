@@ -158,7 +158,7 @@ export function DashboardPageContent({
           </QueryRefreshAlert>
         ) : null}
         {initiallyLoading ? <OverviewContentSkeleton /> : null}
-        {!initiallyLoading && !hasTransactions ? (
+        {!initiallyLoading && data && !hasTransactions ? (
           <StatePanel
             action={<RecordTransactionLink href={recordTransactionHref} />}
             description={t(
