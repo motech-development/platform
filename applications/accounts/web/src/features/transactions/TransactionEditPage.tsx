@@ -68,6 +68,7 @@ function TransactionEditDrawer({
   const [deleteTransaction, { loading: deleting }] =
     useMutation(DELETE_TRANSACTION);
   const transactionDeletionCompleted = useRef(false);
+  const [transactionDeleted, setTransactionDeleted] = useState(false);
   const {
     blocker,
     categories,
@@ -95,14 +96,14 @@ function TransactionEditDrawer({
     trackAttachmentTransfer,
     vatRate,
   } = useTransactionForm({
-    additionalPending: deleting,
+    additionalPending: deleting || transactionDeleted,
     closeTo,
     companyId,
     confirmedReturnTo,
     initialDateTime: transaction.date,
     initialValues: editableTransaction(transaction),
   });
-  const pending = submissionPending || deleting;
+  const pending = submissionPending || deleting || transactionDeleted;
 
   if (loading && !data) {
     return (
@@ -139,6 +140,7 @@ function TransactionEditDrawer({
         }
 
         transactionDeletionCompleted.current = true;
+        setTransactionDeleted(true);
       } catch {
         toast.show({
           description: t(
@@ -271,6 +273,7 @@ function TransactionEditDrawer({
                         description={t(
                           'This transaction and its attachment will be permanently removed.',
                         )}
+                        dismissible={!transactionDeleted}
                         disabled={!online || submissionPending}
                         entityName={transaction.name}
                         nested

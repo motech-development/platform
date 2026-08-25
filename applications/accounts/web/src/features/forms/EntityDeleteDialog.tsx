@@ -18,6 +18,7 @@ export function EntityDeleteDialog({
   deleting,
   description,
   disabled = false,
+  dismissible = true,
   entityName,
   nested = false,
   onDelete,
@@ -32,6 +33,7 @@ export function EntityDeleteDialog({
   deleting: boolean;
   description: string;
   disabled?: boolean;
+  dismissible?: boolean;
   entityName: string;
   nested?: boolean;
   onDelete: () => Promise<boolean>;
@@ -46,7 +48,8 @@ export function EntityDeleteDialog({
   return (
     <AlertDialog.Root
       onOpenChange={(nextOpen) => {
-        if ((!nextOpen && deleting) || (nextOpen && disabled)) return;
+        if ((!nextOpen && (deleting || !dismissible)) || (nextOpen && disabled))
+          return;
         setOpen(nextOpen);
         if (!nextOpen) setConfirmation('');
       }}
@@ -57,7 +60,7 @@ export function EntityDeleteDialog({
       </AlertDialog.Trigger>
       <AlertDialog.Content
         className="breeze-confirmation-dialog max-h-[calc(100dvh-2rem)] w-full max-w-md border-0 border-b-2 border-b-[var(--breeze-border-strong)] p-0 shadow-[0_8px_0_rgb(6_12_24_/_22%)]"
-        keyboardDismissDisabled={deleting}
+        keyboardDismissDisabled={deleting || !dismissible}
         nested={nested}
         overlayClassName="p-5"
       >
@@ -79,7 +82,7 @@ export function EntityDeleteDialog({
             aria-label={closeLabel}
             appearance="ghost"
             className="size-11 min-h-11 border-0 p-0 text-[var(--breeze-ink)]"
-            disabled={deleting}
+            disabled={deleting || !dismissible}
             variant="secondary"
           >
             <CloseIcon size={20} />
@@ -102,7 +105,7 @@ export function EntityDeleteDialog({
             <AlertDialog.Close
               appearance="outline"
               autoFocus
-              disabled={deleting}
+              disabled={deleting || !dismissible}
             >
               {cancelLabel}
             </AlertDialog.Close>

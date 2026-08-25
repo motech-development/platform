@@ -625,7 +625,7 @@ describe('TransactionEditPage', () => {
     });
   });
 
-  it('deletes a persisted attachment after deleting its Transaction', async () => {
+  it('retains persisted attachment cleanup for retry after deleting its Transaction', async () => {
     mocks.transactionQuery.data = {
       getTransaction: {
         ...transaction,
@@ -633,6 +633,11 @@ describe('TransactionEditPage', () => {
       },
     };
     mocks.formQuery.data = formData;
+    mocks.deleteFile
+      .mockResolvedValueOnce({ data: null })
+      .mockResolvedValueOnce({
+        data: { deleteFile: { path: 'company-id/old-invoice.pdf' } },
+      });
 
     render(
       <BreezeProvider locale="en-GB">
@@ -655,7 +660,16 @@ describe('TransactionEditPage', () => {
       screen.getByRole('button', { name: 'Permanently delete transaction' }),
     );
 
-    await waitFor(() => expect(mocks.deleteFile).toHaveBeenCalledOnce());
+    await waitFor(() =>
+      expect(mocks.toast.show).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Attachment cleanup failed' }),
+      ),
+    );
+    expect(
+      screen.getByRole('button', { name: 'Close delete confirmation' }),
+    ).toBeDisabled();
+    expect(mocks.navigate).not.toHaveBeenCalled();
+    expect(mocks.deleteTransaction).toHaveBeenCalledOnce();
     expect(mocks.deleteFile).toHaveBeenCalledWith({
       variables: {
         id: 'company-id',
@@ -665,6 +679,14 @@ describe('TransactionEditPage', () => {
     expect(mocks.deleteTransaction.mock.invocationCallOrder[0]).toBeLessThan(
       mocks.deleteFile.mock.invocationCallOrder[0],
     );
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Permanently delete transaction' }),
+    );
+
+    await waitFor(() => expect(mocks.navigate).toHaveBeenCalledOnce());
+    expect(mocks.deleteTransaction).toHaveBeenCalledOnce();
+    expect(mocks.deleteFile).toHaveBeenCalledTimes(2);
   });
 
   it('retries navigation after the Transaction has been deleted', async () => {
