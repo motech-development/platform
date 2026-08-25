@@ -90,7 +90,7 @@ export async function expectFinancialSummary(
 
 async function completeAuthenticationForPage(content: Locator, page: Page) {
   const consent = page.locator('button#allow');
-  const email = page.getByLabel('Email address');
+  const email = page.locator('input[name="username"]');
 
   await expect(content.or(consent).or(email)).toBeVisible({ timeout: 0 });
 

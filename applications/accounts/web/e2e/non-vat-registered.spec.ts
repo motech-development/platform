@@ -607,7 +607,12 @@ test.describe('Non-VAT registered', () => {
       await expect(compactDate).toBeHidden();
       await expect(dateCell.getByTestId('transaction-date-icon')).toBeVisible();
       await expectPendingRowOnOneLine(pendingRow);
-      await pendingRow.click();
+      await pendingRow
+        .getByText(transaction.description, { exact: true })
+        .click();
+      await expect(
+        page.getByRole('heading', { name: 'Edit transaction' }),
+      ).toBeVisible();
       await page.getByRole('button', { name: 'Delete transaction' }).click();
       await page
         .getByLabel(`Type ${transaction.supplier} to confirm`)
