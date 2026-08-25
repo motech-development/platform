@@ -226,6 +226,7 @@ describe('company route priming', () => {
 
   it.each([
     ['details', primeCompanyDetails],
+    ['dashboard', primeDashboard],
     ['settings', primeCompanySettings],
   ] as const)(
     'leaves an owned company %s query failure to the page recovery state',

@@ -53,9 +53,11 @@ export function AttachmentUpload({
   const toast = useToast();
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [transferPending, setTransferPending] = useState(false);
+  const [discardPending, setDiscardPending] = useState(false);
   const [uploadFailed, setUploadFailed] = useState(false);
   const [uploaded, setUploaded] = useState(false);
   const activeTransfer = useRef<symbol | undefined>(undefined);
+  const discardPendingRef = useRef(false);
   const runLatestTransfer = useLatestTransfer();
   const [requestUpload, { loading }] = useMutation(REQUEST_UPLOAD);
   const showRejectedFileToast = () => {
@@ -64,6 +66,23 @@ export function AttachmentUpload({
       title: t('File not accepted'),
       variant: 'warning',
     });
+  };
+  const discardFailedFile = async () => {
+    if (discardPendingRef.current) return;
+
+    discardPendingRef.current = true;
+    setDiscardPending(true);
+    try {
+      if (await onDiscardFailed()) {
+        setSelectedFiles([]);
+        setUploadFailed(false);
+      }
+    } catch {
+      // The failed upload remains available for another cleanup attempt.
+    } finally {
+      discardPendingRef.current = false;
+      setDiscardPending(false);
+    }
   };
 
   const upload = (file: File) => {
@@ -189,7 +208,7 @@ export function AttachmentUpload({
       {uploadFailed && selectedFiles[0] ? (
         <ButtonGroup>
           <Button
-            disabled={disabled || loading || transferPending}
+            disabled={disabled || discardPending || loading || transferPending}
             onAction={() => {
               upload(selectedFiles[0]).catch(() => undefined);
             }}
@@ -198,16 +217,9 @@ export function AttachmentUpload({
           </Button>
           <Button
             appearance="outline"
-            disabled={disabled || loading || transferPending}
+            disabled={disabled || discardPending || loading || transferPending}
             onAction={() => {
-              Promise.resolve(onDiscardFailed())
-                .then((discarded) => {
-                  if (discarded) {
-                    setSelectedFiles([]);
-                    setUploadFailed(false);
-                  }
-                })
-                .catch(() => undefined);
+              discardFailedFile().catch(() => undefined);
             }}
           >
             {t('Remove file')}

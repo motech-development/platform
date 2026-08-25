@@ -256,14 +256,12 @@ type TransactionLedgerOrigin = 'dashboard' | 'transactions';
 
 function transactionRoute({
   origin,
-  pending,
   pendingCollection,
 }: Readonly<{
   origin: TransactionLedgerOrigin;
-  pending: boolean;
   pendingCollection: boolean;
 }>) {
-  if (pendingCollection || pending) {
+  if (pendingCollection) {
     return '/my-companies/accounts/$companyId/pending-transactions/view-transaction/$transactionId';
   }
 
@@ -436,7 +434,7 @@ function TransactionRow({
             companyId,
             transactionId: transaction.id,
           },
-          to: transactionRoute({ origin, pending, pendingCollection }),
+          to: transactionRoute({ origin, pendingCollection }),
         }).catch(() => undefined);
       }}
       textValue={`${transactionLabel} ${transaction.category}`}

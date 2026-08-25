@@ -201,7 +201,41 @@ describe('TransactionLedger', () => {
     });
   });
 
-  it('opens an Overview Pending transaction through its lifecycle route', async () => {
+  it('keeps a Pending Transaction opened from the combined ledger on that route', async () => {
+    render(
+      <BreezeProvider locale="en-GB">
+        <TransactionLedger
+          companyId="company-id"
+          currencyCode="GBP"
+          transactions={[
+            {
+              amount: -120,
+              attachment: null,
+              category: 'Professional fees',
+              date: '2026-08-20T00:00:00.000Z',
+              description: 'Quarterly bookkeeping',
+              id: 'pending-id',
+              name: 'Oak & Co Accountants',
+              status: 'pending',
+            },
+          ]}
+        />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(
+      screen.getByRole('row', {
+        name: /Pending transaction: Oak & Co Accountants/u,
+      }),
+    );
+
+    expect(mocks.navigate).toHaveBeenCalledWith({
+      params: { companyId: 'company-id', transactionId: 'pending-id' },
+      to: '/my-companies/accounts/$companyId/view-transaction/$transactionId',
+    });
+  });
+
+  it('keeps an Overview Pending transaction on the Overview route', async () => {
     render(
       <BreezeProvider locale="en-GB">
         <TransactionLedger
@@ -233,7 +267,7 @@ describe('TransactionLedger', () => {
 
     expect(mocks.navigate).toHaveBeenCalledWith({
       params: { companyId: 'company-id', transactionId: 'pending-id' },
-      to: '/my-companies/accounts/$companyId/pending-transactions/view-transaction/$transactionId',
+      to: '/my-companies/dashboard/$companyId/view-transaction/$transactionId',
     });
   });
 

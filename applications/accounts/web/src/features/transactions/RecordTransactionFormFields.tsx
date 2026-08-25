@@ -25,6 +25,7 @@ import { TransactionAttachment } from './TransactionAttachment';
 import type { TransactionForm } from './useTransactionForm';
 
 const retainedClientSelection = '__retained_transaction_client__';
+const retainedCategorySelection = '__retained_transaction_category__';
 
 function representsSameAmount(current: string, next: string) {
   if (current === next) return true;
@@ -520,6 +521,12 @@ export function RecordTransactionFormFields({
                           field.state.meta.errors,
                           field.state.meta.isBlurred,
                         );
+                        const retainedCategoryName =
+                          editing &&
+                          category &&
+                          selectedCategorySourceIndex === undefined
+                            ? category
+                            : undefined;
 
                         return (
                           <Select.Root
@@ -527,12 +534,18 @@ export function RecordTransactionFormFields({
                             onBlur={field.handleBlur}
                             onChange={(value) => {
                               const sourceIndex =
-                                value === null ? undefined : Number(value);
+                                value === null ||
+                                value === retainedCategorySelection
+                                  ? undefined
+                                  : Number(value);
                               const selected =
                                 sourceIndex === undefined
                                   ? undefined
                                   : categories[sourceIndex];
-                              const nextCategory = selected?.name ?? '';
+                              const nextCategory =
+                                value === retainedCategorySelection
+                                  ? retainedCategoryName ?? ''
+                                  : selected?.name ?? '';
 
                               setSelectedCategorySourceIndex(
                                 selected ? sourceIndex : undefined,
@@ -549,7 +562,10 @@ export function RecordTransactionFormFields({
                             placeholder={t('Select category')}
                             required
                             value={
-                              selectedCategorySourceIndex?.toString() ?? null
+                              selectedCategorySourceIndex?.toString() ??
+                              (retainedCategoryName
+                                ? retainedCategorySelection
+                                : null)
                             }
                           >
                             <Select.Label>{t('Category')}</Select.Label>
@@ -558,6 +574,14 @@ export function RecordTransactionFormFields({
                             </Select.Trigger>
                             <Select.Popover>
                               <Select.ListBox>
+                                {retainedCategoryName ? (
+                                  <Select.Item
+                                    id={retainedCategorySelection}
+                                    textValue={retainedCategoryName}
+                                  >
+                                    {retainedCategoryName}
+                                  </Select.Item>
+                                ) : null}
                                 {purchaseCategories.map(
                                   ({ name, sourceIndex }) => (
                                     <Select.Item

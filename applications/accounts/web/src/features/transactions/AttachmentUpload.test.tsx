@@ -1,5 +1,11 @@
 import { BreezeProvider } from '@motech-development/breeze-ui';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AttachmentUpload } from './AttachmentUpload';
 
@@ -196,7 +202,11 @@ describe('AttachmentUpload', () => {
   it('reports an image upload failure with file-generic copy', async () => {
     const user = userEvent.setup();
     const file = new File(['image'], 'receipt.jpg', { type: 'image/jpeg' });
-    const onDiscardFailed = vi.fn().mockResolvedValue(true);
+    let finishDiscard!: (discarded: boolean) => void;
+    const discard = new Promise<boolean>((resolve) => {
+      finishDiscard = resolve;
+    });
+    const onDiscardFailed = vi.fn().mockReturnValue(discard);
 
     mocks.requestUpload.mockResolvedValue({
       data: {
@@ -228,9 +238,18 @@ describe('AttachmentUpload', () => {
         variant: 'danger',
       }),
     );
-    await user.click(screen.getByRole('button', { name: 'Remove file' }));
+    const retry = screen.getByRole('button', { name: 'Retry upload' });
+    const remove = screen.getByRole('button', { name: 'Remove file' });
+
+    await user.dblClick(remove);
     await waitFor(() => expect(onDiscardFailed).toHaveBeenCalledOnce());
-    expect(screen.getByText('No file selected')).toBeVisible();
+    expect(retry).toBeDisabled();
+    expect(remove).toBeDisabled();
+    await act(async () => {
+      finishDiscard(true);
+      await discard;
+    });
+    expect(await screen.findByText('No file selected')).toBeVisible();
   });
 
   it('does not upload a selected filename without an extension', async () => {

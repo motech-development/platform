@@ -162,20 +162,17 @@ export async function primeDashboard(
   context: RouterContext,
   companyId: string,
 ) {
-  if (!context.authenticatedOwner) {
-    return;
-  }
-
-  await verifyOwnedCompany(context, companyId);
-  await context.apolloClient.query({
-    query: GET_COMPANY_DASHBOARD,
-    variables: {
-      count: 5,
-      id: companyId,
-      pendingStatus: 'pending',
-      status: 'confirmed',
-    },
-  });
+  await primeOwnedCompanyResource(context, companyId, () =>
+    context.apolloClient.query({
+      query: GET_COMPANY_DASHBOARD,
+      variables: {
+        count: 5,
+        id: companyId,
+        pendingStatus: 'pending',
+        status: 'confirmed',
+      },
+    }),
+  );
 }
 
 export async function primeTransactions(

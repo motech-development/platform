@@ -589,6 +589,32 @@ describe('TransactionEditPage', () => {
     ).toBeVisible();
   });
 
+  it('keeps a persisted purchase category visible after it leaves Settings', () => {
+    mocks.transactionQuery.data = {
+      getTransaction: {
+        ...transaction,
+        amount: -75,
+        category: 'Archived expenses',
+        name: 'Known supplier',
+      },
+    };
+    mocks.formQuery.data = formData;
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <TransactionEditPage
+          companyId="company-id"
+          origin="transactions"
+          transactionId="transaction-id"
+        />
+      </BreezeProvider>,
+    );
+
+    expect(
+      screen.getByRole('button', { name: 'Archived expenses Category' }),
+    ).toBeVisible();
+  });
+
   it('deletes the Transaction after exact confirmation', async () => {
     mocks.transactionQuery.data = { getTransaction: transaction };
     mocks.formQuery.data = formData;
