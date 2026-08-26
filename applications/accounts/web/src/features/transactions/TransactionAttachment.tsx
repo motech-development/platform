@@ -9,7 +9,14 @@ import {
   useToast,
 } from '@motech-development/breeze-ui';
 import { saveAs } from 'file-saver';
-import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
+import {
+  lazy,
+  Suspense,
+  useEffect,
+  useMemo,
+  useState,
+  useSyncExternalStore,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { REQUEST_DOWNLOAD } from '../../data/operations';
 import { downloadPresignedFile } from '../../data/presigned-transfer';
@@ -23,6 +30,52 @@ const PdfPreview = lazy(() =>
 
 const generatedAttachmentName =
   /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}(\.[^.]+)?$/iu;
+const transactionDrawerWidthInRem = 48;
+const attachmentPreviewWidthInRem = 38;
+
+function drawerInlineSize(widthInRem: number) {
+  return (
+    widthInRem *
+    Number.parseFloat(
+      window.getComputedStyle(document.documentElement).fontSize,
+    )
+  );
+}
+
+function adjacentAttachmentPreviewFits() {
+  const viewportWidth = window.visualViewport?.width ?? window.innerWidth;
+
+  return (
+    viewportWidth >=
+    drawerInlineSize(transactionDrawerWidthInRem + attachmentPreviewWidthInRem)
+  );
+}
+
+function subscribeToAdjacentAttachmentPreview(
+  onFitChange: () => void,
+): () => void {
+  const viewport = window.visualViewport;
+
+  window.addEventListener('resize', onFitChange);
+  viewport?.addEventListener('resize', onFitChange);
+
+  return () => {
+    window.removeEventListener('resize', onFitChange);
+    viewport?.removeEventListener('resize', onFitChange);
+  };
+}
+
+function useAdjacentAttachmentPreview() {
+  return useSyncExternalStore(
+    subscribeToAdjacentAttachmentPreview,
+    adjacentAttachmentPreviewFits,
+    () => false,
+  );
+}
+
+function transactionDrawerInlineSize() {
+  return drawerInlineSize(transactionDrawerWidthInRem);
+}
 
 export function TransactionAttachment({
   companyId,
@@ -46,6 +99,7 @@ export function TransactionAttachment({
   const toast = useToast();
   const online = useOnlineStatus();
   const runLatestTransfer = useLatestTransfer();
+  const showAdjacentPreview = useAdjacentAttachmentPreview();
   const [file, setFile] = useState<Blob>();
   const [deleting, setDeleting] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -169,7 +223,11 @@ export function TransactionAttachment({
           triggerless
         >
           <Drawer.Content
-            adjacent={{ inlineEndOffset: 768 }}
+            adjacent={
+              showAdjacentPreview
+                ? { inlineEndOffset: transactionDrawerInlineSize() }
+                : undefined
+            }
             placement={{ base: 'bottom', md: 'end' }}
           >
             <Drawer.Description>

@@ -484,6 +484,99 @@ describe('confirmed Transaction pages', () => {
       },
     });
   });
+
+  it('ignores a continuation response from before a first-page refresh', () => {
+    const cache = createAccountsCache();
+
+    cache.writeQuery({
+      data: {
+        getTransactions: {
+          __typename: 'Transactions',
+          id: 'company-1',
+          items: [
+            {
+              __typename: 'Transaction',
+              date: '2026-07-27T00:00:00.000Z',
+              id: 'old-first',
+              name: 'Old first sale',
+            },
+          ],
+          nextToken: 'old-page-2',
+          status: 'confirmed',
+        },
+      },
+      query: transactionsQuery,
+      variables,
+    });
+    cache.writeQuery({
+      data: {
+        getTransactions: {
+          __typename: 'Transactions',
+          id: 'company-1',
+          items: [
+            {
+              __typename: 'Transaction',
+              date: '2026-07-28T00:00:00.000Z',
+              id: 'fresh-first',
+              name: 'Fresh first sale',
+            },
+          ],
+          nextToken: 'fresh-page-2',
+          status: 'confirmed',
+        },
+      },
+      query: transactionsQuery,
+      variables,
+    });
+
+    cache.writeQuery({
+      data: {
+        getTransactions: {
+          __typename: 'Transactions',
+          id: 'company-1',
+          items: [
+            {
+              __typename: 'Transaction',
+              date: '2026-07-26T00:00:00.000Z',
+              id: 'stale-second',
+              name: 'Stale second sale',
+            },
+          ],
+          nextToken: null,
+          status: 'confirmed',
+        },
+      },
+      query: transactionsQuery,
+      variables: { ...variables, nextToken: 'old-page-2' },
+    });
+
+    expect(cache.readQuery({ query: transactionsQuery, variables })).toEqual({
+      getTransactions: {
+        __typename: 'Transactions',
+        id: 'company-1',
+        items: [
+          {
+            __typename: 'Transaction',
+            date: '2026-07-28T00:00:00.000Z',
+            id: 'fresh-first',
+            name: 'Fresh first sale',
+          },
+        ],
+        nextToken: 'fresh-page-2',
+        status: 'confirmed',
+      },
+    });
+    expect(
+      cache.readQuery({ query: transactionPageStateQuery, variables }),
+    ).toEqual({
+      getTransactions: {
+        __typename: 'Transactions',
+        transactionLoadedPageCount: 1,
+        transactionRefreshGeneration: 1,
+        transactionRequestedPageCount: 1,
+      },
+    });
+  });
 });
 
 describe('owner notifications', () => {

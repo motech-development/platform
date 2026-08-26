@@ -164,6 +164,13 @@ function mergeTransactionPages(
     };
   }
 
+  if (args.nextToken !== existing.nextToken) {
+    // A first-page refresh can replace the active cursor while an older
+    // continuation is still in flight. The older page belongs to the previous
+    // boundary and must not overwrite or extend the refreshed collection.
+    return existing;
+  }
+
   const retainedItems =
     existing.items?.filter(
       (transaction) => !incomingIds.has(entityId(transaction, readField)),

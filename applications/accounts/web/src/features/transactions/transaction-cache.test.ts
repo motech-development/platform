@@ -276,7 +276,7 @@ describe('Transaction cache reconciliation', () => {
       }),
     );
 
-    writeCollection(cache, 'confirmed', 2, existing.slice(0, 2));
+    writeCollection(cache, 'confirmed', 2, existing.slice(0, 2), 'page-2');
     cache.writeQuery({
       data: {
         getTransactions: {
