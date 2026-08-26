@@ -100,7 +100,10 @@ export function TransactionAttachment({
   const online = useOnlineStatus();
   const runLatestTransfer = useLatestTransfer();
   const showAdjacentPreview = useAdjacentAttachmentPreview();
-  const [file, setFile] = useState<Blob>();
+  const [downloadedFile, setDownloadedFile] = useState<{
+    blob: Blob;
+    path: string;
+  }>();
   const [deleting, setDeleting] = useState(false);
   const [loading, setLoading] = useState(false);
   const storedName = path.split('/').at(-1) ?? path;
@@ -110,6 +113,7 @@ export function TransactionAttachment({
     (generatedAttachmentName.test(storedName)
       ? `${t('Transaction attachment')}${extension}`
       : storedName);
+  const file = downloadedFile?.path === path ? downloadedFile.blob : undefined;
   const imageUrl = useMemo(
     () => (file?.type.startsWith('image/') ? URL.createObjectURL(file) : null),
     [file],
@@ -155,7 +159,7 @@ export function TransactionAttachment({
     try {
       const downloaded = await download();
 
-      if (downloaded) setFile(downloaded);
+      if (downloaded) setDownloadedFile({ blob: downloaded, path });
       return downloaded;
     } catch {
       toast.show({
@@ -201,7 +205,7 @@ export function TransactionAttachment({
                 Promise.resolve()
                   .then(onDeleted)
                   .then((deleted) => {
-                    if (deleted) setFile(undefined);
+                    if (deleted) setDownloadedFile(undefined);
                   })
                   .then(
                     () => setDeleting(false),
@@ -218,7 +222,7 @@ export function TransactionAttachment({
       />
       {file ? (
         <Drawer.Root
-          onOpenChange={(open) => !open && setFile(undefined)}
+          onOpenChange={(open) => !open && setDownloadedFile(undefined)}
           open
           triggerless
         >

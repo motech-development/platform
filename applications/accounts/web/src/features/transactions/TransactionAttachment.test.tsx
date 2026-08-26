@@ -185,6 +185,59 @@ describe('TransactionAttachment', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('downloads a replaced attachment instead of reusing the previous file', async () => {
+    const original = new Blob(['original'], { type: 'application/pdf' });
+    const replacement = new Blob(['replacement'], { type: 'application/pdf' });
+
+    mocks.query
+      .mockResolvedValueOnce({
+        data: { requestDownload: { url: 'https://download/original' } },
+      })
+      .mockResolvedValueOnce({
+        data: { requestDownload: { url: 'https://download/replacement' } },
+      });
+    mocks.download
+      .mockResolvedValueOnce(original)
+      .mockResolvedValueOnce(replacement);
+
+    const view = render(
+      <BreezeProvider locale="en-GB">
+        <TransactionAttachment
+          companyId="company-id"
+          onDeleted={() => true}
+          onReplace={() => undefined}
+          path="company-id/original.pdf"
+        />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(screen.getByRole('button', { name: 'View file' }));
+    await screen.findByText('PDF preview: application/pdf');
+
+    view.rerender(
+      <BreezeProvider locale="en-GB">
+        <TransactionAttachment
+          companyId="company-id"
+          onDeleted={() => true}
+          onReplace={() => undefined}
+          path="company-id/replacement.pdf"
+        />
+      </BreezeProvider>,
+    );
+
+    expect(
+      screen.queryByText('PDF preview: application/pdf'),
+    ).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'View file' }));
+    await screen.findByText('PDF preview: application/pdf');
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Download file' }),
+    );
+
+    expect(mocks.download).toHaveBeenCalledTimes(2);
+    expect(mocks.saveAs).toHaveBeenCalledWith(replacement, 'replacement.pdf');
+  });
+
   it('opens a GIF preview and releases its object URL when closed', async () => {
     const file = new Blob(['image'], { type: 'image/gif' });
 

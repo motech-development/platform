@@ -8,19 +8,16 @@ describe('Accounts web hosting stack', () => {
       env: { account: '123456789012', region: 'eu-west-1' },
     }),
   );
+  const synthesized = template.toJSON() as {
+    Resources: Record<
+      string,
+      { Properties?: Record<string, unknown>; Type: string }
+    >;
+  };
+  const resources = Object.values(synthesized.Resources);
+  const amplifyApp = resources.find(({ Type }) => Type === 'AWS::Amplify::App');
 
   it('uses the existing GitHub App connection without embedded build configuration', () => {
-    const synthesized = template.toJSON() as {
-      Resources: Record<
-        string,
-        { Properties?: Record<string, unknown>; Type: string }
-      >;
-    };
-    const resources = Object.values(synthesized.Resources);
-    const amplifyApp = resources.find(
-      ({ Type }) => Type === 'AWS::Amplify::App',
-    );
-
     expect(amplifyApp?.Properties).toMatchObject({
       EnvironmentVariables: [
         {
@@ -37,6 +34,15 @@ describe('Accounts web hosting stack', () => {
     expect(resources.map(({ Type }) => Type)).not.toContain('AWS::IAM::Role');
     expect(resources.map(({ Type }) => Type)).not.toContain(
       'AWS::SecretsManager::Secret',
+    );
+  });
+
+  it('serves PDF support files as static assets', () => {
+    expect(amplifyApp?.Properties?.CustomRules).toContainEqual(
+      expect.objectContaining({
+        Source:
+          '</^[^.]+$|\\.(?!(bcmap|css|gif|ico|jpg|jpeg|js|mjs|pfb|png|txt|ttf|svg|woff|woff2|json|webmanifest)$)([^.]+$)/>',
+      }),
     );
   });
 });

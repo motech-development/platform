@@ -10,7 +10,7 @@ export class AccountsWebStack extends Stack {
       customRules: [
         {
           source:
-            '</^[^.]+$|\\.(?!(css|gif|ico|jpg|jpeg|js|mjs|png|txt|svg|woff|woff2|json|webmanifest)$)([^.]+$)/>',
+            '</^[^.]+$|\\.(?!(bcmap|css|gif|ico|jpg|jpeg|js|mjs|pfb|png|txt|ttf|svg|woff|woff2|json|webmanifest)$)([^.]+$)/>',
           status: '200',
           target: '/_shell.html',
         },
