@@ -575,9 +575,6 @@ describe('TransactionEditPage', () => {
       </BreezeProvider>,
     );
 
-    expect(
-      screen.queryByRole('heading', { name: 'Edit transaction' }),
-    ).not.toBeInTheDocument();
     await waitFor(() =>
       expect(mocks.navigate).toHaveBeenCalledWith({
         params: { companyId: 'company-id' },
@@ -617,15 +614,113 @@ describe('TransactionEditPage', () => {
       </BreezeProvider>,
     );
 
-    expect(
-      screen.queryByRole('heading', { name: 'Edit transaction' }),
-    ).not.toBeInTheDocument();
     await waitFor(() =>
       expect(mocks.navigate).toHaveBeenCalledWith({
         params: { companyId: 'company-id' },
         to: '/my-companies/accounts/$companyId',
       }),
     );
+  });
+
+  it('discards a staged attachment before leaving a published Pending edit', async () => {
+    mocks.transactionQuery.data = {
+      getTransaction: { ...transaction, scheduled: true, status: 'pending' },
+    };
+    mocks.formQuery.data = formData;
+    mocks.requestUpload.mockResolvedValue({
+      data: { requestUpload: { id: 'upload-id', url: 'https://upload' } },
+    });
+    mocks.uploadPresignedFile.mockResolvedValue(undefined);
+
+    const view = render(
+      <BreezeProvider locale="en-GB">
+        <TransactionEditPage
+          companyId="company-id"
+          origin="pending"
+          transactionId="transaction-id"
+        />
+      </BreezeProvider>,
+    );
+
+    await userEvent.upload(
+      document.querySelector('input[type="file"]') as HTMLInputElement,
+      new File(['invoice'], 'invoice.pdf', { type: 'application/pdf' }),
+    );
+    expect(await screen.findByText('invoice.pdf')).toBeVisible();
+
+    mocks.transactionQuery.data = { getTransaction: transaction };
+    view.rerender(
+      <BreezeProvider locale="en-GB">
+        <TransactionEditPage
+          companyId="company-id"
+          origin="pending"
+          transactionId="transaction-id"
+        />
+      </BreezeProvider>,
+    );
+
+    await waitFor(() => expect(mocks.navigate).toHaveBeenCalledOnce());
+    expect(mocks.deleteFile).toHaveBeenCalledWith({
+      variables: {
+        id: 'company-id',
+        path: 'company-id/upload-id.pdf',
+      },
+    });
+    expect(mocks.navigate).toHaveBeenCalledWith({
+      params: { companyId: 'company-id' },
+      to: '/my-companies/accounts/$companyId/pending-transactions',
+    });
+    expect(mocks.deleteFile.mock.invocationCallOrder[0]).toBeLessThan(
+      mocks.navigate.mock.invocationCallOrder[0],
+    );
+  });
+
+  it('keeps a published Pending edit open when staged attachment cleanup fails', async () => {
+    mocks.transactionQuery.data = {
+      getTransaction: { ...transaction, scheduled: true, status: 'pending' },
+    };
+    mocks.formQuery.data = formData;
+    mocks.requestUpload.mockResolvedValue({
+      data: { requestUpload: { id: 'upload-id', url: 'https://upload' } },
+    });
+    mocks.uploadPresignedFile.mockResolvedValue(undefined);
+    mocks.deleteFile.mockResolvedValue({ data: null });
+
+    const view = render(
+      <BreezeProvider locale="en-GB">
+        <TransactionEditPage
+          companyId="company-id"
+          origin="pending"
+          transactionId="transaction-id"
+        />
+      </BreezeProvider>,
+    );
+
+    await userEvent.upload(
+      document.querySelector('input[type="file"]') as HTMLInputElement,
+      new File(['invoice'], 'invoice.pdf', { type: 'application/pdf' }),
+    );
+
+    mocks.transactionQuery.data = { getTransaction: transaction };
+    view.rerender(
+      <BreezeProvider locale="en-GB">
+        <TransactionEditPage
+          companyId="company-id"
+          origin="pending"
+          transactionId="transaction-id"
+        />
+      </BreezeProvider>,
+    );
+
+    await waitFor(() =>
+      expect(mocks.toast.show).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Attachment cleanup failed' }),
+      ),
+    );
+    expect(mocks.navigate).not.toHaveBeenCalled();
+    expect(
+      screen.getByRole('heading', { name: 'Edit transaction' }),
+    ).toBeVisible();
   });
 
   it('retries both transaction and form prerequisites after a refresh failure', async () => {

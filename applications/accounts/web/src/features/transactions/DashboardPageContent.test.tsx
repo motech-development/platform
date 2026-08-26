@@ -65,6 +65,8 @@ const transaction = {
   description: 'Some work',
   id: 'transaction-id',
   name: 'Example client',
+  scheduled: false,
+  status: 'confirmed',
 } satisfies DashboardQuery['getTransactions']['items'][number];
 
 function dashboardData(

@@ -286,6 +286,8 @@ export const GET_COMPANY_DASHBOARD = graphql(`
         date
         description
         name
+        scheduled
+        status
       }
       nextToken
     }
@@ -388,6 +390,8 @@ export const GET_CONFIRMED_TRANSACTIONS = graphql(`
         date
         description
         name
+        scheduled
+        status
       }
       nextToken
     }

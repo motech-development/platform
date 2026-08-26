@@ -1,6 +1,10 @@
 import { gql } from '@apollo/client';
 import { createAccountsCache } from '../../data/cache';
 import {
+  GET_CONFIRMED_TRANSACTIONS,
+  GET_PENDING_TRANSACTIONS,
+} from '../../data/operations';
+import {
   reconcileTransactionInCache,
   removeTransactionFromCache,
 } from './transaction-cache';
@@ -52,6 +56,13 @@ const typeaheadQuery = gql`
 const transactionStatusFragment = gql`
   fragment TestTransactionStatus on Transaction {
     id
+    status
+  }
+`;
+const transactionPublicationFragment = gql`
+  fragment TestTransactionPublication on Transaction {
+    id
+    scheduled
     status
   }
 `;
@@ -110,6 +121,74 @@ function ids(
 }
 
 describe('Transaction cache reconciliation', () => {
+  it('replaces normalized Pending publication fields from a confirmed collection response', () => {
+    const cache = createAccountsCache();
+    const pending = transaction();
+
+    cache.writeQuery<Record<string, unknown>>({
+      data: {
+        getBalance: {
+          __typename: 'Balance',
+          currency: 'GBP',
+          id: companyId,
+        },
+        getTransactions: {
+          __typename: 'Transactions',
+          id: companyId,
+          items: [pending],
+          nextToken: null,
+          status: 'pending',
+          transactionLoadedPageCount: 1,
+          transactionRefreshGeneration: 0,
+          transactionRequestedPageCount: 1,
+        },
+      },
+      query: GET_PENDING_TRANSACTIONS,
+      variables: { count: 100, id: companyId, status: 'pending' },
+    });
+    cache.writeQuery<Record<string, unknown>>({
+      data: {
+        getBalance: {
+          __typename: 'Balance',
+          balance: 120,
+          currency: 'GBP',
+          id: companyId,
+          vat: { __typename: 'Vat', owed: 20, paid: 0 },
+        },
+        getTransactions: {
+          __typename: 'Transactions',
+          id: companyId,
+          items: [
+            {
+              ...pending,
+              scheduled: false,
+              status: 'confirmed',
+            },
+          ],
+          nextToken: null,
+          status: 'confirmed',
+          transactionLoadedPageCount: 1,
+          transactionRefreshGeneration: 0,
+          transactionRequestedPageCount: 1,
+        },
+      },
+      query: GET_CONFIRMED_TRANSACTIONS,
+      variables: { count: 100, id: companyId, status: 'confirmed' },
+    });
+
+    expect(
+      cache.readFragment({
+        fragment: transactionPublicationFragment,
+        id: cache.identify(pending),
+      }),
+    ).toEqual({
+      __typename: 'Transaction',
+      id: pending.id,
+      scheduled: false,
+      status: 'confirmed',
+    });
+  });
+
   it('moves a Transaction to every loaded target collection and removes it from the old status', () => {
     const cache = createAccountsCache();
     const pending = transaction();

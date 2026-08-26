@@ -49,6 +49,7 @@ const transactionEditOrigins = {
 function TransactionEditDrawer({
   companyId,
   origin,
+  published,
   refetchTransaction,
   transaction,
   transactionRefreshFailed,
@@ -56,6 +57,7 @@ function TransactionEditDrawer({
 }: Readonly<{
   companyId: string;
   origin: TransactionEditOrigin;
+  published: boolean;
   refetchTransaction: () => Promise<unknown>;
   transaction: Parameters<typeof editableTransaction>[0];
   transactionRefreshFailed: boolean;
@@ -106,6 +108,20 @@ function TransactionEditDrawer({
     initialValues: editableTransaction(transaction),
   });
   const pending = submissionPending || deleting || transactionDeleted;
+  const publicationCloseRequested = useRef(false);
+
+  useEffect(() => {
+    if (published && !pending && !publicationCloseRequested.current) {
+      publicationCloseRequested.current = true;
+      discardChanges()
+        .then((discarded) => {
+          if (!discarded) publicationCloseRequested.current = false;
+        })
+        .catch(() => {
+          publicationCloseRequested.current = false;
+        });
+    }
+  }, [discardChanges, pending, published]);
 
   if (loading && !data) {
     return (
@@ -370,9 +386,6 @@ export function TransactionEditPage({
     transactionForCompany !== undefined &&
     (origin === 'pending' || openedTransactionStatus === 'pending') &&
     transactionForCompany.status !== 'pending';
-  const transaction = publishedPendingTransaction
-    ? undefined
-    : transactionForCompany;
   const { Background, closeTo } = transactionEditOrigins[origin];
 
   useEffect(() => {
@@ -384,30 +397,18 @@ export function TransactionEditPage({
     }
   }, [openedTransaction?.id, transactionForCompany, transactionId]);
 
-  useEffect(() => {
-    if (publishedPendingTransaction) {
-      navigate({
-        params: { companyId },
-        to: closeTo,
-      }).catch(() => undefined);
-    }
-  }, [closeTo, companyId, navigate, publishedPendingTransaction]);
-
-  if (publishedPendingTransaction) {
-    return <Background companyId={companyId} />;
-  }
-
   return (
     <>
       <Background companyId={companyId} />
-      {transaction ? (
+      {transactionForCompany ? (
         <TransactionEditDrawer
           companyId={companyId}
           origin={origin}
+          published={publishedPendingTransaction}
           refetchTransaction={refetch}
           transaction={{
-            ...transaction,
-            attachment: transaction.attachment ?? '',
+            ...transactionForCompany,
+            attachment: transactionForCompany.attachment ?? '',
           }}
           transactionRefreshFailed={Boolean(error)}
           transactionId={transactionId}
@@ -428,7 +429,7 @@ export function TransactionEditPage({
           <Drawer.Content placement={{ base: 'bottom', md: 'end' }} size="wide">
             <Drawer.Description>{t('Transaction details')}</Drawer.Description>
             <Drawer.Title>{t('Edit transaction')}</Drawer.Title>
-            {error || (!loading && !transaction) ? (
+            {error || (!loading && !transactionForCompany) ? (
               <StatePanel
                 action={
                   <Button
