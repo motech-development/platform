@@ -1269,6 +1269,19 @@ export const VariableVirtualizationAndLoadingCompact: Story = {
   args: { 'aria-label': 'Virtual data', children: null },
   globals: { viewport: { value: 'mobile1' } },
   play: async ({ canvasElement }) =>
+    expectVirtualizedTableGeometry(canvasElement),
+  render: () => <VirtualizedTable />,
+};
+
+/**
+ * Keeps virtual row measurements and separators aligned when a supporting
+ * column is explicitly hidden in the compact presentation.
+ *
+ * @summary compact virtualization with an explicitly hidden column
+ */
+export const VariableVirtualizationCompactHiddenColumns: Story = {
+  ...VariableVirtualizationAndLoadingCompact,
+  play: async ({ canvasElement }) =>
     expectVirtualizedTableGeometry(canvasElement, true),
   render: () => <VirtualizedTable compactHiddenState />,
 };
