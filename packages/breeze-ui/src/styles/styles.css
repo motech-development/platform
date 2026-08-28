@@ -307,6 +307,12 @@
     padding: 0;
     border: 0;
   }
+
+  [data-breeze-table][data-virtualized='true']
+    [data-presentation]
+    > [role='presentation']:has(> [data-breeze-compact-hidden]) {
+    display: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

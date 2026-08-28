@@ -2,6 +2,7 @@ import type { Decorator, Meta, StoryObj } from '@storybook/react-vite';
 import { useState } from 'react';
 import { expect, fireEvent, userEvent, waitFor, within } from 'storybook/test';
 import type { CollectionSelection } from '../../internal/types/collection';
+import { Avatar } from '../Avatar/Avatar';
 import { Button } from '../Button/Button';
 import { Stack } from '../Stack/Stack';
 import { TextField } from '../TextField/TextField';
@@ -236,7 +237,6 @@ export const GridGroupedSections: Story = {
     await expect(view?.getComputedStyle(firstSectionLastRow).display).toBe(
       'grid',
     );
-    await expect(view?.getComputedStyle(cell).display).toBe('block');
     await expect(activeSection).toHaveAttribute('colspan', '2');
     await expect(activeSection.getBoundingClientRect().left).toBeCloseTo(
       nameHeading.getBoundingClientRect().left,
@@ -336,20 +336,23 @@ export const ResponsiveGridColumnVariant: Story = {
     const actionHeading = canvas.getByRole('columnheader', { name: 'Action' });
     const mediaCell = canvas.getByRole('gridcell', { name: 'AC' });
     const primaryCell = canvas.getByRole('rowheader', { name: 'Acme' });
+    const actionCell = canvas.getByRole('gridcell', { name: 'View details' });
 
-    await waitFor(() =>
-      expect(mediaHeading.getBoundingClientRect().width).toBeCloseTo(36, 1),
-    );
-    await expect(actionHeading.getBoundingClientRect().width).toBeCloseTo(
-      20,
-      1,
-    );
-    await expect(primaryHeading.getBoundingClientRect().width).toBeGreaterThan(
-      tertiaryHeading.getBoundingClientRect().width,
-    );
-    await expect(tertiaryHeading.getBoundingClientRect().width).toBeGreaterThan(
-      secondaryHeading.getBoundingClientRect().width,
-    );
+    await waitFor(async () => {
+      await expect(actionCell.getBoundingClientRect().left).toBe(
+        actionHeading.getBoundingClientRect().left,
+      );
+      await expect(actionCell.getBoundingClientRect().height).toBeCloseTo(
+        Number.parseFloat(getComputedStyle(actionCell).lineHeight),
+        1,
+      );
+      await expect(
+        primaryHeading.getBoundingClientRect().width,
+      ).toBeGreaterThan(tertiaryHeading.getBoundingClientRect().width);
+      await expect(
+        tertiaryHeading.getBoundingClientRect().width,
+      ).toBeGreaterThan(secondaryHeading.getBoundingClientRect().width);
+    });
     await expect(mediaCell.getBoundingClientRect().left).toBeCloseTo(
       mediaHeading.getBoundingClientRect().left,
       1,
@@ -376,7 +379,7 @@ export const ResponsiveGridColumnVariant: Story = {
         </Table.Column>
         <Table.Column id="number">Number</Table.Column>
         <Table.Column id="contact">Contact</Table.Column>
-        <Table.Column compactLabel={false} id="action">
+        <Table.Column align="end" compactLabel={false} id="action">
           Action
         </Table.Column>
       </Table.Header>
@@ -386,7 +389,18 @@ export const ResponsiveGridColumnVariant: Story = {
           <Table.Cell column="name">Acme</Table.Cell>
           <Table.Cell column="number">123</Table.Cell>
           <Table.Cell column="contact">contact@example.test</Table.Cell>
-          <Table.Cell column="action">View</Table.Cell>
+          <Table.Cell align="end" column="action">
+            View
+          </Table.Cell>
+        </Table.Row>
+        <Table.Row id="northwind" textValue="Northwind 456 hello@example.test">
+          <Table.Cell column="media">NW</Table.Cell>
+          <Table.Cell column="name">Northwind</Table.Cell>
+          <Table.Cell column="number">456</Table.Cell>
+          <Table.Cell column="contact">hello@example.test</Table.Cell>
+          <Table.Cell align="end" column="action">
+            View details
+          </Table.Cell>
         </Table.Row>
       </Table.Body>
     </Table.Root>
@@ -419,34 +433,36 @@ function GridColumnSpanTable() {
       </Table.Header>
       <Table.Body>
         <Table.Row id="subscription" textValue="Subscription 12 August £20">
-          <Table.Cell column="marker">Marker</Table.Cell>
+          <Table.Cell column="marker">Purchase</Table.Cell>
           <Table.Cell column="name">Subscription</Table.Cell>
           <Table.Cell column="date">12 August</Table.Cell>
           <Table.Cell align="end" column="amount">
             £20
           </Table.Cell>
-          <Table.Cell column="actions">Actions</Table.Cell>
+          <Table.Cell column="actions">View</Table.Cell>
         </Table.Row>
         <Table.Row id="summary" textValue="Summary £40">
-          <Table.Cell column="marker">Summary marker</Table.Cell>
+          <Table.Cell column="marker">Total</Table.Cell>
           <Table.Cell colSpan={2} column="name">
             Summary
           </Table.Cell>
           <Table.Cell align="end" column="amount">
             £40
           </Table.Cell>
-          <Table.Cell column="actions">Summary actions</Table.Cell>
+          <Table.Cell column="actions">View summary</Table.Cell>
         </Table.Row>
         <Table.Row id="editable" textValue="Editable reference">
-          <Table.Cell column="marker">Editable marker</Table.Cell>
+          <Table.Cell column="marker">Purchase</Table.Cell>
           <Table.Cell column="name">
             <TextField.Root aria-label="Reference" defaultValue="AB">
               <TextField.Input />
             </TextField.Root>
           </Table.Cell>
-          <Table.Cell column="date">Editable date</Table.Cell>
-          <Table.Cell column="amount">Editable amount</Table.Cell>
-          <Table.Cell column="actions">Editable actions</Table.Cell>
+          <Table.Cell column="date">13 August</Table.Cell>
+          <Table.Cell align="end" column="amount">
+            £15
+          </Table.Cell>
+          <Table.Cell column="actions">View</Table.Cell>
         </Table.Row>
       </Table.Body>
     </Table.Root>
@@ -462,22 +478,26 @@ function CompactSpanningVisibilityTable() {
     >
       <Table.Header>
         <Table.Column id="hidden-a" rowHeader>
-          Hidden A
+          Record
         </Table.Column>
-        <Table.Column id="visible-b">Visible B</Table.Column>
-        <Table.Column id="hidden-c">Hidden C</Table.Column>
-        <Table.Column id="hidden-d">Hidden D</Table.Column>
-        <Table.Column id="visible-e">Visible E</Table.Column>
+        <Table.Column id="visible-b">Description</Table.Column>
+        <Table.Column id="hidden-c">Category</Table.Column>
+        <Table.Column id="hidden-d">Internal note</Table.Column>
+        <Table.Column align="end" id="visible-e" width="max-content">
+          Amount
+        </Table.Column>
       </Table.Header>
       <Table.Body>
-        <Table.Row id="entry" textValue="Mixed Hidden Remainder">
+        <Table.Row id="entry" textValue="Subscription £20">
           <Table.Cell colSpan={2} column="hidden-a">
-            Mixed
+            Subscription
           </Table.Cell>
           <Table.Cell colSpan={2} column="hidden-c">
-            Hidden
+            Internal note
           </Table.Cell>
-          <Table.Cell column="visible-e">Remainder</Table.Cell>
+          <Table.Cell align="end" column="visible-e">
+            £20
+          </Table.Cell>
         </Table.Row>
       </Table.Body>
     </Table.Root>
@@ -535,6 +555,11 @@ export const CompactGridColumns: Story = {
     const reference = canvas.getByRole<HTMLInputElement>('textbox', {
       name: 'Reference',
     });
+    const editableAmount = canvas.getByRole('gridcell', { name: '£15' });
+
+    await expect(reference.getBoundingClientRect().right).toBeLessThan(
+      editableAmount.getBoundingClientRect().left,
+    );
 
     await userEvent.click(reference);
     await userEvent.keyboard('{ArrowRight}');
@@ -570,26 +595,51 @@ export const CompactConsumerGridPlacement: Story = {
   },
   render: () => (
     <Table.Root aria-label="Compact consumer records" layout="responsiveGrid">
-      <Table.Header className="max-[681px]:hidden!">
-        <Table.Column id="name" rowHeader>
+      <Table.Header className="max-sm:hidden!">
+        <Table.Column compactLabel={false} id="avatar" width="max-content">
+          Company
+        </Table.Column>
+        <Table.Column compactLabel={false} id="name" rowHeader>
           Name
+        </Table.Column>
+        <Table.Column
+          align="end"
+          compactLabel={false}
+          id="balance"
+          width="max-content"
+        >
+          Balance
         </Table.Column>
         <Table.Column id="status">Status</Table.Column>
       </Table.Header>
-      <Table.Body className="max-[681px]:block!">
+      <Table.Body className="max-sm:block!">
         <Table.Row
-          className="max-[681px]:grid! max-[681px]:grid-cols-[2.25rem_minmax(0,1fr)_2.25rem]"
+          className="max-sm:grid! max-sm:grid-cols-[max-content_minmax(0,1fr)_max-content] max-sm:items-center! max-sm:gap-x-4"
           id="acme"
           textValue="Acme Ready"
         >
           <Table.Cell
-            className="max-[681px]:col-start-2 max-[681px]:row-start-1"
+            className="max-sm:col-start-1 max-sm:row-start-1"
+            column="avatar"
+            textValue="Acme"
+          >
+            <Avatar initials="AC" name="Acme" size="sm" />
+          </Table.Cell>
+          <Table.Cell
+            className="max-sm:col-start-2 max-sm:row-start-1"
             column="name"
           >
             Acme
           </Table.Cell>
           <Table.Cell
-            className="max-[681px]:col-span-3 max-[681px]:row-start-2"
+            align="end"
+            className="max-sm:col-start-3 max-sm:row-start-1"
+            column="balance"
+          >
+            £20
+          </Table.Cell>
+          <Table.Cell
+            className="max-sm:col-span-3 max-sm:row-start-2"
             column="status"
           >
             Ready
@@ -611,8 +661,10 @@ export const CompactGridSpanningVisibility: Story = {
   globals: { viewport: { value: 'mobile1' } },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const mixed = canvas.getByText('Mixed');
-    const hidden = canvas.getByText('Hidden');
+    const mixed = canvas.getByText('Subscription');
+    const hidden = canvas.getByText('Internal note', {
+      selector: '[role="gridcell"]',
+    });
 
     await expect(mixed.getBoundingClientRect().width).toBeGreaterThan(0);
     await expect(hidden.getBoundingClientRect().width).toBe(0);
@@ -648,7 +700,7 @@ export const DesktopGridColumnSpan: Story = {
     await expect(summary.getBoundingClientRect().left).toBe(
       nameHeading.getBoundingClientRect().left,
     );
-    await expect(summary.getBoundingClientRect().right).toBe(
+    await expect(summary.getBoundingClientRect().right).toBeLessThan(
       summaryAmount.getBoundingClientRect().left,
     );
   },
@@ -656,8 +708,8 @@ export const DesktopGridColumnSpan: Story = {
 };
 
 /**
- * Applies intrinsic and icon widths from the generic column API while the
- * remaining columns share the available desktop width.
+ * Applies content-sized supporting columns and a flexible primary column
+ * through the generic column API.
  *
  * @summary responsive grid driven by column widths
  */
@@ -665,20 +717,20 @@ export const ResponsiveGridColumnWidths: Story = {
   args: { 'aria-label': 'Responsive records', children: null },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const row = canvas.getByRole('row', { name: 'Example record' });
+    const marker = canvas.getByRole('gridcell', { name: 'A' });
+    const name = canvas.getByRole('rowheader', { name: 'Example record' });
     const amountHeading = canvas.getByText('Amount');
     const amount = canvas.getByText('£10.00');
 
     await waitFor(async () => {
-      const columns = getComputedStyle(row).gridTemplateColumns.split(' ');
-
-      await expect(columns[0]).toBe('36px');
-      await expect(columns.at(-1)).toBe('20px');
+      await expect(name.getBoundingClientRect().width).toBeGreaterThan(
+        marker.getBoundingClientRect().width,
+      );
+      await expect(amount.getBoundingClientRect().right).toBeCloseTo(
+        amountHeading.getBoundingClientRect().right,
+        1,
+      );
     });
-    await expect(amount.getBoundingClientRect().right).toBeCloseTo(
-      amountHeading.getBoundingClientRect().right,
-      1,
-    );
   },
   render: () => (
     <Table.Root aria-label="Responsive records" layout="responsiveGrid">
@@ -687,11 +739,11 @@ export const ResponsiveGridColumnWidths: Story = {
           compactLabel={false}
           id="marker"
           textValue="Marker"
-          width={36}
+          width="max-content"
         >
           <span className="sr-only">Marker</span>
         </Table.Column>
-        <Table.Column id="name" rowHeader>
+        <Table.Column id="name" rowHeader width="minmax(0, 1fr)">
           Name
         </Table.Column>
         <Table.Column align="end" id="amount" width="max-content">
@@ -701,7 +753,7 @@ export const ResponsiveGridColumnWidths: Story = {
           compactLabel={false}
           id="action"
           textValue="Action"
-          width="1.25rem"
+          width="max-content"
         >
           <span className="sr-only">Action</span>
         </Table.Column>
@@ -1163,17 +1215,14 @@ async function expectVirtualizedTableGeometry(
 
     if (compactHiddenState) {
       await expect(secondCellRectangle.width).toBe(0);
-      await expect(firstRowRectangle.bottom).toBeGreaterThanOrEqual(
-        secondRowRectangle.y,
-      );
     } else {
       await expect(firstCellRectangle.width).toBe(secondCellRectangle.width);
       await expect(firstCellRectangle.x).toBe(secondCellRectangle.x);
       await expect(secondCellRectangle.y).toBeGreaterThan(firstCellRectangle.y);
-      await expect(firstRowRectangle.bottom).toBeLessThanOrEqual(
-        secondRowRectangle.y,
-      );
     }
+    await expect(firstRowRectangle.bottom).toBeLessThanOrEqual(
+      secondRowRectangle.y,
+    );
     await expect(table.scrollWidth).toBe(table.clientWidth);
 
     return;

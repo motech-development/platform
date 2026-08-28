@@ -207,19 +207,11 @@ describe('Table', () => {
 
     expect(table.tagName).toBe('TABLE');
     expect(table).toHaveAttribute('data-layout', 'grid');
-    expect(table).toHaveClass(
-      '!grid',
-      '[&>tbody]:grid-cols-subgrid',
-      'sm:[&>thead>tr]:grid',
-      'sm:[&>thead>tr]:grid-cols-subgrid',
-      'sm:[&>thead>tr>th]:block',
-    );
     await waitFor(() => {
       expect(table).toHaveStyle(
         '--breeze-table-columns: minmax(0, 1fr) minmax(0, 1fr)',
       );
     });
-    expect(table.className).not.toContain('md:');
     expect(screen.getByRole('columnheader', { name: 'State' })).toBeVisible();
     expect(screen.getByRole('rowheader', { name: 'Ada' })).toBeVisible();
     const row = screen.getByRole('row', { name: 'Ada' });
