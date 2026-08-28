@@ -644,7 +644,6 @@ function TransactionDayBody({
   items,
   locale,
   origin,
-  pending,
 }: Readonly<{
   companyId: string;
   currencyCode: string;
@@ -652,7 +651,6 @@ function TransactionDayBody({
   items: readonly LedgerTransaction[];
   locale: string;
   origin: TransactionLedgerOrigin;
-  pending: boolean;
 }>) {
   const { t } = useTranslation('transactions');
   const date = dayLabel(`${day}T00:00:00.000Z`, locale);
@@ -663,27 +661,22 @@ function TransactionDayBody({
       <Table.Row
         id={`${day}-total`}
         presentation="section"
-        textValue={
-          pending
-            ? date
-            : t('{{date}}, confirmed daily total {{total}}', { date, total })
-        }
+        textValue={t('{{date}}, confirmed daily total {{total}}', {
+          date,
+          total,
+        })}
       >
         <Table.Cell column="transaction">
           <Typography as="span" level="label">
             {date}
           </Typography>
         </Table.Cell>
-        <Table.Cell column={transactionContextColumn(pending)}>
-          {null}
-        </Table.Cell>
+        <Table.Cell column={transactionContextColumn(false)}>{null}</Table.Cell>
         <Table.Cell align="end" column="amount">
-          {pending ? null : (
-            <Typography as="span" level="label" tabularNumbers>
-              <VisuallyHidden>{t('Confirmed daily total: ')}</VisuallyHidden>
-              {total}
-            </Typography>
-          )}
+          <Typography as="span" level="label" tabularNumbers>
+            <VisuallyHidden>{t('Confirmed daily total: ')}</VisuallyHidden>
+            {total}
+          </Typography>
         </Table.Cell>
         <Table.Cell column="actions">{null}</Table.Cell>
       </Table.Row>
@@ -695,7 +688,7 @@ function TransactionDayBody({
           key={transaction.id}
           locale={locale}
           origin={origin}
-          pendingCollection={pending}
+          pendingCollection={false}
           transaction={transaction}
         />
       ))}
@@ -730,7 +723,6 @@ function TransactionBodies({
         key={day}
         locale={locale}
         origin={origin}
-        pending={pending}
       />
     ));
   }

@@ -721,6 +721,30 @@ describe('TransactionEditPage', () => {
     expect(
       screen.getByRole('heading', { name: 'Edit transaction' }),
     ).toBeVisible();
+    await act(() => {
+      view.rerender(
+        <BreezeProvider locale="en-GB">
+          <TransactionEditPage
+            companyId="company-id"
+            origin="pending"
+            transactionId="transaction-id"
+          />
+        </BreezeProvider>,
+      );
+      return Promise.resolve();
+    });
+    expect(mocks.deleteFile).toHaveBeenCalledOnce();
+
+    mocks.deleteFile.mockResolvedValue({
+      data: { deleteFile: { path: 'company-id/upload-id.pdf' } },
+    });
+    await userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Discard changes' }),
+    );
+
+    await waitFor(() => expect(mocks.navigate).toHaveBeenCalledOnce());
+    expect(mocks.deleteFile).toHaveBeenCalledTimes(2);
   });
 
   it('retries both transaction and form prerequisites after a refresh failure', async () => {

@@ -113,13 +113,7 @@ function TransactionEditDrawer({
   useEffect(() => {
     if (published && !pending && !publicationCloseRequested.current) {
       publicationCloseRequested.current = true;
-      discardChanges()
-        .then((discarded) => {
-          if (!discarded) publicationCloseRequested.current = false;
-        })
-        .catch(() => {
-          publicationCloseRequested.current = false;
-        });
+      discardChanges().catch(() => undefined);
     }
   }, [discardChanges, pending, published]);
 
