@@ -337,7 +337,9 @@ export const ResponsiveGridColumnVariant: Story = {
     const mediaCell = canvas.getByRole('gridcell', { name: 'AC' });
     const primaryCell = canvas.getByRole('rowheader', { name: 'Acme' });
 
-    await expect(mediaHeading.getBoundingClientRect().width).toBeCloseTo(36, 1);
+    await waitFor(() =>
+      expect(mediaHeading.getBoundingClientRect().width).toBeCloseTo(36, 1),
+    );
     await expect(actionHeading.getBoundingClientRect().width).toBeCloseTo(
       20,
       1,
@@ -505,9 +507,11 @@ export const CompactGridColumns: Story = {
     const summaryAmount = within(summaryRow).getByRole('gridcell', {
       name: '£40',
     });
-    const tracks = getComputedStyle(table).gridTemplateColumns.split(' ');
-
-    await expect(tracks).toHaveLength(2);
+    await waitFor(() =>
+      expect(
+        getComputedStyle(table).gridTemplateColumns.split(' '),
+      ).toHaveLength(2),
+    );
     await expect(date.getBoundingClientRect().width).toBe(0);
     await expect(name.getBoundingClientRect().right).toBeLessThanOrEqual(
       amount.getBoundingClientRect().left,
@@ -635,9 +639,11 @@ export const DesktopGridColumnSpan: Story = {
       name: '£40',
     });
     const nameHeading = canvas.getByRole('columnheader', { name: 'Name' });
-    const tracks = getComputedStyle(table).gridTemplateColumns.split(' ');
-
-    await expect(tracks).toHaveLength(5);
+    await waitFor(() =>
+      expect(
+        getComputedStyle(table).gridTemplateColumns.split(' '),
+      ).toHaveLength(5),
+    );
     await expect(getComputedStyle(summary).gridColumn).toBe('span 2 / span 2');
     await expect(summary.getBoundingClientRect().left).toBe(
       nameHeading.getBoundingClientRect().left,
@@ -660,12 +666,15 @@ export const ResponsiveGridColumnWidths: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const row = canvas.getByRole('row', { name: 'Example record' });
-    const columns = getComputedStyle(row).gridTemplateColumns.split(' ');
     const amountHeading = canvas.getByText('Amount');
     const amount = canvas.getByText('£10.00');
 
-    await expect(columns[0]).toBe('36px');
-    await expect(columns.at(-1)).toBe('20px');
+    await waitFor(async () => {
+      const columns = getComputedStyle(row).gridTemplateColumns.split(' ');
+
+      await expect(columns[0]).toBe('36px');
+      await expect(columns.at(-1)).toBe('20px');
+    });
     await expect(amount.getBoundingClientRect().right).toBeCloseTo(
       amountHeading.getBoundingClientRect().right,
       1,
