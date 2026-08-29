@@ -588,7 +588,7 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">93 components ok</span><span class="filter-pill ok" aria-disabled="true">341 stories ok</span><a class="filter-pill ok" data-k="docs" href="#filter-docs">105 docs ok</a></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">93 components ok</span><span class="filter-pill ok" aria-disabled="true">342 stories ok</span><a class="filter-pill ok" data-k="docs" href="#filter-docs">105 docs ok</a></div>
   </div>
 </header>
 <main>
@@ -23969,7 +23969,7 @@ size?: ControlSize</code></pre>
       <div class="badges">
         <label for="c-68-collections-table-props" class="badge ok as-toggle">16 prop types</label>
         
-        <label for="c-68-collections-table-stories" class="badge ok as-toggle">22 stories</label>
+        <label for="c-68-collections-table-stories" class="badge ok as-toggle">23 stories</label>
         <label for="c-68-collections-table-docs" class="badge ok as-toggle">1 doc</label>
         <label for="c-68-collections-table-subcomponents" class="badge ok as-toggle">8 subcomponents</label>
       </div>
@@ -24286,7 +24286,7 @@ virtualization?: CollectionVirtualization</code></pre>
       &lt;/Table.Column&gt;
       &lt;Table.Column id=&quot;number&quot;&gt;Number&lt;/Table.Column&gt;
       &lt;Table.Column id=&quot;contact&quot;&gt;Contact&lt;/Table.Column&gt;
-      &lt;Table.Column compactLabel={false} id=&quot;action&quot;&gt;
+      &lt;Table.Column align=&quot;end&quot; compactLabel={false} id=&quot;action&quot;&gt;
         Action
       &lt;/Table.Column&gt;
     &lt;/Table.Header&gt;
@@ -24296,7 +24296,18 @@ virtualization?: CollectionVirtualization</code></pre>
         &lt;Table.Cell column=&quot;name&quot;&gt;Acme&lt;/Table.Cell&gt;
         &lt;Table.Cell column=&quot;number&quot;&gt;123&lt;/Table.Cell&gt;
         &lt;Table.Cell column=&quot;contact&quot;&gt;contact@example.test&lt;/Table.Cell&gt;
-        &lt;Table.Cell column=&quot;action&quot;&gt;View&lt;/Table.Cell&gt;
+        &lt;Table.Cell align=&quot;end&quot; column=&quot;action&quot;&gt;
+          View
+        &lt;/Table.Cell&gt;
+      &lt;/Table.Row&gt;
+      &lt;Table.Row id=&quot;northwind&quot; textValue=&quot;Northwind 456 hello@example.test&quot;&gt;
+        &lt;Table.Cell column=&quot;media&quot;&gt;NW&lt;/Table.Cell&gt;
+        &lt;Table.Cell column=&quot;name&quot;&gt;Northwind&lt;/Table.Cell&gt;
+        &lt;Table.Cell column=&quot;number&quot;&gt;456&lt;/Table.Cell&gt;
+        &lt;Table.Cell column=&quot;contact&quot;&gt;hello@example.test&lt;/Table.Cell&gt;
+        &lt;Table.Cell align=&quot;end&quot; column=&quot;action&quot;&gt;
+          View details
+        &lt;/Table.Cell&gt;
       &lt;/Table.Row&gt;
     &lt;/Table.Body&gt;
   &lt;/Table.Root&gt;
@@ -24335,34 +24346,36 @@ virtualization?: CollectionVirtualization</code></pre>
       &lt;/Table.Header&gt;
       &lt;Table.Body&gt;
         &lt;Table.Row id=&quot;subscription&quot; textValue=&quot;Subscription 12 August £20&quot;&gt;
-          &lt;Table.Cell column=&quot;marker&quot;&gt;Marker&lt;/Table.Cell&gt;
+          &lt;Table.Cell column=&quot;marker&quot;&gt;Purchase&lt;/Table.Cell&gt;
           &lt;Table.Cell column=&quot;name&quot;&gt;Subscription&lt;/Table.Cell&gt;
           &lt;Table.Cell column=&quot;date&quot;&gt;12 August&lt;/Table.Cell&gt;
           &lt;Table.Cell align=&quot;end&quot; column=&quot;amount&quot;&gt;
             £20
           &lt;/Table.Cell&gt;
-          &lt;Table.Cell column=&quot;actions&quot;&gt;Actions&lt;/Table.Cell&gt;
+          &lt;Table.Cell column=&quot;actions&quot;&gt;View&lt;/Table.Cell&gt;
         &lt;/Table.Row&gt;
         &lt;Table.Row id=&quot;summary&quot; textValue=&quot;Summary £40&quot;&gt;
-          &lt;Table.Cell column=&quot;marker&quot;&gt;Summary marker&lt;/Table.Cell&gt;
+          &lt;Table.Cell column=&quot;marker&quot;&gt;Total&lt;/Table.Cell&gt;
           &lt;Table.Cell colSpan={2} column=&quot;name&quot;&gt;
             Summary
           &lt;/Table.Cell&gt;
           &lt;Table.Cell align=&quot;end&quot; column=&quot;amount&quot;&gt;
             £40
           &lt;/Table.Cell&gt;
-          &lt;Table.Cell column=&quot;actions&quot;&gt;Summary actions&lt;/Table.Cell&gt;
+          &lt;Table.Cell column=&quot;actions&quot;&gt;View summary&lt;/Table.Cell&gt;
         &lt;/Table.Row&gt;
         &lt;Table.Row id=&quot;editable&quot; textValue=&quot;Editable reference&quot;&gt;
-          &lt;Table.Cell column=&quot;marker&quot;&gt;Editable marker&lt;/Table.Cell&gt;
+          &lt;Table.Cell column=&quot;marker&quot;&gt;Purchase&lt;/Table.Cell&gt;
           &lt;Table.Cell column=&quot;name&quot;&gt;
             &lt;TextField.Root aria-label=&quot;Reference&quot; defaultValue=&quot;AB&quot;&gt;
               &lt;TextField.Input /&gt;
             &lt;/TextField.Root&gt;
           &lt;/Table.Cell&gt;
-          &lt;Table.Cell column=&quot;date&quot;&gt;Editable date&lt;/Table.Cell&gt;
-          &lt;Table.Cell column=&quot;amount&quot;&gt;Editable amount&lt;/Table.Cell&gt;
-          &lt;Table.Cell column=&quot;actions&quot;&gt;Editable actions&lt;/Table.Cell&gt;
+          &lt;Table.Cell column=&quot;date&quot;&gt;13 August&lt;/Table.Cell&gt;
+          &lt;Table.Cell align=&quot;end&quot; column=&quot;amount&quot;&gt;
+            £15
+          &lt;/Table.Cell&gt;
+          &lt;Table.Cell column=&quot;actions&quot;&gt;View&lt;/Table.Cell&gt;
         &lt;/Table.Row&gt;
       &lt;/Table.Body&gt;
     &lt;/Table.Root&gt;
@@ -24378,26 +24391,51 @@ virtualization?: CollectionVirtualization</code></pre>
               <div class="hint">Preserves consumer-owned compact grid placement for cells that do not use the compound API&#39;s `colSpan` contract.</div>
               <pre><code>const CompactConsumerGridPlacement = () =&gt; (
   &lt;Table.Root aria-label=&quot;Compact consumer records&quot; layout=&quot;responsiveGrid&quot;&gt;
-    &lt;Table.Header className=&quot;max-[681px]:hidden!&quot;&gt;
-      &lt;Table.Column id=&quot;name&quot; rowHeader&gt;
+    &lt;Table.Header className=&quot;max-sm:hidden!&quot;&gt;
+      &lt;Table.Column compactLabel={false} id=&quot;avatar&quot; width=&quot;max-content&quot;&gt;
+        Company
+      &lt;/Table.Column&gt;
+      &lt;Table.Column compactLabel={false} id=&quot;name&quot; rowHeader&gt;
         Name
+      &lt;/Table.Column&gt;
+      &lt;Table.Column
+        align=&quot;end&quot;
+        compactLabel={false}
+        id=&quot;balance&quot;
+        width=&quot;max-content&quot;
+      &gt;
+        Balance
       &lt;/Table.Column&gt;
       &lt;Table.Column id=&quot;status&quot;&gt;Status&lt;/Table.Column&gt;
     &lt;/Table.Header&gt;
-    &lt;Table.Body className=&quot;max-[681px]:block!&quot;&gt;
+    &lt;Table.Body className=&quot;max-sm:block!&quot;&gt;
       &lt;Table.Row
-        className=&quot;max-[681px]:grid! max-[681px]:grid-cols-[2.25rem_minmax(0,1fr)_2.25rem]&quot;
+        className=&quot;max-sm:grid! max-sm:grid-cols-[max-content_minmax(0,1fr)_max-content] max-sm:items-center! max-sm:gap-x-4&quot;
         id=&quot;acme&quot;
         textValue=&quot;Acme Ready&quot;
       &gt;
         &lt;Table.Cell
-          className=&quot;max-[681px]:col-start-2 max-[681px]:row-start-1&quot;
+          className=&quot;max-sm:col-start-1 max-sm:row-start-1&quot;
+          column=&quot;avatar&quot;
+          textValue=&quot;Acme&quot;
+        &gt;
+          &lt;Avatar initials=&quot;AC&quot; name=&quot;Acme&quot; size=&quot;sm&quot; /&gt;
+        &lt;/Table.Cell&gt;
+        &lt;Table.Cell
+          className=&quot;max-sm:col-start-2 max-sm:row-start-1&quot;
           column=&quot;name&quot;
         &gt;
           Acme
         &lt;/Table.Cell&gt;
         &lt;Table.Cell
-          className=&quot;max-[681px]:col-span-3 max-[681px]:row-start-2&quot;
+          align=&quot;end&quot;
+          className=&quot;max-sm:col-start-3 max-sm:row-start-1&quot;
+          column=&quot;balance&quot;
+        &gt;
+          £20
+        &lt;/Table.Cell&gt;
+        &lt;Table.Cell
+          className=&quot;max-sm:col-span-3 max-sm:row-start-2&quot;
           column=&quot;status&quot;
         &gt;
           Ready
@@ -24423,22 +24461,26 @@ virtualization?: CollectionVirtualization</code></pre>
     &gt;
       &lt;Table.Header&gt;
         &lt;Table.Column id=&quot;hidden-a&quot; rowHeader&gt;
-          Hidden A
+          Record
         &lt;/Table.Column&gt;
-        &lt;Table.Column id=&quot;visible-b&quot;&gt;Visible B&lt;/Table.Column&gt;
-        &lt;Table.Column id=&quot;hidden-c&quot;&gt;Hidden C&lt;/Table.Column&gt;
-        &lt;Table.Column id=&quot;hidden-d&quot;&gt;Hidden D&lt;/Table.Column&gt;
-        &lt;Table.Column id=&quot;visible-e&quot;&gt;Visible E&lt;/Table.Column&gt;
+        &lt;Table.Column id=&quot;visible-b&quot;&gt;Description&lt;/Table.Column&gt;
+        &lt;Table.Column id=&quot;hidden-c&quot;&gt;Category&lt;/Table.Column&gt;
+        &lt;Table.Column id=&quot;hidden-d&quot;&gt;Internal note&lt;/Table.Column&gt;
+        &lt;Table.Column align=&quot;end&quot; id=&quot;visible-e&quot; width=&quot;max-content&quot;&gt;
+          Amount
+        &lt;/Table.Column&gt;
       &lt;/Table.Header&gt;
       &lt;Table.Body&gt;
-        &lt;Table.Row id=&quot;entry&quot; textValue=&quot;Mixed Hidden Remainder&quot;&gt;
+        &lt;Table.Row id=&quot;entry&quot; textValue=&quot;Subscription £20&quot;&gt;
           &lt;Table.Cell colSpan={2} column=&quot;hidden-a&quot;&gt;
-            Mixed
+            Subscription
           &lt;/Table.Cell&gt;
           &lt;Table.Cell colSpan={2} column=&quot;hidden-c&quot;&gt;
-            Hidden
+            Internal note
           &lt;/Table.Cell&gt;
-          &lt;Table.Cell column=&quot;visible-e&quot;&gt;Remainder&lt;/Table.Cell&gt;
+          &lt;Table.Cell align=&quot;end&quot; column=&quot;visible-e&quot;&gt;
+            £20
+          &lt;/Table.Cell&gt;
         &lt;/Table.Row&gt;
       &lt;/Table.Body&gt;
     &lt;/Table.Root&gt;
@@ -24478,34 +24520,36 @@ virtualization?: CollectionVirtualization</code></pre>
       &lt;/Table.Header&gt;
       &lt;Table.Body&gt;
         &lt;Table.Row id=&quot;subscription&quot; textValue=&quot;Subscription 12 August £20&quot;&gt;
-          &lt;Table.Cell column=&quot;marker&quot;&gt;Marker&lt;/Table.Cell&gt;
+          &lt;Table.Cell column=&quot;marker&quot;&gt;Purchase&lt;/Table.Cell&gt;
           &lt;Table.Cell column=&quot;name&quot;&gt;Subscription&lt;/Table.Cell&gt;
           &lt;Table.Cell column=&quot;date&quot;&gt;12 August&lt;/Table.Cell&gt;
           &lt;Table.Cell align=&quot;end&quot; column=&quot;amount&quot;&gt;
             £20
           &lt;/Table.Cell&gt;
-          &lt;Table.Cell column=&quot;actions&quot;&gt;Actions&lt;/Table.Cell&gt;
+          &lt;Table.Cell column=&quot;actions&quot;&gt;View&lt;/Table.Cell&gt;
         &lt;/Table.Row&gt;
         &lt;Table.Row id=&quot;summary&quot; textValue=&quot;Summary £40&quot;&gt;
-          &lt;Table.Cell column=&quot;marker&quot;&gt;Summary marker&lt;/Table.Cell&gt;
+          &lt;Table.Cell column=&quot;marker&quot;&gt;Total&lt;/Table.Cell&gt;
           &lt;Table.Cell colSpan={2} column=&quot;name&quot;&gt;
             Summary
           &lt;/Table.Cell&gt;
           &lt;Table.Cell align=&quot;end&quot; column=&quot;amount&quot;&gt;
             £40
           &lt;/Table.Cell&gt;
-          &lt;Table.Cell column=&quot;actions&quot;&gt;Summary actions&lt;/Table.Cell&gt;
+          &lt;Table.Cell column=&quot;actions&quot;&gt;View summary&lt;/Table.Cell&gt;
         &lt;/Table.Row&gt;
         &lt;Table.Row id=&quot;editable&quot; textValue=&quot;Editable reference&quot;&gt;
-          &lt;Table.Cell column=&quot;marker&quot;&gt;Editable marker&lt;/Table.Cell&gt;
+          &lt;Table.Cell column=&quot;marker&quot;&gt;Purchase&lt;/Table.Cell&gt;
           &lt;Table.Cell column=&quot;name&quot;&gt;
             &lt;TextField.Root aria-label=&quot;Reference&quot; defaultValue=&quot;AB&quot;&gt;
               &lt;TextField.Input /&gt;
             &lt;/TextField.Root&gt;
           &lt;/Table.Cell&gt;
-          &lt;Table.Cell column=&quot;date&quot;&gt;Editable date&lt;/Table.Cell&gt;
-          &lt;Table.Cell column=&quot;amount&quot;&gt;Editable amount&lt;/Table.Cell&gt;
-          &lt;Table.Cell column=&quot;actions&quot;&gt;Editable actions&lt;/Table.Cell&gt;
+          &lt;Table.Cell column=&quot;date&quot;&gt;13 August&lt;/Table.Cell&gt;
+          &lt;Table.Cell align=&quot;end&quot; column=&quot;amount&quot;&gt;
+            £15
+          &lt;/Table.Cell&gt;
+          &lt;Table.Cell column=&quot;actions&quot;&gt;View&lt;/Table.Cell&gt;
         &lt;/Table.Row&gt;
       &lt;/Table.Body&gt;
     &lt;/Table.Root&gt;
@@ -24518,7 +24562,7 @@ virtualization?: CollectionVirtualization</code></pre>
                 <span class="badge ok">story ok</span>
               </div>
               <div>responsive grid driven by column widths</div>
-              <div class="hint">Applies intrinsic and icon widths from the generic column API while the remaining columns share the available desktop width.</div>
+              <div class="hint">Applies content-sized supporting columns and a flexible primary column through the generic column API.</div>
               <pre><code>const ResponsiveGridColumnWidths = () =&gt; (
   &lt;Table.Root aria-label=&quot;Responsive records&quot; layout=&quot;responsiveGrid&quot;&gt;
     &lt;Table.Header&gt;
@@ -24526,11 +24570,11 @@ virtualization?: CollectionVirtualization</code></pre>
         compactLabel={false}
         id=&quot;marker&quot;
         textValue=&quot;Marker&quot;
-        width={36}
+        width=&quot;max-content&quot;
       &gt;
         &lt;span className=&quot;sr-only&quot;&gt;Marker&lt;/span&gt;
       &lt;/Table.Column&gt;
-      &lt;Table.Column id=&quot;name&quot; rowHeader&gt;
+      &lt;Table.Column id=&quot;name&quot; rowHeader width=&quot;minmax(0, 1fr)&quot;&gt;
         Name
       &lt;/Table.Column&gt;
       &lt;Table.Column align=&quot;end&quot; id=&quot;amount&quot; width=&quot;max-content&quot;&gt;
@@ -24540,7 +24584,7 @@ virtualization?: CollectionVirtualization</code></pre>
         compactLabel={false}
         id=&quot;action&quot;
         textValue=&quot;Action&quot;
-        width=&quot;1.25rem&quot;
+        width=&quot;max-content&quot;
       &gt;
         &lt;span className=&quot;sr-only&quot;&gt;Action&lt;/span&gt;
       &lt;/Table.Column&gt;
@@ -24710,7 +24754,16 @@ virtualization?: CollectionVirtualization</code></pre>
               </div>
               <div>compact variable-height virtualized table</div>
               <div class="hint">Verifies variable-height row windowing and the loading sentinel against the stacked compact record presentation without horizontal overflow.</div>
-              <pre><code>const VariableVirtualizationAndLoadingCompact = () =&gt; &lt;VirtualizedTable compactHiddenState /&gt;;</code></pre>
+              <pre><code>const VariableVirtualizationAndLoadingCompact = () =&gt; &lt;VirtualizedTable /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Variable Virtualization Compact Hidden Columns</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              <div>compact virtualization with an explicitly hidden column</div>
+              <div class="hint">Keeps virtual row measurements and separators aligned when a supporting column is explicitly hidden in the compact presentation.</div>
+              <pre><code>const VariableVirtualizationCompactHiddenColumns = () =&gt; &lt;VirtualizedTable compactHiddenState /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -24884,9 +24937,9 @@ Column, row, and section identifiers are stable `string | number` keys. Do not u
 
 ## Responsive layouts and columns
 
-`layout=&quot;responsive&quot;` is the default. It presents compact labelled records below the Breeze small breakpoint and native table columns at wider sizes. `responsiveGrid` keeps the same compact treatment but uses explicit grid tracks at wider sizes. Its `desktopColumns` variant defaults to `equal`; use `desktopColumns=&quot;mediaDetailsAction&quot;` for a five-column media, primary detail, secondary detail, tertiary detail, and trailing action arrangement. `grid` keeps CSS grid structure at all sizes. Use `responsiveGrid` or `grid` only when aligned custom geometry fits the content.
+`layout=&quot;responsive&quot;` is the default. It presents compact labelled records below the Breeze small breakpoint and native table columns at wider sizes. `responsiveGrid` keeps the same compact treatment but shares CSS grid tracks across headings and rows at wider sizes, so content-sized columns remain aligned. Its `desktopColumns` variant defaults to `equal`; use `desktopColumns=&quot;mediaDetailsAction&quot;` for content-sized media and action columns around proportionally flexible primary, secondary, and tertiary details. It does not impose fixed icon widths. `grid` shares those desktop tracks and keeps CSS grid structure at compact sizes too. Both grid layouts provide spacing between columns. Use `responsiveGrid` or `grid` only when aligned custom geometry fits the content.
 
-`Table.Column compactLabel` defaults to `true`; a literal string heading becomes the compact label. When the heading contains formatting, icons, or other React nodes, provide explicit `textValue`. Set `compactLabel` to `false` for a disclosure or control column that should not label compact cells. Set `Table.Root compactHiddenColumns` to one stable key, a readonly array, or a `ReadonlySet` of supporting desktop columns intentionally represented inside another compact cell; one-shot iterators are not supported. Matching cells and grid tracks are omitted below the Breeze small breakpoint while remaining available at wider widths. Declaring this at the root ensures the compact state is present in server-rendered markup. `align` is `start`, `center`, or `end` and defaults to `start`. `width` accepts a CSS width or grid-track size such as `&quot;12rem&quot;`, `&quot;max-content&quot;`, or `&quot;minmax(8rem, 1fr)&quot;`; numbers are pixels. Omitted columns share the remaining width in an equal `responsiveGrid`. `boundary=&quot;strong&quot;` adds a stronger lower edge; `none` is the default.
+`Table.Column compactLabel` defaults to `true`; a literal string heading becomes the compact label. When the heading contains formatting, icons, or other React nodes, provide explicit `textValue`. Set `compactLabel` to `false` for a disclosure or control column that should not label compact cells. Set `Table.Root compactHiddenColumns` to one stable key, a readonly array, or a `ReadonlySet` of supporting desktop columns intentionally represented inside another compact cell; one-shot iterators are not supported. Matching cells and grid tracks are omitted below the Breeze small breakpoint while remaining available at wider widths. Declaring this at the root ensures the compact state is present in server-rendered markup. `align` is `start`, `center`, or `end` and defaults to `start`. `width` accepts a CSS width or grid-track size; numbers are pixels. Prefer `&quot;auto&quot;` or `&quot;max-content&quot;` for content-sized grid columns and fractional tracks for flexible proportions. For example, `&quot;minmax(0, 2fr)&quot;` gives a detail column twice the share of a `&quot;minmax(0, 1fr)&quot;` column. Omitted columns share the remaining width in an equal `responsiveGrid`. `boundary=&quot;strong&quot;` adds a stronger lower edge; `none` is the default.
 
 `Table.Cell colSpan` follows native table semantics and spans the same number of CSS-grid tracks in `grid` and `responsiveGrid` layouts. Use a positive integer, start the cell in the first column it covers, and omit the covered cells from that row.
 
@@ -24900,7 +24953,7 @@ Selection is disabled until you supply selection state, a selection callback, or
 
 Sorting never sorts consumer data. Mark a column `sortable`, then either use `defaultSort` for retained uncontrolled sort metadata or pass controlled `sort` with `onSortChange`. A `TableSort` is `{ column: string | number, direction: &#39;ascending&#39; | &#39;descending&#39; }`. Reorder the supplied rows in response. `onSortChange` receives the next complete descriptor. Read-only mode suppresses sort changes as well as selection changes.
 
-`Table.Row onAction` receives that row&#39;s stable key. Add `Table.Disclosure column=&quot;actions&quot;` to an actionable row when a visual arrow is useful, and define a matching column with `compactLabel={false}` and an explicit icon-sized width. `position=&quot;overlay&quot;` is the disclosure default for compact records; `flow` keeps it in an explicit track. Buttons and links inside cells remain independent controls.
+`Table.Row onAction` receives that row&#39;s stable key. Add `Table.Disclosure column=&quot;actions&quot;` to an actionable row when a visual arrow is useful, and define a matching column with `compactLabel={false}` and `width=&quot;max-content&quot;` when using a grid layout. `position=&quot;overlay&quot;` is the disclosure default for compact records; `flow` keeps it in an explicit track. Buttons and links inside cells remain independent controls.
 
 ```tsx
 import { useState } from &#39;react&#39;;
