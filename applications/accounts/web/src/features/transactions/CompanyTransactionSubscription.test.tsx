@@ -1,29 +1,58 @@
-import { render } from '@testing-library/react';
+import { BreezeProvider } from '@motech-development/breeze-ui';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AccountsOwnerId } from '../../auth/owner';
-import { CompanyTransactionSubscription } from './CompanyTransactionSubscription';
+import {
+  CompanyTransactionSubscription,
+  TransactionSubscriptionAlert,
+} from './CompanyTransactionSubscription';
 
 const ownerId = 'owner-id' as AccountsOwnerId;
 
 const mocks = vi.hoisted(() => ({
+  error: undefined as Error | undefined,
   options: undefined as
     | {
         onData?: (value: unknown) => void;
       }
     | undefined,
+  restart: vi.fn(),
 }));
 
 vi.mock('@apollo/client/react', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@apollo/client/react')>()),
   useSubscription: (_query: unknown, options: typeof mocks.options) => {
     mocks.options = options;
-    return {};
+    return { error: mocks.error, restart: mocks.restart };
   },
 }));
 
 describe('CompanyTransactionSubscription', () => {
   beforeEach(() => {
+    mocks.error = undefined;
     mocks.options = undefined;
+    mocks.restart.mockReset();
+  });
+
+  it('shows a retry when live Transaction updates fail', async () => {
+    mocks.error = new Error('Subscription unavailable');
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <CompanyTransactionSubscription companyId="company-id" owner={ownerId}>
+          <TransactionSubscriptionAlert />
+        </CompanyTransactionSubscription>
+      </BreezeProvider>,
+    );
+
+    expect(
+      screen.getByText(
+        'Live transaction updates are unavailable. Try again to keep this page current.',
+      ),
+    ).toBeVisible();
+    await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
+    expect(mocks.restart).toHaveBeenCalledOnce();
   });
 
   it('refetches active queries when AppSync connects and reconnects', () => {

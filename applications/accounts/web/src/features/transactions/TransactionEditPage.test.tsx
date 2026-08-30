@@ -173,7 +173,7 @@ describe('TransactionEditPage', () => {
     mocks.uploadPresignedFile.mockReset();
   });
 
-  it('announces the initial Transaction load inside the drawer', () => {
+  it('shows the Transaction form skeleton inside the drawer while loading', () => {
     mocks.transactionQuery.loading = true;
 
     render(
@@ -186,7 +186,12 @@ describe('TransactionEditPage', () => {
       </BreezeProvider>,
     );
 
-    expect(screen.getByText('Loading Transaction…')).toBeVisible();
+    expect(
+      screen.getByRole('dialog', { name: 'Edit transaction' }),
+    ).toBeVisible();
+    expect(
+      screen.getByRole('status', { name: 'Loading transaction form' }),
+    ).toBeVisible();
   });
 
   it('offers retry when the Transaction is unavailable', async () => {

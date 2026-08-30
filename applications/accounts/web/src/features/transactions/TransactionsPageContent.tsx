@@ -9,6 +9,7 @@ import {
 } from '../../data/operations';
 import { TransactionsContentSkeleton } from '../loading/AccountsPageSkeletons';
 import { QueryRefreshAlert } from '../QueryRefreshAlert';
+import { TransactionSubscriptionAlert } from './CompanyTransactionSubscription';
 import { FinancialSummary } from './FinancialSummary';
 import { combineTransactions } from './transaction-list';
 import { TransactionLedger } from './TransactionLedger';
@@ -181,6 +182,7 @@ export function TransactionsPageContent({
         )}
         title={t('Transactions')}
       />
+      <TransactionSubscriptionAlert />
       {error && !data && !initiallyLoading ? (
         <TransactionPageError
           onRetry={() => Promise.all([confirmed.refetch(), pending.refetch()])}

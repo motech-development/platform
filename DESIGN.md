@@ -298,7 +298,7 @@ Full-page drawers and dialogs use the Overlay token. The attachment preview must
 - Pending rows are gray only when mixed into other transaction surfaces. Rows on the dedicated Pending transactions screen use the normal surface.
 - Do not show a status column or persistent status badges in transaction lists.
 - Missing attachments use a Danger warning triangle beside the transaction identity. “No invoice or receipt” appears only in the accessible hover/focus tooltip.
-- Scheduled transactions use a filled Action Blue clock with a “Scheduled transaction” tooltip. The pending screen shows the scheduled date without redundant “Yesterday” or “Scheduled” copy.
+- Scheduled transactions use a filled Action Blue calendar with a “Scheduled transaction” tooltip. The pending screen shows the scheduled date without redundant “Yesterday” or “Scheduled” copy.
 - Financial values align right and use tabular numerals. Hidden action headings remain visually hidden and must not receive loading placeholders.
 - Report download buttons are content-width controls aligned consistently within the Actions column.
 

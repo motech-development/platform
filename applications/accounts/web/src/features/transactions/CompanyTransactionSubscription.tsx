@@ -1,9 +1,37 @@
 import { useSubscription } from '@apollo/client/react';
 import { CONTROL_EVENTS_KEY } from 'aws-appsync-subscription-link';
-import type { ReactNode } from 'react';
+import { createContext, type ReactNode, useContext, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { AccountsOwnerId } from '../../auth/owner';
 import { ON_TRANSACTION } from '../../data/operations';
+import { QueryRefreshAlert } from '../QueryRefreshAlert';
 import { useAppSyncSubscriptionConnection } from '../subscriptions';
+
+interface TransactionSubscriptionStatus {
+  error: boolean;
+  retry: () => void;
+}
+
+const TransactionSubscriptionContext =
+  createContext<TransactionSubscriptionStatus | null>(null);
+
+export function TransactionSubscriptionAlert() {
+  const subscription = useContext(TransactionSubscriptionContext);
+  const { t } = useTranslation(['transactions', 'routing']);
+
+  if (!subscription?.error) return null;
+
+  return (
+    <QueryRefreshAlert
+      onRetry={subscription.retry}
+      retryLabel={t('Try again', { ns: 'routing' })}
+    >
+      {t(
+        'Live transaction updates are unavailable. Try again to keep this page current.',
+      )}
+    </QueryRefreshAlert>
+  );
+}
 
 export function CompanyTransactionSubscription({
   children,
@@ -15,7 +43,7 @@ export function CompanyTransactionSubscription({
   owner: AccountsOwnerId;
 }>) {
   const handleSubscriptionConnection = useAppSyncSubscriptionConnection();
-  useSubscription(ON_TRANSACTION, {
+  const { error, restart } = useSubscription(ON_TRANSACTION, {
     context: {
       controlMessages: { [CONTROL_EVENTS_KEY]: true },
     },
@@ -60,6 +88,14 @@ export function CompanyTransactionSubscription({
     },
     variables: { id: companyId, owner },
   });
+  const subscription = useMemo<TransactionSubscriptionStatus>(
+    () => ({ error: Boolean(error), retry: restart }),
+    [error, restart],
+  );
 
-  return children;
+  return (
+    <TransactionSubscriptionContext.Provider value={subscription}>
+      {children}
+    </TransactionSubscriptionContext.Provider>
+  );
 }

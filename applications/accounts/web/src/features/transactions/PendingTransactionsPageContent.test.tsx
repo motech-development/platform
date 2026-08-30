@@ -47,7 +47,10 @@ vi.mock('@tanstack/react-router', async (importOriginal) => ({
   useNavigate: () => vi.fn(),
 }));
 
-vi.mock('@motech-development/breeze-ui/icons', () => ({
+vi.mock('@motech-development/breeze-ui/icons', async (importOriginal) => ({
+  ...(await importOriginal<
+    typeof import('@motech-development/breeze-ui/icons')
+  >()),
   AddIcon: () => <svg aria-hidden="true" />,
   ArrowLeftIcon: () => <svg aria-hidden="true" />,
   ArrowRightIcon: () => <svg aria-hidden="true" />,

@@ -9,7 +9,6 @@ import {
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { expenseCategoryRowClassName } from '../companies/expense-category-layout';
-import { EntityTableSkeleton } from '../EntityTableSkeleton';
 import { FinancialSummarySkeleton } from '../transactions/FinancialSummary';
 import { TransactionLedgerSkeleton } from '../transactions/TransactionLedger';
 
@@ -28,32 +27,6 @@ export function LoadingSkeletonRegion({
 }
 
 export const FormSkeletonRegion = LoadingSkeletonRegion;
-
-export function CompaniesTableSkeleton() {
-  const { t } = useTranslation(['companies', 'routing']);
-
-  return (
-    <EntityTableSkeleton
-      actionLabel={t('Action')}
-      columns={{
-        actions: 'actions',
-        identity: 'avatar',
-        primary: 'company',
-        secondary: 'number',
-        tertiary: 'contact',
-      }}
-      identityLabel={t('Company')}
-      identityShape="square"
-      loadingLabel={t('Loading companies')}
-      loadingText={t('Loading', { ns: 'routing' })}
-      rowCount={3}
-      rowText={(index) =>
-        t('Loading company row {{count}}', { count: index + 1 })
-      }
-      tableLabel={t('Loading companies table')}
-    />
-  );
-}
 
 export function FormFieldSkeletons({ count }: Readonly<{ count: number }>) {
   return (

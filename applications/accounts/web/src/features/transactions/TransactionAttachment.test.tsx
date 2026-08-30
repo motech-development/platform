@@ -35,7 +35,10 @@ vi.mock('../../data/presigned-transfer', async (importOriginal) => ({
   downloadPresignedFile: mocks.download,
 }));
 
-vi.mock('file-saver', () => ({ saveAs: mocks.saveAs }));
+vi.mock('file-saver', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('file-saver')>()),
+  saveAs: mocks.saveAs,
+}));
 
 vi.mock('../../pwa/connectivity', () => ({
   useOnlineStatus: () => mocks.online,

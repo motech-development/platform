@@ -55,6 +55,7 @@ vi.mock('./CompanyTransactionSubscription', () => ({
   CompanyTransactionSubscription: ({
     children,
   }: Readonly<{ children: ReactNode }>) => children,
+  TransactionSubscriptionAlert: () => null,
 }));
 
 const transaction = {

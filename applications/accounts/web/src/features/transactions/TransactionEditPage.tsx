@@ -4,12 +4,11 @@ import {
   Drawer,
   FormActions,
   StatePanel,
-  Typography,
   useToast,
 } from '@motech-development/breeze-ui';
 import { WarningIcon } from '@motech-development/breeze-ui/icons';
 import { useNavigate } from '@tanstack/react-router';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DELETE_TRANSACTION, GET_TRANSACTION } from '../../data/operations';
 import { DiscardChangesDialog } from '../companies/DiscardChangesDialog';
@@ -17,47 +16,26 @@ import { EntityDeleteDialog } from '../forms/EntityDeleteDialog';
 import { SubmittingForm } from '../forms/SubmittingForm';
 import { TransactionEditDrawerSkeleton } from '../loading/AccountsPageSkeletons';
 import { QueryRefreshAlert } from '../QueryRefreshAlert';
-import { DashboardPageContent } from './DashboardPageContent';
-import { PendingTransactionsPageContent } from './PendingTransactionsPageContent';
 import { RecordTransactionFormFields } from './RecordTransactionFormFields';
 import { editableTransaction } from './transaction';
 import { removeTransactionFromCache } from './transaction-cache';
+import {
+  type TransactionPageOrigin,
+  transactionPageOrigins,
+} from './transaction-page-origin';
 import { TransactionFormUnavailable } from './TransactionPagePresentation';
-import { TransactionsPageContent } from './TransactionsPageContent';
 import { useTransactionForm } from './useTransactionForm';
-
-type TransactionEditOrigin = 'dashboard' | 'pending' | 'transactions';
-
-const transactionEditOrigins = {
-  dashboard: {
-    Background: DashboardPageContent,
-    closeTo: '/my-companies/dashboard/$companyId',
-    confirmedReturnTo: '/my-companies/dashboard/$companyId',
-  },
-  pending: {
-    Background: PendingTransactionsPageContent,
-    closeTo: '/my-companies/accounts/$companyId/pending-transactions',
-    confirmedReturnTo: '/my-companies/accounts/$companyId',
-  },
-  transactions: {
-    Background: TransactionsPageContent,
-    closeTo: '/my-companies/accounts/$companyId',
-    confirmedReturnTo: '/my-companies/accounts/$companyId',
-  },
-} as const;
 
 function TransactionEditDrawer({
   companyId,
   origin,
-  published,
   refetchTransaction,
   transaction,
   transactionRefreshFailed,
   transactionId,
 }: Readonly<{
   companyId: string;
-  origin: TransactionEditOrigin;
-  published: boolean;
+  origin: TransactionPageOrigin;
   refetchTransaction: () => Promise<unknown>;
   transaction: Parameters<typeof editableTransaction>[0];
   transactionRefreshFailed: boolean;
@@ -66,11 +44,15 @@ function TransactionEditDrawer({
   const { t } = useTranslation(['transactions', 'routing']);
   const navigate = useNavigate();
   const toast = useToast();
-  const { closeTo, confirmedReturnTo } = transactionEditOrigins[origin];
+  const { closeTo, confirmedReturnTo } = transactionPageOrigins[origin];
   const [deleteTransaction, { loading: deleting }] =
     useMutation(DELETE_TRANSACTION);
   const transactionDeletionCompleted = useRef(false);
   const [transactionDeleted, setTransactionDeleted] = useState(false);
+  const initialValues = useMemo(
+    () => editableTransaction(transaction),
+    [transaction],
+  );
   const {
     blocker,
     categories,
@@ -105,8 +87,11 @@ function TransactionEditDrawer({
     companyId,
     confirmedReturnTo,
     initialDateTime: transaction.date,
-    initialValues: editableTransaction(transaction),
+    initialValues,
   });
+  const published =
+    transaction.status !== 'pending' &&
+    (origin === 'pending' || form.state.values.status === 'pending');
   const pending = submissionPending || deleting || transactionDeleted;
   const publicationCloseRequested = useRef(false);
 
@@ -351,7 +336,7 @@ export function TransactionEditPage({
   transactionId,
 }: Readonly<{
   companyId: string;
-  origin: TransactionEditOrigin;
+  origin: TransactionPageOrigin;
   transactionId: string;
 }>) {
   const { t } = useTranslation(['transactions', 'routing']);
@@ -365,89 +350,63 @@ export function TransactionEditPage({
     data?.getTransaction.companyId === companyId
       ? data.getTransaction
       : undefined;
-  const [openedTransaction, setOpenedTransaction] = useState<
-    | {
-        id: string;
-        status: 'confirmed' | 'pending';
-      }
-    | undefined
-  >(undefined);
-  const openedTransactionStatus =
-    openedTransaction?.id === transactionId
-      ? openedTransaction.status
-      : undefined;
-  const publishedPendingTransaction =
-    transactionForCompany !== undefined &&
-    (origin === 'pending' || openedTransactionStatus === 'pending') &&
-    transactionForCompany.status !== 'pending';
-  const { Background, closeTo } = transactionEditOrigins[origin];
-
-  useEffect(() => {
-    if (transactionForCompany && openedTransaction?.id !== transactionId) {
-      setOpenedTransaction({
-        id: transactionId,
-        status: transactionForCompany.status,
-      });
+  const { Background, closeTo } = transactionPageOrigins[origin];
+  const closeDrawer = (open: boolean) => {
+    if (!open) {
+      navigate({
+        params: { companyId },
+        to: closeTo,
+      }).catch(() => undefined);
     }
-  }, [openedTransaction?.id, transactionForCompany, transactionId]);
+  };
+  let drawer = (
+    <Drawer.Root onOpenChange={closeDrawer} open triggerless>
+      <Drawer.Content placement={{ base: 'bottom', md: 'end' }} size="wide">
+        <Drawer.Description>{t('Transaction details')}</Drawer.Description>
+        <Drawer.Title>{t('Edit transaction')}</Drawer.Title>
+        <StatePanel
+          action={
+            <Button
+              onAction={() => {
+                refetch().catch(() => undefined);
+              }}
+            >
+              {t('Try again', { ns: 'routing' })}
+            </Button>
+          }
+          description={t('The Transaction could not be loaded.')}
+          icon={<WarningIcon />}
+          title={t('Transaction unavailable')}
+          variant="danger"
+        />
+      </Drawer.Content>
+    </Drawer.Root>
+  );
+
+  if (loading) {
+    drawer = <TransactionEditDrawerSkeleton onOpenChange={closeDrawer} />;
+  }
+
+  if (transactionForCompany) {
+    drawer = (
+      <TransactionEditDrawer
+        companyId={companyId}
+        origin={origin}
+        refetchTransaction={refetch}
+        transaction={{
+          ...transactionForCompany,
+          attachment: transactionForCompany.attachment ?? '',
+        }}
+        transactionRefreshFailed={Boolean(error)}
+        transactionId={transactionId}
+      />
+    );
+  }
 
   return (
     <>
       <Background companyId={companyId} />
-      {transactionForCompany ? (
-        <TransactionEditDrawer
-          companyId={companyId}
-          origin={origin}
-          published={publishedPendingTransaction}
-          refetchTransaction={refetch}
-          transaction={{
-            ...transactionForCompany,
-            attachment: transactionForCompany.attachment ?? '',
-          }}
-          transactionRefreshFailed={Boolean(error)}
-          transactionId={transactionId}
-        />
-      ) : (
-        <Drawer.Root
-          onOpenChange={(open) => {
-            if (!open) {
-              navigate({
-                params: { companyId },
-                to: closeTo,
-              }).catch(() => undefined);
-            }
-          }}
-          open
-          triggerless
-        >
-          <Drawer.Content placement={{ base: 'bottom', md: 'end' }} size="wide">
-            <Drawer.Description>{t('Transaction details')}</Drawer.Description>
-            <Drawer.Title>{t('Edit transaction')}</Drawer.Title>
-            {error || (!loading && !transactionForCompany) ? (
-              <StatePanel
-                action={
-                  <Button
-                    disabled={loading}
-                    onAction={() => {
-                      refetch().catch(() => undefined);
-                    }}
-                  >
-                    {t('Try again', { ns: 'routing' })}
-                  </Button>
-                }
-                description={t('The Transaction could not be loaded.')}
-                icon={<WarningIcon />}
-                title={t('Transaction unavailable')}
-                variant="danger"
-              />
-            ) : (
-              <Typography aria-live="polite">
-                {t('Loading Transaction…')}
-              </Typography>
-            )}
-          </Drawer.Content>
-        </Drawer.Root>
-      )}
+      {drawer}
     </>
   );
 }

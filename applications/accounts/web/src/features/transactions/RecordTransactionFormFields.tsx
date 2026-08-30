@@ -482,6 +482,7 @@ export function RecordTransactionFormFields({
                       markDirty();
                     }}
                     onCommit={touch}
+                    placeholder={t('Search or enter a supplier')}
                     suggestions={suggestions?.suppliers ?? []}
                     value={field.state.value}
                   />

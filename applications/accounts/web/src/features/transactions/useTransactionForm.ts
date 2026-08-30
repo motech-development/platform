@@ -2,7 +2,13 @@ import { useMutation, useQuery } from '@apollo/client/react';
 import { useToast } from '@motech-development/breeze-ui';
 import { useForm, useSelector } from '@tanstack/react-form';
 import { useNavigate } from '@tanstack/react-router';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useEffectEvent,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ADD_TRANSACTION,
@@ -71,6 +77,16 @@ function transactionFormValuesEqual(
   );
 }
 
+function transactionFormValuesKey(values: TransactionFormValues | undefined) {
+  return values ? JSON.stringify(values) : undefined;
+}
+
+function savedTransactionStatus(values: TransactionFormValues | undefined) {
+  return values?.status === 'confirmed' || values?.status === 'pending'
+    ? values.status
+    : undefined;
+}
+
 export function useTransactionForm({
   companyId,
   closeTo,
@@ -116,26 +132,10 @@ export function useTransactionForm({
     undefined,
   );
   const successfulSubmissionTitle = useRef<string | undefined>(undefined);
-  const observedInitialValues = useRef(initialValues);
-  const latestInitialValues = useRef(initialValues);
+  const formReference = useRef<
+    { options: { defaultValues?: TransactionFormValues } } | undefined
+  >(undefined);
   const [externalUpdateAvailable, setExternalUpdateAvailable] = useState(false);
-  const persistedTransactionStatus = useRef<
-    'confirmed' | 'pending' | undefined
-  >(
-    initialValues?.status === 'confirmed' || initialValues?.status === 'pending'
-      ? initialValues.status
-      : undefined,
-  );
-  const [persistedFormValues, setPersistedFormValues] =
-    useState<TransactionFormValues>(
-      () =>
-        initialValues ??
-        defaultValues(
-          companyId,
-          initialStatus,
-          initialDateTime ?? new Date().toISOString(),
-        ),
-    );
   const { data, error, loading, refetch } = useQuery(GET_RECORD_TRANSACTION, {
     fetchPolicy: 'cache-and-network',
     nextFetchPolicy: 'cache-first',
@@ -266,6 +266,7 @@ export function useTransactionForm({
   };
   const saveTransaction = async (
     input: ReturnType<typeof buildTransactionInput>,
+    previousStatus: 'confirmed' | 'pending' | undefined,
   ): Promise<TransactionCacheValue> => {
     if (input.id) {
       const result = await updateTransaction({
@@ -274,7 +275,7 @@ export function useTransactionForm({
             reconcileTransactionInCache(
               cache,
               mutation.data.updateTransaction,
-              persistedTransactionStatus.current,
+              previousStatus,
             );
           }
         },
@@ -304,7 +305,14 @@ export function useTransactionForm({
     return result.data.addTransaction;
   };
   const form = useForm({
-    defaultValues: persistedFormValues,
+    defaultValues:
+      formReference.current?.options.defaultValues ??
+      initialValues ??
+      defaultValues(
+        companyId,
+        initialStatus,
+        initialDateTime ?? new Date().toISOString(),
+      ),
     onSubmit: async ({ value }) => {
       if (!(await cleanUpPreviousAttachment())) return;
 
@@ -324,12 +332,12 @@ export function useTransactionForm({
           transfer?.status === 'uploaded' ? transfer.path : value.attachment,
       });
       const editing = Boolean(input.id);
-      const previousStatus = persistedTransactionStatus.current;
+      const previousStatus = savedTransactionStatus(form.options.defaultValues);
       let savedTransaction: TransactionCacheValue;
       const previousAttachment = persistedAttachmentPath.current;
 
       try {
-        savedTransaction = await saveTransaction(input);
+        savedTransaction = await saveTransaction(input, previousStatus);
       } catch {
         toast.show({
           description: t(
@@ -345,13 +353,12 @@ export function useTransactionForm({
       stagedAttachmentPath.current = undefined;
       persistedAttachmentPath.current =
         savedTransaction.attachment || undefined;
-      persistedTransactionStatus.current = savedTransaction.status;
       const savedValues = editableTransaction({
         ...savedTransaction,
         attachment: savedTransaction.attachment ?? '',
       });
 
-      setPersistedFormValues(savedValues);
+      form.options.defaultValues = savedValues;
       form.reset(savedValues);
       let returnTo: TransactionReturnRoute = confirmedReturnTo;
 
@@ -382,6 +389,7 @@ export function useTransactionForm({
       onMount: transactionSchema,
     },
   });
+  formReference.current = form;
   const formSubmissionPending = useSelector(
     form.store,
     (state) => state.isSubmitting,
@@ -411,33 +419,23 @@ export function useTransactionForm({
   const acceptAuthoritativeValues = useCallback(
     (values: TransactionFormValues) => {
       persistedAttachmentPath.current = values.attachment || undefined;
-      persistedTransactionStatus.current =
-        values.status === 'confirmed' || values.status === 'pending'
-          ? values.status
-          : undefined;
       successfulReturnTo.current = undefined;
       successfulSubmissionTitle.current = undefined;
-      setPersistedFormValues(values);
+      form.options.defaultValues = values;
       form.reset(values);
       setExternalUpdateAvailable(false);
     },
     [form],
   );
 
-  useEffect(() => {
+  const initialValuesKey = transactionFormValuesKey(initialValues);
+  const reconcileAuthoritativeValues = useEffectEvent(() => {
     if (
       !initialValues ||
-      (observedInitialValues.current &&
-        transactionFormValuesEqual(
-          initialValues,
-          observedInitialValues.current,
-        ))
+      transactionFormValuesEqual(initialValues, form.state.values)
     ) {
       return;
     }
-
-    observedInitialValues.current = initialValues;
-    latestInitialValues.current = initialValues;
 
     if (navigation.dirty) {
       setExternalUpdateAvailable(true);
@@ -445,7 +443,11 @@ export function useTransactionForm({
     }
 
     acceptAuthoritativeValues(initialValues);
-  }, [acceptAuthoritativeValues, initialValues, navigation.dirty]);
+  });
+
+  useEffect(() => {
+    reconcileAuthoritativeValues();
+  }, [initialValuesKey]);
 
   return {
     ...navigation,
@@ -484,7 +486,7 @@ export function useTransactionForm({
     online,
     refetch,
     reloadLatestTransaction: async () => {
-      const values = latestInitialValues.current;
+      const values = initialValues;
 
       if (!values || !(await cleanUpAttachmentsForDiscard())) return false;
 

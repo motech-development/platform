@@ -19,9 +19,9 @@ import { useTranslation } from 'react-i18next';
 import { AuthenticationPanel } from '../auth/AuthenticationPanel';
 import { AddClientAction } from '../features/clients/AddClientAction';
 import { ClientDetailsFormSkeleton } from '../features/clients/ClientDetailsFormSkeleton';
-import { ClientsTableSkeleton } from '../features/clients/ClientsTableSkeleton';
+import { ClientsTableSkeleton } from '../features/clients/ClientsTable';
+import { CompaniesTableSkeleton } from '../features/companies/CompaniesTable';
 import {
-  CompaniesTableSkeleton,
   CompanyDetailsFormSkeleton,
   CompanyEnrolmentDrawerSkeleton,
   FormSkeletonRegion,
@@ -396,32 +396,32 @@ export function RouteNotFound() {
   const { t } = useTranslation('routing');
 
   return (
-    <main
-      className="grid min-h-screen place-items-center bg-[var(--breeze-shell)] p-6"
-      data-document-background="shell"
-    >
-      <Stack className="w-full max-w-md" gap="xl">
-        <Surface
-          border="none"
-          className="border-b-2 border-b-[var(--breeze-border-strong)] text-center"
-          padding="xxl"
-        >
-          <Stack align="center" gap="none">
-            <IconTile bordered={false} decorative={false} size="lg">
-              404
-            </IconTile>
-            <Typography align="center" as="h1" className="mb-2.5" level="h2">
-              {t('Page not found')}
-            </Typography>
-            <Typography align="center" className="mb-6" colour="muted">
-              {t('The page you requested does not exist or has moved.')}
-            </Typography>
-            <LinkButton href="/my-companies">
-              {t('Return to overview')}
-            </LinkButton>
-          </Stack>
-        </Surface>
-      </Stack>
+    <main data-document-background="shell">
+      <Surface
+        border="none"
+        className="grid min-h-screen place-items-center"
+        padding="lg"
+        tone="inverse"
+      >
+        <Stack className="w-full max-w-md" gap="xl">
+          <Surface border="strong" className="text-center" padding="xxl">
+            <Stack align="center" gap="none">
+              <IconTile bordered={false} decorative={false} size="lg">
+                404
+              </IconTile>
+              <Typography align="center" as="h1" className="mb-2.5" level="h2">
+                {t('Page not found')}
+              </Typography>
+              <Typography align="center" className="mb-6" colour="muted">
+                {t('The page you requested does not exist or has moved.')}
+              </Typography>
+              <LinkButton href="/my-companies">
+                {t('Return to overview')}
+              </LinkButton>
+            </Stack>
+          </Surface>
+        </Stack>
+      </Surface>
     </main>
   );
 }

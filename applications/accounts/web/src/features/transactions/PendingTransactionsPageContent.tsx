@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { GET_PENDING_TRANSACTIONS } from '../../data/operations';
 import { LoadingSkeletonRegion } from '../loading/AccountsPageSkeletons';
 import { QueryRefreshAlert } from '../QueryRefreshAlert';
+import { TransactionSubscriptionAlert } from './CompanyTransactionSubscription';
 import { PendingTransactionsPageHeader } from './PendingTransactionsPageHeader';
 import {
   TransactionLedger,
@@ -53,6 +54,7 @@ export function PendingTransactionsPageContent({
         }
         backHref={accountsHref}
       />
+      <TransactionSubscriptionAlert />
       {error && !data ? (
         <TransactionPageError
           onRetry={refetch}

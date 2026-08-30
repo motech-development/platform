@@ -6,6 +6,7 @@ import {
   Link,
   PageHeader,
   SectionHeader,
+  Separator,
   Skeleton,
   Stack,
   StatePanel,
@@ -23,7 +24,10 @@ import { useAccountsOwnerId } from '../../auth/owner';
 import { GET_COMPANY_DASHBOARD } from '../../data/operations';
 import { OverviewContentSkeleton } from '../loading/AccountsPageSkeletons';
 import { QueryRefreshAlert } from '../QueryRefreshAlert';
-import { CompanyTransactionSubscription } from './CompanyTransactionSubscription';
+import {
+  CompanyTransactionSubscription,
+  TransactionSubscriptionAlert,
+} from './CompanyTransactionSubscription';
 import { FinancialSummary } from './FinancialSummary';
 import { combineTransactions } from './transaction-list';
 import { TransactionLedger } from './TransactionLedger';
@@ -41,44 +45,47 @@ function OverviewAttentionPanel({
   const pendingTransactionsHref = `/my-companies/accounts/${encodeURIComponent(companyId)}/pending-transactions`;
 
   return (
-    <aside
-      aria-label={t('Needs attention')}
-      className="self-start bg-[var(--breeze-shell)] text-[var(--breeze-ink-inverse)]"
-    >
-      <Inline align="start" className="px-5 pb-4 pt-5" gap="md">
-        <IconTile
-          size="md"
-          variant={hasPendingTransactions ? 'warning' : 'success'}
+    <aside aria-label={t('Needs attention')} className="self-start">
+      <Surface border="none" padding="none" tone="inverse">
+        <Inline align="start" className="px-5 pb-4 pt-5" gap="md">
+          <IconTile
+            size="md"
+            variant={hasPendingTransactions ? 'warning' : 'success'}
+          >
+            {hasPendingTransactions ? <WarningIcon /> : <CheckIcon />}
+          </IconTile>
+          <Stack gap="xs">
+            <Typography as="h2" colour="inverse" level="h3">
+              {t('Needs attention')}
+            </Typography>
+            <Typography colour="inverse-muted">
+              {hasPendingTransactions
+                ? t('Pending transactions are waiting for review')
+                : t('No pending transactions are waiting for review')}
+            </Typography>
+          </Stack>
+        </Inline>
+        <Separator className="opacity-20" decorative tone="strong" />
+        <Link
+          className="block px-5 py-4 no-underline"
+          href={pendingTransactionsHref}
+          variant="inverse"
         >
-          {hasPendingTransactions ? <WarningIcon /> : <CheckIcon />}
-        </IconTile>
-        <Stack gap="xs">
-          <Typography as="h2" colour="inverse" level="h3">
-            {t('Needs attention')}
-          </Typography>
-          <Typography colour="inverse-muted">
-            {hasPendingTransactions
-              ? t('Pending transactions are waiting for review')
-              : t('No pending transactions are waiting for review')}
-          </Typography>
-        </Stack>
-      </Inline>
-      <Link
-        className="block border-t border-[var(--breeze-shell-soft)] px-5 py-4 hover:bg-[var(--breeze-shell-soft)]"
-        href={pendingTransactionsHref}
-        variant="inverse"
-      >
-        <Stack gap="xs">
-          <Typography as="strong" colour="inverse" weight="semibold">
-            {t('View pending transactions')}
-          </Typography>
-          <Typography as="span" colour="inverse-muted">
-            {hasPendingTransactions
-              ? t('Review them before they affect your balance')
-              : t('All recorded transactions have been reviewed')}
-          </Typography>
-        </Stack>
-      </Link>
+          <Inline gap="md" justify="between" wrap={false}>
+            <Stack className="min-w-0" gap="xs">
+              <Typography as="strong" colour="inverse" weight="semibold">
+                {t('View pending transactions')}
+              </Typography>
+              <Typography as="span" colour="inverse-muted">
+                {hasPendingTransactions
+                  ? t('Review them before they affect your balance')
+                  : t('All recorded transactions have been reviewed')}
+              </Typography>
+            </Stack>
+            <ArrowRightIcon aria-hidden="true" className="shrink-0" />
+          </Inline>
+        </Link>
+      </Surface>
     </aside>
   );
 }
@@ -134,11 +141,11 @@ export function DashboardPageContent({
                 className="block h-[2.8rem] w-64 max-w-full"
               />
             ) : (
-              data?.getCompany.name ??
               t('Good afternoon, {{firstName}}', { firstName })
             )
           }
         />
+        <TransactionSubscriptionAlert />
         {error && !data ? (
           <TransactionPageError
             onRetry={refetch}

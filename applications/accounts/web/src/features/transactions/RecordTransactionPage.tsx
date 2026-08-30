@@ -4,54 +4,24 @@ import { DiscardChangesDialog } from '../companies/DiscardChangesDialog';
 import { SubmittingForm } from '../forms/SubmittingForm';
 import { RecordTransactionDrawerSkeleton } from '../loading/AccountsPageSkeletons';
 import { QueryRefreshAlert } from '../QueryRefreshAlert';
-import { DashboardPageContent } from './DashboardPageContent';
-import { PendingTransactionsPageContent } from './PendingTransactionsPageContent';
 import { RecordTransactionFormFields } from './RecordTransactionFormFields';
+import {
+  type TransactionPageOrigin,
+  transactionPageOrigins,
+} from './transaction-page-origin';
 import { TransactionFormUnavailable } from './TransactionPagePresentation';
-import { TransactionsPageContent } from './TransactionsPageContent';
 import { useTransactionForm } from './useTransactionForm';
-
-type RecordTransactionOrigin = 'dashboard' | 'pending' | 'transactions';
-
-const recordTransactionOrigins = {
-  dashboard: {
-    Background: DashboardPageContent,
-    closeTo: '/my-companies/dashboard/$companyId',
-    returnTo: '/my-companies/dashboard/$companyId',
-  },
-  pending: {
-    Background: PendingTransactionsPageContent,
-    closeTo: '/my-companies/accounts/$companyId/pending-transactions',
-    returnTo: '/my-companies/accounts/$companyId',
-  },
-  transactions: {
-    Background: TransactionsPageContent,
-    closeTo: '/my-companies/accounts/$companyId',
-    returnTo: '/my-companies/accounts/$companyId',
-  },
-} as const satisfies Record<
-  RecordTransactionOrigin,
-  {
-    Background: typeof DashboardPageContent | typeof TransactionsPageContent;
-    closeTo:
-      | '/my-companies/accounts/$companyId'
-      | '/my-companies/accounts/$companyId/pending-transactions'
-      | '/my-companies/dashboard/$companyId';
-    returnTo:
-      | '/my-companies/accounts/$companyId'
-      | '/my-companies/dashboard/$companyId';
-  }
->;
 
 export function RecordTransactionPage({
   companyId,
   origin,
 }: Readonly<{
   companyId: string;
-  origin: RecordTransactionOrigin;
+  origin: TransactionPageOrigin;
 }>) {
   const { t } = useTranslation(['transactions', 'routing']);
-  const { Background, closeTo, returnTo } = recordTransactionOrigins[origin];
+  const { Background, closeTo, confirmedReturnTo } =
+    transactionPageOrigins[origin];
   const {
     blocker,
     categories,
@@ -77,7 +47,7 @@ export function RecordTransactionPage({
   } = useTransactionForm({
     closeTo,
     companyId,
-    confirmedReturnTo: returnTo,
+    confirmedReturnTo,
   });
 
   if (loading && !data && !error) {
