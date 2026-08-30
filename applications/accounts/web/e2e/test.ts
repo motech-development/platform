@@ -88,6 +88,16 @@ export async function expectFinancialSummary(
   }
 }
 
+export async function expectCompanyDashboard(page: Page, companyName: string) {
+  await expect(page).toHaveURL(/\/my-companies\/dashboard\/[0-9a-f-]+$/u);
+  await expect(
+    page.getByRole('button', { name: 'Switch company' }),
+  ).toContainText(companyName);
+  await expect(
+    page.locator('main').getByRole('heading', { level: 1 }),
+  ).toBeVisible();
+}
+
 async function completeAuthenticationForPage(content: Locator, page: Page) {
   const consent = page.locator('button#allow');
   const email = page.locator('input[name="username"]');
@@ -508,9 +518,7 @@ export const test = base.extend<AccountsFixtures, AccountsWorkerFixtures>({
   openCompany: async ({ page }, use) => {
     await use(async (companyName) => {
       await page.getByTestId(companyName).click();
-      await expect(
-        page.getByRole('heading', { level: 1, name: companyName }),
-      ).toBeVisible();
+      await expectCompanyDashboard(page, companyName);
     });
   },
   openCompanyClients: async ({ openCompany, page }, use) => {
@@ -608,18 +616,16 @@ export const test = base.extend<AccountsFixtures, AccountsWorkerFixtures>({
           await description.press('Escape');
         }
         if (date === 'tomorrow') {
-          const today = new Date();
-          const tomorrow = new Date(today);
+          const calendarTrigger = page.getByRole('button', {
+            name: 'Calendar',
+          });
+          const initialDate = await calendarTrigger.innerText();
 
-          tomorrow.setDate(tomorrow.getDate() + 1);
-          await page.getByRole('button', { name: 'Calendar' }).click();
-          await page
-            .getByRole('button', {
-              name: new Intl.DateTimeFormat('en-GB', {
-                dateStyle: 'full',
-              }).format(tomorrow),
-            })
-            .click();
+          await calendarTrigger.click();
+          await expect(page.getByRole('application')).toBeVisible();
+          await page.keyboard.press('ArrowRight');
+          await page.keyboard.press('Enter');
+          await expect(calendarTrigger).not.toHaveText(initialDate);
         }
         await selectRadioOption(
           page,

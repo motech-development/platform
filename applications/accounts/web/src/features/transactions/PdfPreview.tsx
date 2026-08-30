@@ -26,6 +26,12 @@ const pdfDocumentOptions = {
 const maximumPageWidth = 720;
 const zoomStep = 10;
 
+function zoomOut(current: number) {
+  const next = current - zoomStep;
+
+  return next > 0 ? next : current;
+}
+
 export function PdfPreview({ file }: Readonly<{ file: Blob }>) {
   const { t } = useTranslation('attachments');
   const [pages, setPages] = useState(0);
@@ -75,10 +81,8 @@ export function PdfPreview({ file }: Readonly<{ file: Blob }>) {
         </Typography>
         <IconButton
           aria-label={t('Zoom out')}
-          disabled={zoom === zoomStep}
-          onAction={() =>
-            setZoom((current) => Math.max(zoomStep, current - zoomStep))
-          }
+          disabled={zoom - zoomStep <= 0}
+          onAction={() => setZoom(zoomOut)}
         >
           <ZoomOutIcon />
         </IconButton>

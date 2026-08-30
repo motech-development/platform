@@ -167,6 +167,10 @@ function transactionContextColumn(pending: boolean): 'category' | 'date' {
   return pending ? 'date' : 'category';
 }
 
+function isScheduledTransaction(transaction: LedgerTransaction) {
+  return transaction.status === 'pending' && transaction.scheduled === true;
+}
+
 function TransactionContextColumn({
   loading,
   pending,
@@ -282,12 +286,11 @@ function TransactionIdentityCells({
   transactionLabel: string;
 }>) {
   const { t } = useTranslation('transactions');
+  const scheduled = isScheduledTransaction(transaction);
   const accessibleLabel = [
     transactionLabel,
     transaction.attachment ? null : t('No invoice or receipt'),
-    !pendingCollection && transaction.scheduled
-      ? t('Scheduled transaction')
-      : null,
+    !pendingCollection && scheduled ? t('Scheduled transaction') : null,
   ]
     .filter((label): label is string => Boolean(label))
     .join('. ');
@@ -322,7 +325,7 @@ function TransactionIdentityCells({
                 {transaction.name}
               </Typography>
               {transaction.attachment ? null : <MissingAttachmentWarning />}
-              {!pendingCollection && transaction.scheduled ? (
+              {!pendingCollection && scheduled ? (
                 <ScheduledTransactionIndicator />
               ) : null}
             </Inline>
@@ -334,7 +337,7 @@ function TransactionIdentityCells({
                 className={compactTableOnlyClassName}
                 date={transaction.date}
                 locale={locale}
-                scheduled={transaction.scheduled === true}
+                scheduled={scheduled}
               />
             ) : null}
           </Stack>
@@ -366,7 +369,7 @@ function TransactionContextCell({
       <PendingTransactionDate
         date={transaction.date}
         locale={locale}
-        scheduled={transaction.scheduled === true}
+        scheduled={isScheduledTransaction(transaction)}
       />
     </Table.Cell>
   );

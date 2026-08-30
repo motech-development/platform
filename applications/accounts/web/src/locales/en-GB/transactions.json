@@ -14,6 +14,7 @@
   "We could not load transactions": "We could not load transactions",
   "Transactions could not be refreshed. Existing results are still shown.": "Transactions could not be refreshed. Existing results are still shown.",
   "Transactions could not be refreshed. Check your connection, then try again.": "Transactions could not be refreshed. Check your connection, then try again.",
+  "More transactions could not be loaded. Existing results are still shown.": "More transactions could not be loaded. Existing results are still shown.",
   "Record money coming in or going out of the business.": "Record money coming in or going out of the business.",
   "No transactions yet": "No transactions yet",
   "Load more": "Load more",

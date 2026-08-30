@@ -21,21 +21,17 @@ import {
 import { useTransactionPageReconciliation } from './useTransactionPageReconciliation';
 
 function TransactionsPagination({
-  confirmedFetchMore,
+  confirmedLoadNextPage,
   confirmedLoading,
   confirmedNextToken,
-  pendingFetchMore,
+  pendingLoadNextPage,
   pendingLoading,
   pendingNextToken,
 }: Readonly<{
-  confirmedFetchMore: (options: {
-    variables: { nextToken: string };
-  }) => Promise<unknown>;
+  confirmedLoadNextPage: () => Promise<void>;
   confirmedLoading: boolean;
   confirmedNextToken?: string | null;
-  pendingFetchMore: (options: {
-    variables: { nextToken: string };
-  }) => Promise<unknown>;
+  pendingLoadNextPage: () => Promise<void>;
   pendingLoading: boolean;
   pendingNextToken?: string | null;
 }>) {
@@ -50,14 +46,8 @@ function TransactionsPagination({
       loading={confirmedLoading || pendingLoading}
       onAction={() => {
         Promise.all([
-          confirmedNextToken
-            ? confirmedFetchMore({
-                variables: { nextToken: confirmedNextToken },
-              })
-            : Promise.resolve(),
-          pendingNextToken
-            ? pendingFetchMore({ variables: { nextToken: pendingNextToken } })
-            : Promise.resolve(),
+          confirmedNextToken ? confirmedLoadNextPage() : Promise.resolve(),
+          pendingNextToken ? pendingLoadNextPage() : Promise.resolve(),
         ]).catch(() => undefined);
       }}
     >
@@ -151,16 +141,18 @@ export function TransactionsPageContent({
     pendingLoaded: Boolean(pending.data),
   });
 
-  useTransactionPageReconciliation({
+  const confirmedPagination = useTransactionPageReconciliation({
     fetchMore: confirmed.fetchMore,
     networkStatus: confirmed.networkStatus,
     page: confirmed.data?.getTransactions,
   });
-  useTransactionPageReconciliation({
+  const pendingPagination = useTransactionPageReconciliation({
     fetchMore: pending.fetchMore,
     networkStatus: pending.networkStatus,
     page: pending.data?.getTransactions,
   });
+  const paginationFailed =
+    confirmedPagination.failed || pendingPagination.failed;
 
   return (
     <div
@@ -199,6 +191,25 @@ export function TransactionsPageContent({
           }}
         />
       ) : null}
+      {paginationFailed ? (
+        <QueryRefreshAlert
+          onRetry={() => {
+            Promise.all([
+              confirmedPagination.failed
+                ? confirmedPagination.retry()
+                : Promise.resolve(),
+              pendingPagination.failed
+                ? pendingPagination.retry()
+                : Promise.resolve(),
+            ]).catch(() => undefined);
+          }}
+          retryLabel={t('Try again', { ns: 'routing' })}
+        >
+          {t(
+            'More transactions could not be loaded. Existing results are still shown.',
+          )}
+        </QueryRefreshAlert>
+      ) : null}
       {initiallyLoading ? <TransactionsContentSkeleton /> : null}
       {!initiallyLoading && hasTransactions && data ? (
         <div className="flex flex-col">
@@ -214,16 +225,18 @@ export function TransactionsPageContent({
             currencyCode={data.getBalance.currency}
             transactions={transactions}
           />
-          <TransactionsPagination
-            confirmedFetchMore={confirmed.fetchMore}
-            confirmedLoading={
-              confirmed.networkStatus === NetworkStatus.fetchMore
-            }
-            confirmedNextToken={confirmed.data?.getTransactions.nextToken}
-            pendingFetchMore={pending.fetchMore}
-            pendingLoading={pending.networkStatus === NetworkStatus.fetchMore}
-            pendingNextToken={pending.data?.getTransactions.nextToken}
-          />
+          {!paginationFailed ? (
+            <TransactionsPagination
+              confirmedLoadNextPage={confirmedPagination.loadNextPage}
+              confirmedLoading={
+                confirmed.networkStatus === NetworkStatus.fetchMore
+              }
+              confirmedNextToken={confirmed.data?.getTransactions.nextToken}
+              pendingLoadNextPage={pendingPagination.loadNextPage}
+              pendingLoading={pending.networkStatus === NetworkStatus.fetchMore}
+              pendingNextToken={pending.data?.getTransactions.nextToken}
+            />
+          ) : null}
         </div>
       ) : null}
       {showEmptyState ? (

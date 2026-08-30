@@ -35,7 +35,7 @@ export function PendingTransactionsPageContent({
   const accountsHref = `/my-companies/accounts/${encodeURIComponent(companyId)}`;
   const recordTransactionHref = `${accountsHref}/pending-transactions/record-transaction`;
 
-  useTransactionPageReconciliation({
+  const pagination = useTransactionPageReconciliation({
     fetchMore,
     networkStatus,
     page: data?.getTransactions,
@@ -73,6 +73,18 @@ export function PendingTransactionsPageContent({
           )}
         </QueryRefreshAlert>
       ) : null}
+      {pagination.failed ? (
+        <QueryRefreshAlert
+          onRetry={() => {
+            pagination.retry().catch(() => undefined);
+          }}
+          retryLabel={t('Try again', { ns: 'routing' })}
+        >
+          {t(
+            'More transactions could not be loaded. Existing results are still shown.',
+          )}
+        </QueryRefreshAlert>
+      ) : null}
       {initiallyLoading && !error ? (
         <LoadingSkeletonRegion loadingLabel={t('Loading Pending Transactions')}>
           <TransactionLedgerSkeleton pending />
@@ -92,15 +104,13 @@ export function PendingTransactionsPageContent({
             pending
             transactions={data.getTransactions.items}
           />
-          {data.getTransactions.nextToken ? (
+          {data.getTransactions.nextToken && !pagination.failed ? (
             <Center className="pt-4">
               <Button
                 appearance="text"
                 loading={networkStatus === NetworkStatus.fetchMore}
                 onAction={() => {
-                  fetchMore({
-                    variables: { nextToken: data.getTransactions.nextToken },
-                  }).catch(() => undefined);
+                  pagination.loadNextPage().catch(() => undefined);
                 }}
               >
                 {t('Load more')}

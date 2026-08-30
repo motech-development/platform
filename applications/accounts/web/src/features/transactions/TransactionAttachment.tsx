@@ -233,6 +233,7 @@ export function TransactionAttachment({
                 : undefined
             }
             placement={{ base: 'bottom', md: 'end' }}
+            size="medium"
           >
             <Drawer.Description>
               {t('Transaction attachment')}
@@ -258,7 +259,7 @@ export function TransactionAttachment({
                 <div className="p-6">
                   <img
                     alt={name}
-                    className="mx-auto max-h-[70dvh] max-w-full"
+                    className="mx-auto max-w-full"
                     src={imageUrl}
                   />
                 </div>

@@ -1,5 +1,11 @@
 import type { Locator } from '@playwright/test';
-import { expect, expectFinancialSummary, getFormInput, test } from './test';
+import {
+  expect,
+  expectCompanyDashboard,
+  expectFinancialSummary,
+  getFormInput,
+  test,
+} from './test';
 
 async function expectPendingRowOnOneLine(row: Locator) {
   const amountCell = row.locator('[data-breeze-cell-column="amount"]');
@@ -100,12 +106,10 @@ test.describe('Non-VAT registered', () => {
       await page.getByLabel('Pay rate').fill(company.vat.pay);
       await page.getByRole('button', { name: 'Save company' }).click();
 
+      await expectCompanyDashboard(page, company.company.name);
       await expect(
-        page.getByRole('heading', {
-          level: 1,
-          name: company.company.name,
-        }),
-      ).toBeVisible();
+        page.getByRole('alertdialog', { name: 'Company added' }),
+      ).toContainText(`${company.company.name} is ready to use.`);
     });
   });
 
@@ -143,12 +147,7 @@ test.describe('Non-VAT registered', () => {
       await selectMonth(setting.yearEnd.month);
       await page.getByRole('button', { name: 'Save settings' }).click();
 
-      await expect(
-        page.getByRole('heading', {
-          level: 1,
-          name: company.company.name,
-        }),
-      ).toBeVisible();
+      await expectCompanyDashboard(page, company.company.name);
     });
 
     test('should update company settings', async ({
@@ -175,9 +174,7 @@ test.describe('Non-VAT registered', () => {
       );
       await page.getByRole('button', { name: 'Save settings' }).click();
 
-      await expect(
-        page.getByRole('heading', { level: 1, name: companyName }),
-      ).toBeVisible();
+      await expectCompanyDashboard(page, companyName);
 
       await page.getByRole('link', { name: /Manage settings/ }).click();
       await expect(page.getByLabel('Day')).toHaveValue(setting.yearEnd.day);

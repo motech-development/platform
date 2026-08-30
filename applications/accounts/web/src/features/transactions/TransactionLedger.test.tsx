@@ -84,7 +84,7 @@ describe('TransactionLedger', () => {
               description: 'First confirmed sale',
               id: 'confirmed-1',
               name: 'Alpha client',
-              scheduled: false,
+              scheduled: true,
               status: 'confirmed',
             },
             {
@@ -123,6 +123,9 @@ describe('TransactionLedger', () => {
     expect(
       screen.getByRole('img', { name: 'Scheduled transaction' }),
     ).toBeVisible();
+    expect(
+      screen.getAllByRole('img', { name: 'Scheduled transaction' }),
+    ).toHaveLength(1);
   });
 
   it('does not open a transaction when its scheduled indicator is activated', async () => {
@@ -143,7 +146,7 @@ describe('TransactionLedger', () => {
               id: 'scheduled-id',
               name: 'Client',
               scheduled: true,
-              status: 'confirmed',
+              status: 'pending',
             },
           ]}
         />
@@ -425,7 +428,7 @@ describe('TransactionLedger', () => {
               id: 'scheduled-id',
               name: 'Client',
               scheduled: true,
-              status: 'confirmed',
+              status: 'pending',
             },
           ]}
         />

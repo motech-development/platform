@@ -362,6 +362,43 @@ describe('TransactionsPageContent', () => {
     expect(mocks.pendingFetchMore).toHaveBeenCalledWith({
       variables: { nextToken: 'pending-next' },
     });
+    expect(
+      await screen.findByText(
+        'More transactions could not be loaded. Existing results are still shown.',
+      ),
+    ).toBeVisible();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
+
+    expect(mocks.pendingFetchMore).toHaveBeenCalledTimes(2);
+    expect(mocks.confirmedFetchMore).not.toHaveBeenCalled();
+  });
+
+  it('reports and retries a failed page-depth reconciliation', async () => {
+    mocks.confirmedNextToken = 'confirmed-refreshed-page-2';
+    mocks.confirmedRefreshGeneration = 1;
+    mocks.confirmedRequestedPageCount = 2;
+    mocks.confirmedFetchMore.mockRejectedValueOnce(
+      new Error('Page unavailable'),
+    );
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <TransactionsPageContent companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    expect(
+      await screen.findByText(
+        'More transactions could not be loaded. Existing results are still shown.',
+      ),
+    ).toBeVisible();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
+
+    await waitFor(() =>
+      expect(mocks.confirmedFetchMore).toHaveBeenCalledTimes(2),
+    );
   });
 
   it('rebuilds each source to its previously loaded depth after refresh', async () => {

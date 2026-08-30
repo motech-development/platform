@@ -243,6 +243,15 @@ describe('PendingTransactionsPageContent', () => {
     expect(query.fetchMore).toHaveBeenCalledWith({
       variables: { nextToken: 'page-2' },
     });
+    expect(
+      await screen.findByText(
+        'More transactions could not be loaded. Existing results are still shown.',
+      ),
+    ).toBeVisible();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
+
+    expect(query.fetchMore).toHaveBeenCalledTimes(2);
   });
 
   it('rebuilds previously loaded pages after a first-page refresh', async () => {
