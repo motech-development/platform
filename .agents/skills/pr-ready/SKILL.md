@@ -1,6 +1,6 @@
 ---
 name: pr-ready
-description: Drive an existing pull request to merge-ready by iterating review findings, fixes, validation, commits, pushes, and current-head CI. Use when the user explicitly asks for end-to-end PR completion rather than a single review or diagnostic pass.
+description: Drive an existing pull request to merge-ready by iterating standards and spec review, bot findings, fixes, validation, commits, pushes, and current-head CI. Use when the user explicitly asks for end-to-end PR completion rather than a single review or diagnostic pass.
 ---
 
 # PR Ready
@@ -20,6 +20,9 @@ Before changing anything:
 
 - Resolve the repository, PR, branch, worktree, current local HEAD, PR head, base,
   issue or specification, and affected package boundaries.
+- Resolve the PR merge-base and the applicable standards sources using the
+  repository's `code-review` skill. Use those same fixed sources throughout the
+  readiness cycle unless the PR base or originating specification changes.
 - Read the applicable repository instructions and inspect existing local changes.
   Preserve changes that are not known to belong to this workflow. If they overlap
   and ownership cannot be established safely, pause for the user.
@@ -33,6 +36,8 @@ The PR is merge-ready only when all of the following are true for the same pushe
 head:
 
 - all required checks have completed successfully;
+- the PR diff passes both independent `code-review` axes: **Standards** and
+  **Spec**;
 - every in-scope bot finding has been classified and every valid finding fixed;
 - handled Codex threads are resolved only after their fixes are present on the PR;
 - the relevant local validation passes;
@@ -41,6 +46,27 @@ head:
 
 Draft state, approvals, labels, merge queues, and issue closure wording remain as
 requested by the user or existing PR contract; do not change them by assumption.
+
+## Review the branch on both axes
+
+Apply the two independent axes defined by `.agents/skills/code-review/SKILL.md` to
+the three-dot diff from the PR base to its current head:
+
+- **Standards:** verify the change against applicable repository instructions,
+  documented coding standards, and the code-review smell baseline. Treat
+  documented violations separately from judgement-call smells and do not repeat
+  checks already enforced by tooling.
+- **Spec:** verify the change against the originating issue, PRD, specification,
+  and explicit user decisions. Identify missing or partial requirements,
+  incorrect implementations, and unauthorized scope.
+
+Keep the axes separate so success on one cannot mask a failure on the other.
+Classify their findings by the PR contract before acting, just like bot findings.
+Run the two-axis review when first assessing the PR and refresh it against the
+final pushed head after all fixes. If no standalone specification exists after
+following the code-review discovery process, record that fact and use the PR
+description and explicit user contract for the Spec axis rather than inventing
+requirements.
 
 ## Review findings
 
@@ -131,5 +157,6 @@ a reason to stop.
 ## Completion report
 
 Report the final PR URL and head, checks and validation that passed, review actions
-taken, and any rejected or externally blocked claims that remain relevant. Do not
-report the PR as merge-ready while any completion condition above is unproven.
+taken, the Standards and Spec outcomes, and any rejected or externally blocked
+claims that remain relevant. Do not report the PR as merge-ready while any
+completion condition above is unproven.
