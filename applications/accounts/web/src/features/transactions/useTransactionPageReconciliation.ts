@@ -98,6 +98,8 @@ export function useTransactionPageReconciliation({
   return {
     failed: Boolean(currentFailure),
     loadNextPage,
+    loading: networkStatus === NetworkStatus.fetchMore,
+    nextToken,
     retry,
   };
 }

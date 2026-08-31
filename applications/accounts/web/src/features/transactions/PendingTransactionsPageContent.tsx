@@ -1,4 +1,3 @@
-import { NetworkStatus } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
 import { Button, Center } from '@motech-development/breeze-ui';
 import { useTranslation } from 'react-i18next';
@@ -104,11 +103,11 @@ export function PendingTransactionsPageContent({
             pending
             transactions={data.getTransactions.items}
           />
-          {data.getTransactions.nextToken && !pagination.failed ? (
+          {pagination.nextToken && !pagination.failed ? (
             <Center className="pt-4">
               <Button
                 appearance="text"
-                loading={networkStatus === NetworkStatus.fetchMore}
+                loading={pagination.loading}
                 onAction={() => {
                   pagination.loadNextPage().catch(() => undefined);
                 }}

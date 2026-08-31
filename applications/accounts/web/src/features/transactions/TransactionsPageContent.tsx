@@ -1,4 +1,3 @@
-import { NetworkStatus } from '@apollo/client';
 import { useQuery } from '@apollo/client/react';
 import { Button, PageHeader, StatePanel } from '@motech-development/breeze-ui';
 import { ArrowRightIcon } from '@motech-development/breeze-ui/icons';
@@ -20,34 +19,31 @@ import {
 } from './TransactionPagePresentation';
 import { useTransactionPageReconciliation } from './useTransactionPageReconciliation';
 
+type PaginationSource = Pick<
+  ReturnType<typeof useTransactionPageReconciliation>,
+  'loadNextPage' | 'loading' | 'nextToken'
+>;
+
 function TransactionsPagination({
-  confirmedLoadNextPage,
-  confirmedLoading,
-  confirmedNextToken,
-  pendingLoadNextPage,
-  pendingLoading,
-  pendingNextToken,
+  confirmed,
+  pending,
 }: Readonly<{
-  confirmedLoadNextPage: () => Promise<void>;
-  confirmedLoading: boolean;
-  confirmedNextToken?: string | null;
-  pendingLoadNextPage: () => Promise<void>;
-  pendingLoading: boolean;
-  pendingNextToken?: string | null;
+  confirmed: PaginationSource;
+  pending: PaginationSource;
 }>) {
   const { t } = useTranslation('transactions');
 
-  if (!confirmedNextToken && !pendingNextToken) return null;
+  if (!confirmed.nextToken && !pending.nextToken) return null;
 
   return (
     <Button
       appearance="text"
       className="mt-4 self-center"
-      loading={confirmedLoading || pendingLoading}
+      loading={confirmed.loading || pending.loading}
       onAction={() => {
         Promise.all([
-          confirmedNextToken ? confirmedLoadNextPage() : Promise.resolve(),
-          pendingNextToken ? pendingLoadNextPage() : Promise.resolve(),
+          confirmed.nextToken ? confirmed.loadNextPage() : Promise.resolve(),
+          pending.nextToken ? pending.loadNextPage() : Promise.resolve(),
         ]).catch(() => undefined);
       }}
     >
@@ -154,21 +150,15 @@ function canShowEmptyState({
 
 function TransactionsLoadedContent({
   companyId,
-  confirmedLoadNextPage,
-  confirmedLoading,
-  confirmedNextToken,
+  confirmedPagination,
   confirmedSummary,
   currencyCode,
   paginationFailed,
-  pendingLoadNextPage,
-  pendingLoading,
-  pendingNextToken,
+  pendingPagination,
   transactions,
 }: Readonly<{
   companyId: string;
-  confirmedLoadNextPage: () => Promise<void>;
-  confirmedLoading: boolean;
-  confirmedNextToken?: string | null;
+  confirmedPagination: PaginationSource;
   confirmedSummary?: Readonly<{
     balance: number;
     currency: string;
@@ -176,9 +166,7 @@ function TransactionsLoadedContent({
   }>;
   currencyCode: string;
   paginationFailed: boolean;
-  pendingLoadNextPage: () => Promise<void>;
-  pendingLoading: boolean;
-  pendingNextToken?: string | null;
+  pendingPagination: PaginationSource;
   transactions: ReturnType<typeof combineTransactions>;
 }>) {
   return (
@@ -197,12 +185,8 @@ function TransactionsLoadedContent({
       />
       {!paginationFailed ? (
         <TransactionsPagination
-          confirmedLoadNextPage={confirmedLoadNextPage}
-          confirmedLoading={confirmedLoading}
-          confirmedNextToken={confirmedNextToken}
-          pendingLoadNextPage={pendingLoadNextPage}
-          pendingLoading={pendingLoading}
-          pendingNextToken={pendingNextToken}
+          confirmed={confirmedPagination}
+          pending={pendingPagination}
         />
       ) : null}
     </div>
@@ -309,15 +293,11 @@ export function TransactionsPageContent({
       {!initiallyLoading && hasTransactions && data ? (
         <TransactionsLoadedContent
           companyId={companyId}
-          confirmedLoadNextPage={confirmedPagination.loadNextPage}
-          confirmedLoading={confirmed.networkStatus === NetworkStatus.fetchMore}
-          confirmedNextToken={confirmed.data?.getTransactions.nextToken}
+          confirmedPagination={confirmedPagination}
           confirmedSummary={confirmed.data?.getBalance}
           currencyCode={data.getBalance.currency}
           paginationFailed={paginationFailed}
-          pendingLoadNextPage={pendingPagination.loadNextPage}
-          pendingLoading={pending.networkStatus === NetworkStatus.fetchMore}
-          pendingNextToken={pending.data?.getTransactions.nextToken}
+          pendingPagination={pendingPagination}
           transactions={transactions}
         />
       ) : null}
