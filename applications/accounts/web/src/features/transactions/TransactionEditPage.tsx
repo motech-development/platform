@@ -79,6 +79,7 @@ function TransactionEditDrawer({
     setDiscardOpen,
     submissionPending,
     suggestions,
+    trackAttachmentAllocation,
     trackAttachmentTransfer,
     vatRate,
   } = useTransactionForm({
@@ -252,6 +253,7 @@ function TransactionEditDrawer({
                 online={online}
                 removeAttachment={removeAttachment}
                 suggestions={suggestions}
+                trackAttachmentAllocation={trackAttachmentAllocation}
                 trackAttachmentTransfer={trackAttachmentTransfer}
                 vatRate={vatRate}
               />

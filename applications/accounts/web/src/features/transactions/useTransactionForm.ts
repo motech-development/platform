@@ -526,6 +526,9 @@ export function useTransactionForm({
     retryPreviousAttachmentCleanup: cleanUpPreviousAttachment,
     submissionPending,
     suggestions: data?.getTypeahead,
+    trackAttachmentAllocation: (path: string) => {
+      stagedAttachmentPath.current = path;
+    },
     trackAttachmentTransfer: (transfer: Promise<AttachmentTransferResult>) => {
       attachmentTransfer.current = transfer;
       setAttachmentTransferPending(true);

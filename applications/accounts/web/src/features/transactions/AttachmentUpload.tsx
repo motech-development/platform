@@ -13,7 +13,13 @@ import { uploadPresignedFile } from '../../data/presigned-transfer';
 import { capturePresignedTransferFailure } from '../../observability';
 import { useLatestTransfer } from './useLatestTransfer';
 
-const acceptedFileTypes = ['application/pdf', 'image/*'];
+const attachmentExtensions = {
+  'application/pdf': ['pdf'],
+  'image/gif': ['gif'],
+  'image/jpeg': ['jpeg', 'jpg'],
+  'image/png': ['png'],
+} as const;
+const acceptedFileTypes = Object.keys(attachmentExtensions);
 
 function attachmentExtension(file: File) {
   const extensionIndex = file.name.lastIndexOf('.');
@@ -22,11 +28,12 @@ function attachmentExtension(file: File) {
       ? file.name.slice(extensionIndex + 1).toLowerCase()
       : undefined;
 
-  if (!extension) return undefined;
-  if (file.type === 'application/pdf') {
-    return extension === 'pdf' ? extension : undefined;
-  }
-  return file.type.startsWith('image/') ? extension : undefined;
+  const supportedExtensions =
+    attachmentExtensions[file.type as keyof typeof attachmentExtensions];
+
+  return supportedExtensions?.some((supported) => supported === extension)
+    ? extension
+    : undefined;
 }
 
 export type AttachmentTransferResult =
@@ -37,6 +44,7 @@ export type AttachmentTransferResult =
 export function AttachmentUpload({
   companyId,
   disabled,
+  onAllocated,
   onDiscardFailed,
   onTransfer,
   onUploaded,
@@ -44,6 +52,7 @@ export function AttachmentUpload({
 }: Readonly<{
   companyId: string;
   disabled?: boolean;
+  onAllocated: (path: string) => void;
   onDiscardFailed: () => boolean | Promise<boolean>;
   onTransfer: (transfer: Promise<AttachmentTransferResult>) => void;
   onUploaded: (path: string, name: string) => void;
@@ -126,9 +135,12 @@ export function AttachmentUpload({
             throw error;
           }
 
+          const path = `${companyId}/${presigned.id}.${extension}`;
+
+          onAllocated(path);
           await uploadPresignedFile(presigned.url, file, signal);
 
-          return `${companyId}/${presigned.id}.${extension}`;
+          return path;
         });
 
         if (result.status === 'cancelled') {
@@ -164,6 +176,23 @@ export function AttachmentUpload({
     onTransfer(transfer);
 
     return transfer;
+  };
+
+  const retryUpload = async (file: File) => {
+    if (discardPendingRef.current) return;
+
+    discardPendingRef.current = true;
+    setDiscardPending(true);
+    try {
+      if (await onDiscardFailed()) {
+        await upload(file);
+      }
+    } catch {
+      // The previous allocation remains available for another cleanup attempt.
+    } finally {
+      discardPendingRef.current = false;
+      setDiscardPending(false);
+    }
   };
 
   if (uploaded) {
@@ -210,7 +239,7 @@ export function AttachmentUpload({
           <Button
             disabled={disabled || discardPending || loading || transferPending}
             onAction={() => {
-              upload(selectedFiles[0]).catch(() => undefined);
+              retryUpload(selectedFiles[0]).catch(() => undefined);
             }}
           >
             {t('Retry upload')}

@@ -32,6 +32,7 @@ vi.mock('react-pdf', () => ({
       cMapPacked: boolean;
       cMapUrl: string;
       standardFontDataUrl: string;
+      wasmUrl: string;
     };
   }>) => (
     <div
@@ -39,6 +40,7 @@ vi.mock('react-pdf', () => ({
       data-cmap-url={options.cMapUrl}
       data-standard-font-data-url={options.standardFontDataUrl}
       data-testid="pdf-document"
+      data-wasm-url={options.wasmUrl}
     >
       {loading}
       <button onClick={() => onLoadSuccess({ numPages: 2 })} type="button">
@@ -89,6 +91,10 @@ describe('PdfPreview', () => {
     expect(screen.getByTestId('pdf-document')).toHaveAttribute(
       'data-standard-font-data-url',
       '/standard_fonts/',
+    );
+    expect(screen.getByTestId('pdf-document')).toHaveAttribute(
+      'data-wasm-url',
+      '/wasm/',
     );
 
     await user.click(

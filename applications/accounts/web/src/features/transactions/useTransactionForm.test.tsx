@@ -430,6 +430,7 @@ function DiscardStagedAttachmentHarness({
     discardChanges,
     markDirty,
     submissionPending,
+    trackAttachmentAllocation,
     trackAttachmentTransfer,
   } = useTransactionForm({
     companyId: 'company-id',
@@ -442,6 +443,7 @@ function DiscardStagedAttachmentHarness({
       <button
         onClick={() => {
           markDirty();
+          trackAttachmentAllocation(path);
           trackAttachmentTransfer(
             transfer ?? Promise.resolve({ path, status: 'uploaded' }),
           );
@@ -1257,6 +1259,10 @@ describe('useTransactionForm', () => {
       cancelUpload = resolve;
     });
 
+    mocks.deleteFile.mockResolvedValueOnce({
+      data: { deleteFile: { path: 'company-id/staged-invoice.pdf' } },
+    });
+
     render(
       <BreezeProvider locale="en-GB">
         <DiscardStagedAttachmentHarness transfer={transfer} />
@@ -1272,7 +1278,12 @@ describe('useTransactionForm', () => {
     act(() => cancelUpload({ status: 'cancelled' }));
 
     expect(await screen.findByText('Attachment cleanup settled')).toBeVisible();
-    expect(mocks.deleteFile).not.toHaveBeenCalled();
+    expect(mocks.deleteFile).toHaveBeenCalledWith({
+      variables: {
+        id: 'company-id',
+        path: 'company-id/staged-invoice.pdf',
+      },
+    });
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Discard changes' }),

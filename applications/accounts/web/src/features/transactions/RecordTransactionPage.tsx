@@ -42,6 +42,7 @@ export function RecordTransactionPage({
     setDiscardOpen,
     suggestions,
     submissionPending,
+    trackAttachmentAllocation,
     trackAttachmentTransfer,
     vatRate,
   } = useTransactionForm({
@@ -123,6 +124,7 @@ export function RecordTransactionPage({
                 online={online}
                 removeAttachment={removeAttachment}
                 suggestions={suggestions}
+                trackAttachmentAllocation={trackAttachmentAllocation}
                 trackAttachmentTransfer={trackAttachmentTransfer}
                 vatRate={vatRate}
               />

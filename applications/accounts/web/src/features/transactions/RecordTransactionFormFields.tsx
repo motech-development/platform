@@ -9,7 +9,13 @@ import {
   Stack,
 } from '@motech-development/breeze-ui';
 import { useSelector } from '@tanstack/react-form';
-import { type ReactNode, useEffect, useState } from 'react';
+import {
+  type ReactNode,
+  useEffect,
+  useEffectEvent,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { validationMessage, visibleValidationErrors } from '../form-errors';
 import {
@@ -159,6 +165,7 @@ function TransactionAttachmentField({
   onChange,
   online,
   removeAttachment,
+  trackAttachmentAllocation,
   trackAttachmentTransfer,
   transactionId,
 }: Readonly<{
@@ -170,6 +177,7 @@ function TransactionAttachmentField({
   onChange: (path: string) => void;
   online: boolean;
   removeAttachment: (path: string) => Promise<boolean>;
+  trackAttachmentAllocation: (path: string) => void;
   trackAttachmentTransfer: (
     transfer: Promise<AttachmentTransferResult>,
   ) => void;
@@ -178,15 +186,23 @@ function TransactionAttachmentField({
   const [replacementState, setReplacementState] = useState<
     'cleaning' | 'idle' | 'ready'
   >('idle');
-  const [stagedAttachmentName, setStagedAttachmentName] = useState<string>();
+  const [stagedAttachment, setStagedAttachment] = useState<{
+    name: string;
+    path: string;
+  }>();
+  const stagedAttachmentName =
+    stagedAttachment?.path === attachmentPath
+      ? stagedAttachment.name
+      : undefined;
   const upload = (
     <AttachmentUpload
       companyId={companyId}
       disabled={!online || isSubmitting}
+      onAllocated={trackAttachmentAllocation}
       onDiscardFailed={discardStagedAttachment}
       onTransfer={trackAttachmentTransfer}
       onUploaded={(path, name) => {
-        setStagedAttachmentName(name);
+        setStagedAttachment({ name, path });
         setReplacementState('idle');
         onChange(path);
         markDirty();
@@ -203,7 +219,7 @@ function TransactionAttachmentField({
     if (removed) {
       onChange('');
       setReplacementState('idle');
-      setStagedAttachmentName(undefined);
+      setStagedAttachment(undefined);
       markDirty();
     } else {
       setReplacementState('idle');
@@ -251,6 +267,7 @@ export function RecordTransactionFormFields({
   online,
   removeAttachment,
   suggestions,
+  trackAttachmentAllocation,
   trackAttachmentTransfer,
   vatRate,
 }: Readonly<{
@@ -269,6 +286,7 @@ export function RecordTransactionFormFields({
     sales?: readonly string[] | null;
     suppliers?: readonly string[] | null;
   }>;
+  trackAttachmentAllocation: (path: string) => void;
   trackAttachmentTransfer: (
     transfer: Promise<AttachmentTransferResult>,
   ) => void;
@@ -288,6 +306,13 @@ export function RecordTransactionFormFields({
   );
   const [selectedCategorySourceIndex, setSelectedCategorySourceIndex] =
     useState<number>();
+  const lastCalculatedVatInput = useRef<{
+    amount: string;
+    category: string;
+    transactionType: '' | TransactionType;
+  }>(undefined);
+  const lastCalculatedVat = useRef<string>(undefined);
+  const vatManuallyOverridden = useRef(editing);
 
   useEffect(() => {
     setSelectedCategorySourceIndex((current) => {
@@ -324,7 +349,15 @@ export function RecordTransactionFormFields({
     category: string,
     categorySourceIndex = selectedCategorySourceIndex,
   ) => {
+    lastCalculatedVatInput.current = {
+      amount,
+      category,
+      transactionType,
+    };
+    vatManuallyOverridden.current = false;
+
     if (!transactionType || !amount || !Number.isFinite(Number(amount))) {
+      lastCalculatedVat.current = '';
       form.setFieldValue('vat', '');
       return;
     }
@@ -341,14 +374,33 @@ export function RecordTransactionFormFields({
     }
 
     if (rate === undefined) {
+      lastCalculatedVat.current = '';
       form.setFieldValue('vat', '');
       return;
     }
 
     const vat = policy.calculateVat(amount, rate);
 
-    form.setFieldValue('vat', vat.toFixed(2));
+    const calculatedVat = vat.toFixed(2);
+
+    lastCalculatedVat.current = calculatedVat;
+    form.setFieldValue('vat', calculatedVat);
   };
+  const reconcileCalculatedVat = useEffectEvent(() => {
+    if (vatManuallyOverridden.current) return;
+
+    const input = lastCalculatedVatInput.current ?? {
+      amount: form.getFieldValue('amount'),
+      category: form.getFieldValue('category'),
+      transactionType: form.getFieldValue('transactionType'),
+    };
+
+    updateCalculatedVat(input.amount, input.transactionType, input.category);
+  });
+
+  useEffect(() => {
+    reconcileCalculatedVat();
+  }, [categories, selectedCategorySourceIndex, vatRate]);
 
   return (
     <>
@@ -802,7 +854,25 @@ export function RecordTransactionFormFields({
                           >
                             <NumberField.Label>{t('VAT')}</NumberField.Label>
                             <NumberField.Group>
-                              <NumberField.Input onBlur={field.handleBlur} />
+                              <NumberField.Input
+                                onBlur={field.handleBlur}
+                                onInput={(event) => {
+                                  const inputVat =
+                                    event.currentTarget.value.replace(
+                                      /[^\d.-]/gu,
+                                      '',
+                                    );
+
+                                  if (
+                                    !representsSameAmount(
+                                      inputVat,
+                                      lastCalculatedVat.current ?? '',
+                                    )
+                                  ) {
+                                    vatManuallyOverridden.current = true;
+                                  }
+                                }}
+                              />
                             </NumberField.Group>
                             <NumberField.Error>
                               {validationMessage(errors, t('Check this value'))}
@@ -893,6 +963,7 @@ export function RecordTransactionFormFields({
                         onChange={field.handleChange}
                         online={online}
                         removeAttachment={removeAttachment}
+                        trackAttachmentAllocation={trackAttachmentAllocation}
                         trackAttachmentTransfer={trackAttachmentTransfer}
                         transactionId={form.getFieldValue('id') || undefined}
                       />

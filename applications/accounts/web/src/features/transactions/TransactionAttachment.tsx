@@ -9,14 +9,7 @@ import {
   useToast,
 } from '@motech-development/breeze-ui';
 import { saveAs } from 'file-saver';
-import {
-  lazy,
-  Suspense,
-  useEffect,
-  useMemo,
-  useState,
-  useSyncExternalStore,
-} from 'react';
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { REQUEST_DOWNLOAD } from '../../data/operations';
 import { downloadPresignedFile } from '../../data/presigned-transfer';
@@ -30,52 +23,6 @@ const PdfPreview = lazy(() =>
 
 const generatedAttachmentName =
   /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}(\.[^.]+)?$/iu;
-const transactionDrawerWidthInRem = 48;
-const attachmentPreviewWidthInRem = 38;
-
-function drawerInlineSize(widthInRem: number) {
-  return (
-    widthInRem *
-    Number.parseFloat(
-      window.getComputedStyle(document.documentElement).fontSize,
-    )
-  );
-}
-
-function adjacentAttachmentPreviewFits() {
-  const viewportWidth = window.visualViewport?.width ?? window.innerWidth;
-
-  return (
-    viewportWidth >=
-    drawerInlineSize(transactionDrawerWidthInRem + attachmentPreviewWidthInRem)
-  );
-}
-
-function subscribeToAdjacentAttachmentPreview(
-  onFitChange: () => void,
-): () => void {
-  const viewport = window.visualViewport;
-
-  window.addEventListener('resize', onFitChange);
-  viewport?.addEventListener('resize', onFitChange);
-
-  return () => {
-    window.removeEventListener('resize', onFitChange);
-    viewport?.removeEventListener('resize', onFitChange);
-  };
-}
-
-function useAdjacentAttachmentPreview() {
-  return useSyncExternalStore(
-    subscribeToAdjacentAttachmentPreview,
-    adjacentAttachmentPreviewFits,
-    () => false,
-  );
-}
-
-function transactionDrawerInlineSize() {
-  return drawerInlineSize(transactionDrawerWidthInRem);
-}
 
 export function TransactionAttachment({
   companyId,
@@ -99,13 +46,17 @@ export function TransactionAttachment({
   const toast = useToast();
   const online = useOnlineStatus();
   const runLatestTransfer = useLatestTransfer();
-  const showAdjacentPreview = useAdjacentAttachmentPreview();
+  const attachmentRef = useRef<HTMLDivElement>(null);
+  const previewRef = useRef<HTMLElement>(null);
   const [downloadedFile, setDownloadedFile] = useState<{
     blob: Blob;
     path: string;
   }>();
   const [deleting, setDeleting] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [adjacentPreview, setAdjacentPreview] = useState<{
+    inlineEndOffset: number;
+  }>();
   const storedName = path.split('/').at(-1) ?? path;
   const extension = /\.[^.]+$/u.exec(storedName)?.[0] ?? '';
   const name =
@@ -125,6 +76,50 @@ export function TransactionAttachment({
     },
     [imageUrl],
   );
+  useEffect(() => {
+    if (!file) {
+      setAdjacentPreview(undefined);
+      return undefined;
+    }
+
+    const transactionDrawer =
+      attachmentRef.current?.closest<HTMLElement>('[role="dialog"]');
+    const preview = previewRef.current;
+
+    if (!transactionDrawer || !preview) return undefined;
+
+    const viewport = window.visualViewport;
+    const updatePlacement = () => {
+      const transactionDrawerWidth =
+        transactionDrawer.getBoundingClientRect().width;
+      const previewWidth = preview.getBoundingClientRect().width;
+      const viewportWidth = viewport?.width ?? window.innerWidth;
+      const next =
+        viewportWidth >= transactionDrawerWidth + previewWidth
+          ? { inlineEndOffset: transactionDrawerWidth }
+          : undefined;
+
+      setAdjacentPreview((current) =>
+        current?.inlineEndOffset === next?.inlineEndOffset ? current : next,
+      );
+    };
+    const observer =
+      typeof ResizeObserver === 'undefined'
+        ? undefined
+        : new ResizeObserver(updatePlacement);
+
+    updatePlacement();
+    observer?.observe(transactionDrawer);
+    observer?.observe(preview);
+    window.addEventListener('resize', updatePlacement);
+    viewport?.addEventListener('resize', updatePlacement);
+
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener('resize', updatePlacement);
+      viewport?.removeEventListener('resize', updatePlacement);
+    };
+  }, [file]);
   const download = async () => {
     if (file) return file;
 
@@ -219,6 +214,7 @@ export function TransactionAttachment({
           </>
         }
         name={name}
+        ref={attachmentRef}
       />
       {file ? (
         <Drawer.Root
@@ -227,12 +223,9 @@ export function TransactionAttachment({
           triggerless
         >
           <Drawer.Content
-            adjacent={
-              showAdjacentPreview
-                ? { inlineEndOffset: transactionDrawerInlineSize() }
-                : undefined
-            }
+            adjacent={adjacentPreview}
             placement={{ base: 'bottom', md: 'end' }}
+            ref={previewRef}
             size="medium"
           >
             <Drawer.Description>

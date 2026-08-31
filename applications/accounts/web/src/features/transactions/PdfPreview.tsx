@@ -22,6 +22,7 @@ const pdfDocumentOptions = {
   cMapPacked: true,
   cMapUrl: `${import.meta.env.BASE_URL}cmaps/`,
   standardFontDataUrl: `${import.meta.env.BASE_URL}standard_fonts/`,
+  wasmUrl: `${import.meta.env.BASE_URL}wasm/`,
 };
 const maximumPageWidth = 720;
 const zoomStep = 10;

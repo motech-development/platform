@@ -21,6 +21,7 @@ const pdfCMapsDirectory = normalizePath(
 const pdfStandardFontsDirectory = normalizePath(
   join(pdfDistributionDirectory, 'standard_fonts'),
 );
+const pdfWasmDirectory = normalizePath(join(pdfDistributionDirectory, 'wasm'));
 const ssrInlinedReactDependencies = [
   'lucide-react',
   'react-aria',
@@ -111,6 +112,11 @@ export default defineConfig(({ mode }) => {
             dest: 'standard_fonts',
             rename: { stripBase: true },
             src: `${pdfStandardFontsDirectory}/*`,
+          },
+          {
+            dest: 'wasm',
+            rename: { stripBase: true },
+            src: `${pdfWasmDirectory}/*`,
           },
         ],
       }),

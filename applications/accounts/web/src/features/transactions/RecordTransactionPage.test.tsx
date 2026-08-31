@@ -423,6 +423,72 @@ describe('RecordTransactionPage', () => {
     expect(screen.getByLabelText('VAT')).toHaveValue('£10.91');
   });
 
+  it('reconciles derived VAT after settings refresh without replacing a manual value', async () => {
+    const user = userEvent.setup();
+    const view = render(
+      <BreezeProvider locale="en-GB">
+        <RecordTransactionPage companyId="company-id" origin="transactions" />
+      </BreezeProvider>,
+    );
+
+    await user.click(screen.getByLabelText('Purchase'));
+    await user.click(screen.getByRole('button', { name: /Category/u }));
+    await user.click(
+      await screen.findByRole('option', { name: 'Professional fees' }),
+    );
+    await user.type(screen.getByLabelText('Amount'), '120');
+    expect(screen.getByLabelText('VAT')).toHaveValue('£20.00');
+
+    mocks.query.data = {
+      ...successfulQueryData,
+      getSettings: {
+        categories: [
+          { name: 'Travel', vatRate: 20 },
+          { name: 'Professional fees', vatRate: 10 },
+        ],
+        id: 'company-id',
+        vat: { pay: 20 },
+      },
+    };
+    view.rerender(
+      <BreezeProvider locale="en-GB">
+        <RecordTransactionPage companyId="company-id" origin="transactions" />
+      </BreezeProvider>,
+    );
+
+    expect(screen.getByLabelText('Purchase')).toBeChecked();
+    expect(screen.getByLabelText('Amount')).toHaveValue('120');
+    expect(screen.getByRole('button', { name: /Category/u })).toHaveTextContent(
+      'Professional fees',
+    );
+    await waitFor(() =>
+      expect(screen.getByLabelText('VAT')).toHaveValue('£10.91'),
+    );
+    await user.clear(screen.getByLabelText('VAT'));
+    await user.type(screen.getByLabelText('VAT'), '7.50');
+
+    mocks.query.data = {
+      ...successfulQueryData,
+      getSettings: {
+        categories: [
+          { name: 'Travel', vatRate: 20 },
+          { name: 'Professional fees', vatRate: 5 },
+        ],
+        id: 'company-id',
+        vat: { pay: 20 },
+      },
+    };
+    view.rerender(
+      <BreezeProvider locale="en-GB">
+        <RecordTransactionPage companyId="company-id" origin="transactions" />
+      </BreezeProvider>,
+    );
+
+    await waitFor(() =>
+      expect(screen.getByLabelText('VAT')).toHaveValue('7.50'),
+    );
+  });
+
   it('retries the form query after it fails', async () => {
     mocks.query.error = new Error('failed');
     mocks.query.data = undefined;

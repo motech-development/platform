@@ -81,6 +81,38 @@ function TransactionsRefreshAlert({
   );
 }
 
+function TransactionsPaginationFailureAlert({
+  confirmedFailed,
+  confirmedRetry,
+  pendingFailed,
+  pendingRetry,
+}: Readonly<{
+  confirmedFailed: boolean;
+  confirmedRetry: () => Promise<void>;
+  pendingFailed: boolean;
+  pendingRetry: () => Promise<void>;
+}>) {
+  const { t } = useTranslation(['transactions', 'routing']);
+
+  if (!confirmedFailed && !pendingFailed) return null;
+
+  return (
+    <QueryRefreshAlert
+      onRetry={() => {
+        Promise.all([
+          confirmedFailed ? confirmedRetry() : Promise.resolve(),
+          pendingFailed ? pendingRetry() : Promise.resolve(),
+        ]).catch(() => undefined);
+      }}
+      retryLabel={t('Try again', { ns: 'routing' })}
+    >
+      {t(
+        'More transactions could not be loaded. Existing results are still shown.',
+      )}
+    </QueryRefreshAlert>
+  );
+}
+
 function canShowEmptyState({
   confirmedLoaded,
   hasTransactions,
@@ -191,25 +223,12 @@ export function TransactionsPageContent({
           }}
         />
       ) : null}
-      {paginationFailed ? (
-        <QueryRefreshAlert
-          onRetry={() => {
-            Promise.all([
-              confirmedPagination.failed
-                ? confirmedPagination.retry()
-                : Promise.resolve(),
-              pendingPagination.failed
-                ? pendingPagination.retry()
-                : Promise.resolve(),
-            ]).catch(() => undefined);
-          }}
-          retryLabel={t('Try again', { ns: 'routing' })}
-        >
-          {t(
-            'More transactions could not be loaded. Existing results are still shown.',
-          )}
-        </QueryRefreshAlert>
-      ) : null}
+      <TransactionsPaginationFailureAlert
+        confirmedFailed={confirmedPagination.failed}
+        confirmedRetry={confirmedPagination.retry}
+        pendingFailed={pendingPagination.failed}
+        pendingRetry={pendingPagination.retry}
+      />
       {initiallyLoading ? <TransactionsContentSkeleton /> : null}
       {!initiallyLoading && hasTransactions && data ? (
         <div className="flex flex-col">

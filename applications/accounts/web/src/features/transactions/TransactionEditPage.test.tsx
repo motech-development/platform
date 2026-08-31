@@ -474,6 +474,72 @@ describe('TransactionEditPage', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('restores the authoritative attachment name when reloading a staged replacement', async () => {
+    const authoritativeAttachment = 'company-id/old-invoice.pdf';
+
+    mocks.transactionQuery.data = {
+      getTransaction: { ...transaction, attachment: authoritativeAttachment },
+    };
+    mocks.formQuery.data = formData;
+    mocks.requestUpload.mockResolvedValue({
+      data: { requestUpload: { id: 'replacement-id', url: 'https://upload' } },
+    });
+    mocks.uploadPresignedFile.mockResolvedValue(undefined);
+    mocks.deleteFile.mockResolvedValue({
+      data: { deleteFile: { path: 'company-id/replacement-id.pdf' } },
+    });
+    const view = render(
+      <BreezeProvider locale="en-GB">
+        <TransactionEditPage
+          companyId="company-id"
+          origin="transactions"
+          transactionId="transaction-id"
+        />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(screen.getByRole('button', { name: 'Replace file' }));
+    await userEvent.upload(
+      document.querySelector('input[type="file"]') as HTMLInputElement,
+      new File(['replacement'], 'replacement.pdf', {
+        type: 'application/pdf',
+      }),
+    );
+    expect(await screen.findByText('replacement.pdf')).toBeVisible();
+
+    mocks.transactionQuery.data = {
+      getTransaction: {
+        ...transaction,
+        amount: 90,
+        attachment: authoritativeAttachment,
+      },
+    };
+    view.rerender(
+      <BreezeProvider locale="en-GB">
+        <TransactionEditPage
+          companyId="company-id"
+          origin="transactions"
+          transactionId="transaction-id"
+        />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(
+      await screen.findByRole('button', { name: 'Reload latest' }),
+    );
+
+    await waitFor(() =>
+      expect(screen.getByText('old-invoice.pdf')).toBeVisible(),
+    );
+    expect(screen.queryByText('replacement.pdf')).not.toBeInTheDocument();
+    expect(mocks.deleteFile).toHaveBeenCalledWith({
+      variables: {
+        id: 'company-id',
+        path: 'company-id/replacement-id.pdf',
+      },
+    });
+  });
+
   it('keeps the edit form available when saving returns no Transaction', async () => {
     mocks.transactionQuery.data = { getTransaction: transaction };
     mocks.formQuery.data = formData;

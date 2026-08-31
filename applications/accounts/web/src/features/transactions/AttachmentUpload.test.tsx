@@ -45,6 +45,7 @@ describe('AttachmentUpload', () => {
 
   it('keeps the chooser disabled until the object transfer completes', async () => {
     const user = userEvent.setup();
+    const onAllocated = vi.fn();
     const onUploaded = vi.fn();
     const file = new File(['invoice'], 'invoice.pdf', {
       type: 'application/pdf',
@@ -66,6 +67,7 @@ describe('AttachmentUpload', () => {
       <BreezeProvider locale="en-GB">
         <AttachmentUpload
           companyId="company-1"
+          onAllocated={onAllocated}
           onDiscardFailed={() => true}
           onTransfer={vi.fn()}
           onUploaded={onUploaded}
@@ -81,6 +83,8 @@ describe('AttachmentUpload', () => {
     await waitFor(() => {
       expect(mocks.uploadPresignedFile).toHaveBeenCalledTimes(1);
     });
+    expect(onAllocated).toHaveBeenCalledWith('company-1/upload-1.pdf');
+    expect(onUploaded).not.toHaveBeenCalled();
     expect(screen.getByRole('button', { name: 'Browse' })).toBeDisabled();
     expect(screen.getByRole('status')).toHaveTextContent(
       'Uploading file…: invoice.pdf',
@@ -122,6 +126,7 @@ describe('AttachmentUpload', () => {
       <BreezeProvider locale="en-GB">
         <AttachmentUpload
           companyId="company-1"
+          onAllocated={vi.fn()}
           onDiscardFailed={() => true}
           onTransfer={vi.fn()}
           onUploaded={onUploaded}
@@ -169,6 +174,7 @@ describe('AttachmentUpload', () => {
       <BreezeProvider locale="en-GB">
         <AttachmentUpload
           companyId="company-1"
+          onAllocated={vi.fn()}
           onDiscardFailed={() => true}
           onTransfer={vi.fn()}
           onUploaded={onUploaded}
@@ -219,6 +225,7 @@ describe('AttachmentUpload', () => {
       <BreezeProvider locale="en-GB">
         <AttachmentUpload
           companyId="company-1"
+          onAllocated={vi.fn()}
           onDiscardFailed={onDiscardFailed}
           onTransfer={vi.fn()}
           onUploaded={vi.fn()}
@@ -269,6 +276,7 @@ describe('AttachmentUpload', () => {
       <BreezeProvider locale="en-GB">
         <AttachmentUpload
           companyId="company-1"
+          onAllocated={vi.fn()}
           onDiscardFailed={() => true}
           onTransfer={onTransfer}
           onUploaded={onUploaded}
@@ -292,22 +300,16 @@ describe('AttachmentUpload', () => {
     });
   });
 
-  it('preserves image extensions accepted by the legacy wildcard contract', async () => {
+  it('rejects image extensions unsupported by the storage contract', async () => {
     const user = userEvent.setup();
     const file = new File(['image'], 'photo.jfif', { type: 'image/jpeg' });
     const onUploaded = vi.fn();
-
-    mocks.requestUpload.mockResolvedValue({
-      data: {
-        requestUpload: { id: 'upload-image', url: 'https://upload/image' },
-      },
-    });
-    mocks.uploadPresignedFile.mockResolvedValue(undefined);
 
     render(
       <BreezeProvider locale="en-GB">
         <AttachmentUpload
           companyId="company-1"
+          onAllocated={vi.fn()}
           onDiscardFailed={() => true}
           onTransfer={vi.fn()}
           onUploaded={onUploaded}
@@ -320,21 +322,13 @@ describe('AttachmentUpload', () => {
       file,
     );
 
-    await waitFor(() => {
-      expect(onUploaded).toHaveBeenCalledWith(
-        'company-1/upload-image.jfif',
-        'photo.jfif',
-      );
-    });
-    expect(mocks.requestUpload).toHaveBeenCalledWith({
-      variables: {
-        id: 'company-1',
-        input: {
-          contentType: 'image/jpeg',
-          extension: 'jfif',
-          metadata: { typename: 'Transaction' },
-        },
-      },
+    expect(mocks.requestUpload).not.toHaveBeenCalled();
+    expect(mocks.uploadPresignedFile).not.toHaveBeenCalled();
+    expect(onUploaded).not.toHaveBeenCalled();
+    expect(mocks.toast.show).toHaveBeenCalledWith({
+      description: 'Choose one PDF, JPG, PNG, or GIF file.',
+      title: 'File not accepted',
+      variant: 'warning',
     });
   });
 
@@ -346,6 +340,7 @@ describe('AttachmentUpload', () => {
       <BreezeProvider locale="en-GB">
         <AttachmentUpload
           companyId="company-1"
+          onAllocated={vi.fn()}
           onDiscardFailed={() => true}
           onTransfer={transfer}
           onUploaded={vi.fn()}
@@ -371,6 +366,7 @@ describe('AttachmentUpload', () => {
 
   it('preserves the selected PDF and retries it after transfer failure', async () => {
     const user = userEvent.setup();
+    const onDiscardFailed = vi.fn(() => true);
     const onUploaded = vi.fn();
     const file = new File(['invoice'], 'invoice.pdf', {
       type: 'application/pdf',
@@ -395,7 +391,8 @@ describe('AttachmentUpload', () => {
       <BreezeProvider locale="en-GB">
         <AttachmentUpload
           companyId="company-1"
-          onDiscardFailed={() => true}
+          onAllocated={vi.fn()}
+          onDiscardFailed={onDiscardFailed}
           onTransfer={vi.fn()}
           onUploaded={onUploaded}
         />
@@ -418,6 +415,7 @@ describe('AttachmentUpload', () => {
         'invoice.pdf',
       );
     });
+    expect(onDiscardFailed).toHaveBeenCalledOnce();
     expect(mocks.uploadPresignedFile).toHaveBeenNthCalledWith(
       2,
       'https://upload/retry',
@@ -438,6 +436,7 @@ describe('AttachmentUpload', () => {
       <BreezeProvider locale="en-GB">
         <AttachmentUpload
           companyId="company-1"
+          onAllocated={vi.fn()}
           onDiscardFailed={() => true}
           onTransfer={vi.fn()}
           onUploaded={vi.fn()}

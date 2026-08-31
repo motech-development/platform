@@ -41,7 +41,7 @@ describe('Accounts web hosting stack', () => {
     expect(amplifyApp?.Properties?.CustomRules).toContainEqual(
       expect.objectContaining({
         Source:
-          '</^[^.]+$|\\.(?!(bcmap|css|gif|ico|jpg|jpeg|js|mjs|pfb|png|txt|ttf|svg|woff|woff2|json|webmanifest)$)([^.]+$)/>',
+          '</^[^.]+$|\\.(?!(bcmap|css|gif|ico|jpg|jpeg|js|mjs|pfb|png|txt|ttf|svg|wasm|woff|woff2|json|webmanifest)$)([^.]+$)/>',
       }),
     );
   });

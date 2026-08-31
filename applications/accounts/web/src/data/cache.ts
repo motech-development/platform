@@ -36,6 +36,105 @@ interface NotificationCollection {
   readonly items?: readonly CacheReference[];
 }
 
+interface PaginationMetadata {
+  readonly loadedContinuationTokens: readonly string[];
+  readonly loadedPageCount: number;
+  readonly refreshGeneration: number;
+  readonly requestedPageCount: number;
+}
+
+const initialPaginationMetadata: PaginationMetadata = {
+  loadedContinuationTokens: [],
+  loadedPageCount: 1,
+  refreshGeneration: 0,
+  requestedPageCount: 1,
+};
+
+function refreshedPaginationMetadata(
+  current: PaginationMetadata,
+): PaginationMetadata {
+  return {
+    loadedContinuationTokens: [],
+    loadedPageCount: 1,
+    refreshGeneration: current.refreshGeneration + 1,
+    requestedPageCount: Math.max(
+      current.loadedPageCount,
+      current.requestedPageCount,
+    ),
+  };
+}
+
+function continuedPaginationMetadata(
+  current: PaginationMetadata,
+  continuationToken: string | undefined,
+): PaginationMetadata {
+  const continuationAlreadyLoaded =
+    continuationToken !== undefined &&
+    current.loadedContinuationTokens.includes(continuationToken);
+  const loadedPageCount = continuationAlreadyLoaded
+    ? current.loadedPageCount
+    : current.loadedPageCount + 1;
+
+  return {
+    loadedContinuationTokens:
+      continuationToken && !continuationAlreadyLoaded
+        ? [...current.loadedContinuationTokens, continuationToken]
+        : current.loadedContinuationTokens,
+    loadedPageCount,
+    refreshGeneration: current.refreshGeneration,
+    requestedPageCount: Math.max(loadedPageCount, current.requestedPageCount),
+  };
+}
+
+function clientPaginationMetadata(page: ClientPage): PaginationMetadata {
+  return {
+    loadedContinuationTokens: page.clientLoadedContinuationTokens ?? [],
+    loadedPageCount: page.clientLoadedPageCount ?? 1,
+    refreshGeneration: page.clientRefreshGeneration ?? 0,
+    requestedPageCount: page.clientRequestedPageCount ?? 1,
+  };
+}
+
+function clientPaginationFields(metadata: PaginationMetadata) {
+  return {
+    clientLoadedContinuationTokens: metadata.loadedContinuationTokens,
+    clientLoadedPageCount: metadata.loadedPageCount,
+    clientRefreshGeneration: metadata.refreshGeneration,
+    clientRequestedPageCount: metadata.requestedPageCount,
+  };
+}
+
+function transactionPaginationMetadata(
+  page: TransactionPage,
+): PaginationMetadata {
+  return {
+    loadedContinuationTokens: page.transactionLoadedContinuationTokens ?? [],
+    loadedPageCount: page.transactionLoadedPageCount ?? 1,
+    refreshGeneration: page.transactionRefreshGeneration ?? 0,
+    requestedPageCount: page.transactionRequestedPageCount ?? 1,
+  };
+}
+
+function transactionPaginationFields(metadata: PaginationMetadata) {
+  return {
+    transactionLoadedContinuationTokens: metadata.loadedContinuationTokens,
+    transactionLoadedPageCount: metadata.loadedPageCount,
+    transactionRefreshGeneration: metadata.refreshGeneration,
+    transactionRequestedPageCount: metadata.requestedPageCount,
+  };
+}
+
+const pageCountFieldPolicy = {
+  read(value: number | undefined) {
+    return value ?? 1;
+  },
+};
+const refreshGenerationFieldPolicy = {
+  read(value: number | undefined) {
+    return value ?? 0;
+  },
+};
+
 function entityId(
   entity: CacheReference,
   readField: FieldFunctionOptions['readField'],
@@ -58,25 +157,16 @@ function mergeClientPages(
     return !args?.nextToken && !partialFirstPage
       ? {
           ...incoming,
-          clientLoadedContinuationTokens: [],
-          clientLoadedPageCount: 1,
-          clientRefreshGeneration: 0,
-          clientRequestedPageCount: 1,
+          ...clientPaginationFields(initialPaginationMetadata),
         }
       : incoming;
   }
 
   if (!args?.nextToken && !partialFirstPage) {
-    const loadedPageCount = existing.clientLoadedPageCount ?? 1;
-
     return {
       ...incoming,
-      clientLoadedContinuationTokens: [],
-      clientLoadedPageCount: 1,
-      clientRefreshGeneration: (existing.clientRefreshGeneration ?? 0) + 1,
-      clientRequestedPageCount: Math.max(
-        loadedPageCount,
-        existing.clientRequestedPageCount ?? 1,
+      ...clientPaginationFields(
+        refreshedPaginationMetadata(clientPaginationMetadata(existing)),
       ),
     };
   }
@@ -90,15 +180,6 @@ function mergeClientPages(
   const incomingIdSet = new Set(incomingIds);
   const continuationToken =
     typeof args?.nextToken === 'string' ? args.nextToken : undefined;
-  const loadedContinuationTokens =
-    existing.clientLoadedContinuationTokens ?? [];
-  const continuationAlreadyLoaded =
-    continuationToken !== undefined &&
-    loadedContinuationTokens.includes(continuationToken);
-  const loadedPageCount = existing.clientLoadedPageCount ?? 1;
-  const nextLoadedPageCount = continuationAlreadyLoaded
-    ? loadedPageCount
-    : loadedPageCount + 1;
   const retainedItems =
     existing.items?.filter(
       (client) => !incomingIdSet.has(entityId(client, readField) ?? ''),
@@ -106,15 +187,11 @@ function mergeClientPages(
 
   return {
     ...incoming,
-    clientLoadedContinuationTokens:
-      continuationToken && !continuationAlreadyLoaded
-        ? [...loadedContinuationTokens, continuationToken]
-        : loadedContinuationTokens,
-    clientLoadedPageCount: nextLoadedPageCount,
-    clientRefreshGeneration: existing.clientRefreshGeneration ?? 0,
-    clientRequestedPageCount: Math.max(
-      nextLoadedPageCount,
-      existing.clientRequestedPageCount ?? 1,
+    ...clientPaginationFields(
+      continuedPaginationMetadata(
+        clientPaginationMetadata(existing),
+        continuationToken,
+      ),
     ),
     items: [...retainedItems, ...incomingItems],
   };
@@ -136,10 +213,7 @@ function mergeTransactionPages(
     return !args?.nextToken
       ? {
           ...incoming,
-          transactionLoadedContinuationTokens: [],
-          transactionLoadedPageCount: 1,
-          transactionRefreshGeneration: 0,
-          transactionRequestedPageCount: 1,
+          ...transactionPaginationFields(initialPaginationMetadata),
         }
       : incoming;
   }
@@ -149,17 +223,10 @@ function mergeTransactionPages(
   }
 
   if (!args?.nextToken) {
-    const loadedPageCount = existing.transactionLoadedPageCount ?? 1;
-
     return {
       ...incoming,
-      transactionLoadedContinuationTokens: [],
-      transactionLoadedPageCount: 1,
-      transactionRefreshGeneration:
-        (existing.transactionRefreshGeneration ?? 0) + 1,
-      transactionRequestedPageCount: Math.max(
-        loadedPageCount,
-        existing.transactionRequestedPageCount ?? 1,
+      ...transactionPaginationFields(
+        refreshedPaginationMetadata(transactionPaginationMetadata(existing)),
       ),
     };
   }
@@ -177,28 +244,15 @@ function mergeTransactionPages(
     ) ?? [];
   const continuationToken =
     typeof args.nextToken === 'string' ? args.nextToken : undefined;
-  const loadedContinuationTokens =
-    existing.transactionLoadedContinuationTokens ?? [];
-  const continuationAlreadyLoaded =
-    continuationToken !== undefined &&
-    loadedContinuationTokens.includes(continuationToken);
-  const loadedPageCount = existing.transactionLoadedPageCount ?? 1;
-  const nextLoadedPageCount = continuationAlreadyLoaded
-    ? loadedPageCount
-    : loadedPageCount + 1;
 
   return {
     ...incoming,
     items: [...retainedItems, ...incomingItems],
-    transactionLoadedContinuationTokens:
-      continuationToken && !continuationAlreadyLoaded
-        ? [...loadedContinuationTokens, continuationToken]
-        : loadedContinuationTokens,
-    transactionLoadedPageCount: nextLoadedPageCount,
-    transactionRefreshGeneration: existing.transactionRefreshGeneration ?? 0,
-    transactionRequestedPageCount: Math.max(
-      nextLoadedPageCount,
-      existing.transactionRequestedPageCount ?? 1,
+    ...transactionPaginationFields(
+      continuedPaginationMetadata(
+        transactionPaginationMetadata(existing),
+        continuationToken,
+      ),
     ),
   };
 }
@@ -244,19 +298,13 @@ export function createAccountsCache() {
       Clients: {
         fields: {
           clientLoadedPageCount: {
-            read(value: number | undefined) {
-              return value ?? 1;
-            },
+            ...pageCountFieldPolicy,
           },
           clientRefreshGeneration: {
-            read(value: number | undefined) {
-              return value ?? 0;
-            },
+            ...refreshGenerationFieldPolicy,
           },
           clientRequestedPageCount: {
-            read(value: number | undefined) {
-              return value ?? 1;
-            },
+            ...pageCountFieldPolicy,
           },
         },
         keyFields: false,
@@ -304,19 +352,13 @@ export function createAccountsCache() {
       Transactions: {
         fields: {
           transactionLoadedPageCount: {
-            read(value: number | undefined) {
-              return value ?? 1;
-            },
+            ...pageCountFieldPolicy,
           },
           transactionRefreshGeneration: {
-            read(value: number | undefined) {
-              return value ?? 0;
-            },
+            ...refreshGenerationFieldPolicy,
           },
           transactionRequestedPageCount: {
-            read(value: number | undefined) {
-              return value ?? 1;
-            },
+            ...pageCountFieldPolicy,
           },
         },
         keyFields: false,
