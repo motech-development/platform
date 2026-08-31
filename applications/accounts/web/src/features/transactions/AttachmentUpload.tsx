@@ -28,10 +28,10 @@ function attachmentExtension(file: File) {
       ? file.name.slice(extensionIndex + 1).toLowerCase()
       : undefined;
 
-  const supportedExtensions =
+  const supportedExtensions: readonly string[] | undefined =
     attachmentExtensions[file.type as keyof typeof attachmentExtensions];
 
-  return supportedExtensions?.some((supported) => supported === extension)
+  return extension && supportedExtensions?.includes(extension)
     ? extension
     : undefined;
 }

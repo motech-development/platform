@@ -95,6 +95,7 @@ function TransactionEditDrawer({
     (origin === 'pending' || form.state.values.status === 'pending');
   const pending = submissionPending || deleting || transactionDeleted;
   const publicationCloseRequested = useRef(false);
+  const drawerRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     if (published && !pending && !publicationCloseRequested.current) {
@@ -193,6 +194,7 @@ function TransactionEditDrawer({
           dismissible={!pending}
           keyboardDismissDisabled={pending}
           placement={{ base: 'bottom', md: 'end' }}
+          ref={drawerRef}
           size="wide"
         >
           <Drawer.Description>
@@ -247,6 +249,7 @@ function TransactionEditDrawer({
                 companyId={companyId}
                 currency={currency}
                 discardStagedAttachment={discardStagedAttachment}
+                drawerRef={drawerRef}
                 editing
                 form={form}
                 markDirty={markDirty}

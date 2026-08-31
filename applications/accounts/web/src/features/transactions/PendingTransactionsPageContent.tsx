@@ -3,7 +3,7 @@ import { useQuery } from '@apollo/client/react';
 import { Button, Center } from '@motech-development/breeze-ui';
 import { useTranslation } from 'react-i18next';
 import { GET_PENDING_TRANSACTIONS } from '../../data/operations';
-import { LoadingSkeletonRegion } from '../loading/AccountsPageSkeletons';
+import { LoadingSkeletonRegion } from '../LoadingSkeletonRegion';
 import { QueryRefreshAlert } from '../QueryRefreshAlert';
 import { TransactionSubscriptionAlert } from './CompanyTransactionSubscription';
 import { PendingTransactionsPageHeader } from './PendingTransactionsPageHeader';

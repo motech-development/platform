@@ -82,27 +82,18 @@ function TransactionsRefreshAlert({
 }
 
 function TransactionsPaginationFailureAlert({
-  confirmedFailed,
-  confirmedRetry,
-  pendingFailed,
-  pendingRetry,
+  retries,
 }: Readonly<{
-  confirmedFailed: boolean;
-  confirmedRetry: () => Promise<void>;
-  pendingFailed: boolean;
-  pendingRetry: () => Promise<void>;
+  retries: readonly (() => Promise<void>)[];
 }>) {
   const { t } = useTranslation(['transactions', 'routing']);
 
-  if (!confirmedFailed && !pendingFailed) return null;
+  if (retries.length === 0) return null;
 
   return (
     <QueryRefreshAlert
       onRetry={() => {
-        Promise.all([
-          confirmedFailed ? confirmedRetry() : Promise.resolve(),
-          pendingFailed ? pendingRetry() : Promise.resolve(),
-        ]).catch(() => undefined);
+        Promise.all(retries.map((retry) => retry())).catch(() => undefined);
       }}
       retryLabel={t('Try again', { ns: 'routing' })}
     >
@@ -183,8 +174,11 @@ export function TransactionsPageContent({
     networkStatus: pending.networkStatus,
     page: pending.data?.getTransactions,
   });
-  const paginationFailed =
-    confirmedPagination.failed || pendingPagination.failed;
+  const paginationRetries = [
+    ...(confirmedPagination.failed ? [confirmedPagination.retry] : []),
+    ...(pendingPagination.failed ? [pendingPagination.retry] : []),
+  ];
+  const paginationFailed = paginationRetries.length > 0;
 
   return (
     <div
@@ -223,12 +217,7 @@ export function TransactionsPageContent({
           }}
         />
       ) : null}
-      <TransactionsPaginationFailureAlert
-        confirmedFailed={confirmedPagination.failed}
-        confirmedRetry={confirmedPagination.retry}
-        pendingFailed={pendingPagination.failed}
-        pendingRetry={pendingPagination.retry}
-      />
+      <TransactionsPaginationFailureAlert retries={paginationRetries} />
       {initiallyLoading ? <TransactionsContentSkeleton /> : null}
       {!initiallyLoading && hasTransactions && data ? (
         <div className="flex flex-col">

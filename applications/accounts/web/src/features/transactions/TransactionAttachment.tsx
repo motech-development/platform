@@ -9,7 +9,15 @@ import {
   useToast,
 } from '@motech-development/breeze-ui';
 import { saveAs } from 'file-saver';
-import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  lazy,
+  type RefObject,
+  Suspense,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { REQUEST_DOWNLOAD } from '../../data/operations';
 import { downloadPresignedFile } from '../../data/presigned-transfer';
@@ -32,6 +40,7 @@ export function TransactionAttachment({
   onReplace,
   path,
   replacing = false,
+  transactionDrawerRef,
 }: Readonly<{
   companyId: string;
   displayName?: string;
@@ -40,13 +49,13 @@ export function TransactionAttachment({
   onReplace: () => void;
   path: string;
   replacing?: boolean;
+  transactionDrawerRef: RefObject<HTMLElement | null>;
 }>) {
   const { t } = useTranslation(['attachments', 'transactions']);
   const apolloClient = useApolloClient();
   const toast = useToast();
   const online = useOnlineStatus();
   const runLatestTransfer = useLatestTransfer();
-  const attachmentRef = useRef<HTMLDivElement>(null);
   const previewRef = useRef<HTMLElement>(null);
   const [downloadedFile, setDownloadedFile] = useState<{
     blob: Blob;
@@ -82,8 +91,7 @@ export function TransactionAttachment({
       return undefined;
     }
 
-    const transactionDrawer =
-      attachmentRef.current?.closest<HTMLElement>('[role="dialog"]');
+    const transactionDrawer = transactionDrawerRef.current;
     const preview = previewRef.current;
 
     if (!transactionDrawer || !preview) return undefined;
@@ -119,7 +127,7 @@ export function TransactionAttachment({
       window.removeEventListener('resize', updatePlacement);
       viewport?.removeEventListener('resize', updatePlacement);
     };
-  }, [file]);
+  }, [file, transactionDrawerRef]);
   const download = async () => {
     if (file) return file;
 
@@ -214,7 +222,6 @@ export function TransactionAttachment({
           </>
         }
         name={name}
-        ref={attachmentRef}
       />
       {file ? (
         <Drawer.Root

@@ -14,6 +14,7 @@ const mocks = vi.hoisted(() => ({
   saveAs: vi.fn(),
   toast: { show: vi.fn() },
 }));
+const transactionDrawerRef = { current: document.createElement('section') };
 
 vi.mock('@apollo/client/react', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@apollo/client/react')>()),
@@ -72,6 +73,7 @@ describe('TransactionAttachment', () => {
           onDeleted={() => true}
           onReplace={() => undefined}
           path="company-id/invoice.pdf"
+          transactionDrawerRef={transactionDrawerRef}
         />
       </BreezeProvider>,
     );
@@ -102,6 +104,7 @@ describe('TransactionAttachment', () => {
           onDeleted={onDeleted}
           onReplace={() => undefined}
           path="company-id/receipt.png"
+          transactionDrawerRef={transactionDrawerRef}
         />
       </BreezeProvider>,
     );
@@ -126,6 +129,7 @@ describe('TransactionAttachment', () => {
           onDeleted={() => true}
           onReplace={() => undefined}
           path="company-id/3456df4a-51f8-49af-a52e-c1a21b8ff087.pdf"
+          transactionDrawerRef={transactionDrawerRef}
         />
       </BreezeProvider>,
     );
@@ -164,6 +168,7 @@ describe('TransactionAttachment', () => {
           onDeleted={() => true}
           onReplace={() => undefined}
           path="company-id/invoice.pdf"
+          transactionDrawerRef={transactionDrawerRef}
         />
       </BreezeProvider>,
     );
@@ -210,6 +215,7 @@ describe('TransactionAttachment', () => {
           onDeleted={() => true}
           onReplace={() => undefined}
           path="company-id/original.pdf"
+          transactionDrawerRef={transactionDrawerRef}
         />
       </BreezeProvider>,
     );
@@ -224,6 +230,7 @@ describe('TransactionAttachment', () => {
           onDeleted={() => true}
           onReplace={() => undefined}
           path="company-id/replacement.pdf"
+          transactionDrawerRef={transactionDrawerRef}
         />
       </BreezeProvider>,
     );
@@ -256,6 +263,7 @@ describe('TransactionAttachment', () => {
           onDeleted={() => true}
           onReplace={() => undefined}
           path="company-id/receipt.gif"
+          transactionDrawerRef={transactionDrawerRef}
         />
       </BreezeProvider>,
     );
@@ -288,6 +296,7 @@ describe('TransactionAttachment', () => {
             onDeleted={onDeleted}
             onReplace={() => undefined}
             path="company-id/invoice.pdf"
+            transactionDrawerRef={transactionDrawerRef}
           />
         </BreezeProvider>,
       );
@@ -312,6 +321,7 @@ describe('TransactionAttachment', () => {
           onDeleted={onDeleted}
           onReplace={() => undefined}
           path="company-id/invoice.pdf"
+          transactionDrawerRef={transactionDrawerRef}
         />
       </BreezeProvider>,
     );
@@ -346,6 +356,7 @@ describe('TransactionAttachment', () => {
           onDeleted={() => deletion}
           onReplace={() => undefined}
           path="company-id/invoice.pdf"
+          transactionDrawerRef={transactionDrawerRef}
         />
       </BreezeProvider>,
     );
@@ -376,6 +387,7 @@ describe('TransactionAttachment', () => {
           onDeleted={() => true}
           onReplace={() => undefined}
           path="company-id/invoice.pdf"
+          transactionDrawerRef={transactionDrawerRef}
         />
       </BreezeProvider>,
     );

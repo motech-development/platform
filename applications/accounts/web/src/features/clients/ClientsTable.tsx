@@ -6,6 +6,7 @@ import {
   VisuallyHidden,
 } from '@motech-development/breeze-ui';
 import { useTranslation } from 'react-i18next';
+import { LoadingSkeletonRegion } from '../LoadingSkeletonRegion';
 
 interface ClientTableItem {
   contact: { email: string; telephone: string };
@@ -143,65 +144,62 @@ export function ClientsTable({
 }
 
 export function ClientsTableSkeleton() {
-  const { t } = useTranslation(['clients', 'routing']);
+  const { t } = useTranslation('clients');
 
   return (
-    <section aria-label={t('Loading clients')} role="status">
-      <VisuallyHidden>{t('Loading', { ns: 'routing' })}</VisuallyHidden>
-      <div aria-hidden="true" inert>
-        <Table.Root
-          aria-label={t('Loading clients table')}
-          boundary="strong"
-          desktopColumns="mediaDetailsAction"
-          layout="responsiveGrid"
-          tabIndex={-1}
-        >
-          <ClientsTableHeader loading />
-          <Table.Body>
-            {Array.from({ length: 4 }, (_, index) => (
-              <Table.Row
-                className={clientTableRowClassName}
-                id={`loading-client-${index}`}
-                key={index}
-                textValue={t('Loading client row {{count}}', {
-                  count: index + 1,
-                })}
+    <LoadingSkeletonRegion loadingLabel={t('Loading clients')}>
+      <Table.Root
+        aria-label={t('Loading clients table')}
+        boundary="strong"
+        desktopColumns="mediaDetailsAction"
+        layout="responsiveGrid"
+        tabIndex={-1}
+      >
+        <ClientsTableHeader loading />
+        <Table.Body>
+          {Array.from({ length: 4 }, (_, index) => (
+            <Table.Row
+              className={clientTableRowClassName}
+              id={`loading-client-${index}`}
+              key={index}
+              textValue={t('Loading client row {{count}}', {
+                count: index + 1,
+              })}
+            >
+              <Table.Cell
+                className={clientTableCellClassNames.avatar}
+                column="avatar"
               >
-                <Table.Cell
-                  className={clientTableCellClassNames.avatar}
-                  column="avatar"
-                >
-                  <Skeleton className="size-9 shrink-0 rounded-full" />
-                </Table.Cell>
-                <Table.Cell
-                  className={clientTableCellClassNames.client}
-                  column="client"
-                >
-                  <Skeleton className="h-4 w-3/4 max-w-44" />
-                </Table.Cell>
-                <Table.Cell
-                  className={clientTableCellClassNames.email}
-                  column="email"
-                >
-                  <Skeleton className="h-4 w-3/4 max-w-64" />
-                </Table.Cell>
-                <Table.Cell
-                  className={clientTableCellClassNames.telephone}
-                  column="telephone"
-                >
-                  <Skeleton className="h-4 w-3/4 max-w-64" />
-                </Table.Cell>
-                <Table.Cell
-                  className={clientTableCellClassNames.actions}
-                  column="actions"
-                >
-                  <Skeleton className="h-4 w-3" />
-                </Table.Cell>
-              </Table.Row>
-            ))}
-          </Table.Body>
-        </Table.Root>
-      </div>
-    </section>
+                <Skeleton className="size-9 shrink-0 rounded-full" />
+              </Table.Cell>
+              <Table.Cell
+                className={clientTableCellClassNames.client}
+                column="client"
+              >
+                <Skeleton className="h-4 w-3/4 max-w-44" />
+              </Table.Cell>
+              <Table.Cell
+                className={clientTableCellClassNames.email}
+                column="email"
+              >
+                <Skeleton className="h-4 w-3/4 max-w-64" />
+              </Table.Cell>
+              <Table.Cell
+                className={clientTableCellClassNames.telephone}
+                column="telephone"
+              >
+                <Skeleton className="h-4 w-3/4 max-w-64" />
+              </Table.Cell>
+              <Table.Cell
+                className={clientTableCellClassNames.actions}
+                column="actions"
+              >
+                <Skeleton className="h-4 w-3" />
+              </Table.Cell>
+            </Table.Row>
+          ))}
+        </Table.Body>
+      </Table.Root>
+    </LoadingSkeletonRegion>
   );
 }

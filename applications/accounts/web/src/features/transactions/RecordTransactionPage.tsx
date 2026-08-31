@@ -1,4 +1,5 @@
 import { Button, Drawer, FormActions } from '@motech-development/breeze-ui';
+import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DiscardChangesDialog } from '../companies/DiscardChangesDialog';
 import { SubmittingForm } from '../forms/SubmittingForm';
@@ -20,6 +21,7 @@ export function RecordTransactionPage({
   origin: TransactionPageOrigin;
 }>) {
   const { t } = useTranslation(['transactions', 'routing']);
+  const drawerRef = useRef<HTMLElement>(null);
   const { Background, closeTo, confirmedReturnTo } =
     transactionPageOrigins[origin];
   const {
@@ -80,6 +82,7 @@ export function RecordTransactionPage({
           dismissible={!submissionPending}
           keyboardDismissDisabled={submissionPending}
           placement={{ base: 'bottom', md: 'end' }}
+          ref={drawerRef}
           size="wide"
         >
           <Drawer.Description>
@@ -118,6 +121,7 @@ export function RecordTransactionPage({
                 companyId={companyId}
                 currency={currency}
                 discardStagedAttachment={discardStagedAttachment}
+                drawerRef={drawerRef}
                 editing={false}
                 form={form}
                 markDirty={markDirty}

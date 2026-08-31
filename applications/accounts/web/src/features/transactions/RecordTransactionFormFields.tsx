@@ -11,6 +11,7 @@ import {
 import { useSelector } from '@tanstack/react-form';
 import {
   type ReactNode,
+  type RefObject,
   useEffect,
   useEffectEvent,
   useRef,
@@ -160,6 +161,7 @@ function TransactionAttachmentField({
   attachmentPath,
   companyId,
   discardStagedAttachment,
+  drawerRef,
   isSubmitting,
   markDirty,
   onChange,
@@ -172,6 +174,7 @@ function TransactionAttachmentField({
   attachmentPath: string;
   companyId: string;
   discardStagedAttachment: () => Promise<boolean>;
+  drawerRef: RefObject<HTMLElement | null>;
   isSubmitting: boolean;
   markDirty: () => void;
   onChange: (path: string) => void;
@@ -249,6 +252,7 @@ function TransactionAttachmentField({
         onReplace={startReplacement}
         path={attachmentPath}
         replacing={replacementState !== 'idle'}
+        transactionDrawerRef={drawerRef}
       />
       {replacementState === 'ready' ? upload : null}
     </Stack>
@@ -261,6 +265,7 @@ export function RecordTransactionFormFields({
   companyId,
   currency,
   discardStagedAttachment,
+  drawerRef,
   editing,
   form,
   markDirty,
@@ -276,6 +281,7 @@ export function RecordTransactionFormFields({
   companyId: string;
   currency: string;
   discardStagedAttachment: () => Promise<boolean>;
+  drawerRef: RefObject<HTMLElement | null>;
   editing: boolean;
   form: TransactionForm;
   markDirty: () => void;
@@ -958,6 +964,7 @@ export function RecordTransactionFormFields({
                         attachmentPath={field.state.value}
                         companyId={companyId}
                         discardStagedAttachment={discardStagedAttachment}
+                        drawerRef={drawerRef}
                         isSubmitting={isSubmitting}
                         markDirty={markDirty}
                         onChange={field.handleChange}

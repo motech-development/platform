@@ -25,13 +25,13 @@ import {
   CompanyDetailsFormSkeleton,
   CompanyEnrolmentDrawerSkeleton,
   FormSkeletonRegion,
-  LoadingSkeletonRegion,
   OverviewContentSkeleton,
   RecordTransactionDrawerSkeleton,
   SettingsFormSkeleton,
   TransactionEditDrawerSkeleton,
   TransactionsContentSkeleton,
 } from '../features/loading/AccountsPageSkeletons';
+import { LoadingSkeletonRegion } from '../features/LoadingSkeletonRegion';
 import { PendingTransactionsPageHeader } from '../features/transactions/PendingTransactionsPageHeader';
 import { TransactionLedgerSkeleton } from '../features/transactions/TransactionLedger';
 import { captureRouteFailure } from '../observability';

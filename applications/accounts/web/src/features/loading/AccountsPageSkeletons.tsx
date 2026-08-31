@@ -6,25 +6,11 @@ import {
   Surface,
   VisuallyHidden,
 } from '@motech-development/breeze-ui';
-import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { expenseCategoryRowClassName } from '../companies/expense-category-layout';
+import { LoadingSkeletonRegion } from '../LoadingSkeletonRegion';
 import { FinancialSummarySkeleton } from '../transactions/FinancialSummary';
 import { TransactionLedgerSkeleton } from '../transactions/TransactionLedger';
-
-export function LoadingSkeletonRegion({
-  children,
-  loadingLabel,
-}: Readonly<{ children: ReactNode; loadingLabel: string }>) {
-  return (
-    <section aria-busy="true" aria-label={loadingLabel} role="status">
-      <VisuallyHidden>{loadingLabel}</VisuallyHidden>
-      <div aria-hidden="true" inert>
-        {children}
-      </div>
-    </section>
-  );
-}
 
 export const FormSkeletonRegion = LoadingSkeletonRegion;
 

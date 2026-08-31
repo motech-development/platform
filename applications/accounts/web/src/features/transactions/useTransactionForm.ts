@@ -414,7 +414,9 @@ export function useTransactionForm({
     pending: submissionPending,
   });
 
-  navigationActions.current = navigation;
+  useEffect(() => {
+    navigationActions.current = navigation;
+  }, [navigation]);
 
   const acceptAuthoritativeValues = useCallback(
     (values: TransactionFormValues) => {
