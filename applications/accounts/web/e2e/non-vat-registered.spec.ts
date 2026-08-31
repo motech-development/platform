@@ -684,11 +684,11 @@ test.describe('Non-VAT registered', () => {
         .getByRole('button', { name: 'Permanently delete company' })
         .click();
 
-      companyCleanupRequired = false;
       await expect(
         page.getByRole('heading', { name: 'My companies' }),
       ).toBeVisible();
       await expect(page.getByTestId(companyName)).toHaveCount(0);
+      companyCleanupRequired = false;
     });
   });
 });

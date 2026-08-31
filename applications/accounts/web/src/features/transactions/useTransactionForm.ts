@@ -113,6 +113,8 @@ export function useTransactionForm({
   const online = useOnlineStatus();
   const [attachmentTransferPending, setAttachmentTransferPending] =
     useState(false);
+  const [stagedAttachmentCleanupRequired, setStagedAttachmentCleanupRequired] =
+    useState(false);
   const navigationActions = useRef<
     | Pick<
         ReturnType<typeof useFormNavigation>,
@@ -137,13 +139,16 @@ export function useTransactionForm({
   >(undefined);
   const [externalUpdateAvailable, setExternalUpdateAvailable] = useState(false);
   const { data, error, loading, refetch } = useQuery(GET_RECORD_TRANSACTION, {
-    fetchPolicy: 'cache-and-network',
-    nextFetchPolicy: 'cache-first',
+    fetchPolicy: 'no-cache',
     variables: { id: companyId },
   });
   const [addTransaction] = useMutation(ADD_TRANSACTION);
   const [deleteFile] = useMutation(DELETE_FILE);
   const [updateTransaction] = useMutation(UPDATE_TRANSACTION);
+  const trackStagedAttachment = (path: string | undefined) => {
+    stagedAttachmentPath.current = path;
+    setStagedAttachmentCleanupRequired(Boolean(path));
+  };
   const navigateAfterSuccessfulSubmission = async (
     returnTo: TransactionReturnRoute,
   ) => {
@@ -231,7 +236,7 @@ export function useTransactionForm({
 
       if (!path) return true;
 
-      stagedAttachmentPath.current = path;
+      trackStagedAttachment(path);
 
       setAttachmentTransferPending(true);
       const deleted = await deleteAttachment(
@@ -241,7 +246,9 @@ export function useTransactionForm({
         }),
       );
 
-      if (deleted) stagedAttachmentPath.current = undefined;
+      if (deleted) {
+        trackStagedAttachment(undefined);
+      }
       return deleted;
     } finally {
       resetAttachmentTransferPending();
@@ -350,7 +357,7 @@ export function useTransactionForm({
       }
 
       attachmentTransfer.current = undefined;
-      stagedAttachmentPath.current = undefined;
+      trackStagedAttachment(undefined);
       persistedAttachmentPath.current =
         savedTransaction.attachment || undefined;
       const savedValues = editableTransaction({
@@ -396,7 +403,8 @@ export function useTransactionForm({
   );
   const submissionPending = formSubmissionPending || attachmentTransferPending;
   const navigation = useFormNavigation({
-    blockPendingNavigation: submissionPending || additionalPending,
+    blockPendingNavigation:
+      submissionPending || additionalPending || stagedAttachmentCleanupRequired,
     onClose: async () => {
       if (!(await cleanUpAttachmentsForDiscard())) {
         throw new Error('Attachment cleanup failed');
@@ -519,7 +527,9 @@ export function useTransactionForm({
           }),
         );
 
-        if (deleted) stagedAttachmentPath.current = undefined;
+        if (deleted) {
+          trackStagedAttachment(undefined);
+        }
         return deleted;
       } finally {
         resetAttachmentTransferPending();
@@ -529,7 +539,7 @@ export function useTransactionForm({
     submissionPending,
     suggestions: data?.getTypeahead,
     trackAttachmentAllocation: (path: string) => {
-      stagedAttachmentPath.current = path;
+      trackStagedAttachment(path);
     },
     trackAttachmentTransfer: (transfer: Promise<AttachmentTransferResult>) => {
       attachmentTransfer.current = transfer;

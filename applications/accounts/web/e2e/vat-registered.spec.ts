@@ -748,11 +748,11 @@ test.describe('VAT registered', () => {
       await confirmation.fill(companyName);
       await deleteCompany.click();
 
-      companyCleanupRequired = false;
       await expect(
         page.getByRole('heading', { name: 'My companies' }),
       ).toBeVisible();
       await expect(page.getByTestId(companyName)).toHaveCount(0);
+      companyCleanupRequired = false;
     });
   });
 });

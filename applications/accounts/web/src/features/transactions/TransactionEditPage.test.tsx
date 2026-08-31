@@ -481,6 +481,71 @@ describe('TransactionEditPage', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('preserves authoritative VAT when reloading a concurrent category update', async () => {
+    const purchaseTransaction = {
+      ...transaction,
+      category: 'Professional fees',
+      name: 'Oak & Co',
+      vat: 12.5,
+    };
+    const purchaseFormData = {
+      ...formData,
+      getSettings: {
+        ...formData.getSettings,
+        categories: [
+          { name: 'Professional fees', vatRate: 20 },
+          { name: 'Travel', vatRate: 5 },
+        ],
+      },
+    };
+
+    mocks.transactionQuery.data = { getTransaction: purchaseTransaction };
+    mocks.formQuery.data = purchaseFormData;
+
+    const view = render(
+      <BreezeProvider locale="en-GB">
+        <TransactionEditPage
+          companyId="company-id"
+          origin="transactions"
+          transactionId="transaction-id"
+        />
+      </BreezeProvider>,
+    );
+
+    const amount = screen.getByLabelText('Amount');
+    const vat = screen.getByLabelText('VAT');
+
+    await userEvent.clear(amount);
+    await userEvent.type(amount, '80');
+    await waitFor(() => expect(vat).toHaveValue('£13.33'));
+
+    mocks.transactionQuery.data = {
+      getTransaction: {
+        ...purchaseTransaction,
+        amount: 90,
+        category: 'Travel',
+        vat: 7,
+      },
+    };
+    view.rerender(
+      <BreezeProvider locale="en-GB">
+        <TransactionEditPage
+          companyId="company-id"
+          origin="transactions"
+          transactionId="transaction-id"
+        />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(
+      await screen.findByRole('button', { name: 'Reload latest' }),
+    );
+
+    await waitFor(() => expect(amount).toHaveValue('£90.00'));
+    await screen.findByRole('button', { name: 'Travel Category' });
+    expect(vat).toHaveValue('£7.00');
+  });
+
   it('restores the authoritative attachment name when reloading a staged replacement', async () => {
     const authoritativeAttachment = 'company-id/old-invoice.pdf';
 

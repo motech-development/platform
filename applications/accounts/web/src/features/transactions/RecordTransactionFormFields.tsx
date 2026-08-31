@@ -319,6 +319,15 @@ export function RecordTransactionFormFields({
   }>(undefined);
   const lastCalculatedVat = useRef<string>(undefined);
   const vatManuallyOverridden = useRef(editing);
+  const formDirty = useSelector(form.store, (state) => state.isDirty);
+
+  useEffect(() => {
+    if (formDirty) return;
+
+    lastCalculatedVatInput.current = undefined;
+    lastCalculatedVat.current = form.getFieldValue('vat');
+    vatManuallyOverridden.current = editing;
+  }, [editing, form, formDirty]);
 
   useEffect(() => {
     setSelectedCategorySourceIndex((current) => {

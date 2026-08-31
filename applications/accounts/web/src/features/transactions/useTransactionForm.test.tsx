@@ -469,6 +469,34 @@ function DiscardStagedAttachmentHarness({
   );
 }
 
+function AllocatedAttachmentHarness() {
+  const { discardChanges, trackAttachmentAllocation } = useTransactionForm({
+    companyId: 'company-id',
+    confirmedReturnTo: '/my-companies/accounts/$companyId',
+  });
+
+  return (
+    <>
+      <button
+        onClick={() => {
+          trackAttachmentAllocation('company-id/allocated-invoice.pdf');
+        }}
+        type="button"
+      >
+        Allocate attachment
+      </button>
+      <button
+        onClick={() => {
+          discardChanges().catch(() => undefined);
+        }}
+        type="button"
+      >
+        Discard allocated attachment
+      </button>
+    </>
+  );
+}
+
 function RemovePersistedAttachmentHarness() {
   const [removed, setRemoved] = useState(false);
   const { removeAttachment } = useTransactionForm({
@@ -1083,6 +1111,38 @@ describe('useTransactionForm', () => {
       params: { companyId: 'company-id' },
       to: '/my-companies/accounts/$companyId',
     });
+  });
+
+  it('blocks navigation as soon as an attachment path is allocated', async () => {
+    mocks.deleteFile.mockResolvedValueOnce({
+      data: { deleteFile: { path: 'company-id/allocated-invoice.pdf' } },
+    });
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <AllocatedAttachmentHarness />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Allocate attachment' }),
+    );
+
+    await waitFor(() => expect(mocks.shouldBlockFn?.()).toBe(true));
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Discard allocated attachment' }),
+    );
+
+    await waitFor(() => expect(mocks.deleteFile).toHaveBeenCalledOnce());
+    expect(mocks.deleteFile).toHaveBeenCalledWith({
+      variables: {
+        id: 'company-id',
+        path: 'company-id/allocated-invoice.pdf',
+      },
+    });
+    await waitFor(() => expect(mocks.shouldBlockFn?.()).toBe(false));
+    expect(mocks.navigate).toHaveBeenCalledOnce();
   });
 
   it('explains why a failed attachment transfer blocks submission', async () => {
