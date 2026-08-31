@@ -248,6 +248,7 @@ describe('AttachmentUpload', () => {
     const retry = screen.getByRole('button', { name: 'Retry upload' });
     const remove = screen.getByRole('button', { name: 'Remove file' });
 
+    expect(screen.getByRole('button', { name: 'Browse' })).toBeDisabled();
     await user.dblClick(remove);
     await waitFor(() => expect(onDiscardFailed).toHaveBeenCalledOnce());
     expect(retry).toBeDisabled();

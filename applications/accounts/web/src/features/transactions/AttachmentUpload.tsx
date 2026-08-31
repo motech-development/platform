@@ -212,7 +212,7 @@ export function AttachmentUpload({
             ? t('Connection required', { ns: 'transactions' })
             : t('Browse')
         }
-        disabled={disabled || loading || transferPending}
+        disabled={disabled || loading || transferPending || uploadFailed}
         guidance={
           disabled
             ? t('Connection required to attach a file.')

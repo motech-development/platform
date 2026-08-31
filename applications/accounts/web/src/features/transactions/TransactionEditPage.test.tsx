@@ -1,3 +1,4 @@
+import { CombinedGraphQLErrors } from '@apollo/client/errors';
 import { BreezeProvider } from '@motech-development/breeze-ui';
 import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -67,7 +68,10 @@ const formData = {
 
 vi.mock('@apollo/client/react', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@apollo/client/react')>()),
-  useApolloClient: () => ({ query: mocks.downloadQuery }),
+  useApolloClient: () => ({
+    cache: mocks.transactionCache,
+    query: mocks.downloadQuery,
+  }),
   useMutation: (document: {
     definitions?: { name?: { value?: string } }[];
   }) => {
@@ -461,6 +465,9 @@ describe('TransactionEditPage', () => {
     expect(
       screen.getByRole('button', { name: 'Save transaction' }),
     ).toBeDisabled();
+    expect(
+      screen.getByRole('button', { name: 'Delete transaction' }),
+    ).toBeDisabled();
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Reload latest' }),
@@ -691,6 +698,31 @@ describe('TransactionEditPage', () => {
         to: '/my-companies/accounts/$companyId',
       }),
     );
+  });
+
+  it('keeps a confirmed edit open when its status is changed to Pending', async () => {
+    mocks.transactionQuery.data = { getTransaction: transaction };
+    mocks.formQuery.data = formData;
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <TransactionEditPage
+          companyId="company-id"
+          origin="transactions"
+          transactionId="transaction-id"
+        />
+      </BreezeProvider>,
+    );
+
+    const pendingStatus = screen.getByRole('radio', { name: 'Pending' });
+
+    await userEvent.click(pendingStatus);
+    expect(pendingStatus).toBeChecked();
+    await act(() => Promise.resolve());
+    expect(mocks.navigate).not.toHaveBeenCalled();
+    expect(
+      screen.getByRole('heading', { name: 'Edit transaction' }),
+    ).toBeVisible();
   });
 
   it('discards a staged attachment before leaving a published Pending edit', async () => {
@@ -1214,6 +1246,75 @@ describe('TransactionEditPage', () => {
     );
     expect(screen.getByRole('alertdialog')).toBeVisible();
     expect(mocks.navigate).not.toHaveBeenCalled();
+  });
+
+  it('finishes attachment cleanup when a retry proves the Transaction was already deleted', async () => {
+    const transactionWithAttachment = {
+      ...transaction,
+      attachment: 'company-id/invoice.pdf',
+    };
+    const alreadyDeleted = new CombinedGraphQLErrors({
+      errors: [
+        {
+          extensions: {
+            errorType: 'DynamoDB:ConditionalCheckFailedException',
+          },
+          message: 'The conditional request failed',
+        },
+      ],
+    });
+
+    mocks.transactionQuery.data = {
+      getTransaction: transactionWithAttachment,
+    };
+    mocks.formQuery.data = formData;
+    mocks.deleteTransaction
+      .mockRejectedValueOnce(new Error('Response lost'))
+      .mockRejectedValueOnce(alreadyDeleted);
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <TransactionEditPage
+          companyId="company-id"
+          origin="transactions"
+          transactionId="transaction-id"
+        />
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Delete transaction' }),
+    );
+    await userEvent.type(
+      screen.getByLabelText('Type Known client to confirm'),
+      'Known client',
+    );
+    const confirmDeletion = screen.getByRole('button', {
+      name: 'Permanently delete transaction',
+    });
+
+    await userEvent.click(confirmDeletion);
+    await waitFor(() =>
+      expect(mocks.toast.show).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Transaction could not be deleted' }),
+      ),
+    );
+    expect(mocks.deleteFile).not.toHaveBeenCalled();
+
+    await userEvent.click(confirmDeletion);
+
+    await waitFor(() => expect(mocks.navigate).toHaveBeenCalledOnce());
+    expect(mocks.deleteTransaction).toHaveBeenCalledTimes(2);
+    expect(mocks.deleteFile).toHaveBeenCalledWith({
+      variables: {
+        id: 'company-id',
+        path: 'company-id/invoice.pdf',
+      },
+    });
+    expect(mocks.toast.show).toHaveBeenCalledWith({
+      title: 'Transaction deleted',
+      variant: 'success',
+    });
   });
 
   it('retains a staged replacement when Transaction deletion fails', async () => {

@@ -1,4 +1,5 @@
-import { useMutation, useQuery } from '@apollo/client/react';
+import { CombinedGraphQLErrors } from '@apollo/client/errors';
+import { useApolloClient, useMutation, useQuery } from '@apollo/client/react';
 import {
   Button,
   Drawer,
@@ -26,6 +27,16 @@ import {
 import { TransactionFormUnavailable } from './TransactionPagePresentation';
 import { useTransactionForm } from './useTransactionForm';
 
+function transactionAlreadyDeleted(error: unknown) {
+  return (
+    CombinedGraphQLErrors.is(error) &&
+    error.errors.some(
+      ({ extensions }) =>
+        extensions?.errorType === 'DynamoDB:ConditionalCheckFailedException',
+    )
+  );
+}
+
 function TransactionEditDrawer({
   companyId,
   origin,
@@ -42,6 +53,7 @@ function TransactionEditDrawer({
   transactionId: string;
 }>) {
   const { t } = useTranslation(['transactions', 'routing']);
+  const client = useApolloClient();
   const navigate = useNavigate();
   const toast = useToast();
   const { closeTo, confirmedReturnTo } = transactionPageOrigins[origin];
@@ -49,6 +61,7 @@ function TransactionEditDrawer({
     useMutation(DELETE_TRANSACTION);
   const transactionDeletionCompleted = useRef(false);
   const [transactionDeleted, setTransactionDeleted] = useState(false);
+  const initialTransactionStatus = useRef(transaction.status);
   const initialValues = useMemo(
     () => editableTransaction(transaction),
     [transaction],
@@ -91,8 +104,8 @@ function TransactionEditDrawer({
     initialValues,
   });
   const published =
-    transaction.status !== 'pending' &&
-    (origin === 'pending' || form.state.values.status === 'pending');
+    initialTransactionStatus.current === 'pending' &&
+    transaction.status !== 'pending';
   const pending = submissionPending || deleting || transactionDeleted;
   const publicationCloseRequested = useRef(false);
   const drawerRef = useRef<HTMLElement>(null);
@@ -140,15 +153,21 @@ function TransactionEditDrawer({
 
         transactionDeletionCompleted.current = true;
         setTransactionDeleted(true);
-      } catch {
-        toast.show({
-          description: t(
-            'Nothing was deleted. Check your connection and try again.',
-          ),
-          title: t('Transaction could not be deleted'),
-          variant: 'danger',
-        });
-        return false;
+      } catch (deletionError) {
+        if (!transactionAlreadyDeleted(deletionError)) {
+          toast.show({
+            description: t(
+              'Nothing was deleted. Check your connection and try again.',
+            ),
+            title: t('Transaction could not be deleted'),
+            variant: 'danger',
+          });
+          return false;
+        }
+
+        removeTransactionFromCache(client.cache, companyId, transactionId);
+        transactionDeletionCompleted.current = true;
+        setTransactionDeleted(true);
       }
     }
 
@@ -288,7 +307,11 @@ function TransactionEditDrawer({
                           'This transaction and its attachment will be permanently removed.',
                         )}
                         dismissible={!transactionDeleted}
-                        disabled={!online || submissionPending}
+                        disabled={
+                          !online ||
+                          submissionPending ||
+                          externalUpdateAvailable
+                        }
                         entityName={transaction.name}
                         nested
                         onDelete={deleteCurrentTransaction}
@@ -396,6 +419,7 @@ export function TransactionEditPage({
     drawer = (
       <TransactionEditDrawer
         companyId={companyId}
+        key={transactionId}
         origin={origin}
         refetchTransaction={refetch}
         transaction={{

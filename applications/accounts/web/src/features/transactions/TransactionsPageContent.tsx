@@ -81,6 +81,38 @@ function TransactionsRefreshAlert({
   );
 }
 
+function TransactionsErrorState({
+  error,
+  hasData,
+  hasTransactions,
+  initiallyLoading,
+  onInitialRetry,
+  onRefreshRetry,
+}: Readonly<{
+  error: boolean;
+  hasData: boolean;
+  hasTransactions: boolean;
+  initiallyLoading: boolean;
+  onInitialRetry: () => Promise<unknown>;
+  onRefreshRetry: () => void;
+}>) {
+  const { t } = useTranslation('transactions');
+
+  if (!error || initiallyLoading) return null;
+
+  return hasData ? (
+    <TransactionsRefreshAlert
+      hasTransactions={hasTransactions}
+      onRetry={onRefreshRetry}
+    />
+  ) : (
+    <TransactionPageError
+      onRetry={onInitialRetry}
+      title={t('We could not load transactions')}
+    />
+  );
+}
+
 function TransactionsPaginationFailureAlert({
   retries,
 }: Readonly<{
@@ -117,6 +149,63 @@ function canShowEmptyState({
 }>) {
   return (
     !initiallyLoading && !hasTransactions && confirmedLoaded && pendingLoaded
+  );
+}
+
+function TransactionsLoadedContent({
+  companyId,
+  confirmedLoadNextPage,
+  confirmedLoading,
+  confirmedNextToken,
+  confirmedSummary,
+  currencyCode,
+  paginationFailed,
+  pendingLoadNextPage,
+  pendingLoading,
+  pendingNextToken,
+  transactions,
+}: Readonly<{
+  companyId: string;
+  confirmedLoadNextPage: () => Promise<void>;
+  confirmedLoading: boolean;
+  confirmedNextToken?: string | null;
+  confirmedSummary?: Readonly<{
+    balance: number;
+    currency: string;
+    vat: Readonly<{ owed: number; paid: number }>;
+  }>;
+  currencyCode: string;
+  paginationFailed: boolean;
+  pendingLoadNextPage: () => Promise<void>;
+  pendingLoading: boolean;
+  pendingNextToken?: string | null;
+  transactions: ReturnType<typeof combineTransactions>;
+}>) {
+  return (
+    <div className="flex flex-col">
+      {confirmedSummary ? (
+        <FinancialSummary
+          balance={confirmedSummary.balance}
+          currencyCode={confirmedSummary.currency}
+          vat={confirmedSummary.vat}
+        />
+      ) : null}
+      <TransactionLedger
+        companyId={companyId}
+        currencyCode={currencyCode}
+        transactions={transactions}
+      />
+      {!paginationFailed ? (
+        <TransactionsPagination
+          confirmedLoadNextPage={confirmedLoadNextPage}
+          confirmedLoading={confirmedLoading}
+          confirmedNextToken={confirmedNextToken}
+          pendingLoadNextPage={pendingLoadNextPage}
+          pendingLoading={pendingLoading}
+          pendingNextToken={pendingNextToken}
+        />
+      ) : null}
+    </div>
   );
 }
 
@@ -201,51 +290,36 @@ export function TransactionsPageContent({
         title={t('Transactions')}
       />
       <TransactionSubscriptionAlert />
-      {error && !data && !initiallyLoading ? (
-        <TransactionPageError
-          onRetry={() => Promise.all([confirmed.refetch(), pending.refetch()])}
-          title={t('We could not load transactions')}
-        />
-      ) : null}
-      {error && data && !initiallyLoading ? (
-        <TransactionsRefreshAlert
-          hasTransactions={hasTransactions}
-          onRetry={() => {
-            Promise.all([confirmed.refetch(), pending.refetch()]).catch(
-              () => undefined,
-            );
-          }}
-        />
-      ) : null}
+      <TransactionsErrorState
+        error={Boolean(error)}
+        hasData={Boolean(data)}
+        hasTransactions={hasTransactions}
+        initiallyLoading={initiallyLoading}
+        onInitialRetry={() =>
+          Promise.all([confirmed.refetch(), pending.refetch()])
+        }
+        onRefreshRetry={() => {
+          Promise.all([confirmed.refetch(), pending.refetch()]).catch(
+            () => undefined,
+          );
+        }}
+      />
       <TransactionsPaginationFailureAlert retries={paginationRetries} />
       {initiallyLoading ? <TransactionsContentSkeleton /> : null}
       {!initiallyLoading && hasTransactions && data ? (
-        <div className="flex flex-col">
-          {confirmed.data ? (
-            <FinancialSummary
-              balance={confirmed.data.getBalance.balance}
-              currencyCode={confirmed.data.getBalance.currency}
-              vat={confirmed.data.getBalance.vat}
-            />
-          ) : null}
-          <TransactionLedger
-            companyId={companyId}
-            currencyCode={data.getBalance.currency}
-            transactions={transactions}
-          />
-          {!paginationFailed ? (
-            <TransactionsPagination
-              confirmedLoadNextPage={confirmedPagination.loadNextPage}
-              confirmedLoading={
-                confirmed.networkStatus === NetworkStatus.fetchMore
-              }
-              confirmedNextToken={confirmed.data?.getTransactions.nextToken}
-              pendingLoadNextPage={pendingPagination.loadNextPage}
-              pendingLoading={pending.networkStatus === NetworkStatus.fetchMore}
-              pendingNextToken={pending.data?.getTransactions.nextToken}
-            />
-          ) : null}
-        </div>
+        <TransactionsLoadedContent
+          companyId={companyId}
+          confirmedLoadNextPage={confirmedPagination.loadNextPage}
+          confirmedLoading={confirmed.networkStatus === NetworkStatus.fetchMore}
+          confirmedNextToken={confirmed.data?.getTransactions.nextToken}
+          confirmedSummary={confirmed.data?.getBalance}
+          currencyCode={data.getBalance.currency}
+          paginationFailed={paginationFailed}
+          pendingLoadNextPage={pendingPagination.loadNextPage}
+          pendingLoading={pending.networkStatus === NetworkStatus.fetchMore}
+          pendingNextToken={pending.data?.getTransactions.nextToken}
+          transactions={transactions}
+        />
       ) : null}
       {showEmptyState ? (
         <StatePanel

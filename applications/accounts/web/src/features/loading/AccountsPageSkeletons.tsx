@@ -8,11 +8,10 @@ import {
 } from '@motech-development/breeze-ui';
 import { useTranslation } from 'react-i18next';
 import { expenseCategoryRowClassName } from '../companies/expense-category-layout';
-import { LoadingSkeletonRegion } from '../LoadingSkeletonRegion';
 import { FinancialSummarySkeleton } from '../transactions/FinancialSummary';
 import { TransactionLedgerSkeleton } from '../transactions/TransactionLedger';
 
-export const FormSkeletonRegion = LoadingSkeletonRegion;
+export { LoadingSkeletonRegion as FormSkeletonRegion } from '../LoadingSkeletonRegion';
 
 export function FormFieldSkeletons({ count }: Readonly<{ count: number }>) {
   return (
