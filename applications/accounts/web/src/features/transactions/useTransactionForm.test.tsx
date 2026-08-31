@@ -1068,7 +1068,7 @@ describe('useTransactionForm', () => {
     await userEvent.click(
       screen.getByRole('button', { name: 'Stage attachment' }),
     );
-    await waitFor(() => expect(mocks.shouldBlockFn?.()).toBe(false));
+    await waitFor(() => expect(mocks.shouldBlockFn?.()).toBe(true));
     await userEvent.click(
       screen.getByRole('button', { name: 'Remove staged attachment' }),
     );
@@ -1402,7 +1402,7 @@ describe('useTransactionForm', () => {
     await userEvent.click(
       screen.getByRole('button', { name: 'Stage before close' }),
     );
-    await waitFor(() => expect(mocks.shouldBlockFn?.()).toBe(false));
+    await waitFor(() => expect(mocks.shouldBlockFn?.()).toBe(true));
     await userEvent.click(
       screen.getByRole('button', { name: 'Close with staged attachment' }),
     );

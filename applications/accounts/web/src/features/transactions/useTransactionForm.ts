@@ -550,7 +550,7 @@ export function useTransactionForm({
             attachmentTransfer.current === transfer &&
             result.status === 'uploaded'
           ) {
-            stagedAttachmentPath.current = result.path;
+            trackStagedAttachment(result.path);
           }
         })
         .finally(() => {
