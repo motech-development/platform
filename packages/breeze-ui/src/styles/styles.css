@@ -174,6 +174,44 @@
 }
 
 @layer utilities {
+  .breeze-modal-overlay-nested[data-nested-boundary] {
+    overflow: hidden;
+    padding: 0;
+    background: transparent;
+  }
+
+  .breeze-modal-overlay-nested[data-nested-boundary]::before {
+    position: fixed;
+    top: var(--breeze-nested-overlay-top);
+    left: var(--breeze-nested-overlay-left);
+    width: var(--breeze-nested-overlay-width);
+    height: var(--breeze-nested-overlay-height);
+    background: var(--breeze-overlay);
+    content: '';
+    pointer-events: none;
+  }
+
+  .breeze-modal-overlay-nested[data-nested-boundary] > .breeze-modal-nested {
+    position: fixed;
+    top: var(--breeze-nested-overlay-top);
+    left: var(--breeze-nested-overlay-left);
+    display: flex;
+    width: var(--breeze-nested-overlay-width);
+    height: var(--breeze-nested-overlay-height);
+    max-width: none;
+    max-height: none;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+    padding: 1.25rem;
+  }
+
+  @media (forced-colors: active) {
+    .breeze-modal-overlay-nested[data-nested-boundary]::before {
+      background: Canvas;
+    }
+  }
+
   .breeze-drawer-overlay::before {
     position: fixed;
     bottom: 0;

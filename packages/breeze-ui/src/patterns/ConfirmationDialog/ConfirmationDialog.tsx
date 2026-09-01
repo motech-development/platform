@@ -15,7 +15,7 @@ interface ConfirmationDialogSharedProps {
   description: ReactNode;
   /** Prevents the confirming action. Defaults to `false`. */
   disabled?: boolean;
-  /** Uses the backdrop supplied by an existing modal layer. Defaults to `false`. */
+  /** Dims and centres within the nearest existing modal layer. Defaults to `false`. */
   nested?: boolean;
   /** Reports the explicit confirming decision. */
   onConfirm: () => void;
@@ -118,7 +118,9 @@ export function ConfirmationDialog({
       )}
       <AlertDialog.Content
         className="breeze-confirmation-dialog max-h-[calc(100dvh-2rem)] w-full max-w-md border-0 border-b-2 border-b-[var(--breeze-border-strong)] p-0 shadow-[0_8px_0_rgb(6_12_24_/_22%)]"
-        overlayClassName={`p-5 ${nested ? 'bg-transparent forced-colors:bg-transparent' : ''}`}
+        modalClassName={nested ? 'breeze-modal-nested' : undefined}
+        nested={nested}
+        overlayClassName={`p-5 ${nested ? 'breeze-modal-overlay-nested' : ''}`}
       >
         <div className="flex items-center justify-between gap-4 border-b border-[var(--breeze-border)] p-4 sm:px-5">
           <div className="flex min-w-0 items-center gap-3">

@@ -6,7 +6,14 @@ import type {
   ReactNode,
   Ref,
 } from 'react';
-import { createContext, createElement, useContext, useId } from 'react';
+import {
+  createContext,
+  createElement,
+  useCallback,
+  useContext,
+  useId,
+  useRef,
+} from 'react';
 import { Button as AriaButton } from 'react-aria-components/Button';
 import { Dialog as AriaDialog } from 'react-aria-components/Dialog';
 import { Heading as AriaHeading } from 'react-aria-components/Heading';
@@ -27,7 +34,7 @@ const overlay = tv({
 });
 const modal = tv({ base: 'max-h-full max-w-full outline-none' });
 const surface = tv({
-  base: 'max-h-[calc(100dvh-2rem)] w-[min(36rem,calc(100vw-2rem))] overflow-y-auto border border-[var(--breeze-border-strong)] bg-[var(--breeze-surface)] p-6 text-[var(--breeze-ink)] shadow-xl outline-none data-[focus-visible]:outline-2 data-[focus-visible]:outline-[var(--breeze-focus)]',
+  base: 'breeze-modal-surface max-h-[calc(100dvh-2rem)] w-[min(36rem,calc(100vw-2rem))] overflow-y-auto border border-[var(--breeze-border-strong)] bg-[var(--breeze-surface)] p-6 text-[var(--breeze-ink)] shadow-xl outline-none data-[focus-visible]:outline-2 data-[focus-visible]:outline-[var(--breeze-focus)]',
 });
 const title = tv({
   base: 'm-0 mb-2 font-[family-name:var(--breeze-font-display)] text-xl font-bold leading-tight',
@@ -76,6 +83,7 @@ export interface SharedModalContentProps
   dismissible?: boolean;
   keyboardDismissDisabled?: boolean;
   modalClassName?: string;
+  nested?: boolean;
   modalState?: {
     onOpenChange: (open: boolean) => void;
     open: boolean;
@@ -166,6 +174,7 @@ export function SharedModalContent({
   keyboardDismissDisabled = false,
   modalClassName,
   modalState,
+  nested = false,
   overlayClassName,
   overlayStyle,
   ref,
@@ -175,6 +184,88 @@ export function SharedModalContent({
 }: Readonly<SharedModalContentProps>): ReactElement {
   useBreezeContext();
   const descriptionId = useId();
+  const nestedOverlayCleanupRef = useRef<(() => void) | undefined>(undefined);
+  const overlayRef = useCallback(
+    (currentOverlay: HTMLDivElement | null) => {
+      nestedOverlayCleanupRef.current?.();
+      nestedOverlayCleanupRef.current = undefined;
+
+      if (!nested || currentOverlay === null) return;
+
+      const activeSurface =
+        document.activeElement instanceof Element
+          ? document.activeElement.closest<HTMLElement>('.breeze-modal-surface')
+          : null;
+      const overlays = Array.from(
+        document.querySelectorAll<HTMLElement>('.breeze-modal-overlay'),
+      );
+      const currentIndex = overlays.indexOf(currentOverlay);
+      const precedingSurface = overlays
+        .slice(0, currentIndex)
+        .reverse()
+        .map((candidate) =>
+          candidate.querySelector<HTMLElement>('.breeze-modal-surface'),
+        )
+        .find((candidate) => candidate !== null);
+      const boundary =
+        activeSurface !== null && !currentOverlay.contains(activeSurface)
+          ? activeSurface
+          : precedingSurface;
+
+      if (boundary === undefined || boundary === null) return;
+
+      const updateBoundary = () => {
+        const bounds = boundary.getBoundingClientRect();
+
+        if (bounds.width <= 0 || bounds.height <= 0) {
+          currentOverlay.removeAttribute('data-nested-boundary');
+          return;
+        }
+
+        currentOverlay.setAttribute('data-nested-boundary', '');
+        currentOverlay.style.setProperty(
+          '--breeze-nested-overlay-left',
+          `${bounds.left}px`,
+        );
+        currentOverlay.style.setProperty(
+          '--breeze-nested-overlay-top',
+          `${bounds.top}px`,
+        );
+        currentOverlay.style.setProperty(
+          '--breeze-nested-overlay-width',
+          `${bounds.width}px`,
+        );
+        currentOverlay.style.setProperty(
+          '--breeze-nested-overlay-height',
+          `${bounds.height}px`,
+        );
+      };
+      const observer =
+        typeof ResizeObserver === 'undefined'
+          ? undefined
+          : new ResizeObserver(updateBoundary);
+      const viewport = window.visualViewport;
+      const animationFrame = window.requestAnimationFrame(updateBoundary);
+
+      updateBoundary();
+      observer?.observe(boundary);
+      boundary.addEventListener('animationend', updateBoundary);
+      boundary.addEventListener('transitionend', updateBoundary);
+      window.addEventListener('resize', updateBoundary);
+      viewport?.addEventListener('resize', updateBoundary);
+      viewport?.addEventListener('scroll', updateBoundary);
+      nestedOverlayCleanupRef.current = () => {
+        window.cancelAnimationFrame(animationFrame);
+        observer?.disconnect();
+        boundary.removeEventListener('animationend', updateBoundary);
+        boundary.removeEventListener('transitionend', updateBoundary);
+        window.removeEventListener('resize', updateBoundary);
+        viewport?.removeEventListener('resize', updateBoundary);
+        viewport?.removeEventListener('scroll', updateBoundary);
+      };
+    },
+    [nested],
+  );
 
   return createElement(
     AriaModalOverlay,
@@ -184,6 +275,7 @@ export function SharedModalContent({
       isKeyboardDismissDisabled: keyboardDismissDisabled,
       isOpen: modalState?.open,
       onOpenChange: modalState?.onOpenChange,
+      ref: overlayRef,
       style: overlayStyle,
     } as ComponentProps<typeof AriaModalOverlay>,
     createElement(
