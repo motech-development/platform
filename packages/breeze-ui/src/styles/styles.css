@@ -200,7 +200,7 @@
     height: var(--breeze-nested-overlay-height);
     max-width: none;
     max-height: none;
-    align-items: center;
+    align-items: safe center;
     justify-content: center;
     overflow-y: auto;
     padding: 1.25rem;
@@ -208,7 +208,9 @@
 
   @media (forced-colors: active) {
     .breeze-modal-overlay-nested[data-nested-boundary]::before {
-      background: Canvas;
+      background: transparent;
+      outline: 2px solid CanvasText;
+      outline-offset: -2px;
     }
   }
 

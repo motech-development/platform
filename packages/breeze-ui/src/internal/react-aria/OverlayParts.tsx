@@ -5,6 +5,7 @@ import type {
   ReactElement,
   ReactNode,
   Ref,
+  RefObject,
 } from 'react';
 import {
   createContext,
@@ -40,6 +41,10 @@ const title = tv({
   base: 'm-0 mb-2 font-[family-name:var(--breeze-font-display)] text-xl font-bold leading-tight',
 });
 const description = tv({ base: 'mb-5 block text-[var(--breeze-ink-muted)]' });
+
+const ModalSurfaceContext = createContext<
+  RefObject<HTMLElement | null> | undefined
+>(undefined);
 
 export const OverlayDescriptionContext = createContext<string | undefined>(
   undefined,
@@ -184,6 +189,16 @@ export function SharedModalContent({
 }: Readonly<SharedModalContentProps>): ReactElement {
   useBreezeContext();
   const descriptionId = useId();
+  const parentSurfaceRef = useContext(ModalSurfaceContext);
+  const surfaceRef = useRef<HTMLElement | null>(null);
+  const forwardedSurfaceRef = useForwardedRef(ref);
+  const setSurfaceRef = useCallback(
+    (currentSurface: HTMLElement | null) => {
+      surfaceRef.current = currentSurface;
+      forwardedSurfaceRef(currentSurface);
+    },
+    [forwardedSurfaceRef],
+  );
   const nestedOverlayCleanupRef = useRef<(() => void) | undefined>(undefined);
   const overlayRef = useCallback(
     (currentOverlay: HTMLDivElement | null) => {
@@ -192,33 +207,28 @@ export function SharedModalContent({
 
       if (!nested || currentOverlay === null) return;
 
-      const activeSurface =
-        document.activeElement instanceof Element
-          ? document.activeElement.closest<HTMLElement>('.breeze-modal-surface')
-          : null;
-      const overlays = Array.from(
-        document.querySelectorAll<HTMLElement>('.breeze-modal-overlay'),
-      );
-      const currentIndex = overlays.indexOf(currentOverlay);
-      const precedingSurface = overlays
-        .slice(0, currentIndex)
-        .reverse()
-        .map((candidate) =>
-          candidate.querySelector<HTMLElement>('.breeze-modal-surface'),
-        )
-        .find((candidate) => candidate !== null);
-      const boundary =
-        activeSurface !== null && !currentOverlay.contains(activeSurface)
-          ? activeSurface
-          : precedingSurface;
+      const boundary = parentSurfaceRef?.current;
 
       if (boundary === undefined || boundary === null) return;
+
+      const boundaryProperties = [
+        '--breeze-nested-overlay-left',
+        '--breeze-nested-overlay-top',
+        '--breeze-nested-overlay-width',
+        '--breeze-nested-overlay-height',
+      ];
+      const clearBoundary = () => {
+        currentOverlay.removeAttribute('data-nested-boundary');
+        boundaryProperties.forEach((property) =>
+          currentOverlay.style.removeProperty(property),
+        );
+      };
 
       const updateBoundary = () => {
         const bounds = boundary.getBoundingClientRect();
 
         if (bounds.width <= 0 || bounds.height <= 0) {
-          currentOverlay.removeAttribute('data-nested-boundary');
+          clearBoundary();
           return;
         }
 
@@ -240,37 +250,83 @@ export function SharedModalContent({
           `${bounds.height}px`,
         );
       };
+      let animationFrame: number | undefined;
+      const hasActiveBoundaryMotion = () =>
+        boundary
+          .getAnimations?.()
+          .some(
+            (animation) =>
+              animation.pending || animation.playState === 'running',
+          ) ?? false;
+      const trackBoundaryMotion = () => {
+        animationFrame = undefined;
+        updateBoundary();
+
+        if (hasActiveBoundaryMotion()) {
+          animationFrame = window.requestAnimationFrame(trackBoundaryMotion);
+        }
+      };
+      const scheduleBoundaryTracking = () => {
+        if (animationFrame === undefined) {
+          animationFrame = window.requestAnimationFrame(trackBoundaryMotion);
+        }
+      };
       const observer =
         typeof ResizeObserver === 'undefined'
           ? undefined
           : new ResizeObserver(updateBoundary);
       const viewport = window.visualViewport;
-      const animationFrame = window.requestAnimationFrame(updateBoundary);
 
       updateBoundary();
+      scheduleBoundaryTracking();
       observer?.observe(boundary);
-      boundary.addEventListener('animationend', updateBoundary);
-      boundary.addEventListener('transitionend', updateBoundary);
+      boundary.addEventListener('animationstart', scheduleBoundaryTracking);
+      boundary.addEventListener('animationend', scheduleBoundaryTracking);
+      boundary.addEventListener('animationcancel', scheduleBoundaryTracking);
+      boundary.addEventListener('transitionrun', scheduleBoundaryTracking);
+      boundary.addEventListener('transitionend', scheduleBoundaryTracking);
+      boundary.addEventListener('transitioncancel', scheduleBoundaryTracking);
       window.addEventListener('resize', updateBoundary);
       viewport?.addEventListener('resize', updateBoundary);
       viewport?.addEventListener('scroll', updateBoundary);
       nestedOverlayCleanupRef.current = () => {
-        window.cancelAnimationFrame(animationFrame);
+        if (animationFrame !== undefined) {
+          window.cancelAnimationFrame(animationFrame);
+        }
         observer?.disconnect();
-        boundary.removeEventListener('animationend', updateBoundary);
-        boundary.removeEventListener('transitionend', updateBoundary);
+        boundary.removeEventListener(
+          'animationstart',
+          scheduleBoundaryTracking,
+        );
+        boundary.removeEventListener('animationend', scheduleBoundaryTracking);
+        boundary.removeEventListener(
+          'animationcancel',
+          scheduleBoundaryTracking,
+        );
+        boundary.removeEventListener('transitionrun', scheduleBoundaryTracking);
+        boundary.removeEventListener('transitionend', scheduleBoundaryTracking);
+        boundary.removeEventListener(
+          'transitioncancel',
+          scheduleBoundaryTracking,
+        );
         window.removeEventListener('resize', updateBoundary);
         viewport?.removeEventListener('resize', updateBoundary);
         viewport?.removeEventListener('scroll', updateBoundary);
+        clearBoundary();
       };
     },
-    [nested],
+    [nested, parentSurfaceRef],
   );
 
   return createElement(
     AriaModalOverlay,
     {
-      className: overlay({ class: overlayClassName }),
+      className: overlay({
+        class: [
+          nested ? 'breeze-modal-overlay-nested' : undefined,
+          overlayClassName,
+        ],
+      }),
       isDismissable: dismissible,
       isKeyboardDismissDisabled: keyboardDismissDisabled,
       isOpen: modalState?.open,
@@ -280,20 +336,28 @@ export function SharedModalContent({
     } as ComponentProps<typeof AriaModalOverlay>,
     createElement(
       AriaModal,
-      { className: modal({ class: modalClassName }) },
+      {
+        className: modal({
+          class: [nested ? 'breeze-modal-nested' : undefined, modalClassName],
+        }),
+      },
       createElement(
         AriaDialog,
         {
           ...props,
           'aria-describedby': descriptionId,
           className: surface({ class: [surfaceClassName, className] }),
-          ref: useForwardedRef(ref),
+          ref: setSurfaceRef,
           role,
         } as ComponentProps<typeof AriaDialog>,
         createElement(
-          OverlayDescriptionContext,
-          { value: descriptionId },
-          children,
+          ModalSurfaceContext.Provider,
+          { value: surfaceRef },
+          createElement(
+            OverlayDescriptionContext,
+            { value: descriptionId },
+            children,
+          ),
         ),
       ),
     ),
