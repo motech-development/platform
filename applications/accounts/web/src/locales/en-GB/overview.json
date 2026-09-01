@@ -12,6 +12,8 @@
   "Review them before they affect your balance": "Review them before they affect your balance",
   "All recorded transactions have been reviewed": "All recorded transactions have been reviewed",
   "Good afternoon, {{firstName}}": "Good afternoon, {{firstName}}",
+  "Good evening, {{firstName}}": "Good evening, {{firstName}}",
+  "Good morning, {{firstName}}": "Good morning, {{firstName}}",
   "there": "there",
   "We could not load your overview": "We could not load your overview",
   "Overview could not be refreshed. Existing results are still shown.": "Overview could not be refreshed. Existing results are still shown.",

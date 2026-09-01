@@ -37,6 +37,33 @@ import {
   TransactionPageHeaderAction,
 } from './TransactionPagePresentation';
 
+type GreetingKey =
+  | 'Good afternoon, {{firstName}}'
+  | 'Good evening, {{firstName}}'
+  | 'Good morning, {{firstName}}';
+
+const dayPeriodFormatter = new Intl.DateTimeFormat('en-GB', {
+  dayPeriod: 'long',
+  hour: 'numeric',
+  hourCycle: 'h12',
+});
+
+function getGreetingKey(now = new Date()): GreetingKey {
+  const dayPeriod = dayPeriodFormatter
+    .formatToParts(now)
+    .find(({ type }) => type === 'dayPeriod')?.value;
+
+  if (dayPeriod?.includes('afternoon') || dayPeriod === 'noon') {
+    return 'Good afternoon, {{firstName}}';
+  }
+
+  if (dayPeriod?.includes('evening') || dayPeriod?.includes('night')) {
+    return 'Good evening, {{firstName}}';
+  }
+
+  return 'Good morning, {{firstName}}';
+}
+
 function OverviewAttentionPanel({
   companyId,
   hasPendingTransactions,
@@ -141,7 +168,7 @@ export function DashboardPageContent({
                 className="block h-[2.8rem] w-64 max-w-full"
               />
             ) : (
-              t('Good afternoon, {{firstName}}', { firstName })
+              t(getGreetingKey(), { firstName })
             )
           }
         />

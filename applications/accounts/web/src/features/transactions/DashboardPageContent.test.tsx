@@ -2,7 +2,7 @@ import { BreezeProvider } from '@motech-development/breeze-ui';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { DashboardQuery } from '../../graphql/graphql';
 import { DashboardPageContent } from './DashboardPageContent';
 
@@ -109,6 +109,10 @@ describe('DashboardPageContent', () => {
     queryState.current.refetch.mockClear();
   });
 
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('does not display a temporary greeting while the company is loading', () => {
     render(
       <BreezeProvider locale="en-GB">
@@ -117,7 +121,33 @@ describe('DashboardPageContent', () => {
     );
 
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/^$/u);
-    expect(screen.queryByText(/Good afternoon/u)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/Good (?:morning|afternoon|evening)/u),
+    ).not.toBeInTheDocument();
+  });
+
+  it.each([
+    ['morning', '2026-09-01T09:00:00.000Z'],
+    ['afternoon', '2026-09-01T15:00:00.000Z'],
+    ['evening', '2026-09-01T20:00:00.000Z'],
+  ])('uses the local %s greeting', (dayPeriod, systemTime) => {
+    vi.useFakeTimers();
+    vi.setSystemTime(systemTime);
+    queryState.current.data = dashboardData([]);
+    queryState.current.loading = false;
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <DashboardPageContent companyId="company-id" />
+      </BreezeProvider>,
+    );
+
+    expect(
+      screen.getByRole('heading', {
+        level: 1,
+        name: `Good ${dayPeriod}, Morgan`,
+      }),
+    ).toBeInTheDocument();
   });
 
   it('does not display financial summaries without any activity', () => {
