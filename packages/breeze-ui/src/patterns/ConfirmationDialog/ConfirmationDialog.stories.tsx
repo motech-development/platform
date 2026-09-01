@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useState } from 'react';
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test';
 import { Button } from '../../primitives/Button/Button';
+import { Drawer } from '../../primitives/Drawer/Drawer';
 import { ConfirmationDialog } from './ConfirmationDialog';
 
 const meta = {
@@ -32,6 +33,86 @@ function TriggerlessConfirmationExample() {
       />
     </>
   );
+}
+
+function NestedConfirmationExample() {
+  return (
+    <Drawer.Root defaultOpen>
+      <Drawer.Trigger>Open editor</Drawer.Trigger>
+      <Drawer.Content placement={{ base: 'bottom', md: 'end' }} size="wide">
+        <Drawer.Description>Update the record details.</Drawer.Description>
+        <Drawer.Title>Record editor</Drawer.Title>
+        <p>
+          This parent task remains visible so the confirmation keeps its
+          decision context.
+        </p>
+        <ConfirmationDialog
+          cancelLabel="Keep editing"
+          closeLabel="Close confirmation"
+          confirmLabel="Discard changes"
+          description="Your unsaved changes will be lost."
+          nested
+          onConfirm={() => undefined}
+          title="Discard changes?"
+          trigger="Leave editor"
+          variant="warning"
+        />
+      </Drawer.Content>
+    </Drawer.Root>
+  );
+}
+
+async function verifyNestedConfirmation(canvasElement: HTMLElement) {
+  const body = within(canvasElement.ownerDocument.body);
+  const drawer = body.getByRole('dialog', { name: 'Record editor' });
+
+  await userEvent.click(body.getByRole('button', { name: 'Leave editor' }));
+  const dialog = body.getByRole('alertdialog', { name: 'Discard changes?' });
+  const overlay = dialog.closest<HTMLElement>('.breeze-modal-overlay');
+  const modal = dialog.parentElement;
+  const view = canvasElement.ownerDocument.defaultView;
+
+  await waitFor(() => expect(dialog).toBeVisible());
+  await expect(overlay).toHaveAttribute('data-nested-boundary');
+  await expect(overlay).toHaveClass('breeze-modal-overlay-nested');
+  await expect(modal).toHaveClass('breeze-modal-nested');
+  await expect(
+    view?.getComputedStyle(overlay as HTMLElement).backgroundColor,
+  ).toBe('rgba(0, 0, 0, 0)');
+  await expect(
+    view?.getComputedStyle(overlay as HTMLElement, '::before').backgroundColor,
+  ).toBe('rgba(12, 18, 31, 0.68)');
+
+  const drawerBounds = drawer.getBoundingClientRect();
+  const dialogBounds = dialog.getBoundingClientRect();
+  const nestedLeft = Number.parseFloat(
+    overlay?.style.getPropertyValue('--breeze-nested-overlay-left') ?? '',
+  );
+  const nestedTop = Number.parseFloat(
+    overlay?.style.getPropertyValue('--breeze-nested-overlay-top') ?? '',
+  );
+  const nestedWidth = Number.parseFloat(
+    overlay?.style.getPropertyValue('--breeze-nested-overlay-width') ?? '',
+  );
+  const nestedHeight = Number.parseFloat(
+    overlay?.style.getPropertyValue('--breeze-nested-overlay-height') ?? '',
+  );
+
+  await expect(nestedLeft).toBeCloseTo(drawerBounds.left, 1);
+  await expect(nestedTop).toBeCloseTo(drawerBounds.top, 1);
+  await expect(nestedWidth).toBeCloseTo(drawerBounds.width, 1);
+  await expect(nestedHeight).toBeCloseTo(drawerBounds.height, 1);
+  await expect(dialogBounds.left + dialogBounds.width / 2).toBeCloseTo(
+    drawerBounds.left + drawerBounds.width / 2,
+    1,
+  );
+  await expect(dialogBounds.top + dialogBounds.height / 2).toBeCloseTo(
+    drawerBounds.top + drawerBounds.height / 2,
+    1,
+  );
+  await expect(
+    body.getByRole('button', { name: 'Keep editing' }),
+  ).toHaveFocus();
 }
 
 /**
@@ -119,6 +200,37 @@ export const TriggerlessControlled: Story = {
     await waitFor(() => expect(externalTrigger).toHaveFocus());
   },
   render: TriggerlessConfirmationExample,
+};
+
+/**
+ * Opens a warning confirmation inside a desktop drawer and limits the new
+ * dimming layer and dialog centring to that parent task surface.
+ *
+ * @summary drawer-scoped nested confirmation backdrop
+ */
+export const NestedInDrawer: Story = {
+  args: {
+    cancelLabel: 'Keep editing',
+    closeLabel: 'Close confirmation',
+    confirmLabel: 'Discard changes',
+    description: 'Your unsaved changes will be lost.',
+    onConfirm: fn(),
+    title: 'Discard changes?',
+    trigger: 'Leave editor',
+  },
+  play: async ({ canvasElement }) => verifyNestedConfirmation(canvasElement),
+  render: NestedConfirmationExample,
+};
+
+/**
+ * Exercises the same nested decision in the compact full-screen drawer, where
+ * the scoped dimming layer naturally fills the mobile task surface.
+ *
+ * @summary compact full-screen nested confirmation backdrop
+ */
+export const NestedInDrawerCompact: Story = {
+  ...NestedInDrawer,
+  globals: { viewport: { value: 'mobile1' } },
 };
 
 /**
