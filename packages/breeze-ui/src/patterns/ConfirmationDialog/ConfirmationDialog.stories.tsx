@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { createElement, useState } from 'react';
+import { useState } from 'react';
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test';
 import { Button } from '../../primitives/Button/Button';
 import { Drawer } from '../../primitives/Drawer/Drawer';
@@ -39,34 +39,60 @@ function TriggerlessConfirmationExample() {
   );
 }
 
-/** Renders the supplied confirmation contract inside a responsive drawer. */
-function NestedConfirmationExample(args: ConfirmationDialogProps) {
+interface NestedConfirmationExampleProps {
+  confirmation: ConfirmationDialogProps;
+  initiallyOpen?: boolean;
+}
+
+/** Renders the supplied confirmation beside its responsive drawer owner. */
+function NestedConfirmationExample({
+  confirmation,
+  initiallyOpen = false,
+}: Readonly<NestedConfirmationExampleProps>) {
+  const [open, setOpen] = useState(initiallyOpen);
+
   return (
-    <Drawer.Root defaultOpen>
-      <Drawer.Trigger>Open editor</Drawer.Trigger>
-      <Drawer.Content placement={{ base: 'bottom', md: 'end' }} size="wide">
-        <Drawer.Description>Update the record details.</Drawer.Description>
-        <Drawer.Title>Record editor</Drawer.Title>
-        <p>
-          This parent task remains visible so the confirmation keeps its
-          decision context.
-        </p>
-        {createElement(ConfirmationDialog, {
-          ...args,
-          nested: true,
-          variant: 'warning',
-        })}
-      </Drawer.Content>
-    </Drawer.Root>
+    <>
+      <Drawer.Root defaultOpen>
+        <Drawer.Trigger>Open editor</Drawer.Trigger>
+        <Drawer.Content placement={{ base: 'bottom', md: 'end' }} size="wide">
+          <Drawer.Description>Update the record details.</Drawer.Description>
+          <Drawer.Title>Record editor</Drawer.Title>
+          <p>
+            This parent task remains visible so the confirmation keeps its
+            decision context.
+          </p>
+          <Button onAction={() => setOpen(true)}>Leave editor</Button>
+        </Drawer.Content>
+      </Drawer.Root>
+      <ConfirmationDialog
+        cancelLabel={confirmation.cancelLabel}
+        closeLabel={confirmation.closeLabel}
+        confirmLabel={confirmation.confirmLabel}
+        description={confirmation.description}
+        nested
+        onConfirm={confirmation.onConfirm}
+        onOpenChange={setOpen}
+        open={open}
+        title={confirmation.title}
+        triggerless
+        variant="warning"
+      />
+    </>
   );
 }
 
 /** Verifies the visible backdrop, geometry, and focus of a nested decision. */
-async function verifyNestedConfirmation(canvasElement: HTMLElement) {
+async function verifyNestedConfirmation(
+  canvasElement: HTMLElement,
+  openConfirmation = true,
+) {
   const body = within(canvasElement.ownerDocument.body);
   const drawer = body.getByRole('dialog', { name: 'Record editor' });
 
-  await userEvent.click(body.getByRole('button', { name: 'Leave editor' }));
+  if (openConfirmation) {
+    await userEvent.click(body.getByRole('button', { name: 'Leave editor' }));
+  }
   const dialog = body.getByRole('alertdialog', { name: 'Discard changes?' });
   const overlay = dialog.parentElement?.parentElement;
   const drawerOverlay = drawer.parentElement?.parentElement;
@@ -228,7 +254,7 @@ export const NestedInDrawer: Story = {
     trigger: 'Leave editor',
   },
   play: async ({ canvasElement }) => verifyNestedConfirmation(canvasElement),
-  render: (args) => createElement(NestedConfirmationExample, args),
+  render: (args) => <NestedConfirmationExample confirmation={args} />,
 };
 
 /**
@@ -240,6 +266,21 @@ export const NestedInDrawer: Story = {
 export const NestedInDrawerCompact: Story = {
   ...NestedInDrawer,
   globals: { viewport: { value: 'mobile1' } },
+};
+
+/**
+ * Opens the sibling drawer and confirmation in the same render and verifies
+ * the next-frame boundary reconciliation scopes the decision to the drawer.
+ *
+ * @summary simultaneous sibling drawer and confirmation mounting
+ */
+export const NestedOpenWithDrawer: Story = {
+  ...NestedInDrawer,
+  play: async ({ canvasElement }) =>
+    verifyNestedConfirmation(canvasElement, false),
+  render: (args) => (
+    <NestedConfirmationExample confirmation={args} initiallyOpen />
+  ),
 };
 
 /**
@@ -274,27 +315,29 @@ export const NestedWithoutParent: Story = {
       throw new Error('Expected the viewport modal overlay.');
     }
 
-    const overlayBounds = overlay.getBoundingClientRect();
-    const dialogBounds = dialog.getBoundingClientRect();
+    await waitFor(async () => {
+      const overlayBounds = overlay.getBoundingClientRect();
+      const dialogBounds = dialog.getBoundingClientRect();
 
-    await expect(view.getComputedStyle(overlay).backgroundColor).not.toBe(
-      'rgba(0, 0, 0, 0)',
-    );
-    await expect(overlayBounds.left).toBe(0);
-    await expect(overlayBounds.top).toBe(0);
-    await expect(overlayBounds.width).toBe(view.innerWidth);
-    await expect(overlayBounds.height).toBe(view.innerHeight);
-    await expect(dialogBounds.left + dialogBounds.width / 2).toBeCloseTo(
-      view.innerWidth / 2,
-      1,
-    );
-    await expect(dialogBounds.top + dialogBounds.height / 2).toBeCloseTo(
-      view.innerHeight / 2,
-      1,
-    );
-    await expect(
-      body.getByRole('button', { name: 'Keep editing' }),
-    ).toHaveFocus();
+      await expect(view.getComputedStyle(overlay).backgroundColor).not.toBe(
+        'rgba(0, 0, 0, 0)',
+      );
+      await expect(overlayBounds.left).toBe(0);
+      await expect(overlayBounds.top).toBe(0);
+      await expect(overlayBounds.width).toBe(view.innerWidth);
+      await expect(overlayBounds.height).toBe(view.innerHeight);
+      await expect(dialogBounds.left + dialogBounds.width / 2).toBeCloseTo(
+        view.innerWidth / 2,
+        1,
+      );
+      await expect(dialogBounds.top + dialogBounds.height / 2).toBeCloseTo(
+        view.innerHeight / 2,
+        1,
+      );
+      await expect(
+        body.getByRole('button', { name: 'Keep editing' }),
+      ).toHaveFocus();
+    });
   },
 };
 
