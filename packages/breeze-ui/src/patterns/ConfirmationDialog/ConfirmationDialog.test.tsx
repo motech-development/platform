@@ -1,4 +1,4 @@
-import { fireEvent, screen, waitFor, within } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createElement, useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
@@ -209,27 +209,7 @@ describe('ConfirmationDialog', () => {
     expect(screen.getByRole('alertdialog')).toBeVisible();
   });
 
-  it('falls back to the viewport backdrop without a parent modal layer', () => {
-    renderBreeze(
-      <ConfirmationDialog
-        cancelLabel="Keep editing"
-        closeLabel="Close confirmation"
-        confirmLabel="Discard changes"
-        defaultOpen
-        description="Unsaved changes will be lost."
-        nested
-        onConfirm={() => undefined}
-        title="Discard changes?"
-        trigger="Discard changes"
-      />,
-    );
-
-    expect(
-      screen.getByRole('alertdialog').closest('.breeze-modal-overlay'),
-    ).not.toHaveAttribute('data-nested-boundary');
-  });
-
-  it('dims and centres within the parent modal surface when nested', async () => {
+  it('preserves the parent task and focus behavior when nested', async () => {
     const user = userEvent.setup();
 
     renderBreeze(
@@ -252,50 +232,16 @@ describe('ConfirmationDialog', () => {
       </Drawer.Root>,
     );
 
-    const drawer = screen.getByRole('dialog', { name: 'Item editor' });
-    let bounds = {
-      bottom: 800,
-      height: 800,
-      left: 1024,
-      right: 1536,
-      toJSON: () => undefined,
-      top: 0,
-      width: 512,
-      x: 1024,
-      y: 0,
-    } as DOMRect;
-
-    vi.spyOn(drawer, 'getBoundingClientRect').mockImplementation(() => bounds);
     const trigger = screen.getByRole('button', { name: 'Leave editor' });
 
     await user.click(trigger);
     const dialog = screen.getByRole('alertdialog', {
       name: 'Discard changes?',
     });
-    const nestedOverlay = dialog.closest<HTMLElement>('.breeze-modal-overlay');
 
-    expect(nestedOverlay).toHaveAttribute('data-nested-boundary');
-    expect(nestedOverlay).toHaveClass('breeze-modal-overlay-nested');
-    expect(
-      nestedOverlay?.style.getPropertyValue('--breeze-nested-overlay-height'),
-    ).toBe('800px');
-    expect(
-      nestedOverlay?.style.getPropertyValue('--breeze-nested-overlay-left'),
-    ).toBe('1024px');
-    expect(
-      nestedOverlay?.style.getPropertyValue('--breeze-nested-overlay-top'),
-    ).toBe('0px');
-    expect(
-      nestedOverlay?.style.getPropertyValue('--breeze-nested-overlay-width'),
-    ).toBe('512px');
-    expect(dialog.parentElement).toHaveClass('breeze-modal-nested');
-
-    bounds = { ...bounds, left: 512, right: 1024, x: 512 };
-    fireEvent.animationEnd(drawer);
-    expect(
-      nestedOverlay?.style.getPropertyValue('--breeze-nested-overlay-left'),
-    ).toBe('512px');
-
+    expect(dialog).toBeVisible();
+    expect(screen.getByText('Item editor')).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Keep editing' })).toHaveFocus();
     await user.click(screen.getByRole('button', { name: 'Keep editing' }));
     await waitFor(() => expect(trigger).toHaveFocus());
   });

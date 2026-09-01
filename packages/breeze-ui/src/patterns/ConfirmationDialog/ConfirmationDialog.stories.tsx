@@ -1,9 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { useState } from 'react';
+import { createElement, useState } from 'react';
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test';
 import { Button } from '../../primitives/Button/Button';
 import { Drawer } from '../../primitives/Drawer/Drawer';
-import { ConfirmationDialog } from './ConfirmationDialog';
+import {
+  ConfirmationDialog,
+  type ConfirmationDialogProps,
+} from './ConfirmationDialog';
 
 const meta = {
   component: ConfirmationDialog,
@@ -13,6 +16,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+/** Coordinates a triggerless confirmation from application-owned state. */
 function TriggerlessConfirmationExample() {
   const [open, setOpen] = useState(false);
 
@@ -35,7 +39,8 @@ function TriggerlessConfirmationExample() {
   );
 }
 
-function NestedConfirmationExample() {
+/** Renders the supplied confirmation contract inside a responsive drawer. */
+function NestedConfirmationExample(args: ConfirmationDialogProps) {
   return (
     <Drawer.Root defaultOpen>
       <Drawer.Trigger>Open editor</Drawer.Trigger>
@@ -46,70 +51,74 @@ function NestedConfirmationExample() {
           This parent task remains visible so the confirmation keeps its
           decision context.
         </p>
-        <ConfirmationDialog
-          cancelLabel="Keep editing"
-          closeLabel="Close confirmation"
-          confirmLabel="Discard changes"
-          description="Your unsaved changes will be lost."
-          nested
-          onConfirm={() => undefined}
-          title="Discard changes?"
-          trigger="Leave editor"
-          variant="warning"
-        />
+        {createElement(ConfirmationDialog, {
+          ...args,
+          nested: true,
+          variant: 'warning',
+        })}
       </Drawer.Content>
     </Drawer.Root>
   );
 }
 
+/** Verifies the visible backdrop, geometry, and focus of a nested decision. */
 async function verifyNestedConfirmation(canvasElement: HTMLElement) {
   const body = within(canvasElement.ownerDocument.body);
   const drawer = body.getByRole('dialog', { name: 'Record editor' });
 
   await userEvent.click(body.getByRole('button', { name: 'Leave editor' }));
   const dialog = body.getByRole('alertdialog', { name: 'Discard changes?' });
-  const overlay = dialog.closest<HTMLElement>('.breeze-modal-overlay');
-  const modal = dialog.parentElement;
+  const overlay = dialog.parentElement?.parentElement;
+  const drawerOverlay = drawer.parentElement?.parentElement;
   const view = canvasElement.ownerDocument.defaultView;
 
   await waitFor(() => expect(dialog).toBeVisible());
-  await expect(overlay).toHaveAttribute('data-nested-boundary');
-  await expect(overlay).toHaveClass('breeze-modal-overlay-nested');
-  await expect(modal).toHaveClass('breeze-modal-nested');
-  await expect(
-    view?.getComputedStyle(overlay as HTMLElement).backgroundColor,
-  ).toBe('rgba(0, 0, 0, 0)');
-  await expect(
-    view?.getComputedStyle(overlay as HTMLElement, '::before').backgroundColor,
-  ).toBe('rgba(12, 18, 31, 0.68)');
+  await waitFor(async () => {
+    if (
+      overlay === null ||
+      overlay === undefined ||
+      drawerOverlay === null ||
+      drawerOverlay === undefined ||
+      view === null
+    ) {
+      throw new Error('Expected the nested modal and parent drawer overlays.');
+    }
 
-  const drawerBounds = drawer.getBoundingClientRect();
-  const dialogBounds = dialog.getBoundingClientRect();
-  const nestedLeft = Number.parseFloat(
-    overlay?.style.getPropertyValue('--breeze-nested-overlay-left') ?? '',
-  );
-  const nestedTop = Number.parseFloat(
-    overlay?.style.getPropertyValue('--breeze-nested-overlay-top') ?? '',
-  );
-  const nestedWidth = Number.parseFloat(
-    overlay?.style.getPropertyValue('--breeze-nested-overlay-width') ?? '',
-  );
-  const nestedHeight = Number.parseFloat(
-    overlay?.style.getPropertyValue('--breeze-nested-overlay-height') ?? '',
-  );
+    const drawerBounds = drawer.getBoundingClientRect();
+    const dialogBounds = dialog.getBoundingClientRect();
+    const backdropStyle = view.getComputedStyle(overlay, '::before');
 
-  await expect(nestedLeft).toBeCloseTo(drawerBounds.left, 1);
-  await expect(nestedTop).toBeCloseTo(drawerBounds.top, 1);
-  await expect(nestedWidth).toBeCloseTo(drawerBounds.width, 1);
-  await expect(nestedHeight).toBeCloseTo(drawerBounds.height, 1);
-  await expect(dialogBounds.left + dialogBounds.width / 2).toBeCloseTo(
-    drawerBounds.left + drawerBounds.width / 2,
-    1,
-  );
-  await expect(dialogBounds.top + dialogBounds.height / 2).toBeCloseTo(
-    drawerBounds.top + drawerBounds.height / 2,
-    1,
-  );
+    await expect(view.getComputedStyle(overlay).backgroundColor).toBe(
+      'rgba(0, 0, 0, 0)',
+    );
+    await expect(backdropStyle.backgroundColor).toBe(
+      view.getComputedStyle(drawerOverlay).backgroundColor,
+    );
+    await expect(Number.parseFloat(backdropStyle.left)).toBeCloseTo(
+      drawerBounds.left,
+      1,
+    );
+    await expect(Number.parseFloat(backdropStyle.top)).toBeCloseTo(
+      drawerBounds.top,
+      1,
+    );
+    await expect(Number.parseFloat(backdropStyle.width)).toBeCloseTo(
+      drawerBounds.width,
+      1,
+    );
+    await expect(Number.parseFloat(backdropStyle.height)).toBeCloseTo(
+      drawerBounds.height,
+      1,
+    );
+    await expect(dialogBounds.left + dialogBounds.width / 2).toBeCloseTo(
+      drawerBounds.left + drawerBounds.width / 2,
+      1,
+    );
+    await expect(dialogBounds.top + dialogBounds.height / 2).toBeCloseTo(
+      drawerBounds.top + drawerBounds.height / 2,
+      1,
+    );
+  });
   await expect(
     body.getByRole('button', { name: 'Keep editing' }),
   ).toHaveFocus();
@@ -219,7 +228,7 @@ export const NestedInDrawer: Story = {
     trigger: 'Leave editor',
   },
   play: async ({ canvasElement }) => verifyNestedConfirmation(canvasElement),
-  render: NestedConfirmationExample,
+  render: (args) => createElement(NestedConfirmationExample, args),
 };
 
 /**
@@ -231,6 +240,62 @@ export const NestedInDrawer: Story = {
 export const NestedInDrawerCompact: Story = {
   ...NestedInDrawer,
   globals: { viewport: { value: 'mobile1' } },
+};
+
+/**
+ * Opens a nested-capable confirmation without a parent modal and verifies it
+ * safely falls back to the viewport backdrop and centring behavior.
+ *
+ * @summary viewport fallback for a nested-capable confirmation
+ */
+export const NestedWithoutParent: Story = {
+  args: {
+    cancelLabel: 'Keep editing',
+    closeLabel: 'Close confirmation',
+    confirmLabel: 'Discard changes',
+    description: 'Your unsaved changes will be lost.',
+    nested: true,
+    onConfirm: fn(),
+    open: true,
+    readOnly: true,
+    title: 'Discard changes?',
+    trigger: 'Leave editor',
+    variant: 'warning',
+  },
+  play: async ({ canvasElement }) => {
+    const body = within(canvasElement.ownerDocument.body);
+    const dialog = body.getByRole('alertdialog', {
+      name: 'Discard changes?',
+    });
+    const overlay = dialog.parentElement?.parentElement;
+    const view = canvasElement.ownerDocument.defaultView;
+
+    if (overlay === null || overlay === undefined || view === null) {
+      throw new Error('Expected the viewport modal overlay.');
+    }
+
+    const overlayBounds = overlay.getBoundingClientRect();
+    const dialogBounds = dialog.getBoundingClientRect();
+
+    await expect(view.getComputedStyle(overlay).backgroundColor).not.toBe(
+      'rgba(0, 0, 0, 0)',
+    );
+    await expect(overlayBounds.left).toBe(0);
+    await expect(overlayBounds.top).toBe(0);
+    await expect(overlayBounds.width).toBe(view.innerWidth);
+    await expect(overlayBounds.height).toBe(view.innerHeight);
+    await expect(dialogBounds.left + dialogBounds.width / 2).toBeCloseTo(
+      view.innerWidth / 2,
+      1,
+    );
+    await expect(dialogBounds.top + dialogBounds.height / 2).toBeCloseTo(
+      view.innerHeight / 2,
+      1,
+    );
+    await expect(
+      body.getByRole('button', { name: 'Keep editing' }),
+    ).toHaveFocus();
+  },
 };
 
 /**

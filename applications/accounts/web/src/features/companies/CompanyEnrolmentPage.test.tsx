@@ -201,6 +201,8 @@ describe('CompanyEnrolmentPage', () => {
       screen.getByRole('button', { name: 'Continue to settings' }),
     );
     await user.click(screen.getByLabelText('Standard'));
+    await user.click(screen.getByRole('button', { name: /Month/ }));
+    await user.click(screen.getByRole('option', { name: 'January' }));
     await user.clear(screen.getByLabelText('Day'));
     await user.type(screen.getByLabelText('Day'), '31');
     await user.click(screen.getByRole('button', { name: /Month/ }));
@@ -406,9 +408,7 @@ describe('CompanyEnrolmentPage', () => {
       target: { value: 'Draft Company' },
     });
     await user.click(screen.getByRole('button', { name: 'Close' }));
-    expect(
-      screen.getByRole('alertdialog').closest('.breeze-modal-overlay'),
-    ).toHaveClass('bg-transparent');
+    expect(screen.getByRole('alertdialog')).toBeVisible();
     await user.click(screen.getByRole('button', { name: 'Discard changes' }));
 
     expect(mocks.navigate).toHaveBeenCalledWith({ to: '/my-companies' });
