@@ -42,6 +42,13 @@ const title = tv({
 });
 const description = tv({ base: 'mb-5 block text-[var(--breeze-ink-muted)]' });
 
+const nestedBoundaryProperties = [
+  '--breeze-nested-overlay-left',
+  '--breeze-nested-overlay-top',
+  '--breeze-nested-overlay-width',
+  '--breeze-nested-overlay-height',
+] as const;
+
 const ModalSurfaceContext = createContext<
   RefObject<HTMLElement | null> | undefined
 >(undefined);
@@ -49,6 +56,128 @@ const ModalSurfaceContext = createContext<
 export const OverlayDescriptionContext = createContext<string | undefined>(
   undefined,
 );
+
+function findPrecedingModalSurface(
+  currentOverlay: HTMLElement,
+  portalContainer: HTMLElement | null,
+): HTMLElement | undefined {
+  const portal =
+    portalContainer ??
+    currentOverlay.closest<HTMLElement>('[data-breeze-portal-root]');
+
+  if (portal === null || !portal.contains(currentOverlay)) return undefined;
+
+  const overlays = Array.from(
+    portal.querySelectorAll<HTMLElement>('.breeze-modal-overlay'),
+  );
+  const currentIndex = overlays.indexOf(currentOverlay);
+
+  for (let index = currentIndex - 1; index >= 0; index -= 1) {
+    const precedingSurface = overlays[index]?.querySelector<HTMLElement>(
+      '.breeze-modal-surface',
+    );
+
+    if (precedingSurface !== null && precedingSurface !== undefined) {
+      return precedingSurface;
+    }
+  }
+
+  return undefined;
+}
+
+function clearNestedBoundary(overlayElement: HTMLElement): void {
+  overlayElement.removeAttribute('data-nested-boundary');
+  nestedBoundaryProperties.forEach((property) =>
+    overlayElement.style.removeProperty(property),
+  );
+}
+
+function trackNestedBoundary(
+  overlayElement: HTMLElement,
+  boundary: HTMLElement,
+): () => void {
+  const updateBoundary = () => {
+    const bounds = boundary.getBoundingClientRect();
+
+    if (bounds.width <= 0 || bounds.height <= 0) {
+      clearNestedBoundary(overlayElement);
+      return;
+    }
+
+    overlayElement.setAttribute('data-nested-boundary', '');
+    overlayElement.style.setProperty(
+      '--breeze-nested-overlay-left',
+      `${bounds.left}px`,
+    );
+    overlayElement.style.setProperty(
+      '--breeze-nested-overlay-top',
+      `${bounds.top}px`,
+    );
+    overlayElement.style.setProperty(
+      '--breeze-nested-overlay-width',
+      `${bounds.width}px`,
+    );
+    overlayElement.style.setProperty(
+      '--breeze-nested-overlay-height',
+      `${bounds.height}px`,
+    );
+  };
+  let motionFrame: number | undefined;
+  const hasActiveBoundaryMotion = () =>
+    boundary
+      .getAnimations?.()
+      .some(
+        (animation) => animation.pending || animation.playState === 'running',
+      ) ?? false;
+  const trackBoundaryMotion = () => {
+    motionFrame = undefined;
+    updateBoundary();
+
+    if (hasActiveBoundaryMotion()) {
+      motionFrame = window.requestAnimationFrame(trackBoundaryMotion);
+    }
+  };
+  const scheduleBoundaryTracking = () => {
+    if (motionFrame === undefined) {
+      motionFrame = window.requestAnimationFrame(trackBoundaryMotion);
+    }
+  };
+  const observer =
+    typeof ResizeObserver === 'undefined'
+      ? undefined
+      : new ResizeObserver(updateBoundary);
+  const viewport = window.visualViewport;
+
+  updateBoundary();
+  scheduleBoundaryTracking();
+  observer?.observe(boundary);
+  boundary.addEventListener('animationstart', scheduleBoundaryTracking);
+  boundary.addEventListener('animationend', scheduleBoundaryTracking);
+  boundary.addEventListener('animationcancel', scheduleBoundaryTracking);
+  boundary.addEventListener('transitionrun', scheduleBoundaryTracking);
+  boundary.addEventListener('transitionend', scheduleBoundaryTracking);
+  boundary.addEventListener('transitioncancel', scheduleBoundaryTracking);
+  window.addEventListener('resize', updateBoundary);
+  viewport?.addEventListener('resize', updateBoundary);
+  viewport?.addEventListener('scroll', updateBoundary);
+
+  return () => {
+    if (motionFrame !== undefined) {
+      window.cancelAnimationFrame(motionFrame);
+    }
+    observer?.disconnect();
+    boundary.removeEventListener('animationstart', scheduleBoundaryTracking);
+    boundary.removeEventListener('animationend', scheduleBoundaryTracking);
+    boundary.removeEventListener('animationcancel', scheduleBoundaryTracking);
+    boundary.removeEventListener('transitionrun', scheduleBoundaryTracking);
+    boundary.removeEventListener('transitionend', scheduleBoundaryTracking);
+    boundary.removeEventListener('transitioncancel', scheduleBoundaryTracking);
+    window.removeEventListener('resize', updateBoundary);
+    viewport?.removeEventListener('resize', updateBoundary);
+    viewport?.removeEventListener('scroll', updateBoundary);
+    clearNestedBoundary(overlayElement);
+  };
+}
 
 /** Shared Breeze trigger props for overlays. */
 export type SharedOverlayTriggerProps = Omit<ButtonProps, 'appearance'> & {
@@ -187,7 +316,7 @@ export function SharedModalContent({
   surfaceClassName,
   ...props
 }: Readonly<SharedModalContentProps>): ReactElement {
-  useBreezeContext();
+  const { portalContainer } = useBreezeContext();
   const descriptionId = useId();
   const parentSurfaceRef = useContext(ModalSurfaceContext);
   const surfaceRef = useRef<HTMLElement | null>(null);
@@ -207,115 +336,34 @@ export function SharedModalContent({
 
       if (!nested || currentOverlay === null) return;
 
-      const boundary = parentSurfaceRef?.current;
+      let boundaryCleanup: (() => void) | undefined;
+      let boundaryRetryFrame: number | undefined;
+      const bindBoundary = () => {
+        boundaryRetryFrame = undefined;
+        const boundary =
+          parentSurfaceRef?.current ??
+          findPrecedingModalSurface(currentOverlay, portalContainer);
 
-      if (boundary === undefined || boundary === null) return;
+        if (boundary === undefined) return;
 
-      const boundaryProperties = [
-        '--breeze-nested-overlay-left',
-        '--breeze-nested-overlay-top',
-        '--breeze-nested-overlay-width',
-        '--breeze-nested-overlay-height',
-      ];
-      const clearBoundary = () => {
-        currentOverlay.removeAttribute('data-nested-boundary');
-        boundaryProperties.forEach((property) =>
-          currentOverlay.style.removeProperty(property),
-        );
+        boundaryCleanup = trackNestedBoundary(currentOverlay, boundary);
       };
 
-      const updateBoundary = () => {
-        const bounds = boundary.getBoundingClientRect();
+      bindBoundary();
 
-        if (bounds.width <= 0 || bounds.height <= 0) {
-          clearBoundary();
-          return;
-        }
+      if (boundaryCleanup === undefined) {
+        // React completes all refs in the current commit before the next paint.
+        boundaryRetryFrame = window.requestAnimationFrame(bindBoundary);
+      }
 
-        currentOverlay.setAttribute('data-nested-boundary', '');
-        currentOverlay.style.setProperty(
-          '--breeze-nested-overlay-left',
-          `${bounds.left}px`,
-        );
-        currentOverlay.style.setProperty(
-          '--breeze-nested-overlay-top',
-          `${bounds.top}px`,
-        );
-        currentOverlay.style.setProperty(
-          '--breeze-nested-overlay-width',
-          `${bounds.width}px`,
-        );
-        currentOverlay.style.setProperty(
-          '--breeze-nested-overlay-height',
-          `${bounds.height}px`,
-        );
-      };
-      let animationFrame: number | undefined;
-      const hasActiveBoundaryMotion = () =>
-        boundary
-          .getAnimations?.()
-          .some(
-            (animation) =>
-              animation.pending || animation.playState === 'running',
-          ) ?? false;
-      const trackBoundaryMotion = () => {
-        animationFrame = undefined;
-        updateBoundary();
-
-        if (hasActiveBoundaryMotion()) {
-          animationFrame = window.requestAnimationFrame(trackBoundaryMotion);
-        }
-      };
-      const scheduleBoundaryTracking = () => {
-        if (animationFrame === undefined) {
-          animationFrame = window.requestAnimationFrame(trackBoundaryMotion);
-        }
-      };
-      const observer =
-        typeof ResizeObserver === 'undefined'
-          ? undefined
-          : new ResizeObserver(updateBoundary);
-      const viewport = window.visualViewport;
-
-      updateBoundary();
-      scheduleBoundaryTracking();
-      observer?.observe(boundary);
-      boundary.addEventListener('animationstart', scheduleBoundaryTracking);
-      boundary.addEventListener('animationend', scheduleBoundaryTracking);
-      boundary.addEventListener('animationcancel', scheduleBoundaryTracking);
-      boundary.addEventListener('transitionrun', scheduleBoundaryTracking);
-      boundary.addEventListener('transitionend', scheduleBoundaryTracking);
-      boundary.addEventListener('transitioncancel', scheduleBoundaryTracking);
-      window.addEventListener('resize', updateBoundary);
-      viewport?.addEventListener('resize', updateBoundary);
-      viewport?.addEventListener('scroll', updateBoundary);
       nestedOverlayCleanupRef.current = () => {
-        if (animationFrame !== undefined) {
-          window.cancelAnimationFrame(animationFrame);
+        if (boundaryRetryFrame !== undefined) {
+          window.cancelAnimationFrame(boundaryRetryFrame);
         }
-        observer?.disconnect();
-        boundary.removeEventListener(
-          'animationstart',
-          scheduleBoundaryTracking,
-        );
-        boundary.removeEventListener('animationend', scheduleBoundaryTracking);
-        boundary.removeEventListener(
-          'animationcancel',
-          scheduleBoundaryTracking,
-        );
-        boundary.removeEventListener('transitionrun', scheduleBoundaryTracking);
-        boundary.removeEventListener('transitionend', scheduleBoundaryTracking);
-        boundary.removeEventListener(
-          'transitioncancel',
-          scheduleBoundaryTracking,
-        );
-        window.removeEventListener('resize', updateBoundary);
-        viewport?.removeEventListener('resize', updateBoundary);
-        viewport?.removeEventListener('scroll', updateBoundary);
-        clearBoundary();
+        boundaryCleanup?.();
       };
     },
-    [nested, parentSurfaceRef],
+    [nested, parentSurfaceRef, portalContainer],
   );
 
   return createElement(
