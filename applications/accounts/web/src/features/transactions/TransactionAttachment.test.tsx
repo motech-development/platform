@@ -88,7 +88,8 @@ describe('TransactionAttachment', () => {
         'Download',
       ),
     );
-    expect(screen.getByText('invoice.pdf')).toBeVisible();
+    expect(screen.getByRole('button', { name: 'View file' })).toBeVisible();
+    expect(screen.queryByText('invoice.pdf')).not.toBeInTheDocument();
     expect(mocks.toast.show).toHaveBeenCalledWith(
       expect.objectContaining({ variant: 'danger' }),
     );
@@ -114,7 +115,7 @@ describe('TransactionAttachment', () => {
     expect(onDeleted).toHaveBeenCalledOnce();
   });
 
-  it('presents a nontechnical name for generated attachment storage keys', async () => {
+  it('uses the stored filename only in the preview and download', async () => {
     const file = new Blob(['invoice'], { type: 'application/pdf' });
 
     mocks.query.mockResolvedValue({
@@ -134,13 +135,18 @@ describe('TransactionAttachment', () => {
       </BreezeProvider>,
     );
 
-    expect(screen.getByText('Transaction attachment.pdf')).toBeVisible();
     expect(
       screen.queryByText('3456df4a-51f8-49af-a52e-c1a21b8ff087.pdf'),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('Transaction attachment.pdf'),
     ).not.toBeInTheDocument();
 
     await userEvent.click(screen.getByRole('button', { name: 'View file' }));
     await screen.findByText('PDF preview: application/pdf');
+    expect(
+      screen.getByText('3456df4a-51f8-49af-a52e-c1a21b8ff087.pdf'),
+    ).toBeVisible();
     await userEvent.click(
       screen.getByRole('button', { name: 'Download file' }),
     );
@@ -148,7 +154,7 @@ describe('TransactionAttachment', () => {
     await waitFor(() =>
       expect(mocks.saveAs).toHaveBeenCalledWith(
         file,
-        'Transaction attachment.pdf',
+        '3456df4a-51f8-49af-a52e-c1a21b8ff087.pdf',
       ),
     );
   });
@@ -305,7 +311,8 @@ describe('TransactionAttachment', () => {
 
       await userEvent.click(deleteButton);
       await waitFor(() => expect(deleteButton).toBeEnabled());
-      expect(screen.getByText('invoice.pdf')).toBeVisible();
+      expect(screen.getByRole('button', { name: 'View file' })).toBeVisible();
+      expect(screen.queryByText('invoice.pdf')).not.toBeInTheDocument();
     },
   );
 
@@ -330,7 +337,8 @@ describe('TransactionAttachment', () => {
 
     await userEvent.click(deleteButton);
     await waitFor(() => expect(deleteButton).toBeEnabled());
-    expect(screen.getByText('invoice.pdf')).toBeVisible();
+    expect(screen.getByRole('button', { name: 'View file' })).toBeVisible();
+    expect(screen.queryByText('invoice.pdf')).not.toBeInTheDocument();
   });
 
   it('does not overlap attachment view and delete operations', async () => {

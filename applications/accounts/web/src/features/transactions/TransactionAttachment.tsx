@@ -1,8 +1,8 @@
 import { useApolloClient } from '@apollo/client/react';
 import {
   Button,
+  ButtonGroup,
   Drawer,
-  FileAttachment,
   Inline,
   Surface,
   Typography,
@@ -29,12 +29,8 @@ const PdfPreview = lazy(() =>
   import('./PdfPreview').then((module) => ({ default: module.PdfPreview })),
 );
 
-const generatedAttachmentName =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}(\.[^.]+)?$/iu;
-
 export function TransactionAttachment({
   companyId,
-  displayName,
   disabled,
   onDeleted,
   onReplace,
@@ -43,7 +39,6 @@ export function TransactionAttachment({
   transactionDrawerRef,
 }: Readonly<{
   companyId: string;
-  displayName?: string;
   disabled?: boolean;
   onDeleted: () => boolean | Promise<boolean>;
   onReplace: () => void;
@@ -66,13 +61,7 @@ export function TransactionAttachment({
   const [adjacentPreview, setAdjacentPreview] = useState<{
     inlineEndOffset: number;
   }>();
-  const storedName = path.split('/').at(-1) ?? path;
-  const extension = /\.[^.]+$/u.exec(storedName)?.[0] ?? '';
-  const name =
-    displayName ??
-    (generatedAttachmentName.test(storedName)
-      ? `${t('Transaction attachment')}${extension}`
-      : storedName);
+  const name = path.split('/').at(-1) ?? path;
   const file = downloadedFile?.path === path ? downloadedFile.blob : undefined;
   const imageUrl = useMemo(
     () => (file?.type.startsWith('image/') ? URL.createObjectURL(file) : null),
@@ -178,51 +167,46 @@ export function TransactionAttachment({
 
   return (
     <>
-      <FileAttachment
-        actions={
-          <>
-            <Button
-              appearance="outline"
-              disabled={!online || disabled || loading || deleting}
-              loading={loading}
-              onAction={() => {
-                getFile().catch(() => undefined);
-              }}
-            >
-              {online
-                ? t('View file')
-                : t('Connection required', { ns: 'transactions' })}
-            </Button>
-            <Button
-              appearance="outline"
-              disabled={!online || disabled || deleting || loading || replacing}
-              onAction={onReplace}
-            >
-              {t('Replace file')}
-            </Button>
-            <Button
-              disabled={!online || disabled || deleting || loading}
-              loading={deleting}
-              onAction={() => {
-                setDeleting(true);
-                Promise.resolve()
-                  .then(onDeleted)
-                  .then((deleted) => {
-                    if (deleted) setDownloadedFile(undefined);
-                  })
-                  .then(
-                    () => setDeleting(false),
-                    () => setDeleting(false),
-                  );
-              }}
-              variant="danger"
-            >
-              {t('Delete file')}
-            </Button>
-          </>
-        }
-        name={name}
-      />
+      <ButtonGroup orientation={{ base: 'vertical', sm: 'horizontal' }}>
+        <Button
+          appearance="outline"
+          disabled={!online || disabled || loading || deleting}
+          loading={loading}
+          onAction={() => {
+            getFile().catch(() => undefined);
+          }}
+        >
+          {online
+            ? t('View file')
+            : t('Connection required', { ns: 'transactions' })}
+        </Button>
+        <Button
+          appearance="outline"
+          disabled={!online || disabled || deleting || loading || replacing}
+          onAction={onReplace}
+        >
+          {t('Replace file')}
+        </Button>
+        <Button
+          disabled={!online || disabled || deleting || loading}
+          loading={deleting}
+          onAction={() => {
+            setDeleting(true);
+            Promise.resolve()
+              .then(onDeleted)
+              .then((deleted) => {
+                if (deleted) setDownloadedFile(undefined);
+              })
+              .then(
+                () => setDeleting(false),
+                () => setDeleting(false),
+              );
+          }}
+          variant="danger"
+        >
+          {t('Delete file')}
+        </Button>
+      </ButtonGroup>
       {file ? (
         <Drawer.Root
           onOpenChange={(open) => !open && setDownloadedFile(undefined)}

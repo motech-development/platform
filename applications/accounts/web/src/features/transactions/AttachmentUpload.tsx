@@ -55,7 +55,7 @@ export function AttachmentUpload({
   onAllocated: (path: string) => void;
   onDiscardFailed: () => boolean | Promise<boolean>;
   onTransfer: (transfer: Promise<AttachmentTransferResult>) => void;
-  onUploaded: (path: string, name: string) => void;
+  onUploaded: (path: string) => void;
   transactionId?: string;
 }>) {
   const { t } = useTranslation(['attachments', 'transactions']);
@@ -147,7 +147,7 @@ export function AttachmentUpload({
           return result;
         }
 
-        onUploaded(result.value, file.name);
+        onUploaded(result.value);
         setUploaded(true);
         toast.show({
           description: file.name,

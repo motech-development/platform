@@ -93,10 +93,7 @@ describe('AttachmentUpload', () => {
     finishUpload();
 
     await waitFor(() => {
-      expect(onUploaded).toHaveBeenCalledWith(
-        'company-1/upload-1.pdf',
-        'invoice.pdf',
-      );
+      expect(onUploaded).toHaveBeenCalledWith('company-1/upload-1.pdf');
     });
     expect(mocks.requestUpload).toHaveBeenCalledWith({
       variables: {
@@ -141,10 +138,7 @@ describe('AttachmentUpload', () => {
     );
 
     await waitFor(() => {
-      expect(onUploaded).toHaveBeenCalledWith(
-        'company-1/upload-image.jpg',
-        'receipt.jpg',
-      );
+      expect(onUploaded).toHaveBeenCalledWith('company-1/upload-image.jpg');
     });
     expect(mocks.requestUpload).toHaveBeenCalledWith({
       variables: {
@@ -188,10 +182,7 @@ describe('AttachmentUpload', () => {
     );
 
     await waitFor(() => {
-      expect(onUploaded).toHaveBeenCalledWith(
-        'company-1/upload-gif.gif',
-        'receipt.gif',
-      );
+      expect(onUploaded).toHaveBeenCalledWith('company-1/upload-gif.gif');
     });
     expect(mocks.requestUpload).toHaveBeenCalledWith({
       variables: {
@@ -411,10 +402,7 @@ describe('AttachmentUpload', () => {
     await user.click(retry);
 
     await waitFor(() => {
-      expect(onUploaded).toHaveBeenCalledWith(
-        'company-1/upload-2.pdf',
-        'invoice.pdf',
-      );
+      expect(onUploaded).toHaveBeenCalledWith('company-1/upload-2.pdf');
     });
     expect(onDiscardFailed).toHaveBeenCalledOnce();
     expect(mocks.uploadPresignedFile).toHaveBeenNthCalledWith(

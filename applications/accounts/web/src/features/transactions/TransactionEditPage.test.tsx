@@ -546,7 +546,7 @@ describe('TransactionEditPage', () => {
     expect(vat).toHaveValue('£7.00');
   });
 
-  it('restores the authoritative attachment name when reloading a staged replacement', async () => {
+  it('restores the authoritative attachment when reloading a staged replacement', async () => {
     const authoritativeAttachment = 'company-id/old-invoice.pdf';
 
     mocks.transactionQuery.data = {
@@ -577,7 +577,10 @@ describe('TransactionEditPage', () => {
         type: 'application/pdf',
       }),
     );
-    expect(await screen.findByText('replacement.pdf')).toBeVisible();
+    expect(
+      await screen.findByRole('button', { name: 'View file' }),
+    ).toBeVisible();
+    expect(screen.queryByText('replacement.pdf')).not.toBeInTheDocument();
 
     mocks.transactionQuery.data = {
       getTransaction: {
@@ -601,8 +604,9 @@ describe('TransactionEditPage', () => {
     );
 
     await waitFor(() =>
-      expect(screen.getByText('old-invoice.pdf')).toBeVisible(),
+      expect(screen.getByRole('button', { name: 'View file' })).toBeVisible(),
     );
+    expect(screen.queryByText('old-invoice.pdf')).not.toBeInTheDocument();
     expect(screen.queryByText('replacement.pdf')).not.toBeInTheDocument();
     expect(mocks.deleteFile).toHaveBeenCalledWith({
       variables: {
@@ -814,7 +818,10 @@ describe('TransactionEditPage', () => {
       document.querySelector('input[type="file"]') as HTMLInputElement,
       new File(['invoice'], 'invoice.pdf', { type: 'application/pdf' }),
     );
-    expect(await screen.findByText('invoice.pdf')).toBeVisible();
+    expect(
+      await screen.findByRole('button', { name: 'View file' }),
+    ).toBeVisible();
+    expect(screen.queryByText('invoice.pdf')).not.toBeInTheDocument();
 
     mocks.transactionQuery.data = { getTransaction: transaction };
     view.rerender(
@@ -1176,12 +1183,12 @@ describe('TransactionEditPage', () => {
       </BreezeProvider>,
     );
 
-    expect(screen.getByText('old-invoice.pdf')).toBeVisible();
+    expect(screen.queryByText('old-invoice.pdf')).not.toBeInTheDocument();
     expect(screen.queryByText('No file selected')).not.toBeInTheDocument();
 
     await userEvent.click(screen.getByRole('button', { name: 'Replace file' }));
 
-    expect(screen.getByText('old-invoice.pdf')).toBeVisible();
+    expect(screen.queryByText('old-invoice.pdf')).not.toBeInTheDocument();
     expect(screen.getByText('No file selected')).toBeVisible();
 
     await userEvent.upload(
@@ -1190,7 +1197,10 @@ describe('TransactionEditPage', () => {
         type: 'application/pdf',
       }),
     );
-    expect(await screen.findByText('replacement.pdf')).toBeVisible();
+    expect(
+      await screen.findByRole('button', { name: 'View file' }),
+    ).toBeVisible();
+    expect(screen.queryByText('replacement.pdf')).not.toBeInTheDocument();
     expect(mocks.deleteFile).not.toHaveBeenCalled();
 
     mocks.deleteFile.mockReturnValueOnce(deletion);
@@ -1405,7 +1415,10 @@ describe('TransactionEditPage', () => {
       document.querySelector('input[type="file"]') as HTMLInputElement,
       new File(['invoice'], 'invoice.pdf', { type: 'application/pdf' }),
     );
-    expect(await screen.findByText('invoice.pdf')).toBeVisible();
+    expect(
+      await screen.findByRole('button', { name: 'View file' }),
+    ).toBeVisible();
+    expect(screen.queryByText('invoice.pdf')).not.toBeInTheDocument();
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Delete transaction' }),
@@ -1424,7 +1437,7 @@ describe('TransactionEditPage', () => {
       ),
     );
     expect(mocks.deleteFile).not.toHaveBeenCalled();
-    expect(screen.getByText('invoice.pdf')).toBeVisible();
+    expect(screen.getByRole('alertdialog')).toBeVisible();
   });
 
   it('retries staged replacement cleanup without deleting the Transaction twice', async () => {

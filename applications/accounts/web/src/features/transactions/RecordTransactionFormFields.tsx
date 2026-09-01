@@ -189,14 +189,7 @@ function TransactionAttachmentField({
   const [replacementState, setReplacementState] = useState<
     'cleaning' | 'idle' | 'ready'
   >('idle');
-  const [stagedAttachment, setStagedAttachment] = useState<{
-    name: string;
-    path: string;
-  }>();
-  const stagedAttachmentName =
-    stagedAttachment?.path === attachmentPath
-      ? stagedAttachment.name
-      : undefined;
+  const [stagedAttachmentPath, setStagedAttachmentPath] = useState<string>();
   const upload = (
     <AttachmentUpload
       companyId={companyId}
@@ -204,8 +197,8 @@ function TransactionAttachmentField({
       onAllocated={trackAttachmentAllocation}
       onDiscardFailed={discardStagedAttachment}
       onTransfer={trackAttachmentTransfer}
-      onUploaded={(path, name) => {
-        setStagedAttachment({ name, path });
+      onUploaded={(path) => {
+        setStagedAttachmentPath(path);
         setReplacementState('idle');
         onChange(path);
         markDirty();
@@ -222,7 +215,7 @@ function TransactionAttachmentField({
     if (removed) {
       onChange('');
       setReplacementState('idle');
-      setStagedAttachment(undefined);
+      setStagedAttachmentPath(undefined);
       markDirty();
     } else {
       setReplacementState('idle');
@@ -231,7 +224,7 @@ function TransactionAttachmentField({
     return removed;
   };
   const startReplacement = () => {
-    if (!stagedAttachmentName) {
+    if (stagedAttachmentPath !== attachmentPath) {
       setReplacementState('ready');
       return;
     }
@@ -246,7 +239,6 @@ function TransactionAttachmentField({
     <Stack gap="compact">
       <TransactionAttachment
         companyId={companyId}
-        displayName={stagedAttachmentName}
         disabled={isSubmitting || replacementState === 'cleaning'}
         onDeleted={clearAttachment}
         onReplace={startReplacement}
