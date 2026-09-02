@@ -65,7 +65,7 @@ function findPrecedingModalSurface(
     portalContainer ??
     currentOverlay.closest<HTMLElement>('[data-breeze-portal-root]');
 
-  if (portal === null || !portal.contains(currentOverlay)) return undefined;
+  if (!portal?.contains(currentOverlay)) return undefined;
 
   const overlays = Array.from(
     portal.querySelectorAll<HTMLElement>('.breeze-modal-overlay'),
@@ -86,7 +86,9 @@ function findPrecedingModalSurface(
 }
 
 function clearNestedBoundary(overlayElement: HTMLElement): void {
-  overlayElement.removeAttribute('data-nested-boundary');
+  const { dataset } = overlayElement;
+
+  delete dataset.nestedBoundary;
   nestedBoundaryProperties.forEach((property) =>
     overlayElement.style.removeProperty(property),
   );
@@ -104,7 +106,9 @@ function trackNestedBoundary(
       return;
     }
 
-    overlayElement.setAttribute('data-nested-boundary', '');
+    const { dataset } = overlayElement;
+
+    dataset.nestedBoundary = '';
     overlayElement.style.setProperty(
       '--breeze-nested-overlay-left',
       `${bounds.left}px`,
@@ -138,9 +142,7 @@ function trackNestedBoundary(
     }
   };
   const scheduleBoundaryTracking = () => {
-    if (motionFrame === undefined) {
-      motionFrame = window.requestAnimationFrame(trackBoundaryMotion);
-    }
+    motionFrame ??= window.requestAnimationFrame(trackBoundaryMotion);
   };
   const observer =
     typeof ResizeObserver === 'undefined'
