@@ -9,6 +9,7 @@ import {
   SharedOverlayTrigger as Trigger,
 } from '../../internal/react-aria/OverlayParts';
 import { ButtonGroup } from '../../patterns/ButtonGroup/ButtonGroup';
+import { Drawer } from '../Drawer/Drawer';
 import { Stack } from '../Stack/Stack';
 import { TextField } from '../TextField/TextField';
 import { Typography } from '../Typography/Typography';
@@ -70,6 +71,28 @@ function ControlledDialog() {
         </Stack>
       </Dialog.Content>
     </Dialog.Root>
+  );
+}
+
+function NestedDismissibleDialog() {
+  return (
+    <Drawer.Root defaultOpen>
+      <Drawer.Trigger>Open editor</Drawer.Trigger>
+      <Drawer.Content placement={{ base: 'bottom', md: 'end' }} size="wide">
+        <Drawer.Description>Update the record details.</Drawer.Description>
+        <Drawer.Title>Record editor</Drawer.Title>
+        <Dialog.Root>
+          <Dialog.Trigger>Open nested dialog</Dialog.Trigger>
+          <Dialog.Content nested>
+            <Dialog.Title>Nested settings</Dialog.Title>
+            <Dialog.Description>
+              Dismiss this dialog from its scoped backdrop.
+            </Dialog.Description>
+            <Dialog.Close>Save and close</Dialog.Close>
+          </Dialog.Content>
+        </Dialog.Root>
+      </Drawer.Content>
+    </Drawer.Root>
   );
 }
 
@@ -186,6 +209,63 @@ export const ControlledFocusAndDismissalCompact: Story = {
     await userEvent.click(reopened.save);
     await expectDismissalAndRestoration(canvasElement, reopened.trigger);
   },
+};
+
+/**
+ * Verifies that the visibly dimmed area around a nested, dismissible dialog
+ * remains outside its modal interaction boundary at both responsive layouts.
+ *
+ * @summary nested dialog scoped-backdrop dismissal
+ */
+export const NestedBackdropDismissal: Story = {
+  args: { children: null },
+  play: async ({ canvasElement }) => {
+    const body = within(canvasElement.ownerDocument.body);
+    const trigger = body.getByRole('button', { name: 'Open nested dialog' });
+
+    await userEvent.click(trigger);
+
+    const dialog = body.getByRole('dialog', { name: 'Nested settings' });
+    const drawer = body.getByRole('dialog', { name: 'Record editor' });
+    const overlay = dialog.closest<HTMLElement>('.breeze-modal-overlay');
+    const modal = dialog.closest<HTMLElement>('.breeze-modal-nested');
+    const view = canvasElement.ownerDocument.defaultView;
+
+    if (overlay === null || modal === null || view === null) {
+      throw new Error('Expected the nested dialog modal and overlay.');
+    }
+
+    await waitFor(async () => {
+      await expect(view.getComputedStyle(modal).pointerEvents).toBe('none');
+      await expect(view.getComputedStyle(dialog).pointerEvents).toBe('auto');
+    });
+
+    await waitFor(() =>
+      expect(drawer.getBoundingClientRect().top).toBeCloseTo(0, 1),
+    );
+    const drawerBounds = drawer.getBoundingClientRect();
+    const backdropTarget = canvasElement.ownerDocument.elementFromPoint(
+      drawerBounds.left + 8,
+      drawerBounds.top + 8,
+    );
+
+    if (backdropTarget === null) {
+      throw new Error('Expected the scoped backdrop hit target.');
+    }
+
+    await expect(backdropTarget).toBe(overlay);
+    await userEvent.click(backdropTarget);
+    await waitFor(() => expect(dialog).not.toBeInTheDocument());
+    await expect(drawer).toBeVisible();
+    await expect(trigger).toHaveFocus();
+  },
+  render: NestedDismissibleDialog,
+};
+
+/** Exercises scoped-backdrop dismissal in the compact full-screen drawer. */
+export const NestedBackdropDismissalCompact: Story = {
+  ...NestedBackdropDismissal,
+  globals: { viewport: { value: 'mobile1' } },
 };
 /**
  * Presents a long accessible title and enough body copy to exercise the modal
