@@ -82,6 +82,47 @@ function NestedConfirmationExample({
   );
 }
 
+/** Keeps a triggerless confirmation logically beneath the outer drawer. */
+function NestedDrawerConfirmationExample({
+  confirmation,
+}: Readonly<NestedConfirmationExampleProps>) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <Drawer.Root defaultOpen>
+      <Drawer.Trigger>Open outer editor</Drawer.Trigger>
+      <Drawer.Content placement={{ base: 'bottom', md: 'end' }} size="wide">
+        <Drawer.Description>Update the enclosing record.</Drawer.Description>
+        <Drawer.Title>Outer editor</Drawer.Title>
+        <Drawer.Root defaultOpen>
+          <Drawer.Trigger>Open inner editor</Drawer.Trigger>
+          <Drawer.Content
+            placement={{ base: 'bottom', md: 'end' }}
+            size="medium"
+          >
+            <Drawer.Description>Update the active item.</Drawer.Description>
+            <Drawer.Title>Inner editor</Drawer.Title>
+            <Button onAction={() => setOpen(true)}>Leave inner editor</Button>
+          </Drawer.Content>
+        </Drawer.Root>
+        <ConfirmationDialog
+          cancelLabel={confirmation.cancelLabel}
+          closeLabel={confirmation.closeLabel}
+          confirmLabel={confirmation.confirmLabel}
+          description={confirmation.description}
+          nested
+          onConfirm={confirmation.onConfirm}
+          onOpenChange={setOpen}
+          open={open}
+          title={confirmation.title}
+          triggerless
+          variant="warning"
+        />
+      </Drawer.Content>
+    </Drawer.Root>
+  );
+}
+
 /** Verifies the visible backdrop, geometry, and focus of a nested decision. */
 async function verifyNestedConfirmation(
   canvasElement: HTMLElement,
@@ -281,6 +322,76 @@ export const NestedOpenWithDrawer: Story = {
   render: (args) => (
     <NestedConfirmationExample confirmation={args} initiallyOpen />
   ),
+};
+
+/**
+ * Opens a confirmation logically owned by an outer drawer while an inner
+ * drawer is the active topmost task, and scopes the decision to that task.
+ *
+ * @summary topmost nested drawer confirmation boundary
+ */
+export const NestedOverNestedDrawer: Story = {
+  ...NestedInDrawer,
+  play: async ({ canvasElement }) => {
+    const body = within(canvasElement.ownerDocument.body);
+    const innerDrawer = body.getByRole('dialog', { name: 'Inner editor' });
+
+    await userEvent.click(
+      body.getByRole('button', { name: 'Leave inner editor' }),
+    );
+
+    const dialog = body.getByRole('alertdialog', {
+      name: 'Discard changes?',
+    });
+    const overlay = dialog.parentElement?.parentElement;
+
+    await waitFor(async () => {
+      if (overlay === null || overlay === undefined) {
+        throw new Error('Expected the nested confirmation overlay.');
+      }
+
+      const innerBounds = innerDrawer.getBoundingClientRect();
+      const dialogBounds = dialog.getBoundingClientRect();
+      const backdropStyle = getComputedStyle(overlay, '::before');
+
+      await expect(Number.parseFloat(backdropStyle.left)).toBeCloseTo(
+        innerBounds.left,
+        1,
+      );
+      await expect(Number.parseFloat(backdropStyle.top)).toBeCloseTo(
+        innerBounds.top,
+        1,
+      );
+      await expect(Number.parseFloat(backdropStyle.width)).toBeCloseTo(
+        innerBounds.width,
+        1,
+      );
+      await expect(Number.parseFloat(backdropStyle.height)).toBeCloseTo(
+        innerBounds.height,
+        1,
+      );
+      await expect(dialogBounds.left + dialogBounds.width / 2).toBeCloseTo(
+        innerBounds.left + innerBounds.width / 2,
+        1,
+      );
+      await expect(dialogBounds.top + dialogBounds.height / 2).toBeCloseTo(
+        innerBounds.top + innerBounds.height / 2,
+        1,
+      );
+    });
+  },
+  render: (args) => <NestedDrawerConfirmationExample confirmation={args} />,
+};
+
+/**
+ * Exercises the topmost nested drawer boundary when every modal layer fills a
+ * compact viewport.
+ *
+ * @summary compact topmost nested drawer confirmation boundary
+ */
+export const NestedOverNestedDrawerCompact: Story = {
+  ...NestedOverNestedDrawer,
+  globals: { viewport: { value: 'mobile1' } },
 };
 
 /**

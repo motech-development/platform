@@ -13,6 +13,7 @@ import {
   useCallback,
   useContext,
   useId,
+  useMemo,
   useRef,
 } from 'react';
 import { Button as AriaButton } from 'react-aria-components/Button';
@@ -49,15 +50,21 @@ const nestedBoundaryProperties = [
   '--breeze-nested-overlay-height',
 ] as const;
 
-const ModalSurfaceContext = createContext<
-  RefObject<HTMLElement | null> | undefined
->(undefined);
+interface ModalSurfaceContextValue {
+  depth: number;
+  ref: RefObject<HTMLElement | null>;
+}
+
+const ModalSurfaceContext = createContext<ModalSurfaceContextValue | undefined>(
+  undefined,
+);
+const modalSurfaceDepth = new WeakMap<HTMLElement, number>();
 
 export const OverlayDescriptionContext = createContext<string | undefined>(
   undefined,
 );
 
-function findPrecedingModalSurface(
+function findTopmostModalSurface(
   currentOverlay: HTMLElement,
   portalContainer: HTMLElement | null,
 ): HTMLElement | undefined {
@@ -67,22 +74,38 @@ function findPrecedingModalSurface(
 
   if (!portal?.contains(currentOverlay)) return undefined;
 
-  const overlays = Array.from(
-    portal.querySelectorAll<HTMLElement>('.breeze-modal-overlay'),
+  const surfaces = Array.from(
+    portal.querySelectorAll<HTMLElement>('.breeze-modal-surface'),
+  ).filter((candidateSurface) => !currentOverlay.contains(candidateSurface));
+
+  return surfaces.reduce<HTMLElement | undefined>((topmost, candidate) => {
+    const topmostDepth =
+      topmost === undefined ? -1 : modalSurfaceDepth.get(topmost) ?? -1;
+    const candidateDepth = modalSurfaceDepth.get(candidate) ?? -1;
+
+    return candidateDepth >= topmostDepth ? candidate : topmost;
+  }, undefined);
+}
+
+function resolveNestedBoundary(
+  currentOverlay: HTMLElement,
+  portalContainer: HTMLElement | null,
+  parentSurface: ModalSurfaceContextValue | undefined,
+): HTMLElement | undefined {
+  const contextualSurface = parentSurface?.ref.current ?? undefined;
+  const topmostSurface = findTopmostModalSurface(
+    currentOverlay,
+    portalContainer,
   );
-  const currentIndex = overlays.indexOf(currentOverlay);
 
-  for (let index = currentIndex - 1; index >= 0; index -= 1) {
-    const precedingSurface = overlays[index]?.querySelector<HTMLElement>(
-      '.breeze-modal-surface',
-    );
+  if (contextualSurface === undefined) return topmostSurface;
+  if (topmostSurface === undefined) return contextualSurface;
 
-    if (precedingSurface !== null && precedingSurface !== undefined) {
-      return precedingSurface;
-    }
-  }
+  const contextualDepth =
+    modalSurfaceDepth.get(contextualSurface) ?? parentSurface?.depth ?? -1;
+  const topmostDepth = modalSurfaceDepth.get(topmostSurface) ?? -1;
 
-  return undefined;
+  return topmostDepth > contextualDepth ? topmostSurface : contextualSurface;
 }
 
 function clearNestedBoundary(overlayElement: HTMLElement): void {
@@ -320,15 +343,23 @@ export function SharedModalContent({
 }: Readonly<SharedModalContentProps>): ReactElement {
   const { portalContainer } = useBreezeContext();
   const descriptionId = useId();
-  const parentSurfaceRef = useContext(ModalSurfaceContext);
+  const parentSurface = useContext(ModalSurfaceContext);
   const surfaceRef = useRef<HTMLElement | null>(null);
+  const surfaceDepth = (parentSurface?.depth ?? -1) + 1;
+  const surfaceContext = useMemo<ModalSurfaceContextValue>(
+    () => ({ depth: surfaceDepth, ref: surfaceRef }),
+    [surfaceDepth],
+  );
   const forwardedSurfaceRef = useForwardedRef(ref);
   const setSurfaceRef = useCallback(
     (currentSurface: HTMLElement | null) => {
       surfaceRef.current = currentSurface;
+      if (currentSurface !== null) {
+        modalSurfaceDepth.set(currentSurface, surfaceDepth);
+      }
       forwardedSurfaceRef(currentSurface);
     },
-    [forwardedSurfaceRef],
+    [forwardedSurfaceRef, surfaceDepth],
   );
   const nestedOverlayCleanupRef = useRef<(() => void) | undefined>(undefined);
   const overlayRef = useCallback(
@@ -340,23 +371,28 @@ export function SharedModalContent({
 
       let boundaryCleanup: (() => void) | undefined;
       let boundaryRetryFrame: number | undefined;
+      let trackedBoundary: HTMLElement | undefined;
       const bindBoundary = () => {
         boundaryRetryFrame = undefined;
-        const boundary =
-          parentSurfaceRef?.current ??
-          findPrecedingModalSurface(currentOverlay, portalContainer);
+        const boundary = resolveNestedBoundary(
+          currentOverlay,
+          portalContainer,
+          parentSurface,
+        );
 
-        if (boundary === undefined) return;
+        if (boundary === undefined || boundary === trackedBoundary) return;
 
+        boundaryCleanup?.();
+        trackedBoundary = boundary;
         boundaryCleanup = trackNestedBoundary(currentOverlay, boundary);
       };
 
       bindBoundary();
 
-      if (boundaryCleanup === undefined) {
-        // React completes all refs in the current commit before the next paint.
-        boundaryRetryFrame = window.requestAnimationFrame(bindBoundary);
-      }
+      // React completes all refs in the current commit before the next paint.
+      // Reconcile once so a simultaneously mounted inner layer takes precedence
+      // over an inherited outer surface.
+      boundaryRetryFrame = window.requestAnimationFrame(bindBoundary);
 
       nestedOverlayCleanupRef.current = () => {
         if (boundaryRetryFrame !== undefined) {
@@ -365,7 +401,7 @@ export function SharedModalContent({
         boundaryCleanup?.();
       };
     },
-    [nested, parentSurfaceRef, portalContainer],
+    [nested, parentSurface, portalContainer],
   );
 
   return createElement(
@@ -402,7 +438,7 @@ export function SharedModalContent({
         } as ComponentProps<typeof AriaDialog>,
         createElement(
           ModalSurfaceContext.Provider,
-          { value: surfaceRef },
+          { value: surfaceContext },
           createElement(
             OverlayDescriptionContext,
             { value: descriptionId },
