@@ -104,11 +104,12 @@ function findTopmostModalSurface(
       isOpenModalSurface(candidateSurface),
   );
 
+  const latestSurface = surfaces.at(-1);
   const activeStack =
     parentSurface?.stack ??
-    (surfaces.length === 0
+    (latestSurface === undefined
       ? undefined
-      : modalSurfaceStack.get(surfaces[surfaces.length - 1]));
+      : modalSurfaceStack.get(latestSurface));
   const activeSurfaces =
     activeStack === undefined
       ? surfaces
