@@ -543,9 +543,9 @@ export const NestedAfterParentExit: Story = {
         1,
       );
     });
-    await expect(
-      body.getByRole('button', { name: 'Keep editing' }),
-    ).toHaveFocus();
+    await waitFor(() =>
+      expect(body.getByRole('button', { name: 'Keep editing' })).toHaveFocus(),
+    );
   },
   render: (args) => <ExitingParentConfirmationExample confirmation={args} />,
 };
