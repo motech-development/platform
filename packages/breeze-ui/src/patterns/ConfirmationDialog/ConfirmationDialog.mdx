@@ -61,7 +61,7 @@ The icon is supplementary; meaning must be present in the title, description and
 
 `disabled` disables only the confirming action. Cancel, the header close action and Escape remain available. The pattern has no loading prop: keep asynchronous state application-owned, prevent duplicate confirmation through `disabled` when needed, and present progress or failure outside this fixed composition or use `AlertDialog` for a richer workflow.
 
-Set `nested` only when the confirmation opens above an existing modal layer, such as a dirty-form confirmation above a drawer. Breeze adds a dimming layer scoped to the nearest open modal surface and centres the confirmation within that task while retaining its own focus scope and alert-dialog semantics. If the parent surface closes while the confirmation remains open, Breeze follows another open modal surface or falls back to the viewport. Do not use `nested` for a standalone confirmation.
+Set `nested` only when the confirmation opens above an existing modal layer, such as a dirty-form confirmation above a drawer. Breeze adds a dimming layer scoped to the nearest open modal surface and centres the confirmation within that task while retaining its own focus scope and alert-dialog semantics. If the parent surface closes while the confirmation remains open, Breeze follows another open modal surface or falls back to the viewport. During that handoff, the active confirmation owns the only backdrop while the exiting parent remains mounted. Do not use `nested` for a standalone confirmation.
 
 ## Open state and callbacks
 
