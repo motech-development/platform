@@ -163,6 +163,107 @@ function NestedDrawerConfirmationExample({
   );
 }
 
+/** Keeps a deeper, earlier modal stack open behind the active drawer. */
+function IndependentModalStacksConfirmationExample({
+  confirmation,
+}: Readonly<NestedConfirmationExampleProps>) {
+  const [activeOpen, setActiveOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => setActiveOpen(true), []);
+
+  return (
+    <>
+      <Drawer.Root defaultOpen>
+        <Drawer.Trigger>Open earlier outer editor</Drawer.Trigger>
+        <Drawer.Content placement="start" size="default">
+          <Drawer.Description>Earlier independent task.</Drawer.Description>
+          <Drawer.Title>Earlier outer editor</Drawer.Title>
+          <Drawer.Root defaultOpen>
+            <Drawer.Trigger>Open earlier inner editor</Drawer.Trigger>
+            <Drawer.Content placement="start" size="medium">
+              <Drawer.Description>
+                Deeper surface in the earlier task.
+              </Drawer.Description>
+              <Drawer.Title>Earlier inner editor</Drawer.Title>
+            </Drawer.Content>
+          </Drawer.Root>
+        </Drawer.Content>
+      </Drawer.Root>
+      <Drawer.Root onOpenChange={setActiveOpen} open={activeOpen} triggerless>
+        <Drawer.Content placement="end" size="wide">
+          <Drawer.Description>
+            Currently active independent task.
+          </Drawer.Description>
+          <Drawer.Title>Active editor</Drawer.Title>
+          <Button onAction={() => setOpen(true)}>Leave active editor</Button>
+          <ConfirmationDialog
+            cancelLabel={confirmation.cancelLabel}
+            closeLabel={confirmation.closeLabel}
+            confirmLabel={confirmation.confirmLabel}
+            description={confirmation.description}
+            nested
+            onConfirm={confirmation.onConfirm}
+            onOpenChange={setOpen}
+            open={open}
+            title={confirmation.title}
+            triggerless
+            variant="warning"
+          />
+        </Drawer.Content>
+      </Drawer.Root>
+    </>
+  );
+}
+
+/** Replaces one scoped confirmation while its exit animation is mounted. */
+function ReplacingNestedConfirmationExample() {
+  const [firstOpen, setFirstOpen] = useState(false);
+  const [secondOpen, setSecondOpen] = useState(false);
+
+  return (
+    <Drawer.Root defaultOpen>
+      <Drawer.Trigger>Open replacement editor</Drawer.Trigger>
+      <Drawer.Content placement={{ base: 'bottom', md: 'end' }} size="wide">
+        <Drawer.Description>Update the record details.</Drawer.Description>
+        <Drawer.Title>Replacement editor</Drawer.Title>
+        <Button onAction={() => setFirstOpen(true)}>
+          Review pending changes
+        </Button>
+        <ConfirmationDialog
+          cancelLabel="Keep editing"
+          closeLabel="Close first confirmation"
+          confirmLabel="Review next change"
+          description="Review the next change before leaving."
+          nested
+          onConfirm={() => {
+            setFirstOpen(false);
+            setSecondOpen(true);
+          }}
+          onOpenChange={setFirstOpen}
+          open={firstOpen}
+          title="Review this change?"
+          triggerless
+          variant="warning"
+        />
+        <ConfirmationDialog
+          cancelLabel="Keep editing"
+          closeLabel="Close second confirmation"
+          confirmLabel="Discard changes"
+          description="Your unsaved changes will be lost."
+          nested
+          onConfirm={() => undefined}
+          onOpenChange={setSecondOpen}
+          open={secondOpen}
+          title="Discard changes?"
+          triggerless
+          variant="warning"
+        />
+      </Drawer.Content>
+    </Drawer.Root>
+  );
+}
+
 /** Verifies the visible backdrop, geometry, and focus of a nested decision. */
 async function verifyNestedConfirmation(
   canvasElement: HTMLElement,
@@ -432,6 +533,109 @@ export const NestedOverNestedDrawer: Story = {
 export const NestedOverNestedDrawerCompact: Story = {
   ...NestedOverNestedDrawer,
   globals: { viewport: { value: 'mobile1' } },
+};
+
+/**
+ * Keeps a deeper modal tree mounted behind a later root task and verifies that
+ * portal stacking selects the active root before considering nested depth.
+ *
+ * @summary active independent modal stack boundary
+ */
+export const NestedOverActiveIndependentStack: Story = {
+  ...NestedInDrawer,
+  play: async ({ canvasElement }) => {
+    const body = within(canvasElement.ownerDocument.body);
+    const activeDrawer = body.getByRole('dialog', { name: 'Active editor' });
+
+    await userEvent.click(
+      body.getByRole('button', { name: 'Leave active editor' }),
+    );
+
+    const dialog = body.getByRole('alertdialog', {
+      name: 'Discard changes?',
+    });
+    const overlay = dialog.closest<HTMLElement>('.breeze-modal-overlay');
+
+    if (overlay === null) {
+      throw new Error('Expected the nested confirmation overlay.');
+    }
+
+    await waitFor(async () => {
+      const activeBounds = activeDrawer.getBoundingClientRect();
+      const backdropStyle = getComputedStyle(overlay, '::before');
+
+      await expect(Number.parseFloat(backdropStyle.left)).toBeCloseTo(
+        activeBounds.left,
+        1,
+      );
+      await expect(Number.parseFloat(backdropStyle.width)).toBeCloseTo(
+        activeBounds.width,
+        1,
+      );
+    });
+  },
+  render: (args) => (
+    <IndependentModalStacksConfirmationExample confirmation={args} />
+  ),
+};
+
+/**
+ * Replaces a scoped confirmation during its exit and verifies that the old
+ * pseudo-backdrop no longer contributes a second dimming layer.
+ *
+ * @summary single backdrop while replacing nested confirmations
+ */
+export const NestedReplacementBackdrop: Story = {
+  args: NestedInDrawer.args,
+  play: async ({ canvasElement }) => {
+    const body = within(canvasElement.ownerDocument.body);
+
+    await userEvent.click(
+      body.getByRole('button', { name: 'Review pending changes' }),
+    );
+
+    const firstDialog = body.getByRole('alertdialog', {
+      name: 'Review this change?',
+    });
+    const firstOverlay = firstDialog.closest<HTMLElement>(
+      '.breeze-modal-overlay',
+    );
+
+    if (firstOverlay === null) {
+      throw new Error('Expected the first nested confirmation overlay.');
+    }
+
+    await userEvent.click(
+      body.getByRole('button', { name: 'Review next change' }),
+    );
+
+    const secondDialog = body.getByRole('alertdialog', {
+      name: 'Discard changes?',
+    });
+    const secondOverlay = secondDialog.closest<HTMLElement>(
+      '.breeze-modal-overlay',
+    );
+
+    if (secondOverlay === null) {
+      throw new Error('Expected the replacement confirmation overlay.');
+    }
+
+    await waitFor(async () => {
+      await expect(firstOverlay).toHaveAttribute(
+        'data-nested-backdrop-suppressed',
+      );
+      await expect(getComputedStyle(firstOverlay, '::before').content).toBe(
+        'none',
+      );
+      await expect(getComputedStyle(firstDialog).visibility).toBe('hidden');
+      await expect(
+        getComputedStyle(secondOverlay, '::before').content,
+      ).not.toBe('none');
+    });
+    await waitFor(() => expect(firstDialog).not.toBeInTheDocument());
+    await expect(secondDialog).toBeVisible();
+  },
+  render: ReplacingNestedConfirmationExample,
 };
 
 /**

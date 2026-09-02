@@ -178,6 +178,15 @@
     background: transparent;
   }
 
+  .breeze-modal-overlay-nested[data-nested-backdrop-suppressed][data-nested-boundary]::before {
+    content: none;
+  }
+
+  .breeze-modal-overlay-nested[data-nested-backdrop-suppressed]
+    > .breeze-modal-nested {
+    visibility: hidden;
+  }
+
   .breeze-modal-overlay-nested[data-nested-boundary] {
     overflow: hidden;
     padding: 0;
@@ -208,6 +217,13 @@
     justify-content: center;
     overflow-y: auto;
     padding: 1.25rem;
+    pointer-events: none;
+  }
+
+  .breeze-modal-overlay-nested[data-nested-boundary]
+    > .breeze-modal-nested
+    > .breeze-modal-surface {
+    pointer-events: auto;
   }
 
   @media (forced-colors: active) {

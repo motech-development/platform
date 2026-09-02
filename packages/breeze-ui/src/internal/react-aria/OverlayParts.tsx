@@ -54,13 +54,14 @@ const nestedBackdropSuppressedAttribute = 'data-nested-backdrop-suppressed';
 interface ModalSurfaceContextValue {
   depth: number;
   ref: RefObject<HTMLElement | null>;
+  stack: object;
 }
 
 const ModalSurfaceContext = createContext<ModalSurfaceContextValue | undefined>(
   undefined,
 );
 const modalSurfaceDepth = new WeakMap<HTMLElement, number>();
-
+const modalSurfaceStack = new WeakMap<HTMLElement, object>();
 export const OverlayDescriptionContext = createContext<string | undefined>(
   undefined,
 );
@@ -89,6 +90,7 @@ function resolvePortalRoot(
 function findTopmostModalSurface(
   currentOverlay: HTMLElement,
   portalContainer: HTMLElement | null,
+  parentSurface: ModalSurfaceContextValue | undefined,
 ): HTMLElement | undefined {
   const portal = resolvePortalRoot(currentOverlay, portalContainer);
 
@@ -102,13 +104,29 @@ function findTopmostModalSurface(
       isOpenModalSurface(candidateSurface),
   );
 
-  return surfaces.reduce<HTMLElement | undefined>((topmost, candidate) => {
-    const topmostDepth =
-      topmost === undefined ? -1 : modalSurfaceDepth.get(topmost) ?? -1;
-    const candidateDepth = modalSurfaceDepth.get(candidate) ?? -1;
+  const activeStack =
+    parentSurface?.stack ??
+    (surfaces.length === 0
+      ? undefined
+      : modalSurfaceStack.get(surfaces[surfaces.length - 1]));
+  const activeSurfaces =
+    activeStack === undefined
+      ? surfaces
+      : surfaces.filter(
+          (candidateSurface) =>
+            modalSurfaceStack.get(candidateSurface) === activeStack,
+        );
 
-    return candidateDepth >= topmostDepth ? candidate : topmost;
-  }, undefined);
+  return activeSurfaces.reduce<HTMLElement | undefined>(
+    (topmost, candidate) => {
+      const topmostDepth =
+        topmost === undefined ? -1 : modalSurfaceDepth.get(topmost) ?? -1;
+      const candidateDepth = modalSurfaceDepth.get(candidate) ?? -1;
+
+      return candidateDepth >= topmostDepth ? candidate : topmost;
+    },
+    undefined,
+  );
 }
 
 function findExitingModalOverlays(
@@ -156,16 +174,10 @@ function resolveNestedBoundary(
   const topmostSurface = findTopmostModalSurface(
     currentOverlay,
     portalContainer,
+    parentSurface,
   );
 
-  if (contextualSurface === undefined) return topmostSurface;
-  if (topmostSurface === undefined) return contextualSurface;
-
-  const contextualDepth =
-    modalSurfaceDepth.get(contextualSurface) ?? parentSurface?.depth ?? -1;
-  const topmostDepth = modalSurfaceDepth.get(topmostSurface) ?? -1;
-
-  return topmostDepth > contextualDepth ? topmostSurface : contextualSurface;
+  return topmostSurface ?? contextualSurface;
 }
 
 function clearNestedBoundary(overlayElement: HTMLElement): void {
@@ -406,9 +418,13 @@ export function SharedModalContent({
   const parentSurface = useContext(ModalSurfaceContext);
   const surfaceRef = useRef<HTMLElement | null>(null);
   const surfaceDepth = (parentSurface?.depth ?? -1) + 1;
+  const surfaceStack = useMemo(
+    () => parentSurface?.stack ?? {},
+    [parentSurface?.stack],
+  );
   const surfaceContext = useMemo<ModalSurfaceContextValue>(
-    () => ({ depth: surfaceDepth, ref: surfaceRef }),
-    [surfaceDepth],
+    () => ({ depth: surfaceDepth, ref: surfaceRef, stack: surfaceStack }),
+    [surfaceDepth, surfaceStack],
   );
   const forwardedSurfaceRef = useForwardedRef(ref);
   const setSurfaceRef = useCallback(
@@ -416,10 +432,11 @@ export function SharedModalContent({
       surfaceRef.current = currentSurface;
       if (currentSurface !== null) {
         modalSurfaceDepth.set(currentSurface, surfaceDepth);
+        modalSurfaceStack.set(currentSurface, surfaceStack);
       }
       forwardedSurfaceRef(currentSurface);
     },
-    [forwardedSurfaceRef, surfaceDepth],
+    [forwardedSurfaceRef, surfaceDepth, surfaceStack],
   );
   const nestedOverlayCleanupRef = useRef<(() => void) | undefined>(undefined);
   const overlayRef = useCallback(
