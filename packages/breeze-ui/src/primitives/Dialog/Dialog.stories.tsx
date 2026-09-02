@@ -243,12 +243,14 @@ export const NestedBackdropDismissal: Story = {
     await waitFor(() =>
       expect(drawer.getBoundingClientRect().top).toBeCloseTo(0, 1),
     );
-    const drawerBounds = drawer.getBoundingClientRect();
-    const getBackdropTarget = () =>
-      canvasElement.ownerDocument.elementFromPoint(
+    const getBackdropTarget = () => {
+      const drawerBounds = drawer.getBoundingClientRect();
+
+      return canvasElement.ownerDocument.elementFromPoint(
         drawerBounds.left + 8,
         drawerBounds.top + 8,
       );
+    };
 
     await waitFor(() => expect(getBackdropTarget()).toBe(overlay));
     const backdropTarget = getBackdropTarget();
