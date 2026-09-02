@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { expect, fn, userEvent, waitFor, within } from 'storybook/test';
 import { Button } from '../../primitives/Button/Button';
 import { Drawer } from '../../primitives/Drawer/Drawer';
@@ -89,6 +89,10 @@ function ExitingParentConfirmationExample({
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(true);
 
+  useEffect(() => {
+    if (confirmationOpen) setDrawerOpen(false);
+  }, [confirmationOpen]);
+
   return (
     <>
       <Button onAction={() => setDrawerOpen(true)}>Open editor</Button>
@@ -96,12 +100,7 @@ function ExitingParentConfirmationExample({
         <Drawer.Content placement={{ base: 'bottom', md: 'end' }} size="wide">
           <Drawer.Description>Update the record details.</Drawer.Description>
           <Drawer.Title>Record editor</Drawer.Title>
-          <Button
-            onAction={() => {
-              setConfirmationOpen(true);
-              setDrawerOpen(false);
-            }}
-          >
+          <Button onAction={() => setConfirmationOpen(true)}>
             Close editor and confirm
           </Button>
         </Drawer.Content>
@@ -504,6 +503,8 @@ export const NestedAfterParentExit: Story = {
   play: async ({ canvasElement }) => {
     const body = within(canvasElement.ownerDocument.body);
     const view = canvasElement.ownerDocument.defaultView;
+    const drawer = body.getByRole('dialog', { name: 'Record editor' });
+    const drawerOverlay = drawer.parentElement?.parentElement;
 
     await userEvent.click(
       body.getByRole('button', { name: 'Close editor and confirm' }),
@@ -514,10 +515,26 @@ export const NestedAfterParentExit: Story = {
     });
     const overlay = dialog.parentElement?.parentElement;
 
-    if (overlay === null || overlay === undefined || view === null) {
-      throw new Error('Expected the nested confirmation overlay.');
+    if (
+      overlay === null ||
+      overlay === undefined ||
+      drawerOverlay === null ||
+      drawerOverlay === undefined ||
+      view === null
+    ) {
+      throw new Error('Expected the nested confirmation and drawer overlays.');
     }
 
+    await waitFor(async () => {
+      await expect(drawer).toBeInTheDocument();
+      await expect(drawer.closest('[data-exiting]')).not.toBeNull();
+      await expect(view.getComputedStyle(drawerOverlay).backgroundColor).toBe(
+        'rgba(0, 0, 0, 0)',
+      );
+      await expect(view.getComputedStyle(overlay).backgroundColor).not.toBe(
+        'rgba(0, 0, 0, 0)',
+      );
+    });
     await waitFor(async () => {
       await expect(
         body.queryByRole('dialog', { name: 'Record editor' }),

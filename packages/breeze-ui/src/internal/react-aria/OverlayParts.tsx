@@ -49,6 +49,7 @@ const nestedBoundaryProperties = [
   '--breeze-nested-overlay-width',
   '--breeze-nested-overlay-height',
 ] as const;
+const nestedBackdropSuppressedAttribute = 'data-nested-backdrop-suppressed';
 
 interface ModalSurfaceContextValue {
   depth: number;
@@ -108,6 +109,39 @@ function findTopmostModalSurface(
 
     return candidateDepth >= topmostDepth ? candidate : topmost;
   }, undefined);
+}
+
+function findExitingModalOverlays(
+  currentOverlay: HTMLElement,
+  portalContainer: HTMLElement | null,
+): HTMLElement[] {
+  const portal = resolvePortalRoot(currentOverlay, portalContainer);
+
+  if (portal === undefined) return [];
+
+  return Array.from(
+    portal.querySelectorAll<HTMLElement>('.breeze-modal-surface'),
+  ).reduce<HTMLElement[]>((exitingOverlays, candidateSurface) => {
+    if (
+      currentOverlay.contains(candidateSurface) ||
+      candidateSurface.closest('[data-exiting]') === null
+    ) {
+      return exitingOverlays;
+    }
+
+    const candidateOverlay = candidateSurface.closest<HTMLElement>(
+      '.breeze-modal-overlay',
+    );
+
+    if (
+      candidateOverlay !== null &&
+      !exitingOverlays.includes(candidateOverlay)
+    ) {
+      exitingOverlays.push(candidateOverlay);
+    }
+
+    return exitingOverlays;
+  }, []);
 }
 
 function resolveNestedBoundary(
@@ -398,7 +432,33 @@ export function SharedModalContent({
       let boundaryCleanup: (() => void) | undefined;
       let boundaryRetryFrame: number | undefined;
       let trackedBoundary: HTMLElement | undefined;
+      const suppressedBackdrops = new Set<HTMLElement>();
+      const syncSuppressedBackdrops = () => {
+        const exitingOverlays = new Set(
+          findExitingModalOverlays(currentOverlay, portalContainer),
+        );
+
+        suppressedBackdrops.forEach((suppressedOverlay) => {
+          if (!exitingOverlays.has(suppressedOverlay)) {
+            suppressedOverlay.removeAttribute(
+              nestedBackdropSuppressedAttribute,
+            );
+            suppressedBackdrops.delete(suppressedOverlay);
+          }
+        });
+        exitingOverlays.forEach((exitingOverlay) => {
+          exitingOverlay.setAttribute(nestedBackdropSuppressedAttribute, '');
+          suppressedBackdrops.add(exitingOverlay);
+        });
+      };
+      const releaseSuppressedBackdrops = () => {
+        suppressedBackdrops.forEach((suppressedOverlay) =>
+          suppressedOverlay.removeAttribute(nestedBackdropSuppressedAttribute),
+        );
+        suppressedBackdrops.clear();
+      };
       const bindBoundary = () => {
+        syncSuppressedBackdrops();
         const boundary = resolveNestedBoundary(
           currentOverlay,
           portalContainer,
@@ -448,6 +508,7 @@ export function SharedModalContent({
         }
         boundaryObserver?.disconnect();
         boundaryCleanup?.();
+        releaseSuppressedBackdrops();
       };
     },
     [nested, parentSurface, portalContainer],
