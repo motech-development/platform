@@ -64,7 +64,17 @@ export const OverlayDescriptionContext = createContext<string | undefined>(
   undefined,
 );
 
-function findTopmostModalSurface(
+function isOpenModalSurface(
+  candidate: HTMLElement | undefined,
+): candidate is HTMLElement {
+  return (
+    candidate !== undefined &&
+    candidate.isConnected &&
+    candidate.closest('[data-exiting]') === null
+  );
+}
+
+function resolvePortalRoot(
   currentOverlay: HTMLElement,
   portalContainer: HTMLElement | null,
 ): HTMLElement | undefined {
@@ -72,11 +82,24 @@ function findTopmostModalSurface(
     portalContainer ??
     currentOverlay.closest<HTMLElement>('[data-breeze-portal-root]');
 
-  if (!portal?.contains(currentOverlay)) return undefined;
+  return portal?.contains(currentOverlay) ? portal : undefined;
+}
+
+function findTopmostModalSurface(
+  currentOverlay: HTMLElement,
+  portalContainer: HTMLElement | null,
+): HTMLElement | undefined {
+  const portal = resolvePortalRoot(currentOverlay, portalContainer);
+
+  if (portal === undefined) return undefined;
 
   const surfaces = Array.from(
     portal.querySelectorAll<HTMLElement>('.breeze-modal-surface'),
-  ).filter((candidateSurface) => !currentOverlay.contains(candidateSurface));
+  ).filter(
+    (candidateSurface) =>
+      !currentOverlay.contains(candidateSurface) &&
+      isOpenModalSurface(candidateSurface),
+  );
 
   return surfaces.reduce<HTMLElement | undefined>((topmost, candidate) => {
     const topmostDepth =
@@ -92,7 +115,10 @@ function resolveNestedBoundary(
   portalContainer: HTMLElement | null,
   parentSurface: ModalSurfaceContextValue | undefined,
 ): HTMLElement | undefined {
-  const contextualSurface = parentSurface?.ref.current ?? undefined;
+  const contextualCandidate = parentSurface?.ref.current ?? undefined;
+  const contextualSurface = isOpenModalSurface(contextualCandidate)
+    ? contextualCandidate
+    : undefined;
   const topmostSurface = findTopmostModalSurface(
     currentOverlay,
     portalContainer,
@@ -373,31 +399,54 @@ export function SharedModalContent({
       let boundaryRetryFrame: number | undefined;
       let trackedBoundary: HTMLElement | undefined;
       const bindBoundary = () => {
-        boundaryRetryFrame = undefined;
         const boundary = resolveNestedBoundary(
           currentOverlay,
           portalContainer,
           parentSurface,
         );
 
-        if (boundary === undefined || boundary === trackedBoundary) return;
+        if (boundary === trackedBoundary) return;
 
         boundaryCleanup?.();
+        boundaryCleanup = undefined;
         trackedBoundary = boundary;
-        boundaryCleanup = trackNestedBoundary(currentOverlay, boundary);
+
+        if (boundary === undefined) {
+          clearNestedBoundary(currentOverlay);
+        } else {
+          boundaryCleanup = trackNestedBoundary(currentOverlay, boundary);
+        }
       };
+
+      const portalRoot = resolvePortalRoot(currentOverlay, portalContainer);
+      const boundaryObserver =
+        typeof MutationObserver === 'undefined' || portalRoot === undefined
+          ? undefined
+          : new MutationObserver(bindBoundary);
 
       bindBoundary();
 
       // React completes all refs in the current commit before the next paint.
       // Reconcile once so a simultaneously mounted inner layer takes precedence
       // over an inherited outer surface.
-      boundaryRetryFrame = window.requestAnimationFrame(bindBoundary);
+      boundaryRetryFrame = window.requestAnimationFrame(() => {
+        boundaryRetryFrame = undefined;
+        bindBoundary();
+      });
+      if (boundaryObserver !== undefined && portalRoot !== undefined) {
+        boundaryObserver.observe(portalRoot, {
+          attributeFilter: ['data-exiting'],
+          attributes: true,
+          childList: true,
+          subtree: true,
+        });
+      }
 
       nestedOverlayCleanupRef.current = () => {
         if (boundaryRetryFrame !== undefined) {
           window.cancelAnimationFrame(boundaryRetryFrame);
         }
+        boundaryObserver?.disconnect();
         boundaryCleanup?.();
       };
     },
