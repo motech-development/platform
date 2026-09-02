@@ -588,13 +588,13 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">93 components ok</span><span class="filter-pill ok" aria-disabled="true">342 stories ok</span><a class="filter-pill ok" data-k="docs" href="#filter-docs">105 docs ok</a></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">93 components ok</span><span class="filter-pill ok" aria-disabled="true">354 stories ok</span><a class="filter-pill ok" data-k="docs" href="#filter-docs">105 docs ok</a></div>
   </div>
 </header>
 <main>
   <div class="wrap">
     <div class="note ok" style="margin-bottom: 16px;">
-              Using <code>react-docgen-typescript</code>. Generation took <strong>3.9s</strong>.
+              Using <code>react-docgen-typescript</code>. Generation took <strong>5.1s</strong>.
             </div>
     <h2 class="section-title">Components</h2>
     <div class="grid" role="list">
@@ -3160,7 +3160,7 @@ Use `StatePanel` for a standard empty/error composition, `Spinner` for announced
       <div class="badges">
         <label for="c-9-patterns-actions-confirmationdialog-props" class="badge ok as-toggle">16 prop types</label>
         
-        <label for="c-9-patterns-actions-confirmationdialog-stories" class="badge ok as-toggle">5 stories</label>
+        <label for="c-9-patterns-actions-confirmationdialog-stories" class="badge ok as-toggle">15 stories</label>
         <label for="c-9-patterns-actions-confirmationdialog-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
@@ -3222,7 +3222,7 @@ description: ReactNode
 disabled?: boolean = false
 
 /**
- * Uses the backdrop supplied by an existing modal layer. Defaults to `false`.
+ * Dims and centres within the nearest existing modal layer. Defaults to `false`.
  */
 nested?: boolean = false
 
@@ -3355,6 +3355,156 @@ variant?: &quot;danger&quot; | &quot;primary&quot; | &quot;warning&quot; = dange
             </div>
             <div class="note ok">
               <div class="row">
+                <span class="ex-name">Nested In Drawer</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              <div>drawer-scoped nested confirmation backdrop</div>
+              <div class="hint">Opens a warning confirmation inside a desktop drawer and limits the new dimming layer and dialog centring to that parent task surface.</div>
+              <pre><code>const NestedInDrawer = (args) =&gt; &lt;NestedConfirmationExample confirmation={args} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Nested In Drawer Compact</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              <div>compact full-screen nested confirmation backdrop</div>
+              <div class="hint">Exercises the same nested decision in the compact full-screen drawer, where the scoped dimming layer naturally fills the mobile task surface.</div>
+              <pre><code>const NestedInDrawerCompact = () =&gt; &lt;ConfirmationDialog /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Nested Open With Drawer</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              <div>simultaneous sibling drawer and confirmation mounting</div>
+              <div class="hint">Opens the sibling drawer and confirmation in the same render and verifies the next-frame boundary reconciliation scopes the decision to the drawer.</div>
+              <pre><code>const NestedOpenWithDrawer = (args) =&gt; (
+  &lt;NestedConfirmationExample confirmation={args} initiallyOpen /&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Nested Over Nested Drawer</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              <div>topmost nested drawer confirmation boundary</div>
+              <div class="hint">Opens a confirmation logically owned by an outer drawer while an inner drawer is the active topmost task, and scopes the decision to that task.</div>
+              <pre><code>const NestedOverNestedDrawer = (args) =&gt; &lt;NestedDrawerConfirmationExample confirmation={args} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Nested Over Nested Drawer Compact</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              <div>compact topmost nested drawer confirmation boundary</div>
+              <div class="hint">Exercises the topmost nested drawer boundary when every modal layer fills a compact viewport.</div>
+              <pre><code>const NestedOverNestedDrawerCompact = () =&gt; &lt;ConfirmationDialog /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Nested Over Active Independent Stack</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              <div>active independent modal stack boundary</div>
+              <div class="hint">Keeps a deeper modal tree mounted behind a later root task and verifies that portal stacking selects the active root before considering nested depth.</div>
+              <pre><code>const NestedOverActiveIndependentStack = (args) =&gt; (
+  &lt;IndependentModalStacksConfirmationExample confirmation={args} /&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Nested Replacement Backdrop</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              <div>single backdrop while replacing nested confirmations</div>
+              <div class="hint">Replaces a scoped confirmation during its exit and verifies that the old pseudo-backdrop no longer contributes a second dimming layer.</div>
+              <pre><code>function NestedReplacementBackdrop() {
+  const [firstOpen, setFirstOpen] = useState(false);
+  const [secondOpen, setSecondOpen] = useState(false);
+
+  return (
+    &lt;Drawer.Root defaultOpen&gt;
+      &lt;Drawer.Trigger&gt;Open replacement editor&lt;/Drawer.Trigger&gt;
+      &lt;Drawer.Content placement={{ base: &#39;bottom&#39;, md: &#39;end&#39; }} size=&quot;wide&quot;&gt;
+        &lt;Drawer.Description&gt;Update the record details.&lt;/Drawer.Description&gt;
+        &lt;Drawer.Title&gt;Replacement editor&lt;/Drawer.Title&gt;
+        &lt;Button onAction={() =&gt; setFirstOpen(true)}&gt;
+          Review pending changes
+        &lt;/Button&gt;
+        &lt;ConfirmationDialog
+          cancelLabel=&quot;Keep editing&quot;
+          closeLabel=&quot;Close first confirmation&quot;
+          confirmLabel=&quot;Review next change&quot;
+          description=&quot;Review the next change before leaving.&quot;
+          nested
+          onConfirm={() =&gt; {
+            setFirstOpen(false);
+            setSecondOpen(true);
+          }}
+          onOpenChange={setFirstOpen}
+          open={firstOpen}
+          title=&quot;Review this change?&quot;
+          triggerless
+          variant=&quot;warning&quot;
+        /&gt;
+        &lt;ConfirmationDialog
+          cancelLabel=&quot;Keep editing&quot;
+          closeLabel=&quot;Close second confirmation&quot;
+          confirmLabel=&quot;Discard changes&quot;
+          description=&quot;Your unsaved changes will be lost.&quot;
+          nested
+          onConfirm={() =&gt; undefined}
+          onOpenChange={setSecondOpen}
+          open={secondOpen}
+          title=&quot;Discard changes?&quot;
+          triggerless
+          variant=&quot;warning&quot;
+        /&gt;
+      &lt;/Drawer.Content&gt;
+    &lt;/Drawer.Root&gt;
+  );
+}</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Nested Without Parent</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              <div>viewport fallback for a nested-capable confirmation</div>
+              <div class="hint">Opens a nested-capable confirmation without a parent modal and verifies it safely falls back to the viewport backdrop and centring behavior.</div>
+              <pre><code>const NestedWithoutParent = () =&gt; &lt;ConfirmationDialog
+    cancelLabel=&quot;Keep editing&quot;
+    closeLabel=&quot;Close confirmation&quot;
+    confirmLabel=&quot;Discard changes&quot;
+    description=&quot;Your unsaved changes will be lost.&quot;
+    nested
+    onConfirm={fn()}
+    open
+    readOnly
+    title=&quot;Discard changes?&quot;
+    trigger=&quot;Leave editor&quot;
+    variant=&quot;warning&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Nested After Parent Exit</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              <div>viewport fallback after the parent drawer exits</div>
+              <div class="hint">Closes the owning drawer while its sibling confirmation remains open and verifies that the decision rebinds from the exiting surface to the viewport.</div>
+              <pre><code>const NestedAfterParentExit = (args) =&gt; &lt;ExitingParentConfirmationExample confirmation={args} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Nested After Parent Exit Compact</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Exercises parent-exit fallback in the compact full-screen drawer.</div>
+              <pre><code>const NestedAfterParentExitCompact = () =&gt; &lt;ConfirmationDialog /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
                 <span class="ex-name">Destructive Open</span>
                 <span class="badge ok">story ok</span>
               </div>
@@ -3455,7 +3605,7 @@ The icon is supplementary; meaning must be present in the title, description and
 
 `disabled` disables only the confirming action. Cancel, the header close action and Escape remain available. The pattern has no loading prop: keep asynchronous state application-owned, prevent duplicate confirmation through `disabled` when needed, and present progress or failure outside this fixed composition or use `AlertDialog` for a richer workflow.
 
-Set `nested` only when the confirmation opens above an existing modal layer, such as a dirty-form confirmation above a drawer. The existing modal supplies the visible backdrop while the confirmation retains its own focus scope and alert-dialog semantics. Do not use `nested` for a standalone confirmation.
+Set `nested` only when the confirmation opens above an existing modal layer, such as a dirty-form confirmation above a drawer. Breeze adds a dimming layer scoped to the nearest open modal surface and centres the confirmation within that task while retaining its own focus scope and alert-dialog semantics. If the parent surface closes while the confirmation remains open, Breeze follows another open modal surface or falls back to the viewport. During that handoff, the active confirmation owns the only backdrop while the exiting parent remains mounted. Do not use `nested` for a standalone confirmation.
 
 ## Open state and callbacks
 
@@ -9544,7 +9694,7 @@ variant?: VisualVariant</code></pre>
       <div class="row">
         <span class="ex-name">Content</span>
         <span class="badge ok">
-          6 prop types
+          7 prop types
         </span>
       </div>
       <div class="hint">/home/runner/work/platform/platform/packages/breeze-ui/src/primitives/AlertDialog/AlertDialog.tsx</div>
@@ -9558,6 +9708,8 @@ variant?: VisualVariant</code></pre>
           <pre><code>keyboardDismissDisabled?: boolean
 
 modalClassName?: string
+
+nested?: boolean
 
 overlayClassName?: string
 
@@ -14735,7 +14887,7 @@ ref?: Ref&lt;HTMLElement&gt;</code></pre>
       <div class="badges">
         <label for="c-47-primitives-overlays-dialog-props" class="badge ok as-toggle">5 prop types</label>
         
-        <label for="c-47-primitives-overlays-dialog-stories" class="badge ok as-toggle">4 stories</label>
+        <label for="c-47-primitives-overlays-dialog-stories" class="badge ok as-toggle">6 stories</label>
         <label for="c-47-primitives-overlays-dialog-docs" class="badge ok as-toggle">1 doc</label>
         <label for="c-47-primitives-overlays-dialog-subcomponents" class="badge ok as-toggle">5 subcomponents</label>
       </div>
@@ -14849,6 +15001,44 @@ readOnly?: boolean</code></pre>
               <div>compact controlled modal action layout</div>
               <div class="hint">Repeats the controlled focus and dismissal workflow at the compact viewport, where the action group stacks and its close action fills the available width.</div>
               <pre><code>const ControlledFocusAndDismissalCompact = () =&gt; &lt;Root /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Nested Backdrop Dismissal</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              <div>nested dialog scoped-backdrop dismissal</div>
+              <div class="hint">Verifies that the visibly dimmed area around a nested, dismissible dialog remains outside its modal interaction boundary at both responsive layouts.</div>
+              <pre><code>function NestedBackdropDismissal() {
+  return (
+    &lt;Drawer.Root defaultOpen&gt;
+      &lt;Drawer.Trigger&gt;Open editor&lt;/Drawer.Trigger&gt;
+      &lt;Drawer.Content placement={{ base: &#39;bottom&#39;, md: &#39;end&#39; }} size=&quot;wide&quot;&gt;
+        &lt;Drawer.Description&gt;Update the record details.&lt;/Drawer.Description&gt;
+        &lt;Drawer.Title&gt;Record editor&lt;/Drawer.Title&gt;
+        &lt;Dialog.Root&gt;
+          &lt;Dialog.Trigger&gt;Open nested dialog&lt;/Dialog.Trigger&gt;
+          &lt;Dialog.Content nested&gt;
+            &lt;Dialog.Title&gt;Nested settings&lt;/Dialog.Title&gt;
+            &lt;Dialog.Description&gt;
+              Dismiss this dialog from its scoped backdrop.
+            &lt;/Dialog.Description&gt;
+            &lt;Dialog.Close&gt;Save and close&lt;/Dialog.Close&gt;
+          &lt;/Dialog.Content&gt;
+        &lt;/Dialog.Root&gt;
+      &lt;/Drawer.Content&gt;
+    &lt;/Drawer.Root&gt;
+  );
+}</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Nested Backdrop Dismissal Compact</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Exercises scoped-backdrop dismissal in the compact full-screen drawer.</div>
+              <pre><code>const NestedBackdropDismissalCompact = () =&gt; &lt;Root /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -15068,7 +15258,7 @@ variant?: VisualVariant</code></pre>
       <div class="row">
         <span class="ex-name">Content</span>
         <span class="badge ok">
-          9 prop types
+          10 prop types
         </span>
       </div>
       <div class="hint">/home/runner/work/platform/platform/packages/breeze-ui/src/internal/react-aria/OverlayParts.tsx</div>
@@ -15086,6 +15276,8 @@ keyboardDismissDisabled?: boolean = false
 modalClassName?: string
 
 modalState?: { onOpenChange: (open: boolean) =&gt; void; open: boolean; }
+
+nested?: boolean = false
 
 overlayClassName?: string
 
@@ -15863,7 +16055,7 @@ variant?: VisualVariant</code></pre>
       <div class="row">
         <span class="ex-name">Content</span>
         <span class="badge ok">
-          9 prop types
+          10 prop types
         </span>
       </div>
       <div class="hint">/home/runner/work/platform/platform/packages/breeze-ui/src/primitives/Drawer/Drawer.tsx</div>
@@ -15887,6 +16079,8 @@ chrome?: &quot;default&quot; | &quot;none&quot; | &quot;soft&quot; = default
 dismissible?: boolean
 
 keyboardDismissDisabled?: boolean
+
+nested?: boolean
 
 /**
  * Responsive logical edge. Defaults to `end`.
