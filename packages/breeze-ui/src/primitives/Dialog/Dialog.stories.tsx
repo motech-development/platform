@@ -244,20 +244,23 @@ export const NestedBackdropDismissal: Story = {
       expect(drawer.getBoundingClientRect().top).toBeCloseTo(0, 1),
     );
     const drawerBounds = drawer.getBoundingClientRect();
-    const backdropTarget = canvasElement.ownerDocument.elementFromPoint(
-      drawerBounds.left + 8,
-      drawerBounds.top + 8,
-    );
+    const getBackdropTarget = () =>
+      canvasElement.ownerDocument.elementFromPoint(
+        drawerBounds.left + 8,
+        drawerBounds.top + 8,
+      );
 
-    if (backdropTarget === null) {
+    await waitFor(() => expect(getBackdropTarget()).toBe(overlay));
+    const backdropTarget = getBackdropTarget();
+
+    if (backdropTarget !== overlay) {
       throw new Error('Expected the scoped backdrop hit target.');
     }
 
-    await expect(backdropTarget).toBe(overlay);
     await userEvent.click(backdropTarget);
     await waitFor(() => expect(dialog).not.toBeInTheDocument());
     await expect(drawer).toBeVisible();
-    await expect(trigger).toHaveFocus();
+    await waitFor(() => expect(trigger).toHaveFocus());
   },
   render: NestedDismissibleDialog,
 };
