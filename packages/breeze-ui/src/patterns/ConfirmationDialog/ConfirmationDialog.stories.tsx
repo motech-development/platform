@@ -82,6 +82,47 @@ function NestedConfirmationExample({
   );
 }
 
+/** Keeps the confirmation open while its application-owned drawer exits. */
+function ExitingParentConfirmationExample({
+  confirmation,
+}: Readonly<NestedConfirmationExampleProps>) {
+  const [confirmationOpen, setConfirmationOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(true);
+
+  return (
+    <>
+      <Button onAction={() => setDrawerOpen(true)}>Open editor</Button>
+      <Drawer.Root onOpenChange={setDrawerOpen} open={drawerOpen} triggerless>
+        <Drawer.Content placement={{ base: 'bottom', md: 'end' }} size="wide">
+          <Drawer.Description>Update the record details.</Drawer.Description>
+          <Drawer.Title>Record editor</Drawer.Title>
+          <Button
+            onAction={() => {
+              setConfirmationOpen(true);
+              setDrawerOpen(false);
+            }}
+          >
+            Close editor and confirm
+          </Button>
+        </Drawer.Content>
+      </Drawer.Root>
+      <ConfirmationDialog
+        cancelLabel={confirmation.cancelLabel}
+        closeLabel={confirmation.closeLabel}
+        confirmLabel={confirmation.confirmLabel}
+        description={confirmation.description}
+        nested
+        onConfirm={confirmation.onConfirm}
+        onOpenChange={setConfirmationOpen}
+        open={confirmationOpen}
+        title={confirmation.title}
+        triggerless
+        variant="warning"
+      />
+    </>
+  );
+}
+
 /** Keeps a triggerless confirmation logically beneath the outer drawer. */
 function NestedDrawerConfirmationExample({
   confirmation,
@@ -450,6 +491,69 @@ export const NestedWithoutParent: Story = {
       ).toHaveFocus();
     });
   },
+};
+
+/**
+ * Closes the owning drawer while its sibling confirmation remains open and
+ * verifies that the decision rebinds from the exiting surface to the viewport.
+ *
+ * @summary viewport fallback after the parent drawer exits
+ */
+export const NestedAfterParentExit: Story = {
+  ...NestedInDrawer,
+  play: async ({ canvasElement }) => {
+    const body = within(canvasElement.ownerDocument.body);
+    const view = canvasElement.ownerDocument.defaultView;
+
+    await userEvent.click(
+      body.getByRole('button', { name: 'Close editor and confirm' }),
+    );
+
+    const dialog = body.getByRole('alertdialog', {
+      name: 'Discard changes?',
+    });
+    const overlay = dialog.parentElement?.parentElement;
+
+    if (overlay === null || overlay === undefined || view === null) {
+      throw new Error('Expected the nested confirmation overlay.');
+    }
+
+    await waitFor(async () => {
+      await expect(
+        body.queryByRole('dialog', { name: 'Record editor' }),
+      ).not.toBeInTheDocument();
+
+      const overlayBounds = overlay.getBoundingClientRect();
+      const dialogBounds = dialog.getBoundingClientRect();
+
+      await expect(overlay).not.toHaveAttribute('data-nested-boundary');
+      await expect(view.getComputedStyle(overlay).backgroundColor).not.toBe(
+        'rgba(0, 0, 0, 0)',
+      );
+      await expect(overlayBounds.left).toBe(0);
+      await expect(overlayBounds.top).toBe(0);
+      await expect(overlayBounds.width).toBe(view.innerWidth);
+      await expect(overlayBounds.height).toBe(view.innerHeight);
+      await expect(dialogBounds.left + dialogBounds.width / 2).toBeCloseTo(
+        view.innerWidth / 2,
+        1,
+      );
+      await expect(dialogBounds.top + dialogBounds.height / 2).toBeCloseTo(
+        view.innerHeight / 2,
+        1,
+      );
+    });
+    await expect(
+      body.getByRole('button', { name: 'Keep editing' }),
+    ).toHaveFocus();
+  },
+  render: (args) => <ExitingParentConfirmationExample confirmation={args} />,
+};
+
+/** Exercises parent-exit fallback in the compact full-screen drawer. */
+export const NestedAfterParentExitCompact: Story = {
+  ...NestedAfterParentExit,
+  globals: { viewport: { value: 'mobile1' } },
 };
 
 /**
