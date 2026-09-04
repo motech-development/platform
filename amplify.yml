@@ -10,11 +10,9 @@ applications:
             - yarn workspaces foreach -Rpt --from '@accounts/web' run package
         build:
           commands:
-            - echo "SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN" >> .env
-            - yarn codegen.graphql
             - yarn build
       artifacts:
-        baseDirectory: dist/client
+        baseDirectory: dist
         files:
           - '**/*'
       cache:

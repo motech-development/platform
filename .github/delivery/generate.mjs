@@ -927,7 +927,6 @@ function reservedWorkflowTargets(identifier) {
 const workflowFragmentNames = [
   'dependency-steps',
   'accounts-web-deployment-checkout',
-  'accounts-web-browser-setup',
   'api-client-output',
   'client-api-input',
   'current-api-config',

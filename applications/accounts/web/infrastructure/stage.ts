@@ -1,6 +1,12 @@
-import { type HostedStage, isHostedStage } from '../stage';
+const previewStage = /^pr-\d+$/;
 
-export type { HostedStage } from '../stage';
+export type HostedStage = 'develop' | 'production' | `pr-${number}`;
+
+function isHostedStage(value: string): value is HostedStage {
+  return (
+    value === 'develop' || value === 'production' || previewStage.test(value)
+  );
+}
 
 export function parseStage(arguments_: readonly string[]): HostedStage {
   const index = arguments_.indexOf('--stage');

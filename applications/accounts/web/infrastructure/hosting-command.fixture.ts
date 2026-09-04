@@ -10,14 +10,6 @@ const infrastructureDirectory = join(workspaceDirectory, 'infrastructure');
 const temporaryDirectories: string[] = [];
 
 export const commitId = '1234567890abcdef1234567890abcdef12345678';
-export const requiredEnvironment = {
-  VITE_APPSYNC_URL: 'https://appsync.example.test/graphql',
-  VITE_AUTH0_AUDIENCE: 'https://accounts.example.test',
-  VITE_AUTH0_CLIENT_ID: 'auth0-client-id',
-  VITE_AUTH0_DOMAIN: 'auth.example.test',
-  VITE_AWS_REGION: 'eu-west-1',
-  VITE_SENTRY_DSN: 'https://public@example.ingest.sentry.io/1',
-};
 
 export interface CommandFixture {
   callsPath: string;
@@ -154,7 +146,6 @@ export async function createCommandFixture(
     callsPath,
     env: {
       ...process.env,
-      ...requiredEnvironment,
       COMMAND_CALLS: callsPath,
       COMMAND_SCENARIO: scenario,
       COMMIT_ID: commitId,

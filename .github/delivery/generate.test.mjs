@@ -1164,18 +1164,24 @@ test('client delivery receives public API configuration through explicit job out
   }
 });
 
-test('replacement Accounts web uses normal delivery and one-to-one hosted notification journeys', async () => {
+test('Accounts placeholder retains Amplify delivery without application services or browser fixtures', async () => {
   const generated = await generateWorkflows({ write: false });
-  const previewWorkflow = generated['deploy-to-environment.yml'];
-  const developWorkflow = generated['deploy-to-develop.yml'];
-  const productionWorkflow = generated['deploy-to-production.yml'];
-  const preview = workflowJob(previewWorkflow, 'accounts-web');
-  const previewValidation = workflowJob(
-    previewWorkflow,
+  const preview = workflowJob(
+    generated['deploy-to-environment.yml'],
+    'accounts-web',
+  );
+  const validation = workflowJob(
+    generated['deploy-to-environment.yml'],
     'accounts-web-validation',
   );
-  const develop = workflowJob(developWorkflow, 'accounts-web');
-  const production = workflowJob(productionWorkflow, 'accounts-web');
+  const develop = workflowJob(
+    generated['deploy-to-develop.yml'],
+    'accounts-web',
+  );
+  const production = workflowJob(
+    generated['deploy-to-production.yml'],
+    'accounts-web',
+  );
   const teardown = workflowJob(
     generated['teardown-environment.yml'],
     'accounts-web',
@@ -1187,84 +1193,48 @@ test('replacement Accounts web uses normal delivery and one-to-one hosted notifi
   );
   assert.match(
     preview,
-    /VITE_APPSYNC_URL: \$\{\{ needs\.accounts-api\.outputs\.appsync-url \|\| needs\.setup\.outputs\.api-appsync-url \}\}[\s\S]*VITE_AWS_REGION: \$\{\{ needs\.accounts-api\.outputs\.aws-region \|\| needs\.setup\.outputs\.api-aws-region \}\}/,
+    /deployment="\$\(yarn workspace @accounts\/web deploy --stage "\$STAGE"\)"[\s\S]*jq -er '\.url \| select\(type == "string" and length > 0\)'[\s\S]*echo "deployment-url=\$deployment_url"/,
   );
-  for (const job of [preview, develop]) {
-    assert.match(
+  for (const job of [preview, develop, production]) {
+    assert.doesNotMatch(
       job,
-      /VITE_AUTH0_CLIENT_ID: \$\{\{ secrets\.ACCOUNTS_APP_CLIENT_ID_DEV \}\}[\s\S]*VITE_SENTRY_DSN: \$\{\{ secrets\.SENTRY_DSN_ACCOUNTS_WEB \}\}/,
+      /VITE_|SENTRY_AUTH_TOKEN|TEMP_GH_PAT|accounts-web\/sentry/,
+    );
+    assert.doesNotMatch(
+      job,
+      /^      - (accounts-api|accounts-client|component-library)$/m,
     );
     assert.match(
       job,
       /- name: Configure AWS credentials[\s\S]*aws-region: eu-west-1[\s\S]*role-to-assume: arn:aws:iam::633331859210:role\/github-actions[\s\S]*- name: Deploy hosted web/,
     );
-    assert.doesNotMatch(job, /TEMP_GH_PAT/);
     assert.match(
       job,
       /- name: Generate Accounts web deployment token[\s\S]*permission-contents: write[\s\S]*permission-workflows: write[\s\S]*- name: Checkout code[\s\S]*token: \$\{\{ steps\.accounts-web-token\.outputs\.token \}\}/,
     );
+    assert.doesNotMatch(job, /accounts-web-hosting|@accounts\/web reconcile/);
   }
   assert.match(develop, /^      contents: read$/m);
-  assert.match(
-    production,
-    /VITE_AUTH0_CLIENT_ID: \$\{\{ secrets\.ACCOUNTS_APP_CLIENT_ID_PROD \}\}[\s\S]*VITE_AUTH0_DOMAIN: \$\{\{ secrets\.AUTH0_DOMAIN_PROD \}\}[\s\S]*VITE_SENTRY_DSN: \$\{\{ secrets\.SENTRY_DSN_ACCOUNTS_WEB \}\}/,
-  );
-  assert.match(
-    production,
-    /VITE_APPSYNC_URL: \$\{\{ needs\.accounts-api\.outputs\.appsync-url \|\| needs\.setup\.outputs\.api-appsync-url \}\}[\s\S]*VITE_AWS_REGION: \$\{\{ needs\.accounts-api\.outputs\.aws-region \|\| needs\.setup\.outputs\.api-aws-region \}\}/,
-  );
   assert.match(production, /^      STAGE: production$/m);
-  assert.match(production, /^      - accounts-api$/m);
   assert.doesNotMatch(production, /accounts\.motechdevelopment\.co\.uk/);
-  assert.match(
-    preview,
-    /- name: Deploy hosted web[\s\S]*deployment="\$\(yarn workspace @accounts\/web deploy --stage "\$STAGE"\)"[\s\S]*jq -er '\.url \| select\(type == "string" and length > 0\)'[\s\S]*echo "deployment-url=\$deployment_url"/,
-  );
-  assert.doesNotMatch(preview, /yarn workspace @accounts\/web reconcile/);
-  assert.doesNotMatch(preview, /^      - accounts-notifications$/m);
-  for (const job of [preview, develop, production]) {
-    assert.doesNotMatch(job, /SENTRY_AUTH_TOKEN|accounts-web\/sentry/);
-  }
   for (const job of [develop, production]) {
     assert.match(
       job,
-      /- name: Deploy hosted web[\s\S]*run: yarn workspace @accounts\/web deploy --stage "\$STAGE"/,
+      /run: yarn workspace @accounts\/web deploy --stage "\$STAGE"/,
     );
-    assert.doesNotMatch(job, /accounts-web-hosting|@accounts\/web reconcile/);
   }
-  assert.match(
-    previewValidation,
-    /Build legacy fixture client[\s\S]*Run hosted replacement journeys with legacy event producers[\s\S]*should create a company[\s\S]*should update company settings\|should add client 1\|should add a confirmed sale\$\|should add a confirmed sale refund\$"[\s\S]*BASE_URL="\$DEPLOYMENT_URL"[\s\S]*Virus scanning should display a notification\|should remove virus from transaction[\s\S]*should generate and download report"\s+\\\s+--timeout=90000[\s\S]*BASE_URL="\$DEPLOYMENT_URL"[\s\S]*Notifications should display a notification[\s\S]*should create a company\|should have correct default settings\|should update company settings\|should add client 1\|should add a confirmed sale\$\|should add a confirmed purchase\$\|should add a confirmed purchase refund\$\|should add a pending sale\|should schedule a purchase refund\|should have published the scheduled transaction"[\s\S]*should generate a report"\s+\\\s+--timeout=90000[\s\S]*BASE_URL="\$DEPLOYMENT_URL"[\s\S]*should display a notification[\s\S]*grep-invert "should display a notification"/,
-  );
-  assert.match(
-    previewValidation,
-    /non-vat-registered\\\.spec\\\.ts\$"[\s\S]*--grep "should display a notification"/,
-  );
-  assert.match(
-    previewValidation,
-    /foundation\\\.spec\\\.ts\$"[\s\S]*non-vat-registered\\\.spec\\\.ts\$"[\s\S]*--project=chromium[\s\S]*--grep-invert "should display a notification"[\s\S]*non_vat_fixture_cleanup_required=false[\s\S]*vat-registered\\\.spec\\\.ts\$"[\s\S]*--project=chromium[\s\S]*--grep-invert "should display a notification\|should remove virus from transaction"[\s\S]*vat_fixture_cleanup_required=false/,
-  );
-  assert.match(
-    previewValidation,
-    /if \[\[ "\$vat_fixture_cleanup_required" == "true" \]\][\s\S]*vat-registered[\s\S]*should remove company[\s\S]*if \[\[ "\$non_vat_fixture_cleanup_required" == "true" \]\][\s\S]*non-vat-registered[\s\S]*should remove company/,
-  );
-  assert.match(
-    previewValidation,
-    /trap cleanup_fixture EXIT\s+vat_fixture_cleanup_required=true\s+yarn workspace @accounts\/client e2e-ci[\s\S]*--grep "should create a company"[\s\S]*non_vat_fixture_cleanup_required=true\s+yarn workspace @accounts\/client e2e-ci[\s\S]*--grep "should create a company\|should have correct default settings/,
-  );
-  assert.match(previewValidation, /^      - accounts-web$/m);
-  assert.match(previewValidation, /^      - accounts-client$/m);
-  assert.match(previewValidation, /^      - preview-status$/m);
-  assert.doesNotMatch(previewValidation, /^      id-token: write$/m);
+  assert.match(validation, /^      - accounts-web$/m);
+  assert.match(validation, /^      - preview-status$/m);
   assert.doesNotMatch(
-    previewValidation,
-    /Configure AWS credentials|role-to-assume/,
+    validation,
+    /accounts-client|accounts-api|E2E_|VITE_|AUTH0|playwright|e2e-ci|Configure AWS credentials|role-to-assume/,
   );
-  assert.doesNotMatch(
-    `${previewWorkflow}\n${developWorkflow}`,
-    /capability|evidence|hosted-performance|hosted-observability|PERFORMANCE_CLIENT|VITE_SENTRY_.*SAMPLE/,
+  assert.match(
+    validation,
+    /curl --fail --silent --show-error "\$DEPLOYMENT_URL"/,
   );
-  assert.match(generated['deploy-to-production.yml'], /^  accounts-web:$/m);
+  assert.match(validation, /grep -F '<h1>Accounts<\/h1>'/);
+  assert.match(validation, /grep -F '<p>Ready to rebuild\.<\/p>'/);
   assert.match(
     teardown,
     /yarn workspace @accounts\/web teardown --stage "\$STAGE"/,
@@ -1704,7 +1674,6 @@ test('templates own shared operational workflow fragments', async () => {
     generator,
     dependencyFragment,
     accountsWebCheckoutFragment,
-    accountsWebBrowserFragment,
     apiFragment,
     clientFragment,
     currentApiConfigFragment,
@@ -1721,13 +1690,6 @@ test('templates own shared operational workflow fragments', async () => {
     readFile(
       new URL(
         './templates/fragments/accounts-web-deployment-checkout.yml.tmpl',
-        import.meta.url,
-      ),
-      'utf8',
-    ),
-    readFile(
-      new URL(
-        './templates/fragments/accounts-web-browser-setup.yml.tmpl',
         import.meta.url,
       ),
       'utf8',
@@ -1765,7 +1727,6 @@ test('templates own shared operational workflow fragments', async () => {
   assert.match(dependencyFragment, /yarn workspaces foreach/);
   assert.match(accountsWebCheckoutFragment, /accounts-web-token/);
   assert.match(accountsWebCheckoutFragment, /env\.DEPLOYMENT_REF/);
-  assert.match(accountsWebBrowserFragment, /playwright install/);
   assert.match(apiFragment, /AccountsApiUrl/);
   assert.match(clientFragment, /needs\.accounts-api\.outputs\.appsync-url/);
   assert.match(currentApiConfigFragment, /AccountsApiUrl/);
@@ -1975,7 +1936,7 @@ test('generated preview workflow plans per pull request and selectively deploys 
   );
   assert.match(
     accountsWebValidation,
-    /ACCOUNTS_WEB_HOSTED_SMOKE=true[\s\S]*BASE_URL="\$DEPLOYMENT_URL"[\s\S]*yarn workspace @accounts\/web e2e-ci[\s\S]*foundation\\\.spec\\\.ts\$[\s\S]*non-vat-registered\\\.spec\\\.ts\$[\s\S]*vat-registered\\\.spec\\\.ts\$/,
+    /Verify hosted placeholder[\s\S]*curl --fail --silent --show-error/,
   );
   assert.match(
     playwright,
@@ -2411,7 +2372,7 @@ test('generated long-lived delivery reconciles Environment State after acquiring
     );
     assert.match(
       setup,
-      /Read current Accounts API configuration[\s\S]*contains\(fromJSON\(steps\.plan\.outputs\.units\), 'accounts-web'\)[\s\S]*!contains\(fromJSON\(steps\.plan\.outputs\.units\), 'accounts-api'\)[\s\S]*--stack-name "accounts-\$\{STAGE\}-api"[\s\S]*AccountsApiUrl/,
+      /Read current Accounts API configuration[\s\S]*contains\(fromJSON\(steps\.plan\.outputs\.units\), 'accounts-client'\)[\s\S]*!contains\(fromJSON\(steps\.plan\.outputs\.units\), 'accounts-api'\)[\s\S]*--stack-name "accounts-\$\{STAGE\}-api"[\s\S]*AccountsApiUrl/,
     );
     assert.doesNotMatch(workflow, /^(?!\s*#)\s+.*\.serverless$/m);
 
@@ -2446,10 +2407,7 @@ test('generated long-lived delivery reconciles Environment State after acquiring
         /Create in-progress Deployment status[\s\S]*--arg state in_progress[\s\S]*Record successful Deployment[\s\S]*Record failed Deployment[\s\S]*auto_inactive: false/,
       );
       if (id === 'accounts-web') {
-        assert.match(
-          job,
-          /VITE_APPSYNC_URL: \$\{\{ needs\.accounts-api\.outputs\.appsync-url \|\| needs\.setup\.outputs\.api-appsync-url \}\}[\s\S]*VITE_AWS_REGION: \$\{\{ needs\.accounts-api\.outputs\.aws-region \|\| needs\.setup\.outputs\.api-aws-region \}\}/,
-        );
+        assert.doesNotMatch(job, /VITE_|needs\.accounts-api/);
       }
     }
   }

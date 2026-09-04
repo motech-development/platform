@@ -2,21 +2,13 @@
   "compilerOptions": {
     "allowJs": false,
     "isolatedModules": true,
-    "jsx": "react-jsx",
-    "lib": ["DOM", "DOM.Iterable", "ESNext", "WebWorker"],
+    "lib": ["ESNext"],
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "noEmit": true,
     "target": "ESNext",
-    "useDefineForClassFields": true
+    "types": ["node", "vitest/globals"]
   },
   "extends": "../../../tsconfig.json",
-  "include": [
-    "codegen.ts",
-    "infrastructure",
-    "scripts",
-    "src",
-    "vite.config.ts",
-    "vitest.config.ts"
-  ]
+  "include": ["infrastructure", "vite.config.ts", "vitest.config.ts"]
 }

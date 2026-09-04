@@ -9,6 +9,42 @@ describe('Accounts web hosting stack', () => {
     }),
   );
 
+  it('retains hosting branches and the Develop domain with the placeholder rewrite', () => {
+    expect(
+      Object.keys(template.findResources('AWS::Amplify::App')),
+    ).toHaveLength(1);
+    expect(
+      Object.keys(template.findResources('AWS::Amplify::Branch')),
+    ).toHaveLength(2);
+    expect(
+      Object.keys(template.findResources('AWS::Amplify::Domain')),
+    ).toHaveLength(1);
+    template.hasResourceProperties('AWS::Amplify::App', {
+      CustomRules: [
+        {
+          Source:
+            '</^[^.]+$|\\.(?!(css|gif|ico|jpg|jpeg|js|mjs|png|txt|svg|woff|woff2|json|webmanifest)$)([^.]+$)/>',
+          Status: '200',
+          Target: '/index.html',
+        },
+      ],
+      Name: 'accounts-web',
+      Platform: 'WEB',
+    });
+    ['amplify/develop', 'amplify/production'].forEach((branchName) => {
+      template.hasResourceProperties('AWS::Amplify::Branch', {
+        BranchName: branchName,
+        EnableAutoBuild: false,
+      });
+    });
+    template.hasResourceProperties('AWS::Amplify::Domain', {
+      DomainName: 'motechdevelopment.co.uk',
+      SubDomainSettings: [
+        { BranchName: 'amplify/develop', Prefix: 'accounts-develop' },
+      ],
+    });
+  });
+
   it('uses the existing GitHub App connection without embedded build configuration', () => {
     const synthesized = template.toJSON() as {
       Resources: Record<

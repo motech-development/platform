@@ -386,15 +386,8 @@ jobs:
 
     needs:
       - setup
-      - accounts-api
 
     env:
-      VITE_APPSYNC_URL: ${{ needs.accounts-api.outputs.appsync-url }}
-      VITE_AUTH0_AUDIENCE: ${{ secrets.ACCOUNTS_APP_AUDIENCE }}
-      VITE_AUTH0_CLIENT_ID: ${{ secrets.ACCOUNTS_APP_CLIENT_ID_DEV }}
-      VITE_AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_DEV }}
-      VITE_AWS_REGION: ${{ needs.accounts-api.outputs.aws-region }}
-      VITE_SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_WEB }}
       STAGE: develop
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 

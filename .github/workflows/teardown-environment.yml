@@ -844,7 +844,6 @@ jobs:
 
     needs:
       - setup
-      - accounts-web
 
     env:
       AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_DEV }}
