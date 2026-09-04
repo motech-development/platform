@@ -59,3 +59,7 @@ _Avoid_: Regular update
 **Security Dependency Update**:
 A dependency version change proposed to remediate a reported vulnerability independently of routine maintenance capacity.
 _Avoid_: Routine dependency update, vulnerability upgrade
+
+## Accounts web reset
+
+The `accounts-web` Deployment Unit currently serves a static placeholder while the application is rebuilt. Its shared Amplify app, environment branches, Develop domain, exact-commit deployment, and preview teardown remain in place. It has no Accounts API or Breeze dependency. Preview validation checks the hosted placeholder; the legacy Accounts client retains its separate browser journeys and backend dependencies.

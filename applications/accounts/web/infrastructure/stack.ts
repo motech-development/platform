@@ -12,11 +12,10 @@ export class AccountsWebStack extends Stack {
           source:
             '</^[^.]+$|\\.(?!(css|gif|ico|jpg|jpeg|js|mjs|png|txt|svg|woff|woff2|json|webmanifest)$)([^.]+$)/>',
           status: '200',
-          target: '/_shell.html',
+          target: '/index.html',
         },
       ],
-      description:
-        'Production-shaped React 19 walking skeleton for Motech Accounts',
+      description: 'Accounts placeholder hosting',
       enableBranchAutoDeletion: true,
       environmentVariables: [
         {
@@ -35,7 +34,6 @@ export class AccountsWebStack extends Stack {
       enableAutoBuild: false,
       enablePerformanceMode: false,
       enablePullRequestPreview: false,
-      framework: 'React',
       stage: 'DEVELOPMENT',
     });
     const production = new CfnBranch(this, 'AccountsWebProductionBranch', {
@@ -46,7 +44,6 @@ export class AccountsWebStack extends Stack {
       enableAutoBuild: false,
       enablePerformanceMode: false,
       enablePullRequestPreview: false,
-      framework: 'React',
       stage: 'PRODUCTION',
     });
     const domain = new CfnDomain(this, 'AccountsWebDomain', {

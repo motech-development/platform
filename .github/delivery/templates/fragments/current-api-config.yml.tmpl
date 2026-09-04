@@ -1,6 +1,6 @@
       - name: Read current Accounts API configuration
         id: current-api-config
-        if: contains(fromJSON(steps.plan.outputs.units), 'accounts-web') && !contains(fromJSON(steps.plan.outputs.units), 'accounts-api')
+        if: contains(fromJSON(steps.plan.outputs.units), 'accounts-client') && !contains(fromJSON(steps.plan.outputs.units), 'accounts-api')
         shell: bash
         run: |
           stack="$(

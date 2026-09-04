@@ -127,7 +127,7 @@ jobs:
 
       - name: Read current Accounts API configuration
         id: current-api-config
-        if: contains(fromJSON(steps.plan.outputs.units), 'accounts-web') && !contains(fromJSON(steps.plan.outputs.units), 'accounts-api')
+        if: contains(fromJSON(steps.plan.outputs.units), 'accounts-client') && !contains(fromJSON(steps.plan.outputs.units), 'accounts-api')
         shell: bash
         run: |
           stack="$(
@@ -1966,25 +1966,17 @@ jobs:
   accounts-web:
     name: Deploy Accounts web
 
-    if: always() && contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-web') && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-api') || needs.accounts-api.result == 'success') && (!contains(fromJSON(needs.setup.outputs.units || '[]'), 'component-library') || needs.component-library.result == 'success')
+    if: always() && contains(fromJSON(needs.setup.outputs.units || '[]'), 'accounts-web')
 
     runs-on: ubuntu-latest
 
     needs:
       - setup
-      - accounts-api
-      - component-library
 
     env:
       DEPLOYMENT_ENVIRONMENT: production
       DEPLOYMENT_REF: ${{ fromJSON(inputs.release-plan).desiredTags['@accounts/web'] }}
       DEPLOYMENT_TASK: deploy:accounts-web
-      VITE_APPSYNC_URL: ${{ needs.accounts-api.outputs.appsync-url || needs.setup.outputs.api-appsync-url }}
-      VITE_AUTH0_AUDIENCE: ${{ secrets.ACCOUNTS_APP_AUDIENCE }}
-      VITE_AUTH0_CLIENT_ID: ${{ secrets.ACCOUNTS_APP_CLIENT_ID_PROD }}
-      VITE_AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_PROD }}
-      VITE_AWS_REGION: ${{ needs.accounts-api.outputs.aws-region || needs.setup.outputs.api-aws-region }}
-      VITE_SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_WEB }}
       STAGE: production
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
@@ -2628,8 +2620,8 @@ jobs:
 
       - name: Write client configuration
         env:
-          REACT_APP_APPSYNC_URL: ${{ needs.accounts-api.outputs.appsync-url }}
-          REACT_APP_AWS_REGION: ${{ needs.accounts-api.outputs.aws-region }}
+          REACT_APP_APPSYNC_URL: ${{ needs.accounts-api.outputs.appsync-url || needs.setup.outputs.api-appsync-url }}
+          REACT_APP_AWS_REGION: ${{ needs.accounts-api.outputs.aws-region || needs.setup.outputs.api-aws-region }}
         run: |
           printf 'REACT_APP_APPSYNC_URL="%s"\n' "$REACT_APP_APPSYNC_URL" > ./applications/accounts/client/.env.production
           printf 'REACT_APP_AWS_REGION="%s"\n' "$REACT_APP_AWS_REGION" >> ./applications/accounts/client/.env.production

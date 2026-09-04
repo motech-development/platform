@@ -3,7 +3,6 @@ import {
   commitId,
   createCommandFixture,
   readCalls,
-  requiredEnvironment,
   runScript,
   scriptFailureMessage,
 } from './hosting-command.fixture';
@@ -11,7 +10,7 @@ import {
 afterEach(cleanupCommandFixtures);
 
 describe('Accounts web hosted deployment command', () => {
-  it('deploys the requested commit with the hosted branch configuration', async () => {
+  it('deploys the requested commit without application configuration', async () => {
     const fixture = await createCommandFixture();
 
     const { stdout } = await runScript(
@@ -58,16 +57,7 @@ describe('Accounts web hosted deployment command', () => {
         '--branch-name',
         'amplify/develop',
         '--environment-variables',
-        JSON.stringify({
-          VITE_APPSYNC_URL: requiredEnvironment.VITE_APPSYNC_URL,
-          VITE_AUTH0_AUDIENCE: requiredEnvironment.VITE_AUTH0_AUDIENCE,
-          VITE_AUTH0_CLIENT_ID: requiredEnvironment.VITE_AUTH0_CLIENT_ID,
-          VITE_AUTH0_DOMAIN: requiredEnvironment.VITE_AUTH0_DOMAIN,
-          VITE_AWS_REGION: requiredEnvironment.VITE_AWS_REGION,
-          VITE_COMMIT_SHA: commitId,
-          VITE_SENTRY_DSN: requiredEnvironment.VITE_SENTRY_DSN,
-          VITE_STAGE: 'develop',
-        }),
+        '{}',
       ],
       [
         'aws',

@@ -17,16 +17,6 @@ function aws(arguments_: string[]) {
   return execFileSync('aws', arguments_, { encoding: 'utf8' });
 }
 
-function required(name: string) {
-  const value = process.env[name];
-
-  if (!value) {
-    throw new Error(`${name} is required for Accounts web deployment`);
-  }
-
-  return value;
-}
-
 function streamBuildLogs(
   steps: readonly AmplifyJobStep[],
   streamedCharacters: Map<number, number>,
@@ -129,17 +119,6 @@ const appId = JSON.parse(
     'json',
   ]),
 ) as string;
-const publicBranchEnvironmentVariables = {
-  VITE_APPSYNC_URL: required('VITE_APPSYNC_URL'),
-  VITE_AUTH0_AUDIENCE: required('VITE_AUTH0_AUDIENCE'),
-  VITE_AUTH0_CLIENT_ID: required('VITE_AUTH0_CLIENT_ID'),
-  VITE_AUTH0_DOMAIN: required('VITE_AUTH0_DOMAIN'),
-  VITE_AWS_REGION: required('VITE_AWS_REGION'),
-  VITE_COMMIT_SHA: commitId,
-  VITE_SENTRY_DSN: required('VITE_SENTRY_DSN'),
-  VITE_STAGE: stage,
-};
-
 execFileSync(
   'git',
   ['push', 'origin', `${commitId}:refs/heads/${branchName}`, '--force'],
@@ -173,17 +152,13 @@ if (stage.startsWith('pr-')) {
       branchName,
       '--no-enable-auto-build',
       '--no-enable-pull-request-preview',
-      '--framework',
-      'React',
       '--stage',
       'DEVELOPMENT',
     ]);
   }
 }
 
-// SENTRY_AUTH_TOKEN is app-level Amplify configuration inherited by every
-// branch. Branch deployment owns only public application configuration and
-// must never read, copy, or update the shared credential.
+// Clear retired application configuration without changing shared app credentials.
 aws([
   'amplify',
   'update-branch',
@@ -192,7 +167,7 @@ aws([
   '--branch-name',
   branchName,
   '--environment-variables',
-  JSON.stringify(publicBranchEnvironmentVariables),
+  '{}',
 ]);
 const started = JSON.parse(
   aws([
