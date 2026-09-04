@@ -127,12 +127,12 @@ describe('DashboardPageContent', () => {
   });
 
   it.each([
-    ['morning', '2026-09-01T09:00:00.000Z'],
-    ['afternoon', '2026-09-01T15:00:00.000Z'],
-    ['evening', '2026-09-01T20:00:00.000Z'],
-  ])('uses the local %s greeting', (dayPeriod, systemTime) => {
+    ['morning', 9],
+    ['afternoon', 15],
+    ['evening', 20],
+  ])('uses the local %s greeting', (dayPeriod, hour) => {
     vi.useFakeTimers();
-    vi.setSystemTime(systemTime);
+    vi.setSystemTime(new Date(2026, 8, 1, hour));
     queryState.current.data = dashboardData([]);
     queryState.current.loading = false;
 

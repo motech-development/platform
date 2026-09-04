@@ -1,6 +1,5 @@
 import { BreezeProvider } from '@motech-development/breeze-ui';
 import {
-  act,
   fireEvent,
   render,
   screen,
@@ -352,25 +351,38 @@ describe('RecordTransactionPage', () => {
   });
 
   it('clears calculated VAT when an amount has no applicable category rate', async () => {
-    render(
+    const user = userEvent.setup();
+    const view = render(
       <BreezeProvider locale="en-GB">
         <RecordTransactionPage companyId="company-id" origin="transactions" />
       </BreezeProvider>,
     );
 
-    await userEvent.click(screen.getByLabelText('Purchase'));
-    const amountInput = screen.getByLabelText('Amount');
+    await user.click(screen.getByLabelText('Purchase'));
+    await user.click(screen.getByRole('button', { name: /Category/u }));
+    await user.click(
+      await screen.findByRole('option', { name: 'Professional fees' }),
+    );
+    await user.type(screen.getByLabelText('Amount'), '120');
+    expect(screen.getByLabelText('VAT')).toHaveValue('£20.00');
 
-    await act(async () => {
-      fireEvent.input(amountInput, {
-        data: '100',
-        inputType: 'insertFromPaste',
-        target: { value: '100' },
-      });
-      await Promise.resolve();
+    mocks.query.data = {
+      ...successfulQueryData,
+      getSettings: {
+        categories: [{ name: 'Travel', vatRate: 20 }],
+        id: 'company-id',
+        vat: { pay: 20 },
+      },
+    };
+    view.rerender(
+      <BreezeProvider locale="en-GB">
+        <RecordTransactionPage companyId="company-id" origin="transactions" />
+      </BreezeProvider>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('VAT')).toHaveValue('');
     });
-
-    expect(screen.getByLabelText('VAT')).toHaveValue('');
   });
 
   it('sorts purchase categories while preserving their source indexes', async () => {
