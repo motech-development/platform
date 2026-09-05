@@ -123,6 +123,7 @@ function Accounts() {
   const transactions = useTransactionItems(
     data?.getTransactions.items,
     TransactionStatus.Confirmed,
+    Boolean(data?.getTransactions.nextToken),
   );
   const onDelete = (id: string) => {
     deleteMutation({

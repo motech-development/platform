@@ -16,6 +16,7 @@ import { typePolicies } from '../ApolloClient';
 import TransactionUpdates, {
   TransactionStateProvider,
   useTransactionItems,
+  useTransactionState,
 } from '../TransactionUpdates';
 
 const transaction = (changes = {}) => ({
@@ -159,6 +160,11 @@ function Lists() {
     </>
   );
 }
+function Details() {
+  const current = useTransactionState('transaction');
+  return <p>{current?.description ?? 'Original detail'}</p>;
+}
+
 function Account({ companyId = 'company' }: { companyId?: string }) {
   return (
     <TransactionUpdates key={companyId} companyId={companyId} owner="owner">
@@ -294,6 +300,49 @@ describe('TransactionUpdates', () => {
     await act(() => vi.advanceTimersByTimeAsync(30000));
     expect(network.reads).toHaveLength(3);
   });
+  it('refreshes an open detail after reconnect without any prior transaction signal', async () => {
+    vi.useFakeTimers();
+    const network = setupNetwork();
+    render(
+      <TransactionUpdates companyId="company" owner="owner">
+        <Details />
+      </TransactionUpdates>,
+      { wrapper: network.Wrapper },
+    );
+    expect(screen.getByText('Original detail')).toBeInTheDocument();
+    expect(network.reads).toHaveLength(0);
+    await deliver(() => network.signals[0].error(new Error('Connection lost')));
+    await act(() => vi.advanceTimersByTimeAsync(1000));
+    expect(network.reads.map(({ transactionId }) => transactionId)).toEqual([
+      'transaction',
+    ]);
+    await network.resolveRead(
+      0,
+      transaction({ description: 'Changed while disconnected' }),
+    );
+    expect(screen.getByText('Changed while disconnected')).toBeInTheDocument();
+  });
+
+  it('does not refresh a detail that was closed during the outage', async () => {
+    vi.useFakeTimers();
+    const network = setupNetwork();
+    const view = render(
+      <TransactionUpdates companyId="company" owner="owner">
+        <Details />
+      </TransactionUpdates>,
+      { wrapper: network.Wrapper },
+    );
+    await deliver(() => network.signals[0].error(new Error('Connection lost')));
+    view.rerender(
+      <TransactionUpdates companyId="company" owner="owner">
+        <p>Account page</p>
+      </TransactionUpdates>,
+    );
+    await act(() => vi.advanceTimersByTimeAsync(1000));
+    expect(network.signals).toHaveLength(2);
+    expect(network.reads).toHaveLength(0);
+  });
+
   it('resubscribes after disconnection and receives subsequent changes', async () => {
     vi.useFakeTimers();
     const network = setupNetwork();

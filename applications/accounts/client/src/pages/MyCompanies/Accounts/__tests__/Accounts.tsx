@@ -108,6 +108,142 @@ describe('Accounts', () => {
     expect(list).toHaveBeenLastCalledWith(undefined);
   });
 
+  it('keeps live corrections within loaded pages until older transactions are fetched', async () => {
+    let signal: ((transactionId: string) => void) | undefined;
+    const newest = {
+      __typename: 'Transaction',
+      amount: 20,
+      attachment: '',
+      category: 'Sales',
+      companyId: 'company-id',
+      date: '2026-09-05T12:00:00.000Z',
+      description: 'Newest loaded transaction',
+      id: 'newest-transaction',
+      name: 'Newest customer',
+      refund: false,
+      scheduled: false,
+      status: TransactionStatus.Confirmed,
+      vat: 0,
+    };
+    const boundary = {
+      ...newest,
+      date: '2026-09-04T12:00:00.000Z',
+      description: 'Oldest loaded transaction',
+      id: 'boundary-transaction',
+      name: 'Boundary customer',
+    };
+    const historical = {
+      ...newest,
+      date: '2026-09-01T12:00:00.000Z',
+      description: 'Historical transaction before edit',
+      id: 'historical-transaction',
+      name: 'Historical customer',
+    };
+    const recent = {
+      ...newest,
+      date: '2026-09-06T12:00:00.000Z',
+      description: 'New transaction received live',
+      id: 'recent-transaction',
+      name: 'Recent customer',
+    };
+    const corrections = new Map([
+      [newest.id, { ...newest, description: 'Newest transaction edited live' }],
+      [
+        historical.id,
+        { ...historical, description: 'Historical transaction edited live' },
+      ],
+      [recent.id, recent],
+    ]);
+    const readState = vi.fn((id: string) => corrections.get(id));
+    const link = new ApolloLink(
+      (operation) =>
+        new Observable((observer) => {
+          if (operation.operationName === 'OnTransactionChange') {
+            signal = (transactionId) =>
+              observer.next({
+                data: {
+                  onTransactionChange: {
+                    id: 'company-id',
+                    owner: 'user-id',
+                    transactionId,
+                  },
+                },
+              });
+          } else if (operation.operationName === 'GetTransactionState') {
+            observer.next({
+              data: {
+                getTransactionState: readState(
+                  operation.variables.transactionId as string,
+                ),
+              },
+            });
+            observer.complete();
+          } else if (operation.operationName === 'GetBalance') {
+            const hasOlderPage = !operation.variables.nextToken;
+            observer.next({
+              data: {
+                getBalance: {
+                  balance: 60,
+                  currency: 'GBP',
+                  id: 'company-id',
+                  vat: { owed: 0, paid: 0 },
+                },
+                getTransactions: {
+                  __typename: 'Transactions',
+                  id: 'company-id',
+                  items: hasOlderPage ? [newest, boundary] : [historical],
+                  nextToken: hasOlderPage ? 'older-page' : null,
+                  status: TransactionStatus.Confirmed,
+                },
+              },
+            });
+            observer.complete();
+          }
+        }),
+    );
+    const { findByText, getAllByRole, getByRole, queryByText } = render(
+      <TestProvider path="/accounts/:companyId" history={history}>
+        <MockedProvider link={link} cache={new InMemoryCache({ typePolicies })}>
+          <TransactionStateProvider>
+            <TransactionUpdates companyId="company-id" owner="user-id">
+              <Accounts />
+            </TransactionUpdates>
+          </TransactionStateProvider>
+        </MockedProvider>
+      </TestProvider>,
+    );
+    await findByText(boundary.description);
+    await act(async () => {
+      signal?.(historical.id);
+      await waitForApollo(0);
+    });
+    expect(readState).toHaveBeenCalledWith(historical.id);
+    expect(
+      queryByText('Historical transaction edited live'),
+    ).not.toBeInTheDocument();
+
+    act(() => signal?.(newest.id));
+    await findByText('Newest transaction edited live');
+    expect(queryByText(newest.description)).not.toBeInTheDocument();
+
+    act(() => signal?.(recent.id));
+    await findByText(recent.description);
+    expect(queryByText(boundary.description)).not.toBeInTheDocument();
+    expect(
+      getAllByRole('link', { name: 'transactions-list.view' }),
+    ).toHaveLength(2);
+
+    fireEvent.click(getByRole('button', { name: 'accounts.load-more' }));
+    await findByText('Historical transaction edited live');
+    expect(queryByText(historical.description)).not.toBeInTheDocument();
+    expect(queryByText(boundary.description)).toBeInTheDocument();
+    expect(queryByText('Newest transaction edited live')).toBeInTheDocument();
+    expect(queryByText(recent.description)).toBeInTheDocument();
+    expect(
+      getAllByRole('link', { name: 'transactions-list.view' }),
+    ).toHaveLength(4);
+  });
+
   describe('success', () => {
     beforeEach(async () => {
       cache = new InMemoryCache({
