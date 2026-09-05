@@ -200,6 +200,16 @@ appSync:
       kind: UNIT
       request: mapping-templates/transaction/transactionBeacon/Mutation.transactionBeacon.req.vtl
       response: mapping-templates/transaction/transactionBeacon/Mutation.transactionBeacon.res.vtl
+    Mutation.transactionChangeBeacon:
+      dataSource: Resolver
+      kind: UNIT
+      request: mapping-templates/transaction/transactionChangeBeacon/Mutation.transactionChangeBeacon.req.vtl
+      response: mapping-templates/transaction/transactionChangeBeacon/Mutation.transactionChangeBeacon.res.vtl
+    Subscription.onTransactionChange:
+      dataSource: Resolver
+      kind: UNIT
+      request: mapping-templates/transaction/onTransactionChange/Subscription.onTransactionChange.req.vtl
+      response: mapping-templates/transaction/onTransactionChange/Subscription.onTransactionChange.res.vtl
     Mutation.deleteFile:
       kind: PIPELINE
       functions:
@@ -380,9 +390,12 @@ functions:
   UpdateBalance:
     handler: src/handlers/update-balance.handler
     role: PublishNotificationsRole
+    timeout: 60
     events:
       - stream:
           type: dynamodb
+          batchSize: 10
+          functionResponseType: ReportBatchItemFailures
           arn: !ImportValue ${self:provider.stage}-AccountsApplicationTableStreamArn
           startingPosition: LATEST
     environment:
@@ -550,6 +563,10 @@ resources:
                       - ''
                       - - !Ref ${self:custom.resourceName}
                         - /types/Mutation/fields/transactionBeacon
+                    - !Join
+                      - ''
+                      - - !Ref ${self:custom.resourceName}
+                        - /types/Mutation/fields/transactionChangeBeacon
                 - Effect: Allow
                   Action:
                     - logs:CreateLogGroup

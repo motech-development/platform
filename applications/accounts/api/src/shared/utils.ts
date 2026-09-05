@@ -16,20 +16,3 @@ export const isStreamInsertRecord = (
 
   return false;
 };
-
-export interface IFilteredModifyRecord {
-  eventName: 'MODIFY';
-  dynamodb: {
-    NewImage: Record<string, AttributeValue>;
-  };
-}
-
-export const isStreamModifyRecord = (
-  value: DynamoDBRecord,
-): value is IFilteredModifyRecord => {
-  if (value.eventName === 'MODIFY') {
-    return !!value.dynamodb?.NewImage;
-  }
-
-  return false;
-};

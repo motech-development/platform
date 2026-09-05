@@ -1,6 +1,5 @@
-import { fromNodeProviderChain } from '@aws-sdk/credential-providers';
-import { AWSAppSyncClient } from 'aws-appsync';
 import gql from 'graphql-tag';
+import createAppSyncClient from './appsync-client';
 
 interface IUpdateBalance {
   balance?: number;
@@ -29,29 +28,7 @@ export const mutation = gql`
 `;
 
 async function updateBalance(id: string, owner: string, input: IUpdateBalance) {
-  const credentials = fromNodeProviderChain({});
-
-  const { AWS_REGION, ENDPOINT } = process.env;
-
-  if (!AWS_REGION) {
-    throw new Error('No region set');
-  }
-
-  if (!ENDPOINT) {
-    throw new Error('No endpoint set');
-  }
-
-  const client = new AWSAppSyncClient({
-    auth: {
-      credentials,
-      type: 'AWS_IAM',
-    },
-    disableOffline: true,
-    region: AWS_REGION,
-    url: ENDPOINT,
-  });
-
-  return client.mutate({
+  return createAppSyncClient().mutate({
     mutation,
     variables: {
       id,
