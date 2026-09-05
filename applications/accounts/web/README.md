@@ -27,6 +27,8 @@ yarn workspace @accounts/web lint
 
 `infrastructure/` retains the shared `accounts-web-hosting` Amplify app, Develop and production branches, Develop domain, and exact-commit deployment and preview teardown commands. The app's GitHub connection remains externally managed. No Auth0, AppSync, or Sentry configuration is needed to build or deploy the placeholder.
 
-The root `amplify.yml` builds this workspace and publishes `dist/`. The SPA rewrite serves `index.html`. Preview validation checks the hosted placeholder without creating accounting fixtures. The legacy client keeps its own browser journeys.
+The root `amplify.yml` builds this workspace and publishes `dist/`. The SPA rewrite serves `index.html`.
+
+CI/CD has been restored to commit `1c2b0a711657c61423d7a83fd613d12603b9b05a`, before the Accounts web rewrite. This workspace is outside the Deployment Catalog: automated Release, Develop, production, preview deployment, and preview teardown do not manage it. Existing Amplify resources are retained. The legacy client uses its original deployment and browser validation pipelines.
 
 Reconciliation, deployment, and teardown commands change AWS or remote Git state; local build and tests do not deploy anything.
