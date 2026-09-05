@@ -59,3 +59,7 @@ _Avoid_: Regular update
 **Security Dependency Update**:
 A dependency version change proposed to remediate a reported vulnerability independently of routine maintenance capacity.
 _Avoid_: Routine dependency update, vulnerability upgrade
+
+## Accounts web reset
+
+The CI/CD pipelines and Deployment Catalog have been restored to commit `1c2b0a711657c61423d7a83fd613d12603b9b05a`, immediately before the Accounts web rewrite. The `accounts-web` placeholder and its Amplify infrastructure code remain in the repository, but are outside automated delivery and preview teardown. Existing Amplify resources are intentionally retained. The legacy Accounts client uses the restored deployment and browser validation pipelines.

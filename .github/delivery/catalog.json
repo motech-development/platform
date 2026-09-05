@@ -106,15 +106,6 @@
       "dependsOn": ["accounts-api", "accounts-infrastructure"],
       "expectedStacks": [],
       "exception": "Publishes static assets into the accounts infrastructure without owning a CloudFormation stack."
-    },
-    {
-      "id": "accounts-web",
-      "workspace": "@accounts/web",
-      "path": "applications/accounts/web",
-      "targets": ["preview", "develop", "production"],
-      "dependsOn": ["accounts-api"],
-      "expectedStacks": ["accounts-web-hosting"],
-      "exception": "Deploys an exact Git commit to one branch of the shared GitHub App-connected Amplify Hosting app. Release serializes shared-stack reconciliation before Develop and production deploy their branches under independent environment locks; previews require the shared stack and remain consume-only. Hosted builds inherit the app-level Amplify-managed SENTRY_AUTH_TOKEN; branch deployment never owns the credential."
     }
   ]
 }

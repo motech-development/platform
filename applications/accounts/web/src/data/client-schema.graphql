@@ -1,7 +1,0 @@
-directive @client on FIELD
-
-extend type Clients {
-  clientLoadedPageCount: Int!
-  clientRequestedPageCount: Int!
-  clientRefreshGeneration: Int!
-}

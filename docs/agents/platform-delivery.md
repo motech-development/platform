@@ -104,12 +104,6 @@ Do not add:
 
 Unknown catalog fields must fail validation.
 
-Use `{stage}` in an expected stack name when each target owns a stage-specific
-stack. Use a literal stack name only for deliberately shared infrastructure. A
-Preview Environment may require a shared stack but must fail closed rather than
-recreate a shared Develop resource. Literal stacks are not Preview State and do
-not suppress teardown commands that remove branch-level resources.
-
 ## When application or infrastructure code changes
 
 An agent is authorized to update the Deployment Catalog in the same change when repository evidence shows the delivery relationship changed.

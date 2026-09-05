@@ -1,5 +1,5 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { UpdateCommand } from '@aws-sdk/lib-dynamodb';
+import { GetCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import type { DynamoDBRecord } from 'aws-lambda';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import insertTypeahead from '../insert-typeahead';
@@ -16,6 +16,8 @@ describe('insert-typeahead', () => {
 
   beforeEach(() => {
     ddb = mockClient(DynamoDBClient);
+
+    ddb.on(GetCommand).resolves({});
 
     documentClient = new DynamoDBClient({});
 
@@ -305,117 +307,107 @@ describe('insert-typeahead', () => {
     vi.useRealTimers();
   });
 
-  it('should return update with the correct params', async () => {
+  it('should merge transaction suggestions in one sorted company update', async () => {
     await Promise.all(insertTypeahead(documentClient, tableName, records));
 
     expect(ddb).toReceiveCommandWith(UpdateCommand, {
-      ExpressionAttributeNames: {
-        '#createdAt': 'createdAt',
-        '#data': 'data',
-        '#descriptions': 'purchases',
-        '#groupsCanAccess': 'groupsCanAccess',
-        '#owner': 'owner',
-        '#suppliers': 'suppliers',
-        '#updatedAt': 'updatedAt',
-      },
+      ConditionExpression: 'attribute_not_exists(#id)',
       ExpressionAttributeValues: {
         ':data': 'owner-id:company-id:Typeahead',
-        ':descriptions': ['Description 1'],
         ':groupsCanAccess': ['Admin'],
         ':now': '2020-06-06T19:45:00.000Z',
         ':owner': 'owner-id',
-        ':suppliers': ['Transaction 1'],
+        ':purchases': ['Description 1', 'Description 4'],
+        ':sales': ['Description 2', 'Description 3'],
+        ':suppliers': ['Transaction 1', 'Transaction 4'],
       },
-      Key: {
-        __typename: 'Typeahead',
-        id: 'company-id',
-      },
+      Key: { __typename: 'Typeahead', id: 'company-id' },
       TableName: tableName,
-      UpdateExpression:
-        'ADD #descriptions :descriptions, #suppliers :suppliers SET #createdAt = if_not_exists(#createdAt, :now), #data = :data, #groupsCanAccess = if_not_exists(#groupsCanAccess, :groupsCanAccess), #owner = :owner, #updatedAt = :now',
-    });
-
-    expect(ddb).toReceiveCommandWith(UpdateCommand, {
-      ExpressionAttributeNames: {
-        '#createdAt': 'createdAt',
-        '#data': 'data',
-        '#descriptions': 'sales',
-        '#groupsCanAccess': 'groupsCanAccess',
-        '#owner': 'owner',
-        '#updatedAt': 'updatedAt',
-      },
-      ExpressionAttributeValues: {
-        ':data': 'owner-id:company-id:Typeahead',
-        ':descriptions': ['Description 2'],
-        ':groupsCanAccess': ['Admin'],
-        ':now': '2020-06-06T19:45:00.000Z',
-        ':owner': 'owner-id',
-      },
-      Key: {
-        __typename: 'Typeahead',
-        id: 'company-id',
-      },
-      TableName: tableName,
-      UpdateExpression:
-        'ADD #descriptions :descriptions SET #createdAt = if_not_exists(#createdAt, :now), #data = :data, #groupsCanAccess = if_not_exists(#groupsCanAccess, :groupsCanAccess), #owner = :owner, #updatedAt = :now',
-    });
-
-    expect(ddb).toReceiveCommandWith(UpdateCommand, {
-      ExpressionAttributeNames: {
-        '#createdAt': 'createdAt',
-        '#data': 'data',
-        '#descriptions': 'sales',
-        '#groupsCanAccess': 'groupsCanAccess',
-        '#owner': 'owner',
-        '#updatedAt': 'updatedAt',
-      },
-      ExpressionAttributeValues: {
-        ':data': 'owner-id:company-id:Typeahead',
-        ':descriptions': ['Description 3'],
-        ':groupsCanAccess': ['Admin'],
-        ':now': '2020-06-06T19:45:00.000Z',
-        ':owner': 'owner-id',
-      },
-      Key: {
-        __typename: 'Typeahead',
-        id: 'company-id',
-      },
-      TableName: tableName,
-      UpdateExpression:
-        'ADD #descriptions :descriptions SET #createdAt = if_not_exists(#createdAt, :now), #data = :data, #groupsCanAccess = if_not_exists(#groupsCanAccess, :groupsCanAccess), #owner = :owner, #updatedAt = :now',
-    });
-
-    expect(ddb).toReceiveCommandWith(UpdateCommand, {
-      ExpressionAttributeNames: {
-        '#createdAt': 'createdAt',
-        '#data': 'data',
-        '#descriptions': 'purchases',
-        '#groupsCanAccess': 'groupsCanAccess',
-        '#owner': 'owner',
-        '#suppliers': 'suppliers',
-        '#updatedAt': 'updatedAt',
-      },
-      ExpressionAttributeValues: {
-        ':data': 'owner-id:company-id:Typeahead',
-        ':descriptions': ['Description 4'],
-        ':groupsCanAccess': ['Admin'],
-        ':now': '2020-06-06T19:45:00.000Z',
-        ':owner': 'owner-id',
-        ':suppliers': ['Transaction 4'],
-      },
-      Key: {
-        __typename: 'Typeahead',
-        id: 'company-id',
-      },
-      TableName: tableName,
-      UpdateExpression:
-        'ADD #descriptions :descriptions, #suppliers :suppliers SET #createdAt = if_not_exists(#createdAt, :now), #data = :data, #groupsCanAccess = if_not_exists(#groupsCanAccess, :groupsCanAccess), #owner = :owner, #updatedAt = :now',
     });
   });
 
   it('should call update the correct number of times', async () => {
     await Promise.all(insertTypeahead(documentClient, tableName, records));
 
-    expect(ddb).toReceiveCommandTimes(UpdateCommand, 4);
+    expect(ddb).toReceiveCommandTimes(UpdateCommand, 1);
+  });
+
+  it('should retain existing suggestions and condition the merge on the stored values', async () => {
+    const existing = {
+      owner: 'owner-id',
+      purchases: ['Older purchase', 'Description 1', 'Description 1'],
+      sales: ['Older sale'],
+      suppliers: ['Older supplier'],
+    };
+
+    ddb.on(GetCommand).resolves({ Item: existing });
+
+    await Promise.all(insertTypeahead(documentClient, tableName, records));
+
+    expect(ddb).toReceiveCommandWith(GetCommand, {
+      ConsistentRead: true,
+      Key: { __typename: 'Typeahead', id: 'company-id' },
+      TableName: tableName,
+    });
+    expect(ddb).toReceiveCommandWith(UpdateCommand, {
+      ConditionExpression:
+        '#owner = :owner AND #purchases = :oldpurchases AND #sales = :oldsales AND #suppliers = :oldsuppliers',
+      ExpressionAttributeValues: {
+        ':data': 'owner-id:company-id:Typeahead',
+        ':groupsCanAccess': ['Admin'],
+        ':now': '2020-06-06T19:45:00.000Z',
+        ':oldpurchases': existing.purchases,
+        ':oldsales': existing.sales,
+        ':oldsuppliers': existing.suppliers,
+        ':owner': 'owner-id',
+        ':purchases': ['Description 1', 'Description 4', 'Older purchase'],
+        ':sales': ['Description 2', 'Description 3', 'Older sale'],
+        ':suppliers': ['Older supplier', 'Transaction 1', 'Transaction 4'],
+      },
+      Key: { __typename: 'Typeahead', id: 'company-id' },
+      TableName: tableName,
+    });
+  });
+
+  it('should not write suggestions again when a stream event is replayed', async () => {
+    ddb.on(GetCommand).resolves({
+      Item: {
+        owner: 'owner-id',
+        purchases: ['Description 1', 'Description 4'],
+        sales: ['Description 2', 'Description 3'],
+        suppliers: ['Transaction 1', 'Transaction 4'],
+      },
+    });
+
+    await Promise.all(insertTypeahead(documentClient, tableName, records));
+
+    expect(ddb).toReceiveCommandTimes(UpdateCommand, 0);
+  });
+
+  it('should reject updates to a typeahead record belonging to another owner', async () => {
+    ddb.on(GetCommand).resolves({ Item: { owner: 'other-owner' } });
+
+    await expect(
+      Promise.all(insertTypeahead(documentClient, tableName, records)),
+    ).rejects.toThrow('Typeahead owner does not match transaction owner');
+    expect(ddb).toReceiveCommandTimes(UpdateCommand, 0);
+  });
+
+  it('should reject a batch containing different owners for the same company', () => {
+    const otherOwner: DynamoDBRecord = {
+      dynamodb: {
+        NewImage: {
+          __typename: { S: 'Transaction' },
+          companyId: { S: 'company-id' },
+          owner: { S: 'other-owner' },
+        },
+      },
+    };
+
+    expect(() =>
+      insertTypeahead(documentClient, tableName, [...records, otherOwner]),
+    ).toThrow('Transactions for a company must have the same owner');
+    expect(ddb).toReceiveCommandTimes(GetCommand, 0);
+    expect(ddb).toReceiveCommandTimes(UpdateCommand, 0);
   });
 });
