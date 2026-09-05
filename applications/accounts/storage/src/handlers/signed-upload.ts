@@ -3,7 +3,10 @@ import {
   paramCheck,
   response,
 } from '@motech-development/api-gateway-handler';
-import { createSignedUrl } from '@motech-development/s3-file-operations';
+import {
+  allocateStagedFile,
+  createSignedUrl,
+} from '@motech-development/s3-file-operations';
 import { v4 as uuid } from 'uuid';
 import { object, string } from 'yup';
 
@@ -24,7 +27,8 @@ const schema = object()
   .required();
 
 export const handler = apiGatewayHandler(async (event) => {
-  const { UPLOAD_BUCKET } = process.env;
+  const { UPLOAD_BUCKET, DOWNLOAD_BUCKET, QUARANTINE_RETENTION_DAYS } =
+    process.env;
   const bucket = paramCheck(UPLOAD_BUCKET, 'No bucket set', 400);
   const body = paramCheck(event.body, 'No body found', 400);
   const bodyParams = JSON.parse(body) as unknown;
@@ -37,6 +41,21 @@ export const handler = apiGatewayHandler(async (event) => {
     const { companyId, contentType, extension, metadata, owner } = result;
     const expirationInSeconds = 30;
     const key = `${owner}/${companyId}/${id}.${extension}`;
+    const destination = paramCheck(
+      DOWNLOAD_BUCKET,
+      'No destination bucket set',
+      400,
+    );
+    const retentionDays = Number(
+      paramCheck(QUARANTINE_RETENTION_DAYS, 'No quarantine retention set', 400),
+    );
+    await allocateStagedFile(
+      bucket,
+      destination,
+      key,
+      expirationInSeconds,
+      retentionDays,
+    );
     const url = await createSignedUrl(
       'putObject',
       bucket,
@@ -45,6 +64,7 @@ export const handler = apiGatewayHandler(async (event) => {
       {
         ContentType: contentType,
         Metadata: {
+          'attachment-lifecycle': 'v1',
           ...(metadata.id
             ? {
                 id: metadata.id,

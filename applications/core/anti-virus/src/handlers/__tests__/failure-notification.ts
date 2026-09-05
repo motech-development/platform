@@ -1,13 +1,20 @@
 import { SendMessageCommand, SQSClient } from '@aws-sdk/client-sqs';
-import { getFileData } from '@motech-development/s3-file-operations';
+import {
+  getFileData,
+  getStagedFile,
+} from '@motech-development/s3-file-operations';
 import type { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import type { Mock } from 'vitest';
 import { handler, IEvent } from '../failure-notification';
 
-vi.mock('@motech-development/s3-file-operations', () => ({
+vi.mock('@motech-development/s3-file-operations', async (importOriginal) => ({
+  ...(await importOriginal<
+    typeof import('@motech-development/s3-file-operations')
+  >()),
   getFileData: vi.fn(),
+  getStagedFile: vi.fn(),
 }));
 
 describe('failure-notification', () => {
@@ -126,6 +133,37 @@ describe('failure-notification', () => {
           key: 'path/to/file.pdf',
         });
       });
+    });
+
+    it('does not report a deleted source as a failed virus scan', async () => {
+      vi.mocked(getFileData).mockRejectedValueOnce(
+        Object.assign(new Error('missing'), { name: 'NotFound' }),
+      );
+      await handler(event, context, callback);
+      expect(sqs).not.toReceiveCommand(SendMessageCommand);
+    });
+
+    it('keeps internal lifecycle metadata out of the notification', async () => {
+      vi.mocked(getFileData).mockResolvedValueOnce({
+        $metadata: {},
+        Metadata: {
+          'attachment-lifecycle': 'v1',
+          id: 'test-id',
+          typename: 'TestType',
+        },
+      });
+      vi.mocked(getStagedFile).mockResolvedValueOnce({
+        from: event.from,
+        key: event.key,
+        path: 'downloads/key',
+        state: 'pending',
+        to: 'downloads',
+      });
+      await handler({ ...event, to: 'downloads' }, context, callback);
+      expect(
+        sqs.commandCalls(SendMessageCommand)[0]?.args[0].input.MessageAttributes
+          ?.metadata.StringValue,
+      ).toBe(JSON.stringify({ id: 'test-id', typename: 'TestType' }));
     });
 
     describe('without metadata', () => {

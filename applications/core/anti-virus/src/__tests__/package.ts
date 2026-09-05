@@ -51,7 +51,7 @@ async function packageAntiVirus(
   const inspectionDirectory = join(dirname(binaryDirectory), 'handlers');
   await mkdir(inspectionDirectory, { recursive: true });
   await Promise.all(
-    Array.from({ length: 6 }, (_, index) =>
+    Array.from({ length: 7 }, (_, index) =>
       writeFile(
         join(inspectionDirectory, `handler-${index}.js`),
         'module.exports.handler = async () => ({ statusCode: 204 });\n',
@@ -141,7 +141,7 @@ test('cached and uncached binaries produce equivalent deployable packages', asyn
     const cachedArchives = (await readdir(cachedPackage))
       .filter((file) => file.endsWith('.zip'))
       .sort();
-    expect(freshArchives).toHaveLength(6);
+    expect(freshArchives).toHaveLength(7);
     expect(cachedArchives).toEqual(freshArchives);
 
     const manifests = await Promise.all(

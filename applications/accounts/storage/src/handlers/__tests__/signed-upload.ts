@@ -1,9 +1,16 @@
-import { createSignedUrl } from '@motech-development/s3-file-operations';
+import {
+  allocateStagedFile,
+  createSignedUrl,
+} from '@motech-development/s3-file-operations';
 import type { APIGatewayProxyEvent, Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { handler } from '../signed-upload';
 
-vi.mock('@motech-development/s3-file-operations', () => ({
+vi.mock('@motech-development/s3-file-operations', async (importOriginal) => ({
+  ...(await importOriginal<
+    typeof import('@motech-development/s3-file-operations')
+  >()),
+  allocateStagedFile: vi.fn(),
   createSignedUrl: vi.fn().mockResolvedValue('https://signed-url'),
 }));
 
@@ -53,6 +60,8 @@ describe('signed-upload', () => {
       };
 
       process.env.UPLOAD_BUCKET = 'upload-bucket';
+      process.env.DOWNLOAD_BUCKET = 'download-bucket';
+      process.env.QUARANTINE_RETENTION_DAYS = '1';
     });
 
     afterEach(() => {
@@ -112,6 +121,27 @@ describe('signed-upload', () => {
       });
     });
 
+    it('allocates ownership before issuing the upload URL', async () => {
+      await handler(event, context);
+      expect(allocateStagedFile).toHaveBeenLastCalledWith(
+        'upload-bucket',
+        'download-bucket',
+        'owner/company-id/test-uuid.png',
+        30,
+        1,
+      );
+    });
+
+    it('does not issue an upload URL if allocation fails', async () => {
+      vi.mocked(allocateStagedFile).mockRejectedValueOnce(
+        new Error('Database unavailable'),
+      );
+      vi.mocked(createSignedUrl).mockClear();
+      const result = await handler(event, context);
+      expect(result.statusCode).toBe(400);
+      expect(createSignedUrl).not.toHaveBeenCalled();
+    });
+
     it('should return a success response', async () => {
       await expect(handler(event, context)).resolves.toEqual({
         body: JSON.stringify({
@@ -133,6 +163,7 @@ describe('signed-upload', () => {
         {
           ContentType: 'image/png',
           Metadata: {
+            'attachment-lifecycle': 'v1',
             typename: 'Test',
           },
         },
@@ -161,6 +192,7 @@ describe('signed-upload', () => {
         {
           ContentType: 'image/png',
           Metadata: {
+            'attachment-lifecycle': 'v1',
             id: 'transaction-id',
             typename: 'Test',
           },

@@ -9,7 +9,9 @@ provider:
   deploymentBucket:
     name: ${self:service}-deployment-bucket
   environment:
+    ATTACHMENT_TABLE: !ImportValue ${self:provider.stage}-AttachmentTable
     DOWNLOAD_BUCKET: !Ref DownloadBucket
+    QUARANTINE_RETENTION_DAYS: ${self:custom.quarantineRetentionDays}
     SENTRY_ENVIRONMENT: ${self:provider.stage}
     UPLOAD_BUCKET: !Ref UploadBucket
 
@@ -25,6 +27,7 @@ custom:
   prefix: accounts-${self:provider.stage}
   downloads: ${self:custom.prefix}-downloads
   uploads: ${self:custom.prefix}-uploads
+  quarantineRetentionDays: 1
 
   prune:
     automatic: true
@@ -105,6 +108,7 @@ resources:
                 - Effect: Allow
                   Action:
                     - s3:deleteObject
+                    - s3:AbortMultipartUpload
                     - s3:getObject
                   Resource:
                     - !Join
@@ -114,11 +118,20 @@ resources:
                 - Effect: Allow
                   Action:
                     - s3:PutObject
+                    - s3:DeleteObject
                   Resource:
                     - !Join
                       - ''
                       - - !GetAtt UploadBucket.Arn
                         - '/*'
+                - Effect: Allow
+                  Action:
+                    - dynamodb:PutItem
+                    - dynamodb:GetItem
+                    - dynamodb:UpdateItem
+                    - dynamodb:DeleteItem
+                  Resource:
+                    - !ImportValue ${self:provider.stage}-AttachmentTableArn
                 - Effect: Allow
                   Action:
                     - sqs:DeleteMessage
@@ -144,6 +157,12 @@ resources:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: ${self:custom.downloads}
+        LifecycleConfiguration:
+          Rules:
+            - Id: AbortAbandonedTransfers
+              AbortIncompleteMultipartUpload:
+                DaysAfterInitiation: ${self:custom.quarantineRetentionDays}
+              Status: Enabled
         CorsConfiguration:
           CorsRules:
             - AllowedHeaders:
@@ -160,7 +179,7 @@ resources:
         BucketName: ${self:custom.uploads}
         LifecycleConfiguration:
           Rules:
-            - ExpirationInDays: 1
+            - ExpirationInDays: ${self:custom.quarantineRetentionDays}
               Status: Enabled
         CorsConfiguration:
           CorsRules:

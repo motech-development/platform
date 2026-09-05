@@ -9,6 +9,7 @@ provider:
   deploymentBucket:
     name: ${self:service}-deployment-bucket
   environment:
+    ATTACHMENT_TABLE: !Ref AttachmentTable
     BUCKET: !Ref DefinitionsBucket
     LD_LIBRARY_PATH: /var/task:/var/lang/lib:/lib64:/usr/lib64:/opt/lib
     SENTRY_ENVIRONMENT: ${self:provider.stage}
@@ -39,6 +40,16 @@ custom:
       noFrozenLockfile: true
 
 functions:
+  CleanupAttachments:
+    handler: src/handlers/cleanup-attachments.handler
+    role: LambdaFunctionRole
+    events:
+      # Reconcile abandoned attachments at the existing quarantine retention cadence.
+      - schedule:
+          rate: rate(1 day)
+    environment:
+      SENTRY_DSN: ${env:SENTRY_DSN}
+
   FailureNotification:
     handler: src/handlers/failure-notification.handler
     role: LambdaFunctionRole
@@ -100,12 +111,23 @@ stepFunctions:
           ScanFile:
             Type: Task
             Resource: !GetAtt ScanFileLambdaFunction.Arn
-            Next: ProcessResult
+            Next: CheckCancellation
             Catch:
               - ErrorEquals:
                   - States.ALL
                 Next: FailureNotification
                 ResultPath: $.error
+
+          CheckCancellation:
+            Type: Choice
+            Choices:
+              - Variable: $.cancelled
+                IsPresent: true
+                Next: Cancelled
+            Default: ProcessResult
+
+          Cancelled:
+            Type: Succeed
 
           ProcessResult:
             Type: Choice
@@ -118,6 +140,9 @@ stepFunctions:
           MoveFile:
             Type: Task
             Resource: !GetAtt MoveFileLambdaFunction.Arn
+            Retry:
+              - ErrorEquals:
+                  - States.ALL
             End: true
 
           FailureNotification:
@@ -132,6 +157,31 @@ stepFunctions:
 
 resources:
   Resources:
+    AttachmentTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.prefix}-attachments
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: path
+            AttributeType: S
+          - AttributeName: state
+            AttributeType: S
+          - AttributeName: expiresAt
+            AttributeType: N
+        KeySchema:
+          - AttributeName: path
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: PendingExpiry
+            KeySchema:
+              - AttributeName: state
+                KeyType: HASH
+              - AttributeName: expiresAt
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+
     AntiVirusFailureQueue:
       Type: AWS::SQS::Queue
       Properties:
@@ -166,6 +216,7 @@ resources:
               Statement:
                 - Effect: Allow
                   Action:
+                    - s3:AbortMultipartUpload
                     - s3:DeleteObject
                     - s3:GetObject
                     - S3:GetObjectTagging
@@ -173,6 +224,28 @@ resources:
                     - S3:PutObjectTagging
                   Resource:
                     - 'arn:aws:s3:::*'
+                - Effect: Allow
+                  Action:
+                    - s3:ListBucket
+                  Resource:
+                    - arn:aws:s3:::accounts-${self:provider.stage}-downloads
+                    - arn:aws:s3:::accounts-${self:provider.stage}-uploads
+                - Effect: Allow
+                  Action:
+                    - dynamodb:GetItem
+                    - dynamodb:UpdateItem
+                    - dynamodb:DeleteItem
+                  Resource:
+                    - !GetAtt AttachmentTable.Arn
+                - Effect: Allow
+                  Action:
+                    - dynamodb:Query
+                  Resource:
+                    - !GetAtt AttachmentTable.Arn
+                    - !Join
+                      - ''
+                      - - !GetAtt AttachmentTable.Arn
+                        - '/index/PendingExpiry'
                 - Effect: Allow
                   Action:
                     - sqs:SendMessage
@@ -229,6 +302,16 @@ resources:
                   Resource:
                     - 'arn:aws:logs:*:*:*'
   Outputs:
+    AttachmentTable:
+      Value: !Ref AttachmentTable
+      Export:
+        Name: ${self:provider.stage}-AttachmentTable
+
+    AttachmentTableArn:
+      Value: !GetAtt AttachmentTable.Arn
+      Export:
+        Name: ${self:provider.stage}-AttachmentTableArn
+
     AntiVirusFailureQueueArn:
       Description: Anti Virus failure queue ARN
       Value: !GetAtt AntiVirusFailureQueue.Arn
