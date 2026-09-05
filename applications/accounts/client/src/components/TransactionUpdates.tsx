@@ -372,6 +372,7 @@ export const useTransactionItems = <T extends { date: string; id: string }>(
   items: T[] | undefined,
   status: TransactionStatus,
   hasMore = false,
+  limit = items?.length ?? 0,
 ): Array<T | CurrentTransaction> => {
   const { states, watchList } = useContext(TransactionUpdatesContext);
   useEffect(
@@ -383,7 +384,6 @@ export const useTransactionItems = <T extends { date: string; id: string }>(
     const existing = items ?? [];
     if (states.size === 0) return existing;
 
-    const loadedIds = new Set(existing.map(({ id }) => id));
     const oldestLoadedDate = existing.reduce(
       (oldest, { date }) => Math.min(oldest, new Date(date).getTime()),
       Infinity,
@@ -397,9 +397,7 @@ export const useTransactionItems = <T extends { date: string; id: string }>(
     states.forEach((current) => {
       if (
         current?.status === status &&
-        (!hasMore ||
-          loadedIds.has(current.id) ||
-          new Date(current.date).getTime() >= oldestLoadedDate)
+        (!hasMore || new Date(current.date).getTime() >= oldestLoadedDate)
       )
         result.push(current);
     });
@@ -411,8 +409,8 @@ export const useTransactionItems = <T extends { date: string; id: string }>(
     });
     // Retain the cache's boundary row for the next page, but do not expand the
     // visible window when a recent transaction is inserted ahead of it.
-    return hasMore ? result.slice(0, existing.length) : result;
-  }, [hasMore, items, states, status]);
+    return hasMore ? result.slice(0, limit) : result;
+  }, [hasMore, items, limit, states, status]);
 };
 
 export default TransactionUpdates;

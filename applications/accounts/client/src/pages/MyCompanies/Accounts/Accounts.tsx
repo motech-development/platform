@@ -11,7 +11,7 @@ import {
   Typography,
   useToast,
 } from '@motech-development/breeze-ui';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
@@ -95,6 +95,9 @@ function Accounts() {
   const renderCount = useRef(0);
   const { t } = useTranslation('accounts');
   const [loadingMore, setLoadingMore] = useState(false);
+  const loadingPage = useRef(false);
+  const attemptedRefills = useRef(new Set<string>());
+  const [visibleLimit, setVisibleLimit] = useState<number>();
   const { add } = useToast();
   const applyTransactionState = useApplyTransactionState();
   const { data, error, fetchMore, loading, subscribeToMore } = useQuery(
@@ -131,6 +134,7 @@ function Accounts() {
     data?.getTransactions.items,
     TransactionStatus.Confirmed,
     Boolean(data?.getTransactions.nextToken),
+    visibleLimit,
   );
   const onDelete = (id: string) => {
     deleteMutation({
@@ -139,19 +143,61 @@ function Accounts() {
       },
     }).catch(() => {});
   };
-  const onLoadMore = (nextToken: string) => {
-    setLoadingMore(true);
+  const onLoadMore = useCallback(
+    (nextToken: string, count = 100, expandWindow = true) => {
+      if (loadingPage.current) return;
+      loadingPage.current = true;
+      attemptedRefills.current.add(nextToken);
+      setLoadingMore(true);
 
-    fetchMore({
-      variables: {
-        nextToken,
-      },
-    })
-      .catch(() => {})
-      .finally(() => {
-        setLoadingMore(false);
-      });
-  };
+      fetchMore({
+        variables: {
+          count,
+          nextToken,
+        },
+      })
+        .then(({ data: page }) => {
+          if (expandWindow)
+            setVisibleLimit(
+              (previous) => (previous ?? 0) + page.getTransactions.items.length,
+            );
+        })
+        .catch(() => {})
+        .finally(() => {
+          loadingPage.current = false;
+          setLoadingMore(false);
+        });
+    },
+    [fetchMore],
+  );
+
+  const loadedCount = data?.getTransactions.items.length ?? 0;
+  const nextToken = data?.getTransactions.nextToken;
+  useEffect(() => {
+    if (visibleLimit === undefined && loadedCount > 0)
+      setVisibleLimit(loadedCount);
+  }, [loadedCount, visibleLimit]);
+
+  useEffect(() => {
+    if (loading || loadingMore || loadingPage.current) return;
+    const missing = (visibleLimit ?? loadedCount) - transactions.length;
+    if (missing <= 0 || !nextToken) {
+      attemptedRefills.current.clear();
+      return;
+    }
+    if (attemptedRefills.current.has(nextToken)) return;
+
+    // Fill vacated positions without expanding the window or replaying a cursor.
+    onLoadMore(nextToken, missing, false);
+  }, [
+    loadedCount,
+    loading,
+    loadingMore,
+    nextToken,
+    onLoadMore,
+    transactions.length,
+    visibleLimit,
+  ]);
 
   useEffect(() => {
     let unsubscribe: () => void;

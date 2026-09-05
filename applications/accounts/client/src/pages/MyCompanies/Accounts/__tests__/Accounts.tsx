@@ -431,6 +431,253 @@ describe('Accounts', () => {
     expect(readState).toHaveBeenCalledTimes(2);
   });
 
+  it.each([
+    [
+      'beyond the next page',
+      '2026-09-01T12:00:00.000Z',
+      ['Boundary customer', 'Next customer'],
+    ],
+    [
+      'within the replenished page',
+      '2026-09-03T18:00:00.000Z',
+      ['Boundary customer', 'Moved customer'],
+    ],
+  ])(
+    'replenishes a loaded transaction moved %s without expanding the visible page',
+    async (_, date, expectedNames) => {
+      let signal: (() => void) | undefined;
+      const first = {
+        __typename: 'Transaction',
+        amount: 20,
+        attachment: 'receipt.pdf',
+        category: 'Sales',
+        companyId: 'company-id',
+        date: '2026-09-05T12:00:00.000Z',
+        description: 'Originally newest transaction',
+        id: 'moved-transaction',
+        name: 'Moved customer',
+        refund: false,
+        scheduled: false,
+        status: TransactionStatus.Confirmed,
+        vat: 0,
+      };
+      const boundary = {
+        ...first,
+        date: '2026-09-04T12:00:00.000Z',
+        description: 'Existing boundary transaction',
+        id: 'boundary-transaction',
+        name: 'Boundary customer',
+      };
+      const next = {
+        ...first,
+        date: '2026-09-03T12:00:00.000Z',
+        description: 'Replenished boundary transaction',
+        id: 'next-transaction',
+        name: 'Next customer',
+      };
+      const moved = {
+        ...first,
+        date,
+        description: 'Transaction with corrected date',
+      };
+      const list = vi.fn((_count: number, nextToken: string | undefined) => {
+        if (nextToken === 'page-2')
+          return { items: [next], nextToken: 'page-3' };
+        if (nextToken === 'page-3') return { items: [moved], nextToken: null };
+        return { items: [first, boundary], nextToken: 'page-2' };
+      });
+      const link = new ApolloLink(
+        (operation) =>
+          new Observable((observer) => {
+            if (operation.operationName === 'OnTransactionChange') {
+              signal = () =>
+                observer.next({
+                  data: {
+                    onTransactionChange: {
+                      id: 'company-id',
+                      owner: 'user-id',
+                      transactionId: first.id,
+                    },
+                  },
+                });
+            } else if (operation.operationName === 'GetTransactionState') {
+              observer.next({ data: { getTransactionState: moved } });
+              observer.complete();
+            } else if (operation.operationName === 'GetBalance') {
+              observer.next({
+                data: {
+                  getBalance: {
+                    balance: 60,
+                    currency: 'GBP',
+                    id: 'company-id',
+                    vat: { owed: 0, paid: 0 },
+                  },
+                  getTransactions: {
+                    __typename: 'Transactions',
+                    id: 'company-id',
+                    ...list(
+                      operation.variables.count as number,
+                      operation.variables.nextToken as string | undefined,
+                    ),
+                    status: TransactionStatus.Confirmed,
+                  },
+                },
+              });
+              observer.complete();
+            }
+          }),
+      );
+      const { findByText, getAllByRole, getByRole, queryByRole, queryByText } =
+        render(
+          <TestProvider path="/accounts/:companyId" history={history}>
+            <MockedProvider
+              link={link}
+              cache={new InMemoryCache({ typePolicies })}
+            >
+              <TransactionStateProvider>
+                <TransactionUpdates companyId="company-id" owner="user-id">
+                  <Accounts />
+                </TransactionUpdates>
+              </TransactionStateProvider>
+            </MockedProvider>
+          </TestProvider>,
+        );
+      await findByText(first.description);
+      act(() => signal?.());
+
+      await waitFor(() => expect(list).toHaveBeenCalledWith(1, 'page-2'));
+      await waitFor(() =>
+        expect(
+          getAllByRole('link', { name: 'transactions-list.view' }).map((item) =>
+            item.getAttribute('data-testid'),
+          ),
+        ).toEqual(expectedNames.map((name) => `View ${name}`)),
+      );
+      expect(queryByText(first.description)).not.toBeInTheDocument();
+      expect(list).toHaveBeenCalledTimes(2);
+
+      fireEvent.click(getByRole('button', { name: 'accounts.load-more' }));
+      await waitFor(() => expect(list).toHaveBeenCalledWith(100, 'page-3'));
+      await findByText(moved.description);
+      expect(
+        getAllByRole('link', { name: 'transactions-list.view' }),
+      ).toHaveLength(3);
+      expect(queryByText(boundary.description)).toBeInTheDocument();
+      expect(queryByText(next.description)).toBeInTheDocument();
+      expect(
+        queryByRole('button', { name: 'accounts.load-more' }),
+      ).not.toBeInTheDocument();
+      expect(list.mock.calls).toEqual([
+        [100, undefined],
+        [1, 'page-2'],
+        [100, 'page-3'],
+      ]);
+    },
+  );
+
+  it('stops a failed automatic refill and keeps manual loading available', async () => {
+    let signal: (() => void) | undefined;
+    const row = {
+      __typename: 'Transaction',
+      amount: 20,
+      attachment: '',
+      category: 'Sales',
+      companyId: 'company-id',
+      date: '2026-09-05T12:00:00.000Z',
+      description: 'Moved outside the loaded window',
+      id: 'moved-transaction',
+      name: 'Moved customer',
+      refund: false,
+      scheduled: false,
+      status: TransactionStatus.Confirmed,
+      vat: 0,
+    };
+    const refill = vi.fn();
+    const link = new ApolloLink(
+      (operation) =>
+        new Observable((observer) => {
+          if (operation.operationName === 'OnTransactionChange') {
+            signal = () =>
+              observer.next({
+                data: {
+                  onTransactionChange: {
+                    id: 'company-id',
+                    owner: 'user-id',
+                    transactionId: row.id,
+                  },
+                },
+              });
+          } else if (operation.operationName === 'GetTransactionState') {
+            observer.next({
+              data: {
+                getTransactionState: {
+                  ...row,
+                  date: '2026-09-01T12:00:00.000Z',
+                },
+              },
+            });
+            observer.complete();
+          } else if (operation.operationName === 'GetBalance') {
+            if (operation.variables.nextToken) {
+              refill(operation.variables.count);
+              observer.error(new Error('Temporary page failure'));
+              return;
+            }
+            observer.next({
+              data: {
+                getBalance: {
+                  balance: 40,
+                  currency: 'GBP',
+                  id: 'company-id',
+                  vat: { owed: 0, paid: 0 },
+                },
+                getTransactions: {
+                  __typename: 'Transactions',
+                  id: 'company-id',
+                  items: [
+                    row,
+                    {
+                      ...row,
+                      date: '2026-09-04T12:00:00.000Z',
+                      description: 'Boundary transaction',
+                      id: 'boundary',
+                      name: 'Boundary customer',
+                    },
+                  ],
+                  nextToken: 'next-page',
+                  status: TransactionStatus.Confirmed,
+                },
+              },
+            });
+            observer.complete();
+          }
+        }),
+    );
+    const { findByText, getByRole, queryByText } = render(
+      <TestProvider path="/accounts/:companyId" history={history}>
+        <MockedProvider link={link} cache={new InMemoryCache({ typePolicies })}>
+          <TransactionStateProvider>
+            <TransactionUpdates companyId="company-id" owner="user-id">
+              <Accounts />
+            </TransactionUpdates>
+          </TransactionStateProvider>
+        </MockedProvider>
+      </TestProvider>,
+    );
+    await findByText(row.description);
+    act(() => signal?.());
+    await waitFor(() => expect(refill).toHaveBeenCalledWith(1));
+    const loadMore = getByRole('button', { name: 'accounts.load-more' });
+    await waitFor(() => expect(loadMore).not.toBeDisabled());
+    expect(refill).toHaveBeenCalledOnce();
+    expect(queryByText(row.description)).not.toBeInTheDocument();
+
+    fireEvent.click(loadMore);
+    await waitFor(() => expect(refill).toHaveBeenCalledWith(100));
+    await waitFor(() => expect(loadMore).not.toBeDisabled());
+    expect(refill).toHaveBeenCalledTimes(2);
+  });
+
   describe('success', () => {
     beforeEach(async () => {
       cache = new InMemoryCache({
