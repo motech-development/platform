@@ -336,7 +336,6 @@ test('repository catalog represents the active delivery inventory only', async (
       'accounts-reports',
       'accounts-api',
       'accounts-client',
-      'accounts-web',
     ],
   );
   assert.equal(
@@ -348,10 +347,6 @@ test('repository catalog represents the active delivery inventory only', async (
       ({ workspace }) => workspace === '@accounts/data-restore',
     ),
     false,
-  );
-  assert.deepEqual(
-    catalog.units.find(({ id }) => id === 'accounts-web')?.expectedStacks,
-    ['accounts-web-hosting'],
   );
 });
 
@@ -469,67 +464,6 @@ test('Preview Plan reconciles an independently stale unit and its delivery depen
       units: ['accounts-notifications', 'accounts-reports', 'accounts-api'],
       validationRequired: true,
     },
-  );
-});
-
-test('documentation-only Preview planning fails closed when a required shared stack is missing', () => {
-  const catalog = structuredClone(validCatalog);
-  const environment = 'pr-1542';
-  const head = 'preview-head';
-
-  catalog.units[1].expectedStacks = ['accounts-shared-data'];
-
-  assert.throws(
-    () =>
-      createPreviewPlan(catalog, workspaceManifests, {
-        changedWorkspaces: [],
-        deployments: [
-          {
-            environment,
-            ref: head,
-            statuses: [{ state: 'success' }],
-            task: 'validate:playwright',
-          },
-        ],
-        environment,
-        existingStacks: [],
-        head,
-        history: {},
-        lifecycle: 'synchronize',
-        runtimeAffected: false,
-        stage: environment,
-      }),
-    /requires missing shared stack "accounts-shared-data"/,
-  );
-});
-
-test('shared stacks do not make a documentation-only pull request own Preview state', () => {
-  const catalog = structuredClone(validCatalog);
-  const environment = 'pr-1542';
-  const head = 'preview-head';
-
-  catalog.units[1].expectedStacks = ['accounts-shared-data'];
-
-  assert.deepEqual(
-    createPreviewPlan(catalog, workspaceManifests, {
-      changedWorkspaces: [],
-      deployments: [
-        {
-          environment,
-          ref: head,
-          statuses: [{ state: 'success' }],
-          task: 'validate:playwright',
-        },
-      ],
-      environment,
-      existingStacks: ['accounts-shared-data'],
-      head,
-      history: {},
-      lifecycle: 'synchronize',
-      runtimeAffected: false,
-      stage: environment,
-    }),
-    { target: 'preview', units: [], validationRequired: false },
   );
 });
 
@@ -656,18 +590,6 @@ test('tracked Yarn runtime changes affect every Preview workspace', () => {
       changedWorkspaces: planningManifests.map(({ name }) => name),
     },
   );
-});
-
-test('repository Amplify configuration affects only Accounts web', () => {
-  for (const filename of ['amplify.yml', 'customHttp.yml']) {
-    assert.deepEqual(
-      createPreviewImpact(planningCatalog, planningManifests, [filename]),
-      {
-        runtimeAffected: true,
-        changedWorkspaces: ['@accounts/web'],
-      },
-    );
-  }
 });
 
 test('a successful boundary without published Releases reuses reachable exact tags for reconciliation', () => {
@@ -1164,84 +1086,6 @@ test('client delivery receives public API configuration through explicit job out
   }
 });
 
-test('Accounts placeholder retains Amplify delivery without application services or browser fixtures', async () => {
-  const generated = await generateWorkflows({ write: false });
-  const preview = workflowJob(
-    generated['deploy-to-environment.yml'],
-    'accounts-web',
-  );
-  const validation = workflowJob(
-    generated['deploy-to-environment.yml'],
-    'accounts-web-validation',
-  );
-  const develop = workflowJob(
-    generated['deploy-to-develop.yml'],
-    'accounts-web',
-  );
-  const production = workflowJob(
-    generated['deploy-to-production.yml'],
-    'accounts-web',
-  );
-  const teardown = workflowJob(
-    generated['teardown-environment.yml'],
-    'accounts-web',
-  );
-
-  assert.match(
-    preview,
-    /DEPLOYMENT_REF: \$\{\{ github\.event\.pull_request\.head\.sha \}\}[\s\S]*ref: \$\{\{ env\.DEPLOYMENT_REF \}\}/,
-  );
-  assert.match(
-    preview,
-    /deployment="\$\(yarn workspace @accounts\/web deploy --stage "\$STAGE"\)"[\s\S]*jq -er '\.url \| select\(type == "string" and length > 0\)'[\s\S]*echo "deployment-url=\$deployment_url"/,
-  );
-  for (const job of [preview, develop, production]) {
-    assert.doesNotMatch(
-      job,
-      /VITE_|SENTRY_AUTH_TOKEN|TEMP_GH_PAT|accounts-web\/sentry/,
-    );
-    assert.doesNotMatch(
-      job,
-      /^      - (accounts-api|accounts-client|component-library)$/m,
-    );
-    assert.match(
-      job,
-      /- name: Configure AWS credentials[\s\S]*aws-region: eu-west-1[\s\S]*role-to-assume: arn:aws:iam::633331859210:role\/github-actions[\s\S]*- name: Deploy hosted web/,
-    );
-    assert.match(
-      job,
-      /- name: Generate Accounts web deployment token[\s\S]*permission-contents: write[\s\S]*permission-workflows: write[\s\S]*- name: Checkout code[\s\S]*token: \$\{\{ steps\.accounts-web-token\.outputs\.token \}\}/,
-    );
-    assert.doesNotMatch(job, /accounts-web-hosting|@accounts\/web reconcile/);
-  }
-  assert.match(develop, /^      contents: read$/m);
-  assert.match(production, /^      STAGE: production$/m);
-  assert.doesNotMatch(production, /accounts\.motechdevelopment\.co\.uk/);
-  for (const job of [develop, production]) {
-    assert.match(
-      job,
-      /run: yarn workspace @accounts\/web deploy --stage "\$STAGE"/,
-    );
-  }
-  assert.match(validation, /^      - accounts-web$/m);
-  assert.match(validation, /^      - preview-status$/m);
-  assert.doesNotMatch(
-    validation,
-    /accounts-client|accounts-api|E2E_|VITE_|AUTH0|playwright|e2e-ci|Configure AWS credentials|role-to-assume/,
-  );
-  assert.match(
-    validation,
-    /curl --fail --silent --show-error "\$DEPLOYMENT_URL"/,
-  );
-  assert.match(validation, /grep -F '<h1>Accounts<\/h1>'/);
-  assert.match(validation, /grep -F '<p>Ready to rebuild\.<\/p>'/);
-  assert.match(
-    teardown,
-    /yarn workspace @accounts\/web teardown --stage "\$STAGE"/,
-  );
-  assert.doesNotMatch(teardown, /name: Check for resources/);
-});
-
 test('API delivery records success only after exporting client configuration', async () => {
   const generated = await generateWorkflows({ write: false });
 
@@ -1673,23 +1517,14 @@ test('templates own shared operational workflow fragments', async () => {
   const [
     generator,
     dependencyFragment,
-    accountsWebCheckoutFragment,
     apiFragment,
     clientFragment,
-    currentApiConfigFragment,
     timingFragment,
   ] = await Promise.all([
     readFile(new URL('./generate.mjs', import.meta.url), 'utf8'),
     readFile(
       new URL(
         './templates/fragments/dependency-steps.yml.tmpl',
-        import.meta.url,
-      ),
-      'utf8',
-    ),
-    readFile(
-      new URL(
-        './templates/fragments/accounts-web-deployment-checkout.yml.tmpl',
         import.meta.url,
       ),
       'utf8',
@@ -1709,13 +1544,6 @@ test('templates own shared operational workflow fragments', async () => {
       'utf8',
     ),
     readFile(
-      new URL(
-        './templates/fragments/current-api-config.yml.tmpl',
-        import.meta.url,
-      ),
-      'utf8',
-    ),
-    readFile(
       new URL('./templates/fragments/timing-summary.yml.tmpl', import.meta.url),
       'utf8',
     ),
@@ -1725,11 +1553,8 @@ test('templates own shared operational workflow fragments', async () => {
   assert.doesNotMatch(generator, /AccountsApiUrl/);
   assert.doesNotMatch(generator, /clamav-binaries-v1/);
   assert.match(dependencyFragment, /yarn workspaces foreach/);
-  assert.match(accountsWebCheckoutFragment, /accounts-web-token/);
-  assert.match(accountsWebCheckoutFragment, /env\.DEPLOYMENT_REF/);
   assert.match(apiFragment, /AccountsApiUrl/);
   assert.match(clientFragment, /needs\.accounts-api\.outputs\.appsync-url/);
-  assert.match(currentApiConfigFragment, /AccountsApiUrl/);
   assert.match(timingFragment, /cat "\$RUNNER_TEMP\/delivery-timing\.md"/);
 });
 
@@ -1765,7 +1590,6 @@ test('generator emits deterministic static workflow graphs with one job per Depl
     'accounts-reports': 'Deploy accounts reports',
     'accounts-api': 'Deploy accounts API',
     'accounts-client': 'Deploy accounts client',
-    'accounts-web': 'Deploy Accounts web',
   };
   assert.match(workflowJob(production, 'setup'), /^    name: Setup$/m);
   for (const [id, name] of Object.entries(productionJobNames)) {
@@ -1807,7 +1631,6 @@ test('generated preview workflow plans per pull request and selectively deploys 
   const setup = workflowJob(preview, 'setup');
   const deployment = workflowJob(preview, 'accounts-data');
   const previewStatus = workflowJob(preview, 'preview-status');
-  const accountsWebValidation = workflowJob(preview, 'accounts-web-validation');
   const playwright = workflowJob(preview, 'accounts-client');
   const playwrightStatus = workflowJob(preview, 'playwright-status');
 
@@ -1826,14 +1649,6 @@ test('generated preview workflow plans per pull request and selectively deploys 
     /git diff --name-only '\$\{\{ github\.event\.pull_request\.base\.sha \}\}\.\.\.\$\{\{ github\.event\.pull_request\.head\.sha \}\}'/,
   );
   assert.match(setup, /aws cloudformation describe-stacks/);
-  assert.match(
-    setup,
-    /- name: Configure AWS credentials\n        uses:[\s\S]*- name: Read Preview Environment stacks\n        run:/,
-  );
-  assert.match(
-    setup,
-    /- name: Read GitHub Deployments as Preview State\n        if: github\.event\.action == 'synchronize'/,
-  );
   assert.match(setup, /^      deployments: read$/m);
   assert.match(
     setup,
@@ -1846,12 +1661,6 @@ test('generated preview workflow plans per pull request and selectively deploys 
     /Read changes from recorded Preview State[\s\S]*git merge-base --is-ancestor[\s\S]*--preview-impact/,
   );
   assert.match(setup, /node \.github\/delivery\/generate\.mjs --preview-plan/);
-  assert.match(previewStatus, /^      - accounts-web$/m);
-  assert.match(
-    previewStatus,
-    /\$units \| all\(\. as \$unit \| \(\$needs\[\$unit\] != null and \$needs\[\$unit\]\.result == "success"\)\)/,
-  );
-  assert.doesNotMatch(previewStatus, /map\(select\(\$needs/);
   assert.doesNotMatch(setup, /name: Install dependencies/);
   assert.match(setup, /^      runtime-affected:/m);
   assert.match(setup, /^      validation-required:/m);
@@ -1931,14 +1740,6 @@ test('generated preview workflow plans per pull request and selectively deploys 
   );
   assert.doesNotMatch(previewStatus, /needs\.setup\.result == 'skipped'/);
   assert.match(
-    accountsWebValidation,
-    /if: always\(\) && needs\.setup\.outputs\.validation-required == 'true' && contains\(fromJSON\(needs\.setup\.outputs\.units \|\| '\[\]'\), 'accounts-web'\) && needs\.preview-status\.result == 'success'/,
-  );
-  assert.match(
-    accountsWebValidation,
-    /Verify hosted placeholder[\s\S]*curl --fail --silent --show-error/,
-  );
-  assert.match(
     playwright,
     /if: always\(\) && needs\.setup\.outputs\.validation-required == 'true'/,
   );
@@ -1971,11 +1772,6 @@ test('generated preview workflow plans per pull request and selectively deploys 
   assert.match(
     playwrightStatus,
     /Record Preview Validation result[\s\S]*VALIDATION_STATE:[\s\S]*deployments\/\$\{\{ steps\.validation-deployment\.outputs\.id \}\}\/statuses/,
-  );
-  assert.match(playwrightStatus, /^      - accounts-web-validation$/m);
-  assert.match(
-    playwrightStatus,
-    /needs\.accounts-web-validation\.result == 'success'/,
   );
   assert.match(
     playwrightStatus,
@@ -2248,10 +2044,6 @@ test('Release publishes selectively from full history and constructs one exact-t
   const releaseJob = workflowJob(release, 'release');
   const develop = workflowJob(release, 'deploy-develop');
   const production = workflowJob(release, 'deploy-production');
-  const accountsWebHosting = workflowJob(
-    release,
-    'reconcile-accounts-web-hosting',
-  );
 
   assert.match(
     release,
@@ -2259,7 +2051,6 @@ test('Release publishes selectively from full history and constructs one exact-t
   );
   assert.doesNotMatch(release, /^\s+(?:application-)?version:/m);
   assert.doesNotMatch(releaseJob, /^      deployments: write$/m);
-  assert.match(develop, /^      contents: read$/m);
   assert.match(develop, /^      deployments: write$/m);
   assert.match(production, /^      deployments: write$/m);
   assert.match(
@@ -2288,40 +2079,18 @@ test('Release publishes selectively from full history and constructs one exact-t
     releaseJob,
     /set -o pipefail[\s\S]*gh api --paginate --slurp[\s\S]*\| jq 'add \| map\(/,
   );
-  assert.match(
-    releaseJob,
-    /RELEASE_BOUNDARY: \$\{\{ github\.event_name == 'workflow_dispatch' && inputs\.boundary \|\| github\.sha \}\}[\s\S]*gh api graphql[\s\S]*release\(tagName: \$tag\)[\s\S]*\[\[ -z "\$release" \|\| "\$release" == "null" \]\][\s\S]*map\(select\(\.tag != \$release\.tagName\)\)[\s\S]*git tag --points-at "\$RELEASE_BOUNDARY"/,
-  );
   assert.doesNotMatch(
     releaseJob,
-    /gh api --paginate --slurp(?:(?!\| jq)[\s\S])*--jq/,
+    /gh api --paginate --slurp[\s\S]*?--jq[\s\S]*?releases\.json/,
   );
   assert.match(releaseJob, /^    outputs:\n      release-plan:/m);
   assert.match(
-    accountsWebHosting,
-    /concurrency:\n      group: accounts-web-hosting\n      cancel-in-progress: false/,
-  );
-  assert.match(
-    accountsWebHosting,
-    /if: fromJSON\(needs\.release\.outputs\.release-plan\)\.desiredTags\['@accounts\/web'\] != null/,
-  );
-  assert.match(accountsWebHosting, /^    needs: release$/m);
-  assert.match(
-    accountsWebHosting,
-    /ref: \$\{\{ fromJSON\(needs\.release\.outputs\.release-plan\)\.desiredTags\['@accounts\/web'\] \}\}/,
-  );
-  assert.match(
-    accountsWebHosting,
-    /yarn install --immutable[\s\S]*Configure AWS credentials[\s\S]*yarn workspace @accounts\/web reconcile/,
-  );
-  assert.doesNotMatch(accountsWebHosting, /deploy --stage|deployments: write/);
-  assert.match(
     develop,
-    /if: always\(\) && needs\.release\.result == 'success' && \(needs\.reconcile-accounts-web-hosting\.result == 'success' \|\| needs\.reconcile-accounts-web-hosting\.result == 'skipped'\)[\s\S]*needs:\n      - release\n      - reconcile-accounts-web-hosting[\s\S]*uses: \.\/\.github\/workflows\/deploy-to-develop\.yml[\s\S]*release-plan: \$\{\{ needs\.release\.outputs\.release-plan \}\}/,
+    /needs: release[\s\S]*uses: \.\/\.github\/workflows\/deploy-to-develop\.yml[\s\S]*release-plan: \$\{\{ needs\.release\.outputs\.release-plan \}\}/,
   );
   assert.match(
     production,
-    /if: always\(\) && needs\.release\.result == 'success' && \(needs\.reconcile-accounts-web-hosting\.result == 'success' \|\| needs\.reconcile-accounts-web-hosting\.result == 'skipped'\)[\s\S]*needs:\n      - release\n      - reconcile-accounts-web-hosting[\s\S]*uses: \.\/\.github\/workflows\/deploy-to-production\.yml[\s\S]*release-plan: \$\{\{ needs\.release\.outputs\.release-plan \}\}/,
+    /needs: release[\s\S]*uses: \.\/\.github\/workflows\/deploy-to-production\.yml[\s\S]*release-plan: \$\{\{ needs\.release\.outputs\.release-plan \}\}/,
   );
 });
 
@@ -2351,9 +2120,7 @@ test('generated long-lived delivery reconciles Environment State after acquiring
 
     const setup = workflowJob(workflow, 'setup');
     assert.doesNotMatch(setup, /github\.actor/);
-    assert.match(setup, /^    outputs:\n      api-appsync-url: /m);
-    assert.match(setup, /^      api-aws-region: /m);
-    assert.match(setup, /^      units: /m);
+    assert.match(setup, /^    outputs:\n      units: /m);
     assert.match(setup, /aws cloudformation describe-stacks/);
     assert.match(
       setup,
@@ -2370,10 +2137,6 @@ test('generated long-lived delivery reconciles Environment State after acquiring
       setup,
       /- name: Set Node version[\s\S]*- name: Create Reconciliation Plan[\s\S]*node \.github\/delivery\/generate\.mjs[\s\\]*--reconciliation-plan/,
     );
-    assert.match(
-      setup,
-      /Read current Accounts API configuration[\s\S]*contains\(fromJSON\(steps\.plan\.outputs\.units\), 'accounts-client'\)[\s\S]*!contains\(fromJSON\(steps\.plan\.outputs\.units\), 'accounts-api'\)[\s\S]*--stack-name "accounts-\$\{STAGE\}-api"[\s\S]*AccountsApiUrl/,
-    );
     assert.doesNotMatch(workflow, /^(?!\s*#)\s+.*\.serverless$/m);
 
     for (const { id } of createJobGraph(catalog, manifests, target)) {
@@ -2386,13 +2149,10 @@ test('generated long-lived delivery reconciles Environment State after acquiring
           `contains\\(fromJSON\\(needs\\.setup\\.outputs\\.units \\|\\| '\\[\\]'\\), '${id}'\\)`,
         ),
       );
-      const releaseRef = `\${{ fromJSON(inputs.release-plan).desiredTags['${unit.workspace}'] }}`;
-
       assert.ok(
-        id === 'accounts-web'
-          ? job.includes(`DEPLOYMENT_REF: ${releaseRef}`) &&
-              job.includes('ref: ${{ env.DEPLOYMENT_REF }}')
-          : job.includes(`ref: ${releaseRef}`),
+        job.includes(
+          `ref: \${{ fromJSON(inputs.release-plan).desiredTags['${unit.workspace}'] }}`,
+        ),
         `${filename} ${id} must check out its owning-workspace Release tag`,
       );
       assert.match(job, /^      deployments: write$/m);
@@ -2406,9 +2166,6 @@ test('generated long-lived delivery reconciles Environment State after acquiring
         job,
         /Create in-progress Deployment status[\s\S]*--arg state in_progress[\s\S]*Record successful Deployment[\s\S]*Record failed Deployment[\s\S]*auto_inactive: false/,
       );
-      if (id === 'accounts-web') {
-        assert.doesNotMatch(job, /VITE_|needs\.accounts-api/);
-      }
     }
   }
 });

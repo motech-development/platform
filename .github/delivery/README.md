@@ -2,17 +2,6 @@
 
 `catalog.json` is the source of truth for delivery topology. It records only stable Deployment Unit identifiers, owning workspaces and their paths, supported targets, direct delivery dependencies that cannot be inferred from workspace manifests, expected CloudFormation stacks, and justified exceptions. Identity/Auth0 and accounts data restore are deliberately outside this catalog.
 
-Expected stack names containing `{stage}` belong to each target environment.
-Literal expected stack names identify deliberately shared infrastructure: they
-remain visible to reconciliation, while consume-only Preview Environments must
-fail closed if the shared prerequisite is absent.
-
-The shared Accounts Amplify app owns `SENTRY_AUTH_TOKEN` as app-level,
-Amplify-managed configuration inherited by every branch. Configure it before
-the first hosted build and whenever the app is replaced. Branch deployment
-owns only public application configuration; repository automation must not
-read, copy, update, or recreate the shared credential.
-
 The generator reads every workspace manifest to infer ordinary `workspace:` relationships. Do not copy those relationships into `dependsOn`; validation rejects that duplication. Use `dependsOn` only for runtime infrastructure relationships established by imports, exports, or existing delivery ordering.
 
 ## Regenerate and review
@@ -37,11 +26,11 @@ The accounts API exposes its public URL and AWS region as job outputs. Client jo
 
 The Preview Environment workflow passes changed paths to `generate.mjs --preview-impact`. Runtime changes under a workspace select that workspace; runtime files that cannot be scoped safely, such as the root lockfile or a newly added workspace, select the full workspace graph. Documentation-only changes advance Preview Validation State as explicitly not applicable without creating a Preview Environment.
 
-New, reopened, and newly ready runtime pull requests deploy the complete preview-capable topology. Later synchronisations read successful GitHub Deployments and expected CloudFormation stacks after acquiring the per-preview lock. `generate.mjs --preview-plan` compares each unit's own `deploy:<unit-id>` Preview State with the current head, expands workspace and delivery dependants, repairs missing stage-owned stacks, and falls back to the complete topology for unrelated Git history. Literal shared stacks are prerequisites rather than Preview State: planning fails if a required shared stack is absent, and Preview teardown never treats one as an owned resource. Each selected job records the exact successfully delivered pull-request commit as Preview State.
+New, reopened, and newly ready runtime pull requests deploy the complete preview-capable topology. Later synchronisations read successful GitHub Deployments and expected CloudFormation stacks after acquiring the per-preview lock. `generate.mjs --preview-plan` compares each unit's own `deploy:<unit-id>` Preview State with the current head, expands workspace and delivery dependants, repairs missing stacks, and falls back to the complete topology for unrelated Git history. Each selected job records the exact successfully delivered pull-request commit as Preview State.
 
 Playwright reconciles separately from `validate:playwright` Preview Validation State. Runtime changes can therefore run the unchanged two-shard suite with no Deployment Units selected, and validation failure does not discard successful Preview State. When Accounts API is already current, setup reads its public URL and region from the existing stack. Missing or untrustworthy GitHub, AWS, or Git state fails planning before any mutation. Preview and teardown share a non-cancelling concurrency group scoped to the pull request.
 
-Teardown checks each stage-owned catalogued stack before cleanup, skips units whose Preview resources are already absent, and preserves AWS errors that are not a missing-resource response. Units consuming literal shared stacks still run their teardown command so they can remove branch-level resources without touching the shared stack. S3 cleanup likewise tolerates a missing bucket while reporting permission and deletion failures.
+Teardown checks each catalogued stack before cleanup, skips units whose resources are already absent, and preserves AWS errors that are not a missing-resource response. S3 cleanup likewise tolerates a missing bucket while reporting permission and deletion failures.
 
 ## Release planning
 
@@ -52,8 +41,6 @@ After publication succeeds, the planner resolves published, non-prerelease GitHu
 When publication succeeds without creating a Release, the plan reuses the latest exact owning-workspace tags reachable from the accepted boundary. Independent environment reconciliation can therefore catch up failed, stale, or missing deployments after documentation-only, delivery-only, or other non-releasing commits.
 
 The resulting plan contains the accepted boundary, ordered Affected Deployment Units, and a complete desired workspace-to-tag map for the target. Develop and production receive that same immutable map, then reconcile independently after acquiring separate non-cancelling environment locks. Reconciliation reads successful GitHub Deployments by environment and stable `deploy:<unit-id>` task, repairs missing expected CloudFormation stacks, expands selected units to delivery dependants, and checks out each unit's exact owning-workspace tag before building.
-
-The Accounts Amplify app is a shared prerequisite rather than an environment-owned stack. Release reconciles it once from the exact `@accounts/web` Release tag under the `accounts-web-hosting` lock before starting Develop and production together. Their branch deployments then remain governed only by their independent environment locks. Preview Environments consume the shared app without reconciling it.
 
 Each selected job creates a GitHub Deployment immediately before its real delivery attempt, records `in_progress`, and records the final success or failure without automatically inactivating earlier records. Only a record whose latest status is successful and whose history includes the real attempt advances Environment State. Missing, malformed, pending, or failed history remains selected on the next reconciliation.
 

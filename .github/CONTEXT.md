@@ -62,4 +62,4 @@ _Avoid_: Routine dependency update, vulnerability upgrade
 
 ## Accounts web reset
 
-The `accounts-web` Deployment Unit currently serves a static placeholder while the application is rebuilt. Its shared Amplify app, environment branches, Develop domain, exact-commit deployment, and preview teardown remain in place. It has no Accounts API or Breeze dependency. Preview validation checks the hosted placeholder; the legacy Accounts client retains its separate browser journeys and backend dependencies.
+The CI/CD pipelines and Deployment Catalog have been restored to commit `1c2b0a711657c61423d7a83fd613d12603b9b05a`, immediately before the Accounts web rewrite. The `accounts-web` placeholder and its Amplify infrastructure code remain in the repository, but are outside automated delivery and preview teardown. Existing Amplify resources are intentionally retained. The legacy Accounts client uses the restored deployment and browser validation pipelines.
