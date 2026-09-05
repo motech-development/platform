@@ -1,6 +1,7 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { UpdateCommand } from '@aws-sdk/lib-dynamodb';
-import type { DynamoDBRecord } from 'aws-lambda';
+import { marshall } from '@aws-sdk/util-dynamodb';
+import type { AttributeValue, DynamoDBRecord } from 'aws-lambda';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import updateTransactions from '../update-transactions';
 
@@ -441,16 +442,16 @@ describe('update-transactions', () => {
     expect(ddb).toReceiveCommandWith(UpdateCommand, {
       ExpressionAttributeNames: {
         '#balance': 'balance',
-        '#itemProperty': '2019-12-15T00:00:00.000Z',
+        '#itemProperty': '2019-12-14T00:00:00.000Z',
         '#items': 'items',
         '#updatedAt': 'updatedAt',
         '#vat': 'vat',
         '#vatProperty': 'owed',
       },
       ExpressionAttributeValues: {
-        ':balance': 100.25,
+        ':balance': 200.5,
         ':updatedAt': '2020-06-06T19:45:00.000Z',
-        ':vat': 1.2,
+        ':vat': 2.4,
       },
       Key: {
         __typename: 'Balance',
@@ -487,16 +488,16 @@ describe('update-transactions', () => {
     expect(ddb).toReceiveCommandWith(UpdateCommand, {
       ExpressionAttributeNames: {
         '#balance': 'balance',
-        '#itemProperty': '2019-12-15T00:00:00.000Z',
+        '#itemProperty': '2019-12-14T00:00:00.000Z',
         '#items': 'items',
         '#updatedAt': 'updatedAt',
         '#vat': 'vat',
         '#vatProperty': 'owed',
       },
       ExpressionAttributeValues: {
-        ':balance': 100.25,
+        ':balance': 200.5,
         ':updatedAt': '2020-06-06T19:45:00.000Z',
-        ':vat': 100.25,
+        ':vat': 200.5,
       },
       Key: {
         __typename: 'Balance',
@@ -530,6 +531,84 @@ describe('update-transactions', () => {
         'SET #updatedAt = :updatedAt ADD #balance :balance, #vat.#vatProperty :vat, #items.#itemProperty :balance',
     });
   });
+
+  describe.each([
+    ['VAT payment', 'Expenses', 'owed', 'paid', -100.25, -40.1],
+    ['Expenses', 'VAT payment', 'paid', 'owed', -20.05, -200.5],
+  ])(
+    'reclassifying %s to %s',
+    (oldCategory, newCategory, oldBucket, newBucket, oldVat, newVat) => {
+      it.each(['2019-12-14T00:00:00.000Z', '2019-12-15T00:00:00.000Z'])(
+        'should reverse the old VAT contribution and book the new one on %s',
+        async (date) => {
+          const oldDate = '2019-12-14T00:00:00.000Z';
+          const oldRecord = {
+            __typename: 'Transaction',
+            amount: -100.25,
+            category: oldCategory,
+            companyId: 'company-id',
+            date: oldDate,
+            status: 'confirmed',
+            vat: -20.05,
+          };
+          const newRecord = {
+            ...oldRecord,
+            amount: -200.5,
+            category: newCategory,
+            date,
+            vat: -40.1,
+          };
+
+          await Promise.all(
+            updateTransactions(documentClient, tableName, [
+              {
+                dynamodb: {
+                  NewImage: marshall(newRecord) as Record<
+                    string,
+                    AttributeValue
+                  >,
+                  OldImage: marshall(oldRecord) as Record<
+                    string,
+                    AttributeValue
+                  >,
+                },
+              },
+            ]),
+          );
+
+          expect(ddb).toReceiveCommandTimes(UpdateCommand, 1);
+          expect(ddb).toReceiveCommandWith(UpdateCommand, {
+            ExpressionAttributeNames: {
+              '#balance': 'balance',
+              '#items': 'items',
+              ...(date === oldDate
+                ? { '#itemProperty': date }
+                : { '#itemPropertyNew': date, '#itemPropertyOld': oldDate }),
+              '#updatedAt': 'updatedAt',
+              '#vat': 'vat',
+              '#vatPropertyNew': newBucket,
+              '#vatPropertyOld': oldBucket,
+            },
+            ExpressionAttributeValues: {
+              ':balance': -100.25,
+              ...(date === oldDate
+                ? {}
+                : { ':itemPropertyNew': -200.5, ':itemPropertyOld': -100.25 }),
+              ':updatedAt': '2020-06-06T19:45:00.000Z',
+              ':vatNew': newVat,
+              ':vatOld': oldVat,
+            },
+            Key: { __typename: 'Balance', id: 'company-id' },
+            TableName: tableName,
+            UpdateExpression:
+              date === oldDate
+                ? 'SET #updatedAt = :updatedAt, #vat.#vatPropertyOld = #vat.#vatPropertyOld - :vatOld ADD #balance :balance, #vat.#vatPropertyNew :vatNew, #items.#itemProperty :balance'
+                : 'SET #updatedAt = :updatedAt, #vat.#vatPropertyOld = #vat.#vatPropertyOld - :vatOld, #items.#itemPropertyOld = #items.#itemPropertyOld - :itemPropertyOld ADD #balance :balance, #vat.#vatPropertyNew :vatNew, #items.#itemPropertyNew :itemPropertyNew',
+          });
+        },
+      );
+    },
+  );
 
   it('should call update the correct number of times', async () => {
     await Promise.all(updateTransactions(documentClient, tableName, records));
