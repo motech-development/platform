@@ -185,6 +185,11 @@ appSync:
       kind: UNIT
       request: mapping-templates/transaction/getTransaction/Query.getTransaction.req.vtl
       response: mapping-templates/transaction/getTransaction/Query.getTransaction.res.vtl
+    Query.getTransactionState:
+      dataSource: TransactionState
+      kind: UNIT
+      request: mapping-templates/transaction/getTransactionState/Query.getTransactionState.req.vtl
+      response: mapping-templates/transaction/getTransactionState/Query.getTransactionState.res.vtl
     Query.getTransactions:
       dataSource: Data
       kind: UNIT
@@ -334,6 +339,10 @@ appSync:
       config:
         tableName: !ImportValue ${self:provider.stage}-AccountsApplicationTable
         serviceRoleArn: !GetAtt AppSyncDynamoDbServiceRole.Arn
+    TransactionState:
+      type: AWS_LAMBDA
+      config:
+        functionName: GetTransactionState
     Reports:
       type: HTTP
       config:
@@ -375,6 +384,12 @@ appSync:
     stage: ${self:provider.stage}
 
 functions:
+  GetTransactionState:
+    handler: src/handlers/get-transaction-state.handler
+    role: GetTransactionStateRole
+    environment:
+      TABLE: !ImportValue ${self:provider.stage}-AccountsApplicationTable
+
   PublishNotifications:
     handler: src/handlers/publish-notifications.handler
     role: PublishNotificationsRole
@@ -403,6 +418,33 @@ functions:
 
 resources:
   Resources:
+    GetTransactionStateRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.prefix}-get-transaction-state-role-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - dynamodb:GetItem
+                  Resource: !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                  Resource: !Sub arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${self:service}-${self:provider.stage}-GetTransactionState:*
     AppSyncReportsServiceRole:
       Type: AWS::IAM::Role
       Properties:

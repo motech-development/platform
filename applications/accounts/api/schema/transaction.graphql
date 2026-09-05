@@ -3,10 +3,11 @@ enum TransactionStatus {
   pending
 }
 
-"A company-scoped signal to refetch transactions; repeated signals are harmless."
+"An owner-scoped signal to read current transaction state; repeated signals are harmless."
 type TransactionChange @aws_iam @aws_oidc {
   id: ID!
   owner: String!
+  transactionId: ID!
 }
 
 type Transactions {

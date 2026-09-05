@@ -22,11 +22,14 @@ export interface IBalance {
 
 interface ITransactionScope {
   __typename: 'Transaction';
+  id: string;
   companyId: string;
   owner: string;
 }
 
-const hasTransactionScope = ({ companyId, owner }: ITransactionScope) =>
+const hasTransactionScope = ({ companyId, owner, id }: ITransactionScope) =>
+  typeof id === 'string' &&
+  id.length > 0 &&
   typeof companyId === 'string' &&
   companyId.length > 0 &&
   typeof owner === 'string' &&
@@ -50,14 +53,17 @@ const publishRecord = async ({ eventName, dynamodb }: DynamoDBRecord) => {
   }
 
   if (typename === 'Transaction') {
-    const { companyId, owner } = item;
+    const { companyId, owner, id } = item;
 
     if (!hasTransactionScope(item)) {
       // Retrying an immutable malformed stream image cannot recover its scope.
-      logger.error('Skipping transaction without a valid company or owner', {
-        keys: dynamodb?.Keys,
-        sequenceNumber: dynamodb?.SequenceNumber,
-      });
+      logger.error(
+        'Skipping transaction without a valid transaction ID, company or owner',
+        {
+          keys: dynamodb?.Keys,
+          sequenceNumber: dynamodb?.SequenceNumber,
+        },
+      );
       return;
     }
 
@@ -71,11 +77,15 @@ const publishRecord = async ({ eventName, dynamodb }: DynamoDBRecord) => {
         hasTransactionScope(previous) &&
         (previous.companyId !== companyId || previous.owner !== owner)
       ) {
-        await publishTransactionChange(previous.companyId, previous.owner);
+        await publishTransactionChange(
+          previous.companyId,
+          previous.owner,
+          previous.id,
+        );
       }
     }
 
-    await publishTransactionChange(companyId, owner);
+    await publishTransactionChange(companyId, owner, id);
   }
 };
 

@@ -9,6 +9,11 @@ import {
 } from '@testing-library/react';
 import { saveAs } from 'file-saver';
 import type { Mock } from 'vitest';
+import { useTransactionState } from '../../../../components/TransactionUpdates';
+import {
+  GetTransactionStateQuery,
+  TransactionStatus,
+} from '../../../../graphql/graphql';
 import TestProvider, {
   add,
   createFetchResponse,
@@ -25,6 +30,16 @@ vi.mock('pdfjs-dist/build/pdf.worker.min.mjs?url', () => ({
   default: 'pdfjs-dist/build/pdf.worker.min.mjs',
 }));
 
+vi.mock(
+  '../../../../components/TransactionUpdates',
+  async (importOriginal) => ({
+    ...(await importOriginal<
+      typeof import('../../../../components/TransactionUpdates')
+    >()),
+    useTransactionState: vi.fn(),
+  }),
+);
+
 describe('ViewTransaction', () => {
   let history: string[];
   let mocks: MockedResponse[];
@@ -39,6 +54,152 @@ describe('ViewTransaction', () => {
         body: 'success',
       }),
     );
+  });
+
+  describe('authoritative transaction corrections', () => {
+    const cachedTransaction: NonNullable<
+      GetTransactionStateQuery['getTransactionState']
+    > = {
+      amount: -999.99,
+      attachment: 'path/to/attachment.pdf',
+      category: 'Equipment',
+      companyId: 'company-id',
+      date: '2020-05-07T10:58:17.000Z',
+      description: 'Laptop',
+      id: 'transaction-id',
+      name: 'Apple',
+      refund: false,
+      scheduled: false,
+      status: TransactionStatus.Pending,
+      vat: 166.67,
+    };
+
+    beforeEach(() => {
+      mocks = [
+        {
+          request: {
+            query: VIEW_TRANSACTION,
+            variables: {
+              companyId: 'company-id',
+              transactionId: 'transaction-id',
+            },
+          },
+          result: {
+            data: {
+              getClients: { id: 'company-id', items: [] },
+              getSettings: {
+                categories: [{ name: 'Equipment', vatRate: 20 }],
+                id: 'company-id',
+                vat: { pay: 20 },
+              },
+              getTransaction: cachedTransaction,
+              getTypeahead: {
+                id: 'company-id',
+                purchases: [],
+                sales: [],
+                suppliers: [],
+              },
+            },
+          },
+        },
+      ];
+    });
+
+    const renderTransaction = () =>
+      render(<ViewTransaction />, {
+        wrapper: ({ children }) => (
+          <TestProvider
+            path="/accounts/:companyId/view-transaction/:transactionId"
+            history={history}
+          >
+            <MockedProvider mocks={mocks}>{children}</MockedProvider>
+          </TestProvider>
+        ),
+      });
+
+    it('opens the current transaction without resurrecting a removed attachment', async () => {
+      vi.mocked(useTransactionState).mockReturnValue({
+        ...cachedTransaction,
+        attachment: '',
+        description: 'Corrected laptop',
+      });
+
+      renderTransaction();
+
+      expect(
+        await screen.findByLabelText(
+          'transaction-form.transaction-details.description.label',
+        ),
+      ).toHaveValue('Corrected laptop');
+      expect(
+        screen.getByLabelText('transaction-form.upload.upload.label'),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByText('transaction-form.upload.view-file'),
+      ).not.toBeInTheDocument();
+    });
+
+    it('removes a live attachment without resetting unsaved edits and saves the cleaned state', async () => {
+      const savedTransaction = {
+        ...cachedTransaction,
+        attachment: '',
+        description: 'My unsaved description',
+      };
+      const result = vi.fn(() => ({
+        data: { updateTransaction: savedTransaction },
+      }));
+      mocks.push({
+        request: {
+          query: UPDATE_TRANSACTION,
+          variables: { input: savedTransaction },
+        },
+        result,
+      });
+      const { rerender } = renderTransaction();
+      const description = await screen.findByLabelText(
+        'transaction-form.transaction-details.description.label',
+      );
+      await screen.findByText('transaction-form.upload.view-file');
+
+      fireEvent.change(description, {
+        target: { value: savedTransaction.description },
+      });
+      vi.mocked(useTransactionState).mockReturnValue({
+        ...cachedTransaction,
+        attachment: '',
+        description: 'A different server description',
+      });
+      rerender(<ViewTransaction />);
+
+      expect(description).toHaveValue(savedTransaction.description);
+      expect(
+        screen.queryByText('transaction-form.upload.view-file'),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.getByLabelText('transaction-form.upload.upload.label'),
+      ).toBeInTheDocument();
+
+      const save = screen.getByRole('button', {
+        name: 'transaction-form.save',
+      });
+      await waitFor(() => expect(save).not.toBeDisabled());
+      fireEvent.click(save);
+
+      await waitFor(() => expect(result).toHaveBeenCalledOnce());
+    });
+
+    it('does not expose a deleted or moved transaction from the cached detail query', async () => {
+      const { rerender } = renderTransaction();
+      await screen.findByText('view-transaction.title');
+
+      vi.mocked(useTransactionState).mockReturnValue(null);
+      rerender(<ViewTransaction />);
+
+      expect(screen.queryByRole('form')).not.toBeInTheDocument();
+      expect(
+        screen.queryByText('view-transaction.delete-transaction'),
+      ).not.toBeInTheDocument();
+    });
   });
 
   describe('purchase', () => {
