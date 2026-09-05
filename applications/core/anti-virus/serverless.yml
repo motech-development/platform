@@ -43,6 +43,8 @@ functions:
   CleanupAttachments:
     handler: src/handlers/cleanup-attachments.handler
     role: LambdaFunctionRole
+    # Allow paginated cleanup the full AWS Lambda execution window (15 minutes).
+    timeout: 900
     events:
       # Reconcile abandoned attachments at the existing quarantine retention cadence.
       - schedule:

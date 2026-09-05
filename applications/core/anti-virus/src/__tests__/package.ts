@@ -142,12 +142,17 @@ test('cached and uncached binaries produce equivalent deployable packages', asyn
       ),
     ) as {
       Resources: {
+        CleanupAttachmentsLambdaFunction: { Properties: { Timeout: number } };
         MoveFileLambdaFunction: { Properties: { Timeout: number } };
       };
     };
     expect(template.Resources.MoveFileLambdaFunction.Properties.Timeout).toBe(
       900,
     );
+
+    expect(
+      template.Resources.CleanupAttachmentsLambdaFunction.Properties.Timeout,
+    ).toBe(900);
 
     const freshArchives = (await readdir(freshPackage))
       .filter((file) => file.endsWith('.zip'))
