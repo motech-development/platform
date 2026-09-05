@@ -1,11 +1,18 @@
-import { moveFile } from '@motech-development/s3-file-operations';
+import {
+  moveFile,
+  moveStagedFile,
+} from '@motech-development/s3-file-operations';
 import type { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import type { Mock } from 'vitest';
 import { handler, IEvent } from '../move-file';
 
-vi.mock('@motech-development/s3-file-operations', () => ({
+vi.mock('@motech-development/s3-file-operations', async (importOriginal) => ({
+  ...(await importOriginal<
+    typeof import('@motech-development/s3-file-operations')
+  >()),
   moveFile: vi.fn(),
+  moveStagedFile: vi.fn(),
 }));
 
 describe('move-file', () => {
@@ -14,6 +21,7 @@ describe('move-file', () => {
   let event: IEvent;
 
   beforeEach(() => {
+    vi.clearAllMocks();
     context = ctx();
 
     context.done();
@@ -35,5 +43,14 @@ describe('move-file', () => {
       'download-bucket',
       'path/to/file.pdf',
     );
+  });
+  it('uses the registered transfer for a managed attachment', async () => {
+    await handler({ ...event, managed: true }, context, callback);
+    expect(moveStagedFile).toHaveBeenCalledWith(
+      event.from,
+      event.to,
+      event.key,
+    );
+    expect(moveFile).not.toHaveBeenCalled();
   });
 });

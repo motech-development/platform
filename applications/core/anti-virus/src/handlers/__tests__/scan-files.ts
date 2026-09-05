@@ -1,6 +1,9 @@
 import {
   createDirectory,
+  deleteFile,
   downloadFile,
+  getFileData,
+  getStagedFile,
 } from '@motech-development/s3-file-operations';
 import type { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
@@ -12,9 +15,15 @@ vi.mock('../../shared/clam-av', () => ({
   scanFile: vi.fn().mockResolvedValue(true),
 }));
 
-vi.mock('@motech-development/s3-file-operations', () => ({
+vi.mock('@motech-development/s3-file-operations', async (importOriginal) => ({
+  ...(await importOriginal<
+    typeof import('@motech-development/s3-file-operations')
+  >()),
   createDirectory: vi.fn(),
+  deleteFile: vi.fn(),
   downloadFile: vi.fn(),
+  getFileData: vi.fn().mockResolvedValue({}),
+  getStagedFile: vi.fn(),
 }));
 
 describe('scan-files', () => {
@@ -59,6 +68,51 @@ describe('scan-files', () => {
 
     afterEach(() => {
       process.env = env;
+    });
+
+    it('skips a cancelled attachment without scanning or downloading it', async () => {
+      vi.mocked(getFileData).mockResolvedValueOnce({
+        $metadata: {},
+        Metadata: { 'attachment-lifecycle': 'v1' },
+      });
+      vi.mocked(getStagedFile).mockResolvedValueOnce(undefined);
+      await expect(handler(event, context, callback)).resolves.toEqual({
+        ...event,
+        cancelled: true,
+      });
+      expect(downloadFile).not.toHaveBeenCalled();
+      expect(scanFile).not.toHaveBeenCalled();
+      expect(deleteFile).toHaveBeenCalledWith(event.from, event.key);
+    });
+
+    it('treats a deleted source as cancellation', async () => {
+      vi.mocked(getFileData).mockRejectedValueOnce(
+        Object.assign(new Error('missing'), { name: 'NotFound' }),
+      );
+      await expect(handler(event, context, callback)).resolves.toEqual({
+        ...event,
+        cancelled: true,
+      });
+    });
+
+    it('passes lifecycle ownership through to the promotion step after a clean scan', async () => {
+      vi.mocked(getFileData).mockResolvedValueOnce({
+        $metadata: {},
+        Metadata: { 'attachment-lifecycle': 'v1' },
+      });
+      vi.mocked(getStagedFile).mockResolvedValueOnce({
+        from: event.from,
+        key: event.key,
+        path: 'downloads/key',
+        state: 'pending',
+        to: event.to,
+      });
+      await expect(handler(event, context, callback)).resolves.toEqual({
+        ...event,
+        managed: true,
+        result: true,
+      });
+      expect(scanFile).toHaveBeenCalled();
     });
 
     it('should create the temporary download folder', async () => {

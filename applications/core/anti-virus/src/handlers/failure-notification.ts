@@ -1,5 +1,9 @@
 import { SendMessageCommand, SQSClient } from '@aws-sdk/client-sqs';
-import { getFileData } from '@motech-development/s3-file-operations';
+import {
+  getFileData,
+  getStagedFile,
+  isMissingFile,
+} from '@motech-development/s3-file-operations';
 import { init, wrapHandler } from '@sentry/aws-serverless';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import type { Handler } from 'aws-lambda';
@@ -17,6 +21,8 @@ const sqs = new SQSClient({});
 export interface IEvent {
   from: string;
   key: string;
+  managed?: boolean;
+  to?: string;
 }
 
 export const handler: Handler<IEvent> = wrapHandler(async (event) => {
@@ -27,7 +33,20 @@ export const handler: Handler<IEvent> = wrapHandler(async (event) => {
   }
 
   const { from, key } = event;
-  const { Metadata } = await getFileData(from, key);
+  const data = await getFileData(from, key).catch((error: unknown) => {
+    if (isMissingFile(error)) return undefined;
+    throw error;
+  });
+  if (!data) return { from, key };
+  const managed =
+    event.managed || data.Metadata?.['attachment-lifecycle'] === 'v1';
+  if (managed) {
+    if (!event.to) throw new Error('No destination bucket set');
+    if ((await getStagedFile(event.to, key))?.state !== 'pending')
+      return { from, key };
+  }
+  const Metadata = data.Metadata ? { ...data.Metadata } : undefined;
+  if (Metadata) delete Metadata['attachment-lifecycle'];
   const command = new SendMessageCommand({
     ...(Metadata && Metadata.id
       ? {}
@@ -61,5 +80,6 @@ export const handler: Handler<IEvent> = wrapHandler(async (event) => {
   return {
     from,
     key,
+    ...(managed ? { managed, to: event.to } : {}),
   };
 });

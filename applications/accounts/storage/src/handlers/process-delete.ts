@@ -1,4 +1,4 @@
-import { deleteFile } from '@motech-development/s3-file-operations';
+import { deleteStagedFile } from '@motech-development/s3-file-operations';
 import { init, wrapHandler } from '@sentry/aws-serverless';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import type { SQSHandler } from 'aws-lambda';
@@ -12,18 +12,20 @@ init({
 });
 
 export const handler: SQSHandler = wrapHandler(async (event) => {
-  const { DOWNLOAD_BUCKET } = process.env;
+  const { DOWNLOAD_BUCKET, UPLOAD_BUCKET } = process.env;
 
   if (!DOWNLOAD_BUCKET) {
     throw new Error('No destination bucket set');
   }
+
+  if (!UPLOAD_BUCKET) throw new Error('No upload bucket set');
 
   const deletions = event.Records.map((record) => {
     const { messageAttributes } = record;
     const { key } = messageAttributes;
 
     if (key && key.stringValue) {
-      return deleteFile(DOWNLOAD_BUCKET, key.stringValue);
+      return deleteStagedFile(UPLOAD_BUCKET, DOWNLOAD_BUCKET, key.stringValue);
     }
 
     return Promise.resolve();

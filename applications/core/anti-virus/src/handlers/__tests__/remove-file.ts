@@ -1,11 +1,18 @@
-import { deleteFile } from '@motech-development/s3-file-operations';
+import {
+  deleteFile,
+  deleteStagedFile,
+} from '@motech-development/s3-file-operations';
 import type { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import type { Mock } from 'vitest';
 import { handler, IEvent } from '../remove-file';
 
-vi.mock('@motech-development/s3-file-operations', () => ({
+vi.mock('@motech-development/s3-file-operations', async (importOriginal) => ({
+  ...(await importOriginal<
+    typeof import('@motech-development/s3-file-operations')
+  >()),
   deleteFile: vi.fn(),
+  deleteStagedFile: vi.fn(),
 }));
 
 describe('remove-file', () => {
@@ -14,6 +21,7 @@ describe('remove-file', () => {
   let event: IEvent;
 
   beforeEach(() => {
+    vi.clearAllMocks();
     context = ctx();
 
     context.done();
@@ -32,6 +40,19 @@ describe('remove-file', () => {
     expect(deleteFile).toHaveBeenCalledWith(
       'upload-bucket',
       'path/to/file.pdf',
+    );
+  });
+  it('revokes a rejected attachment without removing another scan’s completed copy', async () => {
+    await handler(
+      { ...event, managed: true, to: 'downloads' },
+      context,
+      callback,
+    );
+    expect(deleteStagedFile).toHaveBeenCalledWith(
+      event.from,
+      'downloads',
+      event.key,
+      { pendingOnly: true },
     );
   });
 });
