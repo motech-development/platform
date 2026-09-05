@@ -8,6 +8,7 @@ import {
   waitFor,
 } from '@testing-library/react';
 import { saveAs } from 'file-saver';
+import { Link } from 'react-router-dom';
 import type { Mock } from 'vitest';
 import { useTransactionState } from '../../../../components/TransactionUpdates';
 import {
@@ -19,6 +20,7 @@ import TestProvider, {
   createFetchResponse,
 } from '../../../../utils/TestProvider';
 import { GET_BALANCE } from '../Accounts';
+import { REQUEST_UPLOAD } from '../shared/UploadAttachment';
 import { DELETE_FILE, REQUEST_DOWNLOAD } from '../shared/ViewAttachment';
 import ViewTransaction, {
   DELETE_TRANSACTION,
@@ -188,17 +190,230 @@ describe('ViewTransaction', () => {
       await waitFor(() => expect(result).toHaveBeenCalledOnce());
     });
 
-    it('does not expose a deleted or moved transaction from the cached detail query', async () => {
+    it('keeps a locally uploaded replacement when delayed cleanup removes the old server attachment', async () => {
+      const savedTransaction = {
+        ...cachedTransaction,
+        attachment: 'company-id/replacement.pdf',
+      };
+      const result = vi.fn(() => ({
+        data: { updateTransaction: savedTransaction },
+      }));
+      mocks.push(
+        {
+          request: {
+            query: DELETE_FILE,
+            variables: {
+              id: 'company-id',
+              path: cachedTransaction.attachment,
+            },
+          },
+          result: {
+            data: { deleteFile: { path: cachedTransaction.attachment } },
+          },
+        },
+        {
+          request: {
+            query: REQUEST_UPLOAD,
+            variables: {
+              id: 'company-id',
+              input: {
+                contentType: 'application/pdf',
+                extension: 'pdf',
+                metadata: { id: 'transaction-id', typename: 'Transaction' },
+              },
+            },
+          },
+          result: {
+            data: {
+              requestUpload: {
+                id: 'replacement',
+                url: 'https://example.com/upload',
+              },
+            },
+          },
+        },
+        {
+          request: {
+            query: UPDATE_TRANSACTION,
+            variables: { input: savedTransaction },
+          },
+          result,
+        },
+      );
       const { rerender } = renderTransaction();
-      await screen.findByText('view-transaction.title');
+      fireEvent.click(
+        await screen.findByText('transaction-form.upload.delete-file'),
+      );
+      const upload = await screen.findByLabelText(
+        'transaction-form.upload.upload.label',
+      );
+      fireEvent.change(upload, {
+        target: {
+          files: [
+            new File(['replacement'], 'replacement.pdf', {
+              type: 'application/pdf',
+            }),
+          ],
+        },
+      });
+      await screen.findByText('transaction-form.upload.view-file');
 
-      vi.mocked(useTransactionState).mockReturnValue(null);
+      vi.mocked(useTransactionState).mockReturnValue({
+        ...cachedTransaction,
+        attachment: '',
+      });
       rerender(<ViewTransaction />);
 
-      expect(screen.queryByRole('form')).not.toBeInTheDocument();
       expect(
-        screen.queryByText('view-transaction.delete-transaction'),
-      ).not.toBeInTheDocument();
+        screen.getByText('transaction-form.upload.view-file'),
+      ).toBeInTheDocument();
+      const save = screen.getByRole('button', {
+        name: 'transaction-form.save',
+      });
+      await waitFor(() => expect(save).not.toBeDisabled());
+      fireEvent.click(save);
+
+      await waitFor(() => expect(result).toHaveBeenCalledOnce());
+    });
+
+    it.each([
+      [
+        TransactionStatus.Pending,
+        '/my-companies/accounts/company-id/pending-transactions',
+      ],
+      [TransactionStatus.Confirmed, '/my-companies/accounts/company-id'],
+    ])(
+      'returns a deleted or moved %s transaction to its account list',
+      async (status, destination) => {
+        vi.mocked(useTransactionState).mockReturnValue({
+          ...cachedTransaction,
+          status,
+        });
+        const { rerender } = renderTransaction();
+        await screen.findByText('view-transaction.title');
+
+        vi.mocked(useTransactionState).mockReturnValue(null);
+        rerender(<ViewTransaction />);
+
+        expect(screen.queryByRole('form')).not.toBeInTheDocument();
+        expect(
+          screen.queryByText('view-transaction.delete-transaction'),
+        ).not.toBeInTheDocument();
+        expect(await screen.findByTestId(destination)).toBeInTheDocument();
+      },
+    );
+
+    it('does not carry a local upload into a different transaction on the same route', async () => {
+      mocks.push(
+        {
+          request: {
+            query: DELETE_FILE,
+            variables: {
+              id: 'company-id',
+              path: cachedTransaction.attachment,
+            },
+          },
+          result: {
+            data: { deleteFile: { path: cachedTransaction.attachment } },
+          },
+        },
+        {
+          request: {
+            query: REQUEST_UPLOAD,
+            variables: {
+              id: 'company-id',
+              input: {
+                contentType: 'application/pdf',
+                extension: 'pdf',
+                metadata: { id: 'transaction-id', typename: 'Transaction' },
+              },
+            },
+          },
+          result: {
+            data: {
+              requestUpload: {
+                id: 'replacement',
+                url: 'https://example.com/upload',
+              },
+            },
+          },
+        },
+        {
+          request: {
+            query: VIEW_TRANSACTION,
+            variables: {
+              companyId: 'company-id',
+              transactionId: 'other-transaction',
+            },
+          },
+          result: {
+            data: {
+              getClients: { id: 'company-id', items: [] },
+              getSettings: {
+                categories: [{ name: 'Equipment', vatRate: 20 }],
+                id: 'company-id',
+                vat: { pay: 20 },
+              },
+              getTransaction: {
+                ...cachedTransaction,
+                attachment: '',
+                description: 'Other transaction',
+                id: 'other-transaction',
+              },
+              getTypeahead: {
+                id: 'company-id',
+                purchases: [],
+                sales: [],
+                suppliers: [],
+              },
+            },
+          },
+        },
+      );
+      render(
+        <TestProvider
+          path="/accounts/:companyId/view-transaction/:transactionId"
+          history={history}
+        >
+          <MockedProvider mocks={mocks}>
+            <>
+              <Link to="/accounts/company-id/view-transaction/other-transaction">
+                Open other transaction
+              </Link>
+              <ViewTransaction />
+            </>
+          </MockedProvider>
+        </TestProvider>,
+      );
+      fireEvent.click(
+        await screen.findByText('transaction-form.upload.delete-file'),
+      );
+      const upload = await screen.findByLabelText(
+        'transaction-form.upload.upload.label',
+      );
+      fireEvent.change(upload, {
+        target: {
+          files: [
+            new File(['replacement'], 'replacement.pdf', {
+              type: 'application/pdf',
+            }),
+          ],
+        },
+      });
+      await screen.findByText('transaction-form.upload.view-file');
+
+      fireEvent.click(screen.getByText('Open other transaction'));
+
+      await waitFor(() =>
+        expect(
+          screen.getByLabelText(
+            'transaction-form.transaction-details.description.label',
+          ),
+        ).toHaveValue('Other transaction'),
+      );
+      expect(
+        screen.getByLabelText('transaction-form.upload.upload.label'),
+      ).toBeInTheDocument();
     });
 
     it('saves a live publication without overwriting it or losing an unsaved description', async () => {

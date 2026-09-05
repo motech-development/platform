@@ -12,7 +12,7 @@ import {
   Row,
   useToast,
 } from '@motech-development/breeze-ui';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
@@ -33,6 +33,12 @@ import ViewAttachment from './shared/ViewAttachment';
 
 const getStatus = (status: string) =>
   status === 'confirmed' ? 'pending' : 'confirmed';
+
+const backTo = (id: string, status?: string) => {
+  const location = `/my-companies/accounts/${id}`;
+
+  return status === 'pending' ? `${location}/pending-transactions` : location;
+};
 
 export const update: MutationUpdaterFunction<
   UpdateTransactionMutation,
@@ -224,29 +230,21 @@ export const DELETE_TRANSACTION = gql(/* GraphQL */ `
   }
 `);
 
-function ViewTransaction() {
+function TransactionDetails({
+  companyId,
+  transactionId,
+}: {
+  readonly companyId: string;
+  readonly transactionId: string;
+}) {
   const navigate = useNavigate();
-  const { companyId, transactionId } = useParams();
-
-  invariant(companyId);
-  invariant(transactionId);
 
   const [attachment, setAttachment] = useState('');
+  const attachmentBaseline = useRef('');
   const [modal, setModal] = useState(false);
   const currentTransaction = useTransactionState(transactionId);
   const { t } = useTranslation('accounts');
   const { add } = useToast();
-  const backTo = (id: string, status?: string) => {
-    const pending = status === 'pending';
-    const location = `/my-companies/accounts/${id}`;
-
-    if (pending) {
-      return `${location}/pending-transactions`;
-    }
-
-    return location;
-  };
-
   const { data, error, loading } = useQuery(VIEW_TRANSACTION, {
     variables: {
       companyId,
@@ -257,10 +255,21 @@ function ViewTransaction() {
     currentTransaction === undefined
       ? data?.getTransaction
       : currentTransaction;
+  const lastStatus = useRef(transaction?.status);
 
   useEffect(() => {
-    setAttachment(transaction?.attachment ?? '');
+    const previous = attachmentBaseline.current;
+    const next = transaction?.attachment ?? '';
+    attachmentBaseline.current = next;
+    setAttachment((current) => (current === previous ? next : current));
   }, [transaction?.attachment]);
+
+  useEffect(() => {
+    if (transaction) lastStatus.current = transaction.status;
+    if (currentTransaction === null) {
+      navigate(backTo(companyId, lastStatus.current), { replace: true });
+    }
+  }, [companyId, currentTransaction, navigate, transaction]);
 
   const [mutation, { error: mutationError, loading: mutationLoading }] =
     useMutation(UPDATE_TRANSACTION, {
@@ -410,6 +419,21 @@ function ViewTransaction() {
         </>
       )}
     </Connected>
+  );
+}
+
+function ViewTransaction() {
+  const { companyId, transactionId } = useParams();
+
+  invariant(companyId);
+  invariant(transactionId);
+
+  return (
+    <TransactionDetails
+      key={`${companyId}/${transactionId}`}
+      companyId={companyId}
+      transactionId={transactionId}
+    />
   );
 }
 

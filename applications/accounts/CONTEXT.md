@@ -44,18 +44,23 @@ can arrive before the separate balance calculation completes.
 
 The client overlays these current records and deletion markers on Pending and
 Confirmed lists, so delayed index responses cannot overwrite a correction or
-restore a deleted row. Repeated signals never apply financial amounts again.
+restore a deleted row. Confirmed corrections respect the loaded date window
+and page size while more pages remain; older unseen records appear when their
+page is loaded. Repeated signals never apply financial amounts again.
 Reads for the same transaction are serialized; a newer signal during a read
 causes another read before applying the result. Failed reads retry with backoff.
 Corrections survive navigation for the signed-in session and are rechecked on
 return to an account. Account changes cancel obsolete reads and subscriptions;
-changing the signed-in owner resets corrections. Transaction details reconcile incoming corrections into unchanged form fields
-and synchronize attachment changes while preserving locally edited fields. A
+changing the signed-in owner resets corrections. Transaction details reconcile
+incoming corrections into unchanged form fields and synchronize attachment
+changes while preserving locally edited fields and replacement uploads. A
 scheduled publication therefore updates the status and scheduled flag without
-resetting an unrelated edit.
+resetting an unrelated edit. An inaccessible transaction returns the user to its
+account list.
 
-Dropped subscriptions reconnect with backoff and refresh known corrections and
-open lists. The subscription does not provide durable replay: newly created
+Dropped subscriptions reconnect with backoff and refresh known corrections,
+open lists and the currently viewed transaction, even if that transaction has
+never received a signal. The subscription does not provide durable replay: newly created
 transactions whose signals were missed depend on the list refresh and its index
 visibility. Continuous connection handling does not assume an index query has
 caught up when a signal arrives.

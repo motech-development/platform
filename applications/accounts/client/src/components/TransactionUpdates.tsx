@@ -50,7 +50,10 @@ type CurrentTransaction = NonNullable<
 type TransactionStates = ReadonlyMap<string, CurrentTransaction | null>;
 
 const emptyStates: TransactionStates = new Map();
-const TransactionUpdatesContext = createContext<TransactionStates>(emptyStates);
+const TransactionUpdatesContext = createContext<{
+  states: TransactionStates;
+  watch: (transactionId: string) => () => void;
+}>({ states: emptyStates, watch: () => () => {} });
 const TransactionStoreContext = createContext<{
   states: ReadonlyMap<string, TransactionStates>;
   update: (
@@ -63,7 +66,7 @@ const TransactionStoreContext = createContext<{
 export function TransactionStateProvider({
   children,
 }: {
-  children: ReactNode;
+  readonly children: ReactNode;
 }) {
   const [states, setStates] = useState<ReadonlyMap<string, TransactionStates>>(
     () => new Map(),
@@ -92,8 +95,11 @@ export function TransactionStateProvider({
   );
 }
 
-export const useTransactionState = (transactionId: string) =>
-  useContext(TransactionUpdatesContext).get(transactionId);
+export const useTransactionState = (transactionId: string) => {
+  const { states, watch } = useContext(TransactionUpdatesContext);
+  useEffect(() => watch(transactionId), [transactionId, watch]);
+  return states.get(transactionId);
+};
 
 interface IReadRequest {
   dirty: boolean;
@@ -102,9 +108,9 @@ interface IReadRequest {
 }
 
 interface ITransactionUpdatesProps {
-  children: ReactNode;
-  companyId: string;
-  owner: string;
+  readonly children: ReactNode;
+  readonly companyId: string;
+  readonly owner: string;
 }
 
 function TransactionUpdates({
@@ -118,6 +124,14 @@ function TransactionUpdates({
   const statesRef = useRef(states);
   statesRef.current = states;
   const { update } = store;
+  const viewedTransactions = useRef(new Set<string>());
+  const watch = useCallback((transactionId: string) => {
+    viewedTransactions.current.add(transactionId);
+    return () => {
+      viewedTransactions.current.delete(transactionId);
+    };
+  }, []);
+  const value = useMemo(() => ({ states, watch }), [states, watch]);
 
   useEffect(() => {
     let active = true;
@@ -186,6 +200,22 @@ function TransactionUpdates({
     let reconnectTimer: ReturnType<typeof setTimeout> | undefined;
     let reconnectAttempts = 0;
 
+    const refreshKnownTransactions = () => {
+      const transactionIds = new Set([
+        ...statesRef.current.keys(),
+        ...viewedTransactions.current,
+      ]);
+      transactionIds.forEach(refresh);
+    };
+
+    const refreshAfterReconnect = () => {
+      // Include open details even when they have never received a signal.
+      refreshKnownTransactions();
+      client
+        .refetchQueries({ include: ['GetBalance', 'GetTransactions'] })
+        .catch(() => {});
+    };
+
     const connect = () => {
       const reconnect = () => {
         if (!active || reconnectTimer) return;
@@ -194,11 +224,7 @@ function TransactionUpdates({
         reconnectTimer = setTimeout(() => {
           reconnectTimer = undefined;
           connect();
-          // Recover known records and refresh open lists after a dropped stream.
-          statesRef.current.forEach((_state, id) => refresh(id));
-          client
-            .refetchQueries({ include: ['GetBalance', 'GetTransactions'] })
-            .catch(() => {});
+          refreshAfterReconnect();
         }, delay);
       };
 
@@ -234,7 +260,7 @@ function TransactionUpdates({
   }, [client, companyId, owner, update]);
 
   return (
-    <TransactionUpdatesContext.Provider value={states}>
+    <TransactionUpdatesContext.Provider value={value}>
       {children}
     </TransactionUpdatesContext.Provider>
   );
@@ -243,12 +269,19 @@ function TransactionUpdates({
 export const useTransactionItems = <T extends { date: string; id: string }>(
   items: T[] | undefined,
   status: TransactionStatus,
+  hasMore = false,
 ): Array<T | CurrentTransaction> => {
-  const states = useContext(TransactionUpdatesContext);
+  const { states } = useContext(TransactionUpdatesContext);
 
   return useMemo(() => {
     const existing = items ?? [];
     if (states.size === 0) return existing;
+
+    const loadedIds = new Set(existing.map(({ id }) => id));
+    const oldestLoadedDate = existing.reduce(
+      (oldest, { date }) => Math.min(oldest, new Date(date).getTime()),
+      Infinity,
+    );
 
     // Keep authoritative records and tombstones separate from Apollo's index
     // results so delayed list responses cannot resurrect or overwrite them.
@@ -256,15 +289,24 @@ export const useTransactionItems = <T extends { date: string; id: string }>(
       ({ id }) => !states.has(id),
     );
     states.forEach((current) => {
-      if (current?.status === status) result.push(current);
+      if (
+        current?.status === status &&
+        (!hasMore ||
+          loadedIds.has(current.id) ||
+          new Date(current.date).getTime() >= oldestLoadedDate)
+      )
+        result.push(current);
     });
 
-    return result.sort((left, right) => {
+    result.sort((left, right) => {
       const order =
         new Date(left.date).getTime() - new Date(right.date).getTime();
       return status === TransactionStatus.Pending ? order : -order;
     });
-  }, [items, states, status]);
+    // Retain the cache's boundary row for the next page, but do not expand the
+    // visible window when a recent transaction is inserted ahead of it.
+    return hasMore ? result.slice(0, existing.length) : result;
+  }, [hasMore, items, states, status]);
 };
 
 export default TransactionUpdates;
