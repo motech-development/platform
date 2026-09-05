@@ -256,10 +256,7 @@ function TransactionDetails({
       transactionId,
     },
   });
-  const transaction =
-    currentTransaction === undefined
-      ? data?.getTransaction
-      : currentTransaction;
+  const transaction = currentTransaction;
   const status = transaction?.status;
   const queriedStatus = data?.getTransaction?.status;
   const lastStatus = useRef(status);
@@ -358,7 +355,10 @@ function TransactionDetails({
   };
 
   return (
-    <Connected error={error || mutationError} loading={loading}>
+    <Connected
+      error={error || mutationError}
+      loading={loading || currentTransaction === undefined}
+    >
       {transaction && data?.getSettings && data?.getClients && (
         <>
           <PageTitle

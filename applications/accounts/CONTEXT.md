@@ -54,7 +54,10 @@ mutation cannot overwrite its result. Failed reads retry with backoff.
 Corrections survive navigation for the signed-in session and are rechecked on
 return to an account. Lists fetch fresh data when mounted, replacing first-page
 membership while cursor requests still append older pages. Opening a transaction
-also reads its current state. Account changes cancel obsolete reads and subscriptions;
+also reads its current state; its form remains loading until this read succeeds,
+even when a previous correction or cached detail is available. Later live reads
+keep the initialized form mounted to preserve local edits.
+Account changes cancel obsolete reads and subscriptions;
 changing the signed-in owner resets corrections. Transaction details reconcile
 incoming corrections into unchanged form fields and synchronize attachment
 changes while preserving locally edited fields and replacement uploads. A
@@ -63,8 +66,10 @@ resetting an unrelated edit. An inaccessible transaction returns the user to its
 account list.
 
 Dropped subscriptions reconnect with backoff and refresh known corrections,
-open lists and the currently viewed transaction, even if that transaction has
-never received a signal. Recovery runs after the server acknowledges the
+open lists and the currently viewed transaction, even without prior signals.
+Loaded list rows also receive strong reads so a stale index refresh cannot hide
+missed edits, publication or deletion. Rows first loaded after acknowledgement
+are checked once for that connection as well. Recovery runs after the server acknowledges the
 subscription, which also resets retry backoff even without transaction traffic.
 The subscription does not provide durable replay: newly created
 transactions whose signals were missed depend on the list refresh and its index
