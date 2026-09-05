@@ -14,8 +14,8 @@ import {
   Typography,
 } from '@motech-development/breeze-ui';
 import { Decimal } from 'decimal.js';
-import { FormikProps, FormikValues, getIn } from 'formik';
-import { ChangeEvent, ReactNode, useEffect, useState } from 'react';
+import { FormikProps, FormikValues, getIn, useFormikContext } from 'formik';
+import { ChangeEvent, ReactNode, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { boolean, number, object, string } from 'yup';
 import { TransactionStatus } from '../graphql/graphql';
@@ -96,6 +96,56 @@ interface IFormValues {
   status: string;
   transaction: string;
   vat: number;
+}
+
+function ReconcileTransaction({
+  initialValues,
+  setDisableInput,
+  setPending,
+  setTransactionType,
+}: {
+  initialValues: IFormValues;
+  setDisableInput: (disabled: boolean) => void;
+  setPending: (pending: boolean) => void;
+  setTransactionType: (transaction: string) => void;
+}) {
+  const { setValues, values } = useFormikContext<IFormValues>();
+  const baseline = useRef(initialValues);
+
+  useEffect(() => {
+    const previous = baseline.current;
+    const changed = (
+      Object.keys(initialValues) as Array<keyof IFormValues>
+    ).filter((field) => initialValues[field] !== previous[field]);
+    baseline.current = initialValues;
+    if (changed.length === 0) return;
+
+    // Compare values, not Formik's touched flags: blur alone is not an edit.
+    setValues((current) =>
+      changed.reduce(
+        (next, field) =>
+          String(current[field] ?? '') === String(previous[field] ?? '')
+            ? { ...next, [field]: initialValues[field] }
+            : next,
+        current,
+      ),
+    ).catch(() => {});
+  }, [initialValues, setValues]);
+
+  useEffect(() => {
+    setDisableInput(values.category === '');
+    setPending(values.status === 'pending');
+    setTransactionType(values.transaction);
+  }, [
+    setDisableInput,
+    setPending,
+    setTransactionType,
+    values.category,
+    values.status,
+    values.transaction,
+  ]);
+
+  return null;
 }
 
 function TransactionForm({
@@ -361,6 +411,12 @@ function TransactionForm({
         </LinkButton>
       }
     >
+      <ReconcileTransaction
+        initialValues={formValues}
+        setDisableInput={setDisableInput}
+        setPending={setPending}
+        setTransactionType={setTransactionType}
+      />
       <Row>
         <Col xs={12} md={6}>
           <Card padding="lg">

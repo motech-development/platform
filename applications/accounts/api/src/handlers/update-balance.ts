@@ -27,24 +27,56 @@ interface ITransactionScope {
   owner: string;
 }
 
-const hasTransactionScope = ({ companyId, owner, id }: ITransactionScope) =>
-  typeof id === 'string' &&
-  id.length > 0 &&
-  typeof companyId === 'string' &&
-  companyId.length > 0 &&
-  typeof owner === 'string' &&
-  owner.length > 0;
+const hasTransactionScope = (
+  item: IBalance | ITransactionScope | undefined,
+): item is ITransactionScope => {
+  if (!item) return false;
+  const { __typename: typename } = item;
+  if (typename !== 'Transaction') return false;
+  const { companyId, owner, id } = item;
+
+  return (
+    typeof id === 'string' &&
+    id.length > 0 &&
+    typeof companyId === 'string' &&
+    companyId.length > 0 &&
+    typeof owner === 'string' &&
+    owner.length > 0
+  );
+};
 
 const publishRecord = async ({ eventName, dynamodb }: DynamoDBRecord) => {
   const image =
     eventName === 'REMOVE' ? dynamodb?.OldImage : dynamodb?.NewImage;
 
-  if (!image) return;
+  const item = image
+    ? (unmarshall(image as Record<string, AttributeValue>) as
+        | IBalance
+        | ITransactionScope)
+    : undefined;
 
-  const item = unmarshall(image as Record<string, AttributeValue>) as
-    | IBalance
-    | ITransactionScope;
+  // Invalidate the former scope even when the new image cannot be published.
+  if (eventName === 'MODIFY' && dynamodb?.OldImage) {
+    const previous = unmarshall(
+      dynamodb.OldImage as Record<string, AttributeValue>,
+    ) as ITransactionScope;
 
+    if (
+      hasTransactionScope(previous) &&
+      (!hasTransactionScope(item) ||
+        previous.companyId !== item.companyId ||
+        previous.owner !== item.owner ||
+        previous.id !== item.id)
+    ) {
+      await publishTransactionChange(
+        previous.companyId,
+        previous.owner,
+        previous.id,
+      );
+    }
+  }
+
+  if (!item) return;
   const { __typename: typename } = item;
 
   if (typename === 'Balance' && eventName === 'MODIFY') {
@@ -65,24 +97,6 @@ const publishRecord = async ({ eventName, dynamodb }: DynamoDBRecord) => {
         },
       );
       return;
-    }
-
-    // Also invalidate the former scope if a record moves between companies.
-    if (eventName === 'MODIFY' && dynamodb?.OldImage) {
-      const previous = unmarshall(
-        dynamodb.OldImage as Record<string, AttributeValue>,
-      ) as ITransactionScope;
-
-      if (
-        hasTransactionScope(previous) &&
-        (previous.companyId !== companyId || previous.owner !== owner)
-      ) {
-        await publishTransactionChange(
-          previous.companyId,
-          previous.owner,
-          previous.id,
-        );
-      }
     }
 
     await publishTransactionChange(companyId, owner, id);
