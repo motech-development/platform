@@ -37,12 +37,18 @@ Signals contain only the company ID and owner, never financial changes or balanc
 snapshots. Consumers reconcile by fetching current transaction data; duplicate
 signals must not apply a transaction again. The existing `onTransaction`
 subscription continues to carry confirmed balance updates. Transaction signals
-can arrive before the separate balance calculation completes.
+can arrive before the separate balance calculation completes. The transaction
+list also uses an eventually consistent secondary index: receipt of a signal
+does not guarantee that an immediate list query includes the change. End-to-end
+client reconciliation must account for that propagation lag.
 
 The publisher processes batches of up to ten stream records in order, with a
 60-second timeout. It reports the first failed record using partial batch failure
 reporting so Lambda retries from that record, including any later records. A
 replayed signal is safe to receive more than once.
+Transaction images without a valid company ID or owner are logged and skipped;
+retrying those immutable malformed images cannot recover a notification scope
+and would prevent later valid records from being processed.
 
 The legacy Accounts client does not yet consume `onTransactionChange`. Its Pending
 page therefore needs a separate client change to refresh automatically. Backend

@@ -1,4 +1,5 @@
 import { marshall } from '@aws-sdk/util-dynamodb';
+import logger from '@motech-development/node-logger';
 import { AWSAppSyncClient } from 'aws-appsync';
 import type { Context, DynamoDBRecord, StreamRecord } from 'aws-lambda';
 import { mutation } from '../../shared/publish-transaction-change';
@@ -46,6 +47,7 @@ describe('transaction stream events', () => {
     vi.stubEnv('ENDPOINT', 'https://my.api/graphql');
     mutate.mockReset();
     mutate.mockResolvedValue({ data: {} });
+    vi.mocked(logger.error).mockClear();
   });
 
   afterEach(() => {
@@ -123,6 +125,17 @@ describe('transaction stream events', () => {
     );
   });
 
+  it('publishes a repaired transaction without retrying its malformed previous scope', async () => {
+    await expect(
+      invoke([record('MODIFY', { ...transaction, owner: 123 }, transaction)]),
+    ).resolves.toEqual({ batchItemFailures: [] });
+
+    expect(mutate).toHaveBeenCalledExactlyOnceWith({
+      mutation,
+      variables: { id: 'company-id', owner: 'owner-id' },
+    });
+  });
+
   it('keeps the existing balance event payload', async () => {
     const balance = {
       __typename: 'Balance',
@@ -178,14 +191,54 @@ describe('transaction stream events', () => {
     },
   );
 
-  it('does not publish an unscoped transaction event', async () => {
-    await expect(
-      invoke([record('INSERT', undefined, { ...transaction, owner: '' })]),
-    ).resolves.toEqual({
-      batchItemFailures: [{ itemIdentifier: '100' }],
-    });
-    expect(mutate).not.toHaveBeenCalled();
-  });
+  it.each([
+    ['missing company', 'companyId', undefined],
+    ['empty company', 'companyId', ''],
+    ['invalid company', 'companyId', 123],
+    ['missing owner', 'owner', undefined],
+    ['empty owner', 'owner', ''],
+    ['invalid owner', 'owner', 123],
+  ] as const)(
+    'skips a transaction with %s and continues publishing later records',
+    async (_, field, value) => {
+      const malformed = { ...transaction, [field]: value };
+      if (value === undefined) Reflect.deleteProperty(malformed, field);
+
+      await expect(
+        invoke([
+          record('INSERT', undefined, malformed, '100'),
+          record('INSERT', undefined, transaction, '101'),
+          record(
+            'MODIFY',
+            undefined,
+            {
+              __typename: 'Balance',
+              balance: 100,
+              id: 'company-id',
+              owner: 'owner-id',
+              vat: { owed: 20, paid: 0 },
+            },
+            '102',
+          ),
+        ]),
+      ).resolves.toEqual({ batchItemFailures: [] });
+
+      expect(logger.error).toHaveBeenCalledOnce();
+      expect(mutate).toHaveBeenCalledTimes(2);
+      expect(mutate).toHaveBeenNthCalledWith(1, {
+        mutation,
+        variables: { id: 'company-id', owner: 'owner-id' },
+      });
+      expect(mutate).toHaveBeenNthCalledWith(2, {
+        mutation: balanceMutation,
+        variables: {
+          id: 'company-id',
+          input: { balance: 100, vat: { owed: 20, paid: 0 } },
+          owner: 'owner-id',
+        },
+      });
+    },
+  );
 
   it('ignores unrelated records and balance creation', async () => {
     await expect(
