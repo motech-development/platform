@@ -29,6 +29,6 @@ yarn workspace @accounts/web lint
 
 The root `amplify.yml` builds this workspace and publishes `dist/`. The SPA rewrite serves `index.html`.
 
-CI/CD has been restored to commit `1c2b0a711657c61423d7a83fd613d12603b9b05a`, before the Accounts web rewrite. This workspace is outside the Deployment Catalog: automated Release, Develop, production, preview deployment, and preview teardown do not manage it. Existing Amplify resources are retained. The legacy client uses its original deployment and browser validation pipelines.
+CI/CD has been restored to commit `1c2b0a711657c61423d7a83fd613d12603b9b05a`, before the Accounts web rewrite. This workspace is private so the root release command excludes it, and it is outside the Deployment Catalog: automated Release, Develop, production, preview deployment, and preview teardown do not manage it. Existing Amplify resources are retained. The legacy client uses its original deployment and browser validation pipelines.
 
 Reconciliation, deployment, and teardown commands change AWS or remote Git state; local build and tests do not deploy anything.

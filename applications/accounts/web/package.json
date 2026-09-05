@@ -1,6 +1,7 @@
 {
   "name": "@accounts/web",
   "version": "0.0.0-development",
+  "private": true,
   "description": "Accounts placeholder with retained Amplify hosting",
   "installConfig": {
     "hoistingLimits": "workspaces"
