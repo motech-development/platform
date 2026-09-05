@@ -1,8 +1,6 @@
-import logger from '@motech-development/node-logger';
 import { AWSAppSyncClient } from 'aws-appsync';
 import type { Callback, Context, DynamoDBStreamEvent } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
-import type { Mock } from 'vitest';
 import { mutation } from '../../shared/update-balance';
 import { handler } from '../update-balance';
 
@@ -116,14 +114,14 @@ describe('update-balance', () => {
       });
     });
 
-    it('should swallow the error', async () => {
-      (AWSAppSyncClient.prototype.mutate as Mock).mockRejectedValueOnce(
+    it('should fail the batch when a failed record has no sequence number', async () => {
+      vi.mocked(AWSAppSyncClient.prototype.mutate).mockRejectedValueOnce(
         new Error('Something has gone wrong'),
       );
 
-      await handler(event, context, callback);
-
-      expect(logger.error).toHaveBeenCalledWith('Something has gone wrong');
+      await expect(handler(event, context, callback)).rejects.toThrow(
+        'Something has gone wrong',
+      );
     });
   });
 });

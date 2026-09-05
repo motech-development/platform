@@ -1,13 +1,16 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import { AttributeValue } from '@aws-sdk/client-dynamodb';
 import { unmarshall } from '@aws-sdk/util-dynamodb';
 import logger from '@motech-development/node-logger';
-import type { DynamoDBStreamHandler } from 'aws-lambda';
+import type {
+  DynamoDBBatchResponse,
+  DynamoDBRecord,
+  DynamoDBStreamHandler,
+} from 'aws-lambda';
+import publishTransactionChange from '../shared/publish-transaction-change';
 import updateBalance from '../shared/update-balance';
-import { isStreamModifyRecord } from '../shared/utils';
 
 export interface IBalance {
-  __typename: string;
+  __typename: 'Balance';
   balance: number;
   id: string;
   owner: string;
@@ -16,6 +19,55 @@ export interface IBalance {
     paid: number;
   };
 }
+
+interface ITransactionScope {
+  __typename: 'Transaction';
+  companyId: string;
+  owner: string;
+}
+
+const publishRecord = async ({ eventName, dynamodb }: DynamoDBRecord) => {
+  const image =
+    eventName === 'REMOVE' ? dynamodb?.OldImage : dynamodb?.NewImage;
+
+  if (!image) return;
+
+  const item = unmarshall(image as Record<string, AttributeValue>) as
+    | IBalance
+    | ITransactionScope;
+
+  const { __typename: typename } = item;
+
+  if (typename === 'Balance' && eventName === 'MODIFY') {
+    const { balance, id, owner, vat } = item;
+    await updateBalance(id, owner, { balance, vat });
+  }
+
+  if (typename === 'Transaction') {
+    const { companyId, owner } = item;
+
+    if (!companyId || !owner) {
+      throw new Error('Transaction is missing its company or owner');
+    }
+
+    // Also invalidate the former scope if a record moves between companies.
+    if (eventName === 'MODIFY' && dynamodb?.OldImage) {
+      const previous = unmarshall(
+        dynamodb.OldImage as Record<string, AttributeValue>,
+      ) as ITransactionScope;
+
+      if (
+        previous.companyId &&
+        previous.owner &&
+        (previous.companyId !== companyId || previous.owner !== owner)
+      ) {
+        await publishTransactionChange(previous.companyId, previous.owner);
+      }
+    }
+
+    await publishTransactionChange(companyId, owner);
+  }
+};
 
 export const handler: DynamoDBStreamHandler = async (event) => {
   const { AWS_REGION, ENDPOINT } = process.env;
@@ -28,53 +80,24 @@ export const handler: DynamoDBStreamHandler = async (event) => {
     throw new Error('No endpoint set');
   }
 
-  const { Records } = event;
+  return event.Records.reduce<Promise<DynamoDBBatchResponse>>(
+    async (previous, record) => {
+      const result = await previous;
+      if (result.batchItemFailures.length > 0) return result;
 
-  const mutations = Records.filter(isStreamModifyRecord)
-    .map(({ dynamodb }) => {
-      const { NewImage } = dynamodb;
+      try {
+        await publishRecord(record);
+        return { batchItemFailures: [] };
+      } catch (error) {
+        logger.error('Failed to publish transaction stream record', { error });
 
-      const { __typename, balance, id, owner, vat } = unmarshall(
-        NewImage as Record<string, AttributeValue>,
-      ) as IBalance;
+        const sequenceNumber = record.dynamodb?.SequenceNumber;
+        if (!sequenceNumber) throw error;
 
-      logger.info('Balance', {
-        balance: {
-          __typename,
-          balance,
-          id,
-          owner,
-          vat,
-        },
-      });
-
-      return {
-        __typename,
-        balance,
-        id,
-        owner,
-        vat,
-      };
-    })
-    .filter(({ __typename }) => __typename === 'Balance')
-    .map(({ balance, id, owner, vat }) =>
-      updateBalance(id, owner, {
-        balance,
-        vat,
-      }),
-    );
-
-  try {
-    const result = await Promise.all(mutations);
-
-    logger.info('Update balance result', {
-      result,
-    });
-  } catch (e) {
-    if (e instanceof Error) {
-      logger.error(e.message);
-    } else {
-      logger.error('Unhandled exception', e);
-    }
-  }
+        // Stop here: Lambda retries from this checkpoint, including later records.
+        return { batchItemFailures: [{ itemIdentifier: sequenceNumber }] };
+      }
+    },
+    Promise.resolve({ batchItemFailures: [] }),
+  );
 };

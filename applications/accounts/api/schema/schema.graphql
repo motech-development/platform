@@ -14,6 +14,7 @@ type Mutation {
     owner: String!
     input: TransactionBeaconInput!
   ): Balance! @aws_iam
+  transactionChangeBeacon(id: ID!, owner: String!): TransactionChange! @aws_iam
   requestUpload(id: ID!, input: StorageUploadInput!): StorageUpload!
   deleteFile(id: ID!, path: String!): Storage!
   notificationBeacon(id: ID!, input: NotificationInput!): Notification! @aws_iam
@@ -42,6 +43,8 @@ type Query {
 }
 
 type Subscription {
+  onTransactionChange(id: ID!, owner: String!): TransactionChange
+    @aws_subscribe(mutations: ["transactionChangeBeacon"])
   onTransaction(id: ID!, owner: String!): Balance
     @aws_subscribe(mutations: ["transactionBeacon"])
   onNotification(owner: String!): Notification
