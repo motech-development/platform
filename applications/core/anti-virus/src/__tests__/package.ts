@@ -51,7 +51,7 @@ async function packageAntiVirus(
   const inspectionDirectory = join(dirname(binaryDirectory), 'handlers');
   await mkdir(inspectionDirectory, { recursive: true });
   await Promise.all(
-    Array.from({ length: 6 }, (_, index) =>
+    Array.from({ length: 7 }, (_, index) =>
       writeFile(
         join(inspectionDirectory, `handler-${index}.js`),
         'module.exports.handler = async () => ({ statusCode: 204 });\n',
@@ -135,13 +135,32 @@ test('cached and uncached binaries produce equivalent deployable packages', asyn
     await packageAntiVirus(freshBinaries, freshPackage);
     await packageAntiVirus(cachedBinaries, cachedPackage);
 
+    const template = JSON.parse(
+      await readFile(
+        join(freshPackage, 'cloudformation-template-update-stack.json'),
+        'utf8',
+      ),
+    ) as {
+      Resources: {
+        CleanupAttachmentsLambdaFunction: { Properties: { Timeout: number } };
+        MoveFileLambdaFunction: { Properties: { Timeout: number } };
+      };
+    };
+    expect(template.Resources.MoveFileLambdaFunction.Properties.Timeout).toBe(
+      900,
+    );
+
+    expect(
+      template.Resources.CleanupAttachmentsLambdaFunction.Properties.Timeout,
+    ).toBe(900);
+
     const freshArchives = (await readdir(freshPackage))
       .filter((file) => file.endsWith('.zip'))
       .sort();
     const cachedArchives = (await readdir(cachedPackage))
       .filter((file) => file.endsWith('.zip'))
       .sort();
-    expect(freshArchives).toHaveLength(6);
+    expect(freshArchives).toHaveLength(7);
     expect(cachedArchives).toEqual(freshArchives);
 
     const manifests = await Promise.all(

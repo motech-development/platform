@@ -1,4 +1,7 @@
-import { moveFile } from '@motech-development/s3-file-operations';
+import {
+  moveFile,
+  moveStagedFile,
+} from '@motech-development/s3-file-operations';
 import { init, wrapHandler } from '@sentry/aws-serverless';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import type { Handler } from 'aws-lambda';
@@ -14,11 +17,13 @@ init({
 export interface IEvent {
   from: string;
   key: string;
+  managed?: boolean;
   to: string;
 }
 
 export const handler: Handler<IEvent> = wrapHandler(async (event) => {
   const { from, key, to } = event;
 
-  await moveFile(from, to, key);
+  if (event.managed) await moveStagedFile(from, to, decodeURIComponent(key));
+  else await moveFile(from, to, key);
 });

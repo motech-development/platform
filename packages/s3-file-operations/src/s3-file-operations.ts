@@ -17,6 +17,15 @@ import {
 import { Upload } from '@aws-sdk/lib-storage';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
+export {
+  allocateStagedFile,
+  cleanupExpiredStagedFiles,
+  deleteStagedFile,
+  getStagedFile,
+  isMissingFile,
+  moveStagedFile,
+} from './file-lifecycle';
+
 const s3 = new S3Client({});
 
 export const createDirectory = async (name: string): Promise<boolean> => {
