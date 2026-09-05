@@ -8,6 +8,7 @@ import {
   RenderResult,
   waitFor,
 } from '@testing-library/react';
+import { Link, Route, Routes } from 'react-router-dom';
 import { typePolicies } from '../../../../components/ApolloClient';
 import TransactionUpdates, {
   TransactionStateProvider,
@@ -47,20 +48,22 @@ describe('Accounts', () => {
       id: 'older-transaction',
       name: 'Older customer',
     };
-    let initial = true;
+    let connected = true;
     const list = vi.fn((nextToken: string | undefined) => {
       if (nextToken) return { items: [older], nextToken: null };
-      if (initial) {
-        initial = false;
-        return { items: [first], nextToken: 'older-page' };
-      }
-      return { items: [], nextToken: null };
+      return connected
+        ? { items: [first], nextToken: 'older-page' }
+        : { items: [], nextToken: null };
     });
     const link = new ApolloLink(
       (operation) =>
         new Observable((observer) => {
           if (operation.operationName === 'OnTransactionChange') {
-            disconnect = () => observer.error(new Error('Connection lost'));
+            disconnect = () => {
+              connected = false;
+              observer.error(new Error('Connection lost'));
+            };
+            observer.next({ extensions: { controlMsgType: 'CONNECTED' } });
           } else if (operation.operationName === 'GetBalance') {
             observer.next({
               data: {
@@ -97,8 +100,9 @@ describe('Accounts', () => {
     fireEvent.click(getByRole('button', { name: 'accounts.load-more' }));
     await findByText(older.description);
     expect(queryByText(first.description)).toBeInTheDocument();
+    const previousCalls = list.mock.calls.length;
     act(() => disconnect?.());
-    await waitFor(() => expect(list).toHaveBeenCalledTimes(3), {
+    await waitFor(() => expect(list).toHaveBeenCalledTimes(previousCalls + 1), {
       timeout: 2000,
     });
     await waitFor(() => {
@@ -242,6 +246,98 @@ describe('Accounts', () => {
     expect(
       getAllByRole('link', { name: 'transactions-list.view' }),
     ).toHaveLength(4);
+  });
+
+  it('refreshes an uncorrected cached transaction after returning from the dashboard', async () => {
+    let resolveReturn: (() => void) | undefined;
+    const unsubscribe = vi.fn();
+    const list = vi.fn();
+    const cachedTransaction = {
+      __typename: 'Transaction',
+      amount: 20,
+      attachment: '',
+      date: '2026-09-05T12:00:00.000Z',
+      description: 'Deleted while viewing dashboard',
+      id: 'missed-transaction',
+      name: 'Missed customer',
+    };
+    const link = new ApolloLink(
+      (operation) =>
+        new Observable((observer) => {
+          if (operation.operationName === 'OnTransactionChange') {
+            return unsubscribe;
+          }
+          if (operation.operationName === 'GetBalance') {
+            list();
+            const respond = (items: (typeof cachedTransaction)[]) => {
+              observer.next({
+                data: {
+                  getBalance: {
+                    balance: 20,
+                    currency: 'GBP',
+                    id: 'company-id',
+                    vat: { owed: 0, paid: 0 },
+                  },
+                  getTransactions: {
+                    __typename: 'Transactions',
+                    id: 'company-id',
+                    items,
+                    nextToken: null,
+                    status: TransactionStatus.Confirmed,
+                  },
+                },
+              });
+              observer.complete();
+            };
+            if (list.mock.calls.length === 1) respond([cachedTransaction]);
+            else resolveReturn = () => respond([]);
+          }
+          return undefined;
+        }),
+    );
+    const { findByText, getByRole, queryByText } = render(
+      <TestProvider
+        path="/my-companies/*"
+        history={['/my-companies/accounts/company-id']}
+      >
+        <MockedProvider link={link} cache={new InMemoryCache({ typePolicies })}>
+          <TransactionStateProvider>
+            <Routes>
+              <Route
+                path="accounts/:companyId"
+                element={
+                  <TransactionUpdates companyId="company-id" owner="user-id">
+                    <Accounts />
+                  </TransactionUpdates>
+                }
+              />
+              <Route
+                path="dashboard/:companyId"
+                element={
+                  <Link to="/my-companies/accounts/company-id">
+                    Return to accounts
+                  </Link>
+                }
+              />
+            </Routes>
+          </TransactionStateProvider>
+        </MockedProvider>
+      </TestProvider>,
+    );
+    await findByText(cachedTransaction.description);
+    fireEvent.click(getByRole('link', { name: 'accounts.dashboard.button' }));
+    await findByText('Return to accounts');
+    expect(unsubscribe).toHaveBeenCalledOnce();
+
+    fireEvent.click(getByRole('link', { name: 'Return to accounts' }));
+    await waitFor(() => expect(list).toHaveBeenCalledTimes(2));
+    await act(async () => {
+      resolveReturn?.();
+      await waitForApollo(0);
+    });
+
+    await findByText('no-transactions.title');
+    expect(queryByText(cachedTransaction.description)).not.toBeInTheDocument();
   });
 
   describe('success', () => {

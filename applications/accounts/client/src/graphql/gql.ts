@@ -26,7 +26,7 @@ type Documents = {
   '\n  query RecordTransaction($id: ID!) {\n    getClients(id: $id) {\n      id\n      items {\n        id\n        name\n      }\n    }\n    getSettings(id: $id) {\n      categories {\n        name\n        vatRate\n      }\n      id\n      vat {\n        pay\n      }\n    }\n    getTypeahead(id: $id) {\n      id\n      purchases\n      sales\n      suppliers\n    }\n  }\n': typeof types.RecordTransactionDocument;
   '\n  mutation AddTransaction($input: TransactionInput!) {\n    addTransaction(input: $input) {\n      amount\n      attachment\n      category\n      companyId\n      date\n      description\n      id\n      name\n      refund\n      scheduled\n      status\n      vat\n    }\n  }\n': typeof types.AddTransactionDocument;
   '\n  query ViewTransaction($companyId: ID!, $transactionId: ID!) {\n    getClients(id: $companyId) {\n      id\n      items {\n        id\n        name\n      }\n    }\n    getSettings(id: $companyId) {\n      categories {\n        name\n        vatRate\n      }\n      id\n      vat {\n        pay\n      }\n    }\n    getTransaction(id: $transactionId) {\n      amount\n      attachment\n      category\n      companyId\n      date\n      description\n      id\n      name\n      refund\n      scheduled\n      status\n      vat\n    }\n    getTypeahead(id: $companyId) {\n      id\n      purchases\n      sales\n      suppliers\n    }\n  }\n': typeof types.ViewTransactionDocument;
-  '\n  mutation UpdateTransaction($input: TransactionInput!) {\n    updateTransaction(input: $input) {\n      amount\n      attachment\n      category\n      companyId\n      date\n      description\n      id\n      name\n      scheduled\n      status\n      vat\n    }\n  }\n': typeof types.UpdateTransactionDocument;
+  '\n  mutation UpdateTransaction($input: TransactionInput!) {\n    updateTransaction(input: $input) {\n      amount\n      attachment\n      category\n      companyId\n      date\n      description\n      id\n      name\n      refund\n      scheduled\n      status\n      vat\n    }\n  }\n': typeof types.UpdateTransactionDocument;
   '\n  query GetTypeahead($id: ID!) {\n    getTypeahead(id: $id) {\n      id\n      purchases\n      sales\n      suppliers\n    }\n  }\n': typeof types.GetTypeaheadDocument;
   '\n  mutation RequestUpload($id: ID!, $input: StorageUploadInput!) {\n    requestUpload(id: $id, input: $input) {\n      id\n      url\n    }\n  }\n': typeof types.RequestUploadDocument;
   '\n  mutation DeleteFile($id: ID!, $path: String!) {\n    deleteFile(id: $id, path: $path) {\n      path\n    }\n  }\n': typeof types.DeleteFileDocument;
@@ -76,7 +76,7 @@ const documents: Documents = {
     types.AddTransactionDocument,
   '\n  query ViewTransaction($companyId: ID!, $transactionId: ID!) {\n    getClients(id: $companyId) {\n      id\n      items {\n        id\n        name\n      }\n    }\n    getSettings(id: $companyId) {\n      categories {\n        name\n        vatRate\n      }\n      id\n      vat {\n        pay\n      }\n    }\n    getTransaction(id: $transactionId) {\n      amount\n      attachment\n      category\n      companyId\n      date\n      description\n      id\n      name\n      refund\n      scheduled\n      status\n      vat\n    }\n    getTypeahead(id: $companyId) {\n      id\n      purchases\n      sales\n      suppliers\n    }\n  }\n':
     types.ViewTransactionDocument,
-  '\n  mutation UpdateTransaction($input: TransactionInput!) {\n    updateTransaction(input: $input) {\n      amount\n      attachment\n      category\n      companyId\n      date\n      description\n      id\n      name\n      scheduled\n      status\n      vat\n    }\n  }\n':
+  '\n  mutation UpdateTransaction($input: TransactionInput!) {\n    updateTransaction(input: $input) {\n      amount\n      attachment\n      category\n      companyId\n      date\n      description\n      id\n      name\n      refund\n      scheduled\n      status\n      vat\n    }\n  }\n':
     types.UpdateTransactionDocument,
   '\n  query GetTypeahead($id: ID!) {\n    getTypeahead(id: $id) {\n      id\n      purchases\n      sales\n      suppliers\n    }\n  }\n':
     types.GetTypeaheadDocument,
@@ -216,8 +216,8 @@ export function gql(
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(
-  source: '\n  mutation UpdateTransaction($input: TransactionInput!) {\n    updateTransaction(input: $input) {\n      amount\n      attachment\n      category\n      companyId\n      date\n      description\n      id\n      name\n      scheduled\n      status\n      vat\n    }\n  }\n',
-): (typeof documents)['\n  mutation UpdateTransaction($input: TransactionInput!) {\n    updateTransaction(input: $input) {\n      amount\n      attachment\n      category\n      companyId\n      date\n      description\n      id\n      name\n      scheduled\n      status\n      vat\n    }\n  }\n'];
+  source: '\n  mutation UpdateTransaction($input: TransactionInput!) {\n    updateTransaction(input: $input) {\n      amount\n      attachment\n      category\n      companyId\n      date\n      description\n      id\n      name\n      refund\n      scheduled\n      status\n      vat\n    }\n  }\n',
+): (typeof documents)['\n  mutation UpdateTransaction($input: TransactionInput!) {\n    updateTransaction(input: $input) {\n      amount\n      attachment\n      category\n      companyId\n      date\n      description\n      id\n      name\n      refund\n      scheduled\n      status\n      vat\n    }\n  }\n'];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

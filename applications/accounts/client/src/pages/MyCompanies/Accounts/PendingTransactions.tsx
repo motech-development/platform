@@ -20,7 +20,10 @@ import NoTransactions from '../../../components/NoTransactions';
 import Scheduled from '../../../components/Scheduled';
 import TransactionArrow from '../../../components/TransactionArrow';
 import TransactionDetailsCell from '../../../components/TransactionDetailsCell';
-import { useTransactionItems } from '../../../components/TransactionUpdates';
+import {
+  useApplyTransactionState,
+  useTransactionItems,
+} from '../../../components/TransactionUpdates';
 import WarningText from '../../../components/WarningText';
 import { gql } from '../../../graphql';
 import {
@@ -172,7 +175,9 @@ function PendingTransactions() {
   invariant(companyId);
 
   const { add } = useToast();
+  const applyTransactionState = useApplyTransactionState();
   const { data, error, loading } = useQuery(GET_TRANSACTIONS, {
+    fetchPolicy: 'cache-and-network',
     variables: {
       id: companyId,
       status: TransactionStatus.Pending,
@@ -191,7 +196,9 @@ function PendingTransactions() {
   const [deleteMutation, { loading: deleteLoading }] = useMutation(
     DELETE_TRANSACTION,
     {
-      onCompleted: () => {
+      onCompleted: ({ deleteTransaction }) => {
+        if (deleteTransaction)
+          applyTransactionState(deleteTransaction.id, null);
         add({
           colour: 'success',
           message: t('delete-transaction.success'),
