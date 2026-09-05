@@ -58,6 +58,8 @@ functions:
       SENTRY_DSN: ${env:SENTRY_DSN}
 
   MoveFile:
+    # S3 completion can take minutes; allow the AWS Lambda maximum (15 minutes).
+    timeout: 900
     handler: src/handlers/move-file.handler
     role: LambdaFunctionRole
     environment:
@@ -216,7 +218,6 @@ resources:
               Statement:
                 - Effect: Allow
                   Action:
-                    - s3:AbortMultipartUpload
                     - s3:DeleteObject
                     - s3:GetObject
                     - S3:GetObjectTagging
@@ -224,6 +225,11 @@ resources:
                     - S3:PutObjectTagging
                   Resource:
                     - 'arn:aws:s3:::*'
+                - Effect: Allow
+                  Action:
+                    - s3:AbortMultipartUpload
+                  Resource:
+                    - arn:aws:s3:::accounts-${self:provider.stage}-downloads/*
                 - Effect: Allow
                   Action:
                     - s3:ListBucket

@@ -24,6 +24,6 @@ export interface IEvent {
 export const handler: Handler<IEvent> = wrapHandler(async (event) => {
   const { from, key, to } = event;
 
-  if (event.managed) await moveStagedFile(from, to, key);
+  if (event.managed) await moveStagedFile(from, to, decodeURIComponent(key));
   else await moveFile(from, to, key);
 });

@@ -135,6 +135,20 @@ test('cached and uncached binaries produce equivalent deployable packages', asyn
     await packageAntiVirus(freshBinaries, freshPackage);
     await packageAntiVirus(cachedBinaries, cachedPackage);
 
+    const template = JSON.parse(
+      await readFile(
+        join(freshPackage, 'cloudformation-template-update-stack.json'),
+        'utf8',
+      ),
+    ) as {
+      Resources: {
+        MoveFileLambdaFunction: { Properties: { Timeout: number } };
+      };
+    };
+    expect(template.Resources.MoveFileLambdaFunction.Properties.Timeout).toBe(
+      900,
+    );
+
     const freshArchives = (await readdir(freshPackage))
       .filter((file) => file.endsWith('.zip'))
       .sort();
