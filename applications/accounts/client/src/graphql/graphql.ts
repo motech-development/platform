@@ -197,6 +197,7 @@ export type Mutation = {
   notificationBeacon: Notification;
   requestUpload: StorageUpload;
   transactionBeacon: Balance;
+  transactionChangeBeacon: TransactionChange;
   updateClient: Client;
   updateCompany: Company;
   updateSettings: Settings;
@@ -257,6 +258,12 @@ export type MutationTransactionBeaconArgs = {
   owner: Scalars['String']['input'];
 };
 
+export type MutationTransactionChangeBeaconArgs = {
+  id: Scalars['ID']['input'];
+  owner: Scalars['String']['input'];
+  transactionId: Scalars['ID']['input'];
+};
+
 export type MutationUpdateClientArgs = {
   input: ClientInput;
 };
@@ -306,6 +313,7 @@ export type Query = {
   getReports: Reports;
   getSettings: Settings;
   getTransaction: Transaction;
+  getTransactionState?: Maybe<Transaction>;
   getTransactions: Transactions;
   getTypeahead: Typeahead;
   requestDownload: StorageDownload;
@@ -353,6 +361,11 @@ export type QueryGetSettingsArgs = {
 
 export type QueryGetTransactionArgs = {
   id: Scalars['ID']['input'];
+};
+
+export type QueryGetTransactionStateArgs = {
+  companyId: Scalars['ID']['input'];
+  transactionId: Scalars['ID']['input'];
 };
 
 export type QueryGetTransactionsArgs = {
@@ -447,6 +460,7 @@ export type StorageUploadInput = {
 export type Subscription = {
   onNotification?: Maybe<Notification>;
   onTransaction?: Maybe<Balance>;
+  onTransactionChange?: Maybe<TransactionChange>;
 };
 
 export type SubscriptionOnNotificationArgs = {
@@ -454,6 +468,11 @@ export type SubscriptionOnNotificationArgs = {
 };
 
 export type SubscriptionOnTransactionArgs = {
+  id: Scalars['ID']['input'];
+  owner: Scalars['String']['input'];
+};
+
+export type SubscriptionOnTransactionChangeArgs = {
   id: Scalars['ID']['input'];
   owner: Scalars['String']['input'];
 };
@@ -489,6 +508,13 @@ export type TransactionBeaconTransactionsItemInput = {
 export type TransactionBeaconVatInput = {
   owed: Scalars['Float']['input'];
   paid: Scalars['Float']['input'];
+};
+
+/** An owner-scoped signal to read current transaction state; repeated signals are harmless. */
+export type TransactionChange = {
+  id: Scalars['ID']['output'];
+  owner: Scalars['String']['output'];
+  transactionId: Scalars['ID']['output'];
 };
 
 export type TransactionInput = {
@@ -543,6 +569,57 @@ export type VatSettingsInput = {
   pay: Scalars['Float']['input'];
   registration?: InputMaybe<Scalars['String']['input']>;
   scheme: VatScheme;
+};
+
+export type NewReportFragment = {
+  id?: string | null;
+  createdAt?: string | null;
+  downloadUrl?: string | null;
+  ttl?: number | null;
+} & { ' $fragmentName'?: 'NewReportFragment' };
+
+export type NewNotificationFragment = {
+  id: string;
+  createdAt: string;
+  message: string;
+  owner: string;
+  payload?: string | null;
+  read: boolean;
+} & { ' $fragmentName'?: 'NewNotificationFragment' };
+
+export type OnTransactionChangeSubscriptionVariables = Exact<{
+  id: Scalars['ID']['input'];
+  owner: Scalars['String']['input'];
+}>;
+
+export type OnTransactionChangeSubscription = {
+  onTransactionChange?: {
+    id: string;
+    owner: string;
+    transactionId: string;
+  } | null;
+};
+
+export type GetTransactionStateQueryVariables = Exact<{
+  companyId: Scalars['ID']['input'];
+  transactionId: Scalars['ID']['input'];
+}>;
+
+export type GetTransactionStateQuery = {
+  getTransactionState?: {
+    amount: number;
+    attachment?: string | null;
+    category: string;
+    companyId: string;
+    date: string;
+    description: string;
+    id: string;
+    name: string;
+    refund: boolean;
+    scheduled: boolean;
+    status: TransactionStatus;
+    vat: number;
+  } | null;
 };
 
 export type GetBalanceQueryVariables = Exact<{
@@ -1078,6 +1155,52 @@ export type MarkAsReadMutation = {
   markAsRead: { items?: Array<{ id: string; read: boolean } | null> | null };
 };
 
+export const NewReportFragmentDoc = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'NewReport' },
+      typeCondition: {
+        kind: 'NamedType',
+        name: { kind: 'Name', value: 'Report' },
+      },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'downloadUrl' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'ttl' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<NewReportFragment, unknown>;
+export const NewNotificationFragmentDoc = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'NewNotification' },
+      typeCondition: {
+        kind: 'NamedType',
+        name: { kind: 'Name', value: 'Notification' },
+      },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'message' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'owner' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'payload' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'read' } },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<NewNotificationFragment, unknown>;
 export const NewTransactionFragmentDoc = {
   kind: 'Document',
   definitions: [
@@ -1209,6 +1332,162 @@ export const NewClientFragmentDoc = {
     },
   ],
 } as unknown as DocumentNode<NewClientFragment, unknown>;
+export const OnTransactionChangeDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'subscription',
+      name: { kind: 'Name', value: 'OnTransactionChange' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'owner' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'onTransactionChange' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'owner' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'owner' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'owner' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'transactionId' },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  OnTransactionChangeSubscription,
+  OnTransactionChangeSubscriptionVariables
+>;
+export const GetTransactionStateDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'GetTransactionState' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'companyId' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'transactionId' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'getTransactionState' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'companyId' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'companyId' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'transactionId' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'transactionId' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'attachment' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'category' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'companyId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'date' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'refund' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'scheduled' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'vat' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  GetTransactionStateQuery,
+  GetTransactionStateQueryVariables
+>;
 export const GetBalanceDocument = {
   kind: 'Document',
   definitions: [
@@ -3915,6 +4194,7 @@ export type MutationKeySpecifier = (
   | 'notificationBeacon'
   | 'requestUpload'
   | 'transactionBeacon'
+  | 'transactionChangeBeacon'
   | 'updateClient'
   | 'updateCompany'
   | 'updateSettings'
@@ -3934,6 +4214,7 @@ export type MutationFieldPolicy = {
   notificationBeacon?: FieldPolicy<any> | FieldReadFunction<any>;
   requestUpload?: FieldPolicy<any> | FieldReadFunction<any>;
   transactionBeacon?: FieldPolicy<any> | FieldReadFunction<any>;
+  transactionChangeBeacon?: FieldPolicy<any> | FieldReadFunction<any>;
   updateClient?: FieldPolicy<any> | FieldReadFunction<any>;
   updateCompany?: FieldPolicy<any> | FieldReadFunction<any>;
   updateSettings?: FieldPolicy<any> | FieldReadFunction<any>;
@@ -3975,6 +4256,7 @@ export type QueryKeySpecifier = (
   | 'getReports'
   | 'getSettings'
   | 'getTransaction'
+  | 'getTransactionState'
   | 'getTransactions'
   | 'getTypeahead'
   | 'requestDownload'
@@ -3990,6 +4272,7 @@ export type QueryFieldPolicy = {
   getReports?: FieldPolicy<any> | FieldReadFunction<any>;
   getSettings?: FieldPolicy<any> | FieldReadFunction<any>;
   getTransaction?: FieldPolicy<any> | FieldReadFunction<any>;
+  getTransactionState?: FieldPolicy<any> | FieldReadFunction<any>;
   getTransactions?: FieldPolicy<any> | FieldReadFunction<any>;
   getTypeahead?: FieldPolicy<any> | FieldReadFunction<any>;
   requestDownload?: FieldPolicy<any> | FieldReadFunction<any>;
@@ -4070,11 +4353,13 @@ export type StorageUploadFieldPolicy = {
 export type SubscriptionKeySpecifier = (
   | 'onNotification'
   | 'onTransaction'
+  | 'onTransactionChange'
   | SubscriptionKeySpecifier
 )[];
 export type SubscriptionFieldPolicy = {
   onNotification?: FieldPolicy<any> | FieldReadFunction<any>;
   onTransaction?: FieldPolicy<any> | FieldReadFunction<any>;
+  onTransactionChange?: FieldPolicy<any> | FieldReadFunction<any>;
 };
 export type TransactionKeySpecifier = (
   | 'amount'
@@ -4104,6 +4389,17 @@ export type TransactionFieldPolicy = {
   scheduled?: FieldPolicy<any> | FieldReadFunction<any>;
   status?: FieldPolicy<any> | FieldReadFunction<any>;
   vat?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type TransactionChangeKeySpecifier = (
+  | 'id'
+  | 'owner'
+  | 'transactionId'
+  | TransactionChangeKeySpecifier
+)[];
+export type TransactionChangeFieldPolicy = {
+  id?: FieldPolicy<any> | FieldReadFunction<any>;
+  owner?: FieldPolicy<any> | FieldReadFunction<any>;
+  transactionId?: FieldPolicy<any> | FieldReadFunction<any>;
 };
 export type TransactionsKeySpecifier = (
   | 'id'
@@ -4312,6 +4608,13 @@ export type StrictTypedTypePolicies = {
       | TransactionKeySpecifier
       | (() => undefined | TransactionKeySpecifier);
     fields?: TransactionFieldPolicy;
+  };
+  TransactionChange?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
+    keyFields?:
+      | false
+      | TransactionChangeKeySpecifier
+      | (() => undefined | TransactionChangeKeySpecifier);
+    fields?: TransactionChangeFieldPolicy;
   };
   Transactions?: Omit<TypePolicy, 'fields' | 'keyFields'> & {
     keyFields?:

@@ -20,6 +20,7 @@ import NoTransactions from '../../../components/NoTransactions';
 import Scheduled from '../../../components/Scheduled';
 import TransactionArrow from '../../../components/TransactionArrow';
 import TransactionDetailsCell from '../../../components/TransactionDetailsCell';
+import { useTransactionItems } from '../../../components/TransactionUpdates';
 import WarningText from '../../../components/WarningText';
 import { gql } from '../../../graphql';
 import {
@@ -183,6 +184,10 @@ function PendingTransactions() {
       name: '',
     });
   };
+  const transactions = useTransactionItems(
+    data?.getTransactions.items,
+    TransactionStatus.Pending,
+  );
   const [deleteMutation, { loading: deleteLoading }] = useMutation(
     DELETE_TRANSACTION,
     {
@@ -229,7 +234,7 @@ function PendingTransactions() {
             {data.getTransactions && (
               <Col>
                 <DataTable
-                  items={data.getTransactions.items}
+                  items={transactions}
                   header={
                     <>
                       <TableCell as="th" colSpan={2}>

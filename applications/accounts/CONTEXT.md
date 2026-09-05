@@ -26,31 +26,46 @@ A transaction that forms part of the confirmed accounts.
 
 ## Transaction notifications
 
-The API's `onTransactionChange(id, owner)` subscription signals that a company's
-transactions should be fetched again. Here `id` is the company ID and `owner` is
-the Accounts Owner ID; the subscription resolver requires `owner` to match the
+The API's `onTransactionChange(id, owner)` subscription identifies a changed
+transaction within a company. Here `id` is the company ID and `owner` is the
+Accounts Owner ID; the subscription resolver requires `owner` to match the
 authenticated user's identity. The IAM-only `transactionChangeBeacon` mutation
-publishes these signals from Transaction stream inserts, updates and removals,
-including Pending Transaction attachment cleanup.
+publishes the company ID, owner and transaction ID from Transaction stream
+inserts, updates and removals, including Pending Transaction attachment cleanup.
+A scope change also notifies the former company and owner.
 
-Signals contain only the company ID and owner, never financial changes or balance
-snapshots. Consumers reconcile by fetching current transaction data; duplicate
-signals must not apply a transaction again. The existing `onTransaction`
-subscription continues to carry confirmed balance updates. Transaction signals
-can arrive before the separate balance calculation completes. The transaction
-list also uses an eventually consistent secondary index: receipt of a signal
-does not guarantee that an immediate list query includes the change. End-to-end
-client reconciliation must account for that propagation lag.
+Signals contain no financial changes or balance snapshots. The Accounts client
+reads `getTransactionState(companyId, transactionId)` after each signal. This
+owner-checked query reads the base table with strong consistency, returning null
+for a deleted, moved or inaccessible transaction. It avoids the propagation lag
+of the secondary index used by transaction lists. The existing `onTransaction`
+subscription continues to carry confirmed balance updates; transaction signals
+can arrive before the separate balance calculation completes.
+
+The client overlays these current records and deletion markers on Pending and
+Confirmed lists, so delayed index responses cannot overwrite a correction or
+restore a deleted row. Repeated signals never apply financial amounts again.
+Reads for the same transaction are serialized; a newer signal during a read
+causes another read before applying the result. Failed reads retry with backoff.
+Corrections survive navigation for the signed-in session and are rechecked on
+return to an account. Account changes cancel obsolete reads and subscriptions;
+changing the signed-in owner resets corrections. Transaction details use the
+correction when opened and synchronize attachment changes while preserving
+unsaved form fields.
+
+Dropped subscriptions reconnect with backoff and refresh known corrections and
+open lists. The subscription does not provide durable replay: newly created
+transactions whose signals were missed depend on the list refresh and its index
+visibility. Continuous connection handling does not assume an index query has
+caught up when a signal arrives.
 
 The publisher processes batches of up to ten stream records in order, with a
 60-second timeout. It reports the first failed record using partial batch failure
 reporting so Lambda retries from that record, including any later records. A
-replayed signal is safe to receive more than once.
-Transaction images without a valid company ID or owner are logged and skipped;
-retrying those immutable malformed images cannot recover a notification scope
-and would prevent later valid records from being processed.
+replayed signal is safe to receive more than once. Transaction images without a
+valid transaction ID, company ID or owner are logged and skipped; retrying those
+immutable malformed images cannot recover a notification scope and would
+prevent later valid records from being processed.
 
-The legacy Accounts client does not yet consume `onTransactionChange`. Its Pending
-page therefore needs a separate client change to refresh automatically. Backend
-verification uses the existing unit-test setup; no separate subscription test
-infrastructure is required.
+Verification uses the existing API and client unit-test setups; no separate
+subscription testing infrastructure is required.

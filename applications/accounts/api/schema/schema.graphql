@@ -14,7 +14,11 @@ type Mutation {
     owner: String!
     input: TransactionBeaconInput!
   ): Balance! @aws_iam
-  transactionChangeBeacon(id: ID!, owner: String!): TransactionChange! @aws_iam
+  transactionChangeBeacon(
+    id: ID!
+    owner: String!
+    transactionId: ID!
+  ): TransactionChange! @aws_iam
   requestUpload(id: ID!, input: StorageUploadInput!): StorageUpload!
   deleteFile(id: ID!, path: String!): Storage!
   notificationBeacon(id: ID!, input: NotificationInput!): Notification! @aws_iam
@@ -30,6 +34,7 @@ type Query {
   getCompany(id: ID!): Company!
   getSettings(id: ID!): Settings!
   getTransaction(id: ID!): Transaction!
+  getTransactionState(companyId: ID!, transactionId: ID!): Transaction
   getTransactions(
     id: ID!
     status: TransactionStatus!

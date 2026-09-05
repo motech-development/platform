@@ -62,6 +62,18 @@ describe('transaction stream events', () => {
     ],
     ['delete', record('REMOVE', transaction, undefined)],
     [
+      'confirmed edit',
+      record(
+        'MODIFY',
+        { ...transaction, status: 'confirmed' },
+        { ...transaction, description: 'Edited', status: 'confirmed' },
+      ),
+    ],
+    [
+      'confirmed delete',
+      record('REMOVE', { ...transaction, status: 'confirmed' }, undefined),
+    ],
+    [
       'attach',
       record('MODIFY', transaction, {
         ...transaction,
@@ -81,7 +93,7 @@ describe('transaction stream events', () => {
       record('MODIFY', { ...transaction, status: 'confirmed' }, transaction),
     ],
   ])(
-    'publishes a scoped invalidation for a Pending %s without balance values',
+    'publishes a scoped invalidation for a transaction %s without balance values',
     async (_, change) => {
       await expect(invoke([change])).resolves.toEqual({
         batchItemFailures: [],
@@ -89,7 +101,11 @@ describe('transaction stream events', () => {
 
       expect(mutate).toHaveBeenCalledExactlyOnceWith({
         mutation,
-        variables: { id: 'company-id', owner: 'owner-id' },
+        variables: {
+          id: 'company-id',
+          owner: 'owner-id',
+          transactionId: 'transaction-id',
+        },
       });
     },
   );
@@ -105,11 +121,19 @@ describe('transaction stream events', () => {
 
     expect(mutate).toHaveBeenNthCalledWith(1, {
       mutation,
-      variables: { id: 'company-id', owner: 'owner-id' },
+      variables: {
+        id: 'company-id',
+        owner: 'owner-id',
+        transactionId: 'transaction-id',
+      },
     });
     expect(mutate).toHaveBeenNthCalledWith(2, {
       mutation,
-      variables: { id: 'another-company', owner: 'another-owner' },
+      variables: {
+        id: 'another-company',
+        owner: 'another-owner',
+        transactionId: 'transaction-id',
+      },
     });
   });
 
@@ -132,7 +156,11 @@ describe('transaction stream events', () => {
 
     expect(mutate).toHaveBeenCalledExactlyOnceWith({
       mutation,
-      variables: { id: 'company-id', owner: 'owner-id' },
+      variables: {
+        id: 'company-id',
+        owner: 'owner-id',
+        transactionId: 'transaction-id',
+      },
     });
   });
 
@@ -192,6 +220,9 @@ describe('transaction stream events', () => {
   );
 
   it.each([
+    ['missing transaction id', 'id', undefined],
+    ['empty transaction id', 'id', ''],
+    ['invalid transaction id', 'id', 123],
     ['missing company', 'companyId', undefined],
     ['empty company', 'companyId', ''],
     ['invalid company', 'companyId', 123],
@@ -227,7 +258,11 @@ describe('transaction stream events', () => {
       expect(mutate).toHaveBeenCalledTimes(2);
       expect(mutate).toHaveBeenNthCalledWith(1, {
         mutation,
-        variables: { id: 'company-id', owner: 'owner-id' },
+        variables: {
+          id: 'company-id',
+          owner: 'owner-id',
+          transactionId: 'transaction-id',
+        },
       });
       expect(mutate).toHaveBeenNthCalledWith(2, {
         mutation: balanceMutation,
@@ -260,7 +295,11 @@ describe('transaction stream events', () => {
     ).resolves.toEqual({ batchItemFailures: [] });
     expect(mutate).toHaveBeenCalledExactlyOnceWith({
       mutation,
-      variables: { id: 'company-id', owner: 'owner-id' },
+      variables: {
+        id: 'company-id',
+        owner: 'owner-id',
+        transactionId: 'transaction-id',
+      },
     });
   });
 });

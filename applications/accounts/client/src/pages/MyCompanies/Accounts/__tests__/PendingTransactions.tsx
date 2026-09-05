@@ -1,4 +1,4 @@
-import { InMemoryCache } from '@apollo/client';
+import { ApolloLink, InMemoryCache, Observable } from '@apollo/client';
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { waitForApollo } from '@motech-development/appsync-apollo';
 import {
@@ -9,6 +9,10 @@ import {
   waitFor,
 } from '@testing-library/react';
 import { typePolicies } from '../../../../components/ApolloClient';
+import TransactionUpdates, {
+  TransactionStateProvider,
+} from '../../../../components/TransactionUpdates';
+import { TransactionStatus } from '../../../../graphql/graphql';
 import TestProvider, { add } from '../../../../utils/TestProvider';
 import PendingTransactions, {
   DELETE_TRANSACTION,
@@ -23,6 +27,100 @@ describe('PendingTransactions', () => {
 
   beforeEach(() => {
     history = ['/accounts/company-id/pending-transactions'];
+  });
+
+  it('shows a signalled transaction when the later index response is empty', async () => {
+    let signal: (() => void) | undefined;
+    let resolveTransaction: (() => void) | undefined;
+    let resolveList: (() => void) | undefined;
+    const link = new ApolloLink(
+      (operation) =>
+        new Observable((observer) => {
+          if (operation.operationName === 'OnTransactionChange') {
+            signal = () => {
+              observer.next({
+                data: {
+                  onTransactionChange: {
+                    id: 'company-id',
+                    owner: 'user-id',
+                    transactionId: 'new-transaction',
+                  },
+                },
+              });
+            };
+          } else if (operation.operationName === 'GetTransactionState') {
+            resolveTransaction = () => {
+              observer.next({
+                data: {
+                  getTransactionState: {
+                    amount: -20,
+                    attachment: '',
+                    category: 'Meals',
+                    companyId: 'company-id',
+                    date: '2026-09-05T12:00:00.000Z',
+                    description: 'Lunch received live',
+                    id: 'new-transaction',
+                    name: 'New supplier',
+                    refund: false,
+                    scheduled: false,
+                    status: TransactionStatus.Pending,
+                    vat: 0,
+                  },
+                },
+              });
+              observer.complete();
+            };
+          } else if (operation.operationName === 'GetTransactions') {
+            resolveList = () => {
+              observer.next({
+                data: {
+                  getBalance: { currency: 'GBP', id: 'company-id' },
+                  getTransactions: {
+                    id: 'company-id',
+                    items: [],
+                    status: TransactionStatus.Pending,
+                  },
+                },
+              });
+              observer.complete();
+            };
+          }
+        }),
+    );
+
+    const { findByText, getByTestId } = render(
+      <TestProvider
+        path="/accounts/:companyId/pending-transactions"
+        history={history}
+      >
+        <MockedProvider link={link}>
+          <TransactionStateProvider>
+            <TransactionUpdates companyId="company-id" owner="user-id">
+              <PendingTransactions />
+            </TransactionUpdates>
+          </TransactionStateProvider>
+        </MockedProvider>
+      </TestProvider>,
+    );
+
+    await waitFor(() => expect(signal).toBeDefined());
+    act(() => signal?.());
+    await waitFor(() => expect(resolveTransaction).toBeDefined());
+    await act(async () => {
+      resolveTransaction?.();
+      await waitForApollo(0);
+    });
+    await waitFor(() => expect(resolveList).toBeDefined());
+    await act(async () => {
+      resolveList?.();
+      await waitForApollo(0);
+    });
+
+    expect(await findByText('Lunch received live')).toBeInTheDocument();
+    expect(getByTestId('View New supplier')).toHaveAttribute(
+      'href',
+      '/my-companies/accounts/company-id/view-transaction/new-transaction',
+    );
   });
 
   describe('success', () => {

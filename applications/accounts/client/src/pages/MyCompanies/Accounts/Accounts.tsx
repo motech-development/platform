@@ -17,6 +17,7 @@ import { useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
 import { formatCurrency } from '../../../components/Currency';
 import TransactionsList from '../../../components/TransactionsList';
+import { useTransactionItems } from '../../../components/TransactionUpdates';
 import { gql } from '../../../graphql';
 import { TransactionStatus } from '../../../graphql/graphql';
 import invariant from '../../../utils/invariant';
@@ -118,6 +119,10 @@ function Accounts() {
         });
       },
     },
+  );
+  const transactions = useTransactionItems(
+    data?.getTransactions.items,
+    TransactionStatus.Confirmed,
   );
   const onDelete = (id: string) => {
     deleteMutation({
@@ -287,7 +292,7 @@ function Accounts() {
                 currency={data.getBalance.currency}
                 loading={deleteLoading}
                 onDelete={onDelete}
-                transactions={data.getTransactions.items}
+                transactions={transactions}
               />
             </Col>
 

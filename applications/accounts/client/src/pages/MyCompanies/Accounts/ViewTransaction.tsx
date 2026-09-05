@@ -12,7 +12,7 @@ import {
   Row,
   useToast,
 } from '@motech-development/breeze-ui';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
@@ -20,6 +20,7 @@ import DeleteItem from '../../../components/DeleteItem';
 import TransactionForm, {
   FormSchema,
 } from '../../../components/TransactionForm';
+import { useTransactionState } from '../../../components/TransactionUpdates';
 import { gql } from '../../../graphql';
 import {
   MutationUpdateTransactionArgs,
@@ -232,6 +233,7 @@ function ViewTransaction() {
 
   const [attachment, setAttachment] = useState('');
   const [modal, setModal] = useState(false);
+  const currentTransaction = useTransactionState(transactionId);
   const { t } = useTranslation('accounts');
   const { add } = useToast();
   const backTo = (id: string, status?: string) => {
@@ -246,16 +248,20 @@ function ViewTransaction() {
   };
 
   const { data, error, loading } = useQuery(VIEW_TRANSACTION, {
-    onCompleted: ({ getTransaction }) => {
-      if (getTransaction?.attachment) {
-        setAttachment(getTransaction.attachment);
-      }
-    },
     variables: {
       companyId,
       transactionId,
     },
   });
+  const transaction =
+    currentTransaction === undefined
+      ? data?.getTransaction
+      : currentTransaction;
+
+  useEffect(() => {
+    setAttachment(transaction?.attachment ?? '');
+  }, [transaction?.attachment]);
+
   const [mutation, { error: mutationError, loading: mutationLoading }] =
     useMutation(UPDATE_TRANSACTION, {
       onCompleted: ({ updateTransaction }) => {
@@ -332,7 +338,7 @@ function ViewTransaction() {
 
   return (
     <Connected error={error || mutationError} loading={loading}>
-      {data?.getTransaction && data?.getSettings && data?.getClients && (
+      {transaction && data?.getSettings && data?.getClients && (
         <>
           <PageTitle
             title={t('view-transaction.title')}
@@ -350,7 +356,7 @@ function ViewTransaction() {
                     onDelete={setAttachment}
                   />
                 }
-                backTo={backTo(companyId, data.getTransaction.status)}
+                backTo={backTo(companyId, transaction.status)}
                 categories={data.getSettings.categories.map(
                   ({ name, vatRate }) => ({
                     name,
@@ -362,7 +368,7 @@ function ViewTransaction() {
                   value: name,
                 }))}
                 companyId={companyId}
-                initialValues={data.getTransaction}
+                initialValues={transaction}
                 loading={mutationLoading}
                 purchases={data.getTypeahead?.purchases}
                 sales={data.getTypeahead?.sales}
@@ -397,7 +403,7 @@ function ViewTransaction() {
             warning={t('delete-transaction.warning')}
             display={modal}
             loading={deleteLoading}
-            name={data.getTransaction.name}
+            name={transaction.name}
             onDelete={onDelete}
             onDismiss={onDismiss}
           />
