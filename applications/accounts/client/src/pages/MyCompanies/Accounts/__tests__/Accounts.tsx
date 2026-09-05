@@ -1,4 +1,4 @@
-import { InMemoryCache } from '@apollo/client';
+import { ApolloLink, InMemoryCache, Observable } from '@apollo/client';
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { waitForApollo } from '@motech-development/appsync-apollo';
 import {
@@ -9,6 +9,10 @@ import {
   waitFor,
 } from '@testing-library/react';
 import { typePolicies } from '../../../../components/ApolloClient';
+import TransactionUpdates, {
+  TransactionStateProvider,
+} from '../../../../components/TransactionUpdates';
+import { TransactionStatus } from '../../../../graphql/graphql';
 import TestProvider, { add } from '../../../../utils/TestProvider';
 import Accounts, {
   DELETE_TRANSACTION,
@@ -24,6 +28,84 @@ describe('Accounts', () => {
 
   beforeEach(() => {
     history = ['/accounts/company-id'];
+  });
+
+  it('appends older pages but replaces cached rows when reconnect recovers missed changes', async () => {
+    let disconnect: (() => void) | undefined;
+    const first = {
+      __typename: 'Transaction',
+      amount: 20,
+      attachment: '',
+      date: '2026-09-05T12:00:00.000Z',
+      description: 'First page transaction',
+      id: 'first-transaction',
+      name: 'First customer',
+    };
+    const older = {
+      ...first,
+      description: 'Older page transaction',
+      id: 'older-transaction',
+      name: 'Older customer',
+    };
+    let initial = true;
+    const list = vi.fn((nextToken: string | undefined) => {
+      if (nextToken) return { items: [older], nextToken: null };
+      if (initial) {
+        initial = false;
+        return { items: [first], nextToken: 'older-page' };
+      }
+      return { items: [], nextToken: null };
+    });
+    const link = new ApolloLink(
+      (operation) =>
+        new Observable((observer) => {
+          if (operation.operationName === 'OnTransactionChange') {
+            disconnect = () => observer.error(new Error('Connection lost'));
+          } else if (operation.operationName === 'GetBalance') {
+            observer.next({
+              data: {
+                getBalance: {
+                  balance: 40,
+                  currency: 'GBP',
+                  id: 'company-id',
+                  vat: { owed: 0, paid: 0 },
+                },
+                getTransactions: {
+                  __typename: 'Transactions',
+                  id: 'company-id',
+                  ...list(operation.variables.nextToken as string | undefined),
+                  status: TransactionStatus.Confirmed,
+                },
+              },
+            });
+            observer.complete();
+          }
+        }),
+    );
+    const { findByText, getByRole, queryByText } = render(
+      <TestProvider path="/accounts/:companyId" history={history}>
+        <MockedProvider link={link} cache={new InMemoryCache({ typePolicies })}>
+          <TransactionStateProvider>
+            <TransactionUpdates companyId="company-id" owner="user-id">
+              <Accounts />
+            </TransactionUpdates>
+          </TransactionStateProvider>
+        </MockedProvider>
+      </TestProvider>,
+    );
+    await findByText(first.description);
+    fireEvent.click(getByRole('button', { name: 'accounts.load-more' }));
+    await findByText(older.description);
+    expect(queryByText(first.description)).toBeInTheDocument();
+    act(() => disconnect?.());
+    await waitFor(() => expect(list).toHaveBeenCalledTimes(3), {
+      timeout: 2000,
+    });
+    await waitFor(() => {
+      expect(queryByText(first.description)).not.toBeInTheDocument();
+      expect(queryByText(older.description)).not.toBeInTheDocument();
+    });
+    expect(list).toHaveBeenLastCalledWith(undefined);
   });
 
   describe('success', () => {

@@ -123,6 +123,68 @@ describe('PendingTransactions', () => {
     );
   });
 
+  it('removes a cached row when reconnect refreshes a missed deletion', async () => {
+    let disconnect: (() => void) | undefined;
+    const pending = {
+      __typename: 'Transaction',
+      amount: -20,
+      attachment: '',
+      date: '2026-09-05T12:00:00.000Z',
+      description: 'Deleted while disconnected',
+      id: 'missed-transaction',
+      name: 'Old supplier',
+      scheduled: false,
+    };
+    const list = vi
+      .fn<() => (typeof pending)[]>()
+      .mockReturnValueOnce([pending])
+      .mockReturnValue([]);
+    const link = new ApolloLink(
+      (operation) =>
+        new Observable((observer) => {
+          if (operation.operationName === 'OnTransactionChange') {
+            disconnect = () => observer.error(new Error('Connection lost'));
+          } else if (operation.operationName === 'GetTransactions') {
+            observer.next({
+              data: {
+                getBalance: { currency: 'GBP', id: 'company-id' },
+                getTransactions: {
+                  __typename: 'Transactions',
+                  id: 'company-id',
+                  items: list(),
+                  status: TransactionStatus.Pending,
+                },
+              },
+            });
+            observer.complete();
+          }
+        }),
+    );
+
+    const { findByText, queryByText } = render(
+      <TestProvider
+        path="/accounts/:companyId/pending-transactions"
+        history={history}
+      >
+        <MockedProvider link={link} cache={new InMemoryCache({ typePolicies })}>
+          <TransactionStateProvider>
+            <TransactionUpdates companyId="company-id" owner="user-id">
+              <PendingTransactions />
+            </TransactionUpdates>
+          </TransactionStateProvider>
+        </MockedProvider>
+      </TestProvider>,
+    );
+    await findByText(pending.description);
+    act(() => disconnect?.());
+    await waitFor(() => expect(list).toHaveBeenCalledTimes(2), {
+      timeout: 2000,
+    });
+    await waitFor(() =>
+      expect(queryByText(pending.description)).not.toBeInTheDocument(),
+    );
+  });
+
   describe('success', () => {
     beforeEach(async () => {
       cache = new InMemoryCache({

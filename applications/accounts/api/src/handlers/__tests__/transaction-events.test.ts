@@ -164,6 +164,44 @@ describe('transaction stream events', () => {
     });
   });
 
+  it.each([
+    ['empty company', { ...transaction, companyId: '' }],
+    ['invalid owner', { ...transaction, owner: 123 }],
+    ['invalid transaction id', { ...transaction, id: '' }],
+    ['missing current image', undefined],
+  ])('invalidates the former scope despite a %s', async (_, current) => {
+    await expect(
+      invoke([record('MODIFY', transaction, current)]),
+    ).resolves.toEqual({ batchItemFailures: [] });
+
+    expect(mutate).toHaveBeenCalledExactlyOnceWith({
+      mutation,
+      variables: {
+        id: 'company-id',
+        owner: 'owner-id',
+        transactionId: 'transaction-id',
+      },
+    });
+    expect(logger.error).toHaveBeenCalledTimes(current ? 1 : 0);
+  });
+
+  it('retries a failed former-scope notification despite malformed current scope', async () => {
+    const changes = [
+      record('MODIFY', transaction, { ...transaction, owner: '' }, '100'),
+      record('INSERT', undefined, transaction, '101'),
+    ];
+    mutate.mockRejectedValueOnce(new Error('AppSync unavailable'));
+
+    await expect(invoke(changes)).resolves.toEqual({
+      batchItemFailures: [{ itemIdentifier: '100' }],
+    });
+    expect(mutate).toHaveBeenCalledOnce();
+
+    await expect(invoke(changes)).resolves.toEqual({ batchItemFailures: [] });
+    expect(mutate).toHaveBeenCalledTimes(3);
+    expect(mutate.mock.calls[0]).toEqual(mutate.mock.calls[1]);
+  });
+
   it('keeps the existing balance event payload', async () => {
     const balance = {
       __typename: 'Balance',

@@ -200,6 +200,103 @@ describe('ViewTransaction', () => {
         screen.queryByText('view-transaction.delete-transaction'),
       ).not.toBeInTheDocument();
     });
+
+    it('saves a live publication without overwriting it or losing an unsaved description', async () => {
+      vi.mocked(useTransactionState).mockReturnValue({
+        ...cachedTransaction,
+        scheduled: true,
+      });
+      const published = {
+        ...cachedTransaction,
+        status: TransactionStatus.Confirmed,
+      };
+      const savedTransaction = {
+        ...published,
+        description: 'My unsaved description',
+      };
+      const result = vi.fn(() => ({
+        data: { updateTransaction: savedTransaction },
+      }));
+      mocks.push({
+        request: {
+          query: UPDATE_TRANSACTION,
+          variables: { input: savedTransaction },
+        },
+        result,
+      });
+      const { rerender } = renderTransaction();
+      const description = await screen.findByLabelText(
+        'transaction-form.transaction-details.description.label',
+      );
+      expect(
+        screen.getByLabelText(
+          'transaction-form.transaction-amount.schedule.options.yes',
+        ),
+      ).toBeChecked();
+      fireEvent.change(description, {
+        target: { value: savedTransaction.description },
+      });
+
+      vi.mocked(useTransactionState).mockReturnValue(published);
+      rerender(<ViewTransaction />);
+
+      await waitFor(() =>
+        expect(
+          screen.getByLabelText(
+            'transaction-form.transaction-amount.status.options.confirmed',
+          ),
+        ).toBeChecked(),
+      );
+      expect(
+        screen.queryByLabelText(
+          'transaction-form.transaction-amount.schedule.options.yes',
+        ),
+      ).not.toBeInTheDocument();
+      expect(description).toHaveValue(savedTransaction.description);
+      const save = screen.getByRole('button', {
+        name: 'transaction-form.save',
+      });
+      await waitFor(() => expect(save).not.toBeDisabled());
+      fireEvent.click(save);
+
+      await waitFor(() => expect(result).toHaveBeenCalledOnce());
+    });
+
+    it('updates unchanged fields even after blur while retaining local edits across server revisions', async () => {
+      const { rerender } = renderTransaction();
+      const name = await screen.findByLabelText(
+        'transaction-form.transaction-details.name.label',
+      );
+      const description = screen.getByLabelText(
+        'transaction-form.transaction-details.description.label',
+      );
+      fireEvent.change(name, { target: { value: 'My local supplier' } });
+      fireEvent.blur(description);
+
+      vi.mocked(useTransactionState).mockReturnValue({
+        ...cachedTransaction,
+        description: 'First server revision',
+        name: 'First server supplier',
+      });
+      rerender(<ViewTransaction />);
+
+      await waitFor(() =>
+        expect(description).toHaveValue('First server revision'),
+      );
+      expect(name).toHaveValue('My local supplier');
+
+      vi.mocked(useTransactionState).mockReturnValue({
+        ...cachedTransaction,
+        description: 'Second server revision',
+        name: 'Second server supplier',
+      });
+      rerender(<ViewTransaction />);
+
+      await waitFor(() =>
+        expect(description).toHaveValue('Second server revision'),
+      );
+      expect(name).toHaveValue('My local supplier');
+    });
   });
 
   describe('purchase', () => {

@@ -49,9 +49,10 @@ Reads for the same transaction are serialized; a newer signal during a read
 causes another read before applying the result. Failed reads retry with backoff.
 Corrections survive navigation for the signed-in session and are rechecked on
 return to an account. Account changes cancel obsolete reads and subscriptions;
-changing the signed-in owner resets corrections. Transaction details use the
-correction when opened and synchronize attachment changes while preserving
-unsaved form fields.
+changing the signed-in owner resets corrections. Transaction details reconcile incoming corrections into unchanged form fields
+and synchronize attachment changes while preserving locally edited fields. A
+scheduled publication therefore updates the status and scheduled flag without
+resetting an unrelated edit.
 
 Dropped subscriptions reconnect with backoff and refresh known corrections and
 open lists. The subscription does not provide durable replay: newly created
@@ -65,7 +66,9 @@ reporting so Lambda retries from that record, including any later records. A
 replayed signal is safe to receive more than once. Transaction images without a
 valid transaction ID, company ID or owner are logged and skipped; retrying those
 immutable malformed images cannot recover a notification scope and would
-prevent later valid records from being processed.
+prevent later valid records from being processed. If an update has a valid
+former scope but a malformed current image, the former scope is still notified;
+failures to publish that notification remain retryable.
 
 Verification uses the existing API and client unit-test setups; no separate
 subscription testing infrastructure is required.
