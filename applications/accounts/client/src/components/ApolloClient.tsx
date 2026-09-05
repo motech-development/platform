@@ -364,9 +364,12 @@ export const typePolicies: StrictTypedTypePolicies = {
   Transactions: {
     fields: {
       items: {
-        // Merge incoming items with existing while deduping
-        merge: (existing: Reference[] | undefined, incoming: Reference[]) =>
-          filterRefs(incoming, existing),
+        // Fresh first pages replace stale membership; only later pages append.
+        merge: (
+          existing: Reference[] | undefined,
+          incoming: Reference[],
+          { variables },
+        ) => filterRefs(incoming, variables?.nextToken ? existing : undefined),
         // Filter out dangling references on read, so evicted items disappear from lists
         read: (existing: Reference[] | undefined, { canRead }) => {
           const list = existing ?? [];

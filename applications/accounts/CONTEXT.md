@@ -48,9 +48,13 @@ restore a deleted row. Confirmed corrections respect the loaded date window
 and page size while more pages remain; older unseen records appear when their
 page is loaded. Repeated signals never apply financial amounts again.
 Reads for the same transaction are serialized; a newer signal during a read
-causes another read before applying the result. Failed reads retry with backoff.
+causes another read before applying the result. Successful local edits and
+deletions update the retained correction immediately; reads started before that
+mutation cannot overwrite its result. Failed reads retry with backoff.
 Corrections survive navigation for the signed-in session and are rechecked on
-return to an account. Account changes cancel obsolete reads and subscriptions;
+return to an account. Lists fetch fresh data when mounted, replacing first-page
+membership while cursor requests still append older pages. Opening a transaction
+also reads its current state. Account changes cancel obsolete reads and subscriptions;
 changing the signed-in owner resets corrections. Transaction details reconcile
 incoming corrections into unchanged form fields and synchronize attachment
 changes while preserving locally edited fields and replacement uploads. A
@@ -60,7 +64,9 @@ account list.
 
 Dropped subscriptions reconnect with backoff and refresh known corrections,
 open lists and the currently viewed transaction, even if that transaction has
-never received a signal. The subscription does not provide durable replay: newly created
+never received a signal. Recovery runs after the server acknowledges the
+subscription, which also resets retry backoff even without transaction traffic.
+The subscription does not provide durable replay: newly created
 transactions whose signals were missed depend on the list refresh and its index
 visibility. Continuous connection handling does not assume an index query has
 caught up when a signal arrives.

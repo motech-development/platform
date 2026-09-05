@@ -795,6 +795,7 @@ export type UpdateTransactionMutation = {
     description: string;
     id: string;
     name: string;
+    refund: boolean;
     scheduled: boolean;
     status: TransactionStatus;
     vat: number;
@@ -2309,6 +2310,7 @@ export const UpdateTransactionDocument = {
                 { kind: 'Field', name: { kind: 'Name', value: 'description' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'refund' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'scheduled' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'status' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'vat' } },

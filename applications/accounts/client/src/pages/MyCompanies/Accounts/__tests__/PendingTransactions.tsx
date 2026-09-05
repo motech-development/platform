@@ -135,15 +135,17 @@ describe('PendingTransactions', () => {
       name: 'Old supplier',
       scheduled: false,
     };
-    const list = vi
-      .fn<() => (typeof pending)[]>()
-      .mockReturnValueOnce([pending])
-      .mockReturnValue([]);
+    let connected = true;
+    const list = vi.fn(() => (connected ? [pending] : []));
     const link = new ApolloLink(
       (operation) =>
         new Observable((observer) => {
           if (operation.operationName === 'OnTransactionChange') {
-            disconnect = () => observer.error(new Error('Connection lost'));
+            disconnect = () => {
+              connected = false;
+              observer.error(new Error('Connection lost'));
+            };
+            observer.next({ extensions: { controlMsgType: 'CONNECTED' } });
           } else if (operation.operationName === 'GetTransactions') {
             observer.next({
               data: {
@@ -176,8 +178,9 @@ describe('PendingTransactions', () => {
       </TestProvider>,
     );
     await findByText(pending.description);
+    const previousCalls = list.mock.calls.length;
     act(() => disconnect?.());
-    await waitFor(() => expect(list).toHaveBeenCalledTimes(2), {
+    await waitFor(() => expect(list).toHaveBeenCalledTimes(previousCalls + 1), {
       timeout: 2000,
     });
     await waitFor(() =>

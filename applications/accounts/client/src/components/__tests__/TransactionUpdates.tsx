@@ -7,7 +7,13 @@ import {
   Observable,
   useQuery,
 } from '@apollo/client';
-import { act, render, screen, waitFor } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 import { ReactNode } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { TransactionStatus } from '../../graphql/graphql';
@@ -15,6 +21,7 @@ import { GET_TRANSACTIONS as LIST } from '../../pages/MyCompanies/Accounts/Pendi
 import { typePolicies } from '../ApolloClient';
 import TransactionUpdates, {
   TransactionStateProvider,
+  useApplyTransactionState,
   useTransactionItems,
   useTransactionState,
 } from '../TransactionUpdates';
@@ -121,8 +128,13 @@ function setupNetwork() {
       </ApolloProvider>
     );
   }
+  const acknowledge = () =>
+    deliver(() =>
+      signals.at(-1)?.next({ extensions: { controlMsgType: 'CONNECTED' } }),
+    );
   return {
     Wrapper,
+    acknowledge,
     reads,
     refetchList,
     resolveList,
@@ -160,6 +172,25 @@ function Lists() {
     </>
   );
 }
+function LocalChanges() {
+  const apply = useApplyTransactionState();
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() =>
+          apply('transaction', transaction({ name: 'Local update' }))
+        }
+      >
+        Save locally
+      </button>
+      <button type="button" onClick={() => apply('transaction', null)}>
+        Delete locally
+      </button>
+    </>
+  );
+}
+
 function Details() {
   const current = useTransactionState('transaction');
   return <p>{current?.description ?? 'Original detail'}</p>;
@@ -310,14 +341,20 @@ describe('TransactionUpdates', () => {
       { wrapper: network.Wrapper },
     );
     expect(screen.getByText('Original detail')).toBeInTheDocument();
-    expect(network.reads).toHaveLength(0);
+    expect(network.reads).toHaveLength(1);
+    await network.resolveRead(
+      0,
+      transaction({ description: 'Original detail' }),
+    );
     await deliver(() => network.signals[0].error(new Error('Connection lost')));
     await act(() => vi.advanceTimersByTimeAsync(1000));
+    await network.acknowledge();
     expect(network.reads.map(({ transactionId }) => transactionId)).toEqual([
+      'transaction',
       'transaction',
     ]);
     await network.resolveRead(
-      0,
+      1,
       transaction({ description: 'Changed while disconnected' }),
     );
     expect(screen.getByText('Changed while disconnected')).toBeInTheDocument();
@@ -340,7 +377,64 @@ describe('TransactionUpdates', () => {
     );
     await act(() => vi.advanceTimersByTimeAsync(1000));
     expect(network.signals).toHaveLength(2);
+    await network.acknowledge();
+    expect(network.reads).toHaveLength(1);
+  });
+
+  it('resets quiet successful connections but backs off attempts that never receive an acknowledgement', async () => {
+    vi.useFakeTimers();
+    const network = setupNetwork();
+    render(
+      <TransactionUpdates companyId="company" owner="owner">
+        <p>Account</p>
+      </TransactionUpdates>,
+      { wrapper: network.Wrapper },
+    );
+    await network.acknowledge();
+    await deliver(() => network.signals.at(-1)?.error(new Error('First drop')));
+    await act(() => vi.advanceTimersByTimeAsync(1000));
+    expect(network.signals).toHaveLength(2);
+    await network.acknowledge();
+    await deliver(() =>
+      network.signals.at(-1)?.error(new Error('Second independent drop')),
+    );
+    await act(() => vi.advanceTimersByTimeAsync(1000));
+    expect(network.signals).toHaveLength(3);
+    await deliver(() =>
+      network.signals.at(-1)?.error(new Error('Failed attempt')),
+    );
+    await act(() => vi.advanceTimersByTimeAsync(1000));
+    expect(network.signals).toHaveLength(3);
+    await act(() => vi.advanceTimersByTimeAsync(1000));
+    expect(network.signals).toHaveLength(4);
+    await deliver(() =>
+      network.signals.at(-1)?.error(new Error('Another failed attempt')),
+    );
+    await act(() => vi.advanceTimersByTimeAsync(3999));
+    expect(network.signals).toHaveLength(4);
+    await act(() => vi.advanceTimersByTimeAsync(1));
+    expect(network.signals).toHaveLength(5);
     expect(network.reads).toHaveLength(0);
+  });
+
+  it('does not overwrite completed local mutations with older in-flight reads', async () => {
+    const network = setupNetwork();
+    render(
+      <TransactionUpdates companyId="company" owner="owner">
+        <Lists />
+        <LocalChanges />
+      </TransactionUpdates>,
+      { wrapper: network.Wrapper },
+    );
+    await network.resolveList([]);
+    network.signal();
+    fireEvent.click(screen.getByText('Save locally'));
+    await network.resolveRead(0, transaction({ name: 'Older server state' }));
+    expect(screen.getByTestId('pending')).toHaveTextContent('Local update');
+    network.signal();
+    fireEvent.click(screen.getByText('Delete locally'));
+    await network.resolveRead(1, transaction());
+    expect(screen.getByTestId('pending')).toBeEmptyDOMElement();
   });
 
   it('resubscribes after disconnection and receives subsequent changes', async () => {

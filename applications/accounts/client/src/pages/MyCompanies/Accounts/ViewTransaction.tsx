@@ -20,7 +20,10 @@ import DeleteItem from '../../../components/DeleteItem';
 import TransactionForm, {
   FormSchema,
 } from '../../../components/TransactionForm';
-import { useTransactionState } from '../../../components/TransactionUpdates';
+import {
+  useApplyTransactionState,
+  useTransactionState,
+} from '../../../components/TransactionUpdates';
 import { gql } from '../../../graphql';
 import {
   MutationUpdateTransactionArgs,
@@ -213,6 +216,7 @@ export const UPDATE_TRANSACTION = gql(/* GraphQL */ `
       description
       id
       name
+      refund
       scheduled
       status
       vat
@@ -243,6 +247,7 @@ function TransactionDetails({
   const attachmentBaseline = useRef('');
   const [modal, setModal] = useState(false);
   const currentTransaction = useTransactionState(transactionId);
+  const applyTransactionState = useApplyTransactionState();
   const { t } = useTranslation('accounts');
   const { add } = useToast();
   const { data, error, loading } = useQuery(VIEW_TRANSACTION, {
@@ -275,6 +280,7 @@ function TransactionDetails({
     useMutation(UPDATE_TRANSACTION, {
       onCompleted: ({ updateTransaction }) => {
         if (updateTransaction) {
+          applyTransactionState(updateTransaction.id, updateTransaction);
           add({
             colour: 'success',
             message: t('view-transaction.success'),
@@ -298,6 +304,7 @@ function TransactionDetails({
     {
       onCompleted: ({ deleteTransaction }) => {
         if (deleteTransaction) {
+          applyTransactionState(deleteTransaction.id, null);
           add({
             colour: 'success',
             message: t('delete-transaction.success'),

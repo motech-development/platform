@@ -17,7 +17,10 @@ import { useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
 import { formatCurrency } from '../../../components/Currency';
 import TransactionsList from '../../../components/TransactionsList';
-import { useTransactionItems } from '../../../components/TransactionUpdates';
+import {
+  useApplyTransactionState,
+  useTransactionItems,
+} from '../../../components/TransactionUpdates';
 import { gql } from '../../../graphql';
 import { TransactionStatus } from '../../../graphql/graphql';
 import invariant from '../../../utils/invariant';
@@ -93,9 +96,11 @@ function Accounts() {
   const { t } = useTranslation('accounts');
   const [loadingMore, setLoadingMore] = useState(false);
   const { add } = useToast();
+  const applyTransactionState = useApplyTransactionState();
   const { data, error, fetchMore, loading, subscribeToMore } = useQuery(
     GET_BALANCE,
     {
+      fetchPolicy: 'cache-and-network',
       variables: {
         count: 100,
         id: companyId,
@@ -106,7 +111,9 @@ function Accounts() {
   const [deleteMutation, { loading: deleteLoading }] = useMutation(
     DELETE_TRANSACTION,
     {
-      onCompleted: () => {
+      onCompleted: ({ deleteTransaction }) => {
+        if (deleteTransaction)
+          applyTransactionState(deleteTransaction.id, null);
         add({
           colour: 'success',
           message: t('delete-transaction.success'),

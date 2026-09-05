@@ -51,9 +51,10 @@ type TransactionStates = ReadonlyMap<string, CurrentTransaction | null>;
 
 const emptyStates: TransactionStates = new Map();
 const TransactionUpdatesContext = createContext<{
+  apply: (transactionId: string, current: CurrentTransaction | null) => void;
   states: TransactionStates;
   watch: (transactionId: string) => () => void;
-}>({ states: emptyStates, watch: () => () => {} });
+}>({ apply: () => {}, states: emptyStates, watch: () => () => {} });
 const TransactionStoreContext = createContext<{
   states: ReadonlyMap<string, TransactionStates>;
   update: (
@@ -95,6 +96,9 @@ export function TransactionStateProvider({
   );
 }
 
+export const useApplyTransactionState = () =>
+  useContext(TransactionUpdatesContext).apply;
+
 export const useTransactionState = (transactionId: string) => {
   const { states, watch } = useContext(TransactionUpdatesContext);
   useEffect(() => watch(transactionId), [transactionId, watch]);
@@ -125,13 +129,35 @@ function TransactionUpdates({
   statesRef.current = states;
   const { update } = store;
   const viewedTransactions = useRef(new Set<string>());
+  const revisions = useRef(new Map<string, number>());
+  const refreshTransaction = useRef<
+    ((transactionId: string) => void) | undefined
+  >();
+  const apply = useCallback(
+    (transactionId: string, current: CurrentTransaction | null) => {
+      revisions.current.set(
+        transactionId,
+        (revisions.current.get(transactionId) ?? 0) + 1,
+      );
+      update(
+        companyId,
+        transactionId,
+        current?.companyId === companyId ? current : null,
+      );
+    },
+    [companyId, update],
+  );
   const watch = useCallback((transactionId: string) => {
     viewedTransactions.current.add(transactionId);
+    refreshTransaction.current?.(transactionId);
     return () => {
       viewedTransactions.current.delete(transactionId);
     };
   }, []);
-  const value = useMemo(() => ({ states, watch }), [states, watch]);
+  const value = useMemo(
+    () => ({ apply, states, watch }),
+    [apply, states, watch],
+  );
 
   useEffect(() => {
     let active = true;
@@ -142,6 +168,7 @@ function TransactionUpdates({
       request: IReadRequest,
     ): Promise<void> => {
       request.dirty = false;
+      const revision = revisions.current.get(transactionId);
 
       try {
         const { data } = await client.query({
@@ -159,15 +186,25 @@ function TransactionUpdates({
           return;
         }
 
-        const current = data.getTransactionState;
-        update(
-          companyId,
-          transactionId,
-          current?.companyId === companyId ? current : null,
-        );
+        // A completed local mutation is newer than a read started before it.
+        if (revision === revisions.current.get(transactionId)) {
+          const current = data.getTransactionState;
+          update(
+            companyId,
+            transactionId,
+            current?.companyId === companyId ? current : null,
+          );
+        }
         requests.delete(transactionId);
       } catch {
         if (!active) return;
+        if (
+          revision !== revisions.current.get(transactionId) &&
+          !request.dirty
+        ) {
+          requests.delete(transactionId);
+          return;
+        }
 
         // Retry a failed authoritative read, not the eventually consistent list.
         const delay = Math.min(1000 * 2 ** request.retries, 30000);
@@ -195,6 +232,8 @@ function TransactionUpdates({
       requests.set(transactionId, request);
       readTransaction(transactionId, request).catch(() => {});
     };
+
+    refreshTransaction.current = refresh;
 
     let subscription: { unsubscribe: () => void } | undefined;
     let reconnectTimer: ReturnType<typeof setTimeout> | undefined;
@@ -224,12 +263,13 @@ function TransactionUpdates({
         reconnectTimer = setTimeout(() => {
           reconnectTimer = undefined;
           connect();
-          refreshAfterReconnect();
         }, delay);
       };
 
       subscription = client
         .subscribe({
+          // AppSync emits CONNECTED only after the server acknowledges start.
+          context: { controlMessages: { '@@controlEvents': true } },
           fetchPolicy: 'no-cache',
           query: ON_TRANSACTION_CHANGE,
           variables: { id: companyId, owner },
@@ -237,10 +277,15 @@ function TransactionUpdates({
         .subscribe({
           complete: reconnect,
           error: reconnect,
-          next: ({ data }) => {
-            const change = data?.onTransactionChange;
-            if (!active || change?.id !== companyId || change.owner !== owner)
+          next: ({ data, extensions }) => {
+            if (!active) return;
+            if (extensions?.controlMsgType === 'CONNECTED') {
+              reconnectAttempts = 0;
+              refreshAfterReconnect();
               return;
+            }
+            const change = data?.onTransactionChange;
+            if (change?.id !== companyId || change.owner !== owner) return;
             reconnectAttempts = 0;
             refresh(change.transactionId);
           },
@@ -249,10 +294,11 @@ function TransactionUpdates({
 
     connect();
     // Corrections survive navigation; recheck them after time away from the account.
-    statesRef.current.forEach((_state, id) => refresh(id));
+    refreshKnownTransactions();
 
     return () => {
       active = false;
+      refreshTransaction.current = undefined;
       subscription?.unsubscribe();
       clearTimeout(reconnectTimer);
       requests.forEach(({ timer }) => clearTimeout(timer));
