@@ -188,6 +188,86 @@ describe('PendingTransactions', () => {
     );
   });
 
+  it('removes a published row after reconnect even while the index still reports pending', async () => {
+    let disconnect: (() => void) | undefined;
+    const pending = {
+      __typename: 'Transaction',
+      amount: 20,
+      attachment: 'receipt.pdf',
+      category: 'Sales',
+      companyId: 'company-id',
+      date: '2026-09-05T12:00:00.000Z',
+      description: 'Published during the subscription gap',
+      id: 'published-transaction',
+      name: 'Published customer',
+      refund: false,
+      scheduled: false,
+      status: TransactionStatus.Pending,
+      vat: 0,
+    };
+    let published = false;
+    const list = vi.fn(() => [pending]);
+    const readState = vi.fn(() => ({
+      ...pending,
+      status: published
+        ? TransactionStatus.Confirmed
+        : TransactionStatus.Pending,
+    }));
+    const link = new ApolloLink(
+      (operation) =>
+        new Observable((observer) => {
+          if (operation.operationName === 'OnTransactionChange') {
+            disconnect = () => {
+              published = true;
+              observer.error(new Error('Connection lost'));
+            };
+            observer.next({ extensions: { controlMsgType: 'CONNECTED' } });
+          } else if (operation.operationName === 'GetTransactions') {
+            observer.next({
+              data: {
+                getBalance: { currency: 'GBP', id: 'company-id' },
+                getTransactions: {
+                  __typename: 'Transactions',
+                  id: 'company-id',
+                  items: list(),
+                  status: TransactionStatus.Pending,
+                },
+              },
+            });
+            observer.complete();
+          } else if (operation.operationName === 'GetTransactionState') {
+            observer.next({ data: { getTransactionState: readState() } });
+            observer.complete();
+          }
+        }),
+    );
+    const { findByText, queryByText } = render(
+      <TestProvider
+        path="/accounts/:companyId/pending-transactions"
+        history={history}
+      >
+        <MockedProvider link={link} cache={new InMemoryCache({ typePolicies })}>
+          <TransactionStateProvider>
+            <TransactionUpdates companyId="company-id" owner="user-id">
+              <PendingTransactions />
+            </TransactionUpdates>
+          </TransactionStateProvider>
+        </MockedProvider>
+      </TestProvider>,
+    );
+    await findByText(pending.description);
+    await waitFor(() => expect(readState).toHaveBeenCalledOnce());
+    const previousLists = list.mock.calls.length;
+
+    act(() => disconnect?.());
+    await waitFor(() => expect(list).toHaveBeenCalledTimes(previousLists + 1), {
+      timeout: 2000,
+    });
+    await findByText('no-transactions.title');
+    expect(readState).toHaveBeenCalledTimes(2);
+    expect(queryByText(pending.description)).not.toBeInTheDocument();
+  });
+
   describe('success', () => {
     beforeEach(async () => {
       cache = new InMemoryCache({

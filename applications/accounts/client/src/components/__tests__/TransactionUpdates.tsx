@@ -205,6 +205,39 @@ function Account({ companyId = 'company' }: { companyId?: string }) {
 }
 afterEach(() => vi.useRealTimers());
 describe('TransactionUpdates', () => {
+  it('strongly checks list rows loaded after acknowledgement without repeated reads for stale refetches', async () => {
+    const network = setupNetwork();
+    render(<Account />, { wrapper: network.Wrapper });
+    await network.acknowledge();
+    await network.resolveList([transaction({ name: 'Stale index row' })]);
+
+    expect(network.reads.map(({ transactionId }) => transactionId)).toEqual([
+      'transaction',
+    ]);
+    await network.resolveRead(
+      0,
+      transaction({ attachment: null, name: 'Current row' }),
+    );
+    await network.refetchList();
+    await network.resolveList([transaction({ name: 'Stale index row' })]);
+
+    expect(network.reads).toHaveLength(1);
+    expect(screen.getByTestId('pending')).toHaveTextContent('Current row|');
+    expect(screen.queryByText(/Stale index row/)).not.toBeInTheDocument();
+
+    await network.refetchList();
+    await network.resolveList([
+      transaction(),
+      transaction({ id: 'another', name: 'Another stale row' }),
+    ]);
+    expect(network.reads.map(({ transactionId }) => transactionId)).toEqual([
+      'transaction',
+      'another',
+    ]);
+    await network.resolveRead(1, null);
+    expect(screen.queryByText(/Another stale row/)).not.toBeInTheDocument();
+  });
+
   it('keeps new rows and attachment corrections when stale index responses arrive', async () => {
     const network = setupNetwork();
     render(<Account />, { wrapper: network.Wrapper });

@@ -53,8 +53,14 @@ const emptyStates: TransactionStates = new Map();
 const TransactionUpdatesContext = createContext<{
   apply: (transactionId: string, current: CurrentTransaction | null) => void;
   states: TransactionStates;
-  watch: (transactionId: string) => () => void;
-}>({ apply: () => {}, states: emptyStates, watch: () => () => {} });
+  watch: (transactionId: string, onReady: () => void) => () => void;
+  watchList: (transactionIds: string[]) => () => void;
+}>({
+  apply: () => {},
+  states: emptyStates,
+  watch: () => () => {},
+  watchList: () => () => {},
+});
 const TransactionStoreContext = createContext<{
   states: ReadonlyMap<string, TransactionStates>;
   update: (
@@ -101,8 +107,17 @@ export const useApplyTransactionState = () =>
 
 export const useTransactionState = (transactionId: string) => {
   const { states, watch } = useContext(TransactionUpdatesContext);
-  useEffect(() => watch(transactionId), [transactionId, watch]);
-  return states.get(transactionId);
+  const [readyFor, setReadyFor] = useState<{
+    transactionId: string;
+    watch: typeof watch;
+  }>();
+  useEffect(
+    () => watch(transactionId, () => setReadyFor({ transactionId, watch })),
+    [transactionId, watch],
+  );
+  return readyFor?.transactionId === transactionId && readyFor.watch === watch
+    ? states.get(transactionId)
+    : undefined;
 };
 
 interface IReadRequest {
@@ -128,11 +143,18 @@ function TransactionUpdates({
   const statesRef = useRef(states);
   statesRef.current = states;
   const { update } = store;
-  const viewedTransactions = useRef(new Set<string>());
+  const viewedTransactions = useRef(new Map<string, Set<() => void>>());
+  const loadedLists = useRef(new Set<string[]>());
+  const refreshList = useRef<
+    ((transactionIds: string[]) => void) | undefined
+  >();
   const revisions = useRef(new Map<string, number>());
   const refreshTransaction = useRef<
     ((transactionId: string) => void) | undefined
   >();
+  const notifyReady = useCallback((transactionId: string) => {
+    viewedTransactions.current.get(transactionId)?.forEach((ready) => ready());
+  }, []);
   const apply = useCallback(
     (transactionId: string, current: CurrentTransaction | null) => {
       revisions.current.set(
@@ -144,19 +166,32 @@ function TransactionUpdates({
         transactionId,
         current?.companyId === companyId ? current : null,
       );
+      notifyReady(transactionId);
     },
-    [companyId, update],
+    [companyId, notifyReady, update],
   );
-  const watch = useCallback((transactionId: string) => {
-    viewedTransactions.current.add(transactionId);
+  const watch = useCallback((transactionId: string, onReady: () => void) => {
+    const observers =
+      viewedTransactions.current.get(transactionId) ?? new Set();
+    observers.add(onReady);
+    viewedTransactions.current.set(transactionId, observers);
     refreshTransaction.current?.(transactionId);
     return () => {
-      viewedTransactions.current.delete(transactionId);
+      observers.delete(onReady);
+      if (observers.size === 0)
+        viewedTransactions.current.delete(transactionId);
+    };
+  }, []);
+  const watchList = useCallback((transactionIds: string[]) => {
+    loadedLists.current.add(transactionIds);
+    refreshList.current?.(transactionIds);
+    return () => {
+      loadedLists.current.delete(transactionIds);
     };
   }, []);
   const value = useMemo(
-    () => ({ apply, states, watch }),
-    [apply, states, watch],
+    () => ({ apply, states, watch, watchList }),
+    [apply, states, watch, watchList],
   );
 
   useEffect(() => {
@@ -195,6 +230,7 @@ function TransactionUpdates({
             current?.companyId === companyId ? current : null,
           );
         }
+        notifyReady(transactionId);
         requests.delete(transactionId);
       } catch {
         if (!active) return;
@@ -238,17 +274,33 @@ function TransactionUpdates({
     let subscription: { unsubscribe: () => void } | undefined;
     let reconnectTimer: ReturnType<typeof setTimeout> | undefined;
     let reconnectAttempts = 0;
+    let connected = false;
+    const reconciledListIds = new Set<string>();
+
+    refreshList.current = (transactionIds) => {
+      if (!connected) return;
+      transactionIds.forEach((id) => {
+        if (!reconciledListIds.has(id)) {
+          reconciledListIds.add(id);
+          refresh(id);
+        }
+      });
+    };
 
     const refreshKnownTransactions = () => {
       const transactionIds = new Set([
         ...statesRef.current.keys(),
-        ...viewedTransactions.current,
+        ...viewedTransactions.current.keys(),
+        ...Array.from(loadedLists.current).flat(),
       ]);
-      transactionIds.forEach(refresh);
+      transactionIds.forEach((id) => {
+        reconciledListIds.add(id);
+        refresh(id);
+      });
     };
 
     const refreshAfterReconnect = () => {
-      // Include open details even when they have never received a signal.
+      // Strongly check loaded rows and open details whose signals were missed.
       refreshKnownTransactions();
       client
         .refetchQueries({ include: ['GetBalance', 'GetTransactions'] })
@@ -258,6 +310,7 @@ function TransactionUpdates({
     const connect = () => {
       const reconnect = () => {
         if (!active || reconnectTimer) return;
+        connected = false;
         const delay = Math.min(1000 * 2 ** reconnectAttempts, 30000);
         reconnectAttempts += 1;
         reconnectTimer = setTimeout(() => {
@@ -280,6 +333,8 @@ function TransactionUpdates({
           next: ({ data, extensions }) => {
             if (!active) return;
             if (extensions?.controlMsgType === 'CONNECTED') {
+              connected = true;
+              reconciledListIds.clear();
               reconnectAttempts = 0;
               refreshAfterReconnect();
               return;
@@ -299,11 +354,12 @@ function TransactionUpdates({
     return () => {
       active = false;
       refreshTransaction.current = undefined;
+      refreshList.current = undefined;
       subscription?.unsubscribe();
       clearTimeout(reconnectTimer);
       requests.forEach(({ timer }) => clearTimeout(timer));
     };
-  }, [client, companyId, owner, update]);
+  }, [client, companyId, notifyReady, owner, update]);
 
   return (
     <TransactionUpdatesContext.Provider value={value}>
@@ -317,7 +373,11 @@ export const useTransactionItems = <T extends { date: string; id: string }>(
   status: TransactionStatus,
   hasMore = false,
 ): Array<T | CurrentTransaction> => {
-  const { states } = useContext(TransactionUpdatesContext);
+  const { states, watchList } = useContext(TransactionUpdatesContext);
+  useEffect(
+    () => watchList(items?.map(({ id }) => id) ?? []),
+    [items, watchList],
+  );
 
   return useMemo(() => {
     const existing = items ?? [];

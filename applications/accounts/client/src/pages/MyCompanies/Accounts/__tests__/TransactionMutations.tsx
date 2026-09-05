@@ -23,7 +23,11 @@ vi.mock('pdfjs-dist/build/pdf.worker.min.mjs?url', () => ({
   default: 'pdfjs-dist/build/pdf.worker.min.mjs',
 }));
 
-function renderTransactions(status: TransactionStatus, details: boolean) {
+function renderTransactions(
+  status: TransactionStatus,
+  details: boolean,
+  deferReads = false,
+) {
   const current = {
     __typename: 'Transaction',
     amount: -20,
@@ -42,6 +46,8 @@ function renderTransactions(status: TransactionStatus, details: boolean) {
   const stale = { ...current, description: 'Stale index description' };
   const saved = { ...current, description: 'Locally saved description' };
   const read = vi.fn(() => current);
+  const detailQuery = vi.fn();
+  const pendingReads: Array<(transaction: typeof current) => void> = [];
   const update = vi.fn(() => saved);
   const remove = vi.fn(() => ({
     companyId: current.companyId,
@@ -68,12 +74,20 @@ function renderTransactions(status: TransactionStatus, details: boolean) {
               },
             });
         } else if (operation.operationName === 'GetTransactionState') {
-          respond({ getTransactionState: read() });
+          const transaction = read();
+          if (deferReads) {
+            pendingReads.push((result) =>
+              respond({ getTransactionState: result }),
+            );
+          } else {
+            respond({ getTransactionState: transaction });
+          }
         } else if (operation.operationName === 'UpdateTransaction') {
           respond({ updateTransaction: update() });
         } else if (operation.operationName === 'DeleteTransaction') {
           respond({ deleteTransaction: remove() });
         } else if (operation.operationName === 'ViewTransaction') {
+          detailQuery();
           respond({
             getClients: { id: 'company-id', items: [] },
             getSettings: {
@@ -145,8 +159,92 @@ function renderTransactions(status: TransactionStatus, details: boolean) {
       </MockedProvider>
     </TestProvider>,
   );
-  return { current, read, remove, saved, signal: () => signal?.(), update };
+  return {
+    current,
+    detailQuery,
+    read,
+    remove,
+    resolveRead: (index: number, transaction: typeof current) =>
+      pendingReads[index]?.(transaction),
+    saved,
+    signal: () => signal?.(),
+    update,
+  };
 }
+
+describe('opening transaction details', () => {
+  it('waits for the authoritative record before editing and keeps later live reads from resetting dirty fields', async () => {
+    const network = renderTransactions(TransactionStatus.Pending, true, true);
+    await waitFor(() => expect(network.detailQuery).toHaveBeenCalledOnce());
+    await waitFor(() => expect(network.read).toHaveBeenCalledOnce());
+
+    expect(screen.queryByRole('form')).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: 'transaction-form.save' }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', {
+        name: 'view-transaction.delete-transaction',
+      }),
+    ).not.toBeInTheDocument();
+
+    const latest = { ...network.current, status: TransactionStatus.Confirmed };
+    act(() => network.resolveRead(0, latest));
+    const description = await screen.findByLabelText(
+      'transaction-form.transaction-details.description.label',
+    );
+    expect(description).toHaveValue(latest.description);
+    expect(
+      screen.getByLabelText(
+        'transaction-form.transaction-amount.status.options.confirmed',
+      ),
+    ).toBeChecked();
+
+    fireEvent.change(description, { target: { value: 'Unsaved local edit' } });
+    act(() => network.signal());
+    await waitFor(() => expect(network.read).toHaveBeenCalledTimes(2));
+    expect(description).toBeInTheDocument();
+    expect(description).toHaveValue('Unsaved local edit');
+    act(() =>
+      network.resolveRead(1, {
+        ...latest,
+        description: 'Later server edit',
+        name: 'Updated supplier',
+      }),
+    );
+    await screen.findByDisplayValue('Updated supplier');
+    expect(description).toHaveValue('Unsaved local edit');
+  });
+
+  it('waits for a new detail read even when an older authoritative correction is retained', async () => {
+    const network = renderTransactions(TransactionStatus.Pending, false, true);
+    await screen.findByText('pending-transactions.title');
+    act(() => network.signal());
+    await waitFor(() => expect(network.read).toHaveBeenCalledOnce());
+    act(() => network.resolveRead(0, network.current));
+    await screen.findByText(network.current.description);
+    fireEvent.click(screen.getByTestId(`View ${network.current.name}`));
+    await waitFor(() => expect(network.detailQuery).toHaveBeenCalledOnce());
+    await waitFor(() => expect(network.read).toHaveBeenCalledTimes(2));
+
+    expect(screen.queryByRole('form')).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: 'transaction-form.save' }),
+    ).not.toBeInTheDocument();
+
+    act(() =>
+      network.resolveRead(1, {
+        ...network.current,
+        description: 'Current on opening',
+      }),
+    );
+    expect(
+      await screen.findByLabelText(
+        'transaction-form.transaction-details.description.label',
+      ),
+    ).toHaveValue('Current on opening');
+  });
+});
 
 describe('local mutations with existing transaction corrections', () => {
   it('shows a successful detail edit on returning to the list without another signal', async () => {

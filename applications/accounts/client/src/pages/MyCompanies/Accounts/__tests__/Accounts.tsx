@@ -340,6 +340,97 @@ describe('Accounts', () => {
     expect(queryByText(cachedTransaction.description)).not.toBeInTheDocument();
   });
 
+  it('checks a stale older page loaded after connection acknowledgement without a transaction signal', async () => {
+    const current = {
+      __typename: 'Transaction',
+      amount: 20,
+      attachment: 'receipt.pdf',
+      category: 'Sales',
+      companyId: 'company-id',
+      date: '2026-09-05T12:00:00.000Z',
+      description: 'Current first page transaction',
+      id: 'current-transaction',
+      name: 'Current customer',
+      refund: false,
+      scheduled: false,
+      status: TransactionStatus.Confirmed,
+      vat: 0,
+    };
+    const deleted = {
+      ...current,
+      date: '2026-09-01T12:00:00.000Z',
+      description: 'Deleted historical transaction in stale index',
+      id: 'deleted-transaction',
+      name: 'Deleted customer',
+    };
+    const readState = vi.fn((id: string) =>
+      id === current.id ? current : null,
+    );
+    const link = new ApolloLink(
+      (operation) =>
+        new Observable((observer) => {
+          if (operation.operationName === 'OnTransactionChange') {
+            observer.next({ extensions: { controlMsgType: 'CONNECTED' } });
+          } else if (operation.operationName === 'GetBalance') {
+            const hasOlderPage = !operation.variables.nextToken;
+            observer.next({
+              data: {
+                getBalance: {
+                  balance: 20,
+                  currency: 'GBP',
+                  id: 'company-id',
+                  vat: { owed: 0, paid: 0 },
+                },
+                getTransactions: {
+                  __typename: 'Transactions',
+                  id: 'company-id',
+                  items: hasOlderPage ? [current] : [deleted],
+                  nextToken: hasOlderPage ? 'older-page' : null,
+                  status: TransactionStatus.Confirmed,
+                },
+              },
+            });
+            observer.complete();
+          } else if (operation.operationName === 'GetTransactionState') {
+            observer.next({
+              data: {
+                getTransactionState: readState(
+                  operation.variables.transactionId as string,
+                ),
+              },
+            });
+            observer.complete();
+          }
+        }),
+    );
+    const { findByText, getByRole, queryByRole, queryByText } = render(
+      <TestProvider path="/accounts/:companyId" history={history}>
+        <MockedProvider link={link} cache={new InMemoryCache({ typePolicies })}>
+          <TransactionStateProvider>
+            <TransactionUpdates companyId="company-id" owner="user-id">
+              <Accounts />
+            </TransactionUpdates>
+          </TransactionStateProvider>
+        </MockedProvider>
+      </TestProvider>,
+    );
+    await findByText(current.description);
+    await waitFor(() =>
+      expect(readState).toHaveBeenCalledExactlyOnceWith(current.id),
+    );
+    fireEvent.click(getByRole('button', { name: 'accounts.load-more' }));
+
+    await waitFor(() => expect(readState).toHaveBeenCalledWith(deleted.id));
+    await waitFor(() =>
+      expect(queryByText(deleted.description)).not.toBeInTheDocument(),
+    );
+    expect(queryByText(current.description)).toBeInTheDocument();
+    expect(
+      queryByRole('button', { name: 'accounts.load-more' }),
+    ).not.toBeInTheDocument();
+    expect(readState).toHaveBeenCalledTimes(2);
+  });
+
   describe('success', () => {
     beforeEach(async () => {
       cache = new InMemoryCache({

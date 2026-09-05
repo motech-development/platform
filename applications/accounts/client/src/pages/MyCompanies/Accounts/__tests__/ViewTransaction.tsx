@@ -6,6 +6,7 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from '@testing-library/react';
 import { saveAs } from 'file-saver';
 import { Link } from 'react-router-dom';
@@ -14,6 +15,7 @@ import { useTransactionState } from '../../../../components/TransactionUpdates';
 import {
   GetTransactionStateQuery,
   TransactionStatus,
+  ViewTransactionQuery,
 } from '../../../../graphql/graphql';
 import TestProvider, {
   add,
@@ -50,6 +52,19 @@ describe('ViewTransaction', () => {
     vi.setConfig({ testTimeout: 120000 });
 
     history = ['/accounts/company-id/view-transaction/transaction-id'];
+
+    vi.mocked(useTransactionState).mockImplementation((transactionId) => {
+      const response = mocks.find(
+        (mock) =>
+          mock.request.query === VIEW_TRANSACTION &&
+          mock.request.variables?.transactionId === transactionId,
+      ) as MockedResponse<ViewTransactionQuery> | undefined;
+      const result = response?.result;
+
+      return typeof result === 'function'
+        ? undefined
+        : result?.data?.getTransaction;
+    });
 
     global.fetch = vi.fn().mockResolvedValue(
       createFetchResponse({
@@ -709,7 +724,11 @@ describe('ViewTransaction', () => {
         });
 
         await act(async () => {
-          const [, , button] = await screen.findAllByRole('button');
+          const button = await screen.findByRole('button', {
+            name: 'transaction-form.save',
+          });
+
+          await waitFor(() => expect(button).not.toBeDisabled());
 
           fireEvent.click(button);
 
@@ -733,7 +752,11 @@ describe('ViewTransaction', () => {
         });
 
         await act(async () => {
-          const [, , button] = await screen.findAllByRole('button');
+          const button = await screen.findByRole('button', {
+            name: 'transaction-form.save',
+          });
+
+          await waitFor(() => expect(button).not.toBeDisabled());
 
           fireEvent.click(button);
 
@@ -762,15 +785,22 @@ describe('ViewTransaction', () => {
         await screen.findByText('view-transaction.title');
 
         await act(async () => {
-          const [, , , button] = await screen.findAllByRole('button');
+          const button = await screen.findByRole('button', {
+            name: 'view-transaction.delete-transaction',
+          });
+
+          await waitFor(() => expect(button).not.toBeDisabled());
 
           fireEvent.click(button);
         });
 
         await screen.findByRole('dialog');
 
-        await act(async () => {
-          const [, , , , cancelButton] = await screen.findAllByRole('button');
+        act(() => {
+          const cancelButton = within(screen.getByRole('dialog')).getByRole(
+            'button',
+            { name: 'cancel' },
+          );
 
           fireEvent.click(cancelButton);
         });
@@ -782,7 +812,11 @@ describe('ViewTransaction', () => {
         await screen.findByText('view-transaction.title');
 
         await act(async () => {
-          const [, , , button] = await screen.findAllByRole('button');
+          const button = await screen.findByRole('button', {
+            name: 'view-transaction.delete-transaction',
+          });
+
+          await waitFor(() => expect(button).not.toBeDisabled());
 
           fireEvent.click(button);
         });
@@ -799,7 +833,10 @@ describe('ViewTransaction', () => {
         });
 
         await act(async () => {
-          const [, , , , , deleteButton] = await screen.findAllByRole('button');
+          const deleteButton = within(screen.getByRole('dialog')).getByRole(
+            'button',
+            { name: 'delete' },
+          );
 
           await waitFor(() => expect(deleteButton).not.toBeDisabled());
 
@@ -819,7 +856,11 @@ describe('ViewTransaction', () => {
         await screen.findByText('view-transaction.title');
 
         await act(async () => {
-          const [, , , button] = await screen.findAllByRole('button');
+          const button = await screen.findByRole('button', {
+            name: 'view-transaction.delete-transaction',
+          });
+
+          await waitFor(() => expect(button).not.toBeDisabled());
 
           fireEvent.click(button);
         });
@@ -836,7 +877,10 @@ describe('ViewTransaction', () => {
         });
 
         await act(async () => {
-          const [, , , , , deleteButton] = await screen.findAllByRole('button');
+          const deleteButton = within(screen.getByRole('dialog')).getByRole(
+            'button',
+            { name: 'delete' },
+          );
 
           await waitFor(() => expect(deleteButton).not.toBeDisabled());
 
@@ -1329,7 +1373,11 @@ describe('ViewTransaction', () => {
         await screen.findByText('view-transaction.title');
 
         await act(async () => {
-          const [, , , button] = await screen.findAllByRole('button');
+          const button = await screen.findByRole('button', {
+            name: 'transaction-form.save',
+          });
+
+          await waitFor(() => expect(button).not.toBeDisabled());
 
           fireEvent.click(button);
 
@@ -1345,7 +1393,11 @@ describe('ViewTransaction', () => {
         await screen.findByText('view-transaction.title');
 
         await act(async () => {
-          const [, , , button] = await screen.findAllByRole('button');
+          const button = await screen.findByRole('button', {
+            name: 'transaction-form.save',
+          });
+
+          await waitFor(() => expect(button).not.toBeDisabled());
 
           fireEvent.click(button);
 
@@ -1364,7 +1416,11 @@ describe('ViewTransaction', () => {
         await screen.findByText('view-transaction.title');
 
         await act(async () => {
-          const [, , , , button] = await screen.findAllByRole('button');
+          const button = await screen.findByRole('button', {
+            name: 'view-transaction.delete-transaction',
+          });
+
+          await waitFor(() => expect(button).not.toBeDisabled());
 
           fireEvent.click(button);
         });
@@ -1381,8 +1437,10 @@ describe('ViewTransaction', () => {
         });
 
         await act(async () => {
-          const [, , , , , , deleteButton] =
-            await screen.findAllByRole('button');
+          const deleteButton = within(screen.getByRole('dialog')).getByRole(
+            'button',
+            { name: 'delete' },
+          );
 
           await waitFor(() => expect(deleteButton).not.toBeDisabled());
 
@@ -1631,7 +1689,11 @@ describe('ViewTransaction', () => {
         await screen.findByText('view-transaction.title');
 
         await act(async () => {
-          const [, , , button] = await screen.findAllByRole('button');
+          const button = await screen.findByRole('button', {
+            name: 'transaction-form.save',
+          });
+
+          await waitFor(() => expect(button).not.toBeDisabled());
 
           fireEvent.click(button);
 
@@ -1650,7 +1712,11 @@ describe('ViewTransaction', () => {
         await screen.findByText('view-transaction.title');
 
         await act(async () => {
-          const [, , , button] = await screen.findAllByRole('button');
+          const button = await screen.findByRole('button', {
+            name: 'transaction-form.save',
+          });
+
+          await waitFor(() => expect(button).not.toBeDisabled());
 
           fireEvent.click(button);
 
@@ -1666,7 +1732,11 @@ describe('ViewTransaction', () => {
         await screen.findByText('view-transaction.title');
 
         await act(async () => {
-          const [, , , , button] = await screen.findAllByRole('button');
+          const button = await screen.findByRole('button', {
+            name: 'view-transaction.delete-transaction',
+          });
+
+          await waitFor(() => expect(button).not.toBeDisabled());
 
           fireEvent.click(button);
         });
@@ -1683,8 +1753,10 @@ describe('ViewTransaction', () => {
         });
 
         await act(async () => {
-          const [, , , , , , deleteButton] =
-            await screen.findAllByRole('button');
+          const deleteButton = within(screen.getByRole('dialog')).getByRole(
+            'button',
+            { name: 'delete' },
+          );
 
           await waitFor(() => expect(deleteButton).not.toBeDisabled());
 
@@ -1705,7 +1777,11 @@ describe('ViewTransaction', () => {
         await screen.findByText('view-transaction.title');
 
         await act(async () => {
-          const [, , , , button] = await screen.findAllByRole('button');
+          const button = await screen.findByRole('button', {
+            name: 'view-transaction.delete-transaction',
+          });
+
+          await waitFor(() => expect(button).not.toBeDisabled());
 
           fireEvent.click(button);
         });
@@ -1722,8 +1798,10 @@ describe('ViewTransaction', () => {
         });
 
         await act(async () => {
-          const [, , , , , , deleteButton] =
-            await screen.findAllByRole('button');
+          const deleteButton = within(screen.getByRole('dialog')).getByRole(
+            'button',
+            { name: 'delete' },
+          );
 
           await waitFor(() => expect(deleteButton).not.toBeDisabled());
 
