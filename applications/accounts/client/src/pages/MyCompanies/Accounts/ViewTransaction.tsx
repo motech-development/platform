@@ -260,7 +260,9 @@ function TransactionDetails({
     currentTransaction === undefined
       ? data?.getTransaction
       : currentTransaction;
-  const lastStatus = useRef(transaction?.status);
+  const status = transaction?.status;
+  const queriedStatus = data?.getTransaction?.status;
+  const lastStatus = useRef(status);
 
   useEffect(() => {
     const previous = attachmentBaseline.current;
@@ -270,11 +272,14 @@ function TransactionDetails({
   }, [transaction?.attachment]);
 
   useEffect(() => {
-    if (transaction) lastStatus.current = transaction.status;
-    if (currentTransaction === null) {
-      navigate(backTo(companyId, lastStatus.current), { replace: true });
+    if (status) lastStatus.current = status;
+    const destinationStatus = lastStatus.current ?? queriedStatus;
+    // Let an unfinished detail read supply the return destination, without
+    // displaying its stale transaction after an authoritative deletion.
+    if (currentTransaction === null && (destinationStatus || !loading)) {
+      navigate(backTo(companyId, destinationStatus), { replace: true });
     }
-  }, [companyId, currentTransaction, navigate, transaction]);
+  }, [companyId, currentTransaction, loading, navigate, queriedStatus, status]);
 
   const [mutation, { error: mutationError, loading: mutationLoading }] =
     useMutation(UPDATE_TRANSACTION, {
