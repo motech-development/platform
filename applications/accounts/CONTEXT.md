@@ -45,8 +45,12 @@ can arrive before the separate balance calculation completes.
 The client overlays these current records and deletion markers on Pending and
 Confirmed lists, so delayed index responses cannot overwrite a correction or
 restore a deleted row. Confirmed corrections respect the loaded date window
-and page size while more pages remain; older unseen records appear when their
-page is loaded. Repeated signals never apply financial amounts again.
+and page size while more pages remain, including when an edited date moves a
+previously loaded row outside that window. Vacated positions are filled from
+the server cursor without increasing the visible limit; explicit Load More
+requests expand it. Refills share the pagination request guard and do not
+automatically repeat a failed cursor. Older records appear when their page is
+loaded. Repeated signals never apply financial amounts again.
 Reads for the same transaction are serialized; a newer signal during a read
 causes another read before applying the result. Successful local edits and
 deletions update the retained correction immediately; reads started before that
