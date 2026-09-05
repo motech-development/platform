@@ -1,5 +1,5 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { UpdateCommand } from '@aws-sdk/lib-dynamodb';
+import { GetCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import logger from '@motech-development/node-logger';
 import type { Context, DynamoDBStreamEvent } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
@@ -21,6 +21,8 @@ describe('typeahead', () => {
     callback = vi.fn();
 
     ddb = mockClient(DynamoDBClient);
+
+    ddb.on(GetCommand).resolves({});
 
     event = {
       Records: [
@@ -292,7 +294,7 @@ describe('typeahead', () => {
       it('should update the correct number of records', async () => {
         await handler(event, context, callback);
 
-        expect(ddb).toReceiveCommandTimes(UpdateCommand, 2);
+        expect(ddb).toReceiveCommandTimes(UpdateCommand, 1);
       });
     });
 
@@ -305,8 +307,8 @@ describe('typeahead', () => {
         ddb.on(UpdateCommand).rejectsOnce(error);
       });
 
-      it('should swallow the error', async () => {
-        await handler(event, context, callback);
+      it('should log and rethrow the error so the stream event is retried', async () => {
+        await expect(handler(event, context, callback)).rejects.toThrow(error);
 
         expect(logger.error).toHaveBeenCalledWith('An error occurred', error);
       });

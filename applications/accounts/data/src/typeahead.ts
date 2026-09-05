@@ -20,11 +20,12 @@ export const handler: DynamoDBStreamHandler = wrapHandler(async (event) => {
   const { TABLE, inserts, updates } = extractStream(event);
 
   try {
-    await Promise.all([
-      ...insertTypeahead(documentClient, TABLE, inserts),
-      ...insertTypeahead(documentClient, TABLE, updates),
-    ]);
+    await Promise.all(
+      insertTypeahead(documentClient, TABLE, [...inserts, ...updates]),
+    );
   } catch (e) {
     logger.error('An error occurred', e);
+
+    throw e;
   }
 });

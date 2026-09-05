@@ -1,5 +1,5 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { UpdateCommand } from '@aws-sdk/lib-dynamodb';
+import { GetCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import type { DynamoDBRecord } from 'aws-lambda';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import insertTypeahead from '../insert-typeahead';
@@ -16,6 +16,8 @@ describe('insert-typeahead', () => {
 
   beforeEach(() => {
     ddb = mockClient(DynamoDBClient);
+
+    ddb.on(GetCommand).resolves({});
 
     documentClient = new DynamoDBClient({});
 
@@ -305,117 +307,28 @@ describe('insert-typeahead', () => {
     vi.useRealTimers();
   });
 
-  it('should return update with the correct params', async () => {
+  it('should merge transaction suggestions in one sorted company update', async () => {
     await Promise.all(insertTypeahead(documentClient, tableName, records));
 
     expect(ddb).toReceiveCommandWith(UpdateCommand, {
-      ExpressionAttributeNames: {
-        '#createdAt': 'createdAt',
-        '#data': 'data',
-        '#descriptions': 'purchases',
-        '#groupsCanAccess': 'groupsCanAccess',
-        '#owner': 'owner',
-        '#suppliers': 'suppliers',
-        '#updatedAt': 'updatedAt',
-      },
+      ConditionExpression: 'attribute_not_exists(#id)',
       ExpressionAttributeValues: {
         ':data': 'owner-id:company-id:Typeahead',
-        ':descriptions': ['Description 1'],
         ':groupsCanAccess': ['Admin'],
         ':now': '2020-06-06T19:45:00.000Z',
         ':owner': 'owner-id',
-        ':suppliers': ['Transaction 1'],
+        ':purchases': ['Description 1', 'Description 4'],
+        ':sales': ['Description 2', 'Description 3'],
+        ':suppliers': ['Transaction 1', 'Transaction 4'],
       },
-      Key: {
-        __typename: 'Typeahead',
-        id: 'company-id',
-      },
+      Key: { __typename: 'Typeahead', id: 'company-id' },
       TableName: tableName,
-      UpdateExpression:
-        'ADD #descriptions :descriptions, #suppliers :suppliers SET #createdAt = if_not_exists(#createdAt, :now), #data = :data, #groupsCanAccess = if_not_exists(#groupsCanAccess, :groupsCanAccess), #owner = :owner, #updatedAt = :now',
-    });
-
-    expect(ddb).toReceiveCommandWith(UpdateCommand, {
-      ExpressionAttributeNames: {
-        '#createdAt': 'createdAt',
-        '#data': 'data',
-        '#descriptions': 'sales',
-        '#groupsCanAccess': 'groupsCanAccess',
-        '#owner': 'owner',
-        '#updatedAt': 'updatedAt',
-      },
-      ExpressionAttributeValues: {
-        ':data': 'owner-id:company-id:Typeahead',
-        ':descriptions': ['Description 2'],
-        ':groupsCanAccess': ['Admin'],
-        ':now': '2020-06-06T19:45:00.000Z',
-        ':owner': 'owner-id',
-      },
-      Key: {
-        __typename: 'Typeahead',
-        id: 'company-id',
-      },
-      TableName: tableName,
-      UpdateExpression:
-        'ADD #descriptions :descriptions SET #createdAt = if_not_exists(#createdAt, :now), #data = :data, #groupsCanAccess = if_not_exists(#groupsCanAccess, :groupsCanAccess), #owner = :owner, #updatedAt = :now',
-    });
-
-    expect(ddb).toReceiveCommandWith(UpdateCommand, {
-      ExpressionAttributeNames: {
-        '#createdAt': 'createdAt',
-        '#data': 'data',
-        '#descriptions': 'sales',
-        '#groupsCanAccess': 'groupsCanAccess',
-        '#owner': 'owner',
-        '#updatedAt': 'updatedAt',
-      },
-      ExpressionAttributeValues: {
-        ':data': 'owner-id:company-id:Typeahead',
-        ':descriptions': ['Description 3'],
-        ':groupsCanAccess': ['Admin'],
-        ':now': '2020-06-06T19:45:00.000Z',
-        ':owner': 'owner-id',
-      },
-      Key: {
-        __typename: 'Typeahead',
-        id: 'company-id',
-      },
-      TableName: tableName,
-      UpdateExpression:
-        'ADD #descriptions :descriptions SET #createdAt = if_not_exists(#createdAt, :now), #data = :data, #groupsCanAccess = if_not_exists(#groupsCanAccess, :groupsCanAccess), #owner = :owner, #updatedAt = :now',
-    });
-
-    expect(ddb).toReceiveCommandWith(UpdateCommand, {
-      ExpressionAttributeNames: {
-        '#createdAt': 'createdAt',
-        '#data': 'data',
-        '#descriptions': 'purchases',
-        '#groupsCanAccess': 'groupsCanAccess',
-        '#owner': 'owner',
-        '#suppliers': 'suppliers',
-        '#updatedAt': 'updatedAt',
-      },
-      ExpressionAttributeValues: {
-        ':data': 'owner-id:company-id:Typeahead',
-        ':descriptions': ['Description 4'],
-        ':groupsCanAccess': ['Admin'],
-        ':now': '2020-06-06T19:45:00.000Z',
-        ':owner': 'owner-id',
-        ':suppliers': ['Transaction 4'],
-      },
-      Key: {
-        __typename: 'Typeahead',
-        id: 'company-id',
-      },
-      TableName: tableName,
-      UpdateExpression:
-        'ADD #descriptions :descriptions, #suppliers :suppliers SET #createdAt = if_not_exists(#createdAt, :now), #data = :data, #groupsCanAccess = if_not_exists(#groupsCanAccess, :groupsCanAccess), #owner = :owner, #updatedAt = :now',
     });
   });
 
   it('should call update the correct number of times', async () => {
     await Promise.all(insertTypeahead(documentClient, tableName, records));
 
-    expect(ddb).toReceiveCommandTimes(UpdateCommand, 4);
+    expect(ddb).toReceiveCommandTimes(UpdateCommand, 1);
   });
 });
