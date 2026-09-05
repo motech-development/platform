@@ -26,6 +26,12 @@ interface ITransactionScope {
   owner: string;
 }
 
+const hasTransactionScope = ({ companyId, owner }: ITransactionScope) =>
+  typeof companyId === 'string' &&
+  companyId.length > 0 &&
+  typeof owner === 'string' &&
+  owner.length > 0;
+
 const publishRecord = async ({ eventName, dynamodb }: DynamoDBRecord) => {
   const image =
     eventName === 'REMOVE' ? dynamodb?.OldImage : dynamodb?.NewImage;
@@ -46,8 +52,13 @@ const publishRecord = async ({ eventName, dynamodb }: DynamoDBRecord) => {
   if (typename === 'Transaction') {
     const { companyId, owner } = item;
 
-    if (!companyId || !owner) {
-      throw new Error('Transaction is missing its company or owner');
+    if (!hasTransactionScope(item)) {
+      // Retrying an immutable malformed stream image cannot recover its scope.
+      logger.error('Skipping transaction without a valid company or owner', {
+        keys: dynamodb?.Keys,
+        sequenceNumber: dynamodb?.SequenceNumber,
+      });
+      return;
     }
 
     // Also invalidate the former scope if a record moves between companies.
@@ -57,8 +68,7 @@ const publishRecord = async ({ eventName, dynamodb }: DynamoDBRecord) => {
       ) as ITransactionScope;
 
       if (
-        previous.companyId &&
-        previous.owner &&
+        hasTransactionScope(previous) &&
         (previous.companyId !== companyId || previous.owner !== owner)
       ) {
         await publishTransactionChange(previous.companyId, previous.owner);
