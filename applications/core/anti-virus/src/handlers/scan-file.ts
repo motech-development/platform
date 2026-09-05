@@ -43,7 +43,10 @@ export const handler: Handler<IEvent> = wrapHandler(async (event) => {
   if (!data) return { ...event, cancelled: true };
   const managed =
     event.managed || data.Metadata?.['attachment-lifecycle'] === 'v1';
-  if (managed && (await getStagedFile(to, key))?.state !== 'pending') {
+  if (
+    managed &&
+    (await getStagedFile(to, decodeURIComponent(key)))?.state !== 'pending'
+  ) {
     await deleteFile(from, key);
     return { ...event, cancelled: true };
   }

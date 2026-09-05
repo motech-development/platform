@@ -63,6 +63,7 @@ const pause = () => {
 describe('staged file lifecycle', () => {
   let file: StagedFile | undefined;
   let source: boolean;
+  let objectKey: string;
   let destination: string | undefined;
   let uploads: Map<string, string>;
   let beforeRegister: () => Promise<void>;
@@ -76,6 +77,7 @@ describe('staged file lifecycle', () => {
     s3.reset();
     file = undefined;
     source = true;
+    objectKey = key;
     destination = undefined;
     uploads = new Map();
     beforeRegister = async () => {};
@@ -122,12 +124,17 @@ describe('staged file lifecycle', () => {
         )
           throw fail('ConditionalCheckFailedException');
         file.state = 'deleting';
+        if (typeof values[':cleanupAt'] === 'number')
+          file.expiresAt = values[':cleanupAt'];
       }
       return { Attributes: structuredClone(file) };
     });
     db.on(QueryCommand).callsFake((input: QueryCommandInput) => ({
       Items:
-        file?.state === input.ExpressionAttributeValues?.[':state']
+        file?.state === input.ExpressionAttributeValues?.[':state'] &&
+        file?.expiresAt !== undefined &&
+        file.expiresAt <=
+          Number(input.ExpressionAttributeValues?.[':expiredBefore'])
           ? [structuredClone(file)]
           : [],
     }));
@@ -136,11 +143,13 @@ describe('staged file lifecycle', () => {
       return {};
     });
     s3.on(HeadObjectCommand).callsFake((input: HeadObjectCommandInput) => {
+      if (input.Key !== objectKey) throw fail('NotFound');
       if (input.Bucket === from && source)
         return {
           ContentLength: 10,
           ContentType: 'application/pdf',
           ETag: 'source-etag',
+          ExpiresString: 'Wed, 21 Oct 2015 07:28:00 GMT',
           Metadata: { id: 'transaction', typename: 'Transaction' },
         };
       if (input.Bucket === to && destination)
@@ -181,6 +190,7 @@ describe('staged file lifecycle', () => {
       },
     );
     s3.on(DeleteObjectCommand).callsFake((input: DeleteObjectCommandInput) => {
+      if (input.Key !== objectKey) return {};
       if (input.Bucket === from) source = false;
       else destination = undefined;
       return {};
@@ -207,11 +217,54 @@ describe('staged file lifecycle', () => {
     expect(file?.expiresAt).toBeUndefined();
     expect(s3).toHaveReceivedCommandWith(CreateMultipartUploadCommand, {
       ContentType: 'application/pdf',
+      Expires: new Date('Wed, 21 Oct 2015 07:28:00 GMT'),
       Metadata: {
         'attachment-transfer': destination ?? '',
         id: 'transaction',
         typename: 'Transaction',
       },
+    });
+  });
+
+  it.each(['%', '%25', '%2F', '%252F'])(
+    'preserves literal %s in object keys through promotion and deletion',
+    async (literal) => {
+      objectKey = `owner/${literal}/file.pdf`;
+      await allocateStagedFile(from, to, objectKey, 30, 1);
+      expect(file?.path).toBe(`${to}/${objectKey}`);
+      await moveStagedFile(from, to, objectKey);
+      expect(destination).toBeDefined();
+      expect(source).toBe(false);
+      await deleteStagedFile(from, to, objectKey);
+      expect(snapshot()).toEqual({
+        destination: undefined,
+        file: undefined,
+        source: false,
+        uploads: 0,
+      });
+    },
+  );
+
+  it('retries a failed ready-file deletion through scheduled cleanup', async () => {
+    await allocate();
+    await moveStagedFile(from, to, key);
+    s3.on(DeleteObjectCommand).rejects(new Error('S3 unavailable'));
+    await expect(deleteStagedFile(from, to, key)).rejects.toThrow(
+      'S3 unavailable',
+    );
+    expect(file?.state).toBe('deleting');
+    expect(destination).toBeDefined();
+    s3.on(DeleteObjectCommand).callsFake((input: DeleteObjectCommandInput) => {
+      if (input.Bucket === from) source = false;
+      else destination = undefined;
+      return {};
+    });
+    await cleanupExpiredStagedFiles();
+    expect(snapshot()).toEqual({
+      destination: undefined,
+      file: undefined,
+      source: false,
+      uploads: 0,
     });
   });
 

@@ -42,7 +42,10 @@ export const handler: Handler<IEvent> = wrapHandler(async (event) => {
     event.managed || data.Metadata?.['attachment-lifecycle'] === 'v1';
   if (managed) {
     if (!event.to) throw new Error('No destination bucket set');
-    if ((await getStagedFile(event.to, key))?.state !== 'pending')
+    if (
+      (await getStagedFile(event.to, decodeURIComponent(key)))?.state !==
+      'pending'
+    )
       return { from, key };
   }
   const Metadata = data.Metadata ? { ...data.Metadata } : undefined;

@@ -41,7 +41,7 @@ const table = (): string => {
 };
 
 const identity = (to: string, key: string) => ({
-  path: `${to}/${decodeURIComponent(key)}`,
+  path: `${to}/${key}`,
 });
 const namedError = (error: unknown, name: string) =>
   error instanceof Error && error.name === name;
@@ -64,7 +64,7 @@ export const allocateStagedFile = async (
     ...identity(to, key),
     expiresAt: expiry.getTime() / 1000,
     from,
-    key: decodeURIComponent(key),
+    key,
     state: 'pending',
     to,
   };
@@ -110,9 +110,7 @@ const abortTransfer = async (
 };
 
 const removeObject = async (bucket: string, key: string): Promise<void> => {
-  await s3.send(
-    new DeleteObjectCommand({ Bucket: bucket, Key: decodeURIComponent(key) }),
-  );
+  await s3.send(new DeleteObjectCommand({ Bucket: bucket, Key: key }));
 };
 
 const cleanupStagedFile = async (
@@ -137,18 +135,23 @@ export const deleteStagedFile = async (
   options: DeleteOptions = {},
 ): Promise<void> => {
   const { expiredBefore, pendingOnly } = options;
+  let condition = 'attribute_exists(#path)';
+  if (pendingOnly) {
+    condition = '( #state = :pending OR #state = :deleting )';
+    if (expiredBefore !== undefined)
+      condition += ' AND expiresAt <= :expiredBefore';
+  }
   let file: StagedFile | undefined;
   try {
     const result = await db.send(
       new UpdateCommand({
-        ConditionExpression: pendingOnly
-          ? `( #state = :pending OR #state = :deleting )${expiredBefore === undefined ? '' : ' AND expiresAt <= :expiredBefore'}`
-          : 'attribute_exists(#path)',
+        ConditionExpression: condition,
         ExpressionAttributeNames: {
           ...(pendingOnly ? {} : { '#path': 'path' }),
           '#state': 'state',
         },
         ExpressionAttributeValues: {
+          ':cleanupAt': Math.floor(Date.now() / 1000),
           ':deleting': 'deleting',
           ...(pendingOnly ? { ':pending': 'pending' } : {}),
           ...(expiredBefore === undefined
@@ -158,7 +161,8 @@ export const deleteStagedFile = async (
         Key: identity(to, key),
         ReturnValues: 'ALL_NEW',
         TableName: table(),
-        UpdateExpression: 'SET #state = :deleting',
+        // Keep failed deletions discoverable after ready records lost their expiry.
+        UpdateExpression: 'SET #state = :deleting, expiresAt = :cleanupAt',
       }),
     );
     file = result.Attributes as StagedFile;
@@ -169,7 +173,7 @@ export const deleteStagedFile = async (
       return;
     }
   }
-  await cleanupStagedFile(file ?? { from, key: decodeURIComponent(key), to });
+  await cleanupStagedFile(file ?? { from, key, to });
   if (file)
     await db.send(
       new DeleteCommand({ Key: identity(to, key), TableName: table() }),
@@ -205,7 +209,9 @@ const registerTransfer = async (
       ContentEncoding: source.ContentEncoding,
       ContentLanguage: source.ContentLanguage,
       ContentType: source.ContentType,
-      Expires: source.Expires,
+      Expires: source.ExpiresString
+        ? new Date(source.ExpiresString)
+        : undefined,
       Key: file.key,
       Metadata: { ...source.Metadata, 'attachment-transfer': token },
     }),
@@ -290,6 +296,30 @@ const finishTransfer = async (file: StagedFile): Promise<void> => {
   );
 };
 
+const completeRegisteredTransfer = async (file: StagedFile): Promise<void> => {
+  if (!(await copied(file))) {
+    try {
+      await finishTransfer(file);
+    } catch (error) {
+      if (!(await copied(file))) throw error;
+    }
+  }
+  await db.send(
+    new UpdateCommand({
+      ConditionExpression: '#state = :pending AND uploadId = :uploadId',
+      ExpressionAttributeNames: { '#state': 'state' },
+      ExpressionAttributeValues: {
+        ':pending': 'pending',
+        ':ready': 'ready',
+        ':uploadId': file.uploadId,
+      },
+      Key: identity(file.to, file.key),
+      TableName: table(),
+      UpdateExpression: 'SET #state = :ready REMOVE expiresAt',
+    }),
+  );
+};
+
 export const moveStagedFile = async (
   from: string,
   to: string,
@@ -303,29 +333,7 @@ export const moveStagedFile = async (
       await deleteStagedFile(from, to, key);
       return;
     }
-    if (file.state === 'pending') {
-      if (!(await copied(file))) {
-        try {
-          await finishTransfer(file);
-        } catch (error) {
-          if (!(await copied(file))) throw error;
-        }
-      }
-      await db.send(
-        new UpdateCommand({
-          ConditionExpression: '#state = :pending AND uploadId = :uploadId',
-          ExpressionAttributeNames: { '#state': 'state' },
-          ExpressionAttributeValues: {
-            ':pending': 'pending',
-            ':ready': 'ready',
-            ':uploadId': file.uploadId,
-          },
-          Key: identity(to, key),
-          TableName: table(),
-          UpdateExpression: 'SET #state = :ready REMOVE expiresAt',
-        }),
-      );
-    }
+    if (file.state === 'pending') await completeRegisteredTransfer(file);
     await removeObject(from, key);
   } catch (error) {
     const current = await getStagedFile(to, key);

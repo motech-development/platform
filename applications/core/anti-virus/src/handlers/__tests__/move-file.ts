@@ -53,4 +53,16 @@ describe('move-file', () => {
     );
     expect(moveFile).not.toHaveBeenCalled();
   });
+  it('decodes a managed event key exactly once', async () => {
+    await handler(
+      { ...event, key: 'owner/%252F/file.pdf', managed: true, to: 'downloads' },
+      context,
+      callback,
+    );
+    expect(moveStagedFile).toHaveBeenCalledWith(
+      event.from,
+      'downloads',
+      'owner/%2F/file.pdf',
+    );
+  });
 });

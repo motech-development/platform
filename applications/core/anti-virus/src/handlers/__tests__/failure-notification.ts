@@ -144,6 +144,7 @@ describe('failure-notification', () => {
     });
 
     it('keeps internal lifecycle metadata out of the notification', async () => {
+      event.key = 'owner/%252F/file.pdf';
       vi.mocked(getFileData).mockResolvedValueOnce({
         $metadata: {},
         Metadata: {
@@ -160,6 +161,10 @@ describe('failure-notification', () => {
         to: 'downloads',
       });
       await handler({ ...event, to: 'downloads' }, context, callback);
+      expect(getStagedFile).toHaveBeenCalledWith(
+        'downloads',
+        'owner/%2F/file.pdf',
+      );
       expect(
         sqs.commandCalls(SendMessageCommand)[0]?.args[0].input.MessageAttributes
           ?.metadata.StringValue,

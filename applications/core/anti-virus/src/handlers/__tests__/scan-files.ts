@@ -96,6 +96,7 @@ describe('scan-files', () => {
     });
 
     it('passes lifecycle ownership through to the promotion step after a clean scan', async () => {
+      event.key = 'owner/%252F/file.pdf';
       vi.mocked(getFileData).mockResolvedValueOnce({
         $metadata: {},
         Metadata: { 'attachment-lifecycle': 'v1' },
@@ -113,6 +114,10 @@ describe('scan-files', () => {
         result: true,
       });
       expect(scanFile).toHaveBeenCalled();
+      expect(getStagedFile).toHaveBeenCalledWith(
+        event.to,
+        'owner/%2F/file.pdf',
+      );
     });
 
     it('should create the temporary download folder', async () => {
