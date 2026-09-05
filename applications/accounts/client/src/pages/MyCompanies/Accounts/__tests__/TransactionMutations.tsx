@@ -219,3 +219,100 @@ describe('local mutations with existing transaction corrections', () => {
     },
   );
 });
+
+describe('deletion before the initial detail query completes', () => {
+  it.each([
+    [
+      TransactionStatus.Pending,
+      '/my-companies/accounts/company-id/pending-transactions',
+    ],
+    [TransactionStatus.Confirmed, '/my-companies/accounts/company-id'],
+    [null, '/my-companies/accounts/company-id'],
+  ])(
+    'returns a transaction with last known status %s to %s',
+    async (status, destination) => {
+      let resolveDetails: (() => void) | undefined;
+      const readState = vi.fn();
+      const link = new ApolloLink(
+        (operation) =>
+          new Observable((observer) => {
+            if (operation.operationName === 'GetTransactionState') {
+              readState();
+              observer.next({ data: { getTransactionState: null } });
+              observer.complete();
+            } else if (operation.operationName === 'ViewTransaction') {
+              resolveDetails = () => {
+                observer.next({
+                  data: {
+                    getClients: { id: 'company-id', items: [] },
+                    getSettings: {
+                      categories: [],
+                      id: 'company-id',
+                      vat: { pay: 20 },
+                    },
+                    getTransaction: status
+                      ? {
+                          __typename: 'Transaction',
+                          amount: -20,
+                          attachment: '',
+                          category: 'Equipment',
+                          companyId: 'company-id',
+                          date: '2026-09-05T12:00:00.000Z',
+                          description: 'Already deleted transaction',
+                          id: 'transaction-id',
+                          name: 'Supplier',
+                          refund: false,
+                          scheduled: false,
+                          status,
+                          vat: 0,
+                        }
+                      : null,
+                    getTypeahead: {
+                      id: 'company-id',
+                      purchases: [],
+                      sales: [],
+                      suppliers: [],
+                    },
+                  },
+                });
+                observer.complete();
+              };
+            }
+          }),
+      );
+
+      render(
+        <TestProvider
+          path="/accounts/:companyId/view-transaction/:transactionId"
+          history={['/accounts/company-id/view-transaction/transaction-id']}
+        >
+          <MockedProvider
+            link={link}
+            cache={new InMemoryCache({ typePolicies })}
+          >
+            <TransactionStateProvider>
+              <TransactionUpdates companyId="company-id" owner="user-id">
+                <ViewTransaction />
+              </TransactionUpdates>
+            </TransactionStateProvider>
+          </MockedProvider>
+        </TestProvider>,
+      );
+
+      await waitFor(() => expect(readState).toHaveBeenCalledOnce());
+      expect(
+        screen.queryByTestId('/my-companies/accounts/company-id'),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText('view-transaction.title'),
+      ).not.toBeInTheDocument();
+
+      act(() => resolveDetails?.());
+
+      expect(await screen.findByTestId(destination)).toBeInTheDocument();
+      expect(
+        screen.queryByText('Already deleted transaction'),
+      ).not.toBeInTheDocument();
+    },
+  );
+});
