@@ -12,7 +12,7 @@ import {
   Row,
   useToast,
 } from '@motech-development/breeze-ui';
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
@@ -20,12 +20,6 @@ import DeleteItem from '../../../components/DeleteItem';
 import TransactionForm, {
   FormSchema,
 } from '../../../components/TransactionForm';
-import {
-  useApplyTransactionState,
-  useTransactionReadError,
-  useTransactionReadPending,
-  useTransactionState,
-} from '../../../components/TransactionUpdates';
 import { gql } from '../../../graphql';
 import {
   MutationUpdateTransactionArgs,
@@ -38,12 +32,6 @@ import ViewAttachment from './shared/ViewAttachment';
 
 const getStatus = (status: string) =>
   status === 'confirmed' ? 'pending' : 'confirmed';
-
-const backTo = (id: string, status?: string) => {
-  const location = `/my-companies/accounts/${id}`;
-
-  return status === 'pending' ? `${location}/pending-transactions` : location;
-};
 
 export const update: MutationUpdaterFunction<
   UpdateTransactionMutation,
@@ -218,7 +206,6 @@ export const UPDATE_TRANSACTION = gql(/* GraphQL */ `
       description
       id
       name
-      refund
       scheduled
       status
       vat
@@ -236,82 +223,43 @@ export const DELETE_TRANSACTION = gql(/* GraphQL */ `
   }
 `);
 
-function TransactionDetails({
-  companyId,
-  transactionId,
-}: {
-  readonly companyId: string;
-  readonly transactionId: string;
-}) {
+function ViewTransaction() {
   const navigate = useNavigate();
+  const { companyId, transactionId } = useParams();
+
+  invariant(companyId);
+  invariant(transactionId);
 
   const [attachment, setAttachment] = useState('');
-  const attachmentBaseline = useRef('');
   const [modal, setModal] = useState(false);
-  const currentTransaction = useTransactionState(transactionId);
-  const readError = useTransactionReadError(transactionId);
-  const readPending = useTransactionReadPending(transactionId);
-  const applyTransactionState = useApplyTransactionState();
   const { t } = useTranslation('accounts');
   const { add } = useToast();
-  const { data, error, loading, refetch } = useQuery(VIEW_TRANSACTION, {
+  const backTo = (id: string, status?: string) => {
+    const pending = status === 'pending';
+    const location = `/my-companies/accounts/${id}`;
+
+    if (pending) {
+      return `${location}/pending-transactions`;
+    }
+
+    return location;
+  };
+
+  const { data, error, loading } = useQuery(VIEW_TRANSACTION, {
+    onCompleted: ({ getTransaction }) => {
+      if (getTransaction?.attachment) {
+        setAttachment(getTransaction.attachment);
+      }
+    },
     variables: {
       companyId,
       transactionId,
     },
   });
-  const transaction = currentTransaction;
-  const refreshedCategories = useRef(new Set<string>());
-  const queryReady = Boolean(data?.getSettings && data?.getClients);
-  const categoryMissing = Boolean(
-    transaction &&
-      transaction.category !== 'Sales' &&
-      data?.getSettings &&
-      !data.getSettings.categories.some(
-        ({ name }) => name === transaction.category,
-      ),
-  );
-  useEffect(() => {
-    const category = transaction?.category;
-    if (
-      !categoryMissing ||
-      !category ||
-      refreshedCategories.current.has(category)
-    )
-      return;
-    refreshedCategories.current.add(category);
-    refetch().catch(() => {});
-  }, [categoryMissing, refetch, transaction?.category]);
-  const initialReadError =
-    transaction && data?.getSettings && data?.getClients
-      ? undefined
-      : readError;
-  const status = transaction?.status;
-  const queriedStatus = data?.getTransaction?.status;
-  const lastStatus = useRef(status);
-
-  useEffect(() => {
-    const previous = attachmentBaseline.current;
-    const next = transaction?.attachment ?? '';
-    attachmentBaseline.current = next;
-    setAttachment((current) => (current === previous ? next : current));
-  }, [transaction?.attachment]);
-
-  useEffect(() => {
-    if (status) lastStatus.current = status;
-    const destinationStatus = lastStatus.current ?? queriedStatus;
-    // Let an unfinished detail read supply the return destination, without
-    // displaying its stale transaction after an authoritative deletion.
-    if (currentTransaction === null && (destinationStatus || !loading)) {
-      navigate(backTo(companyId, destinationStatus), { replace: true });
-    }
-  }, [companyId, currentTransaction, loading, navigate, queriedStatus, status]);
-
   const [mutation, { error: mutationError, loading: mutationLoading }] =
     useMutation(UPDATE_TRANSACTION, {
       onCompleted: ({ updateTransaction }) => {
         if (updateTransaction) {
-          applyTransactionState(updateTransaction.id, updateTransaction);
           add({
             colour: 'success',
             message: t('view-transaction.success'),
@@ -335,7 +283,6 @@ function TransactionDetails({
     {
       onCompleted: ({ deleteTransaction }) => {
         if (deleteTransaction) {
-          applyTransactionState(deleteTransaction.id, null);
           add({
             colour: 'success',
             message: t('delete-transaction.success'),
@@ -375,7 +322,6 @@ function TransactionDetails({
     }).catch(() => {});
   };
   const save = (input: FormSchema) => {
-    if (readError || readPending || error || categoryMissing) return;
     mutation({
       update,
       variables: {
@@ -385,25 +331,13 @@ function TransactionDetails({
   };
 
   return (
-    <Connected
-      error={(!queryReady && error) || mutationError || initialReadError}
-      loading={
-        !readError &&
-        ((loading && !queryReady) || currentTransaction === undefined)
-      }
-    >
-      {transaction && data?.getSettings && data?.getClients && (
+    <Connected error={error || mutationError} loading={loading}>
+      {data?.getTransaction && data?.getSettings && data?.getClients && (
         <>
           <PageTitle
             title={t('view-transaction.title')}
             subTitle={t('view-transaction.sub-title')}
           />
-
-          {(readError || error) && (
-            <Connected error={readError || error} loading={false}>
-              {null}
-            </Connected>
-          )}
 
           <Row>
             <Col>
@@ -411,17 +345,12 @@ function TransactionDetails({
                 attachment={attachment}
                 attachmentView={
                   <ViewAttachment
-                    key={attachment}
                     id={companyId}
                     path={attachment}
-                    onDelete={() => {
-                      setAttachment((current) =>
-                        current === attachment ? '' : current,
-                      );
-                    }}
+                    onDelete={setAttachment}
                   />
                 }
-                backTo={backTo(companyId, transaction.status)}
+                backTo={backTo(companyId, data.getTransaction.status)}
                 categories={data.getSettings.categories.map(
                   ({ name, vatRate }) => ({
                     name,
@@ -433,13 +362,8 @@ function TransactionDetails({
                   value: name,
                 }))}
                 companyId={companyId}
-                initialValues={transaction}
-                loading={
-                  mutationLoading ||
-                  Boolean(readError || error) ||
-                  readPending ||
-                  categoryMissing
-                }
+                initialValues={data.getTransaction}
+                loading={mutationLoading}
                 purchases={data.getTypeahead?.purchases}
                 sales={data.getTypeahead?.sales}
                 suppliers={data.getTypeahead?.suppliers}
@@ -473,28 +397,13 @@ function TransactionDetails({
             warning={t('delete-transaction.warning')}
             display={modal}
             loading={deleteLoading}
-            name={transaction.name}
+            name={data.getTransaction.name}
             onDelete={onDelete}
             onDismiss={onDismiss}
           />
         </>
       )}
     </Connected>
-  );
-}
-
-function ViewTransaction() {
-  const { companyId, transactionId } = useParams();
-
-  invariant(companyId);
-  invariant(transactionId);
-
-  return (
-    <TransactionDetails
-      key={`${companyId}/${transactionId}`}
-      companyId={companyId}
-      transactionId={transactionId}
-    />
   );
 }
 

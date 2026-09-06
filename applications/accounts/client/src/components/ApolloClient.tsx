@@ -18,7 +18,6 @@ import {
 } from '../graphql/graphql';
 import Container from './Container';
 import ErrorCard from './ErrorCard';
-import { TransactionStateProvider } from './TransactionUpdates';
 
 export interface IApolloClientProps {
   children: ReactNode;
@@ -364,12 +363,9 @@ export const typePolicies: StrictTypedTypePolicies = {
   Transactions: {
     fields: {
       items: {
-        // Fresh first pages replace stale membership; only later pages append.
-        merge: (
-          existing: Reference[] | undefined,
-          incoming: Reference[],
-          { variables },
-        ) => filterRefs(incoming, variables?.nextToken ? existing : undefined),
+        // Merge incoming items with existing while deduping
+        merge: (existing: Reference[] | undefined, incoming: Reference[]) =>
+          filterRefs(incoming, existing),
         // Filter out dangling references on read, so evicted items disappear from lists
         read: (existing: Reference[] | undefined, { canRead }) => {
           const list = existing ?? [];
@@ -383,8 +379,7 @@ export const typePolicies: StrictTypedTypePolicies = {
 };
 
 function ApolloClient({ children }: IApolloClientProps) {
-  const { getAccessTokenSilently, isAuthenticated, isLoading, user } =
-    useAuth0();
+  const { getAccessTokenSilently, isAuthenticated, isLoading } = useAuth0();
   const { t } = useTranslation('apollo-client');
 
   return (
@@ -413,9 +408,7 @@ function ApolloClient({ children }: IApolloClientProps) {
         </Container>
       }
     >
-      <TransactionStateProvider key={user?.sub}>
-        {children}
-      </TransactionStateProvider>
+      {children}
     </Apollo>
   );
 }

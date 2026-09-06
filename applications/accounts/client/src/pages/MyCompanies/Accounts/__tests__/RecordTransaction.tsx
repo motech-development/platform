@@ -2126,7 +2126,6 @@ describe('RecordTransaction', () => {
                   scheduled: false,
                 },
               ],
-              nextToken: null,
               status: TransactionStatus.Confirmed,
             } as unknown as Transactions,
           },
@@ -2208,7 +2207,6 @@ describe('RecordTransaction', () => {
                 scheduled: false,
               },
             ],
-            nextToken: null,
             status: TransactionStatus.Confirmed,
           },
         });
@@ -2273,7 +2271,6 @@ describe('RecordTransaction', () => {
                 scheduled: false,
               },
             ],
-            nextToken: null,
             status: TransactionStatus.Confirmed,
           },
         });

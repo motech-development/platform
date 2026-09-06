@@ -1,14 +1,7 @@
-import {
-  act,
-  fireEvent,
-  render,
-  RenderResult,
-  waitFor,
-} from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { act, render, RenderResult } from '@testing-library/react';
 import type { Mock } from 'vitest';
 import TestProvider from '../../utils/TestProvider';
-import TransactionsList, { ITransactionsListProps } from '../TransactionsList';
+import TransactionsList from '../TransactionsList';
 
 describe('TransactionsList', () => {
   let companyId: string;
@@ -39,10 +32,9 @@ describe('TransactionsList', () => {
 
   describe('when there are transaction', () => {
     let component: RenderResult;
-    let transactions: ITransactionsListProps['transactions'];
 
     beforeEach(async () => {
-      transactions = [
+      const transactions = [
         {
           amount: -20,
           attachment: '',
@@ -83,106 +75,6 @@ describe('TransactionsList', () => {
       const [, , action] = await findAllByRole('columnheader');
 
       expect(action).toHaveTextContent('transactions-list.actions');
-    });
-
-    it('should preserve deletion confirmation when transactions refresh', async () => {
-      const user = userEvent.setup();
-
-      await user.click(component.getByTestId('Delete KFC'));
-      await user.type(component.getByLabelText('confirm-delete'), 'K');
-
-      component.rerender(
-        <TestProvider>
-          <TransactionsList
-            companyId={companyId}
-            currency="GBP"
-            loading={false}
-            transactions={transactions.map((transaction) => ({
-              ...transaction,
-              amount: transaction.amount + 10,
-            }))}
-            onDelete={onDelete}
-          />
-        </TestProvider>,
-      );
-
-      expect(component.getByLabelText('confirm-delete')).toHaveValue('K');
-
-      await user.type(component.getByLabelText('confirm-delete'), 'FC');
-      await user.click(component.getByRole('button', { name: 'delete' }));
-
-      expect(onDelete).toHaveBeenCalledWith('transaction-2');
-    });
-
-    it('keeps typed confirmation but requires the renamed transaction name', async () => {
-      const user = userEvent.setup();
-      await user.click(component.getByTestId('Delete KFC'));
-      await user.type(component.getByLabelText('confirm-delete'), 'KFC');
-      expect(
-        component.getByRole('button', { name: 'delete' }),
-      ).not.toBeDisabled();
-      component.rerender(
-        <TestProvider>
-          <TransactionsList
-            companyId={companyId}
-            currency="GBP"
-            loading={false}
-            transactions={transactions.map((transaction) => ({
-              ...transaction,
-              name:
-                transaction.id === 'transaction-2'
-                  ? 'New supplier'
-                  : transaction.name,
-            }))}
-            onDelete={onDelete}
-          />
-        </TestProvider>,
-      );
-      const input = component.getByLabelText('confirm-delete');
-      expect(input).toHaveValue('KFC');
-      await waitFor(() =>
-        expect(
-          component.getByRole('button', { name: 'delete' }),
-        ).toBeDisabled(),
-      );
-      await act(async () => {
-        fireEvent.submit(input.closest('form')!);
-        await Promise.resolve();
-      });
-      expect(onDelete).not.toHaveBeenCalled();
-      await user.clear(input);
-      await user.type(input, 'New supplier');
-      await user.click(component.getByRole('button', { name: 'delete' }));
-      expect(onDelete).toHaveBeenCalledWith('transaction-2');
-    });
-
-    it('should dismiss deletion confirmation when the selected transaction is removed', async () => {
-      const user = userEvent.setup();
-
-      await user.click(component.getByTestId('Delete KFC'));
-
-      expect(component.getByLabelText('confirm-delete')).toBeInTheDocument();
-
-      component.rerender(
-        <TestProvider>
-          <TransactionsList
-            companyId={companyId}
-            currency="GBP"
-            loading={false}
-            transactions={transactions.filter(
-              ({ id }) => id !== 'transaction-2',
-            )}
-            onDelete={onDelete}
-          />
-        </TestProvider>,
-      );
-
-      await waitFor(() => {
-        expect(
-          component.queryByLabelText('confirm-delete'),
-        ).not.toBeInTheDocument();
-      });
-      expect(onDelete).not.toHaveBeenCalled();
     });
 
     it('should display the date in the correct format', async () => {
