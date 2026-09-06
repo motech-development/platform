@@ -146,6 +146,32 @@ export const useTransactionReadError = (
 export const useTransactionReadPending = (transactionId: string) =>
   useContext(TransactionUpdatesContext).pending.has(transactionId);
 
+function isPermanentReadError(error: ApolloError) {
+  const status =
+    error.networkError && 'statusCode' in error.networkError
+      ? Number(error.networkError.statusCode)
+      : undefined;
+  return (
+    (status !== undefined &&
+      status >= 400 &&
+      status < 500 &&
+      status !== 408 &&
+      status !== 429) ||
+    error.graphQLErrors.some((graphQLError) => {
+      const code =
+        graphQLError.extensions?.errorType ??
+        graphQLError.extensions?.code ??
+        ('errorType' in graphQLError ? graphQLError.errorType : '');
+      return (
+        typeof code === 'string' &&
+        /^(Unauthorized(?:Exception)?|AccessDenied(?:Exception)?|Forbidden|ValidationError|GRAPHQL_VALIDATION_FAILED|BAD_USER_INPUT|UNAUTHENTICATED|FORBIDDEN)$/i.test(
+          code,
+        )
+      );
+    })
+  );
+}
+
 interface IReadRequest {
   dirty: boolean;
   running: boolean;
@@ -304,38 +330,16 @@ function TransactionUpdates({
         requests.delete(transactionId);
         setReadPending(transactionId, false);
         return undefined;
-      } catch (failure) {
+      } catch (error_) {
         if (!active) return undefined;
         if (request.dirty || revision !== revisions.current.get(transactionId))
           return readTransaction(transactionId, request);
 
         const error =
-          failure instanceof ApolloError
-            ? failure
-            : new ApolloError({ networkError: failure as Error });
-        const status =
-          error.networkError && 'statusCode' in error.networkError
-            ? Number(error.networkError.statusCode)
-            : undefined;
-        const permanent =
-          (status !== undefined &&
-            status >= 400 &&
-            status < 500 &&
-            status !== 408 &&
-            status !== 429) ||
-          error.graphQLErrors.some((graphQLError) => {
-            const code =
-              graphQLError.extensions?.errorType ??
-              graphQLError.extensions?.code ??
-              ('errorType' in graphQLError ? graphQLError.errorType : '');
-            return (
-              typeof code === 'string' &&
-              /^(Unauthorized(?:Exception)?|AccessDenied(?:Exception)?|Forbidden|ValidationError|GRAPHQL_VALIDATION_FAILED|BAD_USER_INPUT|UNAUTHENTICATED|FORBIDDEN)$/i.test(
-                code,
-              )
-            );
-          });
-        if (permanent || request.retries >= 3) {
+          error_ instanceof ApolloError
+            ? error_
+            : new ApolloError({ networkError: error_ as Error });
+        if (isPermanentReadError(error) || request.retries >= 3) {
           requests.delete(transactionId);
           setReadPending(transactionId, false);
           setErrors((previous) => new Map(previous).set(transactionId, error));
@@ -360,25 +364,32 @@ function TransactionUpdates({
       }
     };
 
+    const runRequest = async (
+      transactionId: string,
+      request: IReadRequest,
+      retry: () => void,
+    ) => {
+      request.running = true;
+      running += 1;
+      try {
+        const delay = await readTransaction(transactionId, request);
+        if (active && delay !== undefined) {
+          request.timer = setTimeout(retry, delay);
+        }
+      } finally {
+        request.running = false;
+        running -= 1;
+        drain();
+      }
+    };
+
     const enqueue = (transactionId: string, request: IReadRequest) => {
+      const retry = () => {
+        request.timer = undefined;
+        enqueue(transactionId, request);
+      };
       queued.set(transactionId, () => {
-        request.running = true;
-        running += 1;
-        readTransaction(transactionId, request)
-          .then((delay) => {
-            if (active && delay !== undefined) {
-              request.timer = setTimeout(() => {
-                request.timer = undefined;
-                enqueue(transactionId, request);
-              }, delay);
-            }
-          })
-          .finally(() => {
-            request.running = false;
-            running -= 1;
-            drain();
-          })
-          .catch(() => {});
+        runRequest(transactionId, request, retry).catch(() => {});
       });
       drain();
     };

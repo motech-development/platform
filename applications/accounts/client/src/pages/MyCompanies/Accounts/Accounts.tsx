@@ -255,6 +255,15 @@ function Accounts() {
     let retries = 0;
 
     const connect = () => {
+      const retry = () => {
+        if (!active || retryTimer) return;
+        const delay = Math.min(1000 * 2 ** retries, 30000);
+        retries += 1;
+        retryTimer = setTimeout(() => {
+          retryTimer = undefined;
+          connect();
+        }, delay);
+      };
       unsubscribe?.();
       const subscription = client
         .subscribe({
@@ -264,15 +273,8 @@ function Accounts() {
           variables: { id: companyId, owner: user.sub as string },
         })
         .subscribe({
-          error: () => {
-            if (!active || retryTimer) return;
-            const delay = Math.min(1000 * 2 ** retries, 30000);
-            retries += 1;
-            retryTimer = setTimeout(() => {
-              retryTimer = undefined;
-              connect();
-            }, delay);
-          },
+          complete: retry,
+          error: retry,
           next: ({ data: subscriptionData, extensions }) => {
             if (!active) return;
             if (extensions?.controlMsgType === 'CONNECTED') retries = 0;
