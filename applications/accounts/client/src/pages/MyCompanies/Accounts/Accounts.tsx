@@ -20,6 +20,8 @@ import TransactionsList from '../../../components/TransactionsList';
 import {
   useApplyTransactionState,
   useTransactionItems,
+  useTransactionReadError,
+  useTransactionRecovery,
 } from '../../../components/TransactionUpdates';
 import { gql } from '../../../graphql';
 import { TransactionStatus } from '../../../graphql/graphql';
@@ -98,21 +100,34 @@ function Accounts() {
   const loadingPage = useRef(false);
   const attemptedRefills = useRef(new Set<string>());
   const [visibleLimit, setVisibleLimit] = useState<number>();
+  const visibleLimitRef = useRef(visibleLimit);
+  visibleLimitRef.current = visibleLimit;
+  const pageRevision = useRef(0);
   const { add } = useToast();
   const applyTransactionState = useApplyTransactionState();
-  const { client, data, error, loading, networkStatus, subscribeToMore } =
-    useQuery(GET_BALANCE, {
-      fetchPolicy: 'cache-and-network',
-      notifyOnNetworkStatusChange: true,
-      onCompleted: ({ getTransactions }) => {
-        setVisibleLimit(getTransactions.items.length);
-      },
-      variables: {
-        count: 100,
-        id: companyId,
-        status: TransactionStatus.Confirmed,
-      },
-    });
+  const {
+    client,
+    data,
+    error,
+    loading,
+    networkStatus,
+    refetch,
+    subscribeToMore,
+  } = useQuery(GET_BALANCE, {
+    context: { queryDeduplication: false },
+    fetchPolicy: 'cache-and-network',
+    notifyOnNetworkStatusChange: true,
+    onCompleted: ({ getTransactions }) => {
+      setVisibleLimit((previous) =>
+        Math.max(previous ?? 0, Math.min(100, getTransactions.items.length)),
+      );
+    },
+    variables: {
+      count: 100,
+      id: companyId,
+      status: TransactionStatus.Confirmed,
+    },
+  });
   const [deleteMutation, { loading: deleteLoading }] = useMutation(
     DELETE_TRANSACTION,
     {
@@ -138,6 +153,11 @@ function Accounts() {
     Boolean(data?.getTransactions.nextToken),
     visibleLimit,
   );
+  const readError = useTransactionReadError(
+    [...(data?.getTransactions.items ?? []), ...transactions].map(
+      ({ id }) => id,
+    ),
+  );
   const onDelete = (id: string) => {
     deleteMutation({
       variables: {
@@ -148,6 +168,7 @@ function Accounts() {
   const onLoadMore = useCallback(
     (nextToken: string, count = 100, expandWindow = true) => {
       if (loadingPage.current) return;
+      const revision = pageRevision.current;
       loadingPage.current = true;
       attemptedRefills.current.add(nextToken);
       setLoadingMore(true);
@@ -160,8 +181,14 @@ function Accounts() {
       };
       // Cursor responses append without completing the watched first-page query.
       client
-        .query({ fetchPolicy: 'no-cache', query: GET_BALANCE, variables })
+        .query({
+          context: { queryDeduplication: false },
+          fetchPolicy: 'no-cache',
+          query: GET_BALANCE,
+          variables,
+        })
         .then(({ data: page }) => {
+          if (revision !== pageRevision.current) return;
           client.cache.writeQuery({
             data: page,
             query: GET_BALANCE,
@@ -174,11 +201,37 @@ function Accounts() {
         })
         .catch(() => {})
         .finally(() => {
+          if (revision !== pageRevision.current) return;
           loadingPage.current = false;
           setLoadingMore(false);
         });
     },
     [client, companyId],
+  );
+
+  useTransactionRecovery(
+    useCallback(() => {
+      // Recovery replaces the cursor chain, including any unfinished page.
+      pageRevision.current += 1;
+      const revision = pageRevision.current;
+      loadingPage.current = true;
+      attemptedRefills.current.clear();
+      setLoadingMore(true);
+      refetch({ count: Math.max(100, visibleLimitRef.current ?? 0) })
+        .catch(() => {})
+        .finally(() => {
+          if (revision !== pageRevision.current) return;
+          loadingPage.current = false;
+          setLoadingMore(false);
+        });
+    }, [refetch]),
+  );
+
+  useEffect(
+    () => () => {
+      pageRevision.current += 1;
+    },
+    [],
   );
 
   const loadedCount = data?.getTransactions.items.length ?? 0;
@@ -243,7 +296,13 @@ function Accounts() {
   }, []);
 
   return (
-    <Connected error={error} loading={networkStatus === NetworkStatus.loading}>
+    <Connected
+      error={error || readError}
+      loading={
+        !readError &&
+        (networkStatus === NetworkStatus.loading || (loading && !data))
+      }
+    >
       {data?.getBalance && (
         <>
           <PageTitle

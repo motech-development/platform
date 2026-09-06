@@ -8,6 +8,7 @@ import {
   RenderResult,
   waitFor,
 } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { typePolicies } from '../../../../components/ApolloClient';
 import TransactionUpdates, {
   TransactionStateProvider,
@@ -28,6 +29,119 @@ describe('PendingTransactions', () => {
   beforeEach(() => {
     history = ['/accounts/company-id/pending-transactions'];
   });
+
+  it.each(['published', 'deleted'])(
+    'dismisses the selected deletion confirmation when its transaction is %s remotely',
+    async (change) => {
+      let signal: ((transactionId: string) => void) | undefined;
+      const selected = {
+        __typename: 'Transaction',
+        amount: 20,
+        attachment: 'receipt.pdf',
+        category: 'Sales',
+        companyId: 'company-id',
+        date: '2026-09-05T12:00:00.000Z',
+        description: 'Selected pending transaction',
+        id: 'selected-transaction',
+        name: 'Selected customer',
+        refund: false,
+        scheduled: false,
+        status: TransactionStatus.Pending,
+        vat: 0,
+      };
+      const other = {
+        ...selected,
+        description: 'Other pending transaction',
+        id: 'other-transaction',
+        name: 'Other customer',
+      };
+      const link = new ApolloLink(
+        (operation) =>
+          new Observable((observer) => {
+            if (operation.operationName === 'OnTransactionChange') {
+              signal = (transactionId) =>
+                observer.next({
+                  data: {
+                    onTransactionChange: {
+                      id: 'company-id',
+                      owner: 'user-id',
+                      transactionId,
+                    },
+                  },
+                });
+            } else if (operation.operationName === 'GetTransactions') {
+              observer.next({
+                data: {
+                  getBalance: { currency: 'GBP', id: 'company-id' },
+                  getTransactions: {
+                    __typename: 'Transactions',
+                    id: 'company-id',
+                    items: [selected, other],
+                    status: TransactionStatus.Pending,
+                  },
+                },
+              });
+              observer.complete();
+            } else if (operation.operationName === 'GetTransactionState') {
+              const selectedState =
+                change === 'deleted'
+                  ? null
+                  : { ...selected, status: TransactionStatus.Confirmed };
+              observer.next({
+                data: {
+                  getTransactionState:
+                    operation.variables.transactionId === selected.id
+                      ? selectedState
+                      : { ...other, description: 'Updated unrelated row' },
+                },
+              });
+              observer.complete();
+            }
+          }),
+      );
+      const user = userEvent.setup();
+      const {
+        findByText,
+        getByLabelText,
+        getByRole,
+        getByTestId,
+        queryByRole,
+        queryByText,
+      } = render(
+        <TestProvider
+          path="/accounts/:companyId/pending-transactions"
+          history={history}
+        >
+          <MockedProvider
+            link={link}
+            cache={new InMemoryCache({ typePolicies })}
+          >
+            <TransactionStateProvider>
+              <TransactionUpdates companyId="company-id" owner="user-id">
+                <PendingTransactions />
+              </TransactionUpdates>
+            </TransactionStateProvider>
+          </MockedProvider>
+        </TestProvider>,
+      );
+      await findByText(selected.description);
+      await user.click(getByTestId('Delete Selected customer'));
+      await user.type(getByLabelText('confirm-delete'), 'Selected');
+
+      act(() => signal?.(other.id));
+      await findByText('Updated unrelated row');
+      expect(getByLabelText('confirm-delete')).toHaveValue('Selected');
+      await user.type(getByLabelText('confirm-delete'), ' customer');
+      expect(getByRole('button', { name: 'delete' })).not.toBeDisabled();
+
+      act(() => signal?.(selected.id));
+      await waitFor(() => {
+        expect(queryByText(selected.description)).not.toBeInTheDocument();
+        expect(queryByRole('dialog')).not.toBeInTheDocument();
+      });
+      expect(queryByRole('button', { name: 'delete' })).not.toBeInTheDocument();
+    },
+  );
 
   it('shows a signalled transaction when the later index response is empty', async () => {
     let signal: (() => void) | undefined;
@@ -426,7 +540,6 @@ describe('PendingTransactions', () => {
 
       fireEvent.change(input, {
         target: {
-          focus: () => {},
           value: 'KFC',
         },
       });
@@ -538,7 +651,6 @@ describe('PendingTransactions', () => {
 
       fireEvent.change(input, {
         target: {
-          focus: () => {},
           value: 'KFC',
         },
       });

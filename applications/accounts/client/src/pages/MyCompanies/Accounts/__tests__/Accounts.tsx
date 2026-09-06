@@ -31,6 +31,526 @@ describe('Accounts', () => {
     history = ['/accounts/company-id'];
   });
 
+  it.each([101, 100])(
+    'preserves an expanded list after reconnect when the server returns at most %i rows',
+    async (pageSize) => {
+      let disconnect: (() => void) | undefined;
+      const rows = Array.from({ length: 101 }, (_, index) => ({
+        __typename: 'Transaction',
+        amount: 20,
+        attachment: '',
+        category: 'Sales',
+        companyId: 'company-id',
+        date: new Date(Date.UTC(2026, 8, 5 - index)).toISOString(),
+        description: `Loaded transaction ${index}`,
+        id: `transaction-${index}`,
+        name: `Customer ${index}`,
+        refund: false,
+        scheduled: false,
+        status: TransactionStatus.Confirmed,
+        vat: 0,
+      }));
+      const list =
+        vi.fn<(variables: { count: number; nextToken?: string }) => void>();
+      const link = new ApolloLink(
+        (operation) =>
+          new Observable((observer) => {
+            if (operation.operationName === 'OnTransactionChange') {
+              disconnect = () => observer.error(new Error('Connection lost'));
+              observer.next({ extensions: { controlMsgType: 'CONNECTED' } });
+            } else if (operation.operationName === 'GetTransactionState') {
+              observer.next({
+                data: {
+                  getTransactionState: rows.find(
+                    ({ id }) => id === operation.variables.transactionId,
+                  ),
+                },
+              });
+              observer.complete();
+            } else if (operation.operationName === 'GetBalance') {
+              list({
+                count: Number(operation.variables.count),
+                ...(operation.variables.nextToken
+                  ? { nextToken: String(operation.variables.nextToken) }
+                  : {}),
+              });
+              const offset = Number(operation.variables.nextToken ?? 0);
+              const count = Math.min(
+                Number(operation.variables.count),
+                pageSize,
+              );
+              const items = rows.slice(offset, offset + count);
+              observer.next({
+                data: {
+                  getBalance: {
+                    balance: 2020,
+                    currency: 'GBP',
+                    id: 'company-id',
+                    vat: { owed: 0, paid: 0 },
+                  },
+                  getTransactions: {
+                    __typename: 'Transactions',
+                    id: 'company-id',
+                    items,
+                    nextToken:
+                      offset + count < rows.length
+                        ? String(offset + count)
+                        : null,
+                    status: TransactionStatus.Confirmed,
+                  },
+                },
+              });
+              observer.complete();
+            }
+          }),
+      );
+      const { findByText, getByRole, getByText } = render(
+        <TestProvider path="/accounts/:companyId" history={history}>
+          <MockedProvider
+            link={link}
+            cache={new InMemoryCache({ typePolicies })}
+          >
+            <TransactionStateProvider>
+              <TransactionUpdates companyId="company-id" owner="user-id">
+                <Accounts />
+              </TransactionUpdates>
+            </TransactionStateProvider>
+          </MockedProvider>
+        </TestProvider>,
+      );
+      await findByText(rows[99].description);
+      fireEvent.click(getByRole('button', { name: 'accounts.load-more' }));
+      await findByText(rows[100].description);
+      const previousCalls = list.mock.calls.length;
+      act(() => disconnect?.());
+      await waitFor(
+        () => expect(list.mock.calls.length).toBeGreaterThan(previousCalls),
+        {
+          timeout: 2000,
+        },
+      );
+      await act(() => waitForApollo(0));
+      await waitFor(() => {
+        expect(getByText(rows[0].description)).toBeInTheDocument();
+        expect(getByText(rows[100].description)).toBeInTheDocument();
+      });
+      expect(list.mock.calls[previousCalls][0].count).toBe(101);
+      const finalRequest =
+        pageSize === 100 ? { count: 1, nextToken: '100' } : { count: 101 };
+      await waitFor(() => expect(list).toHaveBeenLastCalledWith(finalRequest));
+    },
+  );
+
+  it.each(['before', 'after'])(
+    'discards an obsolete page arriving %s a replacement cursor request after reconnect',
+    async (releaseOrder) => {
+      let disconnect: (() => void) | undefined;
+      let releasePage: (() => void) | undefined;
+      let reconnected = false;
+      const rows = Array.from({ length: 200 }, (_, index) => ({
+        __typename: 'Transaction',
+        amount: 20,
+        attachment: '',
+        category: 'Sales',
+        companyId: 'company-id',
+        date: new Date(Date.UTC(2026, 8, 5 - index)).toISOString(),
+        description: `Loaded transaction ${index}`,
+        id: `transaction-${index}`,
+        name: `Customer ${index}`,
+        refund: false,
+        scheduled: false,
+        status: TransactionStatus.Confirmed,
+        vat: 0,
+      }));
+      const inserted = {
+        ...rows[150],
+        date: new Date(new Date(rows[150].date).getTime() - 1000).toISOString(),
+        description: 'Transaction inserted while disconnected',
+        id: 'inserted-transaction',
+        name: 'Inserted customer',
+      };
+      const recoveredList = vi.fn();
+      const cursorRequests = vi.fn();
+      const link = new ApolloLink(
+        (operation) =>
+          new Observable((observer) => {
+            if (operation.operationName === 'OnTransactionChange') {
+              disconnect = () => {
+                reconnected = true;
+                observer.error(new Error('Connection lost'));
+              };
+              observer.next({ extensions: { controlMsgType: 'CONNECTED' } });
+            } else if (operation.operationName === 'GetTransactionState') {
+              observer.next({
+                data: {
+                  getTransactionState: [...rows, inserted].find(
+                    ({ id }) => id === operation.variables.transactionId,
+                  ),
+                },
+              });
+              observer.complete();
+            } else if (operation.operationName === 'GetBalance') {
+              const reply = (items: typeof rows, nextToken: string | null) => {
+                observer.next({
+                  data: {
+                    getBalance: {
+                      balance: 4000,
+                      currency: 'GBP',
+                      id: 'company-id',
+                      vat: { owed: 0, paid: 0 },
+                    },
+                    getTransactions: {
+                      __typename: 'Transactions',
+                      id: 'company-id',
+                      items,
+                      nextToken,
+                      status: TransactionStatus.Confirmed,
+                    },
+                  },
+                });
+                observer.complete();
+              };
+              if (operation.variables.nextToken) cursorRequests();
+              if (operation.variables.nextToken && !reconnected) {
+                releasePage = () => reply(rows.slice(100), null);
+                return;
+              }
+              if (reconnected) recoveredList(operation.variables);
+              const current = reconnected
+                ? [...rows.slice(0, 151), inserted, ...rows.slice(151)]
+                : rows;
+              const offset = Number(operation.variables.nextToken ?? 0);
+              const count = Number(operation.variables.count);
+              reply(
+                current.slice(offset, offset + count),
+                offset + count < current.length ? String(offset + count) : null,
+              );
+            }
+          }),
+      );
+      const { findByText, getAllByRole, getByRole, queryByText } = render(
+        <TestProvider path="/accounts/:companyId" history={history}>
+          <MockedProvider
+            link={link}
+            cache={new InMemoryCache({ typePolicies })}
+          >
+            <TransactionStateProvider>
+              <TransactionUpdates companyId="company-id" owner="user-id">
+                <Accounts />
+              </TransactionUpdates>
+            </TransactionStateProvider>
+          </MockedProvider>
+        </TestProvider>,
+      );
+      await findByText(rows[99].description);
+      await act(() => waitForApollo(30));
+      fireEvent.click(getByRole('button', { name: 'accounts.load-more' }));
+      await waitFor(() => expect(releasePage).toBeDefined());
+
+      act(() => disconnect?.());
+      await waitFor(() => expect(recoveredList).toHaveBeenCalled(), {
+        timeout: 2000,
+      });
+      await act(() => waitForApollo(30));
+      if (releaseOrder === 'before')
+        await act(async () => {
+          releasePage?.();
+          await waitForApollo(30);
+        });
+
+      expect(
+        getAllByRole('link', { name: 'transactions-list.view' }),
+      ).toHaveLength(100);
+      expect(queryByText(rows[199].description)).not.toBeInTheDocument();
+      const loadMore = getByRole('button', { name: 'accounts.load-more' });
+      expect(loadMore).not.toBeDisabled();
+      fireEvent.click(loadMore);
+
+      await waitFor(() => expect(cursorRequests).toHaveBeenCalledTimes(2));
+      await findByText(inserted.description);
+      if (releaseOrder === 'after')
+        await act(async () => {
+          releasePage?.();
+          await waitForApollo(30);
+        });
+      expect(queryByText(inserted.description)).toBeInTheDocument();
+      expect(
+        getAllByRole('link', { name: 'transactions-list.view' }),
+      ).toHaveLength(200);
+      expect(
+        getByRole('button', { name: 'accounts.load-more' }),
+      ).not.toBeDisabled();
+      expect(recoveredList).toHaveBeenLastCalledWith({
+        count: 100,
+        id: 'company-id',
+        nextToken: '100',
+        status: TransactionStatus.Confirmed,
+      });
+    },
+  );
+
+  it('ignores an old cursor response after leaving and returning to accounts', async () => {
+    let releasePage: (() => void) | undefined;
+    let returning = false;
+    const rows = Array.from({ length: 300 }, (_, index) => ({
+      __typename: 'Transaction',
+      amount: 20,
+      attachment: '',
+      category: 'Sales',
+      companyId: 'company-id',
+      date: new Date(Date.UTC(2026, 8, 5 - index)).toISOString(),
+      description: `Loaded transaction ${index}`,
+      id: `transaction-${index}`,
+      name: `Customer ${index}`,
+      refund: false,
+      scheduled: false,
+      status: TransactionStatus.Confirmed,
+      vat: 0,
+    }));
+    const inserted = {
+      ...rows[150],
+      date: new Date(new Date(rows[150].date).getTime() - 1000).toISOString(),
+      description: 'Transaction inserted while viewing the dashboard',
+      id: 'inserted-transaction',
+      name: 'Inserted customer',
+    };
+    const list = vi.fn();
+    const link = new ApolloLink(
+      (operation) =>
+        new Observable((observer) => {
+          if (operation.operationName === 'GetTransactionState') {
+            observer.next({
+              data: {
+                getTransactionState: [...rows, inserted].find(
+                  ({ id }) => id === operation.variables.transactionId,
+                ),
+              },
+            });
+            observer.complete();
+          } else if (operation.operationName === 'GetBalance') {
+            list(operation.variables);
+            const reply = (items: typeof rows, nextToken: string | null) => {
+              observer.next({
+                data: {
+                  getBalance: {
+                    balance: 6000,
+                    currency: 'GBP',
+                    id: 'company-id',
+                    vat: { owed: 0, paid: 0 },
+                  },
+                  getTransactions: {
+                    __typename: 'Transactions',
+                    id: 'company-id',
+                    items,
+                    nextToken,
+                    status: TransactionStatus.Confirmed,
+                  },
+                },
+              });
+              observer.complete();
+            };
+            if (operation.variables.nextToken && !returning) {
+              releasePage = () => reply(rows.slice(100, 200), '200');
+              return;
+            }
+            const current = returning
+              ? [...rows.slice(0, 151), inserted, ...rows.slice(151)]
+              : rows;
+            const offset = Number(operation.variables.nextToken ?? 0);
+            const count = Number(operation.variables.count);
+            reply(
+              current.slice(offset, offset + count),
+              offset + count < current.length ? String(offset + count) : null,
+            );
+          }
+        }),
+    );
+    const { findByText, getAllByRole, getByRole, queryByText } = render(
+      <TestProvider
+        path="/my-companies/*"
+        history={['/my-companies/accounts/company-id']}
+      >
+        <MockedProvider link={link} cache={new InMemoryCache({ typePolicies })}>
+          <TransactionStateProvider>
+            <Routes>
+              <Route
+                path="accounts/:companyId"
+                element={
+                  <TransactionUpdates companyId="company-id" owner="user-id">
+                    <Accounts />
+                  </TransactionUpdates>
+                }
+              />
+              <Route
+                path="dashboard/:companyId"
+                element={
+                  <Link to="/my-companies/accounts/company-id">
+                    Return to accounts
+                  </Link>
+                }
+              />
+            </Routes>
+          </TransactionStateProvider>
+        </MockedProvider>
+      </TestProvider>,
+    );
+    await findByText(rows[99].description);
+    fireEvent.click(getByRole('button', { name: 'accounts.load-more' }));
+    await waitFor(() => expect(releasePage).toBeDefined());
+    fireEvent.click(getByRole('link', { name: 'accounts.dashboard.button' }));
+    await findByText('Return to accounts');
+    returning = true;
+    fireEvent.click(getByRole('link', { name: 'Return to accounts' }));
+    await waitFor(() => expect(list).toHaveBeenCalledTimes(3));
+    await findByText(rows[99].description);
+    await act(() => waitForApollo(30));
+
+    await act(async () => {
+      releasePage?.();
+      await waitForApollo(30);
+    });
+    expect(
+      getAllByRole('link', { name: 'transactions-list.view' }),
+    ).toHaveLength(100);
+    expect(queryByText(rows[199].description)).not.toBeInTheDocument();
+
+    fireEvent.click(getByRole('button', { name: 'accounts.load-more' }));
+    await waitFor(() =>
+      expect(list).toHaveBeenLastCalledWith({
+        count: 100,
+        id: 'company-id',
+        nextToken: '100',
+        status: TransactionStatus.Confirmed,
+      }),
+    );
+    await findByText(inserted.description);
+  });
+
+  it('recovers only the visible window after a deletion automatically refills it', async () => {
+    let disconnect: (() => void) | undefined;
+    let removeFirst: (() => void) | undefined;
+    let deleted = false;
+    const rows = Array.from({ length: 103 }, (_, index) => ({
+      __typename: 'Transaction',
+      amount: 20,
+      attachment: '',
+      category: 'Sales',
+      companyId: 'company-id',
+      date: new Date(Date.UTC(2026, 8, 5 - index)).toISOString(),
+      description: `Loaded transaction ${index}`,
+      id: `transaction-${index}`,
+      name: `Customer ${index}`,
+      refund: false,
+      scheduled: false,
+      status: TransactionStatus.Confirmed,
+      vat: 0,
+    }));
+    const list = vi.fn();
+    const link = new ApolloLink(
+      (operation) =>
+        new Observable((observer) => {
+          if (operation.operationName === 'OnTransactionChange') {
+            disconnect = () => observer.error(new Error('Connection lost'));
+            removeFirst = () => {
+              deleted = true;
+              observer.next({
+                data: {
+                  onTransactionChange: {
+                    id: 'company-id',
+                    owner: 'user-id',
+                    transactionId: rows[0].id,
+                  },
+                },
+              });
+            };
+            observer.next({ extensions: { controlMsgType: 'CONNECTED' } });
+          } else if (operation.operationName === 'GetTransactionState') {
+            observer.next({
+              data: {
+                getTransactionState:
+                  deleted && operation.variables.transactionId === rows[0].id
+                    ? null
+                    : rows.find(
+                        ({ id }) => id === operation.variables.transactionId,
+                      ),
+              },
+            });
+            observer.complete();
+          } else if (operation.operationName === 'GetBalance') {
+            list(operation.variables);
+            const offset = operation.variables.nextToken
+              ? Number(operation.variables.nextToken)
+              : Number(deleted);
+            const count = Number(operation.variables.count);
+            observer.next({
+              data: {
+                getBalance: {
+                  balance: 2060,
+                  currency: 'GBP',
+                  id: 'company-id',
+                  vat: { owed: 0, paid: 0 },
+                },
+                getTransactions: {
+                  __typename: 'Transactions',
+                  id: 'company-id',
+                  items: rows.slice(offset, offset + count),
+                  nextToken:
+                    offset + count < rows.length
+                      ? String(offset + count)
+                      : null,
+                  status: TransactionStatus.Confirmed,
+                },
+              },
+            });
+            observer.complete();
+          }
+        }),
+    );
+    const { findByText, getAllByRole, queryByText } = render(
+      <TestProvider path="/accounts/:companyId" history={history}>
+        <MockedProvider link={link} cache={new InMemoryCache({ typePolicies })}>
+          <TransactionStateProvider>
+            <TransactionUpdates companyId="company-id" owner="user-id">
+              <Accounts />
+            </TransactionUpdates>
+          </TransactionStateProvider>
+        </MockedProvider>
+      </TestProvider>,
+    );
+    await findByText(rows[99].description);
+    await act(() => waitForApollo(30));
+    act(() => removeFirst?.());
+    await findByText(rows[100].description);
+    expect(list).toHaveBeenLastCalledWith({
+      count: 1,
+      id: 'company-id',
+      nextToken: '100',
+      status: TransactionStatus.Confirmed,
+    });
+    expect(
+      getAllByRole('link', { name: 'transactions-list.view' }),
+    ).toHaveLength(100);
+    const previousCalls = list.mock.calls.length;
+
+    act(() => disconnect?.());
+    await waitFor(
+      () => expect(list.mock.calls.length).toBeGreaterThan(previousCalls),
+      { timeout: 2000 },
+    );
+    await act(() => waitForApollo(30));
+
+    expect(list.mock.calls[previousCalls][0]).toEqual({
+      count: 100,
+      id: 'company-id',
+      status: TransactionStatus.Confirmed,
+    });
+    expect(
+      getAllByRole('link', { name: 'transactions-list.view' }),
+    ).toHaveLength(100);
+    expect(queryByText(rows[0].description)).not.toBeInTheDocument();
+    expect(queryByText(rows[101].description)).not.toBeInTheDocument();
+  });
+
   it('appends older pages but replaces cached rows when reconnect recovers missed changes', async () => {
     let disconnect: (() => void) | undefined;
     const first = {

@@ -22,6 +22,7 @@ import TransactionForm, {
 } from '../../../components/TransactionForm';
 import {
   useApplyTransactionState,
+  useTransactionReadError,
   useTransactionState,
 } from '../../../components/TransactionUpdates';
 import { gql } from '../../../graphql';
@@ -247,6 +248,7 @@ function TransactionDetails({
   const attachmentBaseline = useRef('');
   const [modal, setModal] = useState(false);
   const currentTransaction = useTransactionState(transactionId);
+  const readError = useTransactionReadError(transactionId);
   const applyTransactionState = useApplyTransactionState();
   const { t } = useTranslation('accounts');
   const { add } = useToast();
@@ -257,6 +259,10 @@ function TransactionDetails({
     },
   });
   const transaction = currentTransaction;
+  const initialReadError =
+    transaction && data?.getSettings && data?.getClients
+      ? undefined
+      : readError;
   const status = transaction?.status;
   const queriedStatus = data?.getTransaction?.status;
   const lastStatus = useRef(status);
@@ -346,6 +352,7 @@ function TransactionDetails({
     }).catch(() => {});
   };
   const save = (input: FormSchema) => {
+    if (readError) return;
     mutation({
       update,
       variables: {
@@ -356,8 +363,8 @@ function TransactionDetails({
 
   return (
     <Connected
-      error={error || mutationError}
-      loading={loading || currentTransaction === undefined}
+      error={error || mutationError || initialReadError}
+      loading={!readError && (loading || currentTransaction === undefined)}
     >
       {transaction && data?.getSettings && data?.getClients && (
         <>
@@ -365,6 +372,12 @@ function TransactionDetails({
             title={t('view-transaction.title')}
             subTitle={t('view-transaction.sub-title')}
           />
+
+          {readError && (
+            <Connected error={readError} loading={false}>
+              {null}
+            </Connected>
+          )}
 
           <Row>
             <Col>
@@ -395,7 +408,7 @@ function TransactionDetails({
                 }))}
                 companyId={companyId}
                 initialValues={transaction}
-                loading={mutationLoading}
+                loading={mutationLoading || Boolean(readError)}
                 purchases={data.getTypeahead?.purchases}
                 sales={data.getTypeahead?.sales}
                 suppliers={data.getTypeahead?.suppliers}

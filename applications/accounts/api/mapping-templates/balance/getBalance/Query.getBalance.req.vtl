@@ -1,6 +1,7 @@
 {
   "version": "2017-02-28",
   "operation": "GetItem",
+  "consistentRead": true,
   "key": {
     "id": $util.dynamodb.toDynamoDBJson($ctx.args.id),
     "__typename": $util.dynamodb.toDynamoDBJson("Balance")
