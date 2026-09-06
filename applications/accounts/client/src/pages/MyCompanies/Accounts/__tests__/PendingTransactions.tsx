@@ -30,6 +30,109 @@ describe('PendingTransactions', () => {
     history = ['/accounts/company-id/pending-transactions'];
   });
 
+  it.each([
+    ['2026-09-07T12:00:00.000Z', false],
+    ['2026-09-06T12:00:00.000Z', false],
+    ['2026-09-04T12:00:00.000Z', true],
+  ] as const)(
+    'preserves a partial server page when a signalled row has date %s',
+    async (date, visible) => {
+      let signal: (() => void) | undefined;
+      const first = {
+        __typename: 'Transaction',
+        amount: 20,
+        attachment: '',
+        category: 'Sales',
+        companyId: 'company-id',
+        date: '2026-09-05T12:00:00.000Z',
+        description: 'First pending transaction',
+        id: 'first',
+        name: 'First customer',
+        refund: false,
+        scheduled: false,
+        status: TransactionStatus.Pending,
+        vat: 0,
+      };
+      const last = {
+        ...first,
+        date: '2026-09-06T12:00:00.000Z',
+        description: 'Last loaded transaction',
+        id: 'last',
+        name: 'Last customer',
+      };
+      const changed = {
+        ...first,
+        date,
+        description: 'Signalled transaction',
+        id: 'off-page',
+        name: 'Signalled customer',
+      };
+      const link = new ApolloLink(
+        (operation) =>
+          new Observable((observer) => {
+            if (operation.operationName === 'OnTransactionChange') {
+              signal = () =>
+                observer.next({
+                  data: {
+                    onTransactionChange: {
+                      id: 'company-id',
+                      owner: 'user-id',
+                      transactionId: changed.id,
+                    },
+                  },
+                });
+            } else if (operation.operationName === 'GetTransactions') {
+              observer.next({
+                data: {
+                  getBalance: { currency: 'GBP', id: 'company-id' },
+                  getTransactions: {
+                    __typename: 'Transactions',
+                    id: 'company-id',
+                    items: [first, last],
+                    nextToken: 'next-page',
+                    status: TransactionStatus.Pending,
+                  },
+                },
+              });
+              observer.complete();
+            } else if (operation.operationName === 'GetTransactionState') {
+              observer.next({ data: { getTransactionState: changed } });
+              observer.complete();
+            }
+          }),
+      );
+      const { findByText, queryByText, getAllByRole } = render(
+        <TestProvider
+          path="/accounts/:companyId/pending-transactions"
+          history={history}
+        >
+          <MockedProvider
+            link={link}
+            cache={new InMemoryCache({ typePolicies })}
+          >
+            <TransactionStateProvider>
+              <TransactionUpdates companyId="company-id" owner="user-id">
+                <PendingTransactions />
+              </TransactionUpdates>
+            </TransactionStateProvider>
+          </MockedProvider>
+        </TestProvider>,
+      );
+      await findByText(last.description);
+      await act(async () => {
+        signal?.();
+        await waitForApollo(10);
+      });
+      expect(Boolean(queryByText(changed.description))).toBe(visible);
+      expect(Boolean(queryByText(last.description))).toBe(!visible);
+      expect(
+        getAllByRole('link', {
+          name: 'pending-transactions.transactions.view',
+        }),
+      ).toHaveLength(2);
+    },
+  );
+
   it.each(['published', 'deleted'])(
     'dismisses the selected deletion confirmation when its transaction is %s remotely',
     async (change) => {

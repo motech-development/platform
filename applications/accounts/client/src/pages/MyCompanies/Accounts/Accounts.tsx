@@ -93,8 +93,6 @@ function Accounts() {
   invariant(user);
   invariant(companyId);
 
-  const renderCheck = process.env.NODE_ENV === 'development' ? 2 : 1;
-  const renderCount = useRef(0);
   const { t } = useTranslation('accounts');
   const [loadingMore, setLoadingMore] = useState(false);
   const loadingPage = useRef(false);
@@ -258,17 +256,30 @@ function Accounts() {
   ]);
 
   useEffect(() => {
-    let unsubscribe: () => void;
+    let active = true;
+    let unsubscribe: (() => void) | undefined;
+    let retryTimer: ReturnType<typeof setTimeout> | undefined;
+    let retries = 0;
 
-    renderCount.current += 1;
-
-    if (renderCount.current >= renderCheck) {
+    const connect = () => {
+      unsubscribe?.();
       unsubscribe = subscribeToMore({
         document: ON_TRANSACTION,
+        onError: () => {
+          if (!active || retryTimer) return;
+          // A shared socket failure terminates this subscription too.
+          const delay = Math.min(1000 * 2 ** retries, 30000);
+          retries += 1;
+          retryTimer = setTimeout(() => {
+            retryTimer = undefined;
+            connect();
+          }, delay);
+        },
         updateQuery: (prev, { subscriptionData }) => {
           if (!subscriptionData.data?.onTransaction || !prev.getBalance) {
             return prev;
           }
+          retries = 0;
 
           return {
             getBalance: {
@@ -285,15 +296,15 @@ function Accounts() {
           owner: user.sub as string,
         },
       });
-    }
+    };
+    connect();
 
     return () => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
+      active = false;
+      clearTimeout(retryTimer);
+      unsubscribe?.();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [companyId, subscribeToMore, user.sub]);
 
   return (
     <Connected

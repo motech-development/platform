@@ -8,6 +8,7 @@ import {
   RenderResult,
   waitFor,
 } from '@testing-library/react';
+import i18n from 'i18next';
 import { Link, Route, Routes } from 'react-router-dom';
 import { typePolicies } from '../../../../components/ApolloClient';
 import TransactionUpdates, {
@@ -31,6 +32,100 @@ describe('Accounts', () => {
     history = ['/accounts/company-id'];
   });
 
+  it('resubscribes to live balance and VAT updates after both subscriptions lose their shared connection', async () => {
+    let disconnectChanges: (() => void) | undefined;
+    const balances: Array<{
+      fail: () => void;
+      publish: () => void;
+    }> = [];
+    const list = vi.fn();
+    const stoppedBalance = vi.fn();
+    const link = new ApolloLink(
+      (operation) =>
+        new Observable((observer) => {
+          if (operation.operationName === 'OnTransactionChange') {
+            disconnectChanges = () =>
+              observer.error(new Error('Shared connection lost'));
+            observer.next({ extensions: { controlMsgType: 'CONNECTED' } });
+          } else if (operation.operationName === 'OnTransaction') {
+            balances.push({
+              fail: () => observer.error(new Error('Shared connection lost')),
+              publish: () =>
+                observer.next({
+                  data: {
+                    onTransaction: { balance: 75, vat: { owed: 15, paid: 7 } },
+                  },
+                }),
+            });
+            return stoppedBalance;
+          } else if (operation.operationName === 'GetBalance') {
+            list();
+            observer.next({
+              data: {
+                getBalance: {
+                  balance: 50,
+                  currency: 'GBP',
+                  id: 'company-id',
+                  vat: { owed: 10, paid: 5 },
+                },
+                getTransactions: {
+                  __typename: 'Transactions',
+                  id: 'company-id',
+                  items: [],
+                  nextToken: null,
+                  status: TransactionStatus.Confirmed,
+                },
+              },
+            });
+            observer.complete();
+          }
+          return undefined;
+        }),
+    );
+    const view = render(
+      <TestProvider path="/accounts/:companyId" history={history}>
+        <MockedProvider link={link} cache={new InMemoryCache({ typePolicies })}>
+          <TransactionStateProvider>
+            <TransactionUpdates companyId="company-id" owner="user-id">
+              <Accounts />
+            </TransactionUpdates>
+          </TransactionStateProvider>
+        </MockedProvider>
+      </TestProvider>,
+    );
+    i18n.addResources('en', 'accounts', {
+      'accounts.overview.balance': 'Balance {{amount}}',
+      'accounts.overview.vat-owed': 'VAT owed {{amount}}',
+      'accounts.overview.vat-paid': 'VAT paid {{amount}}',
+    });
+    await view.findByText('Balance £50.00');
+    expect(balances).toHaveLength(1);
+    const beforeReconnect = list.mock.calls.length;
+    act(() => {
+      balances[0].fail();
+      disconnectChanges?.();
+    });
+    await waitFor(
+      () => expect(list.mock.calls.length).toBeGreaterThan(beforeReconnect),
+      { timeout: 2000 },
+    );
+    await waitFor(() => expect(balances).toHaveLength(2), { timeout: 2000 });
+    const recoveredReads = list.mock.calls.length;
+    act(() => balances[1].publish());
+    await view.findByText('Balance £75.00');
+    expect(view.getByText('VAT owed £15.00')).toBeInTheDocument();
+    expect(view.getByText('VAT paid £7.00')).toBeInTheDocument();
+    expect(list).toHaveBeenCalledTimes(recoveredReads);
+
+    act(() => balances[1].fail());
+    view.unmount();
+    await new Promise((resolve) => {
+      setTimeout(resolve, 1100);
+    });
+    expect(balances).toHaveLength(2);
+    expect(stoppedBalance).toHaveBeenCalledTimes(2);
+  });
+
   it.each([101, 100])(
     'preserves an expanded list after reconnect when the server returns at most %i rows',
     async (pageSize) => {
@@ -38,10 +133,10 @@ describe('Accounts', () => {
       const rows = Array.from({ length: 101 }, (_, index) => ({
         __typename: 'Transaction',
         amount: 20,
-        attachment: '',
+        attachment: 'receipt.pdf',
         category: 'Sales',
         companyId: 'company-id',
-        date: new Date(Date.UTC(2026, 8, 5 - index)).toISOString(),
+        date: new Date(Date.UTC(2026, 8, 5, 12, 0, -index)).toISOString(),
         description: `Loaded transaction ${index}`,
         id: `transaction-${index}`,
         name: `Customer ${index}`,
@@ -431,10 +526,10 @@ describe('Accounts', () => {
     const rows = Array.from({ length: 103 }, (_, index) => ({
       __typename: 'Transaction',
       amount: 20,
-      attachment: '',
+      attachment: 'receipt.pdf',
       category: 'Sales',
       companyId: 'company-id',
-      date: new Date(Date.UTC(2026, 8, 5 - index)).toISOString(),
+      date: new Date(Date.UTC(2026, 8, 5, 12, 0, -index)).toISOString(),
       description: `Loaded transaction ${index}`,
       id: `transaction-${index}`,
       name: `Customer ${index}`,
