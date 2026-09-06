@@ -1,4 +1,7 @@
 #if($ctx.error)
   $util.error($ctx.error.message, $ctx.error.type)
 #end
+#if($ctx.result.errorType)
+  $util.error($ctx.result.errorMessage, $ctx.result.errorType)
+#end
 $util.toJson($ctx.result)

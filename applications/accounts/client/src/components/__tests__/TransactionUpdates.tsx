@@ -400,6 +400,16 @@ describe('TransactionUpdates', () => {
       }),
     ],
     [
+      'AppSync configuration',
+      new ApolloError({
+        graphQLErrors: [
+          Object.assign(new GraphQLError('Transaction state is unavailable'), {
+            errorType: 'ConfigurationError',
+          }),
+        ],
+      }),
+    ],
+    [
       'AppSync authorization',
       new ApolloError({
         graphQLErrors: [

@@ -1,4 +1,10 @@
-import { act, render, RenderResult, waitFor } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  RenderResult,
+  waitFor,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { Mock } from 'vitest';
 import TestProvider from '../../utils/TestProvider';
@@ -105,6 +111,48 @@ describe('TransactionsList', () => {
       await user.type(component.getByLabelText('confirm-delete'), 'FC');
       await user.click(component.getByRole('button', { name: 'delete' }));
 
+      expect(onDelete).toHaveBeenCalledWith('transaction-2');
+    });
+
+    it('keeps typed confirmation but requires the renamed transaction name', async () => {
+      const user = userEvent.setup();
+      await user.click(component.getByTestId('Delete KFC'));
+      await user.type(component.getByLabelText('confirm-delete'), 'KFC');
+      expect(
+        component.getByRole('button', { name: 'delete' }),
+      ).not.toBeDisabled();
+      component.rerender(
+        <TestProvider>
+          <TransactionsList
+            companyId={companyId}
+            currency="GBP"
+            loading={false}
+            transactions={transactions.map((transaction) => ({
+              ...transaction,
+              name:
+                transaction.id === 'transaction-2'
+                  ? 'New supplier'
+                  : transaction.name,
+            }))}
+            onDelete={onDelete}
+          />
+        </TestProvider>,
+      );
+      const input = component.getByLabelText('confirm-delete');
+      expect(input).toHaveValue('KFC');
+      await waitFor(() =>
+        expect(
+          component.getByRole('button', { name: 'delete' }),
+        ).toBeDisabled(),
+      );
+      await act(async () => {
+        fireEvent.submit(input.closest('form')!);
+        await Promise.resolve();
+      });
+      expect(onDelete).not.toHaveBeenCalled();
+      await user.clear(input);
+      await user.type(input, 'New supplier');
+      await user.click(component.getByRole('button', { name: 'delete' }));
       expect(onDelete).toHaveBeenCalledWith('transaction-2');
     });
 
