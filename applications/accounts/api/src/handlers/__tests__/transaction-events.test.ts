@@ -257,6 +257,88 @@ describe('transaction stream events', () => {
     },
   );
 
+  it('publishes only supported VAT fields from a valid balance', async () => {
+    await expect(
+      invoke([
+        record('MODIFY', undefined, {
+          __typename: 'Balance',
+          balance: 100,
+          id: 'company-id',
+          owner: 'owner-id',
+          vat: { legacy: true, owed: 20, paid: 0 },
+        }),
+      ]),
+    ).resolves.toEqual({ batchItemFailures: [] });
+
+    expect(mutate).toHaveBeenCalledExactlyOnceWith({
+      mutation: balanceMutation,
+      variables: {
+        id: 'company-id',
+        input: { balance: 100, vat: { owed: 20, paid: 0 } },
+        owner: 'owner-id',
+      },
+    });
+  });
+
+  it.each([
+    ['missing id', 'id', undefined],
+    ['empty id', 'id', ''],
+    ['invalid id', 'id', 123],
+    ['missing owner', 'owner', undefined],
+    ['empty owner', 'owner', ''],
+    ['invalid owner', 'owner', 123],
+    ['missing balance', 'balance', undefined],
+    ['null balance', 'balance', null],
+    ['invalid balance', 'balance', '100'],
+    ['missing VAT', 'vat', undefined],
+    ['null VAT', 'vat', null],
+    ['invalid VAT', 'vat', '20'],
+    ['missing VAT owed', 'vat', { paid: 0 }],
+    ['invalid VAT owed', 'vat', { owed: '20', paid: 0 }],
+    ['missing VAT paid', 'vat', { owed: 20 }],
+    ['invalid VAT paid', 'vat', { owed: 20, paid: null }],
+  ] as const)(
+    'skips a balance with %s and continues publishing later records',
+    async (_, field, value) => {
+      const balance = {
+        __typename: 'Balance',
+        balance: -25.5,
+        id: 'company-id',
+        owner: 'owner-id',
+        vat: { owed: 0, paid: 5.1 },
+      };
+      const malformed = { ...balance, [field]: value };
+      if (value === undefined) Reflect.deleteProperty(malformed, field);
+
+      await expect(
+        invoke([
+          record('MODIFY', balance, malformed, '100'),
+          record('INSERT', undefined, transaction, '101'),
+          record('MODIFY', undefined, balance, '102'),
+        ]),
+      ).resolves.toEqual({ batchItemFailures: [] });
+
+      expect(mutate).toHaveBeenCalledTimes(2);
+      expect(mutate).toHaveBeenNthCalledWith(1, {
+        mutation,
+        variables: {
+          id: 'company-id',
+          owner: 'owner-id',
+          transactionId: 'transaction-id',
+        },
+      });
+      expect(mutate).toHaveBeenNthCalledWith(2, {
+        mutation: balanceMutation,
+        variables: {
+          id: 'company-id',
+          input: { balance: -25.5, vat: { owed: 0, paid: 5.1 } },
+          owner: 'owner-id',
+        },
+      });
+      expect(logger.error).toHaveBeenCalledOnce();
+    },
+  );
+
   it.each([
     ['missing transaction id', 'id', undefined],
     ['empty transaction id', 'id', ''],
