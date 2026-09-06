@@ -1,0 +1,3501 @@
+<title>Accounts Prototype</title>
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap"
+/>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<style type="text/tailwindcss">
+  /* ---- 1. tokens: these become Tailwind utilities (bg-canvas, text-ink, rounded-panel …) ---- */
+  @theme {
+    --breakpoint-sm: 42.5625rem; /* breeze's own breakpoints */
+    --breakpoint-md: 56.3125rem;
+    --breakpoint-lg: 73.8125rem;
+
+    --font-sans: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+      helvetica, arial, sans-serif;
+
+    --color-brand: #007fa8;
+    --color-brand-hover: #007aa3;
+    --color-brand-text: #006884;
+    --color-brand-soft: #e3f2f8;
+    --color-on-brand: #ffffff;
+    --color-canvas: #f6f9fc;
+    --color-surface: #ffffff;
+    --color-raised: #f6f9fc;
+    --color-sunken: #eff3f8;
+    --color-line: #e3e8ee;
+    --color-line-strong: #cfd7e0;
+    --color-ink: #161616;
+    --color-ink-2: #4a4f57;
+    --color-ink-3: #66707c;
+    --color-pos: #127a4e;
+    --color-pos-soft: #e4f1ea;
+    --color-warn: #8a5a0b;
+    --color-warn-soft: #fdf3dc;
+    --color-danger: #b4231d;
+
+    /* Type ramp. Sixteen ad-hoc sizes collapsed to eleven steps; nothing moves more than 2px. */
+    --text-2xs: 11px;
+    --text-xs: 12px;
+    --text-sm: 13px;
+    --text-base: 14px;
+    --text-md: 15px;
+    --text-lg: 17px;
+    --text-xl: 20px;
+    --text-2xl: 22px;
+    --text-3xl: 24px;
+    --text-4xl: 26px;
+    --text-5xl: 32px;
+
+    /* Spacing is Tailwind's 4px grid (--spacing 0.25rem); every gap, pad and margin snaps to it. */
+
+    /* Fixed measures that are structure rather than spacing, named so no utility needs brackets. */
+    --spacing-control: 38px; /* standard input / button row */
+    --spacing-control-lg: 52px; /* the amount field */
+    --spacing-chip: 34px;
+    --spacing-tap: 44px; /* minimum touch target */
+    --spacing-doc: 64px; /* the attachment row */
+    --spacing-sheet: 610px;
+    --spacing-card: 400px;
+
+    --radius-panel: 8px;
+    --radius-ctl: 6px;
+    --radius-chip: 3px;
+    --leading-tight: 1.1;
+    --leading-snug: 1.45;
+    --leading-normal: 1.5;
+    --tracking-tight: -0.008em;
+    --tracking-tighter: -0.012em;
+    --tracking-tightest: -0.018em;
+    --tracking-caps: 0.06em;
+    --tracking-wide: 0.05em;
+    --aspect-a4: 1/1.414;
+    --aspect-photo: 3/4;
+    --container-page: 1500px;
+    --container-read: 54ch;
+    --spacing-svh-70: 70vh;
+    --container-prose: 52ch;
+
+    --color-scrim: #0c121f;
+    --animate-skel: skel 1.4s ease-in-out infinite;
+    --radius-xs: 2px;
+    --radius-sm: 4px;
+
+    --shadow-panel: 0 1px 1px rgb(22 22 22/3%), 0 2px 5px rgb(22 22 22/4%);
+    --shadow-over: 0 1px 2px rgb(22 22 22/6%),
+      0 8px 24px -10px rgb(22 22 22/25%);
+  }
+
+  /* ---- 2. dark: utilities compile to var(--color-*), so overriding the var flips the theme ---- */
+  [data-theme='dark'] {
+    --color-brand-text: #33aacf; /* #007FA8 is 3.96:1 on #161616 — an AA fail */
+    --color-brand-soft: #12313b;
+    --color-canvas: #161616;
+    --color-surface: #1f1f1f;
+    --color-raised: #262626;
+    --color-sunken: #262626;
+    --color-line: #303030;
+    --color-line-strong: #3d3d3d;
+    --color-ink: #f2f2f2;
+    --color-ink-2: #b4b4b4;
+    --color-ink-3: #949494;
+    --color-pos: #3fbf8b;
+    --color-pos-soft: #16291f;
+    --color-warn: #e0b341;
+    --color-warn-soft: #2a2314;
+    --color-danger: #f1736a;
+    --shadow-panel: 0 1px 1px rgb(0 0 0/40%);
+    --shadow-over: 0 1px 2px rgb(0 0 0/50%), 0 8px 24px -10px rgb(0 0 0/70%);
+  }
+
+  /* ---- 3. components: each @apply list is the future tailwind-variants recipe ---- */
+  /* our dark mode is an attribute, not a class; aria-current has no built-in variant */
+  @custom-variant dark (&:where([data-theme="dark"] *));
+  @custom-variant current (&[aria-current="page"]);
+
+  /* @theme shadow tokens bake their value into a utility, so these wrap the property and stay theme-reactive */
+  @utility shadow-panel {
+    box-shadow: var(--shadow-panel);
+  }
+  @utility shadow-over {
+    box-shadow: var(--shadow-over);
+  }
+  @utility shadow-fab {
+    box-shadow: 0 2px 6px -2px rgb(22 22 22/30%);
+  }
+  /* ---- 4. motion. Every name stands for a relationship, not a decoration: what stays put, what is
+   the same thing seen larger, what moved, what arrived. The vt-* classes are markers only — no
+   element is named permanently. A name is granted below, for the one transition type it belongs
+   to, because an element that survives a transition has both an old and a new snapshot and an
+   unconditional animation replays on every unrelated transition. That is what made the sheet
+   slide out and back in each time the document opened over it. In React this is the same thing
+   `default="none"` plus type-keyed props buys you. ---- */
+  @keyframes skel {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.45;
+    }
+  }
+
+  :root {
+    --vt-out: 130ms;
+    --vt-in: 220ms;
+    --vt-move: 300ms;
+    --vt-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  @keyframes vt-fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+  @keyframes vt-fade-out {
+    to {
+      opacity: 0;
+    }
+  }
+  @keyframes vt-rise {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+  }
+  @keyframes vt-sheet-in {
+    from {
+      transform: translateX(100%);
+    }
+  }
+  @keyframes vt-sheet-out {
+    to {
+      transform: translateX(100%);
+    }
+  }
+  @keyframes vt-lift-in {
+    from {
+      transform: translateY(100%);
+    }
+  }
+  @keyframes vt-lift-out {
+    to {
+      transform: translateY(100%);
+    }
+  }
+  @keyframes vt-pop {
+    from {
+      opacity: 0;
+      transform: scale(0.97) translateY(-4px);
+    }
+  }
+  @keyframes vt-toast-in {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+  }
+  @keyframes vt-blur {
+    30% {
+      filter: blur(3px);
+    }
+  }
+
+  /* the root is left live, so anything unnamed simply swaps: no frozen snapshot, no dead hover,
+   and no reason to name static chrome except when the root itself is being redrawn */
+  ::view-transition {
+    pointer-events: none;
+  }
+  ::view-transition-old(root) {
+    display: none;
+  }
+  ::view-transition-new(root) {
+    animation: none;
+  }
+
+  /* --- a change of place. Only here is the page itself redrawn, so only here does the chrome need
+   naming: without it, the topbar and the tab rows would fade out and in with everything else. --- */
+  :root[data-vt='nav'] .vt-topbar,
+  :root[data-vt='mode'] .vt-topbar {
+    view-transition-name: topbar;
+  }
+  :root[data-vt='nav'] .vt-topnav,
+  :root[data-vt='mode'] .vt-topnav {
+    view-transition-name: topnav;
+  }
+  :root[data-vt='nav'] .vt-botnav,
+  :root[data-vt='mode'] .vt-botnav {
+    view-transition-name: botnav;
+  }
+  :root[data-vt='nav'] .vt-devbar,
+  :root[data-vt='mode'] .vt-devbar {
+    view-transition-name: devbar;
+  }
+  :root[data-vt='nav'] .vt-navmark {
+    view-transition-name: navmark;
+  }
+
+  ::view-transition-group(topbar),
+  ::view-transition-group(topnav),
+  ::view-transition-group(botnav),
+  ::view-transition-group(devbar) {
+    animation: none;
+    z-index: 100;
+  }
+  ::view-transition-old(topbar),
+  ::view-transition-new(topbar),
+  ::view-transition-old(topnav),
+  ::view-transition-new(topnav),
+  ::view-transition-old(botnav),
+  ::view-transition-new(botnav),
+  ::view-transition-old(devbar),
+  ::view-transition-new(devbar) {
+    animation: none;
+  }
+
+  :root[data-vt='nav']::view-transition-old(root),
+  :root[data-vt='mode']::view-transition-old(root) {
+    display: block;
+    animation: vt-fade-out var(--vt-out) var(--vt-ease) both;
+  }
+  :root[data-vt='nav']::view-transition-new(root),
+  :root[data-vt='mode']::view-transition-new(root) {
+    animation: vt-rise var(--vt-in) var(--vt-ease) both;
+  }
+
+  /* "you are here" slides to its new tab; the bar itself is solid, so only the box moves */
+  ::view-transition-group(navmark) {
+    animation-duration: var(--vt-move);
+    animation-timing-function: var(--vt-ease);
+    z-index: 101;
+  }
+  ::view-transition-old(navmark),
+  ::view-transition-new(navmark) {
+    animation: none;
+  }
+
+  /* --- the sheet, and the scrim behind it --- */
+  :root[data-vt='sheet'] .vt-sheet,
+  :root[data-vt='toast'] .vt-sheet {
+    view-transition-name: sheet;
+  }
+  :root[data-vt='sheet'] .vt-scrim,
+  :root[data-vt='toast'] .vt-scrim {
+    view-transition-name: scrim;
+  }
+  ::view-transition-group(sheet),
+  ::view-transition-group(scrim) {
+    z-index: 150;
+  }
+  ::view-transition-old(scrim) {
+    animation: vt-fade-out var(--vt-out) var(--vt-ease) both;
+  }
+  ::view-transition-new(scrim) {
+    animation: vt-fade-in var(--vt-in) var(--vt-ease) both;
+  }
+  ::view-transition-old(sheet) {
+    animation: vt-sheet-out var(--vt-out) var(--vt-ease) both;
+  }
+  ::view-transition-new(sheet) {
+    animation: vt-sheet-in var(--vt-in) var(--vt-ease) both;
+  }
+  @media (width < 48rem) {
+    /* on a phone the sheet is docked to the bottom, so it rises */
+    ::view-transition-old(sheet) {
+      animation-name: vt-lift-out;
+    }
+    ::view-transition-new(sheet) {
+      animation-name: vt-lift-in;
+    }
+  }
+
+  /* --- menus grow from where they are anchored --- */
+  :root[data-vt='menu'] .vt-menu {
+    view-transition-name: menu;
+  }
+  :root[data-vt='menu'] .vt-catmenu {
+    view-transition-name: catmenu;
+  }
+  :root[data-vt='menu'] .vt-datemenu {
+    view-transition-name: datemenu;
+  }
+  ::view-transition-group(menu),
+  ::view-transition-group(catmenu),
+  ::view-transition-group(datemenu) {
+    z-index: 160;
+  }
+  ::view-transition-old(menu),
+  ::view-transition-old(catmenu),
+  ::view-transition-old(datemenu) {
+    animation: vt-fade-out 90ms var(--vt-ease) both;
+  }
+  ::view-transition-new(menu),
+  ::view-transition-new(catmenu),
+  ::view-transition-new(datemenu) {
+    animation: vt-pop 150ms var(--vt-ease) both;
+  }
+
+  /* --- the confirmation. Saving closes the sheet and confirms in one transition, which is why the
+   sheet is named for this type too: it still has to leave. --- */
+  :root[data-vt='toast'] .vt-toast {
+    view-transition-name: toast;
+  }
+  ::view-transition-group(toast) {
+    z-index: 200;
+  }
+  ::view-transition-old(toast) {
+    animation: vt-fade-out var(--vt-out) var(--vt-ease) both;
+  }
+  ::view-transition-new(toast) {
+    animation: vt-toast-in var(--vt-in) var(--vt-ease) both;
+  }
+
+  /* --- the same file, seen larger. Nothing else is named for this type, so the sheet and the
+   scrim hold perfectly still while the attachment opens over them. --- */
+  :root[data-vt='doc'] .vt-doc {
+    view-transition-name: doc;
+  }
+  ::view-transition-group(doc) {
+    animation-duration: var(--vt-move);
+    animation-timing-function: var(--vt-ease);
+    z-index: 170;
+  }
+  /* the old snapshot is a 44px strip stretched to full screen, so hand over quickly and blur
+   through the middle rather than holding a scaled ghost for the whole morph */
+  ::view-transition-old(doc) {
+    animation: vt-fade-out 120ms var(--vt-ease) both;
+  }
+  ::view-transition-new(doc) {
+    animation: vt-fade-in 160ms var(--vt-ease) both;
+  }
+  ::view-transition-image-pair(doc) {
+    animation: vt-blur var(--vt-move) var(--vt-ease) both;
+  }
+
+  /* --- a ledger row that survives a filter is the same row, so it moves instead of being replaced.
+   Only on a filter: the same ids appear on Overview and on Money, and pairing them across a route
+   change sent rows flying across the page. --- */
+  :root[data-vt='list'] .vt-row {
+    view-transition-name: var(--vt);
+  }
+  :root[data-vt='list']::view-transition-group(*) {
+    animation-duration: var(--vt-move);
+    animation-timing-function: var(--vt-ease);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    ::view-transition-old(*),
+    ::view-transition-new(*),
+    ::view-transition-group(*) {
+      animation-duration: 0s !important;
+      animation-delay: 0s !important;
+    }
+  }
+
+  @layer base {
+    * {
+      @apply box-border;
+    }
+    body {
+      @apply text-ink m-0 font-sans text-sm leading-snug;
+    }
+    button {
+      @apply cursor-pointer border-0 bg-transparent;
+      font: inherit;
+      color: inherit;
+    }
+    a {
+      @apply text-brand-text no-underline;
+    }
+    :focus-visible {
+      @apply outline-brand rounded-chip outline-2;
+      outline-offset: 2px;
+    }
+  }
+
+  /* unlayered on purpose: the artifact/host skeleton sets an off-white body background,
+   and an unlayered rule there would otherwise beat anything inside @layer base. */
+  body {
+    background: var(--color-canvas);
+    min-height: 100vh;
+  }
+
+  /* the resolved theme is always on the attribute, so selects, scrollbars and carets follow it */
+  :root {
+    color-scheme: light;
+  }
+  [data-theme='dark'] {
+    color-scheme: dark;
+  }
+</style>
+
+<!-- Safelist: the browser build scans the DOM and this app rewrites #root on every render,
+     so every class is listed here to be generated at load. A build step removes the need.
+     It must stay `hidden`: the list includes the vt-* utilities, so a visible copy would hold a
+     second element for every view-transition-name and every transition would abort. -->
+<div
+  hidden
+  class="accent-brand animate-skel aria-pressed:bg-brand aria-pressed:bg-brand-soft aria-pressed:bg-sunken aria-pressed:border-brand aria-pressed:text-brand-text aria-pressed:text-ink aria-pressed:text-on-brand aria-selected:bg-brand-soft aria-selected:text-brand-text aspect-a4 aspect-photo basis-17 basis-30 bg-brand bg-brand-soft bg-canvas bg-danger bg-ink bg-line bg-line-strong bg-linear-160 bg-pos-soft bg-raised bg-scrim/45 bg-sunken bg-surface bg-warn-soft border-brand border-canvas border-danger border-line border-line-strong border-pos/30 border-sunken border-surface border-warn current:font-semibold current:text-brand-text current:text-ink current:underline-brand dark:bg-line-strong dark:text-ink focus-within:border-brand focus-within:ring-3 focus-within:ring-brand/15 focus:border-brand focus:ring-3 focus:ring-brand/15 from-sunken h-4.5 h-chip h-control h-control-lg h-doc h-tap hover:bg-brand-hover hover:bg-raised hover:bg-sunken left-30 max-md:bg-brand max-md:bg-surface max-md:border-brand max-md:border-line max-md:bottom-21 max-md:h-18 max-md:pb-42 max-md:text-on-brand max-w-104 max-w-130 max-w-375 max-w-42 max-w-read min-h-13 min-h-svh-70 min-w-84 pb-21 placeholder:text-ink-3 pointer-coarse:bg-brand pointer-coarse:border-brand pointer-coarse:h-11 pointer-coarse:h-12 pointer-coarse:min-h-11 pointer-coarse:text-on-brand pointer-coarse:w-11 read-only:bg-sunken read-only:text-ink-2 rounded-chip rounded-ctl rounded-panel rounded-xs shadow-fab shadow-over shadow-panel text-2xs text-brand-text text-danger text-ink text-ink-2 text-ink-3 text-md text-on-brand text-pos text-surface text-warn to-raised top-19 top-control-lg tracking-caps tracking-tightest vt-botnav vt-catmenu vt-datemenu vt-devbar vt-doc vt-menu vt-navmark vt-row vt-scrim vt-sheet vt-toast vt-topbar vt-topnav w-18 w-19 w-21 w-22 w-26 w-30 w-38 w-4.5 w-75 w-76 w-card w-control w-sheet wordmark z-60 z-65 z-70 sr-only pointer-events-none fixed absolute relative inset-0 inset-x-0 -right-0.5 -top-0.5 -top-6 bottom-0 bottom-24 bottom-4 bottom-6 left-0 left-1/2 left-4 left-6 right-0 right-2.5 right-3 right-5 right-6 right-7 top-1/2 top-14 top-16 z-40 z-50 m-0 mx-2 mx-auto my-0.5 -ml-7 -mt-2 mb-1 mb-1.5 mb-3 mt-1 mt-1.5 mt-2 block flex inline-flex grid hidden h-0.5 h-1 h-1.5 h-11 h-14 h-2 h-2.5 h-3 h-3.5 h-4 h-5 h-6 h-7 h-8 h-9 h-full h-px max-h-72 min-h-0 min-h-screen w-10/12 w-11 w-11/12 w-14 w-2 w-2.5 w-20 w-24 w-28 w-32 w-36 w-4 w-40 w-44 w-5/12 w-52 w-6 w-6/12 w-60 w-7 w-7/12 w-72 w-8 w-8/12 w-9 w-full w-px min-w-0 min-w-52 min-w-64 max-w-full max-w-prose flex-1 shrink-0 grow grow-0 basis-20 basis-36 basis-44 basis-60 basis-auto -translate-x-1/2 -translate-y-1/2 animate-none cursor-default cursor-pointer select-none grid-cols-2 grid-cols-3 grid-cols-7 flex-col flex-wrap items-start items-center items-stretch justify-start justify-end justify-center gap-0.5 gap-1 gap-1.5 gap-2 gap-2.5 gap-3 gap-3.5 gap-4 gap-5 gap-px self-end overflow-auto overflow-hidden overflow-y-auto truncate text-ellipsis whitespace-normal whitespace-nowrap rounded rounded-full rounded-sm border border-0 border-2 border-4 border-b border-b-0 border-l border-t border-dashed bg-transparent p-0.5 p-1 p-2 p-3 p-4 p-5 p-6 p-7 p-8 px-1 px-1.5 px-2 px-2.5 px-3 px-3.5 px-4 px-5 px-7 px-px py-0.5 py-1.5 py-2 py-2.5 py-3 py-3.5 py-4 py-5 py-6 py-px pb-4 pl-5 pr-6 pt-2 pt-3.5 pt-5 text-left text-center text-right text-2xl text-3xl text-4xl text-base text-lg text-sm text-xl text-xs font-bold font-medium font-semibold uppercase tabular-nums leading-normal leading-tight tracking-tight tracking-tighter tracking-wide text-white outline-none [box-shadow:var(--shadow-panel)] aria-pressed:font-semibold aria-selected:font-semibold max-md:fixed max-md:inset-x-0 max-md:bottom-0 max-md:bottom-24 max-md:left-2 max-md:left-3 max-md:right-3 max-md:right-4 max-md:z-30 max-md:flex max-md:hidden max-md:h-11 max-md:min-h-11 max-md:w-11 max-md:w-auto max-md:w-full max-md:min-w-0 max-md:max-w-28 max-md:grow max-md:grow-0 max-md:basis-0 max-md:basis-full max-md:grid-cols-1 max-md:flex-col max-md:flex-wrap max-md:items-end max-md:items-center max-md:items-stretch max-md:justify-center max-md:gap-2.5 max-md:border-l-0 max-md:border-t max-md:px-0.5 max-md:px-3 max-md:px-4 max-md:pl-0 max-md:pt-1.5 max-md:pt-3 max-md:pt-4 max-md:text-sm md:hidden md:whitespace-nowrap"
+></div>
+<div id="root"></div>
+<script>
+  (function () {
+    'use strict';
+
+    /* ---------------- sample data (invented; shapes follow the real schema) ---------------- */
+    var CO = {
+      id: 'c1',
+      initials: 'HP',
+      name: 'Harbour & Pine Ltd',
+      number: '09183422',
+    };
+    var COMPANIES = [
+      CO,
+      {
+        id: 'c2',
+        initials: 'WF',
+        name: 'Wold Farm Joinery Ltd',
+        number: '11274903',
+      },
+    ];
+    var BALANCE = {
+      balance: 24180.5,
+      currency: 'GBP',
+      vat: { owed: 4120.0, paid: 1860.0 },
+    };
+    var TODAY = new Date(
+      2026,
+      8,
+      3,
+    ); /* the prototype's fixed today, matching the sample ledger */
+    var MONTHS = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ];
+    /* Settings.yearEnd is a day and a month only; the year, the days remaining and the start of the
+   financial year all follow from it, so none of them may be written into the markup. */
+    var YEAR_END = { day: 31, month: 3, year: 2027 };
+    function yearEndDate() {
+      return new Date(YEAR_END.year, YEAR_END.month - 1, YEAR_END.day);
+    }
+    function yearEndLabel() {
+      return (
+        YEAR_END.day + ' ' + MONTHS[YEAR_END.month - 1] + ' ' + YEAR_END.year
+      );
+    }
+    function yearStartLabel() {
+      var d = yearEndDate();
+      d.setDate(d.getDate() + 1);
+      d.setFullYear(d.getFullYear() - 1);
+      return d.getDate() + ' ' + MONTHS[d.getMonth()] + ' ' + d.getFullYear();
+    }
+    function daysToYearEnd() {
+      return Math.round((yearEndDate() - TODAY) / 86400000);
+    }
+    /* ReportInput.year is an Int — the year the accounting year BEGINS. reports/get-transactions
+   ranges `<year>-<month+1>-<day+1>` to `<year+1>-<month+1>-<day>` as sort-key strings, so 2026
+   means 1 April 2026 to 31 March 2027. Settings.yearEnd.month is zero-based, as Luxon indexes it.
+   Only completed years are offered, so the list moves with the year end and cannot be written down. */
+    function reportYears() {
+      var current = yearEndDate().getFullYear() - 1,
+        out = [];
+      for (var i = 1; i <= 3; i++) {
+        var y = current - i;
+        out.push({ value: y, label: y + '-' + String(y + 1).slice(-2) });
+      }
+      return out;
+    }
+
+    /* Settings.categories — user-defined per company, any length, each with its own vatRate.
+   "Sales" is not in here: the API writes that literal on a sale, and these are expense categories.
+   protect:true is not a free choice — createCompany seeds exactly these five at 0%, and
+   nothing else can ever carry the flag, because categories the user adds are written protect:false. */
+    var CATEGORIES = [
+      { name: 'Accountancy', rate: 20 },
+      { name: 'Bank charges', rate: 0 },
+      { name: 'Corporation tax', rate: 0, protect: true },
+      { name: 'Dividend', rate: 0, protect: true },
+      { name: 'Insurance', rate: 0 },
+      { name: 'Marketing', rate: 20 },
+      { name: 'Materials', rate: 20 },
+      { name: 'Mileage', rate: 0, protect: true },
+      { name: 'Office supplies', rate: 20 },
+      { name: 'Postage', rate: 0 },
+      { name: 'Premises', rate: 20 },
+      { name: 'Professional fees', rate: 20 },
+      { name: 'Salary', rate: 0, protect: true },
+      { name: 'Software', rate: 20 },
+      { name: 'Subsistence', rate: 0 },
+      { name: 'Telephone and internet', rate: 20 },
+      { name: 'Training', rate: 20 },
+      { name: 'Travel', rate: 0 },
+      { name: 'Utilities', rate: 5 },
+      { name: 'VAT payment', rate: 0, protect: true },
+      { name: 'Vehicle', rate: 20 },
+    ];
+    /* Settings.vat — two different rates. `charge` is what goes on the client's invoice;
+   `pay` is the share of the gross sale you hand to HMRC, which is what Transaction.vat records. */
+    var VAT_SCHEME = 'Standard';
+    var VAT_CHARGE = 20;
+    var VAT_PAY = 16.67;
+    function vatSchemeLabel() {
+      return VAT_SCHEME === 'Not registered'
+        ? VAT_SCHEME
+        : VAT_SCHEME + ' ' + VAT_CHARGE + '%';
+    }
+    function catRate(n) {
+      for (var i = 0; i < CATEGORIES.length; i++)
+        if (CATEGORIES[i].name === n) return CATEGORIES[i].rate;
+      return null;
+    }
+    var TXSEQ = 0,
+      TXBY = {};
+    function t(name, detail, category, amount, dir, o) {
+      o = o || {};
+      var a = Math.abs(amount),
+        r = catRate(category);
+      var x = {
+        id: 't' + ++TXSEQ,
+        name: name,
+        detail: detail,
+        category: category,
+        amount: amount,
+        dir: dir,
+        /* income: the share that goes to HMRC. spend: the VAT included at the category's rate. */
+        vat:
+          dir === 'in'
+            ? Math.round(a * VAT_PAY) / 100
+            : Math.round((a - a / (1 + (r || 0) / 100)) * 100) / 100,
+        noPdf: !!o.noPdf,
+        scheduled: o.scheduled || '',
+        pending: !!o.pending,
+      };
+      TXBY[x.id] = x;
+      return x;
+    }
+
+    var GROUPS = [
+      {
+        day: 'Pending',
+        pending: true,
+        items: [
+          t(
+            'Bramble Studio',
+            'Website retainer, October',
+            'Sales',
+            2400,
+            'in',
+            { scheduled: 'Publishes 5 Oct', pending: true },
+          ),
+          t(
+            'Northgate Supplies',
+            'Standing order, workshop rent',
+            'Premises',
+            -318.4,
+            'out',
+            { scheduled: 'Publishes 8 Sep', pending: true },
+          ),
+          t(
+            'Aldgate Insurance',
+            'Renewal quote, awaiting confirmation',
+            'Insurance',
+            -431,
+            'out',
+            { pending: true },
+          ),
+          t(
+            'Kestrel Homes Ltd',
+            'Phase three deposit, invoice not yet issued',
+            'Sales',
+            1500,
+            'in',
+            { pending: true },
+          ),
+        ],
+      },
+      {
+        day: 'Thursday 3 September',
+        items: [
+          t(
+            'Bramble Studio',
+            'Website retainer, September',
+            'Sales',
+            2100,
+            'in',
+          ),
+          t(
+            'Northgate Supplies',
+            'Workshop consumables',
+            'Materials',
+            -184.6,
+            'out',
+          ),
+          t('Fen Lane Garage', 'Van service and MOT', 'Vehicle', -139, 'out', {
+            noPdf: true,
+          }),
+        ],
+      },
+      {
+        day: 'Wednesday 2 September',
+        items: [
+          t(
+            'Cobalt Print Co.',
+            'Exhibition banners',
+            'Marketing',
+            -348,
+            'out',
+            { noPdf: true },
+          ),
+          t(
+            'Meridian Telecom',
+            'Mobile and broadband',
+            'Utilities',
+            -64.85,
+            'out',
+            { noPdf: true },
+          ),
+        ],
+      },
+      {
+        day: 'Friday 28 August',
+        items: [
+          t('Kestrel Homes Ltd', 'Phase two design fees', 'Sales', 4980, 'in'),
+          t(
+            'Ashcroft & Wills',
+            'Refund, duplicate invoice',
+            'Sales refund',
+            -250,
+            'out',
+          ),
+        ],
+      },
+    ];
+    var CLIENTS = [
+      {
+        id: 'cl1',
+        initials: 'BS',
+        name: 'Bramble Studio',
+        email: 'accounts@bramblestudio.co.uk',
+        town: 'Norwich',
+      },
+      {
+        id: 'cl2',
+        initials: 'KH',
+        name: 'Kestrel Homes Ltd',
+        email: 'finance@kestrelhomes.co.uk',
+        town: 'Ipswich',
+      },
+      {
+        id: 'cl3',
+        initials: 'AW',
+        name: 'Ashcroft & Wills',
+        email: 'hello@ashcroftwills.com',
+        town: 'Cambridge',
+      },
+    ];
+    /* type Report is { createdAt, downloadUrl, id, ttl } — there is no name, status or year on it,
+   so a report is identified by when it was asked for. ttl expires it 24 hours after createdAt,
+   which also means this list is never more than a day deep. */
+    var REPORTS = [
+      { id: 'r1', created: 'Today, 14:32', expires: 'Tomorrow, 14:32' },
+      { id: 'r2', created: 'Yesterday, 09:07', expires: 'Today, 09:07' },
+    ];
+    /* Notification.message is a key, not prose: the client resolves it from user-notifications.json.
+   Exactly three exist, so this list is the complete vocabulary. getNotifications is called with
+   count only — `type Notifications` has no nextToken, so there is no second page to ask for. */
+    var NOTIF_MESSAGES = {
+      REPORT_READY_TO_DOWNLOAD: 'Your report is ready to download',
+      TRANSACTION_PUBLISHED: 'A scheduled transaction has been published',
+      VIRUS_SCAN_FAIL:
+        'A file you have uploaded is infected with a virus and it has been removed',
+    };
+    /* payload is written by exactly one producer. accounts/reports publish-notification.ts sends
+   qs.stringify({ createdAt, downloadUrl, id, ttl }) with REPORT_READY_TO_DOWNLOAD. The other two
+   producers write no payload at all, so only this notification can carry an action. */
+    /* the client asks for count: 5 and Notifications has no nextToken, so this is the whole list */
+    var NOTIFS = [
+      {
+        id: 'n1',
+        key: 'REPORT_READY_TO_DOWNLOAD',
+        when: 'Today, 14:32',
+        unread: true,
+        payload: {
+          id: 'r1',
+          downloadUrl: '#',
+          createdAt: 'Today, 14:32',
+          ttl: 'Tomorrow, 14:32',
+        },
+      },
+      {
+        id: 'n2',
+        key: 'TRANSACTION_PUBLISHED',
+        when: 'Yesterday, 06:00',
+        unread: true,
+      },
+      { id: 'n3', key: 'VIRUS_SCAN_FAIL', when: '30 July 2026', unread: false },
+    ];
+    function clientNames() {
+      return CLIENTS.map(function (c) {
+        return c.name;
+      }).sort();
+    }
+    var SUPPLIERS = [
+      'Cobalt Print Co.',
+      'Fen Lane Garage',
+      'Kestrel Homes Ltd',
+      'Meridian Telecom',
+      'Northgate Supplies',
+    ];
+    var DESCRIPTIONS = {
+      purchase: [
+        'Exhibition banners',
+        'Mobile and broadband',
+        'Van service and MOT',
+        'Workshop consumables',
+      ],
+      sale: [
+        'Brand identity, phase two',
+        'Phase two design fees',
+        'Website retainer',
+      ],
+    };
+
+    /* ---------------- helpers ---------------- */
+    /* Balance.currency is the source of the symbol and grouping — never hardcode one.
+   Built lazily so BALANCE is in scope, and reset if the currency changes. */
+    var _cur = null,
+      _curCode = null;
+    function curFmt() {
+      if (!_cur || _curCode !== BALANCE.currency) {
+        _curCode = BALANCE.currency;
+        _cur = new Intl.NumberFormat('en-GB', {
+          style: 'currency',
+          currency: _curCode,
+        });
+      }
+      return _cur;
+    }
+    /* sign is rendered separately so a real minus sign is used rather than a hyphen */
+    function money(n, sign) {
+      return (sign ? (n < 0 ? '−' : '+') : '') + curFmt().format(Math.abs(n));
+    }
+    function esc(s) {
+      return String(s).replace(/[&<>"]/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+      });
+    }
+    function ico(d, cls, sz) {
+      return (
+        '<svg class="' +
+        (cls || '') +
+        '" width="' +
+        (sz || 18) +
+        '" height="' +
+        (sz || 18) +
+        '" viewBox="0 0 20 20" fill="none" aria-hidden="true">' +
+        d +
+        '</svg>'
+      );
+    }
+    var I = {
+      chevL:
+        '<path d="M12.2 5.2 7.4 10l4.8 4.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>',
+      chevR:
+        '<path d="M7.8 5.2 12.6 10l-4.8 4.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>',
+      building:
+        '<path d="M4.6 16.8V5.2a1.2 1.2 0 0 1 1.2-1.2h5.6a1.2 1.2 0 0 1 1.2 1.2v11.6" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12.6 8.4h2.6a1.2 1.2 0 0 1 1.2 1.2v7.2M3.2 16.8h13.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M7 7.4h1M9.8 7.4h1M7 10.4h1M9.8 10.4h1M7 13.4h1M9.8 13.4h1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>',
+      door: '<path d="M12.8 3.6H6.6a1.2 1.2 0 0 0-1.2 1.2v10.4a1.2 1.2 0 0 0 1.2 1.2h6.2a1.2 1.2 0 0 0 1.2-1.2V4.8a1.2 1.2 0 0 0-1.2-1.2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="11.2" cy="10.2" r="0.95" fill="currentColor"/>',
+      lock: '<rect x="4.4" y="8.8" width="11.2" height="7.4" rx="1.6" stroke="currentColor" stroke-width="1.6"/><path d="M7.2 8.8V6.9a2.8 2.8 0 0 1 5.6 0v1.9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>',
+      overview:
+        '<path d="M3.2 8.4 10 3.2l6.8 5.2v7.4a1.3 1.3 0 0 1-1.3 1.3H4.5a1.3 1.3 0 0 1-1.3-1.3V8.4Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>',
+      money:
+        '<path d="M3.4 5.8h13.2M3.4 10h13.2M3.4 14.2h8.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>',
+      people:
+        '<circle cx="10" cy="7.2" r="3.1" stroke="currentColor" stroke-width="1.6"/><path d="M4.4 16.8a5.6 5.6 0 0 1 11.2 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>',
+      cal: '<rect x="3.4" y="4.6" width="13.2" height="12.2" rx="2.2" stroke="currentColor" stroke-width="1.6"/><path d="M3.4 8.4h13.2M7.2 2.8v3.2M12.8 2.8v3.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>',
+      plus: '<path d="M10 4.2v11.6M4.2 10h11.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
+      chev: '<path d="M5 8 10 12.8 15 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>',
+      right:
+        '<path d="M7.6 4.6 13 10l-5.4 5.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>',
+      bell: '<path d="M10 3a4.5 4.5 0 0 0-4.5 4.5c0 3.3-1.2 4.4-1.2 4.4h11.4s-1.2-1.1-1.2-4.4A4.5 4.5 0 0 0 10 3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8.5 14.8a1.7 1.7 0 0 0 3 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>',
+      warn: '<path d="M10 3.8 3.1 15.8h13.8L10 3.8Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M10 8.4v3.2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="10" cy="13.6" r=".9" fill="currentColor"/>',
+      clock:
+        '<circle cx="10" cy="10" r="6.8" stroke="currentColor" stroke-width="1.6"/><path d="M10 6.4V10l2.5 1.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>',
+      doc: '<path d="M5.6 2.8h5.8l3.4 3.4v11a1 1 0 0 1-1 1H5.6a1 1 0 0 1-1-1V3.8a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M11.2 2.9v3.5h3.5" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>',
+      up: '<path d="M10 14V5.4M10 5.4 6.6 8.8M10 5.4l3.4 3.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.4 13.6v2a1.6 1.6 0 0 0 1.6 1.6h8a1.6 1.6 0 0 0 1.6-1.6v-2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>',
+      x: '<path d="M5.5 5.5l9 9M14.5 5.5l-9 9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
+      cam: '<rect x="2.4" y="5.4" width="15.2" height="11.2" rx="2.4" stroke="currentColor" stroke-width="1.6"/><circle cx="10" cy="11" r="3.1" stroke="currentColor" stroke-width="1.6"/><path d="M7.4 5.4V4.2a1 1 0 0 1 1-1h3.2a1 1 0 0 1 1 1v1.2" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>',
+      cog: '<circle cx="10" cy="10" r="2.6" stroke="currentColor" stroke-width="1.6"/><path d="M10 2.6v2M10 15.4v2M17.4 10h-2M4.6 10h-2M15.2 4.8l-1.4 1.4M6.2 13.8l-1.4 1.4M15.2 15.2l-1.4-1.4M6.2 6.2 4.8 4.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>',
+      arrIn:
+        '<path d="M13.6 6.4 6.4 13.6M6.4 7.6v6h6" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>',
+      arrOut:
+        '<path d="M6.4 13.6 13.6 6.4M13.6 12.4v-6h-6" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>',
+      tick: '<path d="M4.6 10.4 8.2 14l7.2-8" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>',
+    };
+
+    /* ---------------- app state ---------------- */
+    /* themePref is what the user chose; S.theme is what that resolves to now. Only the resolved
+   value is ever written to data-theme, so every dark: variant keeps matching one attribute and
+   no rule needs a media query of its own. Appearance is a device preference — Settings is
+   company data and has no field for it — so in the real client this lives in localStorage. */
+    var S = {
+      route: 'overview',
+      mode: 'ready',
+      themePref: 'auto',
+      theme: 'light',
+      sheet: null,
+      docFull: false,
+      step: 1,
+      menu: null,
+      dir: 'all',
+      chip: null,
+      status: 'confirmed',
+      catOpen: false,
+      catQ: '',
+      pwIdx: 0,
+      pwDone: [],
+      dpOpen: null,
+      dpView: null,
+    };
+    var ROUTES = [
+      ['overview', 'Overview'],
+      ['money', 'Money'],
+      ['people', 'People'],
+      ['yearend', 'Year end'],
+    ];
+    var TITLES = {
+      overview: [
+        'Overview',
+        'Your financial position and the work that needs attention',
+      ],
+      money: ['Money', 'Everything in and out, grouped by day'],
+      people: ['People', 'Clients you invoice'],
+      yearend: [
+        'Year end',
+        'Your accounting year and the reports you have generated',
+      ],
+      companies: ['My companies', 'Select a company or add another business'],
+      company: [
+        'Company details',
+        'The registered identity, address and bank account',
+      ],
+      settings: [
+        'Settings',
+        'VAT scheme, expense categories and your accounting year',
+      ],
+    };
+
+    /* ---------------- shared fragments ---------------- */
+    function skelRows(n, h) {
+      var o = '';
+      for (var i = 0; i < n; i++)
+        o +=
+          '<div class="flex items-center gap-3 px-4 py-2 border-b border-sunken w-full text-left hover:bg-raised"><div class="bg-sunken animate-skel w-7 h-7 rounded-full"></div><div class="flex flex-col gap-px grow min-w-0"><div class="bg-sunken rounded animate-skel" style="width:' +
+          (120 + ((i * 37) % 90)) +
+          'px;height:13px"></div><div class="bg-sunken rounded animate-skel" style="width:' +
+          (170 + ((i * 53) % 110)) +
+          'px;height:12px;margin-top:5px"></div></div><div class="bg-sunken rounded animate-skel w-19 h-3.5"></div></div>';
+      return o;
+    }
+    function panelSkel(title, rows) {
+      return (
+        '<section class="bg-surface border border-line rounded-panel overflow-hidden shadow-panel" aria-busy="true"><div class="flex items-center gap-2 px-4 py-3 border-b border-line max-md:flex-wrap"><div class="bg-sunken rounded animate-skel w-32 h-4"></div></div>' +
+        skelRows(rows || 4) +
+        '</section>'
+      );
+    }
+    function loadMore(shown, noun) {
+      /* every list query returns a nextToken and no total, so the footer counts what is loaded */
+      return (
+        '<div class="flex items-center gap-2.5 py-3 px-4 border-t border-line">' +
+        '<span class="grow text-xs text-ink-3 whitespace-nowrap overflow-hidden text-ellipsis">Showing ' +
+        shown +
+        ' ' +
+        esc(noun) +
+        '</span>' +
+        '<button class="inline-flex items-center gap-2 rounded-ctl border border-line-strong bg-surface font-semibold whitespace-nowrap hover:bg-sunken pointer-coarse:min-h-11 h-8 px-3 text-xs" data-toast="Loading more">Load more</button></div>'
+      );
+    }
+    function emptyState(title, body, action, icon) {
+      return (
+        '<div class="flex gap-3.5 px-5 py-6 items-start"><div class="shrink-0 w-11 h-11 rounded-panel bg-brand-soft text-brand-text flex items-center justify-center">' +
+        ico(icon || I.plus, '', 22) +
+        '</div><div><h3 class="m-0 mb-1 text-md font-semibold">' +
+        esc(title) +
+        '</h3><p class="m-0 mb-3 text-sm text-ink-3 max-w-prose">' +
+        esc(body) +
+        '</p>' +
+        (action || '') +
+        '</div></div>'
+      );
+    }
+
+    function txTags(x, vis) {
+      var t = '';
+      if (x.noPdf)
+        t +=
+          ' <span class="inline-flex items-center text-2xs font-semibold rounded-chip px-1.5 py-px bg-warn-soft text-warn shrink-0 whitespace-nowrap ' +
+          vis +
+          '">No receipt</span>';
+      if (x.scheduled)
+        t +=
+          ' <span class="inline-flex items-center text-2xs font-semibold rounded-chip px-1.5 py-px bg-brand-soft text-brand-text shrink-0 whitespace-nowrap ' +
+          vis +
+          '">' +
+          esc(x.scheduled) +
+          '</span>';
+      return t;
+    }
+    function txRow(x, opts) {
+      opts = opts || {};
+      /* on phones the tags sit on the detail line so the name keeps the full width */
+      return (
+        '<button class="vt-row flex items-center gap-3 px-4 py-2 border-b border-sunken w-full text-left hover:bg-raised" style="--vt:tx-' +
+        x.id +
+        '" data-sheet="record" data-tx="' +
+        x.id +
+        '">' +
+        '<span class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center ' +
+        (x.dir === 'in' ? 'bg-pos-soft text-pos' : 'bg-sunken text-ink') +
+        '">' +
+        ico(x.dir === 'in' ? I.arrIn : I.arrOut, '', 15) +
+        '</span>' +
+        '<span class="flex flex-col gap-px grow min-w-0">' +
+        '<span class="text-sm font-medium flex items-center gap-2 min-w-0"><span class="truncate min-w-0">' +
+        esc(x.name) +
+        '</span>' +
+        txTags(x, 'max-md:hidden') +
+        '</span>' +
+        '<span class="text-xs text-ink-3 truncate">' +
+        esc(x.detail) +
+        (opts.cat ? '' : ' &#183; ' + esc(x.category)) +
+        '</span>' +
+        (x.noPdf || x.scheduled
+          ? '<span class="hidden max-md:flex items-center gap-1.5 flex-wrap mt-1">' +
+            txTags(x, '') +
+            '</span>'
+          : '') +
+        '</span>' +
+        (opts.cat
+          ? '<span class="text-xs text-ink-3 whitespace-nowrap overflow-hidden text-ellipsis max-md:hidden w-30 grow-0 shrink-0 basis-30">' +
+            esc(x.category) +
+            '</span>'
+          : '') +
+        (opts.vat
+          ? '<span class="tabular-nums text-xs text-ink-3 whitespace-nowrap overflow-hidden text-ellipsis max-md:hidden w-20 grow-0 shrink-0 basis-20 text-right">' +
+            money(x.vat) +
+            '</span>'
+          : '') +
+        '<span class="text-sm font-semibold tabular-nums w-26 shrink-0 text-right ' +
+        (x.dir === 'in' ? 'text-pos' : 'text-ink') +
+        '">' +
+        money(x.amount, true) +
+        '</span></button>'
+      );
+    }
+    function groupBar(g) {
+      var sum = 0,
+        i;
+      for (i = 0; i < g.items.length; i++) sum += g.items[i].amount;
+      var vis = g.pending
+        ? '<span class="text-xs text-ink-3 whitespace-nowrap overflow-hidden text-ellipsis">Not in the balance yet</span>'
+        : '<span class="sr-only">Confirmed daily total</span>';
+      var amt = g.pending
+        ? ''
+        : '<span class="text-sm font-semibold tabular-nums text-xs ' +
+          (sum >= 0 ? 'text-pos' : 'text-ink') +
+          '">' +
+          money(sum, true) +
+          '</span>';
+      return (
+        '<div class="flex items-center gap-2.5 px-4 py-2 bg-raised border-b border-line text-xs font-semibold text-ink-2"><span>' +
+        esc(g.day) +
+        '</span><span class="grow"></span>' +
+        vis +
+        amt +
+        '</div>'
+      );
+    }
+
+    /* ---------------- views ---------------- */
+    /* No total exists for confirmed transactions, so anything counted over them is scoped to the
+   page the overview already loaded. The pending query takes no count or nextToken, so counts
+   over pending transactions are complete. */
+    function loadedConfirmed() {
+      var out = [];
+      GROUPS.forEach(function (g) {
+        if (!g.pending) out = out.concat(g.items);
+      });
+      return out;
+    }
+    function pendingScheduled() {
+      var out = [];
+      GROUPS.forEach(function (g) {
+        if (g.pending)
+          g.items.forEach(function (x) {
+            if (x.scheduled) out.push(x);
+          });
+      });
+      return out;
+    }
+    function vOverview(mode) {
+      if (mode === 'loading')
+        return (
+          '<div class="bg-surface border border-line rounded-panel overflow-hidden shadow-panel py-4 px-5 grid grid-cols-3 max-md:grid-cols-1 gap-5" aria-busy="true">' +
+          '<div><div class="bg-sunken rounded animate-skel w-22 h-3"></div><div class="bg-sunken rounded animate-skel w-40 max-w-full h-8 mt-2"></div></div>' +
+          '<div><div class="bg-sunken rounded animate-skel w-28 h-3"></div><div class="bg-sunken rounded animate-skel w-38 max-w-full h-8 mt-2"></div></div>' +
+          '<div><div class="bg-sunken rounded animate-skel w-18 h-3"></div><div class="bg-sunken rounded animate-skel w-32 max-w-full h-8 mt-2"></div></div></div>' +
+          '<div class="flex gap-4 items-start max-md:flex-col max-md:items-stretch"><div class="flex flex-col gap-4 min-w-0 grow">' +
+          panelSkel('Needs you', 2) +
+          panelSkel('Recent activity', 5) +
+          '</div><div class="flex flex-col gap-4 min-w-0 w-75 shrink-0 max-md:w-full">' +
+          panelSkel('Year end', 2) +
+          '</div></div>'
+        );
+
+      if (mode === 'empty')
+        return (
+          '<section class="bg-surface border border-line rounded-panel overflow-hidden shadow-panel">' +
+          emptyState(
+            'No financial activity yet',
+            'Record your first transaction to start building your financial overview.',
+            '<button class="inline-flex items-center gap-2 h-9 rounded-ctl border text-sm font-semibold whitespace-nowrap pointer-coarse:min-h-11 bg-brand border-brand text-on-brand px-3.5 hover:bg-brand-hover" data-sheet="record">' +
+              ico(I.plus, '', 16) +
+              'Record transaction</button>',
+          ) +
+          '</section>'
+        );
+
+      var g = GROUPS.slice(1, 3),
+        rows = '',
+        i;
+      for (i = 0; i < g.length; i++) {
+        rows += groupBar(g[i]);
+        for (var j = 0; j < g[i].items.length; j++)
+          rows += txRow(g[i].items[j]);
+      }
+      var noPdf = loadedConfirmed().filter(function (x) {
+        return x.noPdf;
+      });
+      var sched = pendingScheduled();
+      var attention = [];
+      if (noPdf.length)
+        attention.push(
+          '<div class="flex items-center gap-3 px-4 py-2 border-b border-sunken w-full text-left hover:bg-raised cursor-default max-md:flex-wrap"><span class="shrink-0 w-7 h-7 flex items-center justify-center bg-warn-soft text-warn rounded-ctl">' +
+            ico(I.warn, '', 17) +
+            '</span>' +
+            '<span class="flex flex-col gap-px grow min-w-0 max-md:basis-0"><span class="text-sm font-medium flex items-center gap-2">' +
+            noPdf.length +
+            ' of the transactions below have no invoice or receipt</span><span class="text-xs text-ink-3 overflow-hidden text-ellipsis md:whitespace-nowrap">' +
+            esc(
+              noPdf
+                .map(function (x) {
+                  return x.name;
+                })
+                .join(' · '),
+            ) +
+            '</span></span>' +
+            '<button class="inline-flex items-center gap-2 rounded-ctl border border-line-strong bg-surface font-semibold whitespace-nowrap hover:bg-sunken pointer-coarse:min-h-11 h-8 px-3 text-xs max-md:w-full max-md:justify-center" data-sheet="paperwork">Attach paperwork</button></div>',
+        );
+      if (sched.length)
+        attention.push(
+          '<div class="flex items-center gap-3 px-4 py-2 border-b border-sunken w-full text-left hover:bg-raised cursor-default max-md:flex-wrap"><span class="shrink-0 w-7 h-7 flex items-center justify-center bg-brand-soft text-brand-text rounded-ctl">' +
+            ico(I.clock, '', 17) +
+            '</span>' +
+            '<span class="flex flex-col gap-px grow min-w-0 max-md:basis-0"><span class="text-sm font-medium flex items-center gap-2">' +
+            sched.length +
+            ' scheduled transaction' +
+            (sched.length === 1 ? '' : 's') +
+            ' coming up</span><span class="text-xs text-ink-3 overflow-hidden text-ellipsis md:whitespace-nowrap">' +
+            esc(
+              sched
+                .map(function (x) {
+                  return (
+                    x.name +
+                    ' ' +
+                    money(x.amount, true) +
+                    ' on ' +
+                    String(x.scheduled).replace('Publishes ', '')
+                  );
+                })
+                .join(' · '),
+            ) +
+            '</span></span>' +
+            '<button class="inline-flex items-center gap-2 rounded-ctl border border-line-strong bg-surface font-semibold whitespace-nowrap hover:bg-sunken pointer-coarse:min-h-11 h-8 px-3 text-xs max-md:w-full max-md:justify-center" data-go="money">Review</button></div>',
+        );
+      return (
+        '' +
+        '<section class="bg-surface border border-line rounded-panel overflow-hidden shadow-panel grid gap-3 grid-cols-3 max-md:grid-cols-1">' +
+        '<div class="px-5 py-4 flex flex-col gap-1.5"><span class="text-xs font-medium text-ink-3">Current balance</span><span class="tabular-nums text-4xl font-semibold tracking-tightest leading-tight">' +
+        money(BALANCE.balance) +
+        '</span></div>' +
+        '<div class="px-5 py-4 flex flex-col gap-1.5 border-l border-line max-md:border-l-0 max-md:border-t"><span class="text-xs font-medium text-ink-3">Balance less VAT owed</span><span class="tabular-nums text-4xl font-semibold tracking-tightest leading-tight">' +
+        money(BALANCE.balance - BALANCE.vat.owed) +
+        '</span></div>' +
+        '<div class="px-5 py-4 flex flex-col gap-1.5 border-l border-line max-md:border-l-0 max-md:border-t"><span class="text-xs font-medium text-ink-3">VAT owed <span class="inline-flex items-center text-2xs font-semibold rounded-chip px-1.5 py-px bg-sunken text-ink-2">' +
+        esc(vatSchemeLabel()) +
+        '</span></span><span class="tabular-nums text-4xl font-semibold tracking-tightest leading-tight">' +
+        money(BALANCE.vat.owed) +
+        '</span></div>' +
+        '</section>' +
+        '<div class="flex gap-4 items-start max-md:flex-col max-md:items-stretch"><div class="flex flex-col gap-4 min-w-0 grow">' +
+        '<section class="bg-surface border border-line rounded-panel overflow-hidden shadow-panel"><div class="flex items-center gap-2 px-4 py-3 border-b border-line max-md:flex-wrap"><span class="text-sm font-semibold">Needs you</span>' +
+        (attention.length
+          ? '<span class="inline-flex items-center text-2xs font-semibold rounded-chip px-1.5 py-px bg-sunken text-ink-2">' +
+            attention.length +
+            '</span>'
+          : '') +
+        '</div>' +
+        (attention.length
+          ? attention.join('')
+          : '<div class="px-4 py-6 text-center text-sm text-ink-3">Nothing needs you right now</div>') +
+        '</section>' +
+        '<section class="bg-surface border border-line rounded-panel overflow-hidden shadow-panel"><div class="flex items-center gap-2 px-4 py-3 border-b border-line max-md:flex-wrap"><span class="text-sm font-semibold">Recent activity</span><span class="grow"></span><button class="border-0 bg-transparent text-brand-text px-1 inline-flex items-center pointer-coarse:min-h-11 max-md:min-h-11" data-go="money">View all money</button></div>' +
+        rows +
+        '</section>' +
+        '</div><div class="flex flex-col gap-4 min-w-0 w-75 shrink-0 max-md:w-full">' +
+        '<section class="bg-surface border border-line rounded-panel overflow-hidden shadow-panel py-3.5 px-4 flex flex-col gap-2.5">' +
+        '<span class="text-sm font-semibold">Year end</span><span class="text-xl font-semibold">' +
+        esc(yearEndLabel()) +
+        '</span>' +
+        '<span class="text-xs text-ink-3 overflow-hidden text-ellipsis whitespace-normal">' +
+        daysToYearEnd() +
+        ' days away · financial year began ' +
+        esc(yearStartLabel()) +
+        '</span>' +
+        '<button class="inline-flex items-center gap-2 h-9 px-3 rounded-ctl border border-line-strong bg-surface text-sm font-semibold whitespace-nowrap hover:bg-sunken pointer-coarse:min-h-11 justify-center" data-go="yearend">Open year end</button></section>' +
+        '<section class="bg-surface border border-line rounded-panel overflow-hidden shadow-panel"><div class="flex items-center gap-2 px-4 py-3 border-b border-line max-md:flex-wrap"><span class="text-sm font-semibold">Recent reports</span><span class="grow"></span><button class="border-0 bg-transparent text-brand-text px-1 inline-flex items-center pointer-coarse:min-h-11 max-md:min-h-11" data-go="yearend">All</button></div>' +
+        REPORTS.map(function (r) {
+          return (
+            '<div class="flex items-center gap-3 px-4 py-2 border-b border-sunken w-full text-left hover:bg-raised cursor-default"><span class="shrink-0 w-7 h-7 flex items-center justify-center rounded-ctl bg-sunken text-ink-2">' +
+            ico(I.doc, '', 15) +
+            '</span><span class="flex flex-col gap-px grow min-w-0"><span class="text-sm font-medium flex items-center gap-2">' +
+            esc(r.created) +
+            '</span><span class="text-xs text-ink-3 whitespace-nowrap overflow-hidden text-ellipsis">Expires ' +
+            esc(r.expires) +
+            '</span></span><button class="border-0 bg-transparent text-brand-text px-1 inline-flex items-center pointer-coarse:min-h-11 max-md:min-h-11">Download</button></div>'
+          );
+        }).join('') +
+        '</section>' +
+        '</div></div>'
+      );
+    }
+
+    function vMoney(mode) {
+      var pending = S.status === 'pending';
+      var src = GROUPS.filter(function (g) {
+        return !!g.pending === pending;
+      });
+      var pendingCount = 0,
+        scheduledCount = 0;
+      GROUPS.forEach(function (g) {
+        if (!g.pending) return;
+        g.items.forEach(function (x) {
+          pendingCount++;
+          if (x.scheduled) scheduledCount++;
+        });
+      });
+
+      /* status is a required argument on getTransactions, so these are two queries, not one list filtered */
+      var head =
+        '<div class="flex items-center gap-2 flex-wrap">' +
+        '<div class="inline-flex h-chip p-0.5 gap-0.5 border border-line rounded-ctl bg-surface pointer-coarse:h-12" role="group" aria-label="Transaction status">' +
+        '<button class="px-3 rounded-sm text-xs font-medium text-ink-3 aria-pressed:bg-sunken aria-pressed:text-ink aria-pressed:font-semibold" data-status="confirmed" aria-pressed="' +
+        !pending +
+        '">Confirmed</button>' +
+        '<button class="px-3 rounded-sm text-xs font-medium text-ink-3 aria-pressed:bg-sunken aria-pressed:text-ink aria-pressed:font-semibold" data-status="pending" aria-pressed="' +
+        pending +
+        '">Pending<span class="text-2xs font-bold bg-sunken rounded-chip px-1.5">' +
+        pendingCount +
+        '</span></button>' +
+        '</div><span class="w-px h-5 bg-line"></span>' +
+        '<div class="inline-flex h-chip p-0.5 gap-0.5 border border-line rounded-ctl bg-surface pointer-coarse:h-12" role="group" aria-label="Direction">' +
+        ['all', 'in', 'out']
+          .map(function (k) {
+            return (
+              '<button class="px-3 rounded-sm text-xs font-medium text-ink-3 aria-pressed:bg-sunken aria-pressed:text-ink aria-pressed:font-semibold" data-dir="' +
+              k +
+              '" aria-pressed="' +
+              (S.dir === k) +
+              '">' +
+              { all: 'All', in: 'Money in', out: 'Money out' }[k] +
+              '</button>'
+            );
+          })
+          .join('') +
+        '</div>' +
+        (pending
+          ? '<button class="inline-flex items-center gap-1.5 h-chip px-3 border border-line-strong rounded-full bg-surface text-xs font-semibold aria-pressed:border-brand aria-pressed:bg-brand-soft aria-pressed:text-brand-text pointer-coarse:h-11" data-chip="scheduled" aria-pressed="' +
+            (S.chip === 'scheduled') +
+            '">Scheduled<span class="text-2xs font-bold bg-sunken rounded-chip px-1.5">' +
+            scheduledCount +
+            '</span></button>'
+          : '') +
+        '<button class="inline-flex items-center gap-1.5 h-chip px-3 border border-line-strong rounded-full bg-surface text-xs font-semibold aria-pressed:border-brand aria-pressed:bg-brand-soft aria-pressed:text-brand-text pointer-coarse:h-11" data-chip="nopdf" aria-pressed="' +
+        (S.chip === 'nopdf') +
+        '">No receipt</button></div>';
+
+      if (mode === 'loading') return head + panelSkel('', 8);
+      if (mode === 'empty')
+        return (
+          head +
+          '<section class="bg-surface border border-line rounded-panel overflow-hidden shadow-panel">' +
+          emptyState(
+            pending ? 'Nothing pending' : 'No transactions yet',
+            pending
+              ? 'Transactions you hold or schedule will wait here until they are confirmed.'
+              : 'Record a confirmed sale or purchase to start this transaction history.',
+            '<button class="inline-flex items-center gap-2 h-9 rounded-ctl border text-sm font-semibold whitespace-nowrap pointer-coarse:min-h-11 bg-brand border-brand text-on-brand px-3.5 hover:bg-brand-hover" data-sheet="record">' +
+              ico(I.plus, '', 16) +
+              'Record transaction</button>',
+          ) +
+          '</section>'
+        );
+
+      var gs = src
+        .map(function (g) {
+          var items = g.items.filter(function (x) {
+            if (S.dir === 'in' && x.dir !== 'in') return false;
+            if (S.dir === 'out' && x.dir !== 'out') return false;
+            if (S.chip === 'scheduled' && !x.scheduled) return false;
+            if (S.chip === 'nopdf' && !x.noPdf) return false;
+            return true;
+          });
+          return { day: g.day, pending: g.pending, items: items };
+        })
+        .filter(function (g) {
+          return g.items.length;
+        });
+
+      var body = gs.length
+        ? gs
+            .map(function (g) {
+              return (
+                groupBar(g) +
+                g.items
+                  .map(function (x) {
+                    return txRow(x, { cat: true, vat: true });
+                  })
+                  .join('')
+              );
+            })
+            .join('')
+        : emptyState(
+            'Nothing matches these filters',
+            'Clear a filter to see more of your transactions.',
+            '<button class="inline-flex items-center gap-2 h-9 px-3 rounded-ctl border border-line-strong bg-surface text-sm font-semibold whitespace-nowrap hover:bg-sunken pointer-coarse:min-h-11" data-chip="">Clear filters</button>',
+          );
+
+      var shown = gs.reduce(function (n, g) {
+        return n + g.items.length;
+      }, 0);
+      /* the day group bar already carries "Not in the balance yet" on pending days */
+      return (
+        head +
+        '<section class="bg-surface border border-line rounded-panel overflow-hidden shadow-panel"><div class="flex items-center gap-3 px-4 py-3 border-b border-line"><span class="text-2xs font-semibold tracking-wide uppercase text-ink-3 grow min-w-0">Transaction</span><span class="text-2xs font-semibold tracking-wide uppercase text-ink-3 max-md:hidden w-30 grow-0 shrink-0 basis-30">Category</span><span class="text-2xs font-semibold tracking-wide uppercase text-ink-3 max-md:hidden w-20 grow-0 shrink-0 basis-20 text-right">VAT</span><span class="text-2xs font-semibold tracking-wide uppercase text-ink-3 w-26 shrink-0 text-right">Amount</span></div>' +
+        body +
+        /* the pending query takes no count or nextToken, so that list arrives whole */
+        (pending ? '' : loadMore(shown, 'transactions')) +
+        '</section>'
+      );
+    }
+
+    function vPeople(mode) {
+      if (mode === 'loading') return panelSkel('Clients', 5);
+      if (mode === 'empty')
+        return (
+          '<section class="bg-surface border border-line rounded-panel overflow-hidden shadow-panel">' +
+          emptyState(
+            'No clients yet',
+            'Add a client before recording a confirmed sale.',
+            '<button class="inline-flex items-center gap-2 h-9 rounded-ctl border text-sm font-semibold whitespace-nowrap pointer-coarse:min-h-11 bg-brand border-brand text-on-brand px-3.5 hover:bg-brand-hover" data-sheet="client">' +
+              ico(I.plus, '', 16) +
+              'Add client</button>',
+            I.people,
+          ) +
+          '</section>'
+        );
+      return (
+        '<section class="bg-surface border border-line rounded-panel overflow-hidden shadow-panel"><div class="flex items-center gap-3 px-4 py-3 border-b border-line max-md:flex-wrap"><span class="text-2xs font-semibold tracking-wide uppercase text-ink-3 grow min-w-0">Client</span><span class="text-2xs font-semibold tracking-wide uppercase text-ink-3 w-60 max-md:hidden grow-0 shrink-0">Email</span><span class="text-2xs font-semibold tracking-wide uppercase text-ink-3 w-36 max-md:hidden grow-0 shrink-0">Town or city</span></div>' +
+        CLIENTS.map(function (c) {
+          return (
+            '<button class="flex items-center gap-3 px-4 py-2 border-b border-sunken w-full text-left hover:bg-raised" data-sheet="client" data-name="' +
+            esc(c.name) +
+            '"><span class="w-6 h-6 shrink-0 bg-brand-soft text-brand-text flex items-center justify-center text-2xs font-bold rounded-full">' +
+            esc(c.initials) +
+            '</span>' +
+            '<span class="flex flex-col gap-px grow min-w-0"><span class="text-sm font-medium flex items-center gap-2">' +
+            esc(c.name) +
+            '</span>' +
+            '<span class="text-xs text-ink-3 whitespace-nowrap overflow-hidden text-ellipsis md:hidden">' +
+            esc(c.email) +
+            ' &#183; ' +
+            esc(c.town) +
+            '</span></span>' +
+            '<span class="text-xs text-ink-3 whitespace-nowrap overflow-hidden text-ellipsis w-60 grow-0 shrink-0 basis-60 max-md:hidden">' +
+            esc(c.email) +
+            '</span>' +
+            '<span class="text-xs text-ink-3 whitespace-nowrap overflow-hidden text-ellipsis w-36 grow-0 shrink-0 basis-36 max-md:hidden">' +
+            esc(c.town) +
+            '</span></button>'
+          );
+        }).join('') +
+        loadMore(CLIENTS.length, 'clients') +
+        '</section>'
+      );
+    }
+
+    function vYearEnd(mode) {
+      if (mode === 'loading') return panelSkel('Reports', 4);
+      var top =
+        '<section class="bg-surface border border-line rounded-panel overflow-hidden shadow-panel py-4 px-5 flex items-center gap-5 flex-wrap">' +
+        '<div><div class="text-xs font-medium text-ink-3">Accounting year ends</div><div class="font-semibold tracking-tightest leading-tight text-2xl">' +
+        esc(yearEndLabel()) +
+        '</div></div>' +
+        '<div class="border-l border-line pl-5 max-md:border-l-0 max-md:pl-0 max-md:border-t max-md:pt-3 max-md:w-full"><div class="text-xs font-medium text-ink-3">Days remaining</div><div class="tabular-nums font-semibold tracking-tightest leading-tight text-2xl">' +
+        daysToYearEnd() +
+        '</div></div>' +
+        '<div class="border-l border-line pl-5 max-md:border-l-0 max-md:pl-0 max-md:border-t max-md:pt-3 max-md:w-full"><div class="text-xs font-medium text-ink-3">VAT scheme</div><div class="font-semibold tracking-tightest leading-tight text-2xl">' +
+        esc(vatSchemeLabel()) +
+        '</div></div>' +
+        '</section>';
+      if (mode === 'empty')
+        return (
+          top +
+          '<section class="bg-surface border border-line rounded-panel overflow-hidden shadow-panel">' +
+          emptyState(
+            'No reports yet',
+            'Create a report to export a year of transactions. Reports are deleted 24 hours after they are created.',
+            '<button class="inline-flex items-center gap-2 h-9 rounded-ctl border text-sm font-semibold whitespace-nowrap pointer-coarse:min-h-11 bg-brand border-brand text-on-brand px-3.5 hover:bg-brand-hover" data-sheet="report">' +
+              ico(I.plus, '', 16) +
+              'Create report</button>',
+            I.doc,
+          ) +
+          '</section>'
+        );
+      return (
+        top +
+        '<section class="bg-surface border border-line rounded-panel overflow-hidden shadow-panel"><div class="flex items-center gap-3 px-4 py-3 border-b border-line max-md:flex-wrap"><span class="text-2xs font-semibold tracking-wide uppercase text-ink-3 grow min-w-0">Requested</span><span class="text-2xs font-semibold tracking-wide uppercase text-ink-3 w-44 max-md:hidden grow-0 shrink-0">Expires</span><span class="text-2xs font-semibold tracking-wide uppercase text-ink-3 w-30 text-right grow-0 shrink-0">Actions</span></div>' +
+        REPORTS.map(function (r) {
+          return (
+            '<div class="flex items-center gap-3 px-4 py-2 border-b border-sunken w-full text-left hover:bg-raised cursor-default"><span class="shrink-0 w-7 h-7 flex items-center justify-center rounded-ctl bg-sunken text-ink-2">' +
+            ico(I.doc, '', 15) +
+            '</span>' +
+            '<span class="flex flex-col gap-px grow min-w-0"><span class="text-sm font-medium flex items-center gap-2">' +
+            esc(r.created) +
+            '</span>' +
+            '<span class="text-xs text-ink-3 overflow-hidden md:hidden">Expires ' +
+            esc(r.expires) +
+            '</span></span>' +
+            '<span class="text-xs text-ink-3 whitespace-nowrap overflow-hidden text-ellipsis w-44 grow-0 shrink-0 basis-44 max-md:hidden">' +
+            esc(r.expires) +
+            '</span>' +
+            '<span class="w-30 grow-0 shrink-0 basis-30 text-right"><button class="inline-flex items-center gap-2 rounded-ctl border border-line-strong bg-surface font-semibold whitespace-nowrap hover:bg-sunken pointer-coarse:min-h-11 h-8 px-3 text-xs">Download</button></span></div>'
+          );
+        }).join('') +
+        '<div class="px-4 py-3 border-t border-line text-xs text-ink-3 whitespace-normal">Reports are deleted 24 hours after they are created.</div>' +
+        loadMore(REPORTS.length, 'reports') +
+        '</section>'
+      );
+    }
+
+    function vCompanies(mode) {
+      if (mode === 'loading') return panelSkel('Companies', 3);
+      if (mode === 'empty')
+        return (
+          '<section class="bg-surface border border-line rounded-panel overflow-hidden shadow-panel">' +
+          emptyState(
+            'No companies yet',
+            'Add your first company to start using Accounts.',
+            '<button class="inline-flex items-center gap-2 h-9 rounded-ctl border text-sm font-semibold whitespace-nowrap pointer-coarse:min-h-11 bg-brand border-brand text-on-brand px-3.5 hover:bg-brand-hover" data-sheet="company">' +
+              ico(I.plus, '', 16) +
+              'Add company</button>',
+          ) +
+          '</section>'
+        );
+      return (
+        '<section class="bg-surface border border-line rounded-panel overflow-hidden shadow-panel"><div class="flex items-center gap-3 px-4 py-3 border-b border-line max-md:flex-wrap"><span class="text-2xs font-semibold tracking-wide uppercase text-ink-3 grow min-w-0">Company</span><span class="text-2xs font-semibold tracking-wide uppercase text-ink-3 w-44 max-md:hidden grow-0 shrink-0">Company number</span><span class="text-2xs font-semibold tracking-wide uppercase text-ink-3 w-30 text-right grow-0 shrink-0">Action</span></div>' +
+        COMPANIES.map(function (c) {
+          return (
+            '<div class="flex items-center gap-3 px-4 py-2 border-b border-sunken w-full text-left hover:bg-raised cursor-default"><span class="w-6 h-6 shrink-0 rounded-sm bg-brand-soft text-brand-text flex items-center justify-center text-2xs font-bold">' +
+            esc(c.initials) +
+            '</span>' +
+            '<span class="flex flex-col gap-px grow min-w-0"><span class="text-sm font-medium flex items-center gap-2">' +
+            '<span class="truncate min-w-0">' +
+            esc(c.name) +
+            '</span>' +
+            (c.id === CO.id
+              ? ' <span class="inline-flex items-center text-2xs font-semibold rounded-chip px-1.5 py-px bg-brand-soft text-brand-text shrink-0 whitespace-nowrap">Selected</span>'
+              : '') +
+            '</span><span class="tabular-nums text-xs text-ink-3 whitespace-nowrap overflow-hidden text-ellipsis md:hidden">' +
+            esc(c.number) +
+            '</span></span>' +
+            '<span class="tabular-nums text-xs text-ink-3 whitespace-nowrap overflow-hidden text-ellipsis w-44 grow-0 shrink-0 basis-44 max-md:hidden">' +
+            esc(c.number) +
+            '</span>' +
+            '<span class="w-30 grow-0 shrink-0 basis-30 text-right"><button class="inline-flex items-center gap-2 rounded-ctl border border-line-strong bg-surface font-semibold whitespace-nowrap hover:bg-sunken pointer-coarse:min-h-11 h-8 px-3 text-xs" data-go="company">Details</button></span></div>'
+          );
+        }).join('') +
+        loadMore(COMPANIES.length, 'companies') +
+        '</section>'
+      );
+    }
+
+    /* Loading is shaped like the content it replaces, so a form page loads as labelled fields in the
+   same panels, not as ledger rows. cols describes each panel: how many field rows, and whether
+   those rows are paired across two columns. */
+    function fieldSkel(cols) {
+      var o = '<div class="py-4 px-5 flex flex-col gap-3.5">';
+      for (var i = 0; i < cols.rows; i++) {
+        o += cols.pair
+          ? '<div class="grid gap-3.5 grid-cols-2 max-md:grid-cols-1">' +
+            skelField() +
+            skelField() +
+            '</div>'
+          : skelField();
+      }
+      return o + '</div>';
+    }
+    function skelField() {
+      return (
+        '<div class="flex flex-col gap-1.5"><div class="bg-sunken rounded animate-skel w-24 h-2.5"></div>' +
+        '<div class="bg-sunken rounded animate-skel h-control w-full"></div></div>'
+      );
+    }
+    function panelSkelHead() {
+      return (
+        '<section class="bg-surface border border-line rounded-panel overflow-hidden shadow-panel" aria-busy="true">' +
+        '<div class="flex items-center gap-2 px-4 py-3 border-b border-line"><div class="min-w-0 grow flex flex-col gap-1.5">' +
+        '<div class="bg-sunken rounded animate-skel w-32 h-3"></div><div class="bg-sunken rounded animate-skel w-52 max-w-full h-2.5"></div></div></div>'
+      );
+    }
+    function formSkel(panels) {
+      return panels
+        .map(function (c) {
+          return panelSkelHead() + fieldSkel(c) + '</section>';
+        })
+        .join('');
+    }
+    function panel(title, sub, body) {
+      return (
+        '<section class="bg-surface border border-line rounded-panel overflow-hidden shadow-panel"><div class="flex items-center gap-2 px-4 py-3 border-b border-line max-md:flex-wrap"><div class="min-w-0 grow"><div class="text-sm font-semibold">' +
+        esc(title) +
+        '</div>' +
+        (sub
+          ? '<div class="text-xs text-ink-3 whitespace-nowrap overflow-hidden text-ellipsis">' +
+            esc(sub) +
+            '</div>'
+          : '') +
+        '</div></div>' +
+        body +
+        '</section>'
+      );
+    }
+    function vCompany(mode) {
+      if (mode === 'loading')
+        return formSkel([
+          { rows: 1, pair: true },
+          { rows: 5 },
+          { rows: 1, pair: true },
+          { rows: 1, pair: true },
+        ]);
+      var g =
+        '<div class="grid gap-3.5 grid-cols-2 max-md:grid-cols-1 py-4 px-5">';
+      return (
+        panel(
+          'Identity',
+          'The registered company identity',
+          g +
+            pfld('Company name', 'name') +
+            pfld('Company number', 'num') +
+            '</div>',
+        ) +
+        panel(
+          'Address',
+          'The registered company address',
+          '<div class="py-4 px-5 flex flex-col gap-3.5">' +
+            pfld('Address line 1', 'line1') +
+            pfld('Address line 2', 'line2', { ph: 'Optional' }) +
+            '<div class="grid gap-3.5 grid-cols-2 max-md:grid-cols-1">' +
+            pfld('Town or city', 'line3') +
+            pfld('County', 'line4', { ph: 'Optional' }) +
+            '</div>' +
+            pfld('Postcode', 'line5') +
+            '</div>',
+        ) +
+        panel(
+          'Contact details',
+          'Primary company contact details',
+          g +
+            pfld('Email address', 'email', { type: 'email' }) +
+            pfld('Telephone number', 'tel') +
+            '</div>',
+        ) +
+        panel(
+          'Bank account',
+          'Used to match transactions',
+          g +
+            pfld('Account number', 'acct') +
+            pfld('Sort code', 'sort') +
+            '</div>',
+        ) +
+        '<div class="flex gap-2 items-center"><button class="inline-flex items-center gap-2 h-9 rounded-ctl border text-sm font-semibold whitespace-nowrap pointer-coarse:min-h-11 bg-brand border-brand text-on-brand px-3.5 hover:bg-brand-hover" data-psave="company">Save changes</button>' +
+        '<button class="inline-flex items-center gap-2 h-9 px-3 rounded-ctl border border-line-strong bg-surface text-sm font-semibold whitespace-nowrap hover:bg-sunken pointer-coarse:min-h-11" data-preset="company">Cancel</button><span class="grow"></span>' +
+        '<button class="inline-flex items-center gap-2 h-9 px-3 rounded-ctl border text-sm font-semibold whitespace-nowrap hover:bg-sunken pointer-coarse:min-h-11 bg-danger border-danger text-white" data-toast="Company deleted">Delete company</button></div>'
+      );
+    }
+    function vSettings(mode) {
+      if (mode === 'loading')
+        return formSkel([
+          { rows: 2, pair: true },
+          { rows: 1, pair: true },
+        ]);
+      var notReg = P.scheme === 'Not registered';
+      var cats =
+        '<div class="pt-2 px-5 pb-4 flex flex-col gap-2">' +
+        '<div class="flex items-center gap-2.5"><span class="grow min-w-0 text-2xs font-semibold tracking-wide uppercase text-ink-3">Category</span><span class="text-2xs font-semibold tracking-wide uppercase text-ink-3 w-28 shrink-0">VAT rate</span><span class="w-21 shrink-0"></span></div>' +
+        P.cats
+          .map(function (c, i) {
+            return (
+              '<div class="flex items-center gap-2.5">' +
+              '<input class="h-control flex items-center px-3 border border-line-strong rounded-ctl bg-surface text-sm text-ink outline-none placeholder:text-ink-3 focus:border-brand focus:ring-3 focus:ring-brand/15 focus-within:border-brand focus-within:ring-3 focus-within:ring-brand/15 pointer-coarse:h-11 grow min-w-0 read-only:bg-sunken read-only:text-ink-2' +
+              (P.err && P.err.cats && !String(c.name).trim()
+                ? ' border-danger'
+                : '') +
+              '" data-cat="' +
+              i +
+              '.name" value="' +
+              esc(c.name) +
+              '" aria-label="Category name"' +
+              (c.protect ? ' readonly' : '') +
+              '>' +
+              '<div class="relative w-28 shrink-0"><input class="h-control flex items-center px-3 border border-line-strong rounded-ctl bg-surface text-sm text-ink outline-none placeholder:text-ink-3 focus:border-brand focus:ring-brand/15 focus-within:border-brand focus-within:ring-brand/15 pointer-coarse:h-11 w-full pr-6 read-only:bg-sunken read-only:text-ink-2" data-cat="' +
+              i +
+              '.rate" inputmode="decimal" value="' +
+              esc(c.rate) +
+              '" aria-label="VAT rate for ' +
+              esc(c.name) +
+              '"' +
+              (c.protect ? ' readonly' : '') +
+              '><span class="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-ink-3 pointer-events-none">%</span></div>' +
+              (c.protect
+                ? '<span class="w-21 shrink-0 h-8 flex items-center justify-center text-ink-3" title="This category is fixed and cannot be changed or removed" aria-label="Locked">' +
+                  ico(I.lock, '', 16) +
+                  '</span>'
+                : '<button class="inline-flex items-center gap-2 rounded-ctl border border-line-strong bg-surface font-semibold whitespace-nowrap hover:bg-sunken pointer-coarse:min-h-11 h-8 px-3 text-xs w-21 shrink-0 justify-center" data-catdel="' +
+                  i +
+                  '">Remove</button>') +
+              '</div>'
+            );
+          })
+          .join('') +
+        (P.err && P.err.cats
+          ? '<span class="text-xs text-danger">' + esc(P.err.cats) + '</span>'
+          : '') +
+        '</div>';
+      return (
+        panel(
+          'VAT',
+          'How VAT is charged and what you hand to HMRC',
+          '<div class="py-4 px-5 flex flex-col gap-3.5">' +
+            '<div class="flex flex-col gap-1"><span class="text-xs font-medium text-ink-3">Scheme</span><div class="flex gap-2 flex-wrap">' +
+            ['Standard', 'Flat rate', 'Not registered']
+              .map(function (o) {
+                return (
+                  '<button class="inline-flex items-center gap-1.5 h-chip px-3 border border-line-strong rounded-full bg-surface text-xs font-semibold aria-pressed:border-brand aria-pressed:bg-brand-soft aria-pressed:text-brand-text pointer-coarse:h-11" data-pset="scheme:' +
+                  esc(o) +
+                  '" aria-pressed="' +
+                  (P.scheme === o) +
+                  '">' +
+                  esc(o) +
+                  '</button>'
+                );
+              })
+              .join('') +
+            '</div></div>' +
+            (notReg
+              ? ''
+              : '<div class="grid gap-3.5 grid-cols-2 max-md:grid-cols-1">' +
+                pfld('VAT to charge %', 'charge', {
+                  help: 'Added to what you invoice a client',
+                }) +
+                pfld('VAT to pay %', 'pay', {
+                  help: 'The share of each sale you hand to HMRC',
+                }) +
+                '</div>' +
+                pfld('Registration number', 'reg', { ph: 'Optional' })) +
+            '</div>',
+        ) +
+        panel(
+          'Accounting year',
+          'The date your financial year ends',
+          '<div class="grid gap-3.5 grid-cols-2 max-md:grid-cols-1 py-4 px-5">' +
+            pfld('Day', 'yeDay') +
+            pfld('Month', 'yeMonth', { options: MONTHS }) +
+            '</div>',
+        ) +
+        '<section class="bg-surface border border-line rounded-panel overflow-hidden shadow-panel"><div class="flex items-center gap-2 px-4 py-3 border-b border-line max-md:flex-wrap"><div class="min-w-0 grow"><div class="text-sm font-semibold">Expense categories</div>' +
+        '<div class="text-xs text-ink-3 whitespace-nowrap overflow-hidden text-ellipsis">Each one carries the VAT rate used when you record a purchase against it</div></div>' +
+        '<span class="grow"></span><button class="inline-flex items-center gap-2 rounded-ctl border border-line-strong bg-surface font-semibold whitespace-nowrap hover:bg-sunken pointer-coarse:min-h-11 h-8 px-3 text-xs" data-catadd="1">' +
+        ico(I.plus, '', 14) +
+        'Add category</button></div>' +
+        cats +
+        '</section>' +
+        '<div class="flex gap-2"><button class="inline-flex items-center gap-2 h-9 rounded-ctl border text-sm font-semibold whitespace-nowrap pointer-coarse:min-h-11 bg-brand border-brand text-on-brand px-3.5 hover:bg-brand-hover" data-psave="settings">Save changes</button>' +
+        '<button class="inline-flex items-center gap-2 h-9 px-3 rounded-ctl border border-line-strong bg-surface text-sm font-semibold whitespace-nowrap hover:bg-sunken pointer-coarse:min-h-11" data-preset="settings">Cancel</button></div>'
+      );
+    }
+
+    /* ---------------- form model ---------------- */
+    /* F is the sheet's model, reset every time a sheet opens. P is the page's, kept per route. */
+    var F = {};
+    var P = {},
+      P_ROUTE = null;
+    var PAGE_DEFAULTS = {
+      company: {
+        name: CO.name,
+        num: CO.number,
+        line1: 'Unit 4, Rosemary Works',
+        line2: "St Mary's Road",
+        line3: 'Norwich',
+        line4: 'Norfolk',
+        line5: 'NR3 1QT',
+        email: 'accounts@harbourandpine.co.uk',
+        tel: '01603 555 812',
+        acct: '11224471',
+        sort: '20-45-09',
+        err: {},
+      },
+      settings: {
+        scheme: VAT_SCHEME,
+        charge: String(VAT_CHARGE),
+        pay: String(VAT_PAY),
+        reg: 'GB 418 2277 01',
+        yeDay: String(YEAR_END.day),
+        yeMonth: MONTHS[YEAR_END.month - 1],
+        cats: CATEGORIES.map(function (c) {
+          return { name: c.name, rate: String(c.rate), protect: !!c.protect };
+        }),
+        err: {},
+      },
+    };
+    function openPage(r) {
+      if (P_ROUTE === r) return;
+      P_ROUTE = r;
+      P = PAGE_DEFAULTS[r] ? JSON.parse(JSON.stringify(PAGE_DEFAULTS[r])) : {};
+    }
+    function pfld(label, key, opts) {
+      opts = opts || {};
+      var v = P[key] == null ? '' : P[key],
+        err = P.err && P.err[key];
+      var ctl = opts.options
+        ? '<select class="h-control w-full flex items-center px-3 border border-line-strong rounded-ctl bg-surface text-sm text-ink outline-none placeholder:text-ink-3 focus:border-brand focus:ring-3 focus:ring-brand/15 focus-within:border-brand focus-within:ring-3 focus-within:ring-brand/15 pointer-coarse:h-11' +
+          (err ? ' border-danger' : '') +
+          '" data-p="' +
+          key +
+          '">' +
+          opts.options
+            .map(function (o) {
+              return (
+                '<option' +
+                (o === v ? ' selected' : '') +
+                '>' +
+                esc(o) +
+                '</option>'
+              );
+            })
+            .join('') +
+          '</select>'
+        : '<input class="h-control w-full flex items-center px-3 border border-line-strong rounded-ctl bg-surface text-sm text-ink outline-none placeholder:text-ink-3 focus:border-brand focus:ring-3 focus:ring-brand/15 focus-within:border-brand focus-within:ring-3 focus-within:ring-brand/15 pointer-coarse:h-11' +
+          (err ? ' border-danger' : '') +
+          '" data-p="' +
+          key +
+          '" type="' +
+          (opts.type || 'text') +
+          '" value="' +
+          esc(v) +
+          '"' +
+          (opts.ph ? ' placeholder="' + esc(opts.ph) + '"' : '') +
+          '>';
+      return (
+        '<label class="flex flex-col gap-1"><span class="text-xs font-medium text-ink-3">' +
+        esc(label) +
+        '</span>' +
+        ctl +
+        (opts.help
+          ? '<span class="text-xs text-ink-3 overflow-hidden text-ellipsis whitespace-normal">' +
+            opts.help +
+            '</span>'
+          : '') +
+        (err
+          ? '<span class="text-xs text-danger">' + esc(err) + '</span>'
+          : '') +
+        '</label>'
+      );
+    }
+    var DEFAULTS = {
+      record: {
+        type: 'purchase',
+        refund: false,
+        amount: '139.00',
+        vat: '23.17',
+        who: 'Fen Lane Garage',
+        desc: 'Van service and MOT',
+        date: '2026-09-03',
+        cat: 'Vehicle',
+        when: 'now',
+        hasFile: '1',
+        attType: 'pdf',
+        err: {},
+      },
+      client: {
+        name: 'Bramble Studio',
+        email: 'accounts@bramblestudio.co.uk',
+        tel: '01603 555 118',
+        line1: '12 Bethel Street',
+        line2: '',
+        line3: 'Norwich',
+        line4: 'Norfolk',
+        line5: 'NR2 1NR',
+        err: {},
+      },
+      company: {
+        name: '',
+        num: '',
+        email: '',
+        tel: '',
+        line1: '',
+        line2: '',
+        line3: '',
+        line4: '',
+        line5: '',
+        acct: '',
+        sort: '',
+        scheme: VAT_SCHEME,
+        charge: String(VAT_CHARGE),
+        pay: String(VAT_PAY),
+        reg: '',
+        yeDay: String(YEAR_END.day),
+        yeMonth: MONTHS[YEAR_END.month - 1],
+        opening: '0.00',
+        vatOwed: '0.00',
+        vatPaid: '0.00',
+        err: {},
+      },
+      report: { status: 'Confirmed', year: reportYears()[0].label, err: {} },
+      paperwork: { err: {} },
+    };
+    function loadTx(id) {
+      var x = TXBY[id];
+      if (!x) return;
+      F.id = id;
+      F.type = x.dir === 'in' ? 'sale' : 'purchase';
+      F.refund = false;
+      F.amount = Math.abs(x.amount).toFixed(2);
+      F.vat = x.vat.toFixed(2);
+      F.who = x.name;
+      F.desc = x.detail;
+      F.cat = F.type === 'sale' ? '' : x.category;
+      F.when = x.pending ? (x.scheduled ? 'sched' : 'hold') : 'now';
+      F.hasFile = x.noPdf ? '' : '1';
+      F.attType = 'pdf';
+    }
+    function openSheet(n) {
+      S.sheet = n;
+      S.step = 1;
+      S.catOpen = false;
+      S.catQ = '';
+      S.pwIdx = 0;
+      S.pwDone = [];
+      F = JSON.parse(JSON.stringify(DEFAULTS[n] || { err: {} }));
+    }
+    function num(v) {
+      return (
+        parseFloat(String(v == null ? '' : v).replace(/[^0-9.\-]/g, '')) || 0
+      );
+    }
+    function fmt(n) {
+      return n.toLocaleString('en-GB', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+    }
+    /* purchase: VAT is EXTRACTED from the gross at the chosen category's rate
+   sale:     VAT is Settings.vat.pay per cent OF the gross — a different sum, not an extraction */
+    function autoVat() {
+      var a = num(F.amount);
+      if (F.type === 'sale')
+        return (a * VAT_PAY) / 100; /* what you will owe HMRC on this sale */
+      var r = catRate(F.cat);
+      if (r == null) return 0;
+      return a - a / (1 + r / 100);
+    }
+
+    function fld(label, key, opts) {
+      opts = opts || {};
+      var v = F[key] == null ? '' : F[key];
+      var err = F.err && F.err[key];
+      var ctl;
+      if (opts.options) {
+        ctl =
+          '<select class="h-control w-full flex items-center px-3 border border-line-strong rounded-ctl bg-surface text-sm text-ink outline-none placeholder:text-ink-3 focus:border-brand focus:ring-3 focus:ring-brand/15 focus-within:border-brand focus-within:ring-3 focus-within:ring-brand/15 pointer-coarse:h-11' +
+          (err ? ' border-danger' : '') +
+          '" data-f="' +
+          key +
+          '">' +
+          opts.options
+            .map(function (o) {
+              var val = o && o.value != null ? String(o.value) : o,
+                lab = o && o.label != null ? o.label : o;
+              return (
+                '<option value="' +
+                esc(val) +
+                '"' +
+                (String(lab) === String(v) ? ' selected' : '') +
+                '>' +
+                esc(lab) +
+                '</option>'
+              );
+            })
+            .join('') +
+          '</select>';
+      } else {
+        ctl =
+          '<input class="h-control w-full flex items-center px-3 border border-line-strong rounded-ctl bg-surface text-sm text-ink outline-none placeholder:text-ink-3 focus:border-brand focus:ring-3 focus:ring-brand/15 focus-within:border-brand focus-within:ring-3 focus-within:ring-brand/15 pointer-coarse:h-11' +
+          (err ? ' border-danger' : '') +
+          '" data-f="' +
+          key +
+          '" type="' +
+          (opts.type || 'text') +
+          '"' +
+          ' value="' +
+          esc(v) +
+          '"' +
+          (opts.ph ? ' placeholder="' + esc(opts.ph) + '"' : '') +
+          (opts.ro ? ' readonly' : '') +
+          '>';
+      }
+      return (
+        '<label class="flex flex-col gap-1"><span class="text-xs font-medium text-ink-3">' +
+        esc(label) +
+        '</span>' +
+        ctl +
+        (err
+          ? '<span class="text-xs text-danger">' + esc(err) + '</span>'
+          : '') +
+        '</label>'
+      );
+    }
+    /* TransactionInput.date is an AWSDateTime, so the value carried here stays ISO (YYYY-MM-DD) and
+   the client appends a time on submit; only the label is localised. */
+    function isoOf(d) {
+      return (
+        d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate())
+      );
+    }
+    function pad2(n) {
+      return (n < 10 ? '0' : '') + n;
+    }
+    function parseIso(v) {
+      var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v || '');
+      if (!m) return null;
+      var d = new Date(+m[1], +m[2] - 1, +m[3]);
+      return isNaN(d) ? null : d;
+    }
+    function dateLabel(v) {
+      var d = parseIso(v);
+      if (!d) return '';
+      return d.getDate() + ' ' + MONTHS[d.getMonth()] + ' ' + d.getFullYear();
+    }
+    /* A hand-built calendar rather than the native control: the native picker cannot be themed, puts
+   its own glyph wherever the engine likes, and looks like a different product on every platform. */
+    function datePicker(label, key) {
+      var v = F[key],
+        err = F.err && F.err[key],
+        sel = parseIso(v);
+      var open = S.dpOpen === key;
+      var view = parseIso(S.dpView) || sel || TODAY;
+      var pop = '';
+      if (open) {
+        var y = view.getFullYear(),
+          mo = view.getMonth();
+        var first = new Date(y, mo, 1);
+        var lead = (first.getDay() + 6) % 7; /* the UK week starts on Monday */
+        var start = new Date(y, mo, 1 - lead);
+        var cells = '';
+        for (var i = 0; i < 42; i++) {
+          var d = new Date(
+            start.getFullYear(),
+            start.getMonth(),
+            start.getDate() + i,
+          );
+          var iso = isoOf(d),
+            inMonth = d.getMonth() === mo;
+          var isSel = sel && isoOf(sel) === iso,
+            isToday = isoOf(TODAY) === iso;
+          cells +=
+            '<button class="h-9 rounded-ctl text-sm tabular-nums flex items-center justify-center pointer-coarse:h-11' +
+            (inMonth ? '' : ' text-ink-3') +
+            (isSel
+              ? ' bg-brand text-on-brand font-semibold'
+              : isToday
+                ? ' border border-brand text-brand-text font-semibold'
+                : ' hover:bg-raised') +
+            '" data-dpick="' +
+            iso +
+            '"' +
+            (isSel ? ' aria-current="date"' : '') +
+            '>' +
+            d.getDate() +
+            '</button>';
+        }
+        pop =
+          '<div class="vt-datemenu absolute bg-surface border border-line rounded-panel z-50 shadow-over left-0 top-16 p-3 flex flex-col gap-2 w-76 max-w-full" data-menu="1" role="dialog" aria-label="Choose a date">' +
+          '<div class="flex items-center gap-1.5">' +
+          '<span class="grow text-sm font-semibold">' +
+          esc(MONTHS[mo] + ' ' + y) +
+          '</span>' +
+          '<button class="w-8 h-8 rounded-ctl flex items-center justify-center hover:bg-raised pointer-coarse:w-11 pointer-coarse:h-11" data-dpmove="-1" aria-label="Previous month">' +
+          ico(I.chevL, '', 16) +
+          '</button>' +
+          '<button class="w-8 h-8 rounded-ctl flex items-center justify-center hover:bg-raised pointer-coarse:w-11 pointer-coarse:h-11" data-dpmove="1" aria-label="Next month">' +
+          ico(I.chevR, '', 16) +
+          '</button>' +
+          '</div>' +
+          '<div class="grid grid-cols-7">' +
+          ['M', 'T', 'W', 'T', 'F', 'S', 'S']
+            .map(function (w) {
+              return (
+                '<span class="h-7 flex items-center justify-center text-2xs font-semibold tracking-wide uppercase text-ink-3">' +
+                w +
+                '</span>'
+              );
+            })
+            .join('') +
+          '</div>' +
+          '<div class="grid grid-cols-7 gap-px">' +
+          cells +
+          '</div>' +
+          /* no "Clear": TransactionInput.date is non-null, so an empty date is not a state to offer */
+          '<div class="flex items-center border-t border-line pt-2">' +
+          '<span class="grow"></span>' +
+          '<button class="border-0 bg-transparent text-brand-text px-1 inline-flex items-center text-sm pointer-coarse:min-h-11" data-dpick="' +
+          isoOf(TODAY) +
+          '">Today</button>' +
+          '</div></div>';
+      }
+      return (
+        '<div class="flex flex-col gap-1 relative"><span class="text-xs font-medium text-ink-3">' +
+        esc(label) +
+        '</span>' +
+        '<button class="h-control w-full flex items-center gap-2 px-3 border border-line-strong rounded-ctl bg-surface text-sm text-ink outline-none focus:border-brand focus:ring-3 focus:ring-brand/15 pointer-coarse:h-11' +
+        (err ? ' border-danger' : '') +
+        '" data-dpopen="' +
+        key +
+        '" aria-haspopup="dialog" aria-expanded="' +
+        open +
+        '">' +
+        (v
+          ? '<span class="grow text-left">' + esc(dateLabel(v)) + '</span>'
+          : '<span class="grow text-left text-ink-3">Choose a date</span>') +
+        '<span class="shrink-0 text-ink-3">' +
+        ico(I.cal, '', 17) +
+        '</span></button>' +
+        (err
+          ? '<span class="text-xs text-danger">' + esc(err) + '</span>'
+          : '') +
+        pop +
+        '</div>'
+      );
+    }
+    function catPicker() {
+      var rate = catRate(F.cat);
+      var err = F.err && F.err.cat;
+      var q = (S.catQ || '').toLowerCase();
+      var list = CATEGORIES.filter(function (c) {
+        return c.name.toLowerCase().indexOf(q) > -1;
+      });
+      var pop = '';
+      if (S.catOpen) {
+        pop =
+          '<div class="vt-catmenu absolute bg-surface border border-line rounded-panel min-w-64 z-50 overflow-hidden shadow-over left-0 right-0 flex flex-col top-16 max-h-72" data-menu="1">' +
+          '<div class="p-2 border-b border-line shrink-0"><input class="w-full flex items-center px-3 border border-line-strong rounded-ctl bg-surface text-ink outline-none placeholder:text-ink-3 focus:border-brand focus:ring-brand/15 focus-within:border-brand focus-within:ring-brand/15 pointer-coarse:h-11 h-chip text-sm" data-catq value="' +
+          esc(S.catQ || '') +
+          '" placeholder="Filter categories" aria-label="Filter categories"></div>' +
+          '<div class="overflow-y-auto p-1" role="listbox">' +
+          (list.length
+            ? list
+                .map(function (c) {
+                  var on = c.name === F.cat;
+                  return (
+                    '<button class="flex w-full items-center gap-2 px-2.5 py-2 text-sm rounded-ctl text-left hover:bg-raised aria-selected:bg-brand-soft aria-selected:text-brand-text aria-selected:font-semibold" role="option" aria-selected="' +
+                    on +
+                    '" data-catpick="' +
+                    esc(c.name) +
+                    '">' +
+                    '<span class="grow">' +
+                    esc(c.name) +
+                    '</span>' +
+                    '<span class="text-2xs font-bold text-ink-2 bg-sunken rounded-chip px-2 py-px shrink-0">' +
+                    c.rate +
+                    '%</span>' +
+                    (on ? ico(I.tick, '', 15) : '') +
+                    '</button>'
+                  );
+                })
+                .join('')
+            : '<div class="flex flex-col gap-1 px-3 py-5 text-center text-sm">No category matches &ldquo;' +
+              esc(S.catQ) +
+              '&rdquo;<span class="text-xs text-ink-3 whitespace-nowrap overflow-hidden text-ellipsis">Add it in Settings &#183; Expense categories</span></div>') +
+          '</div>' +
+          '<div class="border-t border-line shrink-0"><button class="flex w-full items-center gap-2 px-3.5 py-2.5 text-sm text-left hover:bg-raised" data-go="settings">' +
+          ico(I.cog, '', 15) +
+          'Manage categories</button></div></div>';
+      }
+      return (
+        '<div class="flex flex-col gap-1 relative"><span class="text-xs font-medium text-ink-3">Category</span>' +
+        '<button class="h-control w-full flex items-center px-3 border border-line-strong rounded-ctl bg-surface text-sm text-ink outline-none placeholder:text-ink-3 focus:border-brand focus:ring-3 focus:ring-brand/15 focus-within:border-brand focus-within:ring-3 focus-within:ring-brand/15 pointer-coarse:h-11 gap-2 text-left' +
+        (err ? ' border-danger' : '') +
+        '" data-catopen="1" aria-haspopup="listbox" aria-expanded="' +
+        !!S.catOpen +
+        '">' +
+        (F.cat
+          ? '<span class="grow text-left">' +
+            esc(F.cat) +
+            '</span><span class="text-2xs font-bold text-ink-2 bg-sunken rounded-chip px-2 py-px shrink-0">' +
+            rate +
+            '% VAT</span>'
+          : '<span class="grow text-left text-ink-3">Select a category</span>') +
+        ico(I.chev, '', 15) +
+        '</button>' +
+        (err
+          ? '<span class="text-xs text-danger">' + esc(err) + '</span>'
+          : '') +
+        pop +
+        '</div>'
+      );
+    }
+    function typeahead(label, key, list, ph) {
+      return (
+        '<label class="flex flex-col gap-1"><span class="text-xs font-medium text-ink-3">' +
+        esc(label) +
+        '</span>' +
+        '<input class="h-control w-full flex items-center px-3 border border-line-strong rounded-ctl bg-surface text-sm text-ink outline-none placeholder:text-ink-3 focus:border-brand focus:ring-3 focus:ring-brand/15 focus-within:border-brand focus-within:ring-3 focus-within:ring-brand/15 pointer-coarse:h-11' +
+        (F.err && F.err[key] ? ' border-danger' : '') +
+        '" data-f="' +
+        key +
+        '" list="dl-' +
+        key +
+        '" value="' +
+        esc(F[key] == null ? '' : F[key]) +
+        '" placeholder="' +
+        esc(ph || '') +
+        '" autocomplete="off">' +
+        '<datalist id="dl-' +
+        key +
+        '">' +
+        list
+          .map(function (v) {
+            return '<option value="' + esc(v) + '">';
+          })
+          .join('') +
+        '</datalist>' +
+        (F.err && F.err[key]
+          ? '<span class="text-xs text-danger">' + esc(F.err[key]) + '</span>'
+          : '') +
+        '</label>'
+      );
+    }
+    function chips(key, list) {
+      return (
+        '<div class="flex gap-1.5 flex-wrap">' +
+        list
+          .map(function (c) {
+            return (
+              '<button class="inline-flex items-center gap-1.5 h-chip px-3 border border-line-strong rounded-full bg-surface text-xs font-semibold aria-pressed:border-brand aria-pressed:bg-brand-soft aria-pressed:text-brand-text pointer-coarse:h-11" data-set="' +
+              key +
+              ':' +
+              esc(c) +
+              '" aria-pressed="' +
+              (F[key] === c) +
+              '">' +
+              esc(c) +
+              '</button>'
+            );
+          })
+          .join('') +
+        '</div>'
+      );
+    }
+
+    /* ---------------- sheets ---------------- */
+    function sheetShell(title, body, foot, width) {
+      return (
+        '<section class="vt-sheet w-sheet max-w-full bg-surface h-full flex flex-col border-l border-line shadow-over max-md:w-full max-md:border-l-0" role="dialog" aria-modal="true" aria-label="' +
+        esc(title) +
+        '" style="width:' +
+        (width || 610) +
+        'px">' +
+        '<header class="px-5 py-3.5 border-b border-line flex items-center gap-3"><span class="text-md font-semibold grow">' +
+        esc(title) +
+        '</span>' +
+        '<button class="inline-flex items-center gap-2 rounded-ctl border border-line-strong bg-surface font-semibold whitespace-nowrap hover:bg-sunken pointer-coarse:min-h-11 h-8 px-3 text-xs" data-close="1" aria-label="Close">' +
+        ico(I.x, '', 14) +
+        '</button></header>' +
+        '<div class="grow overflow-auto px-5 py-4 flex flex-col gap-3.5">' +
+        body +
+        '</div>' +
+        (foot
+          ? '<footer class="px-5 py-3 border-t border-line bg-raised flex items-center gap-2">' +
+            foot +
+            '</footer>'
+          : '') +
+        '</section>'
+      );
+    }
+    function moneyIn() {
+      return (F.type === 'sale') !== !!F.refund;
+    } /* sale, or a purchase refund */
+    function recordFoot() {
+      var a = money(num(F.amount));
+      if (F.when === 'hold')
+        return 'Held as pending — does not affect the balance';
+      var verb = moneyIn() ? 'Adds ' + a + ' to' : 'Takes ' + a + ' off';
+      return (
+        verb +
+        ' the balance ' +
+        (F.when === 'now' ? 'now' : 'on 3 September, automatically')
+      );
+    }
+    function recordFields() {
+      var isSale = F.type === 'sale';
+      var noCat =
+        !isSale &&
+        !F.cat; /* the API needs a category before VAT can be worked out */
+      var locked =
+        !!F.id; /* transaction type and refund are readOnly on an existing record */
+      var vatLabel = isSale ? 'VAT to pay HMRC' : 'VAT paid';
+      var vatHelp = isSale
+        ? VAT_PAY +
+          '% of the sale, from your VAT settings &#183; you charge the client ' +
+          VAT_CHARGE +
+          '%'
+        : F.cat
+          ? 'Included at ' + catRate(F.cat) + '% &#183; ' + esc(F.cat)
+          : 'Pick a category first';
+
+      return (
+        '' +
+        /* transaction type — Purchase or Sale, as the API models it. Locked once saved. */
+        '<div class="flex flex-col gap-1"><span class="text-xs font-medium text-ink-3">Transaction type</span>' +
+        '<div class="inline-flex p-0.5 gap-0.5 border border-line rounded-ctl bg-surface pointer-coarse:h-12 w-full h-control" role="group">' +
+        [
+          ['purchase', 'Purchase', I.arrOut],
+          ['sale', 'Sale', I.arrIn],
+        ]
+          .map(function (o) {
+            return (
+              '<button class="flex-1 flex items-center justify-center gap-1.5 px-3 rounded-sm text-xs font-medium text-ink-3 aria-pressed:bg-sunken aria-pressed:text-ink aria-pressed:font-semibold" ' +
+              (locked ? 'disabled' : 'data-type="' + o[0] + '"') +
+              ' aria-pressed="' +
+              (F.type === o[0]) +
+              '">' +
+              ico(o[2], '', 15) +
+              esc(o[1]) +
+              '</button>'
+            );
+          })
+          .join('') +
+        '</div></div>' +
+        attRow() +
+        /* category drives the VAT rate, so it comes before the amount — and only purchases have one */
+        (isSale ? '' : catPicker()) +
+        '<div class="flex gap-3.5 max-md:flex-col items-start">' +
+        '<label class="flex flex-col gap-1 grow min-w-0"><span class="text-xs font-medium text-ink-3">Amount, including VAT</span>' +
+        '<input class="h-control w-full flex items-center px-3 border border-line-strong rounded-ctl bg-surface text-sm text-ink outline-none placeholder:text-ink-3 focus:border-brand focus:ring-3 focus:ring-brand/15 focus-within:border-brand focus-within:ring-3 focus-within:ring-brand/15 pointer-coarse:h-11 h-control-lg text-xl font-semibold tabular-nums' +
+        (F.err.amount ? ' border-danger' : '') +
+        '" data-f="amount" inputmode="decimal" value="' +
+        esc(F.amount) +
+        '"' +
+        (noCat ? ' disabled' : '') +
+        '>' +
+        (F.err.amount
+          ? '<span class="text-xs text-danger">' + esc(F.err.amount) + '</span>'
+          : '') +
+        '</label>' +
+        '<label class="flex flex-col gap-1 w-44 shrink-0 max-md:w-full"><span class="text-xs font-medium text-ink-3">' +
+        vatLabel +
+        '</span>' +
+        '<input class="w-full flex items-center px-3 border border-line-strong rounded-ctl bg-surface text-ink outline-none placeholder:text-ink-3 focus:border-brand focus:ring-brand/15 focus-within:border-brand focus-within:ring-brand/15 pointer-coarse:h-11 h-control-lg text-xl font-semibold tabular-nums" data-f="vat" data-vat inputmode="decimal" value="' +
+        esc(F.vat) +
+        '"' +
+        (noCat ? ' disabled' : '') +
+        '></label>' +
+        '</div>' +
+        '<span class="text-xs text-ink-3 overflow-hidden text-ellipsis whitespace-normal -mt-2" data-vathelp>' +
+        vatHelp +
+        '</span>' +
+        /* refunds flip the sign; they are the other half of "money in or out". Locked once saved. */
+        '<label class="flex items-center gap-2.5 cursor-pointer select-none"><input class="w-4 h-4 accent-brand cursor-pointer" type="checkbox" data-refund' +
+        (F.refund ? ' checked' : '') +
+        (locked ? ' disabled' : '') +
+        '>' +
+        '<span class="flex flex-col gap-px grow min-w-0"><span class="text-sm font-medium flex items-center gap-2">This is a refund</span>' +
+        '<span class="text-xs text-ink-3 whitespace-nowrap overflow-hidden text-ellipsis">' +
+        (isSale
+          ? 'Money you paid back to a client'
+          : 'Money a supplier paid back to you') +
+        '</span></span>' +
+        '<span class="inline-flex items-center gap-1.5 text-xs font-semibold rounded-chip px-2 py-0.5 bg-sunken text-ink-2">' +
+        ico(moneyIn() ? I.arrIn : I.arrOut, '', 14) +
+        (moneyIn() ? 'Money in' : 'Money out') +
+        '</span></label>' +
+        /* a sale names a client from the list; a purchase names a supplier, free text with suggestions */
+        (isSale
+          ? fld('Client', 'who', { options: [''].concat(clientNames()) })
+          : typeahead('Supplier', 'who', SUPPLIERS, 'Search or enter a name')) +
+        '<div class="grid gap-3.5 grid-cols-2 max-md:grid-cols-1">' +
+        typeahead(
+          'Description',
+          'desc',
+          DESCRIPTIONS[isSale ? 'sale' : 'purchase'],
+          'What was this for?',
+        ) +
+        datePicker('Date', 'date') +
+        '</div>' +
+        '<div class="flex flex-col gap-1 border-t border-line pt-3.5">' +
+        '<span class="text-xs font-medium text-ink-3">When does this count towards the balance?</span>' +
+        '<div class="flex gap-2 flex-wrap">' +
+        [
+          ['now', 'Now', 'Confirmed'],
+          ['sched', 'On its date, automatically', 'Pending, scheduled'],
+          ['hold', 'Hold as pending', 'Pending'],
+        ]
+          .map(function (o) {
+            return (
+              '<button class="inline-flex items-center gap-1.5 h-chip px-3 border border-line-strong rounded-full bg-surface text-xs font-semibold aria-pressed:border-brand aria-pressed:bg-brand-soft aria-pressed:text-brand-text pointer-coarse:h-11" data-set="when:' +
+              o[0] +
+              '" aria-pressed="' +
+              (F.when === o[0]) +
+              '" title="' +
+              o[2] +
+              '">' +
+              esc(o[1]) +
+              '</button>'
+            );
+          })
+          .join('') +
+        '</div></div>'
+      );
+    }
+    function attThumb(isPdf) {
+      return isPdf
+        ? '<span class="flex shrink-0 overflow-hidden w-control h-11 rounded-sm border border-line-strong bg-surface flex-col gap-0.5 py-1.5 px-1 items-stretch justify-start">' +
+            '<span class="h-0.5 rounded-xs bg-line-strong"></span>' +
+            '<span class="h-0.5 w-10/12 rounded-xs bg-line"></span>' +
+            '<span class="h-0.5 w-11/12 rounded-xs bg-line"></span>' +
+            '<span class="h-0.5 w-7/12 rounded-xs bg-line"></span></span>'
+        : '<span class="flex shrink-0 items-center justify-center overflow-hidden w-control h-11 rounded-sm border border-line-strong bg-linear-160 from-sunken to-raised text-ink-3">' +
+            ico(I.cam, '', 16) +
+            '</span>';
+    }
+    function attMenu() {
+      return (
+        '<div class="vt-menu absolute bg-surface border border-line rounded-panel z-50 overflow-hidden shadow-over top-14 right-0 min-w-52" data-menu="1">' +
+        '<button class="flex w-full items-center gap-2 px-3.5 py-2.5 text-sm text-left hover:bg-raised" data-docfull="1">' +
+        ico(I.doc, '', 15) +
+        'Open full screen</button>' +
+        '<button class="flex w-full items-center gap-2 px-3.5 py-2.5 text-sm text-left hover:bg-raised" data-toast="Download started">Download</button>' +
+        '<button class="flex w-full items-center gap-2 px-3.5 py-2.5 text-sm text-left hover:bg-raised" data-attach="pdf">Replace</button>' +
+        '<div class="border-t border-line"><button class="flex w-full items-center gap-2 px-3.5 py-2.5 text-sm text-left hover:bg-raised text-danger" data-set="hasFile:">Remove</button></div></div>'
+      );
+    }
+    /* ---- D. inline: one row, one position, identical height whether or not there is a file ---- */
+    function attRow() {
+      var isPdf = F.attType !== 'photo';
+      if (!F.hasFile) {
+        return (
+          '<div class="flex flex-col gap-1"><span class="text-xs font-medium text-ink-3">Invoice or receipt</span>' +
+          '<div class="relative flex items-center gap-3 rounded-panel bg-raised px-3 h-doc border border-dashed border-line-strong">' +
+          '<span class="flex shrink-0 items-center justify-center overflow-hidden w-control h-11 rounded-sm border border-line-strong bg-sunken text-ink-3 border-dashed">' +
+          ico(I.up, '', 17) +
+          '</span>' +
+          '<span class="flex grow flex-col gap-px min-w-0 text-left"><span class="text-sm font-medium flex items-center gap-2">Add the invoice or receipt</span>' +
+          '<span class="text-xs text-ink-3 whitespace-nowrap overflow-hidden text-ellipsis">PDF, JPG or PNG &#183; or drop one here</span></span>' +
+          '<button class="inline-flex items-center gap-2 rounded-ctl border border-line-strong bg-surface font-semibold whitespace-nowrap hover:bg-sunken pointer-coarse:min-h-11 h-8 px-3 text-xs pointer-coarse:bg-brand pointer-coarse:border-brand pointer-coarse:text-on-brand max-md:bg-brand max-md:border-brand max-md:text-on-brand max-md:grow max-md:justify-center" data-attach="photo" aria-label="Take photo">' +
+          ico(I.cam, '', 15) +
+          '<span class="max-md:hidden">Take photo</span></button>' +
+          '<button class="inline-flex items-center gap-2 rounded-ctl border border-line-strong bg-surface font-semibold whitespace-nowrap hover:bg-sunken pointer-coarse:min-h-11 h-8 px-3 text-xs max-md:px-3" data-attach="pdf" aria-label="Choose file">' +
+          ico(I.up, '', 15) +
+          '<span class="max-md:hidden">Choose file</span></button>' +
+          '</div></div>'
+        );
+      }
+      return (
+        '<div class="flex flex-col gap-1"><span class="text-xs font-medium text-ink-3">Invoice or receipt</span>' +
+        '<div class="relative flex items-center gap-3 rounded-panel bg-raised px-3 h-doc border border-line-strong' +
+        (S.docFull ? '' : ' vt-doc') +
+        '">' +
+        attThumb(isPdf) +
+        '<button class="flex grow flex-col gap-px min-w-0 text-left" data-docfull="1">' +
+        '<span class="text-sm font-medium items-center gap-2 block overflow-hidden text-ellipsis whitespace-nowrap">' +
+        (isPdf ? 'fen-lane-garage-invoice.pdf' : 'IMG_4471.jpg') +
+        '</span>' +
+        '<span class="text-xs text-ink-3 whitespace-nowrap overflow-hidden text-ellipsis">' +
+        (isPdf ? 'PDF &#183; 84 KB' : 'JPEG &#183; 1.2 MB') +
+        ' &#183; open it to read</span></button>' +
+        '<button class="inline-flex items-center gap-2 rounded-ctl border border-line-strong bg-surface font-semibold whitespace-nowrap hover:bg-sunken pointer-coarse:min-h-11 h-8 px-3 text-xs" data-docfull="1">Open</button>' +
+        '<button class="inline-flex items-center gap-2 rounded-ctl border border-line-strong bg-surface font-semibold whitespace-nowrap hover:bg-sunken pointer-coarse:min-h-11 h-8 px-3 text-xs" data-menu="att" aria-haspopup="true" aria-expanded="' +
+        (S.menu === 'att') +
+        '" aria-label="More actions">&#8943;</button>' +
+        (S.menu === 'att' ? attMenu() : '') +
+        '</div></div>'
+      );
+    }
+    function recordActions(cancel) {
+      return (
+        (F.id
+          ? '<button class="inline-flex items-center gap-2 h-9 px-3 rounded-ctl border text-sm font-semibold whitespace-nowrap hover:bg-sunken pointer-coarse:min-h-11 bg-danger border-danger text-white" data-toast="Transaction deleted">Delete</button>'
+          : '') +
+        '<span class="grow text-xs text-ink-3 whitespace-nowrap overflow-hidden text-ellipsis" data-foot>' +
+        esc(recordFoot()) +
+        '</span>' +
+        '<button class="inline-flex items-center gap-2 h-9 px-3 rounded-ctl border border-line-strong bg-surface text-sm font-semibold whitespace-nowrap hover:bg-sunken pointer-coarse:min-h-11" ' +
+        (cancel || 'data-close="1"') +
+        '>Cancel</button>' +
+        '<button class="inline-flex items-center gap-2 h-9 rounded-ctl border text-sm font-semibold whitespace-nowrap pointer-coarse:min-h-11 bg-brand border-brand text-on-brand px-3.5 hover:bg-brand-hover" data-save="record">' +
+        (F.id ? 'Save changes' : 'Save transaction') +
+        '</button>'
+      );
+    }
+
+    function sheetRecord() {
+      return sheetShell(
+        F.id ? 'Transaction' : 'New transaction',
+        recordFields(),
+        recordActions(),
+      );
+    }
+    function sheetPaperwork() {
+      /* The queue is the same scoped set the attention panel counts: confirmed transactions on the
+     loaded page with no attachment. Attaching one means updateTransaction(input: TransactionInput!),
+     which is the whole transaction — there is no attach-only mutation — so each queued item has to
+     be a complete Transaction, not just an id.
+     The scope is shown, not explained: the copy claims nothing wider than "this queue" and the
+     queue is listed below it. No caption about loading, pages or what cannot be counted. */
+      var queue = loadedConfirmed().filter(function (x) {
+        return x.noPdf;
+      });
+      var done = S.pwDone || [];
+      var idx = Math.min(S.pwIdx || 0, queue.length);
+      var cur = queue[idx];
+      var next = queue[idx + 1];
+      var pct = queue.length
+        ? Math.round((done.length / queue.length) * 100)
+        : 0;
+
+      var body =
+        '<div class="flex items-center gap-3"><div class="grow h-1.5 bg-sunken rounded-full overflow-hidden">' +
+        '<div class="h-full bg-brand" style="width:' +
+        pct +
+        '%"></div></div>' +
+        '<span class="text-xs text-ink-3 font-semibold whitespace-nowrap">' +
+        done.length +
+        ' of ' +
+        queue.length +
+        ' done</span></div>';
+
+      if (!cur) {
+        var skipped = queue.length - done.length;
+        body += skipped
+          ? emptyState(
+              'End of the queue',
+              skipped +
+                ' still ' +
+                (skipped === 1 ? 'has' : 'have') +
+                ' no invoice or receipt. ' +
+                (skipped === 1 ? 'It stays' : 'They stay') +
+                ' here until you attach one.',
+              '',
+              I.warn,
+            )
+          : emptyState(
+              'Nothing left to attach',
+              'Every transaction in this queue now has an invoice or receipt.',
+              '',
+              I.doc,
+            );
+      } else {
+        body +=
+          '<div class="flex items-center gap-3 w-full text-left"><span class="rounded-full flex items-center justify-center bg-sunken text-ink w-9 h-9 shrink-0">' +
+          ico(I.arrOut, '', 17) +
+          '</span>' +
+          '<span class="flex flex-col gap-px grow min-w-0"><span class="font-medium text-md truncate">' +
+          esc(cur.name) +
+          '</span>' +
+          '<span class="text-xs text-ink-3 truncate">' +
+          esc(cur.detail) +
+          ' &#183; ' +
+          esc(cur.category) +
+          '</span></span>' +
+          '<span class="tabular-nums font-semibold text-xl shrink-0">' +
+          money(cur.amount, true) +
+          '</span></div>' +
+          '<div class="rounded-panel bg-raised p-4 flex flex-col items-center gap-1.5 text-center border-2 border-dashed border-line-strong py-6 px-4">' +
+          ico(I.up, '', 26) +
+          '<span class="max-md:hidden font-semibold">Drop the invoice or receipt here</span>' +
+          '<span class="text-xs text-ink-3">PDF, JPG or PNG &#183; one file</span>' +
+          '<div class="flex gap-2 mt-1.5 max-md:w-full"><button class="inline-flex items-center gap-2 rounded-ctl border border-line-strong bg-surface font-semibold whitespace-nowrap hover:bg-sunken pointer-coarse:min-h-11 h-8 px-3 text-xs pointer-coarse:bg-brand pointer-coarse:border-brand pointer-coarse:text-on-brand max-md:bg-brand max-md:border-brand max-md:text-on-brand max-md:grow max-md:justify-center" data-pw="photo">' +
+          ico(I.cam, '', 15) +
+          'Take photo</button>' +
+          '<button class="inline-flex items-center gap-2 rounded-ctl border border-line-strong bg-surface font-semibold whitespace-nowrap hover:bg-sunken pointer-coarse:min-h-11 h-8 px-3 text-xs" data-pw="pdf">Choose file</button></div></div>' +
+          '<div class="flex items-center gap-2.5 max-md:flex-wrap"><button class="inline-flex items-center gap-2 h-9 px-3 rounded-ctl border border-line-strong bg-surface text-sm font-semibold whitespace-nowrap hover:bg-sunken pointer-coarse:min-h-11" data-pwskip="1">Skip for now</button>' +
+          '<span class="grow"></span>' +
+          (next
+            ? '<span class="text-xs text-ink-3 truncate">Next: ' +
+              esc(next.name) +
+              '</span>'
+            : '') +
+          '<button class="inline-flex items-center gap-2 h-9 rounded-ctl border text-sm font-semibold whitespace-nowrap pointer-coarse:min-h-11 bg-brand border-brand text-on-brand px-3.5 hover:bg-brand-hover max-md:w-full max-md:justify-center" data-pw="pdf">Attach and continue</button></div>';
+      }
+
+      body +=
+        '<div class="flex flex-col gap-1 border-t border-line pt-3.5"><span class="text-2xs font-semibold tracking-wide uppercase text-ink-3">In this queue</span>' +
+        queue
+          .map(function (x, n) {
+            var isDone = done.indexOf(x.id) > -1;
+            return (
+              '<div class="flex items-center gap-2.5 py-1' +
+              (isDone ? ' opacity-55' : '') +
+              '">' +
+              '<span class="w-4.5 h-4.5 rounded-full shrink-0 border-2 ' +
+              (isDone ? 'border-brand bg-brand-soft' : 'border-line-strong') +
+              '"></span>' +
+              '<span class="grow truncate' +
+              (isDone ? ' line-through' : '') +
+              '">' +
+              esc(x.name) +
+              '</span>' +
+              '<span class="tabular-nums shrink-0">' +
+              money(x.amount, true) +
+              '</span></div>'
+            );
+          })
+          .join('') +
+        '</div>';
+      return sheetShell(
+        'Attach paperwork',
+        body,
+        '<span class="grow"></span><button class="inline-flex items-center gap-2 h-9 px-3 rounded-ctl border border-line-strong bg-surface text-sm font-semibold whitespace-nowrap hover:bg-sunken pointer-coarse:min-h-11" data-close="1">Done</button>',
+      );
+    }
+    function sheetClient() {
+      return sheetShell(
+        'Client details',
+        fld('Client name', 'name', { ph: 'Trading name' }) +
+          '<div class="grid gap-3.5 grid-cols-2 max-md:grid-cols-1">' +
+          fld('Email address', 'email', { type: 'email' }) +
+          fld('Telephone', 'tel') +
+          '</div>' +
+          fld('Address line 1', 'line1') +
+          fld('Address line 2', 'line2', { ph: 'Optional' }) +
+          '<div class="grid gap-3.5 grid-cols-2 max-md:grid-cols-1">' +
+          fld('Town or city', 'line3') +
+          fld('County', 'line4', { ph: 'Optional' }) +
+          '</div>' +
+          fld('Postcode', 'line5'),
+        '<button class="inline-flex items-center gap-2 h-9 px-3 rounded-ctl border text-sm font-semibold whitespace-nowrap hover:bg-sunken pointer-coarse:min-h-11 bg-danger border-danger text-white" data-toast="Client deleted">Delete</button><span class="grow"></span><button class="inline-flex items-center gap-2 h-9 px-3 rounded-ctl border border-line-strong bg-surface text-sm font-semibold whitespace-nowrap hover:bg-sunken pointer-coarse:min-h-11" data-close="1">Cancel</button><button class="inline-flex items-center gap-2 h-9 rounded-ctl border text-sm font-semibold whitespace-nowrap pointer-coarse:min-h-11 bg-brand border-brand text-on-brand px-3.5 hover:bg-brand-hover" data-save="client">Save client</button>',
+      );
+    }
+    function sheetCompany() {
+      /* CreateCompanyInput = company + bank + vat + yearEnd + opening balance, so all of it is collected here */
+      var STEPS = [
+        'the business',
+        'bank and VAT',
+        'year end and opening position',
+      ];
+      var s1 =
+        fld('Company name', 'name', { ph: 'Registered name' }) +
+        fld('Company number', 'num', { ph: '8 digits' }) +
+        '<div class="grid gap-3.5 grid-cols-2 max-md:grid-cols-1">' +
+        fld('Email address', 'email', { type: 'email' }) +
+        fld('Telephone', 'tel') +
+        '</div>' +
+        fld('Address line 1', 'line1') +
+        fld('Address line 2', 'line2', { ph: 'Optional' }) +
+        '<div class="grid gap-3.5 grid-cols-2 max-md:grid-cols-1">' +
+        fld('Town or city', 'line3') +
+        fld('County', 'line4', { ph: 'Optional' }) +
+        '</div>' +
+        fld('Postcode', 'line5');
+      var s2 =
+        '<div class="grid gap-3.5 grid-cols-2 max-md:grid-cols-1">' +
+        fld('Account number', 'acct', { ph: '8 digits' }) +
+        fld('Sort code', 'sort', { ph: '00-00-00' }) +
+        '</div>' +
+        '<div class="flex flex-col gap-1 border-t border-line pt-3.5">' +
+        '<span class="text-xs font-medium text-ink-3">VAT scheme</span>' +
+        '<div class="flex gap-2 flex-wrap">' +
+        ['Standard', 'Flat rate', 'Not registered']
+          .map(function (o) {
+            return (
+              '<button class="inline-flex items-center gap-1.5 h-chip px-3 border border-line-strong rounded-full bg-surface text-xs font-semibold aria-pressed:border-brand aria-pressed:bg-brand-soft aria-pressed:text-brand-text pointer-coarse:h-11" data-set="scheme:' +
+              esc(o) +
+              '" aria-pressed="' +
+              (F.scheme === o) +
+              '">' +
+              esc(o) +
+              '</button>'
+            );
+          })
+          .join('') +
+        '</div></div>' +
+        (F.scheme === 'Not registered'
+          ? ''
+          : '<div class="grid gap-3.5 grid-cols-2 max-md:grid-cols-1">' +
+            fld('VAT to charge %', 'charge') +
+            fld('VAT to pay %', 'pay') +
+            '</div>' +
+            '<span class="text-xs text-ink-3 overflow-hidden text-ellipsis whitespace-normal">You add the charge rate to what you invoice. The pay rate is the share of each sale that goes to HMRC &#8212; it is what gets recorded against every sale.</span>' +
+            fld('VAT registration number', 'reg', { ph: 'Optional' }));
+      var s3 =
+        '<div class="grid gap-3.5 grid-cols-2 max-md:grid-cols-1">' +
+        fld('Year end day', 'yeDay') +
+        fld('Year end month', 'yeMonth', { options: MONTHS }) +
+        '</div>' +
+        '<div class="flex flex-col gap-1 border-t border-line pt-3.5"><span class="text-xs font-medium text-ink-3">Opening position</span>' +
+        '<span class="text-xs text-ink-3 overflow-hidden text-ellipsis whitespace-normal">Where this company stands on the day you start using Accounts.</span></div>' +
+        fld('Opening balance', 'opening') +
+        '<div class="grid gap-3.5 grid-cols-2 max-md:grid-cols-1">' +
+        fld('VAT owed', 'vatOwed') +
+        fld('VAT paid', 'vatPaid') +
+        '</div>';
+      var body =
+        '<div class="text-xs text-ink-3 whitespace-nowrap overflow-hidden text-ellipsis">Step ' +
+        S.step +
+        ' of 3 &#8212; ' +
+        STEPS[S.step - 1] +
+        '</div>' +
+        '<div class="h-1 bg-sunken rounded-full overflow-hidden"><div style="width:' +
+        (S.step * 100) / 3 +
+        '%;height:100%;background:var(--color-brand)"></div></div>' +
+        (S.step === 1 ? s1 : S.step === 2 ? s2 : s3);
+      var foot =
+        S.step < 3
+          ? (S.step > 1
+              ? '<button class="inline-flex items-center gap-2 h-9 px-3 rounded-ctl border border-line-strong bg-surface text-sm font-semibold whitespace-nowrap hover:bg-sunken pointer-coarse:min-h-11" data-step="' +
+                (S.step - 1) +
+                '">Back</button>'
+              : '') +
+            '<span class="grow"></span>' +
+            '<button class="inline-flex items-center gap-2 h-9 px-3 rounded-ctl border border-line-strong bg-surface text-sm font-semibold whitespace-nowrap hover:bg-sunken pointer-coarse:min-h-11" data-close="1">Cancel</button><button class="inline-flex items-center gap-2 h-9 rounded-ctl border text-sm font-semibold whitespace-nowrap pointer-coarse:min-h-11 bg-brand border-brand text-on-brand px-3.5 hover:bg-brand-hover" data-save="company-step">Continue</button>'
+          : '<button class="inline-flex items-center gap-2 h-9 px-3 rounded-ctl border border-line-strong bg-surface text-sm font-semibold whitespace-nowrap hover:bg-sunken pointer-coarse:min-h-11" data-step="2">Back</button><span class="grow"></span><button class="inline-flex items-center gap-2 h-9 rounded-ctl border text-sm font-semibold whitespace-nowrap pointer-coarse:min-h-11 bg-brand border-brand text-on-brand px-3.5 hover:bg-brand-hover" data-save="company">Add company</button>';
+      return sheetShell('Add a company', body, foot, 760);
+    }
+    function sheetReport() {
+      return sheetShell(
+        'Create report',
+        '<div class="flex flex-col gap-1"><span class="text-xs font-medium text-ink-3">Transactions to include</span>' +
+          chips('status', ['Confirmed', 'Pending']) +
+          '</div>' +
+          fld('Accounting year', 'year', { options: reportYears() }) +
+          '<div class="text-xs text-ink-3 overflow-hidden text-ellipsis whitespace-normal">You will get a notification when the report is ready. The download stays available for 24 hours.</div>',
+        '<span class="grow"></span><button class="inline-flex items-center gap-2 h-9 px-3 rounded-ctl border border-line-strong bg-surface text-sm font-semibold whitespace-nowrap hover:bg-sunken pointer-coarse:min-h-11" data-close="1">Cancel</button><button class="inline-flex items-center gap-2 h-9 rounded-ctl border text-sm font-semibold whitespace-nowrap pointer-coarse:min-h-11 bg-brand border-brand text-on-brand px-3.5 hover:bg-brand-hover" data-save="report">Create report</button>',
+      );
+    }
+    function docPage(isPdf) {
+      return isPdf
+        ? '<div class="w-full max-w-130 aspect-a4 bg-surface border border-line-strong [box-shadow:var(--shadow-panel)] flex flex-col gap-2.5 p-8">' +
+            '<div class="bg-sunken rounded h-3.5 w-6/12 animate-none"></div>' +
+            '<div class="bg-sunken rounded h-2.5 w-11/12 animate-none"></div>' +
+            '<div class="bg-sunken rounded h-2.5 w-10/12 animate-none"></div>' +
+            '<div class="h-4"></div>' +
+            '<div class="bg-sunken rounded h-2.5 w-11/12 animate-none"></div>' +
+            '<div class="bg-sunken rounded h-2.5 w-8/12 animate-none"></div>' +
+            '<div class="bg-sunken rounded h-2.5 w-10/12 animate-none"></div>' +
+            '<div class="grow"></div>' +
+            '<div class="bg-sunken rounded h-3 w-5/12 self-end animate-none"></div></div>'
+        : '<div class="w-full max-w-104 aspect-photo rounded-panel bg-linear-160 from-sunken to-raised border border-line-strong flex flex-col items-center justify-center gap-2.5 text-ink-3">' +
+            ico(I.cam, '', 32) +
+            '<span class="text-xs text-ink-3 whitespace-nowrap overflow-hidden text-ellipsis">Photo of a receipt</span></div>';
+    }
+    function docPane(closeBtn) {
+      var isPdf =
+        F.attType !==
+        'photo'; /* holds the shared name while the row lets go of it */
+      var name = isPdf ? 'fen-lane-garage-invoice.pdf' : 'IMG_4471.jpg';
+      return (
+        '<div class="vt-doc grow flex flex-col min-h-0 bg-canvas">' +
+        '<div class="flex items-center gap-1.5 py-2 px-3 border-b border-line bg-raised max-md:flex-wrap">' +
+        '<span class="text-xs whitespace-nowrap overflow-hidden text-ellipsis grow text-ink-2 font-semibold max-md:basis-full max-md:grow-0">' +
+        esc(name) +
+        '</span>' +
+        '<button class="inline-flex items-center gap-2 rounded-ctl border border-line-strong bg-surface font-semibold whitespace-nowrap hover:bg-sunken pointer-coarse:min-h-11 h-8 px-3 text-xs" data-toast="Zoomed out">&minus;</button>' +
+        '<button class="inline-flex items-center gap-2 rounded-ctl border border-line-strong bg-surface font-semibold whitespace-nowrap hover:bg-sunken pointer-coarse:min-h-11 h-8 px-3 text-xs" data-toast="Zoomed in">+</button>' +
+        '<button class="inline-flex items-center gap-2 rounded-ctl border border-line-strong bg-surface font-semibold whitespace-nowrap hover:bg-sunken pointer-coarse:min-h-11 h-8 px-3 text-xs" data-toast="Rotated">Rotate</button>' +
+        '<button class="inline-flex items-center gap-2 rounded-ctl border border-line-strong bg-surface font-semibold whitespace-nowrap hover:bg-sunken pointer-coarse:min-h-11 h-8 px-3 text-xs" data-toast="Download started">Download</button>' +
+        (S.docFull
+          ? ''
+          : '<button class="inline-flex items-center gap-2 rounded-ctl border border-line-strong bg-surface font-semibold whitespace-nowrap hover:bg-sunken pointer-coarse:min-h-11 h-8 px-3 text-xs" data-docfull="1">Full screen</button>') +
+        '<button class="inline-flex items-center gap-2 rounded-ctl border border-line-strong bg-surface font-semibold whitespace-nowrap hover:bg-sunken pointer-coarse:min-h-11 h-8 px-3 text-xs" data-toast="File picker would open here">Replace</button>' +
+        '<button class="inline-flex items-center gap-2 rounded-ctl border border-line-strong bg-surface font-semibold whitespace-nowrap hover:bg-sunken pointer-coarse:min-h-11 h-8 px-3 text-xs" data-set="hasFile:">Remove</button>' +
+        (closeBtn || '') +
+        '</div>' +
+        '<div class="grow overflow-auto flex items-start justify-center p-5">' +
+        docPage(isPdf) +
+        '</div>' +
+        '<div class="flex items-center gap-2 py-2.5 px-3 border-t border-line bg-raised">' +
+        '<span class="text-2xs font-bold tracking-caps uppercase text-ink-3 grow px-1">Prototype &#183; attachment type</span>' +
+        '<button class="inline-flex items-center gap-1.5 h-chip px-3 border border-line-strong rounded-full bg-surface text-xs font-semibold aria-pressed:border-brand aria-pressed:bg-brand-soft aria-pressed:text-brand-text pointer-coarse:h-11" data-set="attType:pdf" aria-pressed="' +
+        isPdf +
+        '">PDF</button>' +
+        '<button class="inline-flex items-center gap-1.5 h-chip px-3 border border-line-strong rounded-full bg-surface text-xs font-semibold aria-pressed:border-brand aria-pressed:bg-brand-soft aria-pressed:text-brand-text pointer-coarse:h-11" data-set="attType:photo" aria-pressed="' +
+        !isPdf +
+        '">Photo</button></div></div>'
+      );
+    }
+    var SHEETS = {
+      record: sheetRecord,
+      paperwork: sheetPaperwork,
+      client: sheetClient,
+      company: sheetCompany,
+      report: sheetReport,
+    };
+
+    /* ---------------- validation ---------------- */
+    function validatePage(kind) {
+      P.err = {};
+      if (kind === 'company') {
+        if (!String(P.name).trim()) P.err.name = 'Enter a company name';
+        if (!/^\d{8}$/.test(String(P.num).trim()))
+          P.err.num = 'Company number is 8 digits';
+        if (!String(P.line1).trim())
+          P.err.line1 = 'Enter the first line of the address';
+        if (!String(P.line3).trim()) P.err.line3 = 'Enter a town or city';
+        if (!String(P.line5).trim()) P.err.line5 = 'Enter a postcode';
+        if (!/^\d{8}$/.test(String(P.acct).trim()))
+          P.err.acct = 'Account number is 8 digits';
+        if (!/^\d{2}-?\d{2}-?\d{2}$/.test(String(P.sort).trim()))
+          P.err.sort = 'Sort code is six digits';
+      }
+      if (kind === 'settings') {
+        if (P.scheme !== 'Not registered') {
+          if (P.charge === '' || isNaN(parseFloat(P.charge)))
+            P.err.charge = 'Enter a rate';
+          if (P.pay === '' || isNaN(parseFloat(P.pay)))
+            P.err.pay = 'Enter a rate';
+        }
+        /* every category has to have a name and a rate — both are non-null on ExpenseCategoryInput */
+        var bad = P.cats.some(function (c) {
+          return !String(c.name).trim() || isNaN(parseFloat(c.rate));
+        });
+        if (bad) P.err.cats = 'Give every category a name and a VAT rate';
+      }
+      return !Object.keys(P.err).length;
+    }
+    function validate(kind) {
+      F.err = {};
+      if (kind === 'record') {
+        if (F.type !== 'sale' && !F.cat) F.err.cat = 'Choose a category';
+        if (num(F.amount) <= 0)
+          F.err.amount = 'Enter an amount greater than zero';
+        if (!String(F.who).trim())
+          F.err.who =
+            F.type === 'sale' ? 'Choose a client' : 'Enter a supplier';
+        if (!String(F.desc).trim()) F.err.desc = 'Enter a description';
+        if (!parseIso(F.date)) F.err.date = 'Choose a date';
+      }
+      if (kind === 'client') {
+        if (!String(F.name).trim()) F.err.name = 'Enter a client name';
+        if (!String(F.line1).trim())
+          F.err.line1 = 'Enter the first line of the address';
+        if (!String(F.line3).trim()) F.err.line3 = 'Enter a town or city';
+        if (!String(F.line5).trim()) F.err.line5 = 'Enter a postcode';
+        if (F.email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(F.email))
+          F.err.email = 'Enter a valid email address';
+      }
+      if (kind === 'company' || kind === 'company-step') {
+        if (S.step === 1) {
+          if (!String(F.name).trim()) F.err.name = 'Enter a company name';
+          if (!/^\d{8}$/.test(String(F.num).trim()))
+            F.err.num = 'Company number is 8 digits';
+          if (!String(F.line1).trim())
+            F.err.line1 = 'Enter the first line of the address';
+          if (!String(F.line3).trim()) F.err.line3 = 'Enter a town or city';
+          if (!String(F.line5).trim()) F.err.line5 = 'Enter a postcode';
+        }
+        if (S.step === 2) {
+          if (!/^\d{8}$/.test(String(F.acct).trim()))
+            F.err.acct = 'Account number is 8 digits';
+          if (!/^\d{2}-?\d{2}-?\d{2}$/.test(String(F.sort).trim()))
+            F.err.sort = 'Sort code is six digits';
+        }
+      }
+      return !Object.keys(F.err).length;
+    }
+
+    /* ---------------- standalone screens ---------------- */
+    function vLogin() {
+      return (
+        '<div class="min-h-screen flex items-center justify-center p-6"><div class="w-card max-w-full bg-surface border border-line rounded-panel p-7 flex flex-col gap-3.5 shadow-over">' +
+        '<span class="flex items-center text-md font-semibold tracking-tight gap-2.5"><svg width="30" height="30" viewBox="0 0 345.21 398.61" aria-hidden="true"><polygon fill="#007FA8" points="172.6 199.31 57.53 132.87 57.53 332.18 0 298.96 0 99.65 172.6 0 345.21 99.65 345.21 298.96 287.67 332.18 287.67 132.87 172.6 199.31"></polygon><polygon fill="#007FA8" points="115.07 365.39 115.07 232.53 172.6 265.74 230.14 232.53 230.14 365.39 172.6 398.61 115.07 365.39"></polygon></svg><span class="text-lg">Accounts by Motech Development</span></span>' +
+        '<div class="h-px bg-line my-0.5"></div>' +
+        '<h1 class="font-semibold tracking-tighter m-0 text-3xl">Welcome</h1>' +
+        '<p class="text-sm text-ink-3 m-0 whitespace-normal">Log in or sign up to manage your company accounts, clients, transactions and reports.</p>' +
+        (S.mode === 'error'
+          ? '<div class="flex gap-2.5 py-3 px-3.5 rounded-panel bg-warn-soft border border-warn"><span class="text-warn grow-0 shrink-0 basis-auto">' +
+            ico(I.warn, '', 18) +
+            '</span><span class="text-xs text-ink-2 whitespace-normal"><strong class="block text-ink">Couldn&#39;t log you in</strong>Check your connection and try again.</span></div>'
+          : '') +
+        '<button class="inline-flex items-center gap-2 rounded-ctl border text-sm font-semibold whitespace-nowrap pointer-coarse:min-h-11 bg-brand border-brand text-on-brand px-3.5 hover:bg-brand-hover justify-center h-tap" data-go="overview">' +
+        (S.mode === 'error' ? 'Try logging in again' : 'Log in') +
+        '</button>' +
+        '</div></div>'
+      );
+    }
+    function vNotFound() {
+      var TILE =
+        'background:var(--color-brand-soft);color:var(--color-brand-text);border-radius:var(--radius-panel);display:flex;align-items:center;justify-content:center;flex:0 0 48px;width:48px;height:48px';
+      return (
+        '<div class="min-h-svh-70 flex items-center justify-center p-6">' +
+        '<div class="bg-surface border border-line rounded-panel overflow-hidden shadow-panel max-w-read p-7 flex gap-4 items-start">' +
+        '<div style="' +
+        TILE +
+        '">' +
+        ico(I.warn, '', 24) +
+        '</div>' +
+        '<div class="flex flex-col gap-4 items-start">' +
+        '<div><h3 class="mb-1.5 font-semibold text-xl">Page not found</h3>' +
+        '<p class="m-0 text-base leading-normal text-ink-3 whitespace-normal">We couldn&#39;t find a page at this address. It may have been mistyped, or the link may be out of date.</p></div>' +
+        '<button class="inline-flex items-center gap-2 h-9 rounded-ctl border text-sm font-semibold whitespace-nowrap pointer-coarse:min-h-11 bg-brand border-brand text-on-brand px-3.5 hover:bg-brand-hover" data-go="overview">Back to overview</button>' +
+        '</div></div></div>'
+      );
+    }
+    function errorPanel() {
+      return (
+        '<section class="bg-surface border border-line rounded-panel overflow-hidden shadow-panel">' +
+        emptyState(
+          'Something went wrong',
+          "We couldn't load this. Try again in a moment.",
+          '<button class="inline-flex items-center gap-2 h-9 rounded-ctl border text-sm font-semibold whitespace-nowrap pointer-coarse:min-h-11 bg-brand border-brand text-on-brand px-3.5 hover:bg-brand-hover" data-mode="ready">Try again</button>',
+          I.warn,
+        ) +
+        '</section>'
+      );
+    }
+
+    /* ---------------- menus ---------------- */
+    function menuCompany() {
+      return (
+        '<div class="vt-menu absolute top-control-lg bg-surface border border-line rounded-panel min-w-64 z-50 overflow-hidden shadow-over left-30" data-menu="1"><div class="py-2.5 px-3.5 border-b border-line"><span class="text-2xs font-semibold tracking-wide uppercase text-ink-3">Companies</span></div>' +
+        COMPANIES.map(function (c) {
+          return (
+            '<button class="flex w-full items-center gap-2 px-3.5 py-2.5 text-sm text-left hover:bg-raised" data-close="1"><span class="w-6 h-6 shrink-0 rounded-sm bg-brand-soft text-brand-text flex items-center justify-center text-2xs font-bold">' +
+            esc(c.initials) +
+            '</span><span class="grow">' +
+            esc(c.name) +
+            '</span>' +
+            (c.id === CO.id
+              ? '<span class="inline-flex items-center text-2xs font-semibold rounded-chip px-1.5 py-px bg-brand-soft text-brand-text">Selected</span>'
+              : '') +
+            '</button>'
+          );
+        }).join('') +
+        '<div class="border-t border-line"><button class="flex w-full items-center gap-2 px-3.5 py-2.5 text-sm text-left hover:bg-raised" data-go="companies">' +
+        ico(I.cog, '', 16) +
+        'Manage companies</button></div></div>'
+      );
+    }
+    /* the bell and the avatar are two controls; they get two menus, not one mixed one */
+    function menuAccount() {
+      var unread = NOTIFS.filter(function (n) {
+        return n.unread;
+      }).length;
+      return (
+        '<div class="vt-menu absolute top-control-lg bg-surface border border-line rounded-panel z-50 overflow-hidden shadow-over right-5 min-w-84 max-md:left-3 max-md:right-3 max-md:min-w-0" data-menu="1">' +
+        '<div class="py-2.5 px-3.5 border-b border-line flex items-center gap-2"><span class="grow text-2xs font-semibold tracking-wide uppercase text-ink-3">Notifications</span>' +
+        (unread
+          ? '<button class="border-0 bg-transparent text-brand-text px-1 inline-flex items-center pointer-coarse:min-h-11 max-md:min-h-11" data-mark="1">Mark all as read</button>'
+          : '') +
+        '</div>' +
+        (NOTIFS.length
+          ? NOTIFS.map(function (n) {
+              return (
+                '<div class="py-2.5 px-3.5 border-b border-sunken flex gap-2 items-start">' +
+                '<span class="w-2 h-2 rounded-full mt-1.5 shrink-0 ' +
+                (n.unread ? 'bg-brand' : 'bg-transparent') +
+                '"></span>' +
+                '<span class="min-w-0 grow"><span class="block text-sm' +
+                (n.unread ? ' font-semibold' : '') +
+                '">' +
+                esc(NOTIF_MESSAGES[n.key]) +
+                '</span>' +
+                '<span class="block text-xs text-ink-3">' +
+                esc(n.when) +
+                '</span></span>' +
+                /* the payload carries downloadUrl, so this one notification can act */
+                (n.payload && n.payload.downloadUrl
+                  ? '<button class="inline-flex items-center gap-2 rounded-ctl border border-line-strong bg-surface font-semibold whitespace-nowrap hover:bg-sunken pointer-coarse:min-h-11 h-8 px-3 text-xs shrink-0" data-toast="Download started">Download</button>'
+                  : '') +
+                '</div>'
+              );
+            }).join('')
+          : '<div class="px-3.5 py-6 text-center text-sm text-ink-3">Nothing to catch up on</div>') +
+        '<div class="border-t border-line flex items-center gap-2 px-3.5 py-2.5 max-md:flex-wrap">' +
+        '<span class="grow text-sm">Appearance</span>' +
+        '<span class="flex items-center gap-1.5" role="group" aria-label="Appearance">' +
+        [
+          ['light', 'Light'],
+          ['auto', 'Auto'],
+          ['dark', 'Dark'],
+        ]
+          .map(function (o) {
+            return (
+              '<button class="inline-flex items-center gap-1.5 h-chip px-3 border border-line-strong rounded-full bg-surface text-xs font-semibold aria-pressed:border-brand aria-pressed:bg-brand-soft aria-pressed:text-brand-text pointer-coarse:h-11" data-theme-pref="' +
+              o[0] +
+              '" aria-pressed="' +
+              (S.themePref === o[0]) +
+              '">' +
+              o[1] +
+              '</button>'
+            );
+          })
+          .join('') +
+        '</span></div>' +
+        '<div class="border-t border-line">' +
+        '<button class="flex w-full items-center gap-2 px-3.5 py-2.5 text-sm text-left hover:bg-raised" data-go="company">' +
+        ico(I.building, '', 16) +
+        'Company details</button>' +
+        '<button class="flex w-full items-center gap-2 px-3.5 py-2.5 text-sm text-left hover:bg-raised" data-go="settings">' +
+        ico(I.cog, '', 16) +
+        'Settings</button>' +
+        '<div class="border-t border-line"><button class="flex w-full items-center gap-2 px-3.5 py-2.5 text-sm text-left hover:bg-raised" data-go="login">' +
+        ico(I.door, '', 16) +
+        'Log out</button></div></div></div>'
+      );
+    }
+
+    /* ---------------- shell + render ---------------- */
+    function topbar() {
+      var unread = NOTIFS.filter(function (n) {
+        return n.unread;
+      }).length;
+      return (
+        '<header class="vt-topbar h-14 bg-surface border-b border-line flex items-center gap-4 px-5 py-2 max-md:gap-2.5 max-md:px-3">' +
+        '<span class="flex items-center gap-2 text-md font-semibold tracking-tight"><svg width="22" height="22" viewBox="0 0 345.21 398.61" aria-hidden="true"><polygon fill="#007FA8" points="172.6 199.31 57.53 132.87 57.53 332.18 0 298.96 0 99.65 172.6 0 345.21 99.65 345.21 298.96 287.67 332.18 287.67 132.87 172.6 199.31"/><polygon fill="#007FA8" points="115.07 365.39 115.07 232.53 172.6 265.74 230.14 232.53 230.14 365.39 172.6 398.61 115.07 365.39"/></svg><span class="wordmark max-md:hidden">Accounts</span></span>' +
+        '<span class="w-px h-5 bg-line max-md:hidden"></span>' +
+        '<button class="flex items-center gap-2 h-8 px-2.5 border border-line rounded-ctl bg-surface max-md:h-11" data-menu="company" aria-haspopup="true"><span class="w-6 h-6 shrink-0 rounded-sm bg-brand-soft text-brand-text flex items-center justify-center text-2xs font-bold">' +
+        esc(CO.initials) +
+        '</span><span class="max-w-42 overflow-hidden text-ellipsis whitespace-nowrap font-medium max-md:max-w-28">' +
+        esc(CO.name) +
+        '</span>' +
+        ico(I.chev, '', 14) +
+        '</button>' +
+        '<span class="grow"></span>' +
+        '<button class="relative w-8 h-8 rounded-full bg-ink text-surface flex items-center justify-center text-2xs font-semibold dark:bg-line-strong dark:text-ink max-md:w-11 max-md:h-11 max-md:text-sm" data-menu="account" aria-haspopup="true" aria-label="Account and notifications' +
+        (unread ? ', ' + unread + ' unread' : '') +
+        '">MG' +
+        (unread
+          ? '<span class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-danger border-2 border-surface"></span>'
+          : '') +
+        '</button>' +
+        '</header>' +
+        '<nav class="vt-topnav h-11 bg-surface border-b border-line flex items-center px-5 max-md:hidden" aria-label="Accounts navigation">' +
+        ROUTES.map(function (r) {
+          return (
+            '<button class="relative h-11 flex items-center mx-2 text-sm font-medium text-ink-3 current:font-semibold current:text-ink" data-go="' +
+            r[0] +
+            '"' +
+            (S.route === r[0] ? ' aria-current="page"' : '') +
+            '>' +
+            r[1] +
+            (S.route === r[0]
+              ? '<span class="vt-navmark absolute inset-x-0 bottom-0 h-0.5 bg-brand"></span>'
+              : '') +
+            '</button>'
+          );
+        }).join('') +
+        '</nav>'
+      );
+    }
+    function botnav(act) {
+      var half = [ROUTES[0], ROUTES[1]],
+        rest = [ROUTES[2], ROUTES[3]];
+      function b(r) {
+        return (
+          '<button class="flex-1 flex flex-col items-center justify-center gap-0.5 min-h-13 text-2xs font-medium text-ink-3 current:text-brand-text current:font-semibold" data-go="' +
+          r[0] +
+          '"' +
+          (S.route === r[0] ? ' aria-current="page"' : '') +
+          '>' +
+          ico(I[r[0] === 'yearend' ? 'cal' : r[0]], '', 21) +
+          '<span>' +
+          r[1] +
+          '</span></button>'
+        );
+      }
+      return (
+        '<nav class="vt-botnav hidden max-md:flex max-md:fixed max-md:inset-x-0 max-md:bottom-0 max-md:h-18 max-md:bg-surface max-md:border-t max-md:border-line max-md:z-30 max-md:items-center max-md:pt-1.5 max-md:px-0.5" aria-label="Accounts navigation">' +
+        half.map(b).join('') +
+        /* the gap and the button are constants: the bar has the same geometry on every route */
+        '<span class="grow-0 shrink-0 basis-17"></span>' +
+        rest.map(b).join('') +
+        (act && ACTIONS[act]
+          ? '<button class="absolute left-1/2 -ml-7 -top-6 w-14 h-14 rounded-full bg-brand text-on-brand flex items-center justify-center border-4 border-canvas shadow-fab" data-sheet="' +
+            act +
+            '" aria-label="' +
+            esc(ACTIONS[act][1]) +
+            '">' +
+            ico(I.plus, '', 24) +
+            '</button>'
+          : '') +
+        '</nav>'
+      );
+    }
+    function devbar() {
+      var modes = [
+        ['ready', 'Ready'],
+        ['loading', 'Loading'],
+        ['empty', 'Empty'],
+        ['error', 'Error'],
+      ];
+      return (
+        '<div class="vt-devbar fixed left-4 bottom-4 z-60 flex items-center gap-1.5 bg-surface border border-line-strong rounded-full px-2 py-1.5 shadow-over max-md:left-2 max-md:bottom-21 max-md:flex-wrap" role="group" aria-label="Prototype controls"><span class="text-2xs font-bold tracking-caps uppercase text-ink-3 px-1">State</span>' +
+        modes
+          .map(function (m) {
+            return (
+              '<button class="h-7 px-2.5 rounded-full text-xs font-semibold text-ink-3 aria-pressed:bg-brand aria-pressed:text-on-brand" data-mode="' +
+              m[0] +
+              '" aria-pressed="' +
+              (S.mode === m[0]) +
+              '">' +
+              m[1] +
+              '</button>'
+            );
+          })
+          .join('') +
+        '<span class="w-px h-5 bg-line"></span><button class="h-7 px-2.5 rounded-full text-xs font-semibold text-ink-3 aria-pressed:bg-brand aria-pressed:text-on-brand" data-go="login" aria-pressed="' +
+        (S.route === 'login') +
+        '">Log in</button>' +
+        '<button class="h-7 px-2.5 rounded-full text-xs font-semibold text-ink-3 aria-pressed:bg-brand aria-pressed:text-on-brand" data-go="notfound" aria-pressed="' +
+        (S.route === 'notfound') +
+        '">404</button></div>'
+      );
+    }
+    var ACTIONS = {
+      record: ['record', 'Record transaction'],
+      client: ['client', 'Add client'],
+      company: ['company', 'Add company'],
+      report: ['report', 'Create report'],
+    };
+    var ACTION_FOR = {
+      overview: 'record',
+      money: 'record',
+      people: 'client',
+      companies: 'company',
+      yearend: 'report',
+      company: null,
+      settings: null,
+    };
+    var VIEWS = {
+      overview: vOverview,
+      money: vMoney,
+      people: vPeople,
+      yearend: vYearEnd,
+      companies: vCompanies,
+      company: vCompany,
+      settings: vSettings,
+    };
+
+    var VT_OK = typeof document.startViewTransition === 'function';
+    /* The kind is this app's transition type: CSS keys off :root[data-vt] the way React keys off
+   addTransitionType. No kind means paint immediately — typing, toggling a chip and switching
+   theme should feel instant, and animating them would only add apparent latency. */
+    var vtSeq = 0;
+    function render(kind) {
+      if (!VT_OK || !kind) {
+        paint();
+        return;
+      }
+      var root = document.documentElement,
+        mine = ++vtSeq;
+      root.setAttribute('data-vt', kind);
+      var t = document.startViewTransition(paint);
+      /* starting a transition while one is running skips the first, and its rejection must not strip
+     the type the second just set — only the newest transition owns the attribute */
+      t.finished
+        .catch(function () {})
+        .then(function () {
+          if (mine === vtSeq) root.removeAttribute('data-vt');
+        });
+    }
+    function paint() {
+      S.theme = resolveTheme();
+      document.documentElement.setAttribute('data-theme', S.theme);
+      openPage(S.route);
+      var meta = TITLES[S.route] || ['', ''];
+      var act = Object.prototype.hasOwnProperty.call(ACTION_FOR, S.route)
+        ? ACTION_FOR[S.route]
+        : 'record';
+      /* An empty or failed page already offers the one thing worth doing in its own panel, so the
+     header button stands down. The phone's floating button is app chrome and never moves or
+     disappears: on the two form routes, which have no page action of their own, it falls back to
+     the app's primary verb rather than leaving a hole and shifting the bar between pages. */
+      var navAct = act || 'record';
+      if (S.mode === 'empty' || S.mode === 'error') act = null;
+      var action =
+        act && ACTIONS[act]
+          ? '<button class="inline-flex items-center gap-2 h-9 rounded-ctl border text-sm font-semibold whitespace-nowrap pointer-coarse:min-h-11 bg-brand border-brand text-on-brand px-3.5 hover:bg-brand-hover max-md:hidden" data-sheet="' +
+            act +
+            '">' +
+            ico(I.plus, '', 16) +
+            esc(ACTIONS[act][1]) +
+            '</button>'
+          : '';
+
+      var html;
+      if (S.route === 'login' || S.route === 'notfound') {
+        html = S.route === 'login' ? vLogin() : vNotFound();
+      } else {
+        var content =
+          S.mode === 'error'
+            ? errorPanel()
+            : (VIEWS[S.route] || vOverview)(S.mode);
+        html =
+          topbar() +
+          '<main class="px-7 pt-5 pb-21 flex flex-col gap-4 max-w-375 mx-auto w-full max-md:px-4 max-md:pt-4 max-md:pb-42"><div class="flex items-center gap-4 max-md:flex-wrap max-md:gap-2.5"><div><h1 class="text-2xl font-semibold tracking-tighter m-0">' +
+          esc(meta[0]) +
+          '</h1><div class="text-sm text-ink-3">' +
+          esc(meta[1]) +
+          '</div></div><span class="grow"></span>' +
+          action +
+          '</div>' +
+          content +
+          '</main>';
+        if (S.menu === 'company') html += menuCompany();
+        if (S.menu === 'account') html += menuAccount();
+        if (S.sheet && SHEETS[S.sheet]) {
+          html +=
+            '<div class="vt-scrim fixed inset-0 flex justify-end z-40 bg-scrim/45 max-md:items-end" data-close="backdrop">' +
+            SHEETS[S.sheet]() +
+            '</div>';
+        }
+        html += botnav(navAct);
+      }
+      if (S.docFull && F.hasFile) {
+        html +=
+          '<div class="fixed inset-0 z-65 flex flex-col bg-canvas"><div class="grow flex flex-col min-h-0">' +
+          docPane(
+            '<button class="inline-flex items-center gap-2 rounded-ctl border border-line-strong bg-surface font-semibold whitespace-nowrap hover:bg-sunken pointer-coarse:min-h-11 h-8 px-3 text-xs" data-docfullclose="1">Close</button>',
+          ) +
+          '</div></div>';
+      }
+      if (S.toast) html += toastNode();
+      html += devbar();
+      document.getElementById('root').innerHTML = html;
+      if (S.catOpen) {
+        var cq = document.querySelector('[data-catq]');
+        if (cq) cq.focus();
+      }
+      /* the sheet body scrolls, so a calendar opened near the foot of the form would be cut off */
+      if (S.dpOpen) {
+        var dp = document.querySelector('#root .vt-datemenu');
+        if (dp) dp.scrollIntoView({ block: 'nearest' });
+      }
+    }
+
+    /* ---------------- events ---------------- */
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest || !e.target.closest('#root')) return;
+      var el = e.target.closest(
+        '[data-go],[data-sheet],[data-mode],[data-theme-pref],[data-menu],[data-close],[data-dir],[data-chip],[data-step],[data-set],[data-save],[data-toast],[data-docfull],[data-docfullclose],[data-attach],[data-type],[data-refund],[data-catopen],[data-catpick],[data-dpopen],[data-dpmove],[data-dpick],[data-pset],[data-psave],[data-preset],[data-catadd],[data-catdel],[data-mark],[data-tx],[data-status],[data-pw],[data-pwskip]',
+      );
+      if (!el) {
+        if (S.menu || S.catOpen || S.dpOpen) {
+          S.menu = null;
+          S.catOpen = false;
+          S.dpOpen = null;
+          render();
+        }
+        return;
+      }
+      if (
+        el.hasAttribute('data-menu') &&
+        el.getAttribute('data-menu') !== '1'
+      ) {
+        var m = el.getAttribute('data-menu');
+        S.menu = S.menu === m ? null : m;
+        render('menu');
+        return;
+      }
+      if (el.hasAttribute('data-menu')) return;
+      if (el.hasAttribute('data-close')) {
+        /* the backdrop wraps the sheet, so ignore clicks that merely bubbled out of it */
+        if (el.getAttribute('data-close') === 'backdrop' && e.target !== el)
+          return;
+        S.sheet = null;
+        S.menu = null;
+        S.step = 1;
+        render('sheet');
+        return;
+      }
+      if (el.hasAttribute('data-step')) {
+        S.step = +el.getAttribute('data-step');
+        render();
+        return;
+      }
+      if (el.hasAttribute('data-go')) {
+        S.route = el.getAttribute('data-go');
+        S.menu = null;
+        S.sheet = null;
+        S.catOpen = false;
+        location.hash = '#/' + S.route;
+        render('nav');
+        return;
+      }
+      if (el.hasAttribute('data-sheet')) {
+        var which = el.getAttribute('data-sheet');
+        openSheet(which);
+        S.menu = null;
+        if (which === 'record' && el.hasAttribute('data-tx'))
+          loadTx(el.getAttribute('data-tx'));
+        render('sheet');
+        return;
+      }
+      if (el.hasAttribute('data-pset')) {
+        var pkv = el.getAttribute('data-pset'),
+          pi = pkv.indexOf(':');
+        P[pkv.slice(0, pi)] = pkv.slice(pi + 1);
+        render();
+        return;
+      }
+      if (el.hasAttribute('data-catadd')) {
+        P.cats.push({ name: '', rate: '20', protect: false });
+        render();
+        return;
+      }
+      if (el.hasAttribute('data-catdel')) {
+        P.cats.splice(+el.getAttribute('data-catdel'), 1);
+        render();
+        return;
+      }
+      if (el.hasAttribute('data-preset')) {
+        P_ROUTE = null;
+        openPage(S.route);
+        toast('Changes discarded');
+        return;
+      }
+      if (el.hasAttribute('data-psave')) {
+        var kind = el.getAttribute('data-psave');
+        if (!validatePage(kind)) {
+          render();
+          return;
+        }
+        toast(kind === 'company' ? 'Company details saved' : 'Settings saved');
+        return;
+      }
+      if (el.hasAttribute('data-mark')) {
+        NOTIFS.forEach(function (n) {
+          n.unread = false;
+        });
+        render();
+        return;
+      }
+      if (el.hasAttribute('data-pw') || el.hasAttribute('data-pwskip')) {
+        var q = loadedConfirmed().filter(function (x) {
+          return x.noPdf;
+        });
+        var cur = q[S.pwIdx || 0];
+        if (cur && el.hasAttribute('data-pw') && S.pwDone.indexOf(cur.id) < 0)
+          S.pwDone.push(cur.id);
+        S.pwIdx = (S.pwIdx || 0) + 1;
+        toast(
+          el.hasAttribute('data-pw') ? 'Paperwork attached' : 'Skipped for now',
+        );
+        return;
+      }
+      if (el.hasAttribute('data-dpopen')) {
+        var dk = el.getAttribute('data-dpopen');
+        S.dpOpen = S.dpOpen === dk ? null : dk;
+        S.dpView =
+          F[dk] ||
+          null; /* reopen on the month of the chosen date, not where you left off */
+        S.catOpen = false;
+        render('menu');
+        return;
+      }
+      if (el.hasAttribute('data-dpmove')) {
+        var base = parseIso(S.dpView) || parseIso(F[S.dpOpen]) || TODAY;
+        var mv = new Date(
+          base.getFullYear(),
+          base.getMonth() + +el.getAttribute('data-dpmove'),
+          1,
+        );
+        S.dpView = isoOf(mv);
+        render();
+        return;
+      }
+      if (el.hasAttribute('data-dpick')) {
+        F[S.dpOpen] = el.getAttribute('data-dpick');
+        if (F.err) delete F.err[S.dpOpen];
+        S.dpOpen = null;
+        S.dpView = null;
+        render('menu');
+        return;
+      }
+      if (el.hasAttribute('data-catopen')) {
+        S.catOpen = !S.catOpen;
+        S.catQ = '';
+        S.dpOpen = null;
+        render('menu');
+        return;
+      }
+      if (el.hasAttribute('data-catpick')) {
+        F.cat = el.getAttribute('data-catpick');
+        F.vat = autoVat().toFixed(2);
+        S.catOpen = false;
+        S.catQ = '';
+        render();
+        return;
+      }
+      if (el.hasAttribute('data-type')) {
+        F.type = el.getAttribute('data-type');
+        /* the two sides do not share a name list, a description list or a VAT sum */
+        F.who = '';
+        F.desc = '';
+        F.refund = false;
+        if (F.type === 'sale') F.cat = '';
+        F.vat = autoVat().toFixed(2);
+        S.catOpen = false;
+        render();
+        return;
+      }
+      if (el.hasAttribute('data-refund'))
+        return; /* handled on change, so the box toggles natively */
+      if (el.hasAttribute('data-docfull')) {
+        S.docFull = true;
+        S.menu = null;
+        render('doc');
+        return;
+      }
+      if (el.hasAttribute('data-attach')) {
+        var t = el.getAttribute('data-attach');
+        F.hasFile = '1';
+        F.attType = t;
+        S.menu = null;
+        toast(t === 'photo' ? 'Photo attached' : 'Invoice attached');
+        return;
+      }
+      if (el.hasAttribute('data-docfullclose')) {
+        S.docFull = false;
+        render('doc');
+        return;
+      }
+      if (el.hasAttribute('data-set')) {
+        var kv = el.getAttribute('data-set'),
+          i = kv.indexOf(':');
+        var k = kv.slice(0, i),
+          v = kv.slice(i + 1);
+        F[k] = v;
+        S.menu = null;
+        if (k === 'hasFile' && !v) S.docFull = false;
+        render();
+        return;
+      }
+      if (el.hasAttribute('data-toast')) {
+        toast(el.getAttribute('data-toast'));
+        return;
+      }
+      if (el.hasAttribute('data-save')) {
+        var kind = el.getAttribute('data-save');
+        if (!validate(kind)) {
+          render();
+          return;
+        }
+        if (kind === 'company-step') {
+          S.step = S.step + 1;
+          render();
+          return;
+        }
+        S.sheet = null;
+        S.step = 1;
+        toast(
+          {
+            record: 'Transaction saved',
+            client: 'Client saved',
+            company: 'Company added',
+            report: 'Report requested',
+          }[kind] || 'Saved',
+        );
+        return;
+      }
+      if (el.hasAttribute('data-mode')) {
+        S.mode = el.getAttribute('data-mode');
+        render('mode');
+        return;
+      }
+      if (el.hasAttribute('data-theme-pref')) {
+        S.themePref = el.getAttribute('data-theme-pref');
+        render();
+        return;
+      }
+      if (el.hasAttribute('data-status')) {
+        S.status = el.getAttribute('data-status');
+        S.chip = null;
+        render('list');
+        return;
+      }
+      if (el.hasAttribute('data-dir')) {
+        S.dir = el.getAttribute('data-dir');
+        render('list');
+        return;
+      }
+      if (el.hasAttribute('data-chip')) {
+        var c = el.getAttribute('data-chip');
+        S.chip = S.chip === c || !c ? null : c;
+        render('list');
+        return;
+      }
+    });
+    /* A card below the topbar on the right, in the positive wash the in-line version used: the
+   colour says "this went through" on its own, so the message never has to. Placed clear of the
+   page's primary action, and it carries no control — a confirmation is not a decision, and
+   updateTransaction and the delete mutations have no inverse to offer as an undo. */
+    function toastNode() {
+      return (
+        '<div class="vt-toast fixed right-7 top-19 z-70 flex items-start gap-2.5 w-72 px-3.5 py-3 rounded-panel bg-pos-soft border border-pos/30 text-ink shadow-over max-md:right-4" role="status">' +
+        '<span class="shrink-0 text-pos">' +
+        ico(I.tick, '', 16) +
+        '</span>' +
+        '<span class="text-sm font-medium whitespace-normal">' +
+        esc(S.toast) +
+        '</span></div>'
+      );
+    }
+    var DARK_MQ = window.matchMedia
+      ? window.matchMedia('(prefers-color-scheme: dark)')
+      : null;
+    function resolveTheme() {
+      if (S.themePref !== 'auto') return S.themePref;
+      return DARK_MQ && DARK_MQ.matches ? 'dark' : 'light';
+    }
+    /* bound once, not per render: on auto the app follows the device as it changes */
+    if (DARK_MQ && DARK_MQ.addEventListener)
+      DARK_MQ.addEventListener('change', function () {
+        if (S.themePref === 'auto') render();
+      });
+
+    function toast(msg) {
+      S.toast = msg;
+      render('toast');
+      clearTimeout(toast._t);
+      toast._t = setTimeout(function () {
+        S.toast = null;
+        render('toast');
+      }, 2600);
+    }
+    document.addEventListener('input', function (e) {
+      var el = e.target;
+      if (!el.hasAttribute || !el.hasAttribute('data-f')) return;
+      var k = el.getAttribute('data-f');
+      F[k] = el.value;
+      if (k === 'amount') {
+        /* recalculated in place so the caret survives */
+        F.vat = autoVat().toFixed(2);
+        var v = document.querySelector('[data-vat]');
+        if (v) v.value = F.vat;
+        var f = document.querySelector('[data-foot]');
+        if (f) f.textContent = recordFoot();
+      }
+    });
+    document.addEventListener('input', function (e) {
+      if (!e.target.hasAttribute || !e.target.hasAttribute('data-catq')) return;
+      S.catQ = e.target.value;
+      var l = document.querySelector('.catpop-l');
+      if (l) {
+        var tmp = document.createElement('div');
+        tmp.innerHTML = catPicker();
+        var fresh = tmp.querySelector('.catpop-l');
+        if (fresh) l.innerHTML = fresh.innerHTML;
+      }
+    });
+    document.addEventListener('input', function (e) {
+      var t = e.target;
+      if (!t.hasAttribute) return;
+      if (t.hasAttribute('data-p')) {
+        P[t.getAttribute('data-p')] = t.value;
+        return;
+      }
+      if (t.hasAttribute('data-cat')) {
+        var parts = t.getAttribute('data-cat').split('.');
+        P.cats[+parts[0]][parts[1]] = t.value;
+        return;
+      }
+    });
+    document.addEventListener('change', function (e) {
+      if (e.target.hasAttribute && e.target.hasAttribute('data-p')) {
+        P[e.target.getAttribute('data-p')] = e.target.value;
+        return;
+      }
+      if (e.target.hasAttribute && e.target.hasAttribute('data-refund')) {
+        F.refund = e.target.checked;
+        render();
+        return;
+      }
+      var el = e.target;
+      if (el.hasAttribute && el.hasAttribute('data-f'))
+        F[el.getAttribute('data-f')] = el.value;
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape') return;
+      if (S.dpOpen) {
+        S.dpOpen = null;
+        render();
+        return;
+      }
+      if (S.catOpen) {
+        S.catOpen = false;
+        render();
+        return;
+      }
+      if (S.docFull) {
+        S.docFull = false;
+        render('doc');
+        return;
+      }
+      if (S.sheet || S.menu) {
+        S.sheet = null;
+        S.menu = null;
+        render();
+      }
+    });
+    window.addEventListener('hashchange', function () {
+      var r = location.hash.replace('#/', '');
+      if (!r) {
+        S.route = 'overview';
+      } else if (VIEWS[r] || r === 'login' || r === 'notfound') {
+        S.route = r;
+      } else {
+        S.route = 'notfound';
+      }
+      S.sheet = null;
+      S.menu = null;
+      render();
+    });
+
+    var start = location.hash.replace('#/', '');
+    if (VIEWS[start] || start === 'login' || start === 'notfound')
+      S.route = start;
+    else if (start) S.route = 'notfound';
+    render();
+  })();
+</script>
