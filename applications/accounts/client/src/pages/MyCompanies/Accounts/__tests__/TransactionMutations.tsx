@@ -430,11 +430,16 @@ describe('opening transaction details', () => {
       ),
     ).toBeChecked();
 
+    const save = screen.getByRole('button', { name: 'transaction-form.save' });
     fireEvent.change(description, { target: { value: 'Unsaved local edit' } });
     act(() => network.signal());
     await waitFor(() => expect(network.read).toHaveBeenCalledTimes(2));
     expect(description).toBeInTheDocument();
     expect(description).toHaveValue('Unsaved local edit');
+    expect(save).toBeDisabled();
+    fireEvent.submit(description.closest('form')!);
+    await act(() => waitForApollo(0));
+    expect(network.update).not.toHaveBeenCalled();
     act(() =>
       network.resolveRead(1, {
         ...latest,
@@ -444,6 +449,7 @@ describe('opening transaction details', () => {
     );
     await screen.findByDisplayValue('Updated supplier');
     expect(description).toHaveValue('Unsaved local edit');
+    await waitFor(() => expect(save).not.toBeDisabled());
   });
 
   it('waits for a new detail read even when an older authoritative correction is retained', async () => {

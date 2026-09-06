@@ -23,6 +23,7 @@ import TransactionForm, {
 import {
   useApplyTransactionState,
   useTransactionReadError,
+  useTransactionReadPending,
   useTransactionState,
 } from '../../../components/TransactionUpdates';
 import { gql } from '../../../graphql';
@@ -249,6 +250,7 @@ function TransactionDetails({
   const [modal, setModal] = useState(false);
   const currentTransaction = useTransactionState(transactionId);
   const readError = useTransactionReadError(transactionId);
+  const readPending = useTransactionReadPending(transactionId);
   const applyTransactionState = useApplyTransactionState();
   const { t } = useTranslation('accounts');
   const { add } = useToast();
@@ -352,7 +354,7 @@ function TransactionDetails({
     }).catch(() => {});
   };
   const save = (input: FormSchema) => {
-    if (readError) return;
+    if (readError || readPending) return;
     mutation({
       update,
       variables: {
@@ -408,7 +410,7 @@ function TransactionDetails({
                 }))}
                 companyId={companyId}
                 initialValues={transaction}
-                loading={mutationLoading || Boolean(readError)}
+                loading={mutationLoading || Boolean(readError) || readPending}
                 purchases={data.getTypeahead?.purchases}
                 sales={data.getTypeahead?.sales}
                 suppliers={data.getTypeahead?.suppliers}

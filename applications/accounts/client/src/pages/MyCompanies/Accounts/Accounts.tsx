@@ -103,29 +103,22 @@ function Accounts() {
   const pageRevision = useRef(0);
   const { add } = useToast();
   const applyTransactionState = useApplyTransactionState();
-  const {
-    client,
-    data,
-    error,
-    loading,
-    networkStatus,
-    refetch,
-    subscribeToMore,
-  } = useQuery(GET_BALANCE, {
-    context: { queryDeduplication: false },
-    fetchPolicy: 'cache-and-network',
-    notifyOnNetworkStatusChange: true,
-    onCompleted: ({ getTransactions }) => {
-      setVisibleLimit((previous) =>
-        Math.max(previous ?? 0, Math.min(100, getTransactions.items.length)),
-      );
-    },
-    variables: {
-      count: 100,
-      id: companyId,
-      status: TransactionStatus.Confirmed,
-    },
-  });
+  const { client, data, error, loading, networkStatus, refetch, updateQuery } =
+    useQuery(GET_BALANCE, {
+      context: { queryDeduplication: false },
+      fetchPolicy: 'cache-and-network',
+      notifyOnNetworkStatusChange: true,
+      onCompleted: ({ getTransactions }) => {
+        setVisibleLimit((previous) =>
+          Math.max(previous ?? 0, Math.min(100, getTransactions.items.length)),
+        );
+      },
+      variables: {
+        count: 100,
+        id: companyId,
+        status: TransactionStatus.Confirmed,
+      },
+    });
   const [deleteMutation, { loading: deleteLoading }] = useMutation(
     DELETE_TRANSACTION,
     {
@@ -263,39 +256,40 @@ function Accounts() {
 
     const connect = () => {
       unsubscribe?.();
-      unsubscribe = subscribeToMore({
-        document: ON_TRANSACTION,
-        onError: () => {
-          if (!active || retryTimer) return;
-          // A shared socket failure terminates this subscription too.
-          const delay = Math.min(1000 * 2 ** retries, 30000);
-          retries += 1;
-          retryTimer = setTimeout(() => {
-            retryTimer = undefined;
-            connect();
-          }, delay);
-        },
-        updateQuery: (prev, { subscriptionData }) => {
-          if (!subscriptionData.data?.onTransaction || !prev.getBalance) {
-            return prev;
-          }
-          retries = 0;
-
-          return {
-            getBalance: {
-              ...prev.getBalance,
-              ...subscriptionData.data.onTransaction,
-            },
-            getTransactions: {
-              ...prev.getTransactions,
-            },
-          };
-        },
-        variables: {
-          id: companyId,
-          owner: user.sub as string,
-        },
-      });
+      const subscription = client
+        .subscribe({
+          context: { controlMessages: { '@@controlEvents': true } },
+          fetchPolicy: 'no-cache',
+          query: ON_TRANSACTION,
+          variables: { id: companyId, owner: user.sub as string },
+        })
+        .subscribe({
+          error: () => {
+            if (!active || retryTimer) return;
+            const delay = Math.min(1000 * 2 ** retries, 30000);
+            retries += 1;
+            retryTimer = setTimeout(() => {
+              retryTimer = undefined;
+              connect();
+            }, delay);
+          },
+          next: ({ data: subscriptionData, extensions }) => {
+            if (!active) return;
+            if (extensions?.controlMsgType === 'CONNECTED') retries = 0;
+            const balance = subscriptionData?.onTransaction;
+            if (!balance) return;
+            retries = 0;
+            updateQuery((previous) =>
+              previous.getBalance
+                ? {
+                    ...previous,
+                    getBalance: { ...previous.getBalance, ...balance },
+                  }
+                : previous,
+            );
+          },
+        });
+      unsubscribe = () => subscription.unsubscribe();
     };
     connect();
 
@@ -304,7 +298,7 @@ function Accounts() {
       clearTimeout(retryTimer);
       unsubscribe?.();
     };
-  }, [companyId, subscribeToMore, user.sub]);
+  }, [client, companyId, updateQuery, user.sub]);
 
   return (
     <Connected
