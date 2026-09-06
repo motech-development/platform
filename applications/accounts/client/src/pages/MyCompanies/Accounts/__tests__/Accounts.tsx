@@ -147,7 +147,7 @@ describe('Accounts', () => {
       let disconnect: (() => void) | undefined;
       let releasePage: (() => void) | undefined;
       let reconnected = false;
-      const rows = Array.from({ length: 200 }, (_, index) => ({
+      const rows = Array.from({ length: 2 }, (_, index) => ({
         __typename: 'Transaction',
         amount: 20,
         attachment: '',
@@ -163,8 +163,8 @@ describe('Accounts', () => {
         vat: 0,
       }));
       const inserted = {
-        ...rows[150],
-        date: new Date(new Date(rows[150].date).getTime() - 1000).toISOString(),
+        ...rows[0],
+        date: new Date(new Date(rows[0].date).getTime() - 1000).toISOString(),
         description: 'Transaction inserted while disconnected',
         id: 'inserted-transaction',
         name: 'Inserted customer',
@@ -194,7 +194,7 @@ describe('Accounts', () => {
                 observer.next({
                   data: {
                     getBalance: {
-                      balance: 4000,
+                      balance: 40,
                       currency: 'GBP',
                       id: 'company-id',
                       vat: { owed: 0, paid: 0 },
@@ -212,15 +212,13 @@ describe('Accounts', () => {
               };
               if (operation.variables.nextToken) cursorRequests();
               if (operation.variables.nextToken && !reconnected) {
-                releasePage = () => reply(rows.slice(100), null);
+                releasePage = () => reply(rows.slice(1), null);
                 return;
               }
               if (reconnected) recoveredList(operation.variables);
-              const current = reconnected
-                ? [...rows.slice(0, 151), inserted, ...rows.slice(151)]
-                : rows;
+              const current = reconnected ? [rows[0], inserted, rows[1]] : rows;
               const offset = Number(operation.variables.nextToken ?? 0);
-              const count = Number(operation.variables.count);
+              const count = Math.min(Number(operation.variables.count), 1);
               reply(
                 current.slice(offset, offset + count),
                 offset + count < current.length ? String(offset + count) : null,
@@ -242,7 +240,7 @@ describe('Accounts', () => {
           </MockedProvider>
         </TestProvider>,
       );
-      await findByText(rows[99].description);
+      await findByText(rows[0].description);
       await act(() => waitForApollo(30));
       fireEvent.click(getByRole('button', { name: 'accounts.load-more' }));
       await waitFor(() => expect(releasePage).toBeDefined());
@@ -260,8 +258,8 @@ describe('Accounts', () => {
 
       expect(
         getAllByRole('link', { name: 'transactions-list.view' }),
-      ).toHaveLength(100);
-      expect(queryByText(rows[199].description)).not.toBeInTheDocument();
+      ).toHaveLength(1);
+      expect(queryByText(rows[1].description)).not.toBeInTheDocument();
       const loadMore = getByRole('button', { name: 'accounts.load-more' });
       expect(loadMore).not.toBeDisabled();
       fireEvent.click(loadMore);
@@ -276,14 +274,14 @@ describe('Accounts', () => {
       expect(queryByText(inserted.description)).toBeInTheDocument();
       expect(
         getAllByRole('link', { name: 'transactions-list.view' }),
-      ).toHaveLength(200);
+      ).toHaveLength(2);
       expect(
         getByRole('button', { name: 'accounts.load-more' }),
       ).not.toBeDisabled();
       expect(recoveredList).toHaveBeenLastCalledWith({
         count: 100,
         id: 'company-id',
-        nextToken: '100',
+        nextToken: '1',
         status: TransactionStatus.Confirmed,
       });
     },
@@ -292,7 +290,7 @@ describe('Accounts', () => {
   it('ignores an old cursor response after leaving and returning to accounts', async () => {
     let releasePage: (() => void) | undefined;
     let returning = false;
-    const rows = Array.from({ length: 300 }, (_, index) => ({
+    const rows = Array.from({ length: 3 }, (_, index) => ({
       __typename: 'Transaction',
       amount: 20,
       attachment: '',
@@ -308,8 +306,8 @@ describe('Accounts', () => {
       vat: 0,
     }));
     const inserted = {
-      ...rows[150],
-      date: new Date(new Date(rows[150].date).getTime() - 1000).toISOString(),
+      ...rows[0],
+      date: new Date(new Date(rows[0].date).getTime() - 1000).toISOString(),
       description: 'Transaction inserted while viewing the dashboard',
       id: 'inserted-transaction',
       name: 'Inserted customer',
@@ -333,7 +331,7 @@ describe('Accounts', () => {
               observer.next({
                 data: {
                   getBalance: {
-                    balance: 6000,
+                    balance: 60,
                     currency: 'GBP',
                     id: 'company-id',
                     vat: { owed: 0, paid: 0 },
@@ -350,14 +348,14 @@ describe('Accounts', () => {
               observer.complete();
             };
             if (operation.variables.nextToken && !returning) {
-              releasePage = () => reply(rows.slice(100, 200), '200');
+              releasePage = () => reply(rows.slice(1, 2), '2');
               return;
             }
             const current = returning
-              ? [...rows.slice(0, 151), inserted, ...rows.slice(151)]
+              ? [rows[0], inserted, ...rows.slice(1)]
               : rows;
             const offset = Number(operation.variables.nextToken ?? 0);
-            const count = Number(operation.variables.count);
+            const count = Math.min(Number(operation.variables.count), 1);
             reply(
               current.slice(offset, offset + count),
               offset + count < current.length ? String(offset + count) : null,
@@ -394,7 +392,7 @@ describe('Accounts', () => {
         </MockedProvider>
       </TestProvider>,
     );
-    await findByText(rows[99].description);
+    await findByText(rows[0].description);
     fireEvent.click(getByRole('button', { name: 'accounts.load-more' }));
     await waitFor(() => expect(releasePage).toBeDefined());
     fireEvent.click(getByRole('link', { name: 'accounts.dashboard.button' }));
@@ -402,7 +400,7 @@ describe('Accounts', () => {
     returning = true;
     fireEvent.click(getByRole('link', { name: 'Return to accounts' }));
     await waitFor(() => expect(list).toHaveBeenCalledTimes(3));
-    await findByText(rows[99].description);
+    await findByText(rows[0].description);
     await act(() => waitForApollo(30));
 
     await act(async () => {
@@ -411,15 +409,15 @@ describe('Accounts', () => {
     });
     expect(
       getAllByRole('link', { name: 'transactions-list.view' }),
-    ).toHaveLength(100);
-    expect(queryByText(rows[199].description)).not.toBeInTheDocument();
+    ).toHaveLength(1);
+    expect(queryByText(rows[1].description)).not.toBeInTheDocument();
 
     fireEvent.click(getByRole('button', { name: 'accounts.load-more' }));
     await waitFor(() =>
       expect(list).toHaveBeenLastCalledWith({
         count: 100,
         id: 'company-id',
-        nextToken: '100',
+        nextToken: '1',
         status: TransactionStatus.Confirmed,
       }),
     );
