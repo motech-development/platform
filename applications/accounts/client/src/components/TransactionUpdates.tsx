@@ -53,6 +53,7 @@ const emptyStates: TransactionStates = new Map();
 const TransactionUpdatesContext = createContext<{
   apply: (transactionId: string, current: CurrentTransaction | null) => void;
   errors: ReadonlyMap<string, ApolloError>;
+  pending: ReadonlySet<string>;
   states: TransactionStates;
   watch: (transactionId: string, onReady: () => void) => () => void;
   watchList: (transactionIds: string[]) => () => void;
@@ -60,6 +61,7 @@ const TransactionUpdatesContext = createContext<{
 }>({
   apply: () => {},
   errors: new Map(),
+  pending: new Set(),
   states: emptyStates,
   watch: () => () => {},
   watchList: () => () => {},
@@ -141,6 +143,9 @@ export const useTransactionReadError = (
   );
 };
 
+export const useTransactionReadPending = (transactionId: string) =>
+  useContext(TransactionUpdatesContext).pending.has(transactionId);
+
 interface IReadRequest {
   dirty: boolean;
   running: boolean;
@@ -173,6 +178,7 @@ function TransactionUpdates({
   );
   const errorsRef = useRef(errors);
   errorsRef.current = errors;
+  const [pending, setPending] = useState<ReadonlySet<string>>(() => new Set());
   const refreshList = useRef<
     ((transactionIds: string[]) => void) | undefined
   >();
@@ -229,12 +235,13 @@ function TransactionUpdates({
     () => ({
       apply,
       errors,
+      pending,
       states,
       watch,
       watchList,
       watchRecovery,
     }),
-    [apply, errors, states, watch, watchList, watchRecovery],
+    [apply, errors, pending, states, watch, watchList, watchRecovery],
   );
 
   useEffect(() => {
@@ -242,6 +249,18 @@ function TransactionUpdates({
     const requests = new Map<string, IReadRequest>();
     const queued = new Map<string, () => void>();
     let running = 0;
+
+    const setReadPending = (transactionId: string, reading: boolean) => {
+      // Only mounted details need pending state; list recovery can read many rows.
+      if (reading && !viewedTransactions.current.has(transactionId)) return;
+      setPending((previous) => {
+        if (previous.has(transactionId) === reading) return previous;
+        const next = new Set(previous);
+        if (reading) next.add(transactionId);
+        else next.delete(transactionId);
+        return next;
+      });
+    };
 
     const clearError = (transactionId: string) => {
       setErrors((previous) => {
@@ -283,6 +302,7 @@ function TransactionUpdates({
         clearError(transactionId);
         notifyReady(transactionId);
         requests.delete(transactionId);
+        setReadPending(transactionId, false);
         return undefined;
       } catch (failure) {
         if (!active) return undefined;
@@ -317,6 +337,7 @@ function TransactionUpdates({
           });
         if (permanent || request.retries >= 3) {
           requests.delete(transactionId);
+          setReadPending(transactionId, false);
           setErrors((previous) => new Map(previous).set(transactionId, error));
           return undefined;
         }
@@ -363,6 +384,7 @@ function TransactionUpdates({
     };
 
     const refresh = (transactionId: string) => {
+      setReadPending(transactionId, true);
       const existing = requests.get(transactionId);
       if (existing) {
         if (existing.running) existing.dirty = true;

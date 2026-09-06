@@ -57,6 +57,11 @@ describe('Accounts', () => {
                   },
                 }),
             });
+            const context = operation.getContext() as {
+              controlMessages?: { '@@controlEvents'?: boolean };
+            };
+            if (context.controlMessages?.['@@controlEvents'])
+              observer.next({ extensions: { controlMsgType: 'CONNECTED' } });
             return stoppedBalance;
           } else if (operation.operationName === 'GetBalance') {
             list();
@@ -100,30 +105,39 @@ describe('Accounts', () => {
     });
     await view.findByText('Balance £50.00');
     expect(balances).toHaveLength(1);
-    const beforeReconnect = list.mock.calls.length;
-    act(() => {
-      balances[0].fail();
-      disconnectChanges?.();
-    });
-    await waitFor(
-      () => expect(list.mock.calls.length).toBeGreaterThan(beforeReconnect),
-      { timeout: 2000 },
-    );
-    await waitFor(() => expect(balances).toHaveLength(2), { timeout: 2000 });
-    const recoveredReads = list.mock.calls.length;
-    act(() => balances[1].publish());
-    await view.findByText('Balance £75.00');
-    expect(view.getByText('VAT owed £15.00')).toBeInTheDocument();
-    expect(view.getByText('VAT paid £7.00')).toBeInTheDocument();
-    expect(list).toHaveBeenCalledTimes(recoveredReads);
+    vi.useFakeTimers();
+    try {
+      const beforeReconnect = list.mock.calls.length;
+      act(() => {
+        balances[0].fail();
+        disconnectChanges?.();
+      });
+      await act(() => vi.advanceTimersByTimeAsync(1000));
+      expect(list.mock.calls.length).toBeGreaterThan(beforeReconnect);
+      expect(balances).toHaveLength(2);
 
-    act(() => balances[1].fail());
-    view.unmount();
-    await new Promise((resolve) => {
-      setTimeout(resolve, 1100);
-    });
-    expect(balances).toHaveLength(2);
-    expect(stoppedBalance).toHaveBeenCalledTimes(2);
+      // Quiet successful connections must reset the delay for later outages.
+      act(() => balances[1].fail());
+      await act(() => vi.advanceTimersByTimeAsync(1000));
+      expect(balances).toHaveLength(3);
+      const recoveredReads = list.mock.calls.length;
+      await act(async () => {
+        balances[2].publish();
+        await vi.advanceTimersByTimeAsync(0);
+      });
+      expect(view.getByText('Balance £75.00')).toBeInTheDocument();
+      expect(view.getByText('VAT owed £15.00')).toBeInTheDocument();
+      expect(view.getByText('VAT paid £7.00')).toBeInTheDocument();
+      expect(list).toHaveBeenCalledTimes(recoveredReads);
+
+      act(() => balances[2].fail());
+      view.unmount();
+      await act(() => vi.advanceTimersByTimeAsync(30000));
+      expect(balances).toHaveLength(3);
+      expect(stoppedBalance).toHaveBeenCalledTimes(3);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it.each([101, 100])(
@@ -756,6 +770,18 @@ describe('Accounts', () => {
       id: 'historical-transaction',
       name: 'Historical customer',
     };
+    const middle = {
+      ...historical,
+      date: '2026-09-02T12:00:00.000Z',
+      description: 'First row of the second page',
+      id: 'middle-transaction',
+    };
+    const oldest = {
+      ...historical,
+      date: '2026-08-31T12:00:00.000Z',
+      description: 'Last server page',
+      id: 'oldest-transaction',
+    };
     const recent = {
       ...newest,
       date: '2026-09-06T12:00:00.000Z',
@@ -796,7 +822,16 @@ describe('Accounts', () => {
             });
             observer.complete();
           } else if (operation.operationName === 'GetBalance') {
-            const hasOlderPage = !operation.variables.nextToken;
+            const token = operation.variables.nextToken as string | undefined;
+            let items = [newest, boundary];
+            let nextToken: string | null = 'older-page';
+            if (token === 'older-page') {
+              items = [middle, historical];
+              nextToken = 'last-page';
+            } else if (token) {
+              items = [oldest];
+              nextToken = null;
+            }
             observer.next({
               data: {
                 getBalance: {
@@ -808,8 +843,8 @@ describe('Accounts', () => {
                 getTransactions: {
                   __typename: 'Transactions',
                   id: 'company-id',
-                  items: hasOlderPage ? [newest, boundary] : [historical],
-                  nextToken: hasOlderPage ? 'older-page' : null,
+                  items,
+                  nextToken,
                   status: TransactionStatus.Confirmed,
                 },
               },
@@ -851,14 +886,27 @@ describe('Accounts', () => {
     ).toHaveLength(2);
 
     fireEvent.click(getByRole('button', { name: 'accounts.load-more' }));
-    await findByText('Historical transaction edited live');
+    await findByText(middle.description);
+    expect(queryByText(boundary.description)).toBeInTheDocument();
+    expect(
+      queryByText('Historical transaction edited live'),
+    ).not.toBeInTheDocument();
+    expect(
+      getAllByRole('link', { name: 'transactions-list.view' }),
+    ).toHaveLength(4);
+
+    fireEvent.click(getByRole('button', { name: 'accounts.load-more' }));
+    await findByText(oldest.description);
+    expect(
+      queryByText('Historical transaction edited live'),
+    ).toBeInTheDocument();
     expect(queryByText(historical.description)).not.toBeInTheDocument();
     expect(queryByText(boundary.description)).toBeInTheDocument();
     expect(queryByText('Newest transaction edited live')).toBeInTheDocument();
     expect(queryByText(recent.description)).toBeInTheDocument();
     expect(
       getAllByRole('link', { name: 'transactions-list.view' }),
-    ).toHaveLength(4);
+    ).toHaveLength(6);
   });
 
   it('refreshes an uncorrected cached transaction after returning from the dashboard', async () => {
