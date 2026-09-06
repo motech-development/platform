@@ -1,5 +1,6 @@
 import { ApolloLink, InMemoryCache, Observable } from '@apollo/client';
 import { MockedProvider } from '@apollo/client/testing';
+import { waitForApollo } from '@motech-development/appsync-apollo';
 import {
   act,
   fireEvent,
@@ -8,6 +9,7 @@ import {
   waitFor,
   within,
 } from '@testing-library/react';
+import { GraphQLError } from 'graphql';
 import { Route, Routes } from 'react-router-dom';
 import { typePolicies } from '../../../../components/ApolloClient';
 import TransactionUpdates, {
@@ -27,6 +29,8 @@ function renderTransactions(
   status: TransactionStatus,
   details: boolean,
   deferReads = false,
+  readError?: GraphQLError,
+  emptyIndex = false,
 ) {
   const current = {
     __typename: 'Transaction',
@@ -46,6 +50,7 @@ function renderTransactions(
   const stale = { ...current, description: 'Stale index description' };
   const saved = { ...current, description: 'Locally saved description' };
   let authoritative: typeof current | null = current;
+  let failure = readError;
   const read = vi.fn(() => authoritative);
   const detailQuery = vi.fn();
   const pendingReads: Array<(transaction: typeof current) => void> = [];
@@ -82,7 +87,10 @@ function renderTransactions(
             });
         } else if (operation.operationName === 'GetTransactionState') {
           const transaction = read();
-          if (deferReads) {
+          if (failure) {
+            observer.next({ errors: [failure] });
+            observer.complete();
+          } else if (deferReads) {
             pendingReads.push((result) =>
               respond({ getTransactionState: result }),
             );
@@ -124,7 +132,7 @@ function renderTransactions(
             getTransactions: {
               __typename: 'Transactions',
               id: 'company-id',
-              items: [stale],
+              items: emptyIndex ? [] : [stale],
               nextToken: null,
               status,
             },
@@ -169,7 +177,17 @@ function renderTransactions(
   return {
     current,
     detailQuery,
+    fail: () => {
+      failure = new GraphQLError('Cannot read this transaction', {
+        extensions: { code: 'UNAUTHENTICATED' },
+      });
+      signal?.();
+    },
     read,
+    recover: () => {
+      failure = undefined;
+      signal?.();
+    },
     remove,
     resolveRead: (index: number, transaction: typeof current) =>
       pendingReads[index]?.(transaction),
@@ -179,7 +197,212 @@ function renderTransactions(
   };
 }
 
+describe('recovering while the initial list request is pending', () => {
+  it.each([TransactionStatus.Pending, TransactionStatus.Confirmed])(
+    'reads fresh %s membership after acknowledgement and ignores the older response',
+    async (status) => {
+      let acknowledge: (() => void) | undefined;
+      let releaseInitial: (() => void) | undefined;
+      const read = vi.fn();
+      const current = {
+        __typename: 'Transaction',
+        amount: 20,
+        attachment: '',
+        category: 'Sales',
+        companyId: 'company-id',
+        date: '2026-09-05T12:00:00.000Z',
+        description: 'Created while the subscription connected',
+        id: 'new-transaction',
+        name: 'New customer',
+        refund: false,
+        scheduled: false,
+        status,
+        vat: 0,
+      };
+      const link = new ApolloLink(
+        (operation) =>
+          new Observable((observer) => {
+            if (operation.operationName === 'OnTransactionChange') {
+              acknowledge = () =>
+                observer.next({ extensions: { controlMsgType: 'CONNECTED' } });
+            } else if (operation.operationName === 'GetTransactionState') {
+              observer.next({ data: { getTransactionState: current } });
+              observer.complete();
+            } else if (
+              operation.operationName === 'GetBalance' ||
+              operation.operationName === 'GetTransactions'
+            ) {
+              read();
+              const respond = (items: (typeof current)[]) => {
+                observer.next({
+                  data: {
+                    getBalance: {
+                      balance: items.length * 20,
+                      currency: 'GBP',
+                      id: 'company-id',
+                      vat: { owed: 0, paid: 0 },
+                    },
+                    getTransactions: {
+                      __typename: 'Transactions',
+                      id: 'company-id',
+                      items,
+                      nextToken: null,
+                      status,
+                    },
+                  },
+                });
+                observer.complete();
+              };
+              if (read.mock.calls.length === 1)
+                releaseInitial = () => respond([]);
+              else respond([current]);
+            }
+          }),
+      );
+      render(
+        <TestProvider
+          path="/accounts/:companyId"
+          history={['/accounts/company-id']}
+        >
+          <MockedProvider
+            link={link}
+            cache={new InMemoryCache({ typePolicies })}
+          >
+            <TransactionStateProvider>
+              <TransactionUpdates companyId="company-id" owner="user-id">
+                {status === TransactionStatus.Pending ? (
+                  <PendingTransactions />
+                ) : (
+                  <Accounts />
+                )}
+              </TransactionUpdates>
+            </TransactionStateProvider>
+          </MockedProvider>
+        </TestProvider>,
+      );
+      await waitFor(() => expect(read).toHaveBeenCalledOnce());
+      act(() => acknowledge?.());
+      expect(await screen.findByText(current.description)).toBeInTheDocument();
+      expect(read).toHaveBeenCalledTimes(2);
+      act(() => releaseInitial?.());
+      await act(() => waitForApollo(0));
+      expect(screen.getByText(current.description)).toBeInTheDocument();
+    },
+  );
+});
+
 describe('opening transaction details', () => {
+  it.each([TransactionStatus.Pending, TransactionStatus.Confirmed])(
+    'shows a terminal failure for the first read of an unseen %s signal',
+    async (status) => {
+      const network = renderTransactions(status, false, false, undefined, true);
+      await screen.findByText(
+        status === TransactionStatus.Pending
+          ? 'pending-transactions.title'
+          : 'accounts.title',
+      );
+      act(() => network.fail());
+      expect(
+        await screen.findByRole('heading', { name: 'ApolloError' }),
+      ).toBeInTheDocument();
+      act(() => network.recover());
+      expect(
+        await screen.findByText(network.current.description),
+      ).toBeInTheDocument();
+    },
+  );
+
+  it('keeps an unsaved edit through a terminal live-read failure and recovery', async () => {
+    const network = renderTransactions(TransactionStatus.Pending, true);
+    const description = await screen.findByDisplayValue(
+      network.current.description,
+    );
+    const saveButton = screen.getByRole('button', {
+      name: 'transaction-form.save',
+    });
+    fireEvent.change(description, { target: { value: 'Unsaved local edit' } });
+    act(() => network.fail());
+    await screen.findByRole('heading', { name: 'ApolloError' });
+    expect(description).toBeInTheDocument();
+    expect(description).toHaveValue('Unsaved local edit');
+    expect(saveButton).toBeDisabled();
+
+    act(() => network.recover());
+    await waitFor(() =>
+      expect(
+        screen.getByRole('button', { name: 'transaction-form.save' }),
+      ).not.toBeDisabled(),
+    );
+    expect(description).toBeInTheDocument();
+    expect(description).toHaveValue('Unsaved local edit');
+    expect(
+      screen.queryByRole('heading', { name: 'ApolloError' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it.each([TransactionStatus.Pending, TransactionStatus.Confirmed])(
+    'surfaces read failures for a %s row that is not in the index yet',
+    async (status) => {
+      const network = renderTransactions(status, false, false, undefined, true);
+      await screen.findByText(
+        status === TransactionStatus.Pending
+          ? 'pending-transactions.title'
+          : 'accounts.title',
+      );
+      act(() => network.signal());
+      await screen.findByText(network.current.description);
+      act(() => network.fail());
+      expect(
+        await screen.findByRole('heading', { name: 'ApolloError' }),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByText(network.current.description),
+      ).not.toBeInTheDocument();
+      act(() => network.recover());
+      expect(
+        await screen.findByText(network.current.description),
+      ).toBeInTheDocument();
+    },
+  );
+
+  it.each([
+    [TransactionStatus.Pending, true],
+    [TransactionStatus.Pending, false],
+    [TransactionStatus.Confirmed, false],
+  ])(
+    'surfaces a failed authoritative read and recovers after a new signal (%s, details: %s)',
+    async (status, details) => {
+      const network = renderTransactions(
+        status,
+        details,
+        false,
+        new GraphQLError('Cannot read this transaction', {
+          extensions: { code: 'UNAUTHENTICATED' },
+        }),
+      );
+      if (!details) {
+        await screen.findByText('Stale index description');
+        act(() => network.signal());
+      }
+      expect(
+        await screen.findByRole('heading', { name: 'ApolloError' }),
+      ).toBeInTheDocument();
+      expect(screen.queryByRole('form')).not.toBeInTheDocument();
+      expect(
+        screen.queryByText('Stale index description'),
+      ).not.toBeInTheDocument();
+
+      act(() => network.recover());
+      const recovered = await (details
+        ? screen.findByDisplayValue(network.current.description)
+        : screen.findByText(network.current.description));
+      expect(recovered).toBeInTheDocument();
+      expect(
+        screen.queryByRole('heading', { name: 'ApolloError' }),
+      ).not.toBeInTheDocument();
+    },
+  );
+
   it('waits for the authoritative record before editing and keeps later live reads from resetting dirty fields', async () => {
     const network = renderTransactions(TransactionStatus.Pending, true, true);
     await waitFor(() => expect(network.detailQuery).toHaveBeenCalledOnce());

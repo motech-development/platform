@@ -73,7 +73,14 @@ function TransactionsList({
     });
   };
 
-  useEffect(onDismiss, [transactions]);
+  useEffect(() => {
+    if (
+      transaction.id &&
+      !transactions.some(({ id }) => id === transaction.id)
+    ) {
+      onDismiss();
+    }
+  }, [transaction.id, transactions]);
 
   if (transactions.length === 0) {
     return <NoTransactions />;

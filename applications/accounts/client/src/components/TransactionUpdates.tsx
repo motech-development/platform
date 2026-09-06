@@ -1,4 +1,4 @@
-import { useApolloClient } from '@apollo/client';
+import { ApolloError, useApolloClient } from '@apollo/client';
 import {
   createContext,
   ReactNode,
@@ -52,14 +52,18 @@ type TransactionStates = ReadonlyMap<string, CurrentTransaction | null>;
 const emptyStates: TransactionStates = new Map();
 const TransactionUpdatesContext = createContext<{
   apply: (transactionId: string, current: CurrentTransaction | null) => void;
+  errors: ReadonlyMap<string, ApolloError>;
   states: TransactionStates;
   watch: (transactionId: string, onReady: () => void) => () => void;
   watchList: (transactionIds: string[]) => () => void;
+  watchRecovery: (recover: () => void) => () => void;
 }>({
   apply: () => {},
+  errors: new Map(),
   states: emptyStates,
   watch: () => () => {},
   watchList: () => () => {},
+  watchRecovery: () => () => {},
 });
 const TransactionStoreContext = createContext<{
   states: ReadonlyMap<string, TransactionStates>;
@@ -105,6 +109,11 @@ export function TransactionStateProvider({
 export const useApplyTransactionState = () =>
   useContext(TransactionUpdatesContext).apply;
 
+export const useTransactionRecovery = (recover: () => void) => {
+  const { watchRecovery } = useContext(TransactionUpdatesContext);
+  useEffect(() => watchRecovery(recover), [recover, watchRecovery]);
+};
+
 export const useTransactionState = (transactionId: string) => {
   const { states, watch } = useContext(TransactionUpdatesContext);
   const [readyFor, setReadyFor] = useState<{
@@ -120,8 +129,21 @@ export const useTransactionState = (transactionId: string) => {
     : undefined;
 };
 
+export const useTransactionReadError = (
+  transactionIds: string | readonly string[],
+) => {
+  const { errors, states } = useContext(TransactionUpdatesContext);
+  if (typeof transactionIds === 'string') return errors.get(transactionIds);
+  // A failed first read has no known status or list membership yet.
+  return (
+    transactionIds.map((id) => errors.get(id)).find(Boolean) ??
+    Array.from(errors).find(([id]) => !states.has(id))?.[1]
+  );
+};
+
 interface IReadRequest {
   dirty: boolean;
+  running: boolean;
   retries: number;
   timer?: ReturnType<typeof setTimeout>;
 }
@@ -145,6 +167,12 @@ function TransactionUpdates({
   const { update } = store;
   const viewedTransactions = useRef(new Map<string, Set<() => void>>());
   const loadedLists = useRef(new Set<string[]>());
+  const recoveries = useRef(new Set<() => void>());
+  const [errors, setErrors] = useState<ReadonlyMap<string, ApolloError>>(
+    () => new Map(),
+  );
+  const errorsRef = useRef(errors);
+  errorsRef.current = errors;
   const refreshList = useRef<
     ((transactionIds: string[]) => void) | undefined
   >();
@@ -191,19 +219,43 @@ function TransactionUpdates({
       loadedLists.current.delete(transactionIds);
     };
   }, []);
+  const watchRecovery = useCallback((recover: () => void) => {
+    recoveries.current.add(recover);
+    return () => {
+      recoveries.current.delete(recover);
+    };
+  }, []);
   const value = useMemo(
-    () => ({ apply, states, watch, watchList }),
-    [apply, states, watch, watchList],
+    () => ({
+      apply,
+      errors,
+      states,
+      watch,
+      watchList,
+      watchRecovery,
+    }),
+    [apply, errors, states, watch, watchList, watchRecovery],
   );
 
   useEffect(() => {
     let active = true;
     const requests = new Map<string, IReadRequest>();
+    const queued = new Map<string, () => void>();
+    let running = 0;
+
+    const clearError = (transactionId: string) => {
+      setErrors((previous) => {
+        if (!previous.has(transactionId)) return previous;
+        const next = new Map(previous);
+        next.delete(transactionId);
+        return next;
+      });
+    };
 
     const readTransaction = async (
       transactionId: string,
       request: IReadRequest,
-    ): Promise<void> => {
+    ): Promise<number | undefined> => {
       request.dirty = false;
       const revision = revisions.current.get(transactionId);
 
@@ -215,17 +267,12 @@ function TransactionUpdates({
           variables: { companyId, transactionId },
         });
 
-        if (!active) return;
+        if (!active) return undefined;
 
         // Signals and mutation responses can race. Re-read after either one
         // rather than inferring write order from response arrival.
-        if (
-          request.dirty ||
-          revision !== revisions.current.get(transactionId)
-        ) {
-          await readTransaction(transactionId, request);
-          return;
-        }
+        if (request.dirty || revision !== revisions.current.get(transactionId))
+          return await readTransaction(transactionId, request);
 
         const current = data.getTransactionState;
         update(
@@ -233,40 +280,104 @@ function TransactionUpdates({
           transactionId,
           current?.companyId === companyId ? current : null,
         );
+        clearError(transactionId);
         notifyReady(transactionId);
         requests.delete(transactionId);
-      } catch {
-        if (!active) return;
-        if (revision !== revisions.current.get(transactionId)) {
-          await readTransaction(transactionId, request);
-          return;
+        return undefined;
+      } catch (failure) {
+        if (!active) return undefined;
+        if (request.dirty || revision !== revisions.current.get(transactionId))
+          return readTransaction(transactionId, request);
+
+        const error =
+          failure instanceof ApolloError
+            ? failure
+            : new ApolloError({ networkError: failure as Error });
+        const status =
+          error.networkError && 'statusCode' in error.networkError
+            ? Number(error.networkError.statusCode)
+            : undefined;
+        const permanent =
+          (status !== undefined &&
+            status >= 400 &&
+            status < 500 &&
+            status !== 408 &&
+            status !== 429) ||
+          error.graphQLErrors.some((graphQLError) => {
+            const code =
+              graphQLError.extensions?.errorType ??
+              graphQLError.extensions?.code ??
+              ('errorType' in graphQLError ? graphQLError.errorType : '');
+            return (
+              typeof code === 'string' &&
+              /^(Unauthorized(?:Exception)?|AccessDenied(?:Exception)?|Forbidden|ValidationError|GRAPHQL_VALIDATION_FAILED|BAD_USER_INPUT|UNAUTHENTICATED|FORBIDDEN)$/i.test(
+                code,
+              )
+            );
+          });
+        if (permanent || request.retries >= 3) {
+          requests.delete(transactionId);
+          setErrors((previous) => new Map(previous).set(transactionId, error));
+          return undefined;
         }
 
-        // Retry a failed authoritative read, not the eventually consistent list.
-        const delay = Math.min(1000 * 2 ** request.retries, 30000);
+        // Retry transient authoritative-read failures a bounded number of times.
+        const delay = 1000 * 2 ** request.retries;
         request.retries += 1;
-        request.timer = setTimeout(() => {
-          request.timer = undefined;
-          readTransaction(transactionId, request).catch(() => {});
-        }, delay);
+        return delay;
       }
+    };
+
+    const drain = () => {
+      while (active && running < 5 && queued.size > 0) {
+        const [transactionId, start] = queued.entries().next().value as [
+          string,
+          () => void,
+        ];
+        queued.delete(transactionId);
+        start();
+      }
+    };
+
+    const enqueue = (transactionId: string, request: IReadRequest) => {
+      queued.set(transactionId, () => {
+        request.running = true;
+        running += 1;
+        readTransaction(transactionId, request)
+          .then((delay) => {
+            if (active && delay !== undefined) {
+              request.timer = setTimeout(() => {
+                request.timer = undefined;
+                enqueue(transactionId, request);
+              }, delay);
+            }
+          })
+          .finally(() => {
+            request.running = false;
+            running -= 1;
+            drain();
+          })
+          .catch(() => {});
+      });
+      drain();
     };
 
     const refresh = (transactionId: string) => {
       const existing = requests.get(transactionId);
       if (existing) {
-        existing.dirty = true;
+        if (existing.running) existing.dirty = true;
         if (existing.timer) {
           clearTimeout(existing.timer);
           existing.timer = undefined;
-          readTransaction(transactionId, existing).catch(() => {});
+          enqueue(transactionId, existing);
         }
         return;
       }
 
-      const request = { dirty: false, retries: 0 };
+      clearError(transactionId);
+      const request = { dirty: false, retries: 0, running: false };
       requests.set(transactionId, request);
-      readTransaction(transactionId, request).catch(() => {});
+      enqueue(transactionId, request);
     };
 
     refreshTransaction.current = refresh;
@@ -290,6 +401,7 @@ function TransactionUpdates({
     const refreshKnownTransactions = () => {
       const transactionIds = new Set([
         ...statesRef.current.keys(),
+        ...errorsRef.current.keys(),
         ...viewedTransactions.current.keys(),
         ...Array.from(loadedLists.current).flat(),
       ]);
@@ -302,9 +414,8 @@ function TransactionUpdates({
     const refreshAfterReconnect = () => {
       // Strongly check loaded rows and open details whose signals were missed.
       refreshKnownTransactions();
-      client
-        .refetchQueries({ include: ['GetBalance', 'GetTransactions'] })
-        .catch(() => {});
+      recoveries.current.forEach((recover) => recover());
+      client.refetchQueries({ include: ['GetTransactions'] }).catch(() => {});
     };
 
     const connect = () => {
@@ -358,6 +469,7 @@ function TransactionUpdates({
       subscription?.unsubscribe();
       clearTimeout(reconnectTimer);
       requests.forEach(({ timer }) => clearTimeout(timer));
+      queued.clear();
     };
   }, [client, companyId, notifyReady, owner, update]);
 
@@ -385,9 +497,13 @@ export const useTransactionItems = <T extends { date: string; id: string }>(
     if (states.size === 0) return existing;
 
     const loadedOrder = new Map(existing.map(({ id }, index) => [id, index]));
-    const oldestLoadedDate = existing.reduce(
-      (oldest, { date }) => Math.min(oldest, new Date(date).getTime()),
-      Infinity,
+    const ascending = status === TransactionStatus.Pending;
+    const boundaryDate = existing.reduce(
+      (boundary, { date }) =>
+        ascending
+          ? Math.max(boundary, new Date(date).getTime())
+          : Math.min(boundary, new Date(date).getTime()),
+      ascending ? -Infinity : Infinity,
     );
 
     // Keep authoritative records and tombstones separate from Apollo's index
@@ -400,8 +516,8 @@ export const useTransactionItems = <T extends { date: string; id: string }>(
       const date = new Date(current.date).getTime();
       if (
         !hasMore ||
-        date > oldestLoadedDate ||
-        (date === oldestLoadedDate && loadedOrder.has(current.id))
+        (ascending ? date < boundaryDate : date > boundaryDate) ||
+        (date === boundaryDate && loadedOrder.has(current.id))
       )
         result.push(current);
     });

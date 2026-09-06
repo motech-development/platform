@@ -1,5 +1,6 @@
 import {
   ApolloClient,
+  ApolloError,
   ApolloLink,
   ApolloProvider,
   FetchResult,
@@ -14,6 +15,7 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react';
+import { GraphQLError } from 'graphql';
 import { ReactNode } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { TransactionStatus } from '../../graphql/graphql';
@@ -23,6 +25,8 @@ import TransactionUpdates, {
   TransactionStateProvider,
   useApplyTransactionState,
   useTransactionItems,
+  useTransactionReadError,
+  useTransactionRecovery,
   useTransactionState,
 } from '../TransactionUpdates';
 
@@ -54,7 +58,7 @@ const deliver = async (action: () => void) => {
   });
 };
 
-function setupNetwork() {
+function setupNetwork(acknowledgeOnSubscribe = false) {
   const signals: Observer[] = [];
   const reads: Array<{ observer: Observer; transactionId: string }> = [];
   const lists: Observer[] = [];
@@ -66,6 +70,8 @@ function setupNetwork() {
         new Observable((observer) => {
           if (operation.operationName === 'OnTransactionChange') {
             signals.push(observer as Observer);
+            if (acknowledgeOnSubscribe)
+              observer.next({ extensions: { controlMsgType: 'CONNECTED' } });
             return unsubscribe;
           }
           if (operation.operationName === 'GetTransactionState') {
@@ -144,17 +150,22 @@ function setupNetwork() {
     unsubscribe,
   };
 }
-function Lists() {
+function Lists({ paginated = false }: { paginated?: boolean }) {
   const { data } = useQuery<{
     getTransactions: { items: ReturnType<typeof transaction>[] };
   }>(LIST, { variables: { id: 'company', status: TransactionStatus.Pending } });
   const pending = useTransactionItems(
     data?.getTransactions.items,
     TransactionStatus.Pending,
+    paginated,
   );
   const confirmed = useTransactionItems([], TransactionStatus.Confirmed);
+  const error = useTransactionReadError(
+    data?.getTransactions.items.map(({ id }) => id) ?? [],
+  );
   return (
     <>
+      <div data-testid="read-error">{error?.message}</div>
       <div data-testid="pending">
         {pending.map((item) => (
           <p key={item.id}>
@@ -196,6 +207,24 @@ function Details() {
   return <p>{current?.description ?? 'Original detail'}</p>;
 }
 
+function Recovery({ onRecover }: { onRecover: () => void }) {
+  useTransactionRecovery(onRecover);
+  return null;
+}
+
+function ReadableDetails() {
+  const current = useTransactionState('transaction');
+  const error = useTransactionReadError('transaction');
+  if (error) return <p role="alert">{error.message}</p>;
+  return (
+    <p>
+      {current === undefined
+        ? 'Loading current transaction'
+        : current?.description ?? 'Deleted transaction'}
+    </p>
+  );
+}
+
 function Account({ companyId = 'company' }: { companyId?: string }) {
   return (
     <TransactionUpdates key={companyId} companyId={companyId} owner="owner">
@@ -205,6 +234,249 @@ function Account({ companyId = 'company' }: { companyId?: string }) {
 }
 afterEach(() => vi.useRealTimers());
 describe('TransactionUpdates', () => {
+  it('registers recovery before a synchronous subscription acknowledgement', async () => {
+    const network = setupNetwork(true);
+    const recover = vi.fn();
+    render(
+      <TransactionUpdates companyId="company" owner="owner">
+        <Recovery onRecover={recover} />
+        <Lists />
+      </TransactionUpdates>,
+      { wrapper: network.Wrapper },
+    );
+    await waitFor(() => expect(recover).toHaveBeenCalledOnce());
+  });
+
+  it('calls the current recovery callback on acknowledgement and removes it when its screen closes', async () => {
+    const network = setupNetwork();
+    const original = vi.fn();
+    const current = vi.fn();
+    const view = render(
+      <TransactionUpdates companyId="company" owner="owner">
+        <Recovery onRecover={original} />
+      </TransactionUpdates>,
+      { wrapper: network.Wrapper },
+    );
+    await network.acknowledge();
+    expect(original).toHaveBeenCalledOnce();
+    view.rerender(
+      <TransactionUpdates companyId="company" owner="owner">
+        <Recovery onRecover={current} />
+      </TransactionUpdates>,
+    );
+    await network.acknowledge();
+    expect(original).toHaveBeenCalledOnce();
+    expect(current).toHaveBeenCalledOnce();
+    view.rerender(
+      <TransactionUpdates companyId="company" owner="owner">
+        <p>Another screen</p>
+      </TransactionUpdates>,
+    );
+    await network.acknowledge();
+    expect(current).toHaveBeenCalledOnce();
+  });
+
+  it('keeps Pending corrections inside the ascending page boundary and preserves equal-date membership', async () => {
+    const network = setupNetwork();
+    render(
+      <TransactionUpdates companyId="company" owner="owner">
+        <Lists paginated />
+      </TransactionUpdates>,
+      { wrapper: network.Wrapper },
+    );
+    const first = transaction({
+      date: '2026-09-01',
+      id: 'first',
+      name: 'First',
+    });
+    const second = transaction({
+      date: '2026-09-03',
+      id: 'second',
+      name: 'Second',
+    });
+    const third = transaction({
+      date: '2026-09-03',
+      id: 'third',
+      name: 'Third',
+    });
+    await network.resolveList([first, second, third]);
+    network.signal('second');
+    await network.resolveRead(
+      0,
+      transaction({ ...second, name: 'Updated second' }),
+    );
+    expect(screen.getByTestId('pending')).toHaveTextContent(
+      'First|receipt.pdfUpdated second|receipt.pdfThird|receipt.pdf',
+    );
+
+    network.signal('unseen-tie');
+    await network.resolveRead(
+      1,
+      transaction({ date: '2026-09-03', id: 'unseen-tie', name: 'Unseen tie' }),
+    );
+    expect(screen.queryByText(/Unseen tie/)).not.toBeInTheDocument();
+    network.signal('later');
+    await network.resolveRead(
+      2,
+      transaction({ date: '2026-09-04', id: 'later', name: 'Off page' }),
+    );
+    expect(screen.queryByText(/Off page/)).not.toBeInTheDocument();
+
+    network.signal('first');
+    await network.resolveRead(
+      3,
+      transaction({ ...first, date: '2026-09-02', name: 'Moved within page' }),
+    );
+    expect(screen.getByTestId('pending')).toHaveTextContent(
+      'Moved within page|receipt.pdfUpdated second|receipt.pdfThird|receipt.pdf',
+    );
+    network.signal('earlier');
+    await network.resolveRead(
+      4,
+      transaction({ date: '2026-08-30', id: 'earlier', name: 'New earliest' }),
+    );
+    expect(screen.getByTestId('pending')).toHaveTextContent(
+      'New earliest|receipt.pdfMoved within page|receipt.pdfUpdated second|receipt.pdf',
+    );
+    expect(screen.getByTestId('pending').children).toHaveLength(3);
+  });
+
+  it('reconciles every loaded row with at most five strong reads active', async () => {
+    const network = setupNetwork();
+    render(<Account />, { wrapper: network.Wrapper });
+    const rows = Array.from({ length: 100 }, (_, index) =>
+      transaction({ id: `row-${index}` }),
+    );
+    await network.resolveList(rows);
+    await network.acknowledge();
+    expect(network.reads).toHaveLength(5);
+    network.signal('row-50');
+    expect(network.reads).toHaveLength(5);
+    const resolveNext = async (index: number): Promise<void> => {
+      await network.resolveRead(index, null);
+      expect(network.reads).toHaveLength(Math.min(index + 6, rows.length));
+      if (index + 1 < rows.length) await resolveNext(index + 1);
+    };
+    await resolveNext(0);
+    expect(
+      new Set(network.reads.map(({ transactionId }) => transactionId)).size,
+    ).toBe(100);
+    expect(screen.getByTestId('pending')).toBeEmptyDOMElement();
+  });
+
+  it('does not start queued strong reads after leaving the account', async () => {
+    const network = setupNetwork();
+    const view = render(<Account />, { wrapper: network.Wrapper });
+    await network.resolveList(
+      Array.from({ length: 10 }, (_, index) =>
+        transaction({ id: `row-${index}` }),
+      ),
+    );
+    await network.acknowledge();
+    expect(network.reads).toHaveLength(5);
+    view.unmount();
+    await deliver(() =>
+      network.reads.forEach(({ observer }) => {
+        observer.next({ data: { getTransactionState: null } });
+        observer.complete();
+      }),
+    );
+    expect(network.reads).toHaveLength(5);
+  });
+
+  it.each([
+    [
+      'HTTP authorization',
+      Object.assign(new Error('Access denied'), { statusCode: 403 }),
+    ],
+    [
+      'GraphQL validation',
+      new ApolloError({
+        graphQLErrors: [
+          new GraphQLError('Invalid request', {
+            extensions: { code: 'GRAPHQL_VALIDATION_FAILED' },
+          }),
+        ],
+      }),
+    ],
+    [
+      'AppSync authorization',
+      new ApolloError({
+        graphQLErrors: [
+          Object.assign(new GraphQLError('Unauthorized'), {
+            errorType: 'UnauthorizedException',
+          }),
+        ],
+      }),
+    ],
+  ])(
+    'exposes permanent %s failures immediately and retries after a new signal',
+    async (_, failure) => {
+      vi.useFakeTimers();
+      const network = setupNetwork();
+      render(
+        <TransactionUpdates companyId="company" owner="owner">
+          <ReadableDetails />
+        </TransactionUpdates>,
+        { wrapper: network.Wrapper },
+      );
+      await deliver(() => network.reads[0].observer.error(failure));
+      expect(screen.getByRole('alert')).toHaveTextContent(failure.message);
+      expect(screen.queryByText('Deleted transaction')).not.toBeInTheDocument();
+      await act(() => vi.advanceTimersByTimeAsync(60000));
+      expect(network.reads).toHaveLength(1);
+      network.signal();
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+      expect(
+        screen.getByText('Loading current transaction'),
+      ).toBeInTheDocument();
+      await network.resolveRead(1, transaction());
+      expect(screen.getByText('Invoice')).toBeInTheDocument();
+    },
+  );
+
+  it.each([
+    ['loaded', [transaction()]],
+    ['signal-only', []],
+  ])(
+    'bounds transient %s read retries, exposes the failure to lists, and recovers on reconnect',
+    async (_, initialRows) => {
+      vi.useFakeTimers();
+      const network = setupNetwork();
+      render(<Account />, { wrapper: network.Wrapper });
+      await network.resolveList(initialRows);
+      network.signal();
+      const rejectRead = (index: number) =>
+        deliver(() =>
+          network.reads[index].observer.error(new Error('Service unavailable')),
+        );
+      await rejectRead(0);
+      await act(() => vi.advanceTimersByTimeAsync(1000));
+      await rejectRead(1);
+      await act(() => vi.advanceTimersByTimeAsync(2000));
+      await rejectRead(2);
+      await act(() => vi.advanceTimersByTimeAsync(4000));
+      await rejectRead(3);
+      expect(screen.getByTestId('read-error')).toHaveTextContent(
+        'Service unavailable',
+      );
+      expect(screen.getByTestId('pending').children).toHaveLength(
+        initialRows.length,
+      );
+      await act(() => vi.advanceTimersByTimeAsync(60000));
+      expect(network.reads).toHaveLength(4);
+      await network.acknowledge();
+      expect(screen.getByTestId('read-error')).toBeEmptyDOMElement();
+      await network.resolveRead(
+        4,
+        transaction({ name: 'Recovered transaction' }),
+      );
+      expect(screen.getByTestId('pending')).toHaveTextContent(
+        'Recovered transaction',
+      );
+    },
+  );
+
   it('strongly checks list rows loaded after acknowledgement without repeated reads for stale refetches', async () => {
     const network = setupNetwork();
     render(<Account />, { wrapper: network.Wrapper });

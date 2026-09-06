@@ -44,14 +44,17 @@ can arrive before the separate balance calculation completes.
 
 The client overlays these current records and deletion markers on Pending and
 Confirmed lists, so delayed index responses cannot overwrite a correction or
-restore a deleted row. Confirmed corrections respect the loaded date window
-and page size while more pages remain, including when an edited date moves a
-previously loaded row outside that window. Equal-date rows at the boundary
+restore a deleted row. Corrections respect the loaded date window and page size
+while more pages remain, including when an edited date moves a previously loaded
+row outside that window. Pending windows advance toward later dates; Confirmed
+windows advance toward earlier dates. Equal-date rows at the boundary
 retain server-loaded membership and order; an unseen row with that same date
 waits for its server page. Vacated positions are filled from
-the server cursor without increasing the visible limit, which is set by each
-successful first-page network response rather than cached membership.
-Explicit Load More requests expand it. Refills share the pagination request guard and do not
+the server cursor without increasing the visible limit, which is initialized by
+a successful first-page network response rather than cached membership.
+Explicit Load More requests expand it, and recovery preserves that expanded
+window even when the server limits a response to fewer rows.
+Refills share the pagination request guard and do not
 automatically repeat a failed cursor. Older records appear when their page is
 loaded. Repeated signals never apply financial amounts again.
 Reads for the same transaction are serialized; a newer signal during a read
@@ -59,7 +62,14 @@ causes another read before applying the result. Successful local edits and
 deletions update the retained correction immediately and trigger a strong read
 to resolve the write order. Reads started before a mutation response also cause
 a follow-up read; the local result stays visible until reconciliation. Failed
-reads retry with backoff.
+reads retry with backoff up to four attempts; permanent authorization and input
+errors stop immediately. Terminal read failures display the existing error view,
+including for rows supplied only by live corrections and failed first reads of
+newly signalled transactions. Those failed IDs remain eligible for reconnect recovery.
+An initialized detail form
+retains its unsaved edits while displaying that error and prevents saving until
+the error clears. A new signal, reconnection or detail visit can start another attempt.
+Authoritative reads use at most five concurrent requests.
 Corrections survive navigation for the signed-in session and are rechecked on
 return to an account. Lists fetch fresh data when mounted, replacing first-page
 membership while cursor requests still append older pages. Opening a transaction
@@ -81,6 +91,12 @@ account list.
 
 Dropped subscriptions reconnect with backoff and refresh known corrections,
 open lists and the currently viewed transaction, even without prior signals.
+Balance recovery uses a strongly consistent read. Expanded lists request their
+visible range again, refilling from the cursor when necessary. First-page recovery
+starts a fresh request even when an older list read is still pending. Recovery rejects
+unfinished cursor responses from the previous connection. Live row refreshes
+keep an open deletion confirmation and its typed input intact while the selected
+transaction remains present.
 Loaded list rows also receive strong reads so a stale index refresh cannot hide
 missed edits, publication or deletion. Rows first loaded after acknowledgement
 are checked once for that connection as well. Recovery runs after the server acknowledges the

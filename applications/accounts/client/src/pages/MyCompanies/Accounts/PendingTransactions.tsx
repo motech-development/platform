@@ -10,7 +10,7 @@ import {
   Typography,
   useToast,
 } from '@motech-development/breeze-ui';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
@@ -23,6 +23,7 @@ import TransactionDetailsCell from '../../../components/TransactionDetailsCell';
 import {
   useApplyTransactionState,
   useTransactionItems,
+  useTransactionReadError,
 } from '../../../components/TransactionUpdates';
 import WarningText from '../../../components/WarningText';
 import { gql } from '../../../graphql';
@@ -177,6 +178,7 @@ function PendingTransactions() {
   const { add } = useToast();
   const applyTransactionState = useApplyTransactionState();
   const { data, error, loading } = useQuery(GET_TRANSACTIONS, {
+    context: { queryDeduplication: false },
     fetchPolicy: 'cache-and-network',
     variables: {
       id: companyId,
@@ -192,6 +194,19 @@ function PendingTransactions() {
   const transactions = useTransactionItems(
     data?.getTransactions.items,
     TransactionStatus.Pending,
+  );
+  useEffect(() => {
+    if (
+      transaction.id &&
+      !transactions.some(({ id }) => id === transaction.id)
+    ) {
+      onDismiss();
+    }
+  }, [transaction.id, transactions]);
+  const readError = useTransactionReadError(
+    [...(data?.getTransactions.items ?? []), ...transactions].map(
+      ({ id }) => id,
+    ),
   );
   const [deleteMutation, { loading: deleteLoading }] = useMutation(
     DELETE_TRANSACTION,
@@ -229,7 +244,7 @@ function PendingTransactions() {
   };
 
   return (
-    <Connected error={error} loading={loading}>
+    <Connected error={error || readError} loading={!readError && loading}>
       {data && (
         <>
           <PageTitle
