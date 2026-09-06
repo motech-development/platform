@@ -5,8 +5,10 @@ import type {
   DynamoDBBatchResponse,
   DynamoDBRecord,
   DynamoDBStreamHandler,
+  StreamRecord,
 } from 'aws-lambda';
 import publishTransactionChange from '../shared/publish-transaction-change';
+import transactionCompanyId from '../shared/transaction-company-id';
 import updateBalance from '../shared/update-balance';
 
 export interface IBalance {
@@ -71,21 +73,25 @@ const hasTransactionScope = (
   );
 };
 
+const readImage = (image: StreamRecord['NewImage']) => {
+  if (!image) return undefined;
+  const item = unmarshall(image as Record<string, AttributeValue>);
+  const { __typename: typename } = item;
+  if (typename === 'Transaction') {
+    item.companyId = transactionCompanyId(item);
+  }
+  return item as IBalance | ITransactionScope;
+};
+
 const publishRecord = async ({ eventName, dynamodb }: DynamoDBRecord) => {
   const image =
     eventName === 'REMOVE' ? dynamodb?.OldImage : dynamodb?.NewImage;
 
-  const item = image
-    ? (unmarshall(image as Record<string, AttributeValue>) as
-        | IBalance
-        | ITransactionScope)
-    : undefined;
+  const item = readImage(image);
 
   // Invalidate the former scope even when the new image cannot be published.
   if (eventName === 'MODIFY' && dynamodb?.OldImage) {
-    const previous = unmarshall(
-      dynamodb.OldImage as Record<string, AttributeValue>,
-    ) as ITransactionScope;
+    const previous = readImage(dynamodb.OldImage);
 
     if (
       hasTransactionScope(previous) &&
