@@ -122,13 +122,15 @@ function ReconcileTransaction({
 
     // Compare values, not Formik's touched flags: blur alone is not an edit.
     setValues((current) =>
-      changed.reduce(
-        (next, field) =>
-          String(current[field] ?? '') === String(previous[field] ?? '')
-            ? { ...next, [field]: initialValues[field] }
-            : next,
-        current,
-      ),
+      changed.reduce((next, field) => {
+        const unchanged =
+          String(current[field] ?? '') === String(previous[field] ?? '') ||
+          (field === 'date' &&
+            new Date(current.date).getTime() ===
+              new Date(previous.date).getTime());
+
+        return unchanged ? { ...next, [field]: initialValues[field] } : next;
+      }, current),
     ).catch(() => {});
   }, [initialValues, setValues]);
 
@@ -146,6 +148,19 @@ function ReconcileTransaction({
   ]);
 
   return null;
+}
+
+function TransactionDate() {
+  const { values } = useFormikContext<IFormValues>();
+  const { t } = useTranslation('accounts');
+
+  return (
+    <DatePicker
+      key={values.date}
+      label={t('transaction-form.transaction-details.date.label')}
+      name="date"
+    />
+  );
 }
 
 function TransactionForm({
@@ -467,10 +482,7 @@ function TransactionForm({
                   }))}
                 />
 
-                <DatePicker
-                  label={t('transaction-form.transaction-details.date.label')}
-                  name="date"
-                />
+                <TransactionDate />
               </>
             )}
           </Card>

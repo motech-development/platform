@@ -1,4 +1,9 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing';
+import { ApolloLink, Observable } from '@apollo/client';
+import {
+  MockedProvider,
+  MockedResponse,
+  MockLink,
+} from '@apollo/client/testing';
 import { waitForApollo } from '@motech-development/appsync-apollo';
 import {
   act,
@@ -122,14 +127,16 @@ describe('ViewTransaction', () => {
       ];
     });
 
-    const renderTransaction = () =>
+    const renderTransaction = (link?: ApolloLink) =>
       render(<ViewTransaction />, {
         wrapper: ({ children }) => (
           <TestProvider
             path="/accounts/:companyId/view-transaction/:transactionId"
             history={history}
           >
-            <MockedProvider mocks={mocks}>{children}</MockedProvider>
+            <MockedProvider link={link} mocks={mocks}>
+              {children}
+            </MockedProvider>
           </TestProvider>
         ),
       });
@@ -196,6 +203,130 @@ describe('ViewTransaction', () => {
         screen.getByLabelText('transaction-form.upload.upload.label'),
       ).toBeInTheDocument();
 
+      const save = screen.getByRole('button', {
+        name: 'transaction-form.save',
+      });
+      await waitFor(() => expect(save).not.toBeDisabled());
+      fireEvent.click(save);
+
+      await waitFor(() => expect(result).toHaveBeenCalledOnce());
+    });
+
+    it('resets an open attachment preview when a live update replaces the file', async () => {
+      const replacement = 'company-id/replacement.pdf';
+      mocks.push(
+        ...[cachedTransaction.attachment, replacement].map((path) => ({
+          request: {
+            query: REQUEST_DOWNLOAD,
+            variables: { id: 'company-id', path },
+          },
+          result: {
+            data: {
+              requestDownload: { url: `https://example.com/${path}` },
+            },
+          },
+        })),
+      );
+      (fetch as Mock).mockImplementation((url: string) =>
+        Promise.resolve(
+          createFetchResponse({
+            body:
+              url === `https://example.com/${replacement}`
+                ? 'New receipt'
+                : 'Old receipt',
+          }),
+        ),
+      );
+      const { rerender } = renderTransaction();
+      fireEvent.click(
+        await screen.findByText('transaction-form.upload.view-file'),
+      );
+      fireEvent.click(await screen.findByLabelText('download'));
+      await waitFor(() =>
+        expect(saveAs).toHaveBeenCalledWith('Old receipt', 'attachment.pdf'),
+      );
+
+      vi.mocked(useTransactionState).mockReturnValue({
+        ...cachedTransaction,
+        attachment: replacement,
+      });
+      rerender(<ViewTransaction />);
+
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+      expect(screen.queryByLabelText('download')).not.toBeInTheDocument();
+      fireEvent.click(screen.getByText('transaction-form.upload.view-file'));
+      fireEvent.click(await screen.findByLabelText('download'));
+      await waitFor(() =>
+        expect(saveAs).toHaveBeenLastCalledWith(
+          'New receipt',
+          'replacement.pdf',
+        ),
+      );
+    });
+
+    it('retains and saves the live replacement when an older attachment deletion completes', async () => {
+      const replacement = {
+        ...cachedTransaction,
+        attachment: 'company-id/replacement.pdf',
+      };
+      const result = vi.fn(() => ({
+        data: { updateTransaction: replacement },
+      }));
+      mocks.push({
+        request: {
+          query: UPDATE_TRANSACTION,
+          variables: { input: replacement },
+        },
+        result,
+      });
+      let deletedPath: string | undefined;
+      let completeDelete: (() => void) | undefined;
+      const link = ApolloLink.split(
+        ({ operationName }) => operationName === 'DeleteFile',
+        new ApolloLink(
+          (operation) =>
+            new Observable((observer) => {
+              deletedPath = operation.variables.path as string;
+              completeDelete = () => {
+                observer.next({
+                  data: { deleteFile: { path: deletedPath } },
+                });
+                observer.complete();
+              };
+            }),
+        ),
+        new MockLink(mocks),
+      );
+      const { rerender } = renderTransaction(link);
+      fireEvent.click(
+        await screen.findByRole('button', {
+          name: 'transaction-form.upload.delete-file',
+        }),
+      );
+      await waitFor(() =>
+        expect(deletedPath).toBe(cachedTransaction.attachment),
+      );
+
+      vi.mocked(useTransactionState).mockReturnValue(replacement);
+      rerender(<ViewTransaction />);
+      expect(
+        screen.getByRole('button', {
+          name: 'transaction-form.upload.view-file',
+        }),
+      ).toBeInTheDocument();
+      await act(async () => {
+        completeDelete?.();
+        await waitForApollo(0);
+      });
+
+      expect(
+        screen.getByRole('button', {
+          name: 'transaction-form.upload.view-file',
+        }),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByLabelText('transaction-form.upload.upload.label'),
+      ).not.toBeInTheDocument();
       const save = screen.getByRole('button', {
         name: 'transaction-form.save',
       });
@@ -483,6 +614,125 @@ describe('ViewTransaction', () => {
         ),
       ).not.toBeInTheDocument();
       expect(description).toHaveValue(savedTransaction.description);
+      const save = screen.getByRole('button', {
+        name: 'transaction-form.save',
+      });
+      await waitFor(() => expect(save).not.toBeDisabled());
+      fireEvent.click(save);
+
+      await waitFor(() => expect(result).toHaveBeenCalledOnce());
+    });
+
+    it.each([
+      '2020-05-07T10:58:17.000Z',
+      '2020-05-07T10:58:17Z',
+      '2020-05-07T11:58:17+01:00',
+    ])(
+      'retains a live date correction from %s through validation changes and saves the corrected date',
+      async (date) => {
+        vi.mocked(useTransactionState).mockReturnValue({
+          ...cachedTransaction,
+          date,
+        });
+        const corrected = {
+          ...cachedTransaction,
+          date: '2020-05-08T10:58:17.000Z',
+        };
+        const savedTransaction = {
+          ...corrected,
+          description: 'Updated after validation',
+        };
+        const result = vi.fn(() => ({
+          data: { updateTransaction: savedTransaction },
+        }));
+        mocks.push({
+          request: {
+            query: UPDATE_TRANSACTION,
+            variables: { input: savedTransaction },
+          },
+          result,
+        });
+        const { rerender } = renderTransaction();
+        const description = await screen.findByLabelText(
+          'transaction-form.transaction-details.description.label',
+        );
+        vi.mocked(useTransactionState).mockReturnValue(corrected);
+        rerender(<ViewTransaction />);
+        await waitFor(() =>
+          expect(
+            screen.getByLabelText(
+              'transaction-form.transaction-details.date.label',
+            ),
+          ).toHaveValue(corrected.date),
+        );
+
+        fireEvent.change(description, { target: { value: '' } });
+        fireEvent.blur(description);
+        await screen.findByText(
+          'transaction-form.transaction-details.description.required',
+        );
+        expect(
+          screen.getByLabelText(
+            'transaction-form.transaction-details.date.label',
+          ),
+        ).toHaveValue(corrected.date);
+        fireEvent.change(description, {
+          target: { value: savedTransaction.description },
+        });
+        const save = screen.getByRole('button', {
+          name: 'transaction-form.save',
+        });
+        await waitFor(() => expect(save).not.toBeDisabled());
+        fireEvent.click(save);
+
+        await waitFor(() => expect(result).toHaveBeenCalledOnce());
+      },
+    );
+
+    it('retains a locally selected calendar date across a later server correction and saves it', async () => {
+      const savedTransaction = {
+        ...cachedTransaction,
+        date: '2020-05-09T10:58:17.000Z',
+        description: 'Server description',
+      };
+      const result = vi.fn(() => ({
+        data: { updateTransaction: savedTransaction },
+      }));
+      mocks.push({
+        request: {
+          query: UPDATE_TRANSACTION,
+          variables: { input: savedTransaction },
+        },
+        result,
+      });
+      const { rerender } = renderTransaction();
+      fireEvent.click(
+        await screen.findByRole('button', {
+          name: /^Choose transaction-form.transaction-details.date.label/,
+        }),
+      );
+      const calendar = await screen.findByRole('grid');
+      fireEvent.click(within(calendar).getByRole('button', { name: '9' }));
+      await waitFor(() =>
+        expect(
+          screen.getByLabelText(
+            'transaction-form.transaction-details.date.label',
+          ),
+        ).toHaveValue(savedTransaction.date),
+      );
+
+      vi.mocked(useTransactionState).mockReturnValue({
+        ...cachedTransaction,
+        date: '2020-05-08T10:58:17.000Z',
+        description: savedTransaction.description,
+      });
+      rerender(<ViewTransaction />);
+      await screen.findByDisplayValue(savedTransaction.description);
+      expect(
+        screen.getByLabelText(
+          'transaction-form.transaction-details.date.label',
+        ),
+      ).toHaveValue(savedTransaction.date);
       const save = screen.getByRole('button', {
         name: 'transaction-form.save',
       });
