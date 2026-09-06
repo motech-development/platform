@@ -22,10 +22,13 @@ const transaction = {
 
 type StateEvent = AppSyncResolverEvent<ITransactionStateArguments>;
 
-const invoke = (identity: unknown = { sub: 'owner-id' }) =>
+const invoke = (
+  identity: unknown = { sub: 'owner-id' },
+  companyId = 'company-id',
+) =>
   handler(
     {
-      arguments: { companyId: 'company-id', transactionId: 'transaction-id' },
+      arguments: { companyId, transactionId: 'transaction-id' },
       identity,
     } as StateEvent,
     {} as Context,
@@ -69,6 +72,27 @@ describe('get-transaction-state', () => {
     await expect(invoke()).resolves.toEqual(transaction);
     expect(ddb).toReceiveCommandTimes(GetCommand, 2);
   });
+
+  it.each(['owner-id', 'provider:tenant:user'])(
+    'uses indexed membership after a move without changing owner authorization: %s',
+    async (owner) => {
+      const moved = {
+        ...transaction,
+        data: `${owner}:another-company:${transaction.status}:${transaction.date}`,
+        owner,
+      };
+      ddb.on(GetCommand).resolves({ Item: moved });
+
+      await expect(invoke({ sub: owner })).resolves.toBeNull();
+      await expect(invoke({ sub: owner }, 'another-company')).resolves.toEqual({
+        ...moved,
+        companyId: 'another-company',
+      });
+      await expect(
+        invoke({ sub: 'another-owner' }, 'another-company'),
+      ).resolves.toBeNull();
+    },
+  );
 
   it.each([
     ['deleted', undefined],

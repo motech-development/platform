@@ -1,6 +1,7 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, GetCommand } from '@aws-sdk/lib-dynamodb';
 import type { AppSyncResolverHandler } from 'aws-lambda';
+import transactionCompanyId from '../shared/transaction-company-id';
 
 export interface ITransactionStateArguments {
   companyId: string;
@@ -39,11 +40,15 @@ export const handler: AppSyncResolverHandler<
     );
 
     // Deleted, moved and inaccessible transactions have the same nullable result.
-    if (Item?.companyId !== companyId || Item.owner !== identity.sub) {
+    if (!Item || Item.owner !== identity.sub) {
+      return null;
+    }
+    const currentCompanyId = transactionCompanyId(Item);
+    if (currentCompanyId !== companyId) {
       return null;
     }
 
-    return Item;
+    return { ...Item, companyId: currentCompanyId };
   } catch (error) {
     if (
       error instanceof Error &&

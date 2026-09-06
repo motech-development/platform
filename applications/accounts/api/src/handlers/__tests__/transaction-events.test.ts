@@ -149,6 +149,53 @@ describe('transaction stream events', () => {
     );
   });
 
+  it.each(['owner-id', 'provider:tenant:user'])(
+    'notifies both indexed companies when the stored company field is stale: %s',
+    async (owner) => {
+      const date = '2026-09-06T00:00:00.000Z';
+      const previous = {
+        ...transaction,
+        data: `${owner}:company-id:pending:${date}`,
+        date,
+        owner,
+      };
+      const current = {
+        ...previous,
+        data: `${owner}:another-company:pending:${date}`,
+      };
+
+      await expect(
+        invoke([record('MODIFY', previous, current)]),
+      ).resolves.toEqual({ batchItemFailures: [] });
+      expect(mutate).toHaveBeenCalledTimes(2);
+      expect(mutate).toHaveBeenNthCalledWith(1, {
+        mutation,
+        variables: { id: 'company-id', owner, transactionId: 'transaction-id' },
+      });
+      expect(mutate).toHaveBeenNthCalledWith(2, {
+        mutation,
+        variables: {
+          id: 'another-company',
+          owner,
+          transactionId: 'transaction-id',
+        },
+      });
+
+      mutate.mockClear();
+      await expect(
+        invoke([record('REMOVE', current, undefined)]),
+      ).resolves.toEqual({ batchItemFailures: [] });
+      expect(mutate).toHaveBeenCalledExactlyOnceWith({
+        mutation,
+        variables: {
+          id: 'another-company',
+          owner,
+          transactionId: 'transaction-id',
+        },
+      });
+    },
+  );
+
   it('publishes a repaired transaction without retrying its malformed previous scope', async () => {
     await expect(
       invoke([record('MODIFY', { ...transaction, owner: 123 }, transaction)]),
