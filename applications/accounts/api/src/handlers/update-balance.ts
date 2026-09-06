@@ -27,6 +27,32 @@ interface ITransactionScope {
   owner: string;
 }
 
+const publishBalance = async (
+  { id, owner, balance, vat }: IBalance,
+  dynamodb: DynamoDBRecord['dynamodb'],
+) => {
+  if (
+    typeof id !== 'string' ||
+    id.length === 0 ||
+    typeof owner !== 'string' ||
+    owner.length === 0 ||
+    !Number.isFinite(balance) ||
+    !Number.isFinite(vat?.owed) ||
+    !Number.isFinite(vat?.paid)
+  ) {
+    logger.error('Skipping balance without a valid ID, owner, balance or VAT', {
+      keys: dynamodb?.Keys,
+      sequenceNumber: dynamodb?.SequenceNumber,
+    });
+    return;
+  }
+
+  await updateBalance(id, owner, {
+    balance,
+    vat: { owed: vat.owed, paid: vat.paid },
+  });
+};
+
 const hasTransactionScope = (
   item: IBalance | ITransactionScope | undefined,
 ): item is ITransactionScope => {
@@ -80,8 +106,7 @@ const publishRecord = async ({ eventName, dynamodb }: DynamoDBRecord) => {
   const { __typename: typename } = item;
 
   if (typename === 'Balance' && eventName === 'MODIFY') {
-    const { balance, id, owner, vat } = item;
-    await updateBalance(id, owner, { balance, vat });
+    await publishBalance(item, dynamodb);
   }
 
   if (typename === 'Transaction') {
