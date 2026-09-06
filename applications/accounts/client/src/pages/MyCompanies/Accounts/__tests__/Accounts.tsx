@@ -32,113 +32,128 @@ describe('Accounts', () => {
     history = ['/accounts/company-id'];
   });
 
-  it('resubscribes to live balance and VAT updates after both subscriptions lose their shared connection', async () => {
-    let disconnectChanges: (() => void) | undefined;
-    const balances: Array<{
-      fail: () => void;
-      publish: () => void;
-    }> = [];
-    const list = vi.fn();
-    const stoppedBalance = vi.fn();
-    const link = new ApolloLink(
-      (operation) =>
-        new Observable((observer) => {
-          if (operation.operationName === 'OnTransactionChange') {
-            disconnectChanges = () =>
-              observer.error(new Error('Shared connection lost'));
-            observer.next({ extensions: { controlMsgType: 'CONNECTED' } });
-          } else if (operation.operationName === 'OnTransaction') {
-            balances.push({
-              fail: () => observer.error(new Error('Shared connection lost')),
-              publish: () =>
-                observer.next({
-                  data: {
-                    onTransaction: { balance: 75, vat: { owed: 15, paid: 7 } },
-                  },
-                }),
-            });
-            const context = operation.getContext() as {
-              controlMessages?: { '@@controlEvents'?: boolean };
-            };
-            if (context.controlMessages?.['@@controlEvents'])
+  it.each(['error', 'complete'] as const)(
+    'resubscribes to live balance and VAT updates after %s disconnects the subscriptions',
+    async (disconnectType) => {
+      let disconnectChanges: (() => void) | undefined;
+      const balances: Array<{
+        fail: () => void;
+        publish: () => void;
+      }> = [];
+      const list = vi.fn();
+      const stoppedBalance = vi.fn();
+      const link = new ApolloLink(
+        (operation) =>
+          new Observable((observer) => {
+            if (operation.operationName === 'OnTransactionChange') {
+              disconnectChanges = () =>
+                disconnectType === 'error'
+                  ? observer.error(new Error('Shared connection lost'))
+                  : observer.complete();
               observer.next({ extensions: { controlMsgType: 'CONNECTED' } });
-            return stoppedBalance;
-          } else if (operation.operationName === 'GetBalance') {
-            list();
-            observer.next({
-              data: {
-                getBalance: {
-                  balance: 50,
-                  currency: 'GBP',
-                  id: 'company-id',
-                  vat: { owed: 10, paid: 5 },
+            } else if (operation.operationName === 'OnTransaction') {
+              balances.push({
+                fail: () => {
+                  if (disconnectType === 'error')
+                    observer.error(new Error('Shared connection lost'));
+                  else observer.complete();
                 },
-                getTransactions: {
-                  __typename: 'Transactions',
-                  id: 'company-id',
-                  items: [],
-                  nextToken: null,
-                  status: TransactionStatus.Confirmed,
+                publish: () =>
+                  observer.next({
+                    data: {
+                      onTransaction: {
+                        balance: 75,
+                        vat: { owed: 15, paid: 7 },
+                      },
+                    },
+                  }),
+              });
+              const context = operation.getContext() as {
+                controlMessages?: { '@@controlEvents'?: boolean };
+              };
+              if (context.controlMessages?.['@@controlEvents'])
+                observer.next({ extensions: { controlMsgType: 'CONNECTED' } });
+              return stoppedBalance;
+            } else if (operation.operationName === 'GetBalance') {
+              list();
+              observer.next({
+                data: {
+                  getBalance: {
+                    balance: 50,
+                    currency: 'GBP',
+                    id: 'company-id',
+                    vat: { owed: 10, paid: 5 },
+                  },
+                  getTransactions: {
+                    __typename: 'Transactions',
+                    id: 'company-id',
+                    items: [],
+                    nextToken: null,
+                    status: TransactionStatus.Confirmed,
+                  },
                 },
-              },
-            });
-            observer.complete();
-          }
-          return undefined;
-        }),
-    );
-    const view = render(
-      <TestProvider path="/accounts/:companyId" history={history}>
-        <MockedProvider link={link} cache={new InMemoryCache({ typePolicies })}>
-          <TransactionStateProvider>
-            <TransactionUpdates companyId="company-id" owner="user-id">
-              <Accounts />
-            </TransactionUpdates>
-          </TransactionStateProvider>
-        </MockedProvider>
-      </TestProvider>,
-    );
-    i18n.addResources('en', 'accounts', {
-      'accounts.overview.balance': 'Balance {{amount}}',
-      'accounts.overview.vat-owed': 'VAT owed {{amount}}',
-      'accounts.overview.vat-paid': 'VAT paid {{amount}}',
-    });
-    await view.findByText('Balance £50.00');
-    expect(balances).toHaveLength(1);
-    vi.useFakeTimers();
-    try {
-      const beforeReconnect = list.mock.calls.length;
-      act(() => {
-        balances[0].fail();
-        disconnectChanges?.();
+              });
+              observer.complete();
+            }
+            return undefined;
+          }),
+      );
+      const view = render(
+        <TestProvider path="/accounts/:companyId" history={history}>
+          <MockedProvider
+            link={link}
+            cache={new InMemoryCache({ typePolicies })}
+          >
+            <TransactionStateProvider>
+              <TransactionUpdates companyId="company-id" owner="user-id">
+                <Accounts />
+              </TransactionUpdates>
+            </TransactionStateProvider>
+          </MockedProvider>
+        </TestProvider>,
+      );
+      i18n.addResources('en', 'accounts', {
+        'accounts.overview.balance': 'Balance {{amount}}',
+        'accounts.overview.vat-owed': 'VAT owed {{amount}}',
+        'accounts.overview.vat-paid': 'VAT paid {{amount}}',
       });
-      await act(() => vi.advanceTimersByTimeAsync(1000));
-      expect(list.mock.calls.length).toBeGreaterThan(beforeReconnect);
-      expect(balances).toHaveLength(2);
+      await view.findByText('Balance £50.00');
+      expect(balances).toHaveLength(1);
+      vi.useFakeTimers();
+      try {
+        const beforeReconnect = list.mock.calls.length;
+        act(() => {
+          balances[0].fail();
+          disconnectChanges?.();
+        });
+        await act(() => vi.advanceTimersByTimeAsync(1000));
+        expect(list.mock.calls.length).toBeGreaterThan(beforeReconnect);
+        expect(balances).toHaveLength(2);
 
-      // Quiet successful connections must reset the delay for later outages.
-      act(() => balances[1].fail());
-      await act(() => vi.advanceTimersByTimeAsync(1000));
-      expect(balances).toHaveLength(3);
-      const recoveredReads = list.mock.calls.length;
-      await act(async () => {
-        balances[2].publish();
-        await vi.advanceTimersByTimeAsync(0);
-      });
-      expect(view.getByText('Balance £75.00')).toBeInTheDocument();
-      expect(view.getByText('VAT owed £15.00')).toBeInTheDocument();
-      expect(view.getByText('VAT paid £7.00')).toBeInTheDocument();
-      expect(list).toHaveBeenCalledTimes(recoveredReads);
+        // Quiet successful connections must reset the delay for later outages.
+        act(() => balances[1].fail());
+        await act(() => vi.advanceTimersByTimeAsync(1000));
+        expect(balances).toHaveLength(3);
+        const recoveredReads = list.mock.calls.length;
+        await act(async () => {
+          balances[2].publish();
+          await vi.advanceTimersByTimeAsync(0);
+        });
+        expect(view.getByText('Balance £75.00')).toBeInTheDocument();
+        expect(view.getByText('VAT owed £15.00')).toBeInTheDocument();
+        expect(view.getByText('VAT paid £7.00')).toBeInTheDocument();
+        expect(list).toHaveBeenCalledTimes(recoveredReads);
 
-      act(() => balances[2].fail());
-      view.unmount();
-      await act(() => vi.advanceTimersByTimeAsync(30000));
-      expect(balances).toHaveLength(3);
-      expect(stoppedBalance).toHaveBeenCalledTimes(3);
-    } finally {
-      vi.useRealTimers();
-    }
-  });
+        act(() => balances[2].fail());
+        view.unmount();
+        await act(() => vi.advanceTimersByTimeAsync(30000));
+        expect(balances).toHaveLength(3);
+        expect(stoppedBalance).toHaveBeenCalledTimes(3);
+      } finally {
+        vi.useRealTimers();
+      }
+    },
+  );
 
   it.each([101, 100])(
     'preserves an expanded list after reconnect when the server returns at most %i rows',
