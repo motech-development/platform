@@ -684,6 +684,7 @@ export type GetTransactionsQuery = {
   getBalance: { currency: string; id: string };
   getTransactions: {
     id: string;
+    nextToken?: string | null;
     status: TransactionStatus;
     items: Array<{
       amount: number;
@@ -1886,6 +1887,7 @@ export const GetTransactionsDocument = {
                     ],
                   },
                 },
+                { kind: 'Field', name: { kind: 'Name', value: 'nextToken' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'status' } },
               ],
             },

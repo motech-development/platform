@@ -150,6 +150,7 @@ export const GET_TRANSACTIONS = gql(/* GraphQL */ `
         name
         scheduled
       }
+      nextToken
       status
     }
   }
@@ -194,6 +195,7 @@ function PendingTransactions() {
   const transactions = useTransactionItems(
     data?.getTransactions.items,
     TransactionStatus.Pending,
+    Boolean(data?.getTransactions.nextToken),
   );
   useEffect(() => {
     if (
