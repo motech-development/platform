@@ -1,0 +1,4 @@
+interface:
+  display_name: 'PR Review Loop'
+  short_description: 'Loop until Codex, CodeRabbit, Sonar, and CI are clear'
+  default_prompt: 'Use $pr-review-loop with GPT-6 Astra at low effort until Codex is clear, CodeRabbit approves the latest commit, Sonar has no open PR issues, and required CI passes. Preserve the original task scope across every fix and cumulative pre-push check. Repeat parallel local reviews and fixes until both reviewers are clear before every push, then wait for hosted feedback and repeat. Resolve handled threads, sleep based on pipeline history, and stop before paid reviews.'
