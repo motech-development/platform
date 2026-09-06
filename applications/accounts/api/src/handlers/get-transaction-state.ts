@@ -40,7 +40,7 @@ export const handler: AppSyncResolverHandler<
     );
 
     // Deleted, moved and inaccessible transactions have the same nullable result.
-    if (!Item || Item.owner !== identity.sub) {
+    if (Item?.owner !== identity.sub) {
       return null;
     }
     const currentCompanyId = transactionCompanyId(Item);
