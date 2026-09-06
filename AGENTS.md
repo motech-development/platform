@@ -26,9 +26,7 @@ Repository-specific guidance for agents working in this monorepo.
 
 ## Testing and Verification
 
-- Test observable behavior rather than implementation details; identify the concrete regression each test would catch.
-- Do not write tests that merely read source, schema, configuration, or generated files and repeat their declarations as assertions, such as field names, required arguments, directives, or copied snippets. Use existing static validation and build checks for those concerns.
-- Exercise the production behavior under test. Do not replace it with a mock or test-only implementation, such as a resolver that echoes its inputs, and claim to verify authorization, integration, or other behavior that never runs. Mock external boundaries instead.
+- Test observable behavior rather than implementation details.
 - Add or update regression tests at the appropriate level when behavior changes. Follow coverage thresholds configured by the affected package.
 - Prefer targeted, non-watch tests. Do not run root `yarn test` or a workspace's `test-ci` locally unless explicitly requested; they run CI coverage suites. Invoke the affected Jest or Vitest tests directly instead.
 - Run the relevant formatting, lint, type-check, test, build, and end-to-end checks in proportion to the change and available tooling.

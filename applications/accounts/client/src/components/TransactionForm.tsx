@@ -14,8 +14,8 @@ import {
   Typography,
 } from '@motech-development/breeze-ui';
 import { Decimal } from 'decimal.js';
-import { FormikProps, FormikValues, getIn, useFormikContext } from 'formik';
-import { ChangeEvent, ReactNode, useEffect, useRef, useState } from 'react';
+import { FormikProps, FormikValues, getIn } from 'formik';
+import { ChangeEvent, ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { boolean, number, object, string } from 'yup';
 import { TransactionStatus } from '../graphql/graphql';
@@ -98,71 +98,6 @@ interface IFormValues {
   vat: number;
 }
 
-function ReconcileTransaction({
-  initialValues,
-  setDisableInput,
-  setPending,
-  setTransactionType,
-}: {
-  initialValues: IFormValues;
-  setDisableInput: (disabled: boolean) => void;
-  setPending: (pending: boolean) => void;
-  setTransactionType: (transaction: string) => void;
-}) {
-  const { setValues, values } = useFormikContext<IFormValues>();
-  const baseline = useRef(initialValues);
-
-  useEffect(() => {
-    const previous = baseline.current;
-    const changed = (
-      Object.keys(initialValues) as Array<keyof IFormValues>
-    ).filter((field) => initialValues[field] !== previous[field]);
-    baseline.current = initialValues;
-    if (changed.length === 0) return;
-
-    // Compare values, not Formik's touched flags: blur alone is not an edit.
-    setValues((current) =>
-      changed.reduce((next, field) => {
-        const unchanged =
-          String(current[field] ?? '') === String(previous[field] ?? '') ||
-          (field === 'date' &&
-            new Date(current.date).getTime() ===
-              new Date(previous.date).getTime());
-
-        return unchanged ? { ...next, [field]: initialValues[field] } : next;
-      }, current),
-    ).catch(() => {});
-  }, [initialValues, setValues]);
-
-  useEffect(() => {
-    setDisableInput(values.category === '');
-    setPending(values.status === 'pending');
-    setTransactionType(values.transaction);
-  }, [
-    setDisableInput,
-    setPending,
-    setTransactionType,
-    values.category,
-    values.status,
-    values.transaction,
-  ]);
-
-  return null;
-}
-
-function TransactionDate() {
-  const { values } = useFormikContext<IFormValues>();
-  const { t } = useTranslation('accounts');
-
-  return (
-    <DatePicker
-      key={values.date}
-      label={t('transaction-form.transaction-details.date.label')}
-      name="date"
-    />
-  );
-}
-
 function TransactionForm({
   attachment,
   attachmentView,
@@ -187,16 +122,15 @@ function TransactionForm({
     !initialValues.refund && (initialValues.amount as number) > 0
       ? 'Sales'
       : 'Purchase';
-  const initialCategory =
-    initialTransaction === 'Sales'
-      ? 'Sales'
-      : categories.findIndex(({ name }) => name === initialValues.category);
   const formValues = {
     ...initialValues,
     amount: initialValues.amount
       ? Math.abs(initialValues.amount as number)
       : initialValues.amount,
-    category: initialCategory === -1 ? '' : initialCategory,
+    category:
+      initialValues.category === ''
+        ? initialValues.category
+        : categories.findIndex(({ name }) => name === initialValues.category),
     ...(isEmpty
       ? {
           transaction: '',
@@ -228,16 +162,9 @@ function TransactionForm({
         t('transaction-form.transaction-amount.amount.required'),
       ),
       attachment: string(),
-      category: string()
-        .required(t('transaction-form.transaction-amount.category.required'))
-        .when('transaction', {
-          is: 'Purchase',
-          then: (schema) =>
-            schema.oneOf(
-              categories.map((_, index) => String(index)),
-              t('transaction-form.transaction-amount.category.required'),
-            ),
-        }),
+      category: string().required(
+        t('transaction-form.transaction-amount.category.required'),
+      ),
       companyId: string().required(),
       date: string().required(
         t('transaction-form.transaction-details.date.required'),
@@ -345,9 +272,7 @@ function TransactionForm({
     const { setFieldValue, values } = form;
     const value = parseFloat(event.target.value.replace(currency, ''));
     const i = getIn(values, 'category') as number;
-    const selectedCategory = categories[i];
-    if (!selectedCategory) return;
-    const vatRate = parseFloat(selectedCategory.value);
+    const vatRate = parseFloat(categories[i].value);
     const rate = new Decimal(vatRate).dividedBy(100).plus(1);
     const calculated = new Decimal(value)
       .minus(new Decimal(value).dividedBy(rate))
@@ -436,12 +361,6 @@ function TransactionForm({
         </LinkButton>
       }
     >
-      <ReconcileTransaction
-        initialValues={formValues}
-        setDisableInput={setDisableInput}
-        setPending={setPending}
-        setTransactionType={setTransactionType}
-      />
       <Row>
         <Col xs={12} md={6}>
           <Card padding="lg">
@@ -492,7 +411,10 @@ function TransactionForm({
                   }))}
                 />
 
-                <TransactionDate />
+                <DatePicker
+                  label={t('transaction-form.transaction-details.date.label')}
+                  name="date"
+                />
               </>
             )}
           </Card>

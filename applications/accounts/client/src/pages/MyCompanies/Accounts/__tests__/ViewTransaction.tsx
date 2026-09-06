@@ -1,9 +1,4 @@
-import { ApolloLink, Observable } from '@apollo/client';
-import {
-  MockedProvider,
-  MockedResponse,
-  MockLink,
-} from '@apollo/client/testing';
+import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { waitForApollo } from '@motech-development/appsync-apollo';
 import {
   act,
@@ -11,23 +6,14 @@ import {
   render,
   screen,
   waitFor,
-  within,
 } from '@testing-library/react';
 import { saveAs } from 'file-saver';
-import { Link } from 'react-router-dom';
 import type { Mock } from 'vitest';
-import { useTransactionState } from '../../../../components/TransactionUpdates';
-import {
-  GetTransactionStateQuery,
-  TransactionStatus,
-  ViewTransactionQuery,
-} from '../../../../graphql/graphql';
 import TestProvider, {
   add,
   createFetchResponse,
 } from '../../../../utils/TestProvider';
 import { GET_BALANCE } from '../Accounts';
-import { REQUEST_UPLOAD } from '../shared/UploadAttachment';
 import { DELETE_FILE, REQUEST_DOWNLOAD } from '../shared/ViewAttachment';
 import ViewTransaction, {
   DELETE_TRANSACTION,
@@ -39,16 +25,6 @@ vi.mock('pdfjs-dist/build/pdf.worker.min.mjs?url', () => ({
   default: 'pdfjs-dist/build/pdf.worker.min.mjs',
 }));
 
-vi.mock(
-  '../../../../components/TransactionUpdates',
-  async (importOriginal) => ({
-    ...(await importOriginal<
-      typeof import('../../../../components/TransactionUpdates')
-    >()),
-    useTransactionState: vi.fn(),
-  }),
-);
-
 describe('ViewTransaction', () => {
   let history: string[];
   let mocks: MockedResponse[];
@@ -58,798 +34,11 @@ describe('ViewTransaction', () => {
 
     history = ['/accounts/company-id/view-transaction/transaction-id'];
 
-    vi.mocked(useTransactionState).mockImplementation((transactionId) => {
-      const response = mocks.find(
-        (mock) =>
-          mock.request.query === VIEW_TRANSACTION &&
-          mock.request.variables?.transactionId === transactionId,
-      ) as MockedResponse<ViewTransactionQuery> | undefined;
-      const result = response?.result;
-
-      return typeof result === 'function'
-        ? undefined
-        : result?.data?.getTransaction;
-    });
-
     global.fetch = vi.fn().mockResolvedValue(
       createFetchResponse({
         body: 'success',
       }),
     );
-  });
-
-  describe('authoritative transaction corrections', () => {
-    const cachedTransaction: NonNullable<
-      GetTransactionStateQuery['getTransactionState']
-    > = {
-      amount: -999.99,
-      attachment: 'path/to/attachment.pdf',
-      category: 'Equipment',
-      companyId: 'company-id',
-      date: '2020-05-07T10:58:17.000Z',
-      description: 'Laptop',
-      id: 'transaction-id',
-      name: 'Apple',
-      refund: false,
-      scheduled: false,
-      status: TransactionStatus.Pending,
-      vat: 166.67,
-    };
-
-    beforeEach(() => {
-      mocks = [
-        {
-          request: {
-            query: VIEW_TRANSACTION,
-            variables: {
-              companyId: 'company-id',
-              transactionId: 'transaction-id',
-            },
-          },
-          result: {
-            data: {
-              getClients: { id: 'company-id', items: [] },
-              getSettings: {
-                categories: [{ name: 'Equipment', vatRate: 20 }],
-                id: 'company-id',
-                vat: { pay: 20 },
-              },
-              getTransaction: cachedTransaction,
-              getTypeahead: {
-                id: 'company-id',
-                purchases: [],
-                sales: [],
-                suppliers: [],
-              },
-            },
-          },
-        },
-      ];
-    });
-
-    const renderTransaction = (link?: ApolloLink) =>
-      render(<ViewTransaction />, {
-        wrapper: ({ children }) => (
-          <TestProvider
-            path="/accounts/:companyId/view-transaction/:transactionId"
-            history={history}
-          >
-            <MockedProvider link={link} mocks={mocks}>
-              {children}
-            </MockedProvider>
-          </TestProvider>
-        ),
-      });
-
-    it('opens the current transaction without resurrecting a removed attachment', async () => {
-      vi.mocked(useTransactionState).mockReturnValue({
-        ...cachedTransaction,
-        attachment: '',
-        description: 'Corrected laptop',
-      });
-
-      renderTransaction();
-
-      expect(
-        await screen.findByLabelText(
-          'transaction-form.transaction-details.description.label',
-        ),
-      ).toHaveValue('Corrected laptop');
-      expect(
-        screen.getByLabelText('transaction-form.upload.upload.label'),
-      ).toBeInTheDocument();
-      expect(
-        screen.queryByText('transaction-form.upload.view-file'),
-      ).not.toBeInTheDocument();
-    });
-
-    it('removes a live attachment without resetting unsaved edits and saves the cleaned state', async () => {
-      const savedTransaction = {
-        ...cachedTransaction,
-        attachment: '',
-        description: 'My unsaved description',
-      };
-      const result = vi.fn(() => ({
-        data: { updateTransaction: savedTransaction },
-      }));
-      mocks.push({
-        request: {
-          query: UPDATE_TRANSACTION,
-          variables: { input: savedTransaction },
-        },
-        result,
-      });
-      const { rerender } = renderTransaction();
-      const description = await screen.findByLabelText(
-        'transaction-form.transaction-details.description.label',
-      );
-      await screen.findByText('transaction-form.upload.view-file');
-
-      fireEvent.change(description, {
-        target: { value: savedTransaction.description },
-      });
-      vi.mocked(useTransactionState).mockReturnValue({
-        ...cachedTransaction,
-        attachment: '',
-        description: 'A different server description',
-      });
-      rerender(<ViewTransaction />);
-
-      expect(description).toHaveValue(savedTransaction.description);
-      expect(
-        screen.queryByText('transaction-form.upload.view-file'),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.getByLabelText('transaction-form.upload.upload.label'),
-      ).toBeInTheDocument();
-
-      const save = screen.getByRole('button', {
-        name: 'transaction-form.save',
-      });
-      await waitFor(() => expect(save).not.toBeDisabled());
-      fireEvent.click(save);
-
-      await waitFor(() => expect(result).toHaveBeenCalledOnce());
-    });
-
-    it('resets an open attachment preview when a live update replaces the file', async () => {
-      const replacement = 'company-id/replacement.pdf';
-      mocks.push(
-        ...[cachedTransaction.attachment, replacement].map((path) => ({
-          request: {
-            query: REQUEST_DOWNLOAD,
-            variables: { id: 'company-id', path },
-          },
-          result: {
-            data: {
-              requestDownload: { url: `https://example.com/${path}` },
-            },
-          },
-        })),
-      );
-      (fetch as Mock).mockImplementation((url: string) =>
-        Promise.resolve(
-          createFetchResponse({
-            body:
-              url === `https://example.com/${replacement}`
-                ? 'New receipt'
-                : 'Old receipt',
-          }),
-        ),
-      );
-      const { rerender } = renderTransaction();
-      fireEvent.click(
-        await screen.findByText('transaction-form.upload.view-file'),
-      );
-      fireEvent.click(await screen.findByLabelText('download'));
-      await waitFor(() =>
-        expect(saveAs).toHaveBeenCalledWith('Old receipt', 'attachment.pdf'),
-      );
-
-      vi.mocked(useTransactionState).mockReturnValue({
-        ...cachedTransaction,
-        attachment: replacement,
-      });
-      rerender(<ViewTransaction />);
-
-      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-      expect(screen.queryByLabelText('download')).not.toBeInTheDocument();
-      fireEvent.click(screen.getByText('transaction-form.upload.view-file'));
-      fireEvent.click(await screen.findByLabelText('download'));
-      await waitFor(() =>
-        expect(saveAs).toHaveBeenLastCalledWith(
-          'New receipt',
-          'replacement.pdf',
-        ),
-      );
-    });
-
-    it('retains and saves the live replacement when an older attachment deletion completes', async () => {
-      const replacement = {
-        ...cachedTransaction,
-        attachment: 'company-id/replacement.pdf',
-      };
-      const result = vi.fn(() => ({
-        data: { updateTransaction: replacement },
-      }));
-      mocks.push({
-        request: {
-          query: UPDATE_TRANSACTION,
-          variables: { input: replacement },
-        },
-        result,
-      });
-      let deletedPath: string | undefined;
-      let completeDelete: (() => void) | undefined;
-      const link = ApolloLink.split(
-        ({ operationName }) => operationName === 'DeleteFile',
-        new ApolloLink(
-          (operation) =>
-            new Observable((observer) => {
-              deletedPath = operation.variables.path as string;
-              completeDelete = () => {
-                observer.next({
-                  data: { deleteFile: { path: deletedPath } },
-                });
-                observer.complete();
-              };
-            }),
-        ),
-        new MockLink(mocks),
-      );
-      const { rerender } = renderTransaction(link);
-      fireEvent.click(
-        await screen.findByRole('button', {
-          name: 'transaction-form.upload.delete-file',
-        }),
-      );
-      await waitFor(() =>
-        expect(deletedPath).toBe(cachedTransaction.attachment),
-      );
-
-      vi.mocked(useTransactionState).mockReturnValue(replacement);
-      rerender(<ViewTransaction />);
-      expect(
-        screen.getByRole('button', {
-          name: 'transaction-form.upload.view-file',
-        }),
-      ).toBeInTheDocument();
-      await act(async () => {
-        completeDelete?.();
-        await waitForApollo(0);
-      });
-
-      expect(
-        screen.getByRole('button', {
-          name: 'transaction-form.upload.view-file',
-        }),
-      ).toBeInTheDocument();
-      expect(
-        screen.queryByLabelText('transaction-form.upload.upload.label'),
-      ).not.toBeInTheDocument();
-      const save = screen.getByRole('button', {
-        name: 'transaction-form.save',
-      });
-      await waitFor(() => expect(save).not.toBeDisabled());
-      fireEvent.click(save);
-
-      await waitFor(() => expect(result).toHaveBeenCalledOnce());
-    });
-
-    it('keeps a locally uploaded replacement when delayed cleanup removes the old server attachment', async () => {
-      const savedTransaction = {
-        ...cachedTransaction,
-        attachment: 'company-id/replacement.pdf',
-      };
-      const result = vi.fn(() => ({
-        data: { updateTransaction: savedTransaction },
-      }));
-      mocks.push(
-        {
-          request: {
-            query: DELETE_FILE,
-            variables: {
-              id: 'company-id',
-              path: cachedTransaction.attachment,
-            },
-          },
-          result: {
-            data: { deleteFile: { path: cachedTransaction.attachment } },
-          },
-        },
-        {
-          request: {
-            query: REQUEST_UPLOAD,
-            variables: {
-              id: 'company-id',
-              input: {
-                contentType: 'application/pdf',
-                extension: 'pdf',
-                metadata: { id: 'transaction-id', typename: 'Transaction' },
-              },
-            },
-          },
-          result: {
-            data: {
-              requestUpload: {
-                id: 'replacement',
-                url: 'https://example.com/upload',
-              },
-            },
-          },
-        },
-        {
-          request: {
-            query: UPDATE_TRANSACTION,
-            variables: { input: savedTransaction },
-          },
-          result,
-        },
-      );
-      const { rerender } = renderTransaction();
-      fireEvent.click(
-        await screen.findByText('transaction-form.upload.delete-file'),
-      );
-      const upload = await screen.findByLabelText(
-        'transaction-form.upload.upload.label',
-      );
-      fireEvent.change(upload, {
-        target: {
-          files: [
-            new File(['replacement'], 'replacement.pdf', {
-              type: 'application/pdf',
-            }),
-          ],
-        },
-      });
-      await screen.findByText('transaction-form.upload.view-file');
-
-      vi.mocked(useTransactionState).mockReturnValue({
-        ...cachedTransaction,
-        attachment: '',
-      });
-      rerender(<ViewTransaction />);
-
-      expect(
-        screen.getByText('transaction-form.upload.view-file'),
-      ).toBeInTheDocument();
-      const save = screen.getByRole('button', {
-        name: 'transaction-form.save',
-      });
-      await waitFor(() => expect(save).not.toBeDisabled());
-      fireEvent.click(save);
-
-      await waitFor(() => expect(result).toHaveBeenCalledOnce());
-    });
-
-    it.each([
-      [
-        TransactionStatus.Pending,
-        '/my-companies/accounts/company-id/pending-transactions',
-      ],
-      [TransactionStatus.Confirmed, '/my-companies/accounts/company-id'],
-    ])(
-      'returns a deleted or moved %s transaction to its account list',
-      async (status, destination) => {
-        vi.mocked(useTransactionState).mockReturnValue({
-          ...cachedTransaction,
-          status,
-        });
-        const { rerender } = renderTransaction();
-        await screen.findByText('view-transaction.title');
-
-        vi.mocked(useTransactionState).mockReturnValue(null);
-        rerender(<ViewTransaction />);
-
-        expect(screen.queryByRole('form')).not.toBeInTheDocument();
-        expect(
-          screen.queryByText('view-transaction.delete-transaction'),
-        ).not.toBeInTheDocument();
-        expect(await screen.findByTestId(destination)).toBeInTheDocument();
-      },
-    );
-
-    it('does not carry a local upload into a different transaction on the same route', async () => {
-      mocks.push(
-        {
-          request: {
-            query: DELETE_FILE,
-            variables: {
-              id: 'company-id',
-              path: cachedTransaction.attachment,
-            },
-          },
-          result: {
-            data: { deleteFile: { path: cachedTransaction.attachment } },
-          },
-        },
-        {
-          request: {
-            query: REQUEST_UPLOAD,
-            variables: {
-              id: 'company-id',
-              input: {
-                contentType: 'application/pdf',
-                extension: 'pdf',
-                metadata: { id: 'transaction-id', typename: 'Transaction' },
-              },
-            },
-          },
-          result: {
-            data: {
-              requestUpload: {
-                id: 'replacement',
-                url: 'https://example.com/upload',
-              },
-            },
-          },
-        },
-        {
-          request: {
-            query: VIEW_TRANSACTION,
-            variables: {
-              companyId: 'company-id',
-              transactionId: 'other-transaction',
-            },
-          },
-          result: {
-            data: {
-              getClients: { id: 'company-id', items: [] },
-              getSettings: {
-                categories: [{ name: 'Equipment', vatRate: 20 }],
-                id: 'company-id',
-                vat: { pay: 20 },
-              },
-              getTransaction: {
-                ...cachedTransaction,
-                attachment: '',
-                description: 'Other transaction',
-                id: 'other-transaction',
-              },
-              getTypeahead: {
-                id: 'company-id',
-                purchases: [],
-                sales: [],
-                suppliers: [],
-              },
-            },
-          },
-        },
-      );
-      render(
-        <TestProvider
-          path="/accounts/:companyId/view-transaction/:transactionId"
-          history={history}
-        >
-          <MockedProvider mocks={mocks}>
-            <>
-              <Link to="/accounts/company-id/view-transaction/other-transaction">
-                Open other transaction
-              </Link>
-              <ViewTransaction />
-            </>
-          </MockedProvider>
-        </TestProvider>,
-      );
-      fireEvent.click(
-        await screen.findByText('transaction-form.upload.delete-file'),
-      );
-      const upload = await screen.findByLabelText(
-        'transaction-form.upload.upload.label',
-      );
-      fireEvent.change(upload, {
-        target: {
-          files: [
-            new File(['replacement'], 'replacement.pdf', {
-              type: 'application/pdf',
-            }),
-          ],
-        },
-      });
-      await screen.findByText('transaction-form.upload.view-file');
-
-      fireEvent.click(screen.getByText('Open other transaction'));
-
-      await waitFor(() =>
-        expect(
-          screen.getByLabelText(
-            'transaction-form.transaction-details.description.label',
-          ),
-        ).toHaveValue('Other transaction'),
-      );
-      expect(
-        screen.getByLabelText('transaction-form.upload.upload.label'),
-      ).toBeInTheDocument();
-    });
-
-    it('refreshes an unknown live category while preserving the draft and blocking invalid saves', async () => {
-      const initial = { ...cachedTransaction, attachment: '' };
-      const changed = { ...initial, category: 'New category' };
-      const saved = { ...changed, description: 'My draft' };
-      vi.mocked(useTransactionState).mockReturnValue(initial);
-      let queries = 0;
-      let resolveSettings: (() => void) | undefined;
-      const result = vi.fn(() => ({ data: { updateTransaction: saved } }));
-      mocks.push({
-        request: { query: UPDATE_TRANSACTION, variables: { input: saved } },
-        result,
-      });
-      const link = new ApolloLink((operation, forward) => {
-        if (operation.operationName === 'ViewTransaction') queries += 1;
-        if (operation.operationName === 'ViewTransaction' && queries > 1) {
-          return new Observable((observer) => {
-            resolveSettings = () => {
-              observer.next({
-                data: {
-                  getClients: { id: 'company-id', items: [] },
-                  getSettings: {
-                    categories: [
-                      { name: 'Equipment', vatRate: 20 },
-                      { name: 'New category', vatRate: 20 },
-                    ],
-                    id: 'company-id',
-                    vat: { pay: 20 },
-                  },
-                  getTransaction: initial,
-                  getTypeahead: {
-                    id: 'company-id',
-                    purchases: [],
-                    sales: [],
-                    suppliers: [],
-                  },
-                },
-              });
-              observer.complete();
-            };
-          });
-        }
-        return forward(operation);
-      }).concat(new MockLink(mocks));
-      const { rerender } = renderTransaction(link);
-      const description = await screen.findByLabelText(
-        'transaction-form.transaction-details.description.label',
-      );
-      const save = screen.getByRole('button', {
-        name: 'transaction-form.save',
-      });
-      fireEvent.change(description, { target: { value: 'My draft' } });
-      vi.mocked(useTransactionState).mockReturnValue(changed);
-      rerender(<ViewTransaction />);
-      await waitFor(() => expect(resolveSettings).toBeDefined());
-      expect(description).toHaveValue('My draft');
-      expect(save).toBeDisabled();
-      await act(async () => {
-        resolveSettings?.();
-        await waitForApollo(0);
-      });
-      await waitFor(() =>
-        expect(
-          screen.getByLabelText(
-            'transaction-form.transaction-amount.category.label',
-          ),
-        ).toHaveValue('1'),
-      );
-      expect(description).toHaveValue('My draft');
-      await waitFor(() => expect(save).not.toBeDisabled());
-      fireEvent.click(save);
-      await waitFor(() => expect(result).toHaveBeenCalledOnce());
-    });
-
-    it('saves a live publication without overwriting it or losing an unsaved description', async () => {
-      vi.mocked(useTransactionState).mockReturnValue({
-        ...cachedTransaction,
-        scheduled: true,
-      });
-      const published = {
-        ...cachedTransaction,
-        status: TransactionStatus.Confirmed,
-      };
-      const savedTransaction = {
-        ...published,
-        description: 'My unsaved description',
-      };
-      const result = vi.fn(() => ({
-        data: { updateTransaction: savedTransaction },
-      }));
-      mocks.push({
-        request: {
-          query: UPDATE_TRANSACTION,
-          variables: { input: savedTransaction },
-        },
-        result,
-      });
-      const { rerender } = renderTransaction();
-      const description = await screen.findByLabelText(
-        'transaction-form.transaction-details.description.label',
-      );
-      expect(
-        screen.getByLabelText(
-          'transaction-form.transaction-amount.schedule.options.yes',
-        ),
-      ).toBeChecked();
-      fireEvent.change(description, {
-        target: { value: savedTransaction.description },
-      });
-
-      vi.mocked(useTransactionState).mockReturnValue(published);
-      rerender(<ViewTransaction />);
-
-      await waitFor(() =>
-        expect(
-          screen.getByLabelText(
-            'transaction-form.transaction-amount.status.options.confirmed',
-          ),
-        ).toBeChecked(),
-      );
-      expect(
-        screen.queryByLabelText(
-          'transaction-form.transaction-amount.schedule.options.yes',
-        ),
-      ).not.toBeInTheDocument();
-      expect(description).toHaveValue(savedTransaction.description);
-      const save = screen.getByRole('button', {
-        name: 'transaction-form.save',
-      });
-      await waitFor(() => expect(save).not.toBeDisabled());
-      fireEvent.click(save);
-
-      await waitFor(() => expect(result).toHaveBeenCalledOnce());
-    });
-
-    it.each([
-      '2020-05-07T10:58:17.000Z',
-      '2020-05-07T10:58:17Z',
-      '2020-05-07T11:58:17+01:00',
-    ])(
-      'retains a live date correction from %s through validation changes and saves the corrected date',
-      async (date) => {
-        vi.mocked(useTransactionState).mockReturnValue({
-          ...cachedTransaction,
-          date,
-        });
-        const corrected = {
-          ...cachedTransaction,
-          date: '2020-05-08T10:58:17.000Z',
-        };
-        const savedTransaction = {
-          ...corrected,
-          description: 'Updated after validation',
-        };
-        const result = vi.fn(() => ({
-          data: { updateTransaction: savedTransaction },
-        }));
-        mocks.push({
-          request: {
-            query: UPDATE_TRANSACTION,
-            variables: { input: savedTransaction },
-          },
-          result,
-        });
-        const { rerender } = renderTransaction();
-        const description = await screen.findByLabelText(
-          'transaction-form.transaction-details.description.label',
-        );
-        vi.mocked(useTransactionState).mockReturnValue(corrected);
-        rerender(<ViewTransaction />);
-        await waitFor(() =>
-          expect(
-            screen.getByLabelText(
-              'transaction-form.transaction-details.date.label',
-            ),
-          ).toHaveValue(corrected.date),
-        );
-
-        fireEvent.change(description, { target: { value: '' } });
-        fireEvent.blur(description);
-        await screen.findByText(
-          'transaction-form.transaction-details.description.required',
-        );
-        expect(
-          screen.getByLabelText(
-            'transaction-form.transaction-details.date.label',
-          ),
-        ).toHaveValue(corrected.date);
-        fireEvent.change(description, {
-          target: { value: savedTransaction.description },
-        });
-        const save = screen.getByRole('button', {
-          name: 'transaction-form.save',
-        });
-        await waitFor(() => expect(save).not.toBeDisabled());
-        fireEvent.click(save);
-
-        await waitFor(() => expect(result).toHaveBeenCalledOnce());
-      },
-    );
-
-    it('retains a locally selected calendar date across a later server correction and saves it', async () => {
-      const savedTransaction = {
-        ...cachedTransaction,
-        date: '2020-05-09T10:58:17.000Z',
-        description: 'Server description',
-      };
-      const result = vi.fn(() => ({
-        data: { updateTransaction: savedTransaction },
-      }));
-      mocks.push({
-        request: {
-          query: UPDATE_TRANSACTION,
-          variables: { input: savedTransaction },
-        },
-        result,
-      });
-      const { rerender } = renderTransaction();
-      fireEvent.click(
-        await screen.findByRole('button', {
-          name: /^Choose transaction-form.transaction-details.date.label/,
-        }),
-      );
-      const calendar = await screen.findByRole('grid');
-      fireEvent.click(within(calendar).getByRole('button', { name: '9' }));
-      await waitFor(() =>
-        expect(
-          screen.getByLabelText(
-            'transaction-form.transaction-details.date.label',
-          ),
-        ).toHaveValue(savedTransaction.date),
-      );
-
-      vi.mocked(useTransactionState).mockReturnValue({
-        ...cachedTransaction,
-        date: '2020-05-08T10:58:17.000Z',
-        description: savedTransaction.description,
-      });
-      rerender(<ViewTransaction />);
-      await screen.findByDisplayValue(savedTransaction.description);
-      expect(
-        screen.getByLabelText(
-          'transaction-form.transaction-details.date.label',
-        ),
-      ).toHaveValue(savedTransaction.date);
-      const save = screen.getByRole('button', {
-        name: 'transaction-form.save',
-      });
-      await waitFor(() => expect(save).not.toBeDisabled());
-      fireEvent.click(save);
-
-      await waitFor(() => expect(result).toHaveBeenCalledOnce());
-    });
-
-    it('updates unchanged fields even after blur while retaining local edits across server revisions', async () => {
-      const { rerender } = renderTransaction();
-      const name = await screen.findByLabelText(
-        'transaction-form.transaction-details.name.label',
-      );
-      const description = screen.getByLabelText(
-        'transaction-form.transaction-details.description.label',
-      );
-      fireEvent.change(name, { target: { value: 'My local supplier' } });
-      fireEvent.blur(description);
-
-      vi.mocked(useTransactionState).mockReturnValue({
-        ...cachedTransaction,
-        description: 'First server revision',
-        name: 'First server supplier',
-      });
-      rerender(<ViewTransaction />);
-
-      await waitFor(() =>
-        expect(description).toHaveValue('First server revision'),
-      );
-      expect(name).toHaveValue('My local supplier');
-
-      vi.mocked(useTransactionState).mockReturnValue({
-        ...cachedTransaction,
-        description: 'Second server revision',
-        name: 'Second server supplier',
-      });
-      rerender(<ViewTransaction />);
-
-      await waitFor(() =>
-        expect(description).toHaveValue('Second server revision'),
-      );
-      expect(name).toHaveValue('My local supplier');
-    });
   });
 
   describe('purchase', () => {
@@ -1047,11 +236,7 @@ describe('ViewTransaction', () => {
         });
 
         await act(async () => {
-          const button = await screen.findByRole('button', {
-            name: 'transaction-form.save',
-          });
-
-          await waitFor(() => expect(button).not.toBeDisabled());
+          const [, , button] = await screen.findAllByRole('button');
 
           fireEvent.click(button);
 
@@ -1075,11 +260,7 @@ describe('ViewTransaction', () => {
         });
 
         await act(async () => {
-          const button = await screen.findByRole('button', {
-            name: 'transaction-form.save',
-          });
-
-          await waitFor(() => expect(button).not.toBeDisabled());
+          const [, , button] = await screen.findAllByRole('button');
 
           fireEvent.click(button);
 
@@ -1108,22 +289,15 @@ describe('ViewTransaction', () => {
         await screen.findByText('view-transaction.title');
 
         await act(async () => {
-          const button = await screen.findByRole('button', {
-            name: 'view-transaction.delete-transaction',
-          });
-
-          await waitFor(() => expect(button).not.toBeDisabled());
+          const [, , , button] = await screen.findAllByRole('button');
 
           fireEvent.click(button);
         });
 
         await screen.findByRole('dialog');
 
-        act(() => {
-          const cancelButton = within(screen.getByRole('dialog')).getByRole(
-            'button',
-            { name: 'cancel' },
-          );
+        await act(async () => {
+          const [, , , , cancelButton] = await screen.findAllByRole('button');
 
           fireEvent.click(cancelButton);
         });
@@ -1135,11 +309,7 @@ describe('ViewTransaction', () => {
         await screen.findByText('view-transaction.title');
 
         await act(async () => {
-          const button = await screen.findByRole('button', {
-            name: 'view-transaction.delete-transaction',
-          });
-
-          await waitFor(() => expect(button).not.toBeDisabled());
+          const [, , , button] = await screen.findAllByRole('button');
 
           fireEvent.click(button);
         });
@@ -1156,10 +326,7 @@ describe('ViewTransaction', () => {
         });
 
         await act(async () => {
-          const deleteButton = within(screen.getByRole('dialog')).getByRole(
-            'button',
-            { name: 'delete' },
-          );
+          const [, , , , , deleteButton] = await screen.findAllByRole('button');
 
           await waitFor(() => expect(deleteButton).not.toBeDisabled());
 
@@ -1179,11 +346,7 @@ describe('ViewTransaction', () => {
         await screen.findByText('view-transaction.title');
 
         await act(async () => {
-          const button = await screen.findByRole('button', {
-            name: 'view-transaction.delete-transaction',
-          });
-
-          await waitFor(() => expect(button).not.toBeDisabled());
+          const [, , , button] = await screen.findAllByRole('button');
 
           fireEvent.click(button);
         });
@@ -1200,10 +363,7 @@ describe('ViewTransaction', () => {
         });
 
         await act(async () => {
-          const deleteButton = within(screen.getByRole('dialog')).getByRole(
-            'button',
-            { name: 'delete' },
-          );
+          const [, , , , , deleteButton] = await screen.findAllByRole('button');
 
           await waitFor(() => expect(deleteButton).not.toBeDisabled());
 
@@ -1696,11 +856,7 @@ describe('ViewTransaction', () => {
         await screen.findByText('view-transaction.title');
 
         await act(async () => {
-          const button = await screen.findByRole('button', {
-            name: 'transaction-form.save',
-          });
-
-          await waitFor(() => expect(button).not.toBeDisabled());
+          const [, , , button] = await screen.findAllByRole('button');
 
           fireEvent.click(button);
 
@@ -1716,11 +872,7 @@ describe('ViewTransaction', () => {
         await screen.findByText('view-transaction.title');
 
         await act(async () => {
-          const button = await screen.findByRole('button', {
-            name: 'transaction-form.save',
-          });
-
-          await waitFor(() => expect(button).not.toBeDisabled());
+          const [, , , button] = await screen.findAllByRole('button');
 
           fireEvent.click(button);
 
@@ -1739,11 +891,7 @@ describe('ViewTransaction', () => {
         await screen.findByText('view-transaction.title');
 
         await act(async () => {
-          const button = await screen.findByRole('button', {
-            name: 'view-transaction.delete-transaction',
-          });
-
-          await waitFor(() => expect(button).not.toBeDisabled());
+          const [, , , , button] = await screen.findAllByRole('button');
 
           fireEvent.click(button);
         });
@@ -1760,10 +908,8 @@ describe('ViewTransaction', () => {
         });
 
         await act(async () => {
-          const deleteButton = within(screen.getByRole('dialog')).getByRole(
-            'button',
-            { name: 'delete' },
-          );
+          const [, , , , , , deleteButton] =
+            await screen.findAllByRole('button');
 
           await waitFor(() => expect(deleteButton).not.toBeDisabled());
 
@@ -2012,11 +1158,7 @@ describe('ViewTransaction', () => {
         await screen.findByText('view-transaction.title');
 
         await act(async () => {
-          const button = await screen.findByRole('button', {
-            name: 'transaction-form.save',
-          });
-
-          await waitFor(() => expect(button).not.toBeDisabled());
+          const [, , , button] = await screen.findAllByRole('button');
 
           fireEvent.click(button);
 
@@ -2035,11 +1177,7 @@ describe('ViewTransaction', () => {
         await screen.findByText('view-transaction.title');
 
         await act(async () => {
-          const button = await screen.findByRole('button', {
-            name: 'transaction-form.save',
-          });
-
-          await waitFor(() => expect(button).not.toBeDisabled());
+          const [, , , button] = await screen.findAllByRole('button');
 
           fireEvent.click(button);
 
@@ -2055,11 +1193,7 @@ describe('ViewTransaction', () => {
         await screen.findByText('view-transaction.title');
 
         await act(async () => {
-          const button = await screen.findByRole('button', {
-            name: 'view-transaction.delete-transaction',
-          });
-
-          await waitFor(() => expect(button).not.toBeDisabled());
+          const [, , , , button] = await screen.findAllByRole('button');
 
           fireEvent.click(button);
         });
@@ -2076,10 +1210,8 @@ describe('ViewTransaction', () => {
         });
 
         await act(async () => {
-          const deleteButton = within(screen.getByRole('dialog')).getByRole(
-            'button',
-            { name: 'delete' },
-          );
+          const [, , , , , , deleteButton] =
+            await screen.findAllByRole('button');
 
           await waitFor(() => expect(deleteButton).not.toBeDisabled());
 
@@ -2100,11 +1232,7 @@ describe('ViewTransaction', () => {
         await screen.findByText('view-transaction.title');
 
         await act(async () => {
-          const button = await screen.findByRole('button', {
-            name: 'view-transaction.delete-transaction',
-          });
-
-          await waitFor(() => expect(button).not.toBeDisabled());
+          const [, , , , button] = await screen.findAllByRole('button');
 
           fireEvent.click(button);
         });
@@ -2121,10 +1249,8 @@ describe('ViewTransaction', () => {
         });
 
         await act(async () => {
-          const deleteButton = within(screen.getByRole('dialog')).getByRole(
-            'button',
-            { name: 'delete' },
-          );
+          const [, , , , , , deleteButton] =
+            await screen.findAllByRole('button');
 
           await waitFor(() => expect(deleteButton).not.toBeDisabled());
 

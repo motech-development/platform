@@ -10,7 +10,7 @@ import {
   Typography,
   useToast,
 } from '@motech-development/breeze-ui';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
@@ -20,11 +20,6 @@ import NoTransactions from '../../../components/NoTransactions';
 import Scheduled from '../../../components/Scheduled';
 import TransactionArrow from '../../../components/TransactionArrow';
 import TransactionDetailsCell from '../../../components/TransactionDetailsCell';
-import {
-  useApplyTransactionState,
-  useTransactionItems,
-  useTransactionReadError,
-} from '../../../components/TransactionUpdates';
 import WarningText from '../../../components/WarningText';
 import { gql } from '../../../graphql';
 import {
@@ -37,7 +32,7 @@ interface IDataRow {
   companyId: string;
   data: GetTransactionsQuery;
   deleteLabel: string;
-  launchDeleteModal: (id: string) => void;
+  launchDeleteModal: (id: string, name: string) => void;
   noAttachmentLabel: string;
   scheduledLabel: string;
   viewLabel: string;
@@ -121,7 +116,7 @@ function row({
             data-testid={`Delete ${name}`}
             colour="danger"
             size="sm"
-            onClick={() => launchDeleteModal(id)}
+            onClick={() => launchDeleteModal(id, name)}
           >
             {deleteLabel}
           </Button>
@@ -150,7 +145,6 @@ export const GET_TRANSACTIONS = gql(/* GraphQL */ `
         name
         scheduled
       }
-      nextToken
       status
     }
   }
@@ -167,45 +161,32 @@ export const DELETE_TRANSACTION = gql(/* GraphQL */ `
 `);
 
 function PendingTransactions() {
-  const [transactionId, setTransactionId] = useState('');
+  const [transaction, setTransaction] = useState({
+    id: '',
+    name: '',
+  });
   const { t } = useTranslation('accounts');
   const { companyId } = useParams();
 
   invariant(companyId);
 
   const { add } = useToast();
-  const applyTransactionState = useApplyTransactionState();
   const { data, error, loading } = useQuery(GET_TRANSACTIONS, {
-    context: { queryDeduplication: false },
-    fetchPolicy: 'cache-and-network',
     variables: {
       id: companyId,
       status: TransactionStatus.Pending,
     },
   });
   const onDismiss = () => {
-    setTransactionId('');
+    setTransaction({
+      id: '',
+      name: '',
+    });
   };
-  const transactions = useTransactionItems(
-    data?.getTransactions.items,
-    TransactionStatus.Pending,
-    Boolean(data?.getTransactions.nextToken),
-  );
-  const transaction = transactions.find(({ id }) => id === transactionId);
-  useEffect(() => {
-    if (transactionId && !transaction) onDismiss();
-  }, [transactionId, transaction]);
-  const readError = useTransactionReadError(
-    [...(data?.getTransactions.items ?? []), ...transactions].map(
-      ({ id }) => id,
-    ),
-  );
   const [deleteMutation, { loading: deleteLoading }] = useMutation(
     DELETE_TRANSACTION,
     {
-      onCompleted: ({ deleteTransaction }) => {
-        if (deleteTransaction)
-          applyTransactionState(deleteTransaction.id, null);
+      onCompleted: () => {
         add({
           colour: 'success',
           message: t('delete-transaction.success'),
@@ -221,8 +202,11 @@ function PendingTransactions() {
       },
     },
   );
-  const launchDeleteModal = (id: string) => {
-    setTransactionId(id);
+  const launchDeleteModal = (id: string, name: string) => {
+    setTransaction({
+      id,
+      name,
+    });
   };
   const onDelete = (id: string) => {
     deleteMutation({
@@ -233,7 +217,7 @@ function PendingTransactions() {
   };
 
   return (
-    <Connected error={error || readError} loading={!readError && loading}>
+    <Connected error={error} loading={loading}>
       {data && (
         <>
           <PageTitle
@@ -245,7 +229,7 @@ function PendingTransactions() {
             {data.getTransactions && (
               <Col>
                 <DataTable
-                  items={transactions}
+                  items={data.getTransactions.items}
                   header={
                     <>
                       <TableCell as="th" colSpan={2}>
@@ -308,10 +292,10 @@ function PendingTransactions() {
           <DeleteItem
             title={t('delete-transaction.title')}
             warning={t('delete-transaction.warning')}
-            display={Boolean(transaction)}
+            display={!!transaction.id}
             loading={deleteLoading}
-            name={transaction?.name ?? ''}
-            onDelete={() => onDelete(transactionId)}
+            name={transaction.name}
+            onDelete={() => onDelete(transaction.id)}
             onDismiss={onDismiss}
           />
         </>
