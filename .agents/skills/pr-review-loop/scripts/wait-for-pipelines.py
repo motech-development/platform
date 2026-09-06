@@ -7,6 +7,7 @@ from datetime import datetime
 import json
 import os
 from pathlib import Path
+import re
 import statistics
 import subprocess
 import tempfile
@@ -57,13 +58,9 @@ def next_delay(checks, averages, now, overrun):
       continue
     key = (check.get('workflow') or '', check.get('event') or '')
     timing = averages.get(key)
-    starts = [
-      timestamp(item.get('startedAt')) for item in checks
-      if (item.get('workflow') or '', item.get('event') or '') == key
-    ]
-    starts = [value for value in starts if value is not None]
-    if timing and starts:
-      remaining = timing['mean_seconds'] * 1.2 - max(0, now - min(starts))
+    created = timestamp(check.get('workflowCreatedAt'))
+    if timing and created is not None:
+      remaining = timing['mean_seconds'] * 1.2 - max(0, now - created)
       if remaining > 0:
         estimates.append(remaining)
   if estimates:
@@ -84,12 +81,16 @@ def write_state(path, state):
 def observe(args, query=gh_json, sleep=time.sleep, now=time.time):
   started = now()
   averages = None
+  run_created_at = {}
   overrun = 0
   state = {'repo': args.repo, 'pr': args.pr, 'head': args.head}
 
   def finish(reason, code):
     state.update(reason=reason, next_wake_at=None, observed_at=now())
-    write_state(args.state_file, state)
+    try:
+      write_state(args.state_file, state)
+    except OSError as error:
+      state['state_file_error'] = type(error).__name__
     print(json.dumps(state), flush=True)
     return code
 
@@ -105,6 +106,12 @@ def observe(args, query=gh_json, sleep=time.sleep, now=time.time):
         'pr', 'checks', str(args.pr), '--repo', args.repo, '--json',
         'name,bucket,state,workflow,event,startedAt,completedAt,link'
       ], allowed_codes=(0, 1, 8))
+      # PR checks cannot be pinned to a SHA; validate their head before using them.
+      latest = query(['pr', 'view', str(args.pr), '--repo', args.repo, '--json', 'headRefOid,state'])
+      if latest['headRefOid'] != args.head:
+        return finish('head_changed', 4)
+      if latest['state'] != 'OPEN':
+        return finish('pr_closed', 5)
       if not isinstance(checks, list):
         raise RuntimeError('GitHub returned an invalid check list.')
       state['checks'] = checks
@@ -113,12 +120,6 @@ def observe(args, query=gh_json, sleep=time.sleep, now=time.time):
       if any(check.get('bucket') not in ('pass', 'skipping', 'pending') for check in checks):
         return finish('unknown_check_state', 6)
       if checks and all(check['bucket'] in ('pass', 'skipping') for check in checks):
-        # A second head read prevents attributing a concurrent push's checks to this head.
-        latest = query(['pr', 'view', str(args.pr), '--repo', args.repo, '--json', 'headRefOid,state'])
-        if latest['headRefOid'] != args.head:
-          return finish('head_changed', 4)
-        if latest['state'] != 'OPEN':
-          return finish('pr_closed', 5)
         return finish('observed_checks_settled', 0)
       if now() - started >= args.max_wait_seconds:
         return finish('inspection_needed', 3)
@@ -128,6 +129,16 @@ def observe(args, query=gh_json, sleep=time.sleep, now=time.time):
           '--json', 'workflowName,event,conclusion,createdAt,updatedAt'
         ])
         averages = workflow_averages(runs)
+      for check in checks:
+        if check.get('bucket') != 'pending' or not check.get('workflow'):
+          continue
+        match = re.search(r'/actions/runs/(\d+)(?:/|$)', check.get('link') or '')
+        if match:
+          run_id = match.group(1)
+          if run_id not in run_created_at:
+            run = query(['run', 'view', run_id, '--repo', args.repo, '--json', 'createdAt'])
+            run_created_at[run_id] = run.get('createdAt')
+          check['workflowCreatedAt'] = run_created_at[run_id]
       state['workflow_timings'] = [
         {'workflow': workflow, 'event': event, **timing}
         for (workflow, event), timing in averages.items()

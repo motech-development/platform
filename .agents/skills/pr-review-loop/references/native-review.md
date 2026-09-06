@@ -6,6 +6,12 @@ its local help for supported arguments; do not hard-code a cached installation
 path or a workaround from a previous machine. The model pin below is an explicit
 user choice for this workflow.
 
+If the CLI rejects the configuration or pinned model before review starts, check
+other already-installed official CLI versions, including the app-bundled binary,
+for compatibility. A successful help command alone does not establish model
+support. Preserve any completed CodeRabbit result while correcting this startup
+failure; do not change global settings or substitute a different model.
+
 ## Choose the delta
 
 For a follow-up fix, the initial baseline is the local revision before that fix,
