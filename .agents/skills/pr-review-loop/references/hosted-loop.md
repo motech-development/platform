@@ -93,8 +93,9 @@ python3 "$skill_dir/scripts/wait-for-pipelines.py" \
 It uses read-only GitHub CLI calls. It measures up to ten recent successful runs
 per relevant workflow and event from a bounded history sample. The estimate is
 the arithmetic mean of creation-to-completion duration, including queue time;
-GitHub's `updatedAt` is an approximation of completion. It subtracts elapsed time
-and adds a 20% margin. Concurrent workflows contribute their longest remaining
+GitHub's `updatedAt` is an approximation of completion. It reads each pending
+workflow run's creation time once, so elapsed queue time is subtracted on the
+same basis, and adds a 20% margin. Concurrent workflows contribute their longest remaining
 estimate, not a sum. Unknown timings start at two minutes. Overruns back off from
 two to fifteen minutes; the initial sleep is also capped at fifteen minutes.
 
@@ -105,6 +106,9 @@ notifications where supported, with bounded tool yields; preserve the session ID
 and keep cancellation available. Do not restart the process or re-read unchanged
 logs every few seconds. Host-required status updates or model resumptions still
 consume usage; never promise zero total usage.
+
+If the state file cannot be saved, the terminal event still reports the outcome
+and persistence error; retain that event instead of assuming a saved checkpoint.
 
 The helper returns when observed checks settle, a check fails, the head changes,
 the PR closes, the API fails, or the observation window expires. **Its result is
