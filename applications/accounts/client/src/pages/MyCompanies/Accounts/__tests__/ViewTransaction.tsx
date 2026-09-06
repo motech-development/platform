@@ -562,6 +562,79 @@ describe('ViewTransaction', () => {
       ).toBeInTheDocument();
     });
 
+    it('refreshes an unknown live category while preserving the draft and blocking invalid saves', async () => {
+      const initial = { ...cachedTransaction, attachment: '' };
+      const changed = { ...initial, category: 'New category' };
+      const saved = { ...changed, description: 'My draft' };
+      vi.mocked(useTransactionState).mockReturnValue(initial);
+      let queries = 0;
+      let resolveSettings: (() => void) | undefined;
+      const result = vi.fn(() => ({ data: { updateTransaction: saved } }));
+      mocks.push({
+        request: { query: UPDATE_TRANSACTION, variables: { input: saved } },
+        result,
+      });
+      const link = new ApolloLink((operation, forward) => {
+        if (operation.operationName === 'ViewTransaction') queries += 1;
+        if (operation.operationName === 'ViewTransaction' && queries > 1) {
+          return new Observable((observer) => {
+            resolveSettings = () => {
+              observer.next({
+                data: {
+                  getClients: { id: 'company-id', items: [] },
+                  getSettings: {
+                    categories: [
+                      { name: 'Equipment', vatRate: 20 },
+                      { name: 'New category', vatRate: 20 },
+                    ],
+                    id: 'company-id',
+                    vat: { pay: 20 },
+                  },
+                  getTransaction: initial,
+                  getTypeahead: {
+                    id: 'company-id',
+                    purchases: [],
+                    sales: [],
+                    suppliers: [],
+                  },
+                },
+              });
+              observer.complete();
+            };
+          });
+        }
+        return forward(operation);
+      }).concat(new MockLink(mocks));
+      const { rerender } = renderTransaction(link);
+      const description = await screen.findByLabelText(
+        'transaction-form.transaction-details.description.label',
+      );
+      const save = screen.getByRole('button', {
+        name: 'transaction-form.save',
+      });
+      fireEvent.change(description, { target: { value: 'My draft' } });
+      vi.mocked(useTransactionState).mockReturnValue(changed);
+      rerender(<ViewTransaction />);
+      await waitFor(() => expect(resolveSettings).toBeDefined());
+      expect(description).toHaveValue('My draft');
+      expect(save).toBeDisabled();
+      await act(async () => {
+        resolveSettings?.();
+        await waitForApollo(0);
+      });
+      await waitFor(() =>
+        expect(
+          screen.getByLabelText(
+            'transaction-form.transaction-amount.category.label',
+          ),
+        ).toHaveValue('1'),
+      );
+      expect(description).toHaveValue('My draft');
+      await waitFor(() => expect(save).not.toBeDisabled());
+      fireEvent.click(save);
+      await waitFor(() => expect(result).toHaveBeenCalledOnce());
+    });
+
     it('saves a live publication without overwriting it or losing an unsaved description', async () => {
       vi.mocked(useTransactionState).mockReturnValue({
         ...cachedTransaction,

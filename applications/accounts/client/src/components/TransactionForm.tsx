@@ -187,15 +187,16 @@ function TransactionForm({
     !initialValues.refund && (initialValues.amount as number) > 0
       ? 'Sales'
       : 'Purchase';
+  const initialCategory =
+    initialTransaction === 'Sales'
+      ? 'Sales'
+      : categories.findIndex(({ name }) => name === initialValues.category);
   const formValues = {
     ...initialValues,
     amount: initialValues.amount
       ? Math.abs(initialValues.amount as number)
       : initialValues.amount,
-    category:
-      initialValues.category === ''
-        ? initialValues.category
-        : categories.findIndex(({ name }) => name === initialValues.category),
+    category: initialCategory === -1 ? '' : initialCategory,
     ...(isEmpty
       ? {
           transaction: '',
@@ -227,9 +228,16 @@ function TransactionForm({
         t('transaction-form.transaction-amount.amount.required'),
       ),
       attachment: string(),
-      category: string().required(
-        t('transaction-form.transaction-amount.category.required'),
-      ),
+      category: string()
+        .required(t('transaction-form.transaction-amount.category.required'))
+        .when('transaction', {
+          is: 'Purchase',
+          then: (schema) =>
+            schema.oneOf(
+              categories.map((_, index) => String(index)),
+              t('transaction-form.transaction-amount.category.required'),
+            ),
+        }),
       companyId: string().required(),
       date: string().required(
         t('transaction-form.transaction-details.date.required'),
@@ -337,7 +345,9 @@ function TransactionForm({
     const { setFieldValue, values } = form;
     const value = parseFloat(event.target.value.replace(currency, ''));
     const i = getIn(values, 'category') as number;
-    const vatRate = parseFloat(categories[i].value);
+    const selectedCategory = categories[i];
+    if (!selectedCategory) return;
+    const vatRate = parseFloat(selectedCategory.value);
     const rate = new Decimal(vatRate).dividedBy(100).plus(1);
     const calculated = new Decimal(value)
       .minus(new Decimal(value).dividedBy(rate))

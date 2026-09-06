@@ -254,13 +254,34 @@ function TransactionDetails({
   const applyTransactionState = useApplyTransactionState();
   const { t } = useTranslation('accounts');
   const { add } = useToast();
-  const { data, error, loading } = useQuery(VIEW_TRANSACTION, {
+  const { data, error, loading, refetch } = useQuery(VIEW_TRANSACTION, {
     variables: {
       companyId,
       transactionId,
     },
   });
   const transaction = currentTransaction;
+  const refreshedCategories = useRef(new Set<string>());
+  const queryReady = Boolean(data?.getSettings && data?.getClients);
+  const categoryMissing = Boolean(
+    transaction &&
+      transaction.category !== 'Sales' &&
+      data?.getSettings &&
+      !data.getSettings.categories.some(
+        ({ name }) => name === transaction.category,
+      ),
+  );
+  useEffect(() => {
+    const category = transaction?.category;
+    if (
+      !categoryMissing ||
+      !category ||
+      refreshedCategories.current.has(category)
+    )
+      return;
+    refreshedCategories.current.add(category);
+    refetch().catch(() => {});
+  }, [categoryMissing, refetch, transaction?.category]);
   const initialReadError =
     transaction && data?.getSettings && data?.getClients
       ? undefined
@@ -354,7 +375,7 @@ function TransactionDetails({
     }).catch(() => {});
   };
   const save = (input: FormSchema) => {
-    if (readError || readPending) return;
+    if (readError || readPending || error || categoryMissing) return;
     mutation({
       update,
       variables: {
@@ -365,8 +386,11 @@ function TransactionDetails({
 
   return (
     <Connected
-      error={error || mutationError || initialReadError}
-      loading={!readError && (loading || currentTransaction === undefined)}
+      error={(!queryReady && error) || mutationError || initialReadError}
+      loading={
+        !readError &&
+        ((loading && !queryReady) || currentTransaction === undefined)
+      }
     >
       {transaction && data?.getSettings && data?.getClients && (
         <>
@@ -375,8 +399,8 @@ function TransactionDetails({
             subTitle={t('view-transaction.sub-title')}
           />
 
-          {readError && (
-            <Connected error={readError} loading={false}>
+          {(readError || error) && (
+            <Connected error={readError || error} loading={false}>
               {null}
             </Connected>
           )}
@@ -410,7 +434,12 @@ function TransactionDetails({
                 }))}
                 companyId={companyId}
                 initialValues={transaction}
-                loading={mutationLoading || Boolean(readError) || readPending}
+                loading={
+                  mutationLoading ||
+                  Boolean(readError || error) ||
+                  readPending ||
+                  categoryMissing
+                }
                 purchases={data.getTypeahead?.purchases}
                 sales={data.getTypeahead?.sales}
                 suppliers={data.getTypeahead?.suppliers}

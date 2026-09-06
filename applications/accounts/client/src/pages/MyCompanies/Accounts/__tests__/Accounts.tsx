@@ -32,6 +32,82 @@ describe('Accounts', () => {
     history = ['/accounts/company-id'];
   });
 
+  it('reconciles a balance event received while a recovery snapshot is in flight', async () => {
+    let acknowledge: (() => void) | undefined;
+    let publish: (() => void) | undefined;
+    const reads: Array<(balance: number) => void> = [];
+    const link = new ApolloLink(
+      (operation) =>
+        new Observable((observer) => {
+          if (operation.operationName === 'OnTransaction') {
+            acknowledge = () =>
+              observer.next({ extensions: { controlMsgType: 'CONNECTED' } });
+            publish = () =>
+              observer.next({
+                data: {
+                  onTransaction: { balance: 100, vat: { owed: 20, paid: 10 } },
+                },
+              });
+          } else if (operation.operationName === 'GetBalance') {
+            reads.push((balance) => {
+              observer.next({
+                data: {
+                  getBalance: {
+                    balance,
+                    currency: 'GBP',
+                    id: 'company-id',
+                    vat: { owed: balance / 5, paid: balance / 10 },
+                  },
+                  getTransactions: {
+                    __typename: 'Transactions',
+                    id: 'company-id',
+                    items: [],
+                    nextToken: null,
+                    status: TransactionStatus.Confirmed,
+                  },
+                },
+              });
+              observer.complete();
+            });
+          }
+        }),
+    );
+    const view = render(
+      <TestProvider path="/accounts/:companyId" history={history}>
+        <MockedProvider link={link} cache={new InMemoryCache({ typePolicies })}>
+          <Accounts />
+        </MockedProvider>
+      </TestProvider>,
+    );
+    i18n.addResources('en', 'accounts', {
+      'accounts.overview.balance': 'Balance {{amount}}',
+      'accounts.overview.vat-owed': 'VAT owed {{amount}}',
+      'accounts.overview.vat-paid': 'VAT paid {{amount}}',
+    });
+    await act(async () => {
+      reads[0](50);
+      await waitForApollo(0);
+    });
+    await view.findByText('Balance £50.00');
+    act(() => acknowledge?.());
+    await waitFor(() => expect(reads).toHaveLength(2));
+    act(() => publish?.());
+    await view.findByText('Balance £100.00');
+    await act(async () => {
+      reads[1](50);
+      await waitForApollo(0);
+    });
+    await waitFor(() => expect(reads).toHaveLength(3));
+    expect(view.getByText('Balance £100.00')).toBeInTheDocument();
+    await act(async () => {
+      reads[2](110);
+      await waitForApollo(0);
+    });
+    await view.findByText('Balance £110.00');
+    expect(view.getByText('VAT owed £22.00')).toBeInTheDocument();
+    expect(view.getByText('VAT paid £11.00')).toBeInTheDocument();
+  });
+
   it.each(['error', 'complete'] as const)(
     'resubscribes to live balance and VAT updates after %s disconnects the subscriptions',
     async (disconnectType) => {
