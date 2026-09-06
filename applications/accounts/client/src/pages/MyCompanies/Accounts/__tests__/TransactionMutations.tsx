@@ -45,15 +45,22 @@ function renderTransactions(
   };
   const stale = { ...current, description: 'Stale index description' };
   const saved = { ...current, description: 'Locally saved description' };
-  const read = vi.fn(() => current);
+  let authoritative: typeof current | null = current;
+  const read = vi.fn(() => authoritative);
   const detailQuery = vi.fn();
   const pendingReads: Array<(transaction: typeof current) => void> = [];
-  const update = vi.fn(() => saved);
-  const remove = vi.fn(() => ({
-    companyId: current.companyId,
-    id: current.id,
-    status,
-  }));
+  const update = vi.fn(() => {
+    authoritative = saved;
+    return saved;
+  });
+  const remove = vi.fn(() => {
+    authoritative = null;
+    return {
+      companyId: current.companyId,
+      id: current.id,
+      status,
+    };
+  });
   let signal: (() => void) | undefined;
   const link = new ApolloLink(
     (operation) =>
@@ -272,7 +279,7 @@ describe('local mutations with existing transaction corrections', () => {
       screen.queryByText(network.current.description),
     ).not.toBeInTheDocument();
     expect(network.update).toHaveBeenCalledOnce();
-    expect(network.read).toHaveBeenCalledTimes(readsBeforeMutation);
+    expect(network.read).toHaveBeenCalledTimes(readsBeforeMutation + 1);
   });
 
   it.each([
@@ -313,7 +320,7 @@ describe('local mutations with existing transaction corrections', () => {
       expect(
         screen.queryByTestId(`View ${network.current.name}`),
       ).not.toBeInTheDocument();
-      expect(network.read).toHaveBeenCalledTimes(readsBeforeMutation);
+      expect(network.read).toHaveBeenCalledTimes(readsBeforeMutation + 1);
     },
   );
 });

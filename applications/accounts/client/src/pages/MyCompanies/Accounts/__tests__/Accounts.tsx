@@ -678,6 +678,408 @@ describe('Accounts', () => {
     expect(refill).toHaveBeenCalledTimes(2);
   });
 
+  it('preserves the server page for equal dates despite out-of-order authoritative reads', async () => {
+    let signal: (() => void) | undefined;
+    const resolveReads = new Map<string, () => void>();
+    const first = {
+      __typename: 'Transaction',
+      amount: 20,
+      attachment: 'receipt.pdf',
+      category: 'Sales',
+      companyId: 'company-id',
+      date: '2026-09-05T00:00:00.000Z',
+      description: 'First server row',
+      id: 'first-transaction',
+      name: 'First customer',
+      refund: false,
+      scheduled: false,
+      status: TransactionStatus.Confirmed,
+      vat: 0,
+    };
+    const second = {
+      ...first,
+      description: 'Second server row',
+      id: 'second-transaction',
+      name: 'Second customer',
+    };
+    const offPage = {
+      ...first,
+      description: 'Equal-date row beyond the cursor',
+      id: 'off-page-transaction',
+      name: 'Off-page customer',
+    };
+    const transactions = new Map(
+      [first, second, offPage].map((item) => [item.id, item]),
+    );
+    const link = new ApolloLink(
+      (operation) =>
+        new Observable((observer) => {
+          if (operation.operationName === 'OnTransactionChange') {
+            signal = () =>
+              observer.next({
+                data: {
+                  onTransactionChange: {
+                    id: 'company-id',
+                    owner: 'user-id',
+                    transactionId: offPage.id,
+                  },
+                },
+              });
+            observer.next({ extensions: { controlMsgType: 'CONNECTED' } });
+          } else if (operation.operationName === 'GetTransactionState') {
+            const id = operation.variables.transactionId as string;
+            resolveReads.set(id, () => {
+              observer.next({
+                data: { getTransactionState: transactions.get(id) },
+              });
+              observer.complete();
+            });
+          } else if (operation.operationName === 'GetBalance') {
+            const hasMore = !operation.variables.nextToken;
+            observer.next({
+              data: {
+                getBalance: {
+                  balance: 60,
+                  currency: 'GBP',
+                  id: 'company-id',
+                  vat: { owed: 0, paid: 0 },
+                },
+                getTransactions: {
+                  __typename: 'Transactions',
+                  id: 'company-id',
+                  items: hasMore ? [first, second] : [offPage],
+                  nextToken: hasMore ? 'next-page' : null,
+                  status: TransactionStatus.Confirmed,
+                },
+              },
+            });
+            observer.complete();
+          }
+        }),
+    );
+    const { findByText, getAllByRole, getByRole, queryByText } = render(
+      <TestProvider path="/accounts/:companyId" history={history}>
+        <MockedProvider link={link} cache={new InMemoryCache({ typePolicies })}>
+          <TransactionStateProvider>
+            <TransactionUpdates companyId="company-id" owner="user-id">
+              <Accounts />
+            </TransactionUpdates>
+          </TransactionStateProvider>
+        </MockedProvider>
+      </TestProvider>,
+    );
+    const visibleRows = () =>
+      getAllByRole('link', { name: 'transactions-list.view' }).map((item) =>
+        item.getAttribute('data-testid'),
+      );
+    await findByText(second.description);
+    await waitFor(() =>
+      expect(resolveReads.has(first.id) && resolveReads.has(second.id)).toBe(
+        true,
+      ),
+    );
+    act(() => signal?.());
+    await waitFor(() => expect(resolveReads.has(offPage.id)).toBe(true));
+    await act(async () => {
+      resolveReads.get(offPage.id)?.();
+      await waitForApollo(0);
+    });
+    expect(visibleRows()).toEqual([
+      'View First customer',
+      'View Second customer',
+    ]);
+
+    await act(async () => {
+      resolveReads.get(second.id)?.();
+      await waitForApollo(0);
+    });
+    expect(visibleRows()).toEqual([
+      'View First customer',
+      'View Second customer',
+    ]);
+    await act(async () => {
+      resolveReads.get(first.id)?.();
+      await waitForApollo(0);
+    });
+    expect(visibleRows()).toEqual([
+      'View First customer',
+      'View Second customer',
+    ]);
+    expect(queryByText(offPage.description)).not.toBeInTheDocument();
+
+    fireEvent.click(getByRole('button', { name: 'accounts.load-more' }));
+    await findByText(offPage.description);
+    expect(visibleRows()).toEqual([
+      'View First customer',
+      'View Second customer',
+      'View Off-page customer',
+    ]);
+  });
+
+  it('initializes the visible page from the fresh response rather than a shorter cached page', async () => {
+    let resolveFresh: (() => void) | undefined;
+    let signal: (() => void) | undefined;
+    const first = {
+      __typename: 'Transaction',
+      amount: 20,
+      attachment: 'receipt.pdf',
+      category: 'Sales',
+      companyId: 'company-id',
+      date: '2026-09-05T12:00:00.000Z',
+      description: 'First cached row',
+      id: 'first-transaction',
+      name: 'First customer',
+      refund: false,
+      scheduled: false,
+      status: TransactionStatus.Confirmed,
+      vat: 0,
+    };
+    const second = {
+      ...first,
+      date: '2026-09-04T12:00:00.000Z',
+      description: 'Second cached row',
+      id: 'second-transaction',
+      name: 'Second customer',
+    };
+    const fresh = {
+      ...first,
+      date: '2026-09-06T12:00:00.000Z',
+      description: 'New first-page row',
+      id: 'fresh-transaction',
+      name: 'Fresh customer',
+    };
+    const older = {
+      ...first,
+      date: '2026-09-03T12:00:00.000Z',
+      description: 'Older next-page row',
+      id: 'older-transaction',
+      name: 'Older customer',
+    };
+    const transactions = new Map(
+      [first, second, fresh, older].map((item) => [item.id, item]),
+    );
+    const response = (items: (typeof first)[], nextToken: string | null) => ({
+      getBalance: {
+        balance: 80,
+        currency: 'GBP',
+        id: 'company-id',
+        vat: { owed: 0, paid: 0 },
+      },
+      getTransactions: {
+        __typename: 'Transactions',
+        id: 'company-id',
+        items,
+        nextToken,
+        status: TransactionStatus.Confirmed,
+      },
+    });
+    const savedCache = new InMemoryCache({ typePolicies });
+    savedCache.writeQuery({
+      data: response([first, second], 'cached-next-page'),
+      query: GET_BALANCE,
+      variables: {
+        count: 100,
+        id: 'company-id',
+        status: TransactionStatus.Confirmed,
+      },
+    });
+    const requests = vi.fn();
+    const link = new ApolloLink(
+      (operation) =>
+        new Observable((observer) => {
+          if (operation.operationName === 'OnTransactionChange') {
+            signal = () =>
+              observer.next({
+                data: {
+                  onTransactionChange: {
+                    id: 'company-id',
+                    owner: 'user-id',
+                    transactionId: first.id,
+                  },
+                },
+              });
+          } else if (operation.operationName === 'GetTransactionState') {
+            observer.next({
+              data: {
+                getTransactionState: transactions.get(
+                  operation.variables.transactionId as string,
+                ),
+              },
+            });
+            observer.complete();
+          } else if (operation.operationName === 'GetBalance') {
+            requests(operation.variables.count, operation.variables.nextToken);
+            if (operation.variables.nextToken) {
+              observer.next({ data: response([older], null) });
+              observer.complete();
+            } else {
+              resolveFresh = () => {
+                observer.next({
+                  data: response([fresh, first, second], 'fresh-next-page'),
+                });
+                observer.complete();
+              };
+            }
+          }
+        }),
+    );
+    const { findByText, getAllByRole, getByRole } = render(
+      <TestProvider path="/accounts/:companyId" history={history}>
+        <MockedProvider link={link} cache={savedCache}>
+          <TransactionStateProvider>
+            <TransactionUpdates companyId="company-id" owner="user-id">
+              <Accounts />
+            </TransactionUpdates>
+          </TransactionStateProvider>
+        </MockedProvider>
+      </TestProvider>,
+    );
+    await waitFor(() => expect(resolveFresh).toBeDefined());
+    await act(async () => {
+      signal?.();
+      await waitForApollo(0);
+    });
+    await act(async () => {
+      resolveFresh?.();
+      await waitForApollo(0);
+    });
+
+    await findByText(fresh.description);
+    expect(
+      getAllByRole('link', { name: 'transactions-list.view' }).map((item) =>
+        item.getAttribute('data-testid'),
+      ),
+    ).toEqual([
+      'View Fresh customer',
+      'View First customer',
+      'View Second customer',
+    ]);
+    expect(requests).toHaveBeenCalledExactlyOnceWith(100, undefined);
+    fireEvent.click(getByRole('button', { name: 'accounts.load-more' }));
+    await findByText(older.description);
+    expect(
+      getAllByRole('link', { name: 'transactions-list.view' }),
+    ).toHaveLength(4);
+    expect(requests.mock.calls).toEqual([
+      [100, undefined],
+      [100, 'fresh-next-page'],
+    ]);
+  });
+
+  it('adopts a larger first-page window after reconnecting from a previously complete short list', async () => {
+    let disconnect: (() => void) | undefined;
+    let reconnected = false;
+    const first = {
+      __typename: 'Transaction',
+      amount: 20,
+      attachment: 'receipt.pdf',
+      category: 'Sales',
+      companyId: 'company-id',
+      date: '2026-09-05T12:00:00.000Z',
+      description: 'First existing row',
+      id: 'first-transaction',
+      name: 'First customer',
+      refund: false,
+      scheduled: false,
+      status: TransactionStatus.Confirmed,
+      vat: 0,
+    };
+    const second = {
+      ...first,
+      date: '2026-09-04T12:00:00.000Z',
+      description: 'Second existing row',
+      id: 'second-transaction',
+      name: 'Second customer',
+    };
+    const fresh = {
+      ...first,
+      date: '2026-09-06T12:00:00.000Z',
+      description: 'New first-page row after reconnect',
+      id: 'fresh-transaction',
+      name: 'Fresh customer',
+    };
+    const transactions = new Map(
+      [first, second, fresh].map((item) => [item.id, item]),
+    );
+    const list = vi.fn(() => ({
+      items: reconnected ? [fresh, first, second] : [first, second],
+      nextToken: reconnected ? 'next-page' : null,
+    }));
+    const link = new ApolloLink(
+      (operation) =>
+        new Observable((observer) => {
+          if (operation.operationName === 'OnTransactionChange') {
+            disconnect = () => {
+              reconnected = true;
+              observer.error(new Error('Connection lost'));
+            };
+            observer.next({ extensions: { controlMsgType: 'CONNECTED' } });
+          } else if (operation.operationName === 'GetTransactionState') {
+            observer.next({
+              data: {
+                getTransactionState: transactions.get(
+                  operation.variables.transactionId as string,
+                ),
+              },
+            });
+            observer.complete();
+          } else if (operation.operationName === 'GetBalance') {
+            observer.next({
+              data: {
+                getBalance: {
+                  balance: 60,
+                  currency: 'GBP',
+                  id: 'company-id',
+                  vat: { owed: 0, paid: 0 },
+                },
+                getTransactions: {
+                  __typename: 'Transactions',
+                  id: 'company-id',
+                  ...list(),
+                  status: TransactionStatus.Confirmed,
+                },
+              },
+            });
+            observer.complete();
+          }
+        }),
+    );
+    const { findByText, getAllByRole, getByRole, queryByRole } = render(
+      <TestProvider path="/accounts/:companyId" history={history}>
+        <MockedProvider link={link} cache={new InMemoryCache({ typePolicies })}>
+          <TransactionStateProvider>
+            <TransactionUpdates companyId="company-id" owner="user-id">
+              <Accounts />
+            </TransactionUpdates>
+          </TransactionStateProvider>
+        </MockedProvider>
+      </TestProvider>,
+    );
+    await findByText(second.description);
+    expect(
+      queryByRole('button', { name: 'accounts.load-more' }),
+    ).not.toBeInTheDocument();
+    const previousLists = list.mock.calls.length;
+    act(() => disconnect?.());
+    await waitFor(() => expect(list).toHaveBeenCalledTimes(previousLists + 1), {
+      timeout: 2000,
+    });
+    await findByText(fresh.description);
+
+    expect(
+      getAllByRole('link', { name: 'transactions-list.view' }).map((item) =>
+        item.getAttribute('data-testid'),
+      ),
+    ).toEqual([
+      'View Fresh customer',
+      'View First customer',
+      'View Second customer',
+    ]);
+    expect(
+      getByRole('button', { name: 'accounts.load-more' }),
+    ).toBeInTheDocument();
+  });
+
   describe('success', () => {
     beforeEach(async () => {
       cache = new InMemoryCache({

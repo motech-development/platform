@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@apollo/client';
+import { NetworkStatus, useMutation, useQuery } from '@apollo/client';
 import { useAuth0 } from '@auth0/auth0-react';
 import {
   Button,
@@ -100,17 +100,19 @@ function Accounts() {
   const [visibleLimit, setVisibleLimit] = useState<number>();
   const { add } = useToast();
   const applyTransactionState = useApplyTransactionState();
-  const { data, error, fetchMore, loading, subscribeToMore } = useQuery(
-    GET_BALANCE,
-    {
+  const { client, data, error, loading, networkStatus, subscribeToMore } =
+    useQuery(GET_BALANCE, {
       fetchPolicy: 'cache-and-network',
+      notifyOnNetworkStatusChange: true,
+      onCompleted: ({ getTransactions }) => {
+        setVisibleLimit(getTransactions.items.length);
+      },
       variables: {
         count: 100,
         id: companyId,
         status: TransactionStatus.Confirmed,
       },
-    },
-  );
+    });
   const [deleteMutation, { loading: deleteLoading }] = useMutation(
     DELETE_TRANSACTION,
     {
@@ -150,13 +152,21 @@ function Accounts() {
       attemptedRefills.current.add(nextToken);
       setLoadingMore(true);
 
-      fetchMore({
-        variables: {
-          count,
-          nextToken,
-        },
-      })
+      const variables = {
+        count,
+        id: companyId,
+        nextToken,
+        status: TransactionStatus.Confirmed,
+      };
+      // Cursor responses append without completing the watched first-page query.
+      client
+        .query({ fetchPolicy: 'no-cache', query: GET_BALANCE, variables })
         .then(({ data: page }) => {
+          client.cache.writeQuery({
+            data: page,
+            query: GET_BALANCE,
+            variables,
+          });
           if (expandWindow)
             setVisibleLimit(
               (previous) => (previous ?? 0) + page.getTransactions.items.length,
@@ -168,16 +178,11 @@ function Accounts() {
           setLoadingMore(false);
         });
     },
-    [fetchMore],
+    [client, companyId],
   );
 
   const loadedCount = data?.getTransactions.items.length ?? 0;
   const nextToken = data?.getTransactions.nextToken;
-  useEffect(() => {
-    if (visibleLimit === undefined && loadedCount > 0)
-      setVisibleLimit(loadedCount);
-  }, [loadedCount, visibleLimit]);
-
   useEffect(() => {
     if (loading || loadingMore || loadingPage.current) return;
     const missing = (visibleLimit ?? loadedCount) - transactions.length;
@@ -238,7 +243,7 @@ function Accounts() {
   }, []);
 
   return (
-    <Connected error={error} loading={loading}>
+    <Connected error={error} loading={networkStatus === NetworkStatus.loading}>
       {data?.getBalance && (
         <>
           <PageTitle

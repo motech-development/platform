@@ -167,6 +167,8 @@ function TransactionUpdates({
         current?.companyId === companyId ? current : null,
       );
       notifyReady(transactionId);
+      // A delayed mutation response may be older than an already completed read.
+      refreshTransaction.current?.(transactionId);
     },
     [companyId, notifyReady, update],
   );
@@ -215,30 +217,28 @@ function TransactionUpdates({
 
         if (!active) return;
 
-        // A signal arriving during this read may represent a newer write.
-        if (request.dirty) {
+        // Signals and mutation responses can race. Re-read after either one
+        // rather than inferring write order from response arrival.
+        if (
+          request.dirty ||
+          revision !== revisions.current.get(transactionId)
+        ) {
           await readTransaction(transactionId, request);
           return;
         }
 
-        // A completed local mutation is newer than a read started before it.
-        if (revision === revisions.current.get(transactionId)) {
-          const current = data.getTransactionState;
-          update(
-            companyId,
-            transactionId,
-            current?.companyId === companyId ? current : null,
-          );
-        }
+        const current = data.getTransactionState;
+        update(
+          companyId,
+          transactionId,
+          current?.companyId === companyId ? current : null,
+        );
         notifyReady(transactionId);
         requests.delete(transactionId);
       } catch {
         if (!active) return;
-        if (
-          revision !== revisions.current.get(transactionId) &&
-          !request.dirty
-        ) {
-          requests.delete(transactionId);
+        if (revision !== revisions.current.get(transactionId)) {
+          await readTransaction(transactionId, request);
           return;
         }
 
@@ -384,6 +384,7 @@ export const useTransactionItems = <T extends { date: string; id: string }>(
     const existing = items ?? [];
     if (states.size === 0) return existing;
 
+    const loadedOrder = new Map(existing.map(({ id }, index) => [id, index]));
     const oldestLoadedDate = existing.reduce(
       (oldest, { date }) => Math.min(oldest, new Date(date).getTime()),
       Infinity,
@@ -395,9 +396,12 @@ export const useTransactionItems = <T extends { date: string; id: string }>(
       ({ id }) => !states.has(id),
     );
     states.forEach((current) => {
+      if (current?.status !== status) return;
+      const date = new Date(current.date).getTime();
       if (
-        current?.status === status &&
-        (!hasMore || new Date(current.date).getTime() >= oldestLoadedDate)
+        !hasMore ||
+        date > oldestLoadedDate ||
+        (date === oldestLoadedDate && loadedOrder.has(current.id))
       )
         result.push(current);
     });
@@ -405,6 +409,11 @@ export const useTransactionItems = <T extends { date: string; id: string }>(
     result.sort((left, right) => {
       const order =
         new Date(left.date).getTime() - new Date(right.date).getTime();
+      if (order === 0)
+        return (
+          (loadedOrder.get(left.id) ?? existing.length) -
+          (loadedOrder.get(right.id) ?? existing.length)
+        );
       return status === TransactionStatus.Pending ? order : -order;
     });
     // Retain the cache's boundary row for the next page, but do not expand the

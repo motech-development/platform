@@ -464,9 +464,105 @@ describe('TransactionUpdates', () => {
     fireEvent.click(screen.getByText('Save locally'));
     await network.resolveRead(0, transaction({ name: 'Older server state' }));
     expect(screen.getByTestId('pending')).toHaveTextContent('Local update');
+    expect(network.reads).toHaveLength(2);
+    await network.resolveRead(1, transaction({ name: 'Local update' }));
     network.signal();
     fireEvent.click(screen.getByText('Delete locally'));
-    await network.resolveRead(1, transaction());
+    await network.resolveRead(2, transaction());
+    expect(screen.getByTestId('pending')).toBeEmptyDOMElement();
+    expect(network.reads).toHaveLength(4);
+    await network.resolveRead(3, null);
+    expect(screen.getByTestId('pending')).toBeEmptyDOMElement();
+  });
+
+  it.each([
+    ['deletion', null, ''],
+    [
+      'edit',
+      transaction({ name: 'Later external edit' }),
+      'Later external edit|receipt.pdf',
+    ],
+  ])(
+    'rechecks a later external %s after a delayed local save response overlaps its read',
+    async (_, current, expected) => {
+      const network = setupNetwork();
+      render(
+        <TransactionUpdates companyId="company" owner="owner">
+          <Lists />
+          <LocalChanges />
+        </TransactionUpdates>,
+        { wrapper: network.Wrapper },
+      );
+      await network.resolveList([]);
+      network.signal();
+      fireEvent.click(screen.getByText('Save locally'));
+      await network.resolveRead(0, current);
+
+      expect(network.reads).toHaveLength(2);
+      expect(screen.getByTestId('pending')).toHaveTextContent('Local update');
+      await network.resolveRead(1, current);
+      expect(screen.getByTestId('pending').textContent).toBe(expected);
+    },
+  );
+
+  it.each([
+    ['deletion', null, ''],
+    [
+      'edit',
+      transaction({ name: 'Already-read external edit' }),
+      'Already-read external edit|receipt.pdf',
+    ],
+  ])(
+    'restores an already-read external %s after an older local mutation response arrives',
+    async (_, current, expected) => {
+      const network = setupNetwork();
+      render(
+        <TransactionUpdates companyId="company" owner="owner">
+          <Lists />
+          <LocalChanges />
+        </TransactionUpdates>,
+        { wrapper: network.Wrapper },
+      );
+      await network.resolveList([]);
+      network.signal();
+      await network.resolveRead(0, current);
+      expect(screen.getByTestId('pending').textContent).toBe(expected);
+
+      fireEvent.click(screen.getByText('Save locally'));
+      expect(screen.getByTestId('pending')).toHaveTextContent('Local update');
+      expect(network.reads).toHaveLength(2);
+      await network.resolveRead(1, current);
+      expect(screen.getByTestId('pending').textContent).toBe(expected);
+    },
+  );
+
+  it('rechecks ordering after a read fails across a delayed mutation response and retries subsequent failures', async () => {
+    vi.useFakeTimers();
+    const network = setupNetwork();
+    render(
+      <TransactionUpdates companyId="company" owner="owner">
+        <Lists />
+        <LocalChanges />
+      </TransactionUpdates>,
+      { wrapper: network.Wrapper },
+    );
+    await network.resolveList([]);
+    network.signal();
+    fireEvent.click(screen.getByText('Save locally'));
+    await deliver(() =>
+      network.reads[0].observer.error(new Error('Interrupted read')),
+    );
+
+    expect(network.reads).toHaveLength(2);
+    expect(screen.getByTestId('pending')).toHaveTextContent('Local update');
+    await deliver(() =>
+      network.reads[1].observer.error(new Error('Temporary failure')),
+    );
+    expect(network.reads).toHaveLength(2);
+    await act(() => vi.advanceTimersByTimeAsync(1000));
+    expect(network.reads).toHaveLength(3);
+    expect(screen.getByTestId('pending')).toHaveTextContent('Local update');
+    await network.resolveRead(2, null);
     expect(screen.getByTestId('pending')).toBeEmptyDOMElement();
   });
 

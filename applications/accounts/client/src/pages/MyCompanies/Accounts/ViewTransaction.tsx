@@ -372,9 +372,14 @@ function TransactionDetails({
                 attachment={attachment}
                 attachmentView={
                   <ViewAttachment
+                    key={attachment}
                     id={companyId}
                     path={attachment}
-                    onDelete={setAttachment}
+                    onDelete={() => {
+                      setAttachment((current) =>
+                        current === attachment ? '' : current,
+                      );
+                    }}
                   />
                 }
                 backTo={backTo(companyId, transaction.status)}

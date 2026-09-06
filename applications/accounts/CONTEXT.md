@@ -46,15 +46,20 @@ The client overlays these current records and deletion markers on Pending and
 Confirmed lists, so delayed index responses cannot overwrite a correction or
 restore a deleted row. Confirmed corrections respect the loaded date window
 and page size while more pages remain, including when an edited date moves a
-previously loaded row outside that window. Vacated positions are filled from
-the server cursor without increasing the visible limit; explicit Load More
-requests expand it. Refills share the pagination request guard and do not
+previously loaded row outside that window. Equal-date rows at the boundary
+retain server-loaded membership and order; an unseen row with that same date
+waits for its server page. Vacated positions are filled from
+the server cursor without increasing the visible limit, which is set by each
+successful first-page network response rather than cached membership.
+Explicit Load More requests expand it. Refills share the pagination request guard and do not
 automatically repeat a failed cursor. Older records appear when their page is
 loaded. Repeated signals never apply financial amounts again.
 Reads for the same transaction are serialized; a newer signal during a read
 causes another read before applying the result. Successful local edits and
-deletions update the retained correction immediately; reads started before that
-mutation cannot overwrite its result. Failed reads retry with backoff.
+deletions update the retained correction immediately and trigger a strong read
+to resolve the write order. Reads started before a mutation response also cause
+a follow-up read; the local result stays visible until reconciliation. Failed
+reads retry with backoff.
 Corrections survive navigation for the signed-in session and are rechecked on
 return to an account. Lists fetch fresh data when mounted, replacing first-page
 membership while cursor requests still append older pages. Opening a transaction
@@ -64,7 +69,12 @@ keep the initialized form mounted to preserve local edits.
 Account changes cancel obsolete reads and subscriptions;
 changing the signed-in owner resets corrections. Transaction details reconcile
 incoming corrections into unchanged form fields and synchronize attachment
-changes while preserving locally edited fields and replacement uploads. A
+changes while preserving locally edited fields and replacement uploads. The date
+picker follows the form's accepted date so validation cannot restore an older
+date after a live correction. Equivalent date formats are compared by their
+timestamp, so normalization does not count as a local edit. Replacing
+an attachment resets its preview and download state. A delayed deletion response
+only clears the path it deleted, preserving any intervening replacement. A
 scheduled publication therefore updates the status and scheduled flag without
 resetting an unrelated edit. An inaccessible transaction returns the user to its
 account list.
