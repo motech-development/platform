@@ -41,6 +41,7 @@ describe('Accounts', () => {
         publish: () => void;
       }> = [];
       const list = vi.fn();
+      let serverBalance = 50;
       const stoppedBalance = vi.fn();
       const link = new ApolloLink(
         (operation) =>
@@ -79,10 +80,10 @@ describe('Accounts', () => {
               observer.next({
                 data: {
                   getBalance: {
-                    balance: 50,
+                    balance: serverBalance,
                     currency: 'GBP',
                     id: 'company-id',
-                    vat: { owed: 10, paid: 5 },
+                    vat: { owed: serverBalance / 5, paid: serverBalance / 10 },
                   },
                   getTransactions: {
                     __typename: 'Transactions',
@@ -132,8 +133,13 @@ describe('Accounts', () => {
 
         // Quiet successful connections must reset the delay for later outages.
         act(() => balances[1].fail());
+        // A missed balance update is not replayed when only this channel recovers.
+        serverBalance = 100;
         await act(() => vi.advanceTimersByTimeAsync(1000));
         expect(balances).toHaveLength(3);
+        expect(view.getByText('Balance £100.00')).toBeInTheDocument();
+        expect(view.getByText('VAT owed £20.00')).toBeInTheDocument();
+        expect(view.getByText('VAT paid £10.00')).toBeInTheDocument();
         const recoveredReads = list.mock.calls.length;
         await act(async () => {
           balances[2].publish();
