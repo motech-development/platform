@@ -68,8 +68,5 @@
     "commitizen": {
       "path": "cz-conventional-changelog"
     }
-  },
-  "lint-staged": {
-    "*": "prettier --ignore-unknown --write"
   }
 }
