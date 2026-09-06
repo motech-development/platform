@@ -200,23 +200,22 @@ function Accounts() {
     [client, companyId],
   );
 
-  useTransactionRecovery(
-    useCallback(() => {
-      // Recovery replaces the cursor chain, including any unfinished page.
-      pageRevision.current += 1;
-      const revision = pageRevision.current;
-      loadingPage.current = true;
-      attemptedRefills.current.clear();
-      setLoadingMore(true);
-      refetch({ count: Math.max(100, visibleLimitRef.current ?? 0) })
-        .catch(() => {})
-        .finally(() => {
-          if (revision !== pageRevision.current) return;
-          loadingPage.current = false;
-          setLoadingMore(false);
-        });
-    }, [refetch]),
-  );
+  const recoverAccounts = useCallback(() => {
+    // Recovery replaces the cursor chain, including any unfinished page.
+    pageRevision.current += 1;
+    const revision = pageRevision.current;
+    loadingPage.current = true;
+    attemptedRefills.current.clear();
+    setLoadingMore(true);
+    refetch({ count: Math.max(100, visibleLimitRef.current ?? 0) })
+      .catch(() => {})
+      .finally(() => {
+        if (revision !== pageRevision.current) return;
+        loadingPage.current = false;
+        setLoadingMore(false);
+      });
+  }, [refetch]);
+  useTransactionRecovery(recoverAccounts);
 
   useEffect(
     () => () => {
@@ -277,7 +276,10 @@ function Accounts() {
           error: retry,
           next: ({ data: subscriptionData, extensions }) => {
             if (!active) return;
-            if (extensions?.controlMsgType === 'CONNECTED') retries = 0;
+            if (extensions?.controlMsgType === 'CONNECTED') {
+              retries = 0;
+              recoverAccounts();
+            }
             const balance = subscriptionData?.onTransaction;
             if (!balance) return;
             retries = 0;
@@ -300,7 +302,7 @@ function Accounts() {
       clearTimeout(retryTimer);
       unsubscribe?.();
     };
-  }, [client, companyId, updateQuery, user.sub]);
+  }, [client, companyId, recoverAccounts, updateQuery, user.sub]);
 
   return (
     <Connected
