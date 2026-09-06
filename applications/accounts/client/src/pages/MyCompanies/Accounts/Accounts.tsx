@@ -24,7 +24,10 @@ import {
   useTransactionRecovery,
 } from '../../../components/TransactionUpdates';
 import { gql } from '../../../graphql';
-import { TransactionStatus } from '../../../graphql/graphql';
+import {
+  OnTransactionSubscription,
+  TransactionStatus,
+} from '../../../graphql/graphql';
 import invariant from '../../../utils/invariant';
 
 export const GET_BALANCE = gql(/* GraphQL */ `
@@ -101,6 +104,9 @@ function Accounts() {
   const visibleLimitRef = useRef(visibleLimit);
   visibleLimitRef.current = visibleLimit;
   const pageRevision = useRef(0);
+  const balanceRevision = useRef(0);
+  const latestBalance =
+    useRef<OnTransactionSubscription['onTransaction']>(null);
   const { add } = useToast();
   const applyTransactionState = useApplyTransactionState();
   const { client, data, error, loading, networkStatus, refetch, updateQuery } =
@@ -200,7 +206,22 @@ function Accounts() {
     [client, companyId],
   );
 
+  const applyBalance = useCallback(
+    (balance: NonNullable<OnTransactionSubscription['onTransaction']>) => {
+      updateQuery((previous) =>
+        previous.getBalance
+          ? {
+              ...previous,
+              getBalance: { ...previous.getBalance, ...balance },
+            }
+          : previous,
+      );
+    },
+    [updateQuery],
+  );
+
   const recoverAccounts = useCallback(() => {
+    const balanceAtStart = balanceRevision.current;
     // Recovery replaces the cursor chain, including any unfinished page.
     pageRevision.current += 1;
     const revision = pageRevision.current;
@@ -208,13 +229,23 @@ function Accounts() {
     attemptedRefills.current.clear();
     setLoadingMore(true);
     refetch({ count: Math.max(100, visibleLimitRef.current ?? 0) })
+      .then(() => {
+        if (
+          revision !== pageRevision.current ||
+          balanceAtStart === balanceRevision.current
+        )
+          return;
+        // Keep the received event visible until a read started after it completes.
+        if (latestBalance.current) applyBalance(latestBalance.current);
+        recoverAccounts();
+      })
       .catch(() => {})
       .finally(() => {
         if (revision !== pageRevision.current) return;
         loadingPage.current = false;
         setLoadingMore(false);
       });
-  }, [refetch]);
+  }, [applyBalance, refetch]);
   useTransactionRecovery(recoverAccounts);
 
   useEffect(
@@ -283,14 +314,9 @@ function Accounts() {
             const balance = subscriptionData?.onTransaction;
             if (!balance) return;
             retries = 0;
-            updateQuery((previous) =>
-              previous.getBalance
-                ? {
-                    ...previous,
-                    getBalance: { ...previous.getBalance, ...balance },
-                  }
-                : previous,
-            );
+            balanceRevision.current += 1;
+            latestBalance.current = balance;
+            applyBalance(balance);
           },
         });
       unsubscribe = () => subscription.unsubscribe();
@@ -302,7 +328,7 @@ function Accounts() {
       clearTimeout(retryTimer);
       unsubscribe?.();
     };
-  }, [client, companyId, recoverAccounts, updateQuery, user.sub]);
+  }, [applyBalance, client, companyId, recoverAccounts, user.sub]);
 
   return (
     <Connected

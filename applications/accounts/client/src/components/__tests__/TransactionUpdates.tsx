@@ -234,6 +234,39 @@ function Account({ companyId = 'company' }: { companyId?: string }) {
 }
 afterEach(() => vi.useRealTimers());
 describe('TransactionUpdates', () => {
+  it.each(['before', 'after'])(
+    'does not carry a detail-only failure to an unrelated list when it fails %s navigation',
+    async (timing) => {
+      const network = setupNetwork();
+      const view = render(
+        <TransactionUpdates companyId="company" owner="owner">
+          <ReadableDetails />
+        </TransactionUpdates>,
+        { wrapper: network.Wrapper },
+      );
+      const fail = () =>
+        deliver(() =>
+          network.reads[0].observer.error(
+            Object.assign(new Error('Invalid detail'), { statusCode: 403 }),
+          ),
+        );
+      if (timing === 'before') await fail();
+      view.rerender(
+        <TransactionUpdates companyId="company" owner="owner">
+          <Lists />
+        </TransactionUpdates>,
+      );
+      await network.resolveList([
+        transaction({ id: 'healthy-row', name: 'Healthy transaction' }),
+      ]);
+      if (timing === 'after') await fail();
+      expect(screen.getByTestId('pending')).toHaveTextContent(
+        'Healthy transaction',
+      );
+      expect(screen.getByTestId('read-error')).toBeEmptyDOMElement();
+    },
+  );
+
   it('registers recovery before a synchronous subscription acknowledgement', async () => {
     const network = setupNetwork(true);
     const recover = vi.fn();

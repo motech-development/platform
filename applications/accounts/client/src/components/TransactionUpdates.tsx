@@ -54,6 +54,7 @@ const TransactionUpdatesContext = createContext<{
   apply: (transactionId: string, current: CurrentTransaction | null) => void;
   errors: ReadonlyMap<string, ApolloError>;
   pending: ReadonlySet<string>;
+  signalled: ReadonlySet<string>;
   states: TransactionStates;
   watch: (transactionId: string, onReady: () => void) => () => void;
   watchList: (transactionIds: string[]) => () => void;
@@ -62,6 +63,7 @@ const TransactionUpdatesContext = createContext<{
   apply: () => {},
   errors: new Map(),
   pending: new Set(),
+  signalled: new Set(),
   states: emptyStates,
   watch: () => () => {},
   watchList: () => () => {},
@@ -134,12 +136,12 @@ export const useTransactionState = (transactionId: string) => {
 export const useTransactionReadError = (
   transactionIds: string | readonly string[],
 ) => {
-  const { errors, states } = useContext(TransactionUpdatesContext);
+  const { errors, signalled, states } = useContext(TransactionUpdatesContext);
   if (typeof transactionIds === 'string') return errors.get(transactionIds);
-  // A failed first read has no known status or list membership yet.
+  // Only signal-originated failures can have unknown list membership.
   return (
     transactionIds.map((id) => errors.get(id)).find(Boolean) ??
-    Array.from(errors).find(([id]) => !states.has(id))?.[1]
+    Array.from(errors).find(([id]) => signalled.has(id) && !states.has(id))?.[1]
   );
 };
 
@@ -198,6 +200,7 @@ function TransactionUpdates({
   const { update } = store;
   const viewedTransactions = useRef(new Map<string, Set<() => void>>());
   const loadedLists = useRef(new Set<string[]>());
+  const signalled = useRef(new Set<string>());
   const recoveries = useRef(new Set<() => void>());
   const [errors, setErrors] = useState<ReadonlyMap<string, ApolloError>>(
     () => new Map(),
@@ -262,6 +265,7 @@ function TransactionUpdates({
       apply,
       errors,
       pending,
+      signalled: signalled.current,
       states,
       watch,
       watchList,
@@ -486,6 +490,7 @@ function TransactionUpdates({
             const change = data?.onTransactionChange;
             if (change?.id !== companyId || change.owner !== owner) return;
             reconnectAttempts = 0;
+            signalled.current.add(change.transactionId);
             refresh(change.transactionId);
           },
         });
