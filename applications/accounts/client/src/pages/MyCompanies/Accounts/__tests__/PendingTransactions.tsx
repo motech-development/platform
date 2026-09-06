@@ -133,8 +133,8 @@ describe('PendingTransactions', () => {
     },
   );
 
-  it.each(['published', 'deleted'])(
-    'dismisses the selected deletion confirmation when its transaction is %s remotely',
+  it.each(['published', 'deleted', 'renamed'])(
+    'reconciles the selected deletion confirmation when its transaction is %s remotely',
     async (change) => {
       let signal: ((transactionId: string) => void) | undefined;
       const selected = {
@@ -189,7 +189,14 @@ describe('PendingTransactions', () => {
               const selectedState =
                 change === 'deleted'
                   ? null
-                  : { ...selected, status: TransactionStatus.Confirmed };
+                  : {
+                      ...selected,
+                      name: 'Renamed customer',
+                      status:
+                        change === 'renamed'
+                          ? TransactionStatus.Pending
+                          : TransactionStatus.Confirmed,
+                    };
               observer.next({
                 data: {
                   getTransactionState:
@@ -239,10 +246,24 @@ describe('PendingTransactions', () => {
 
       act(() => signal?.(selected.id));
       await waitFor(() => {
-        expect(queryByText(selected.description)).not.toBeInTheDocument();
-        expect(queryByRole('dialog')).not.toBeInTheDocument();
+        expect(Boolean(queryByText(selected.description))).toBe(
+          change === 'renamed',
+        );
+        expect(Boolean(queryByRole('dialog'))).toBe(change === 'renamed');
+        expect(Boolean(queryByText('Renamed customer'))).toBe(
+          change === 'renamed',
+        );
+        expect((queryByRole('textbox') as HTMLInputElement | null)?.value).toBe(
+          change === 'renamed' ? 'Selected customer' : undefined,
+        );
+        expect(
+          (
+            queryByRole('button', {
+              name: 'delete',
+            }) as HTMLButtonElement | null
+          )?.disabled,
+        ).toBe(change === 'renamed' ? true : undefined);
       });
-      expect(queryByRole('button', { name: 'delete' })).not.toBeInTheDocument();
     },
   );
 

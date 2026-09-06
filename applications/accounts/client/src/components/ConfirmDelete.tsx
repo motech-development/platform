@@ -1,5 +1,6 @@
 import { Button, Col, Row, TextBox } from '@motech-development/breeze-ui';
-import { Form, Formik } from 'formik';
+import { Form, Formik, FormikProps } from 'formik';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { object, string } from 'yup';
 
@@ -23,6 +24,10 @@ function ConfirmDelete({
   onDelete,
 }: IConfirmDeleteProps) {
   const { t } = useTranslation('confirm-delete');
+  const form = useRef<FormikProps<FormSchema>>(null);
+  useEffect(() => {
+    form.current?.validateForm().catch(() => {});
+  }, [name]);
   const validationSchema = object<FormSchema>()
     .shape({
       confirmation: string()
@@ -40,10 +45,11 @@ function ConfirmDelete({
     <Formik
       validateOnMount
       initialValues={formSchema}
+      innerRef={form}
       validationSchema={validationSchema}
       onSubmit={onDelete}
     >
-      {({ isValid }) => (
+      {({ isValid, values }) => (
         <Form autoComplete="off">
           <TextBox
             name="confirmation"
@@ -65,7 +71,7 @@ function ConfirmDelete({
                 colour="danger"
                 size="lg"
                 loading={loading}
-                disabled={!isValid}
+                disabled={!isValid || values.confirmation !== name}
               >
                 {t('delete')}
               </Button>

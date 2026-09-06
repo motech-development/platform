@@ -86,15 +86,47 @@ describe('get-transaction-state', () => {
   it.each([null, {}, { sub: '' }, { sub: 123 }, { username: 'owner-id' }])(
     'rejects an invalid authenticated identity before accessing data: %j',
     async (identity) => {
-      await expect(invoke(identity)).rejects.toThrow('Unauthorized');
+      await expect(invoke(identity)).resolves.toEqual({
+        errorMessage: 'Unauthorized',
+        errorType: 'UnauthorizedException',
+      });
       expect(ddb).toReceiveCommandTimes(GetCommand, 0);
     },
   );
 
   it('fails without a configured table before accessing data', async () => {
     vi.stubEnv('TABLE', undefined);
-    await expect(invoke()).rejects.toThrow('No table set');
+    await expect(invoke()).resolves.toEqual({
+      errorMessage: 'Transaction state is unavailable',
+      errorType: 'ConfigurationError',
+    });
     expect(ddb).toReceiveCommandTimes(GetCommand, 0);
+  });
+
+  it.each([
+    'ResourceNotFoundException',
+    'ValidationException',
+    'AccessDeniedException',
+    'UnrecognizedClientException',
+  ])('classifies permanent DynamoDB %s failures', async (name) => {
+    ddb
+      .on(GetCommand)
+      .rejects(Object.assign(new Error('Permanent failure'), { name }));
+    await expect(invoke()).resolves.toEqual({
+      errorMessage: 'Transaction state is unavailable',
+      errorType: 'ConfigurationError',
+    });
+  });
+
+  it.each([
+    'ThrottlingException',
+    'ProvisionedThroughputExceededException',
+    'InternalServerError',
+  ])('preserves retryable DynamoDB %s failures', async (name) => {
+    ddb
+      .on(GetCommand)
+      .rejects(Object.assign(new Error('Temporary failure'), { name }));
+    await expect(invoke()).rejects.toThrow('Temporary failure');
   });
 
   it('propagates a failed read rather than treating the transaction as deleted', async () => {

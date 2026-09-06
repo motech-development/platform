@@ -164,7 +164,7 @@ function isPermanentReadError(error: ApolloError) {
         ('errorType' in graphQLError ? graphQLError.errorType : '');
       return (
         typeof code === 'string' &&
-        /^(Unauthorized(?:Exception)?|AccessDenied(?:Exception)?|Forbidden|ValidationError|GRAPHQL_VALIDATION_FAILED|BAD_USER_INPUT|UNAUTHENTICATED|FORBIDDEN)$/i.test(
+        /^(Unauthorized(?:Exception)?|AccessDenied(?:Exception)?|Forbidden|ValidationError|GRAPHQL_VALIDATION_FAILED|BAD_USER_INPUT|UNAUTHENTICATED|FORBIDDEN|ConfigurationError)$/i.test(
           code,
         )
       );

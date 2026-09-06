@@ -55,32 +55,19 @@ function TransactionsList({
   onDelete,
   transactions,
 }: ITransactionsListProps) {
-  const [transaction, setTransaction] = useState({
-    id: '',
-    name: '',
-  });
+  const [transactionId, setTransactionId] = useState('');
   const { t } = useTranslation('accounts');
-  const launchDeleteModal = (id: string, name: string) => {
-    setTransaction({
-      id,
-      name,
-    });
+  const launchDeleteModal = (id: string) => {
+    setTransactionId(id);
   };
   const onDismiss = () => {
-    setTransaction({
-      id: '',
-      name: '',
-    });
+    setTransactionId('');
   };
 
+  const transaction = transactions.find(({ id }) => id === transactionId);
   useEffect(() => {
-    if (
-      transaction.id &&
-      !transactions.some(({ id }) => id === transaction.id)
-    ) {
-      onDismiss();
-    }
-  }, [transaction.id, transactions]);
+    if (transactionId && !transaction) onDismiss();
+  }, [transactionId, transaction]);
 
   if (transactions.length === 0) {
     return <NoTransactions />;
@@ -193,7 +180,7 @@ function TransactionsList({
                       data-testid={`Delete ${item.name}`}
                       colour="danger"
                       size="sm"
-                      onClick={() => launchDeleteModal(item.id, item.name)}
+                      onClick={() => launchDeleteModal(item.id)}
                     >
                       {t('transactions-list.delete')}
                     </Button>
@@ -207,10 +194,10 @@ function TransactionsList({
       <DeleteItem
         title={t('delete-transaction.title')}
         warning={t('delete-transaction.warning')}
-        display={!!transaction.id}
+        display={Boolean(transaction)}
         loading={loading}
-        name={transaction.name}
-        onDelete={() => onDelete(transaction.id)}
+        name={transaction?.name ?? ''}
+        onDelete={() => onDelete(transactionId)}
         onDismiss={onDismiss}
       />
     </>
