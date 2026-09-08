@@ -2,15 +2,23 @@ import { Meta } from '@storybook/addon-docs/blocks';
 
 <Meta
   title="Guides/01 Overview"
-  summary="The Breeze v4 foundation and the boundary between library and application."
+  summary="React components for building consistent, accessible Motech interfaces."
 />
 
-# Breeze UI v4
+# Breeze UI
 
-Breeze provides a consistent, domain-neutral interface for Motech applications. It carries the Accounts design language: Public Sans, a quiet neutral palette, cyan primary actions and small control corners. Its appearance is closed, with no consumer theming or styling escape hatches.
+Breeze UI is a React component library for Motech applications. It provides a consistent visual language with keyboard interaction, visible focus states and support for light and dark colour schemes.
 
-This first v4 slice ships `BreezeProvider` and `Button`. Version 3's primitives, patterns and styling internals are removed. There are no compatibility exports. Existing applications pinned to published v2 remain outside this change.
+Use component props to choose the treatment, size and state that suit an action. Each component page includes interactive examples, usage guidance and an API reference.
 
-Breeze owns accessible component interactions and visual consistency. Applications own domain compositions, data, business rules, copy and persistence. Additional primitives and neutral patterns follow in separate tickets; documentation describes only what currently ships.
+## Get started
 
-The authoritative specification is [#1598](https://github.com/motech-development/platform/issues/1598), with this foundation delivered by [#1599](https://github.com/motech-development/platform/issues/1599). The v3 ADRs are historical; their v4 amendments are tracked in #1615.
+Start with <a href="./?path=/docs/guides-02-installation--docs" target="_top">Installation</a> to add Breeze and its styles to your application. Then follow the <a href="./?path=/docs/guides-03-quick-start--docs" target="_top">Quick start</a> to connect a component to application state.
+
+Wrap your components in <a href="./?path=/docs/foundation-breezeprovider--docs" target="_top">BreezeProvider</a> and supply your application's locale.
+
+## Explore the components
+
+Use <a href="./?path=/docs/actions-button--docs" target="_top">Button</a> to perform an action or submit a form. Choose from primary, secondary, quiet and danger treatments, with three sizes and a loading state that prevents repeat activation.
+
+See <a href="./?path=/docs/guides-06-accessibility--docs" target="_top">Accessibility</a> for the supported interactions, verification coverage and guidance for accessible use.
