@@ -582,8 +582,13 @@ describe('update-transactions', () => {
               '#balance': 'balance',
               '#items': 'items',
               ...(date === oldDate
-                ? { '#itemProperty': date }
-                : { '#itemPropertyNew': date, '#itemPropertyOld': oldDate }),
+                ? {
+                    '#itemProperty': date,
+                  }
+                : {
+                    '#itemPropertyNew': date,
+                    '#itemPropertyOld': oldDate,
+                  }),
               '#updatedAt': 'updatedAt',
               '#vat': 'vat',
               '#vatPropertyNew': newBucket,
@@ -593,12 +598,18 @@ describe('update-transactions', () => {
               ':balance': -100.25,
               ...(date === oldDate
                 ? {}
-                : { ':itemPropertyNew': -200.5, ':itemPropertyOld': -100.25 }),
+                : {
+                    ':itemPropertyNew': -200.5,
+                    ':itemPropertyOld': -100.25,
+                  }),
               ':updatedAt': '2020-06-06T19:45:00.000Z',
               ':vatNew': newVat,
               ':vatOld': oldVat,
             },
-            Key: { __typename: 'Balance', id: 'company-id' },
+            Key: {
+              __typename: 'Balance',
+              id: 'company-id',
+            },
             TableName: tableName,
             UpdateExpression:
               date === oldDate

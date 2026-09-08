@@ -44,8 +44,17 @@ describe('move-file', () => {
       'path/to/file.pdf',
     );
   });
+
   it('uses the registered transfer for a managed attachment', async () => {
-    await handler({ ...event, managed: true }, context, callback);
+    await handler(
+      {
+        ...event,
+        managed: true,
+      },
+      context,
+      callback,
+    );
+
     expect(moveStagedFile).toHaveBeenCalledWith(
       event.from,
       event.to,
@@ -53,12 +62,19 @@ describe('move-file', () => {
     );
     expect(moveFile).not.toHaveBeenCalled();
   });
+
   it('decodes a managed event key exactly once', async () => {
     await handler(
-      { ...event, key: 'owner/%252F/file.pdf', managed: true, to: 'downloads' },
+      {
+        ...event,
+        key: 'owner/%252F/file.pdf',
+        managed: true,
+        to: 'downloads',
+      },
       context,
       callback,
     );
+
     expect(moveStagedFile).toHaveBeenCalledWith(
       event.from,
       'downloads',

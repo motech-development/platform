@@ -51,11 +51,15 @@ async function packageAntiVirus(
   const inspectionDirectory = join(dirname(binaryDirectory), 'handlers');
   await mkdir(inspectionDirectory, { recursive: true });
   await Promise.all(
-    Array.from({ length: 7 }, (_, index) =>
-      writeFile(
-        join(inspectionDirectory, `handler-${index}.js`),
-        'module.exports.handler = async () => ({ statusCode: 204 });\n',
-      ),
+    Array.from(
+      {
+        length: 7,
+      },
+      (_, index) =>
+        writeFile(
+          join(inspectionDirectory, `handler-${index}.js`),
+          'module.exports.handler = async () => ({ statusCode: 204 });\n',
+        ),
     ),
   );
   await execFileAsync(
@@ -146,6 +150,7 @@ test('cached and uncached binaries produce equivalent deployable packages', asyn
         MoveFileLambdaFunction: { Properties: { Timeout: number } };
       };
     };
+
     expect(template.Resources.MoveFileLambdaFunction.Properties.Timeout).toBe(
       900,
     );
@@ -160,6 +165,7 @@ test('cached and uncached binaries produce equivalent deployable packages', asyn
     const cachedArchives = (await readdir(cachedPackage))
       .filter((file) => file.endsWith('.zip'))
       .sort();
+
     expect(freshArchives).toHaveLength(7);
     expect(cachedArchives).toEqual(freshArchives);
 

@@ -1,7 +1,7 @@
 import { fromNodeProviderChain } from '@aws-sdk/credential-providers';
 import { AWSAppSyncClient } from 'aws-appsync';
 
-const createAppSyncClient = () => {
+const createAppSyncClient = (): InstanceType<typeof AWSAppSyncClient> => {
   const { AWS_REGION, ENDPOINT } = process.env;
 
   if (!AWS_REGION) {

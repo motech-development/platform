@@ -78,7 +78,13 @@ function NestedDismissibleDialog() {
   return (
     <Drawer.Root defaultOpen>
       <Drawer.Trigger>Open editor</Drawer.Trigger>
-      <Drawer.Content placement={{ base: 'bottom', md: 'end' }} size="wide">
+      <Drawer.Content
+        placement={{
+          base: 'bottom',
+          md: 'end',
+        }}
+        size="wide"
+      >
         <Drawer.Description>Update the record details.</Drawer.Description>
         <Drawer.Title>Record editor</Drawer.Title>
         <Dialog.Root>
@@ -218,15 +224,23 @@ export const ControlledFocusAndDismissalCompact: Story = {
  * @summary nested dialog scoped-backdrop dismissal
  */
 export const NestedBackdropDismissal: Story = {
-  args: { children: null },
+  args: {
+    children: null,
+  },
   play: async ({ canvasElement }) => {
     const body = within(canvasElement.ownerDocument.body);
-    const trigger = body.getByRole('button', { name: 'Open nested dialog' });
+    const trigger = body.getByRole('button', {
+      name: 'Open nested dialog',
+    });
 
     await userEvent.click(trigger);
 
-    const dialog = body.getByRole('dialog', { name: 'Nested settings' });
-    const drawer = body.getByRole('dialog', { name: 'Record editor' });
+    const dialog = body.getByRole('dialog', {
+      name: 'Nested settings',
+    });
+    const drawer = body.getByRole('dialog', {
+      name: 'Record editor',
+    });
     const overlay = dialog.closest<HTMLElement>('.breeze-modal-overlay');
     const modal = dialog.closest<HTMLElement>('.breeze-modal-nested');
     const view = canvasElement.ownerDocument.defaultView;
@@ -243,6 +257,7 @@ export const NestedBackdropDismissal: Story = {
     await waitFor(() =>
       expect(drawer.getBoundingClientRect().top).toBeCloseTo(0, 1),
     );
+
     const getBackdropTarget = () => {
       const drawerBounds = drawer.getBoundingClientRect();
 
@@ -253,6 +268,7 @@ export const NestedBackdropDismissal: Story = {
     };
 
     await waitFor(() => expect(getBackdropTarget()).toBe(overlay));
+
     const backdropTarget = getBackdropTarget();
 
     if (backdropTarget !== overlay) {
@@ -260,6 +276,7 @@ export const NestedBackdropDismissal: Story = {
     }
 
     await userEvent.click(backdropTarget);
+
     await waitFor(() => expect(dialog).not.toBeInTheDocument());
     await expect(drawer).toBeVisible();
     await waitFor(() => expect(trigger).toHaveFocus());
@@ -270,8 +287,13 @@ export const NestedBackdropDismissal: Story = {
 /** Exercises scoped-backdrop dismissal in the compact full-screen drawer. */
 export const NestedBackdropDismissalCompact: Story = {
   ...NestedBackdropDismissal,
-  globals: { viewport: { value: 'mobile1' } },
+  globals: {
+    viewport: {
+      value: 'mobile1',
+    },
+  },
 };
+
 /**
  * Presents a long accessible title and enough body copy to exercise the modal
  * height boundary and internal scrolling without unlocking the underlying

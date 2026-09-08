@@ -72,6 +72,7 @@ describe('process-delete', () => {
       vi.mocked(deleteStagedFile).mockRejectedValueOnce(
         new Error('Cancellation failed'),
       );
+
       await expect(handler(event, context, callback)).rejects.toThrow(
         'Cancellation failed',
       );

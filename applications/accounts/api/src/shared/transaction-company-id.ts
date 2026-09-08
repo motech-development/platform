@@ -22,6 +22,7 @@ const transactionCompanyId = ({
   ) {
     const prefix = `${owner}:`;
     const suffix = `:${status}:${date}`;
+
     if (data.startsWith(prefix) && data.endsWith(suffix)) {
       return data.slice(prefix.length, -suffix.length) || undefined;
     }

@@ -30,8 +30,8 @@ import {
   allocateStagedFile,
   cleanupExpiredStagedFiles,
   deleteStagedFile,
+  type IStagedFile,
   moveStagedFile,
-  type StagedFile,
 } from '../file-lifecycle';
 
 const db = mockClient(DynamoDBDocumentClient);
@@ -39,29 +39,38 @@ const s3 = mockClient(S3Client);
 const from = 'uploads';
 const to = 'downloads';
 const key = 'owner/company/file.pdf';
-const fail = (name: string) => Object.assign(new Error(name), { name });
+
+const fail = (name: string) =>
+  Object.assign(new Error(name), {
+    name,
+  });
 
 const pause = () => {
   let release = () => {};
+
   let entered = () => {};
+
   const reached = new Promise<void>((resolve) => {
     entered = resolve;
   });
+
   const resumed = new Promise<void>((resolve) => {
     release = resolve;
   });
+
   return {
     reached,
     release,
     wait: async () => {
       entered();
+
       await resumed;
     },
   };
 };
 
 describe('staged file lifecycle', () => {
-  let file: StagedFile | undefined;
+  let file: IStagedFile | undefined;
   let source: boolean;
   let objectKey: string;
   let destination: string | undefined;
@@ -86,7 +95,9 @@ describe('staged file lifecycle', () => {
     beforeReady = async () => {};
     db.on(PutCommand).callsFake((input: PutCommandInput) => {
       if (file) throw fail('ConditionalCheckFailedException');
-      file = structuredClone(input.Item) as StagedFile;
+
+      file = structuredClone(input.Item) as IStagedFile;
+
       return {};
     });
     db.on(GetCommand).callsFake(() => ({
@@ -94,10 +105,13 @@ describe('staged file lifecycle', () => {
     }));
     db.on(UpdateCommand).callsFake(async (input: UpdateCommandInput) => {
       const values = input.ExpressionAttributeValues as Record<string, unknown>;
+
       if (values[':uploadId'] && !values[':ready']) {
         await beforeRegister();
+
         if (!file || file.state !== 'pending' || file.uploadId)
           throw fail('ConditionalCheckFailedException');
+
         Object.assign(file, {
           empty: values[':empty'],
           sourceETag: values[':sourceETag'],
@@ -106,12 +120,14 @@ describe('staged file lifecycle', () => {
         });
       } else if (values[':ready']) {
         await beforeReady();
+
         if (
           !file ||
           file.state === 'deleting' ||
           file.uploadId !== values[':uploadId']
         )
           throw fail('ConditionalCheckFailedException');
+
         file.state = 'ready';
         delete file.expiresAt;
       } else {
@@ -123,11 +139,16 @@ describe('staged file lifecycle', () => {
               file.expiresAt > values[':expiredBefore']))
         )
           throw fail('ConditionalCheckFailedException');
+
         file.state = 'deleting';
+
         if (typeof values[':cleanupAt'] === 'number')
           file.expiresAt = values[':cleanupAt'];
       }
-      return { Attributes: structuredClone(file) };
+
+      return {
+        Attributes: structuredClone(file),
+      };
     });
     db.on(QueryCommand).callsFake((input: QueryCommandInput) => ({
       Items:
@@ -140,59 +161,91 @@ describe('staged file lifecycle', () => {
     }));
     db.on(DeleteCommand).callsFake(() => {
       file = undefined;
+
       return {};
     });
     s3.on(HeadObjectCommand).callsFake((input: HeadObjectCommandInput) => {
       if (input.Key !== objectKey) throw fail('NotFound');
+
       if (input.Bucket === from && source)
         return {
           ContentLength: 10,
           ContentType: 'application/pdf',
           ETag: 'source-etag',
           ExpiresString: 'Wed, 21 Oct 2015 07:28:00 GMT',
-          Metadata: { id: 'transaction', typename: 'Transaction' },
+          Metadata: {
+            id: 'transaction',
+            typename: 'Transaction',
+          },
         };
+
       if (input.Bucket === to && destination)
-        return { Metadata: { 'attachment-transfer': destination } };
+        return {
+          Metadata: {
+            'attachment-transfer': destination,
+          },
+        };
+
       throw fail('NotFound');
     });
+
     let sequence = 0;
+
     s3.on(CreateMultipartUploadCommand).callsFake(
       (input: CreateMultipartUploadCommandInput) => {
         sequence += 1;
+
         const id = String(sequence);
+
         uploads.set(id, input.Metadata?.['attachment-transfer'] ?? '');
-        return { UploadId: id };
+
+        return {
+          UploadId: id,
+        };
       },
     );
     s3.on(UploadPartCopyCommand).callsFake(
       (input: UploadPartCopyCommandInput) => {
         if (!uploads.has(input.UploadId ?? '')) throw fail('NoSuchUpload');
+
         if (!source) throw fail('NoSuchKey');
-        return { CopyPartResult: { ETag: 'part-etag' } };
+
+        return {
+          CopyPartResult: {
+            ETag: 'part-etag',
+          },
+        };
       },
     );
     s3.on(CompleteMultipartUploadCommand).callsFake(
       async (input: CompleteMultipartUploadCommandInput) => {
         await beforeComplete();
+
         const token = uploads.get(input.UploadId ?? '');
+
         if (!token) throw fail('NoSuchUpload');
+
         destination = token;
         uploads.delete(input.UploadId ?? '');
+
         await afterComplete();
+
         return {};
       },
     );
     s3.on(AbortMultipartUploadCommand).callsFake(
       (input: AbortMultipartUploadCommandInput) => {
         if (!uploads.delete(input.UploadId ?? '')) throw fail('NoSuchUpload');
+
         return {};
       },
     );
     s3.on(DeleteObjectCommand).callsFake((input: DeleteObjectCommandInput) => {
       if (input.Key !== objectKey) return {};
+
       if (input.Bucket === from) source = false;
       else destination = undefined;
+
       return {};
     });
   });
@@ -200,10 +253,17 @@ describe('staged file lifecycle', () => {
   afterEach(() => vi.unstubAllEnvs());
 
   const allocate = () => allocateStagedFile(from, to, key, 30, 1);
-  const snapshot = () => ({ destination, file, source, uploads: uploads.size });
+
+  const snapshot = () => ({
+    destination,
+    file,
+    source,
+    uploads: uploads.size,
+  });
 
   it('allocates only a database record, without a download object', async () => {
     await allocate();
+
     expect(file?.state).toBe('pending');
     expect(s3.calls()).toHaveLength(0);
   });
@@ -211,6 +271,7 @@ describe('staged file lifecycle', () => {
   it('promotes a wanted file and preserves its metadata and content type', async () => {
     await allocate();
     await moveStagedFile(from, to, key);
+
     expect(destination).toBeDefined();
     expect(source).toBe(false);
     expect(file?.state).toBe('ready');
@@ -230,12 +291,18 @@ describe('staged file lifecycle', () => {
     'preserves literal %s in object keys through promotion and deletion',
     async (literal) => {
       objectKey = `owner/${literal}/file.pdf`;
+
       await allocateStagedFile(from, to, objectKey, 30, 1);
+
       expect(file?.path).toBe(`${to}/${objectKey}`);
+
       await moveStagedFile(from, to, objectKey);
+
       expect(destination).toBeDefined();
       expect(source).toBe(false);
+
       await deleteStagedFile(from, to, objectKey);
+
       expect(snapshot()).toEqual({
         destination: undefined,
         file: undefined,
@@ -248,18 +315,24 @@ describe('staged file lifecycle', () => {
   it('retries a failed ready-file deletion through scheduled cleanup', async () => {
     await allocate();
     await moveStagedFile(from, to, key);
+
     s3.on(DeleteObjectCommand).rejects(new Error('S3 unavailable'));
+
     await expect(deleteStagedFile(from, to, key)).rejects.toThrow(
       'S3 unavailable',
     );
     expect(file?.state).toBe('deleting');
     expect(destination).toBeDefined();
+
     s3.on(DeleteObjectCommand).callsFake((input: DeleteObjectCommandInput) => {
       if (input.Bucket === from) source = false;
       else destination = undefined;
+
       return {};
     });
+
     await cleanupExpiredStagedFiles();
+
     expect(snapshot()).toEqual({
       destination: undefined,
       file: undefined,
@@ -271,9 +344,12 @@ describe('staged file lifecycle', () => {
   it('does not promote after deletion, including a late upload and duplicate scan', async () => {
     await allocate();
     await deleteStagedFile(from, to, key);
+
     source = true;
+
     await moveStagedFile(from, to, key);
     await moveStagedFile(from, to, key);
+
     expect(snapshot()).toEqual({
       destination: undefined,
       file: undefined,
@@ -284,13 +360,20 @@ describe('staged file lifecycle', () => {
 
   it('cancels a transfer paused before it can register with the database', async () => {
     await allocate();
+
     const gate = pause();
+
     beforeRegister = gate.wait;
+
     const moving = moveStagedFile(from, to, key);
+
     await gate.reached;
     await deleteStagedFile(from, to, key);
+
     gate.release();
+
     await moving;
+
     expect(snapshot()).toEqual({
       destination: undefined,
       file: undefined,
@@ -301,24 +384,34 @@ describe('staged file lifecycle', () => {
 
   it('prevents an already-started completion from recreating a deleted file', async () => {
     await allocate();
+
     const gate = pause();
     const acknowledgement = pause();
+
     beforeComplete = gate.wait;
     afterComplete = acknowledgement.wait;
+
     const moving = moveStagedFile(from, to, key);
+
     await gate.reached;
     await deleteStagedFile(from, to, key);
+
     expect(destination).toBeUndefined();
+
     gate.release();
+
     try {
       // Observe the destination even if the worker stalls after S3 responds,
       // before any compensating cleanup in that worker can run.
       await Promise.race([acknowledgement.reached, moving]);
+
       expect(destination).toBeUndefined();
     } finally {
       acknowledgement.release();
+
       await moving;
     }
+
     expect(snapshot()).toEqual({
       destination: undefined,
       file: undefined,
@@ -329,13 +422,20 @@ describe('staged file lifecycle', () => {
 
   it('deletes a copy that completed before the worker acknowledged it', async () => {
     await allocate();
+
     const gate = pause();
+
     afterComplete = gate.wait;
+
     const moving = moveStagedFile(from, to, key);
+
     await gate.reached;
     await deleteStagedFile(from, to, key);
+
     gate.release();
+
     await moving;
+
     expect(snapshot()).toEqual({
       destination: undefined,
       file: undefined,
@@ -346,9 +446,12 @@ describe('staged file lifecycle', () => {
 
   it('recovers a completed transfer when its response was lost', async () => {
     await allocate();
+
     afterComplete = () => Promise.reject(new Error('connection lost'));
+
     await moveStagedFile(from, to, key);
     await moveStagedFile(from, to, key);
+
     expect(file?.state).toBe('ready');
     expect(destination).toBeDefined();
     expect(s3).toHaveReceivedCommandTimes(CreateMultipartUploadCommand, 1);
@@ -356,24 +459,32 @@ describe('staged file lifecycle', () => {
 
   it('keeps deletion retryable if cancelling the transfer fails', async () => {
     await allocate();
+
     beforeComplete = () => Promise.reject(new Error('worker interrupted'));
+
     await expect(moveStagedFile(from, to, key)).rejects.toThrow(
       'worker interrupted',
     );
+
     s3.on(AbortMultipartUploadCommand).rejectsOnce(new Error('S3 unavailable'));
+
     await expect(deleteStagedFile(from, to, key)).rejects.toThrow(
       'S3 unavailable',
     );
     expect(file?.state).toBe('deleting');
     expect(source).toBe(true);
+
     s3.on(AbortMultipartUploadCommand).callsFake(
       (input: AbortMultipartUploadCommandInput) => {
         uploads.delete(input.UploadId ?? '');
+
         return {};
       },
     );
+
     await deleteStagedFile(from, to, key);
     await deleteStagedFile(from, to, key);
+
     expect(snapshot()).toEqual({
       destination: undefined,
       file: undefined,
@@ -381,10 +492,14 @@ describe('staged file lifecycle', () => {
       uploads: 0,
     });
   });
+
   it('cleans an abandoned allocation without leaving its database record', async () => {
     await allocate();
+
     if (file) file.expiresAt = 0;
+
     await cleanupExpiredStagedFiles();
+
     expect(snapshot()).toEqual({
       destination: undefined,
       file: undefined,
@@ -395,10 +510,15 @@ describe('staged file lifecycle', () => {
 
   it('cleans an interrupted transfer after the quarantine retention ends', async () => {
     await allocate();
+
     if (file) file.expiresAt = 0;
+
     beforeComplete = () => Promise.reject(new Error('worker interrupted'));
+
     await expect(moveStagedFile(from, to, key)).rejects.toThrow();
+
     await cleanupExpiredStagedFiles();
+
     expect(snapshot()).toEqual({
       destination: undefined,
       file: undefined,
@@ -409,13 +529,23 @@ describe('staged file lifecycle', () => {
 
   it('preserves a ready file when cleanup reads an outdated pending index entry', async () => {
     await allocate();
+
     if (file) file.expiresAt = 0;
+
     const stale = structuredClone(file);
+
     await moveStagedFile(from, to, key);
+
     db.on(QueryCommand)
-      .resolvesOnce({ Items: [stale as StagedFile] })
-      .resolves({ Items: [] });
+      .resolvesOnce({
+        Items: [stale as IStagedFile],
+      })
+      .resolves({
+        Items: [],
+      });
+
     await cleanupExpiredStagedFiles();
+
     expect(file?.state).toBe('ready');
     expect(destination).toBeDefined();
   });
@@ -423,43 +553,67 @@ describe('staged file lifecycle', () => {
   it('does not remove a completed copy when a duplicate scan rejects it', async () => {
     await allocate();
     await moveStagedFile(from, to, key);
-    await deleteStagedFile(from, to, key, { pendingOnly: true });
+    await deleteStagedFile(from, to, key, {
+      pendingOnly: true,
+    });
+
     expect(file?.state).toBe('ready');
     expect(destination).toBeDefined();
   });
 
   it('resumes the registered transfer after a worker interruption', async () => {
     await allocate();
+
     beforeComplete = () => Promise.reject(new Error('worker interrupted'));
+
     await expect(moveStagedFile(from, to, key)).rejects.toThrow();
+
     beforeComplete = async () => {};
+
     await moveStagedFile(from, to, key);
+
     expect(file?.state).toBe('ready');
     expect(s3).toHaveReceivedCommandTimes(CreateMultipartUploadCommand, 1);
   });
 
   it('promotes an empty file without trying to copy an empty byte range', async () => {
     await allocate();
-    s3.on(HeadObjectCommand, { Bucket: from }).resolves({
+
+    s3.on(HeadObjectCommand, {
+      Bucket: from,
+    }).resolves({
       ContentLength: 0,
       ETag: 'empty',
     });
-    s3.on(UploadPartCommand).resolves({ ETag: 'empty-part' });
+    s3.on(UploadPartCommand).resolves({
+      ETag: 'empty-part',
+    });
+
     await moveStagedFile(from, to, key);
+
     expect(file?.state).toBe('ready');
     expect(s3).not.toHaveReceivedCommand(UploadPartCopyCommand);
   });
 
   it('allows competing scan retries to finish only their registered transfer', async () => {
     await allocate();
+
     const gate = pause();
+
     beforeRegister = gate.wait;
+
     const first = moveStagedFile(from, to, key);
+
     await gate.reached;
+
     beforeRegister = async () => {};
+
     await moveStagedFile(from, to, key);
+
     gate.release();
+
     await first;
+
     expect(file?.state).toBe('ready');
     expect(destination).toBeDefined();
     expect(uploads.size).toBe(0);
@@ -467,19 +621,28 @@ describe('staged file lifecycle', () => {
 
   it('retries expiry cleanup after cancelling a transfer initially fails', async () => {
     await allocate();
+
     if (file) file.expiresAt = 0;
+
     beforeComplete = () => Promise.reject(new Error('worker interrupted'));
+
     await expect(moveStagedFile(from, to, key)).rejects.toThrow();
+
     s3.on(AbortMultipartUploadCommand).rejects(new Error('S3 unavailable'));
+
     await expect(cleanupExpiredStagedFiles()).rejects.toThrow('S3 unavailable');
     expect(file?.state).toBe('deleting');
+
     s3.on(AbortMultipartUploadCommand).callsFake(
       (input: AbortMultipartUploadCommandInput) => {
         uploads.delete(input.UploadId ?? '');
+
         return {};
       },
     );
+
     await cleanupExpiredStagedFiles();
+
     expect(snapshot()).toEqual({
       destination: undefined,
       file: undefined,
@@ -487,16 +650,23 @@ describe('staged file lifecycle', () => {
       uploads: 0,
     });
   });
+
   it('recovers a wanted copy left behind when recording completion failed', async () => {
     await allocate();
+
     if (file) file.expiresAt = 0;
+
     beforeReady = () => Promise.reject(new Error('Database unavailable'));
+
     await expect(moveStagedFile(from, to, key)).rejects.toThrow(
       'Database unavailable',
     );
     expect(destination).toBeDefined();
+
     beforeReady = async () => {};
+
     await cleanupExpiredStagedFiles();
+
     expect(file?.state).toBe('ready');
     expect(file?.expiresAt).toBeUndefined();
     expect(destination).toBeDefined();

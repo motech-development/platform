@@ -55,7 +55,13 @@ function NestedConfirmationExample({
     <>
       <Drawer.Root defaultOpen>
         <Drawer.Trigger>Open editor</Drawer.Trigger>
-        <Drawer.Content placement={{ base: 'bottom', md: 'end' }} size="wide">
+        <Drawer.Content
+          placement={{
+            base: 'bottom',
+            md: 'end',
+          }}
+          size="wide"
+        >
           <Drawer.Description>Update the record details.</Drawer.Description>
           <Drawer.Title>Record editor</Drawer.Title>
           <p>
@@ -97,7 +103,13 @@ function ExitingParentConfirmationExample({
     <>
       <Button onAction={() => setDrawerOpen(true)}>Open editor</Button>
       <Drawer.Root onOpenChange={setDrawerOpen} open={drawerOpen} triggerless>
-        <Drawer.Content placement={{ base: 'bottom', md: 'end' }} size="wide">
+        <Drawer.Content
+          placement={{
+            base: 'bottom',
+            md: 'end',
+          }}
+          size="wide"
+        >
           <Drawer.Description>Update the record details.</Drawer.Description>
           <Drawer.Title>Record editor</Drawer.Title>
           <Button onAction={() => setConfirmationOpen(true)}>
@@ -131,13 +143,22 @@ function NestedDrawerConfirmationExample({
   return (
     <Drawer.Root defaultOpen>
       <Drawer.Trigger>Open outer editor</Drawer.Trigger>
-      <Drawer.Content placement={{ base: 'bottom', md: 'end' }} size="wide">
+      <Drawer.Content
+        placement={{
+          base: 'bottom',
+          md: 'end',
+        }}
+        size="wide"
+      >
         <Drawer.Description>Update the enclosing record.</Drawer.Description>
         <Drawer.Title>Outer editor</Drawer.Title>
         <Drawer.Root defaultOpen>
           <Drawer.Trigger>Open inner editor</Drawer.Trigger>
           <Drawer.Content
-            placement={{ base: 'bottom', md: 'end' }}
+            placement={{
+              base: 'bottom',
+              md: 'end',
+            }}
             size="medium"
           >
             <Drawer.Description>Update the active item.</Drawer.Description>
@@ -224,7 +245,13 @@ function ReplacingNestedConfirmationExample() {
   return (
     <Drawer.Root defaultOpen>
       <Drawer.Trigger>Open replacement editor</Drawer.Trigger>
-      <Drawer.Content placement={{ base: 'bottom', md: 'end' }} size="wide">
+      <Drawer.Content
+        placement={{
+          base: 'bottom',
+          md: 'end',
+        }}
+        size="wide"
+      >
         <Drawer.Description>Update the record details.</Drawer.Description>
         <Drawer.Title>Replacement editor</Drawer.Title>
         <Button onAction={() => setFirstOpen(true)}>
@@ -270,12 +297,21 @@ async function verifyNestedConfirmation(
   openConfirmation = true,
 ) {
   const body = within(canvasElement.ownerDocument.body);
-  const drawer = body.getByRole('dialog', { name: 'Record editor' });
+  const drawer = body.getByRole('dialog', {
+    name: 'Record editor',
+  });
 
   if (openConfirmation) {
-    await userEvent.click(body.getByRole('button', { name: 'Leave editor' }));
+    await userEvent.click(
+      body.getByRole('button', {
+        name: 'Leave editor',
+      }),
+    );
   }
-  const dialog = body.getByRole('alertdialog', { name: 'Discard changes?' });
+
+  const dialog = body.getByRole('alertdialog', {
+    name: 'Discard changes?',
+  });
   const overlay = dialog.parentElement?.parentElement;
   const drawerOverlay = drawer.parentElement?.parentElement;
   const view = canvasElement.ownerDocument.defaultView;
@@ -328,7 +364,9 @@ async function verifyNestedConfirmation(
     );
   });
   await expect(
-    body.getByRole('button', { name: 'Keep editing' }),
+    body.getByRole('button', {
+      name: 'Keep editing',
+    }),
   ).toHaveFocus();
 }
 
@@ -447,7 +485,11 @@ export const NestedInDrawer: Story = {
  */
 export const NestedInDrawerCompact: Story = {
   ...NestedInDrawer,
-  globals: { viewport: { value: 'mobile1' } },
+  globals: {
+    viewport: {
+      value: 'mobile1',
+    },
+  },
 };
 
 /**
@@ -475,10 +517,14 @@ export const NestedOverNestedDrawer: Story = {
   ...NestedInDrawer,
   play: async ({ canvasElement }) => {
     const body = within(canvasElement.ownerDocument.body);
-    const innerDrawer = body.getByRole('dialog', { name: 'Inner editor' });
+    const innerDrawer = body.getByRole('dialog', {
+      name: 'Inner editor',
+    });
 
     await userEvent.click(
-      body.getByRole('button', { name: 'Leave inner editor' }),
+      body.getByRole('button', {
+        name: 'Leave inner editor',
+      }),
     );
 
     const dialog = body.getByRole('alertdialog', {
@@ -532,7 +578,11 @@ export const NestedOverNestedDrawer: Story = {
  */
 export const NestedOverNestedDrawerCompact: Story = {
   ...NestedOverNestedDrawer,
-  globals: { viewport: { value: 'mobile1' } },
+  globals: {
+    viewport: {
+      value: 'mobile1',
+    },
+  },
 };
 
 /**
@@ -545,10 +595,14 @@ export const NestedOverActiveIndependentStack: Story = {
   ...NestedInDrawer,
   play: async ({ canvasElement }) => {
     const body = within(canvasElement.ownerDocument.body);
-    const activeDrawer = body.getByRole('dialog', { name: 'Active editor' });
+    const activeDrawer = body.getByRole('dialog', {
+      name: 'Active editor',
+    });
 
     await userEvent.click(
-      body.getByRole('button', { name: 'Leave active editor' }),
+      body.getByRole('button', {
+        name: 'Leave active editor',
+      }),
     );
 
     const dialog = body.getByRole('alertdialog', {
@@ -591,7 +645,9 @@ export const NestedReplacementBackdrop: Story = {
     const body = within(canvasElement.ownerDocument.body);
 
     await userEvent.click(
-      body.getByRole('button', { name: 'Review pending changes' }),
+      body.getByRole('button', {
+        name: 'Review pending changes',
+      }),
     );
 
     const firstDialog = body.getByRole('alertdialog', {
@@ -606,7 +662,9 @@ export const NestedReplacementBackdrop: Story = {
     }
 
     await userEvent.click(
-      body.getByRole('button', { name: 'Review next change' }),
+      body.getByRole('button', {
+        name: 'Review next change',
+      }),
     );
 
     const secondDialog = body.getByRole('alertdialog', {
@@ -690,7 +748,9 @@ export const NestedWithoutParent: Story = {
         1,
       );
       await expect(
-        body.getByRole('button', { name: 'Keep editing' }),
+        body.getByRole('button', {
+          name: 'Keep editing',
+        }),
       ).toHaveFocus();
     });
   },
@@ -707,11 +767,15 @@ export const NestedAfterParentExit: Story = {
   play: async ({ canvasElement }) => {
     const body = within(canvasElement.ownerDocument.body);
     const view = canvasElement.ownerDocument.defaultView;
-    const drawer = body.getByRole('dialog', { name: 'Record editor' });
+    const drawer = body.getByRole('dialog', {
+      name: 'Record editor',
+    });
     const drawerOverlay = drawer.parentElement?.parentElement;
 
     await userEvent.click(
-      body.getByRole('button', { name: 'Close editor and confirm' }),
+      body.getByRole('button', {
+        name: 'Close editor and confirm',
+      }),
     );
 
     const dialog = body.getByRole('alertdialog', {
@@ -741,7 +805,9 @@ export const NestedAfterParentExit: Story = {
     });
     await waitFor(async () => {
       await expect(
-        body.queryByRole('dialog', { name: 'Record editor' }),
+        body.queryByRole('dialog', {
+          name: 'Record editor',
+        }),
       ).not.toBeInTheDocument();
 
       const overlayBounds = overlay.getBoundingClientRect();
@@ -765,7 +831,11 @@ export const NestedAfterParentExit: Story = {
       );
     });
     await waitFor(() =>
-      expect(body.getByRole('button', { name: 'Keep editing' })).toHaveFocus(),
+      expect(
+        body.getByRole('button', {
+          name: 'Keep editing',
+        }),
+      ).toHaveFocus(),
     );
   },
   render: (args) => <ExitingParentConfirmationExample confirmation={args} />,
@@ -774,7 +844,11 @@ export const NestedAfterParentExit: Story = {
 /** Exercises parent-exit fallback in the compact full-screen drawer. */
 export const NestedAfterParentExitCompact: Story = {
   ...NestedAfterParentExit,
-  globals: { viewport: { value: 'mobile1' } },
+  globals: {
+    viewport: {
+      value: 'mobile1',
+    },
+  },
 };
 
 /**

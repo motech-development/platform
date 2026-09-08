@@ -20,10 +20,19 @@ const updateCompanyTypeahead = async (
   records: ITransaction[],
 ): Promise<UpdateCommandOutput | undefined> => {
   const { companyId, owner } = records[0];
-  const Key = { __typename: 'Typeahead', id: companyId };
-  const { Item } = await documentClient.send(
-    new GetCommand({ ConsistentRead: true, Key, TableName: tableName }),
-  );
+
+  const Key = {
+    __typename: 'Typeahead',
+    id: companyId,
+  };
+
+  const getCommand = new GetCommand({
+    ConsistentRead: true,
+    Key,
+    TableName: tableName,
+  });
+
+  const { Item } = await documentClient.send(getCommand);
 
   const previous = Item as StoredTypeahead | undefined;
 
@@ -77,40 +86,44 @@ const updateCompanyTypeahead = async (
       ]
     : ['attribute_not_exists(#id)'];
 
-  return documentClient.send(
-    new UpdateCommand({
-      ConditionExpression: conditions.join(' AND '),
-      ExpressionAttributeNames: {
-        '#createdAt': 'createdAt',
-        '#data': 'data',
-        '#groupsCanAccess': 'groupsCanAccess',
-        ...(!previous ? { '#id': 'id' } : {}),
-        '#owner': 'owner',
-        '#purchases': 'purchases',
-        '#sales': 'sales',
-        '#suppliers': 'suppliers',
-        '#updatedAt': 'updatedAt',
-      },
-      ExpressionAttributeValues: {
-        ':data': `${owner}:${companyId}:Typeahead`,
-        ':groupsCanAccess': ['Admin'],
-        ':now': new Date().toISOString(),
-        ...Object.fromEntries(
-          suggestionFields
-            .filter((field) => previous?.[field] !== undefined)
-            .map((field) => [`:old${field}`, previous?.[field]]),
-        ),
-        ':owner': owner,
-        ':purchases': values.purchases,
-        ':sales': values.sales,
-        ':suppliers': values.suppliers,
-      },
-      Key,
-      TableName: tableName,
-      UpdateExpression:
-        'SET #createdAt = if_not_exists(#createdAt, :now), #data = :data, #groupsCanAccess = if_not_exists(#groupsCanAccess, :groupsCanAccess), #owner = :owner, #purchases = :purchases, #sales = :sales, #suppliers = :suppliers, #updatedAt = :now',
-    }),
-  );
+  const updateCommand = new UpdateCommand({
+    ConditionExpression: conditions.join(' AND '),
+    ExpressionAttributeNames: {
+      '#createdAt': 'createdAt',
+      '#data': 'data',
+      '#groupsCanAccess': 'groupsCanAccess',
+      ...(!previous
+        ? {
+            '#id': 'id',
+          }
+        : {}),
+      '#owner': 'owner',
+      '#purchases': 'purchases',
+      '#sales': 'sales',
+      '#suppliers': 'suppliers',
+      '#updatedAt': 'updatedAt',
+    },
+    ExpressionAttributeValues: {
+      ':data': `${owner}:${companyId}:Typeahead`,
+      ':groupsCanAccess': ['Admin'],
+      ':now': new Date().toISOString(),
+      ...Object.fromEntries(
+        suggestionFields
+          .filter((field) => previous?.[field] !== undefined)
+          .map((field) => [`:old${field}`, previous?.[field]]),
+      ),
+      ':owner': owner,
+      ':purchases': values.purchases,
+      ':sales': values.sales,
+      ':suppliers': values.suppliers,
+    },
+    Key,
+    TableName: tableName,
+    UpdateExpression:
+      'SET #createdAt = if_not_exists(#createdAt, :now), #data = :data, #groupsCanAccess = if_not_exists(#groupsCanAccess, :groupsCanAccess), #owner = :owner, #purchases = :purchases, #sales = :sales, #suppliers = :suppliers, #updatedAt = :now',
+  });
+
+  return documentClient.send(updateCommand);
 };
 
 const insertTypeahead = (

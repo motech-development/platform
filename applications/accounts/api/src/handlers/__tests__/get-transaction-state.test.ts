@@ -23,12 +23,17 @@ const transaction = {
 type StateEvent = AppSyncResolverEvent<ITransactionStateArguments>;
 
 const invoke = (
-  identity: unknown = { sub: 'owner-id' },
+  identity: unknown = {
+    sub: 'owner-id',
+  },
   companyId = 'company-id',
 ) =>
   handler(
     {
-      arguments: { companyId, transactionId: 'transaction-id' },
+      arguments: {
+        companyId,
+        transactionId: 'transaction-id',
+      },
       identity,
     } as StateEvent,
     {} as Context,
@@ -41,7 +46,9 @@ describe('get-transaction-state', () => {
   beforeEach(() => {
     ddb.reset();
     vi.stubEnv('TABLE', 'accounts-test-application');
-    ddb.on(GetCommand).resolves({ Item: transaction });
+    ddb.on(GetCommand).resolves({
+      Item: transaction,
+    });
   });
 
   afterEach(() => {
@@ -54,10 +61,15 @@ describe('get-transaction-state', () => {
 
   it('reads current transaction state directly and consistently for its owner', async () => {
     await expect(invoke()).resolves.toEqual(transaction);
+
     expect(ddb).toReceiveCommandTimes(GetCommand, 1);
+
     expect(ddb).toReceiveCommandWith(GetCommand, {
       ConsistentRead: true,
-      Key: { __typename: 'Transaction', id: 'transaction-id' },
+      Key: {
+        __typename: 'Transaction',
+        id: 'transaction-id',
+      },
       TableName: 'accounts-test-application',
     });
   });
@@ -65,11 +77,22 @@ describe('get-transaction-state', () => {
   it('reads updated state again when a notification is replayed', async () => {
     ddb
       .on(GetCommand)
-      .resolvesOnce({ Item: { ...transaction, status: 'pending' } })
-      .resolvesOnce({ Item: transaction });
+      .resolvesOnce({
+        Item: {
+          ...transaction,
+          status: 'pending',
+        },
+      })
+      .resolvesOnce({
+        Item: transaction,
+      });
 
-    await expect(invoke()).resolves.toMatchObject({ status: 'pending' });
+    await expect(invoke()).resolves.toMatchObject({
+      status: 'pending',
+    });
+
     await expect(invoke()).resolves.toEqual(transaction);
+
     expect(ddb).toReceiveCommandTimes(GetCommand, 2);
   });
 
@@ -81,15 +104,36 @@ describe('get-transaction-state', () => {
         data: `${owner}:another-company:${transaction.status}:${transaction.date}`,
         owner,
       };
-      ddb.on(GetCommand).resolves({ Item: moved });
 
-      await expect(invoke({ sub: owner })).resolves.toBeNull();
-      await expect(invoke({ sub: owner }, 'another-company')).resolves.toEqual({
+      ddb.on(GetCommand).resolves({
+        Item: moved,
+      });
+
+      await expect(
+        invoke({
+          sub: owner,
+        }),
+      ).resolves.toBeNull();
+
+      await expect(
+        invoke(
+          {
+            sub: owner,
+          },
+          'another-company',
+        ),
+      ).resolves.toEqual({
         ...moved,
         companyId: 'another-company',
       });
+
       await expect(
-        invoke({ sub: 'another-owner' }, 'another-company'),
+        invoke(
+          {
+            sub: 'another-owner',
+          },
+          'another-company',
+        ),
       ).resolves.toBeNull();
     },
   );
@@ -98,32 +142,65 @@ describe('get-transaction-state', () => {
     ['deleted', undefined],
     [
       'moved to another company',
-      { ...transaction, companyId: 'other-company' },
+      {
+        ...transaction,
+        companyId: 'other-company',
+      },
     ],
-    ['owned by another user', { ...transaction, owner: 'other-owner' }],
-    ['missing its owner', { ...transaction, owner: undefined }],
+    [
+      'owned by another user',
+      {
+        ...transaction,
+        owner: 'other-owner',
+      },
+    ],
+    [
+      'missing its owner',
+      {
+        ...transaction,
+        owner: undefined,
+      },
+    ],
   ])('returns null for a transaction that is %s', async (_, item) => {
-    ddb.on(GetCommand).resolves({ Item: item });
+    ddb.on(GetCommand).resolves({
+      Item: item,
+    });
+
     await expect(invoke()).resolves.toBeNull();
   });
 
-  it.each([null, {}, { sub: '' }, { sub: 123 }, { username: 'owner-id' }])(
+  it.each([
+    null,
+    {},
+    {
+      sub: '',
+    },
+    {
+      sub: 123,
+    },
+    {
+      username: 'owner-id',
+    },
+  ])(
     'rejects an invalid authenticated identity before accessing data: %j',
     async (identity) => {
       await expect(invoke(identity)).resolves.toEqual({
         errorMessage: 'Unauthorized',
         errorType: 'UnauthorizedException',
       });
+
       expect(ddb).toReceiveCommandTimes(GetCommand, 0);
     },
   );
 
   it('fails without a configured table before accessing data', async () => {
     vi.stubEnv('TABLE', undefined);
+
     await expect(invoke()).resolves.toEqual({
       errorMessage: 'Transaction state is unavailable',
       errorType: 'ConfigurationError',
     });
+
     expect(ddb).toReceiveCommandTimes(GetCommand, 0);
   });
 
@@ -133,9 +210,12 @@ describe('get-transaction-state', () => {
     'AccessDeniedException',
     'UnrecognizedClientException',
   ])('classifies permanent DynamoDB %s failures', async (name) => {
-    ddb
-      .on(GetCommand)
-      .rejects(Object.assign(new Error('Permanent failure'), { name }));
+    ddb.on(GetCommand).rejects(
+      Object.assign(new Error('Permanent failure'), {
+        name,
+      }),
+    );
+
     await expect(invoke()).resolves.toEqual({
       errorMessage: 'Transaction state is unavailable',
       errorType: 'ConfigurationError',
@@ -147,14 +227,18 @@ describe('get-transaction-state', () => {
     'ProvisionedThroughputExceededException',
     'InternalServerError',
   ])('preserves retryable DynamoDB %s failures', async (name) => {
-    ddb
-      .on(GetCommand)
-      .rejects(Object.assign(new Error('Temporary failure'), { name }));
+    ddb.on(GetCommand).rejects(
+      Object.assign(new Error('Temporary failure'), {
+        name,
+      }),
+    );
+
     await expect(invoke()).rejects.toThrow('Temporary failure');
   });
 
   it('propagates a failed read rather than treating the transaction as deleted', async () => {
     ddb.on(GetCommand).rejects(new Error('DynamoDB unavailable'));
+
     await expect(invoke()).rejects.toThrow('DynamoDB unavailable');
   });
 });

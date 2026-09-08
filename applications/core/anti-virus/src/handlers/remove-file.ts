@@ -26,6 +26,7 @@ export const handler: Handler<IEvent> = wrapHandler(async (event) => {
 
   if (event.managed) {
     if (!event.to) throw new Error('No destination bucket set');
+
     await deleteStagedFile(from, event.to, decodeURIComponent(key), {
       pendingOnly: true,
     });

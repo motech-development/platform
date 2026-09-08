@@ -109,6 +109,7 @@ export const update = (
   const isSameVatProperty = oldVat.property === newVat.property;
   const isSameDate =
     aggregatedDay(newRecord.date) === aggregatedDay(oldRecord.date);
+
   const setExpressions = ['#updatedAt = :updatedAt'];
 
   if (!isSameVatProperty) {
@@ -132,6 +133,7 @@ export const update = (
       ? '#items.#itemProperty :balance'
       : '#items.#itemPropertyNew :itemPropertyNew',
   ];
+
   const command = new UpdateCommand({
     ExpressionAttributeNames: {
       '#balance': 'balance',
@@ -147,7 +149,9 @@ export const update = (
       '#updatedAt': 'updatedAt',
       '#vat': 'vat',
       ...(isSameVatProperty
-        ? { '#vatProperty': newVat.property }
+        ? {
+            '#vatProperty': newVat.property,
+          }
         : {
             '#vatPropertyNew': newVat.property,
             '#vatPropertyOld': oldVat.property,
@@ -165,8 +169,13 @@ export const update = (
           }),
       ':updatedAt': now.toISOString(),
       ...(isSameVatProperty
-        ? { ':vat': new Decimal(newVat.value).minus(oldVat.value).toNumber() }
-        : { ':vatNew': newVat.value, ':vatOld': oldVat.value }),
+        ? {
+            ':vat': new Decimal(newVat.value).minus(oldVat.value).toNumber(),
+          }
+        : {
+            ':vatNew': newVat.value,
+            ':vatOld': oldVat.value,
+          }),
     },
     Key: {
       __typename: 'Balance',

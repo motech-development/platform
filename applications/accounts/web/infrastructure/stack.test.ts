@@ -40,7 +40,10 @@ describe('Accounts web hosting stack', () => {
     template.hasResourceProperties('AWS::Amplify::Domain', {
       DomainName: 'motechdevelopment.co.uk',
       SubDomainSettings: [
-        { BranchName: 'amplify/develop', Prefix: 'accounts-develop' },
+        {
+          BranchName: 'amplify/develop',
+          Prefix: 'accounts-develop',
+        },
       ],
     });
   });

@@ -46,12 +46,16 @@ const publishBalance = async (
       keys: dynamodb?.Keys,
       sequenceNumber: dynamodb?.SequenceNumber,
     });
+
     return;
   }
 
   await updateBalance(id, owner, {
     balance,
-    vat: { owed: vat.owed, paid: vat.paid },
+    vat: {
+      owed: vat.owed,
+      paid: vat.paid,
+    },
   });
 };
 
@@ -59,8 +63,11 @@ const hasTransactionScope = (
   item: IBalance | ITransactionScope | undefined,
 ): item is ITransactionScope => {
   if (!item) return false;
+
   const { __typename: typename } = item;
+
   if (typename !== 'Transaction') return false;
+
   const { companyId, owner, id } = item;
 
   return (
@@ -75,11 +82,14 @@ const hasTransactionScope = (
 
 const readImage = (image: StreamRecord['NewImage']) => {
   if (!image) return undefined;
+
   const item = unmarshall(image as Record<string, AttributeValue>);
   const { __typename: typename } = item;
+
   if (typename === 'Transaction') {
     item.companyId = transactionCompanyId(item);
   }
+
   return item as IBalance | ITransactionScope;
 };
 
@@ -109,6 +119,7 @@ const publishRecord = async ({ eventName, dynamodb }: DynamoDBRecord) => {
   }
 
   if (!item) return;
+
   const { __typename: typename } = item;
 
   if (typename === 'Balance' && eventName === 'MODIFY') {
@@ -127,6 +138,7 @@ const publishRecord = async ({ eventName, dynamodb }: DynamoDBRecord) => {
           sequenceNumber: dynamodb?.SequenceNumber,
         },
       );
+
       return;
     }
 
@@ -148,21 +160,36 @@ export const handler: DynamoDBStreamHandler = async (event) => {
   return event.Records.reduce<Promise<DynamoDBBatchResponse>>(
     async (previous, record) => {
       const result = await previous;
+
       if (result.batchItemFailures.length > 0) return result;
 
       try {
         await publishRecord(record);
-        return { batchItemFailures: [] };
+
+        return {
+          batchItemFailures: [],
+        };
       } catch (error) {
-        logger.error('Failed to publish transaction stream record', { error });
+        logger.error('Failed to publish transaction stream record', {
+          error,
+        });
 
         const sequenceNumber = record.dynamodb?.SequenceNumber;
+
         if (!sequenceNumber) throw error;
 
         // Stop here: Lambda retries from this checkpoint, including later records.
-        return { batchItemFailures: [{ itemIdentifier: sequenceNumber }] };
+        return {
+          batchItemFailures: [
+            {
+              itemIdentifier: sequenceNumber,
+            },
+          ],
+        };
       }
     },
-    Promise.resolve({ batchItemFailures: [] }),
+    Promise.resolve({
+      batchItemFailures: [],
+    }),
   );
 };

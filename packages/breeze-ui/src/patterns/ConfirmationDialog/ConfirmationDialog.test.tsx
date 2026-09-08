@@ -232,17 +232,30 @@ describe('ConfirmationDialog', () => {
       </Drawer.Root>,
     );
 
-    const trigger = screen.getByRole('button', { name: 'Leave editor' });
+    const trigger = screen.getByRole('button', {
+      name: 'Leave editor',
+    });
 
     await user.click(trigger);
+
     const dialog = screen.getByRole('alertdialog', {
       name: 'Discard changes?',
     });
 
     expect(dialog).toBeVisible();
     expect(screen.getByText('Item editor')).toBeVisible();
-    expect(screen.getByRole('button', { name: 'Keep editing' })).toHaveFocus();
-    await user.click(screen.getByRole('button', { name: 'Keep editing' }));
+    expect(
+      screen.getByRole('button', {
+        name: 'Keep editing',
+      }),
+    ).toHaveFocus();
+
+    await user.click(
+      screen.getByRole('button', {
+        name: 'Keep editing',
+      }),
+    );
+
     await waitFor(() => expect(trigger).toHaveFocus());
   });
 });
