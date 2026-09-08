@@ -1,16 +1,31 @@
 @layer theme, base, components, utilities;
 
-@import 'tailwindcss/preflight.css' layer(base);
-
+/* Opt-in normalization stays inside Breeze, including when used alongside an
+   application's own reset. Document-global painting is deliberately absent. */
 @layer base {
-  html {
-    min-width: 20rem;
-    min-height: 100%;
-    background: #eef1f5;
+  :where([data-breeze-root]),
+  :where([data-breeze-root]) *,
+  :where([data-breeze-root]) *::before,
+  :where([data-breeze-root]) *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    border: 0 solid;
   }
 
-  body {
-    min-height: 100vh;
-    margin: 0;
+  :where([data-breeze-root]) :is(button, input, select, textarea) {
+    font: inherit;
+    color: inherit;
+    background: transparent;
+  }
+
+  :where([data-breeze-root]) :is(img, svg, video, canvas) {
+    display: block;
+    max-inline-size: 100%;
+  }
+
+  :where([data-breeze-root]) :is(h1, h2, h3, h4, h5, h6) {
+    font-size: inherit;
+    font-weight: inherit;
   }
 }

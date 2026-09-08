@@ -1,37 +1,10 @@
-import {
-  render,
-  type RenderOptions,
-  type RenderResult,
-} from '@testing-library/react';
+import { render, type RenderResult } from '@testing-library/react';
 import type { ReactElement } from 'react';
-import {
-  BreezeProvider,
-  type BreezeProviderProps,
-} from '../src/provider/BreezeProvider';
-
-type BreezeRenderProviderProps = Omit<
-  BreezeProviderProps,
-  'children' | 'locale'
-> &
-  Partial<Pick<BreezeProviderProps, 'locale'>>;
+import { BreezeProvider } from '../src/provider/BreezeProvider';
 
 export default function renderBreeze(
   element: ReactElement,
-  providerProps: BreezeRenderProviderProps = {},
-  options?: RenderOptions,
+  locale = 'en-GB',
 ): RenderResult {
-  return render(
-    <BreezeProvider
-      direction={providerProps.direction}
-      locale={providerProps.locale ?? 'en-GB'}
-      messages={providerProps.messages}
-      portalContainer={providerProps.portalContainer}
-      router={providerProps.router}
-      timeZone={providerProps.timeZone}
-      toastLimit={providerProps.toastLimit}
-    >
-      {element}
-    </BreezeProvider>,
-    options,
-  );
+  return render(<BreezeProvider locale={locale}>{element}</BreezeProvider>);
 }

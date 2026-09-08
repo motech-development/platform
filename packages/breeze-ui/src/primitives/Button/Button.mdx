@@ -3,72 +3,52 @@ import * as Stories from './Button.stories';
 
 <Meta
   of={Stories}
-  summary="A semantic application action with canonical emphasis, sizing, and accessible progress states."
+  summary="A labelled action with four treatments, three sizes and its own loading skeleton."
 />
 
 # Button
 
-`Button` performs an application action through pointer or keyboard activation.
-
-## Import
+Use `Button` to perform an action or submit a form. Its visible label describes the action.
 
 ```tsx
-import { Button } from '@motech-development/breeze-ui';
-```
+import { BreezeProvider, Button } from '@motech-development/breeze-ui';
 
-## When to use
-
-Use `Button` to submit a form or change application state. Use `Link` for ordinary navigation, `LinkButton` when a destination needs button emphasis, `IconButton` for a compact icon-only action, and `ToggleButton` for a persistent on/off choice.
-
-## Basic example
-
-```tsx
-import { Button } from '@motech-development/breeze-ui';
-
-export function SaveButton() {
-  return <Button onAction={() => saveChanges()}>Save changes</Button>;
-}
+<BreezeProvider locale="en-GB">
+  <Button onAction={() => saveChanges()}>Save changes</Button>
+</BreezeProvider>;
 ```
 
 <Canvas of={Stories.Activation} />
 
-## Emphasis and size
+## Treatments and sizes
 
-Choose `appearance` for emphasis and `variant` for meaning. `solid` is the default primary action; `subtle`, `outline`, and `ghost` progressively reduce emphasis. `text` is the lowest-emphasis button treatment and remains an action, never navigation. Semantic variants are `primary`, `secondary`, `success`, `danger`, `warning`, `info`, `light`, and `dark`. Avoid relying on colour alone; use clear action text.
+`variant` is one flat choice: `primary` for the principal action, `secondary` for a neutral alternative, `quiet` for low emphasis, or `danger` for destruction. Prefer one primary action per decision group. Colour never replaces a useful label.
 
-Sizes are `sm`, `md`, and `lg`. Prefer `md`; use `sm` only in space-constrained contexts that retain an adequate target, and `lg` for deliberately prominent actions.
+`size` is `sm`, `md` (default), or `lg`: minimum block sizes of 34, 38 and 52px. Coarse pointers automatically receive a 44px minimum in both dimensions. Labels may wrap and increase the height; these are minimums, not clipping constraints.
 
-```tsx
-<Button appearance="outline" variant="danger" onAction={removeItem}>
-  Remove item
-</Button>
-```
+<Canvas of={Stories.TreatmentsAndSizes} />
 
-## Activation, forms, and state
+## Loading and disabled
 
-`onAction` runs once for a semantic activation, independent of whether the user clicked, touched, or used the keyboard. Use it instead of `onClick`. `type` is deliberately limited to `button` and `submit`, and defaults to the safe non-submitting `button`.
+`loading` replaces the visible label with the button's own static skeleton. The label still determines the width and accessible name. React Aria prevents repeat activation, retains focusability, and announces the pending state; Breeze also exposes `aria-busy`. A static skeleton avoids unrelated motion and needs no reduced-motion alternative.
 
-`disabled` prevents interaction. `loading` prevents activation while preserving focusability, sets `aria-busy`, and adds an announced in-progress state while retaining the visible label. Keep the label stable, such as “Save changes”, or use a short progressive label such as “Saving”. Errors and validation remain owned by the surrounding form or feedback component; `Button` has no invalid, error, read-only, controlled, or empty state.
+`disabled` prevents activation and removes the button from the tab order. Explain unavailable actions in nearby content when necessary.
 
-<Canvas of={Stories.States} />
+<Canvas of={Stories.Loading} />
+<Canvas of={Stories.Disabled} />
 
-## API
+## Forms and callbacks
+
+`onAction` reports a semantic activation with no DOM event. For a form, use `type="submit"` and handle submission on the form. The default `type="button"` is safe inside forms. The native `form`, `name` and string `value` props support form association and submission.
+
+Use `ref` for imperative focus where the surrounding interaction requires it. `id`, `aria-label`, `aria-labelledby`, `aria-describedby` and `aria-controls` are available for accessible relationships.
+
+## Closed styling
+
+There is no `className`, `style`, `slot`, render prop, icon slot or arbitrary attribute/event passthrough. `children` is the visible string label. Layout belongs to the parent; a missing visual treatment requires a library change. Version 3's separate `appearance` axis is gone.
+
+## Accessibility
+
+Breeze requires `BreezeProvider`. React Aria supplies press, keyboard and pending semantics; Breeze owns the rendered label, skeleton, target sizing and focus styling. Storybook runs axe in Chromium on every story. This is automated coverage, not a screen-reader certification, third-party audit or VPAT. Firefox, WebKit and RTL are not claimed test targets.
 
 <ArgTypes />
-
-## Accessibility and keyboard behaviour
-
-Relevant native button attributes such as `name`, `value`, `form`, `autoFocus`, `aria-*`, and `data-*` are supported. Breeze owns `onClick`, `disabled`, `type`, `aria-busy`, `className`, and inline styling through the API above.
-
-Use a concise visible label; when an icon accompanies text, keep the icon decorative. `Enter` and `Space` activate the button when enabled, with browser and React Aria press semantics preventing duplicate callbacks. Focus remains visibly indicated. Do not remove focus styles or encode meaning using variant alone. Labels may expand after translation, so allow action layouts to wrap rather than truncating essential text.
-
-## Common mistakes
-
-- Do not use `Button` to navigate or pass an anchor destination; use `Link` or `LinkButton`.
-- Do not attach both `onAction` and a native click handler.
-- Do not put more than one primary solid action in the same decision group without a clear hierarchy.
-- Do not replace a useful label with only an icon; use `IconButton` with `aria-label`.
-
-## Related components
-
-Use `LinkButton` for destinations, `IconButton` for icon-only actions, `ToggleButton` for persistent two-state actions, `ButtonGroup` for grouped actions, and `FormActions` for canonical form placement.

@@ -1,0 +1,31 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta
+  title="Guides/07 Tokens"
+  summary="Private prefixed tokens and theme-reactive shadows."
+/>
+
+# Tokens
+
+Tokens are prefixed inside the Tailwind namespace: `--color-breeze-brand` generates `bg-breeze-brand`. The same pattern covers fonts, text sizes, spacing, radii and other measures. Breeze ships its compiled CSS; applications must not depend on, override or treat these tokens as a theming API.
+
+The palette and measures come from the library-authoritative portions of `DESIGN.md` and the Accounts prototype. `--spacing-doc` becomes the domain-neutral `--spacing-breeze-row`. Control sizes map to 34, 38 and 52px; the coarse-pointer minimum is 44px.
+
+The v4 ramp removes the prototype's unused 32px step. The remaining steps cover the planned inventory:
+
+| Size | Role                                      |
+| ---- | ----------------------------------------- |
+| 11px | Badge and compact metadata                |
+| 12px | Field labels and secondary metadata       |
+| 13px | Button, fields, body text and collections |
+| 14px | Supporting prose and control content      |
+| 15px | Card, dialog and state-panel titles       |
+| 17px | Section headings                          |
+| 20px | Larger headings                           |
+| 22px | Page headings                             |
+| 24px | Prominent content                         |
+| 26px | Numeric emphasis                          |
+
+Only the Button and provider ship today. The wider palette and ramp establish the token foundation for the remaining component waves; future additions must demonstrate a real use.
+
+Shadow values live in `--breeze-shadow-panel` and `--breeze-shadow-overlay` on the document element, outside `@theme`. The `shadow-breeze-panel` and `shadow-breeze-overlay` wrappers use `var()` so dark overrides stay reactive. Tailwind bakes shadow values from `@theme` into generated utilities, unlike the variable references emitted for colours, font sizes, spacing and radii. Breakpoint thresholds are deliberately static.

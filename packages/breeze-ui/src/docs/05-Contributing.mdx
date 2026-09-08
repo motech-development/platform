@@ -1,0 +1,20 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta
+  title="Guides/05 Contributing"
+  summary="The literal variant-map and component contribution contract."
+/>
+
+# Contributing components
+
+Use `src/primitives/Name/` or `src/patterns/Name/`. Each component ships its implementation, `.mdx`, `.stories.tsx` and `.test.tsx` beside one another. Follow Button as the vertical slice. Export intentional public values and types from `src/index.ts`.
+
+Each component owns one literal recipe object, ordered `base`, `variant`, `size`, `state`, `compound`. The order is an explicit v4 requirement; the two local `sort-keys` comments in Button document that exception without changing repository lint configuration. Keep entries within each group alphabetical.
+
+Class names are complete literals. Select a literal by typed key and join the results; never interpolate a utility name. Flat treatment unions belong to each component. `ControlSize` is the shared `sm | md | lg` contract. Do not reintroduce `tailwind-variants`, `tailwind-merge` or a parallel recipe abstraction.
+
+Public callbacks report semantic values. Props are intentionally enumerated, with no native-event, styling or slot passthrough. A Button's string label cannot inject arbitrary styled markup. Components read the required Breeze context and expose their own loading skeleton.
+
+Use logical utility properties. The local `breeze/logical-properties` ESLint rule rejects physical spacing, positions, dimensions, edges and alignment in literal classes, including responsive/state variants and arbitrary physical property syntax. Use `ms/me`, `ps/pe`, `start/end`, and the private spacing-backed `min-block-*`, `min-inline-*`, `block-size-*` and `inline-size-full` utilities. Tailwind v4's `px/py` use logical inline/block padding and are allowed.
+
+Run typechecking, formatting, lint, focused unit tests and the Storybook Chromium project. Run the complete package suite with coverage at the end. Existing thresholds are 80% for branches, functions, lines and statements. Do not retest the interaction kit's keyboard engine; test the behavior Breeze owns at public boundaries.

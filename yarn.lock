@@ -5836,10 +5836,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fontsource-variable/cabin@npm:5.2.8":
-  version: 5.2.8
-  resolution: "@fontsource-variable/cabin@npm:5.2.8"
-  checksum: 10c0/3027b158732929246b671d820369a5a515546c426ebe70d37a10eb402854dedbab10bfe5f11c72b97807140ec242772e93aaadc16bd3ebb6d3c12f71b72ec14d
+"@fontsource-variable/public-sans@npm:5.3.0":
+  version: 5.3.0
+  resolution: "@fontsource-variable/public-sans@npm:5.3.0"
+  checksum: 10c0/51c95e6f31d9ca2a11931d2c3ef5300ef303f107cef18c6cac0a0f364d9adfe81e2e4aa6e26f81206953bfe914cc06f27e839c420c965c97be4d062e0f2f01e6
   languageName: node
   linkType: hard
 
@@ -7214,7 +7214,7 @@ __metadata:
   resolution: "@motech-development/breeze-ui@workspace:packages/breeze-ui"
   dependencies:
     "@chromatic-com/storybook": "npm:5.2.1"
-    "@fontsource-variable/cabin": "npm:5.2.8"
+    "@fontsource-variable/public-sans": "npm:5.3.0"
     "@internationalized/date": "npm:3.12.2"
     "@motech-development/eslint-config-motech-react": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
@@ -7235,17 +7235,13 @@ __metadata:
     "@vitest/coverage-v8": "npm:4.1.9"
     eslint: "npm:9.37.0"
     jsdom: "npm:29.1.1"
-    lucide-react: "npm:1.23.0"
     playwright: "npm:1.61.1"
     prettier: "npm:3.2.5"
     react: "npm:19.2.7"
-    react-aria: "npm:3.50.0"
     react-aria-components: "npm:1.19.0"
     react-dom: "npm:19.2.7"
     remark-gfm: "npm:4.0.1"
     storybook: "npm:10.4.6"
-    tailwind-merge: "npm:3.6.0"
-    tailwind-variants: "npm:3.2.2"
     tailwindcss: "npm:4.3.2"
     typescript: "npm:6.0.3"
     vite: "npm:8.1.5"
@@ -23390,15 +23386,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lucide-react@npm:1.23.0":
-  version: 1.23.0
-  resolution: "lucide-react@npm:1.23.0"
-  peerDependencies:
-    react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10c0/1cb2108d81c9713e20dd1beb7b6ac5bfc17307d5f38388f84921cf6a124efb4b933c73929bede42f00bd08aa2df340b0904acdf4fb90206ccd52971e943e775b
-  languageName: node
-  linkType: hard
-
 "luxon@npm:3.5.0":
   version: 3.5.0
   resolution: "luxon@npm:3.5.0"
@@ -30152,26 +30139,6 @@ __metadata:
     string-width: "npm:^4.2.3"
     strip-ansi: "npm:^6.0.1"
   checksum: 10c0/35646185712bb65985fbae5975dda46696325844b78735f95faefae83e86df0a265277819a3e67d189de6e858c509b54e66ca3958ffd51bde56ef1118d455bf4
-  languageName: node
-  linkType: hard
-
-"tailwind-merge@npm:3.6.0":
-  version: 3.6.0
-  resolution: "tailwind-merge@npm:3.6.0"
-  checksum: 10c0/a728d929f4786bcb48641db4228cc8c006a7545491783a658fb4d24d177dab960620991d17805a047309228de50ab949ca8d9e112c30183da0432367796ae186
-  languageName: node
-  linkType: hard
-
-"tailwind-variants@npm:3.2.2":
-  version: 3.2.2
-  resolution: "tailwind-variants@npm:3.2.2"
-  peerDependencies:
-    tailwind-merge: ">=3.0.0"
-    tailwindcss: "*"
-  peerDependenciesMeta:
-    tailwind-merge:
-      optional: true
-  checksum: 10c0/715a35b66c374f3bb234cd1e6737588cb7c0213c80a69bd62239d752d20c44377bec1d028c3ea7c28882d81384507fbae407813d348c142cb991c5a0ad063d48
   languageName: node
   linkType: hard
 
