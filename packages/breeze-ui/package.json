@@ -1,7 +1,7 @@
 {
   "name": "@motech-development/breeze-ui",
   "version": "0.0.0-development",
-  "description": "Accessible, domain-neutral UI primitives and patterns for Motech applications",
+  "description": "Accessible, domain-neutral UI primitives and patterns for Motech Development applications",
   "installConfig": {
     "hoistingLimits": "workspaces"
   },
