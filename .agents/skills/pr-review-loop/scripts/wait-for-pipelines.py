@@ -102,7 +102,6 @@ def write_state(path, state):
 def observe(args, query=gh_json, sleep=time.sleep, now=time.time):
   started = now()
   averages = None
-  run_created_at = {}
   overrun = 0
   state = {'repo': args.repo, 'pr': args.pr, 'head': args.head}
 
@@ -163,6 +162,7 @@ def observe(args, query=gh_json, sleep=time.sleep, now=time.time):
           '--json', 'workflowName,event,conclusion,createdAt,updatedAt,attempt'
         ])
         averages = workflow_averages(runs)
+      run_created_at = {}
       for check in checks:
         if check.get('bucket') != 'pending' or not check.get('workflow'):
           continue
@@ -170,8 +170,12 @@ def observe(args, query=gh_json, sleep=time.sleep, now=time.time):
         if match:
           run_id = match.group(1)
           if run_id not in run_created_at:
-            run = request(['run', 'view', run_id, '--repo', args.repo, '--json', 'createdAt'])
-            run_created_at[run_id] = run.get('createdAt')
+            run = request([
+              'run', 'view', run_id, '--repo', args.repo, '--json', 'createdAt,startedAt,attempt'
+            ])
+            run_created_at[run_id] = (
+              run.get('startedAt') if run.get('attempt', 1) > 1 else run.get('createdAt')
+            )
           check['workflowCreatedAt'] = run_created_at[run_id]
       state['workflow_timings'] = [
         {'workflow': workflow, 'event': event, **timing}
