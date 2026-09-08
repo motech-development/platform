@@ -7,7 +7,7 @@ description: Run a PR feedback loop until Codex is clear, CodeRabbit approves th
 
 Continue across local review rounds and hosted feedback batches until the PR's
 completion conditions are verified. Do not repeatedly review the accumulated PR
-or expand its agreed scope. Use native Codex with **`gpt-6-astra` at `low`
+or expand its agreed scope. Use native Codex with **`gpt-5.6-luna` at `low`
 reasoning effort** and CodeRabbit
 CLI in parallel for the local review gate, handling each round only after both
 report back; the repository's `code-review` skill is a different, multi-agent
@@ -140,7 +140,7 @@ complete this gate; every resulting fix must go through the next local round.
    Tests must establish behavior or a regression; do not add tests that merely
    restate a style edit. The fixing agent owns validation, so neither reviewer
    needs to rerun the supplied passing checks.
-3. Run **one native Codex review with `gpt-6-astra` at `low` effort and one
+3. Run **one native Codex review with `gpt-5.6-luna` at `low` effort and one
    CodeRabbit CLI review of the same new delta**. Follow
    [native-review.md](references/native-review.md) and
    [coderabbit-cli.md](references/coderabbit-cli.md). After preparing both inputs
