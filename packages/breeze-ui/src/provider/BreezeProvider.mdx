@@ -22,6 +22,14 @@ import * as Stories from './BreezeProvider.stories';
 
 `locale` takes a BCP 47 language tag. It sets the `lang` attribute and the text direction of the provider's root element.
 
+Only English (`en-GB`) messages are bundled. Supply `messages` to translate Breeze's loading announcement into the provider locale. Without an override, the announcement uses the English message and is marked `lang="en-GB"`, independently of the surrounding content's language.
+
+```tsx
+<BreezeProvider locale="fr-FR" messages={{ loading: 'Chargement' }}>
+  <Button loading>Enregistrer</Button>
+</BreezeProvider>
+```
+
 <Canvas of={Stories.Locale} />
 
 ## Colour scheme

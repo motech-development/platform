@@ -1,7 +1,10 @@
 import { createContext, useContext } from 'react';
+import type enGB from './en-GB';
 
 interface BreezeContextValue {
   locale: string;
+  messageLocale: string;
+  messages: typeof enGB;
 }
 
 export const BreezeContext = createContext<BreezeContextValue | null>(null);
