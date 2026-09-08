@@ -32,7 +32,24 @@ def gh_json(args, allowed_codes=(0,)):
     ['gh', *args], capture_output=True, text=True, timeout=60, check=False
   )
   if result.returncode not in allowed_codes:
-    raise RuntimeError(f'GitHub command failed (exit {result.returncode}).')
+    # Keep useful failure categories without copying URLs, headers, or credentials.
+    diagnostic = (result.stderr or '').lower()
+    status = re.search(r'\bhttp\s+([45]\d{2})\b', diagnostic)
+    code = int(status.group(1)) if status else None
+    if code == 429 or 'rate limit' in diagnostic:
+      category = 'rate limit'
+    elif code == 401 or 'gh auth login' in diagnostic or 'bad credentials' in diagnostic:
+      category = 'authentication'
+    elif code == 403:
+      category = 'permission'
+    elif code is not None and code >= 500:
+      category = 'service'
+    else:
+      category = 'unclassified'
+    http_status = f', HTTP {code}' if code is not None else ''
+    raise RuntimeError(
+      f'GitHub command failed (exit {result.returncode}{http_status}; {category}).'
+    )
   try:
     return json.loads(result.stdout)
   except json.JSONDecodeError as error:

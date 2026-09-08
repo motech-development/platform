@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 
 spec = importlib.util.spec_from_file_location(
@@ -67,6 +68,32 @@ class PipelineWaitTests(unittest.TestCase):
         code = pipeline_wait.observe(args, query=query, sleep=sleep, now=lambda: clock[0])
       state = json.loads(path.read_text()) if path.exists() else json.loads(output.getvalue().splitlines()[-1])
     return code, state, sleeps, calls, output.getvalue().splitlines()
+
+  def test_cli_failure_reports_safe_diagnostic_without_echoing_credentials(self):
+    cases = [
+      ('HTTP 401: Bad credentials (https://api.github.com?token=secret)', 'authentication'),
+      ('HTTP 403: Resource not accessible by integration', 'permission'),
+      ('HTTP 403: API rate limit exceeded', 'rate limit'),
+      ('HTTP 502: Bad Gateway', 'service'),
+      ('To get started with GitHub CLI, please run: gh auth login', 'authentication'),
+    ]
+    for stderr, diagnostic in cases:
+      with self.subTest(stderr=stderr):
+        result = pipeline_wait.subprocess.CompletedProcess(['gh'], 1, '', stderr)
+        with patch.object(pipeline_wait.subprocess, 'run', return_value=result):
+          with self.assertRaises(RuntimeError) as error:
+            pipeline_wait.gh_json(['pr', 'view'])
+        self.assertIn(diagnostic, str(error.exception))
+        self.assertNotIn('secret', str(error.exception))
+        self.assertNotIn('https://', str(error.exception))
+
+  def test_unknown_cli_failure_does_not_echo_arbitrary_stderr(self):
+    result = pipeline_wait.subprocess.CompletedProcess(['gh'], 1, '', 'private-value' * 1000)
+    with patch.object(pipeline_wait.subprocess, 'run', return_value=result):
+      with self.assertRaises(RuntimeError) as error:
+        pipeline_wait.gh_json(['pr', 'view'])
+    self.assertNotIn('private-value', str(error.exception))
+    self.assertLess(len(str(error.exception)), 200)
 
   def test_average_uses_ten_recent_successes_and_keeps_events_separate(self):
     runs = [run(300, created=index * 100) for index in range(1, 11)]
