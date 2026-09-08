@@ -26,8 +26,10 @@ been assessed against the current remote head:
 
 Do not resolve a still-valid problem simply because it is outside scope, low
 priority, or expensive. Leave pending fixes and unresolved scope decisions open.
-Do not reopen resolved threads, dismiss an entire review, delete comments, or
-resolve human feedback without the corresponding user instruction.
+Preserve threads resolved by other actors. Do not dismiss an entire review,
+delete comments, or resolve human feedback without the corresponding user
+instruction. Existing authorization to handle bot threads includes correcting
+this batch's own stale resolution as described below.
 
 ## Read current state
 
@@ -87,7 +89,14 @@ reassess affected findings against the new revision before resolving them.
 
 ## Resolve and confirm
 
-For each eligible, unresolved thread with `viewerCanResolve: true`, send:
+Immediately before each mutation, re-read the remote head and that thread,
+including follow-ups. If the head differs from the verified revision or new
+feedback changes eligibility, reassess and verify before proceeding. Record the
+head, thread state, and mutation result for this batch. GitHub does not provide
+an atomic head-conditional resolution: the checks below detect races rather
+than preventing them.
+
+For each still-eligible, unresolved thread with `viewerCanResolve: true`, send:
 
 ```graphql
 mutation ResolveThread($threadId: ID!) {
@@ -105,6 +114,16 @@ match and `isResolved` to be true. After an uncertain response, read the thread
 before retrying; another actor may already have resolved it. Do not retry a
 permission failure in a loop. Complete unaffected resolutions and report the
 specific remaining thread links and blocker.
+
+Immediately after each mutation, read the remote head and thread again. If the
+head changed, or the response was uncertain, do not claim the finding settled
+until eligibility is reassessed against the current head. If a confirmed
+resolution made by this batch now hides a still-valid finding, use
+`unresolveReviewThread` for that thread and verify the result under the existing
+bot-thread authorization. Do not undo another actor's resolution: when ownership
+or current state cannot be established safely, leave it unchanged and report
+the thread and race as unresolved work. Recheck the head after any correction
+and retain uncertainty if concurrent changes continue.
 
 Finally, re-read the handled threads and confirm their state. Report resolved
 threads separately from findings embedded in CodeRabbit's main review: those
