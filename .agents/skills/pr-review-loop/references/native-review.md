@@ -83,9 +83,10 @@ or failed review is not a clean review; report the limitation and continue
 independent fixes and checks. Do not silently replace a required native review.
 
 Once clean, freeze the final result through commit. Compare the post-hook content
-to the reviewed snapshot. Review new substantive edits against that snapshot;
-formatting-only hook changes need the corresponding static checks, not another
-full model pass. Keep this result while CodeRabbit runs or waits for a cooldown;
+to the reviewed snapshot. Validate substantive hook edits and send their delta
+through both local reviewers in parallel before pushing. Formatting-only hook
+changes need the corresponding static checks, not another full model pass.
+Keep this result while CodeRabbit runs or waits for a cooldown;
 do not rerun Codex on unchanged content. Both reviewers must cover subsequent
 review-driven fixes before the combined gate is complete.
 

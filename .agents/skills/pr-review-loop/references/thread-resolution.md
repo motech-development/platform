@@ -3,9 +3,11 @@
 Use GitHub's `resolveReviewThread` GraphQL mutation, through an available GitHub
 tool or `gh api graphql`. Reactions and replies do not change resolution state.
 Use the review-thread node ID, not an inline comment's numeric ID or a review ID.
-The user's request to handle feedback under this workflow includes resolving
-eligible bot threads; carry forward any narrower permissions or exclusions.
-Do not ask for separate confirmation for each routine resolution.
+Require existing authorization to resolve bot threads before invoking the
+mutation. Carry that authorization across batches, together with narrower
+permissions or exclusions; do not ask again for each routine resolution. A
+request limited to code fixes, inspection, or pushes does not by itself authorize
+review-thread mutations.
 
 ## Eligibility
 
