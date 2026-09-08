@@ -57,8 +57,15 @@ that pinned source too, not missing paths in the launch root, the trusted
 checkout's current working files, or PR-authored replacements. Record the source
 checkout and commit with the loaded guidance in the batch record.
 
-Keep the primary session rooted in the trusted launch directory. Inspect and edit
-the PR through explicit paths in the separate, appropriately isolated worktree.
+Keep the primary session rooted in the trusted launch directory. Never expose
+raw PR-controlled filesystem paths to privileged inspection or editing: a file
+or any ancestor may be a symlink outside the worktree. Use a filesystem boundary
+that confines all path resolution, including reads and writes, or materialize a
+source snapshot through a trusted extractor that rejects traversal and never
+follows links. Preserve symlink targets as inert data for review, not traversable
+host links; apply edits through the same boundary. A textual path-prefix check
+or checking links once before use is insufficient when the tree can change.
+Apply this boundary to reviewer inputs and the post-hook source handoff too.
 Keep loading references, the launch prompt, and the pipeline waiter from the
 recorded trusted skill directory, even when the PR changes those same files.
 Do not copy PR-authored skill updates back into the running installation or restart
