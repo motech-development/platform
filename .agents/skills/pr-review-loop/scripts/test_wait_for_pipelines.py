@@ -200,7 +200,7 @@ class PipelineWaitTests(unittest.TestCase):
     self.assertEqual(delay, 264)
     self.assertTrue(estimated)
 
-  def test_workflow_creation_lookup_is_shared_across_jobs_and_waits(self):
+  def test_workflow_timing_lookup_is_shared_across_jobs_but_refreshed_each_poll(self):
     opened = {'headRefOid': 'head-a', 'state': 'OPEN'}
     pending = {
       **check(started=1100),
@@ -209,12 +209,38 @@ class PipelineWaitTests(unittest.TestCase):
     code, _, sleeps, calls, _ = self.observe([
       opened, [pending, {**pending, 'name': 'Lint'}], opened,
       [run(720)], {'createdAt': iso(500)},
-      opened, [{**pending}], opened,
+      opened, [{**pending}], opened, {'createdAt': iso(500)},
       opened, [check('pass')], opened
     ])
     self.assertEqual(code, 0)
     self.assertEqual(sleeps, [264, 120])
-    self.assertEqual(sum(args[:2] == ['run', 'view'] for args, _ in calls), 1)
+    self.assertEqual(sum(args[:2] == ['run', 'view'] for args, _ in calls), 2)
+
+  def test_active_rerun_uses_current_attempt_start_for_wait_estimate(self):
+    opened = {'headRefOid': 'head-a', 'state': 'OPEN'}
+    pending = {**check(), 'link': 'https://github.com/owner/repo/actions/runs/123/job/456'}
+    code, _, sleeps, _, _ = self.observe([
+      opened, [pending], opened, [run(600)],
+      {'createdAt': iso(100), 'startedAt': iso(1100), 'attempt': 2},
+      opened, [check('pass')], opened
+    ])
+    self.assertEqual(code, 0)
+    self.assertEqual(sleeps, [720])
+
+  def test_attempt_timing_is_refreshed_after_rerun_or_missing_start(self):
+    opened = {'headRefOid': 'head-a', 'state': 'OPEN'}
+    pending = {**check(), 'link': 'https://github.com/owner/repo/actions/runs/123/job/456'}
+    for first in ({'createdAt': iso(100), 'attempt': 1},
+                  {'createdAt': iso(100), 'startedAt': None, 'attempt': 2}):
+      with self.subTest(first=first):
+        code, _, sleeps, _, _ = self.observe([
+          opened, [pending], opened, [run(600)], first,
+          opened, [pending], opened,
+          {'createdAt': iso(100), 'startedAt': iso(1220), 'attempt': 2},
+          opened, [check('pass')], opened
+        ])
+        self.assertEqual(code, 0)
+        self.assertEqual(sleeps, [120, 720])
 
   def test_terminal_report_survives_unwritable_state_destination(self):
     code, state, sleeps, _, output = self.observe([

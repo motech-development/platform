@@ -95,8 +95,9 @@ per relevant workflow and event from a bounded history sample. The estimate is
 the arithmetic mean of creation-to-completion duration, including queue time;
 later attempts are excluded because their timestamps can include idle time before a rerun.
 GitHub's `updatedAt` is an approximation of completion. It reads each pending
-workflow run's creation time once, so elapsed queue time is subtracted on the
-same basis, and adds a 20% margin. Concurrent workflows contribute their longest remaining
+workflow run's timestamps and attempt once per poll, sharing the lookup across jobs. First attempts use creation time,
+including queue time; active reruns use the current attempt's `startedAt` to avoid
+counting the idle gap since original creation. Estimates add a 20% margin. Concurrent workflows contribute their longest remaining
 estimate, not a sum. Unknown timings start at two minutes. Overruns back off from
 two to fifteen minutes; the initial sleep is also capped at fifteen minutes.
 
