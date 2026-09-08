@@ -31,33 +31,35 @@ def gh_json(args, allowed_codes=(0,)):
   result = subprocess.run(
     ['gh', *args], capture_output=True, text=True, timeout=60, check=False
   )
-  if result.returncode not in allowed_codes:
-    # Keep useful failure categories without copying URLs, headers, or credentials.
-    diagnostic = (result.stderr or '').lower()
-    status = re.search(r'\bhttp\s+([45]\d{2})\b', diagnostic)
-    code = int(status.group(1)) if status else None
-    if code == 429 or 'rate limit' in diagnostic:
-      category = 'rate limit'
-    elif code == 401 or 'gh auth login' in diagnostic or 'bad credentials' in diagnostic:
-      category = 'authentication'
-    elif code == 403:
-      category = 'permission'
-    elif code is not None and code >= 500:
-      category = 'service'
-    else:
-      category = 'unclassified'
-    http_status = f', HTTP {code}' if code is not None else ''
-    raise RuntimeError(
-      f'GitHub command failed (exit {result.returncode}{http_status}; {category}).'
-    )
-  try:
-    return json.loads(result.stdout)
-  except json.JSONDecodeError as error:
-    raise RuntimeError('GitHub returned no usable JSON result.') from error
+  if result.returncode in allowed_codes:
+    try:
+      return json.loads(result.stdout)
+    except json.JSONDecodeError as error:
+      if result.returncode == 0:
+        raise RuntimeError('GitHub returned no usable JSON result.') from error
+  # Keep useful failure categories without copying URLs, headers, or credentials.
+  diagnostic = (result.stderr or '').lower()
+  status = re.search(r'\bhttp\s+([45]\d{2})\b', diagnostic)
+  code = int(status.group(1)) if status else None
+  if code == 429 or 'rate limit' in diagnostic:
+    category = 'rate limit'
+  elif code == 401 or 'gh auth login' in diagnostic or 'bad credentials' in diagnostic:
+    category = 'authentication'
+  elif code == 403:
+    category = 'permission'
+  elif code is not None and code >= 500:
+    category = 'service'
+  else:
+    category = 'unclassified'
+  http_status = f', HTTP {code}' if code is not None else ''
+  raise RuntimeError(
+    f'GitHub command failed (exit {result.returncode}{http_status}; {category}).'
+  )
 
 
 def workflow_averages(runs):
   groups = defaultdict(list)
+  runtime_groups = defaultdict(list)
   for run in sorted(runs, key=lambda item: item.get('createdAt') or '', reverse=True):
     if run.get('conclusion') != 'success' or run.get('attempt') != 1:
       continue
@@ -66,8 +68,15 @@ def workflow_averages(runs):
     if key[0] and start is not None and end is not None and end > start:
       if len(groups[key]) < 10:
         groups[key].append(end - start)
+        execution_start = timestamp(run.get('startedAt'))
+        if execution_start is not None and start <= execution_start < end:
+          runtime_groups[key].append(end - execution_start)
   return {
-    key: {'mean_seconds': statistics.mean(values), 'samples': len(values)}
+    key: {
+      'mean_seconds': statistics.mean(values), 'samples': len(values),
+      'mean_runtime_seconds': statistics.mean(runtime_groups[key]) if runtime_groups[key] else None,
+      'runtime_samples': len(runtime_groups[key])
+    }
     for key, values in groups.items()
   }
 
@@ -80,8 +89,10 @@ def next_delay(checks, averages, now, overrun):
     key = (check.get('workflow') or '', check.get('event') or '')
     timing = averages.get(key)
     created = timestamp(check.get('workflowCreatedAt'))
-    if timing and created is not None:
-      remaining = timing['mean_seconds'] * 1.2 - max(0, now - created)
+    metric = 'mean_runtime_seconds' if check.get('workflowAttempt', 1) > 1 else 'mean_seconds'
+    mean = timing.get(metric) if timing else None
+    if mean is not None and created is not None:
+      remaining = mean * 1.2 - max(0, now - created)
       if remaining > 0:
         estimates.append(remaining)
   if estimates:
@@ -159,24 +170,25 @@ def observe(args, query=gh_json, sleep=time.sleep, now=time.time):
       if averages is None:
         runs = request([
           'run', 'list', '--repo', args.repo, '--status', 'success', '--limit', '100',
-          '--json', 'workflowName,event,conclusion,createdAt,updatedAt,attempt'
+          '--json', 'workflowName,event,conclusion,createdAt,startedAt,updatedAt,attempt'
         ])
         averages = workflow_averages(runs)
-      run_created_at = {}
+      run_timing = {}
       for check in checks:
         if check.get('bucket') != 'pending' or not check.get('workflow'):
           continue
         match = re.search(r'/actions/runs/(\d+)(?:/|$)', check.get('link') or '')
         if match:
           run_id = match.group(1)
-          if run_id not in run_created_at:
+          if run_id not in run_timing:
             run = request([
               'run', 'view', run_id, '--repo', args.repo, '--json', 'createdAt,startedAt,attempt'
             ])
-            run_created_at[run_id] = (
-              run.get('startedAt') if run.get('attempt', 1) > 1 else run.get('createdAt')
+            attempt = run.get('attempt', 1)
+            run_timing[run_id] = (
+              run.get('startedAt') if attempt > 1 else run.get('createdAt'), attempt
             )
-          check['workflowCreatedAt'] = run_created_at[run_id]
+          check['workflowCreatedAt'], check['workflowAttempt'] = run_timing[run_id]
       state['workflow_timings'] = [
         {'workflow': workflow, 'event': event, **timing}
         for (workflow, event), timing in averages.items()
