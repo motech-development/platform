@@ -49,11 +49,10 @@ function LoadingStatus(): ReactElement {
   const progress = useSlottedContext(ProgressBarContext);
 
   return (
-    <span
+    <progress
       aria-label="Loading"
       className={variants.state.loadingStatus}
       id={progress?.id}
-      role="progressbar"
     />
   );
 }
