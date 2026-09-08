@@ -3,7 +3,6 @@ import { createElement } from 'react';
 import { Button as AriaButton } from 'react-aria-components/Button';
 import { useBreezeContext } from '../../provider/BreezeContext';
 
-// The ordered recipe is the v4 contribution contract, not alphabetical data.
 const variants = {
   base: {
     button:
@@ -12,17 +11,14 @@ const variants = {
     skeleton:
       '[grid-area:1/1] inline-size-full block-size-breeze-3 rounded-breeze-xs',
   },
-  variant: {
-    danger:
-      'border-transparent bg-breeze-danger-fill text-breeze-on-brand data-[hovered]:bg-breeze-danger-hover data-[pressed]:bg-breeze-danger-hover',
-    primary:
-      'border-transparent bg-breeze-brand text-breeze-on-brand data-[hovered]:bg-breeze-brand-hover data-[pressed]:bg-breeze-brand-hover',
-    quiet:
-      'border-transparent bg-transparent text-breeze-brand-text data-[hovered]:bg-breeze-brand-soft data-[pressed]:bg-breeze-brand-soft',
-    secondary:
-      'border-breeze-line-strong bg-breeze-surface text-breeze-ink data-[hovered]:bg-breeze-sunken data-[pressed]:bg-breeze-sunken',
+  compound: {
+    loading: {
+      danger: 'bg-breeze-on-brand/35',
+      primary: 'bg-breeze-on-brand/35',
+      quiet: 'bg-breeze-line-strong',
+      secondary: 'bg-breeze-line-strong',
+    },
   },
-  // eslint-disable-next-line sort-keys -- v4 recipes require base, variant, size, state, compound ordering.
   size: {
     lg: 'min-block-breeze-lg ps-breeze-5 pe-breeze-5 py-breeze-3',
     md: 'min-block-breeze-md ps-breeze-3 pe-breeze-3 py-breeze-2',
@@ -33,14 +29,15 @@ const variants = {
     loading: 'cursor-wait',
     loadingLabel: 'opacity-0',
   },
-  // eslint-disable-next-line sort-keys -- compound states deliberately finish every v4 recipe.
-  compound: {
-    loading: {
-      danger: 'bg-breeze-on-brand/35',
-      primary: 'bg-breeze-on-brand/35',
-      quiet: 'bg-breeze-line-strong',
-      secondary: 'bg-breeze-line-strong',
-    },
+  variant: {
+    danger:
+      'border-transparent bg-breeze-danger-fill text-breeze-on-brand data-[hovered]:bg-breeze-danger-hover data-[pressed]:bg-breeze-danger-hover',
+    primary:
+      'border-transparent bg-breeze-brand text-breeze-on-brand data-[hovered]:bg-breeze-brand-hover data-[pressed]:bg-breeze-brand-hover',
+    quiet:
+      'border-transparent bg-transparent text-breeze-brand-text data-[hovered]:bg-breeze-brand-soft data-[pressed]:bg-breeze-brand-soft',
+    secondary:
+      'border-breeze-line-strong bg-breeze-surface text-breeze-ink data-[hovered]:bg-breeze-sunken data-[pressed]:bg-breeze-sunken',
   },
 } as const;
 
