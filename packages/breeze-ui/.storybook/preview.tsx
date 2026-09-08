@@ -2,6 +2,7 @@ import type { Preview } from '@storybook/react-vite';
 import { BreezeProvider } from '../src/provider/BreezeProvider';
 import '../src/styles/reset.css';
 import '../src/styles/styles.css';
+import './preview.css';
 
 const preview: Preview = {
   decorators: [

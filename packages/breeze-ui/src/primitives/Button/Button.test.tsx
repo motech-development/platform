@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { FormEvent } from 'react';
 import { createRef } from 'react';
@@ -43,9 +43,17 @@ describe('Button', () => {
     );
 
     expect(button).toHaveFocus();
-    expect(button).toHaveAccessibleName('Save changes');
+    expect(button).toHaveAccessibleName('Save changes Loading');
     expect(button).toHaveAttribute('aria-busy', 'true');
     expect(button).toHaveAttribute('aria-disabled', 'true');
+    expect(
+      screen.getByRole('progressbar', { name: 'Loading' }),
+    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        document.querySelector('[aria-live="assertive"] [aria-labelledby]'),
+      ).toHaveAccessibleName('Save changes Loading');
+    });
     expect(button.querySelector('[data-breeze-skeleton]')).toHaveAttribute(
       'aria-hidden',
       'true',
@@ -84,6 +92,34 @@ describe('Button', () => {
     expect(onSubmit).not.toHaveBeenCalled();
 
     await userEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+    expect(onSubmit).toHaveBeenCalledOnce();
+  });
+
+  it('blocks implicit form submission while loading and restores it afterwards', async () => {
+    const onSubmit = vi.fn((event: FormEvent) => event.preventDefault());
+    const form = (loading: boolean) => (
+      <form onSubmit={onSubmit}>
+        <input aria-label="Title" />
+        <Button loading={loading} type="submit">
+          Save
+        </Button>
+      </form>
+    );
+    const { rerender } = renderBreeze(form(true));
+
+    await userEvent.type(
+      screen.getByRole('textbox', { name: 'Title' }),
+      'Draft{Enter}',
+    );
+
+    expect(onSubmit).not.toHaveBeenCalled();
+
+    rerender(<BreezeProvider locale="en-GB">{form(false)}</BreezeProvider>);
+    await userEvent.type(
+      screen.getByRole('textbox', { name: 'Title' }),
+      '{Enter}',
+    );
 
     expect(onSubmit).toHaveBeenCalledOnce();
   });
@@ -134,7 +170,11 @@ describe('Button', () => {
         </form>,
       );
 
-      await userEvent.click(screen.getByRole('button', { name: 'Save' }));
+      await userEvent.click(
+        screen.getByRole('button', {
+          name: state === 'loading' ? 'Save Loading' : 'Save',
+        }),
+      );
 
       expect(onAction).not.toHaveBeenCalled();
       expect(onSubmit).not.toHaveBeenCalled();
@@ -149,7 +189,10 @@ describe('Button', () => {
         <span id="action-label">Save draft</span>
         <span id="action-help">You can publish later.</span>
         <Button
+          aria-controls="action-menu"
           aria-describedby="action-help"
+          aria-expanded={false}
+          aria-haspopup="menu"
           aria-labelledby="action-label"
           ref={ref}
         >
@@ -162,6 +205,9 @@ describe('Button', () => {
     ref.current?.focus();
 
     expect(button).toHaveFocus();
+    expect(button).toHaveAttribute('aria-controls', 'action-menu');
+    expect(button).toHaveAttribute('aria-expanded', 'false');
+    expect(button).toHaveAttribute('aria-haspopup', 'menu');
     expect(button).toHaveAccessibleDescription('You can publish later.');
   });
 });

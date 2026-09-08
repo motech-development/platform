@@ -1,5 +1,5 @@
 /* Private tokens: visible in CSS, but not a supported customisation API. */
-@theme static {
+@theme static prefix(breeze) {
   --breakpoint-breeze-sm: 42.5625rem;
   --breakpoint-breeze-md: 56.3125rem;
   --breakpoint-breeze-lg: 73.8125rem;
@@ -90,22 +90,22 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
     color-scheme: dark;
-    --color-breeze-brand-text: #33aacf;
-    --color-breeze-brand-soft: #12313b;
-    --color-breeze-canvas: #161616;
-    --color-breeze-surface: #1f1f1f;
-    --color-breeze-raised: #262626;
-    --color-breeze-sunken: #262626;
-    --color-breeze-line: #303030;
-    --color-breeze-line-strong: #3d3d3d;
-    --color-breeze-ink: #f2f2f2;
-    --color-breeze-ink-2: #b4b4b4;
-    --color-breeze-ink-3: #949494;
-    --color-breeze-pos: #3fbf8b;
-    --color-breeze-pos-soft: #16291f;
-    --color-breeze-warn: #e0b341;
-    --color-breeze-warn-soft: #2a2314;
-    --color-breeze-danger: #f1736a;
+    --breeze-color-breeze-brand-text: #33aacf;
+    --breeze-color-breeze-brand-soft: #12313b;
+    --breeze-color-breeze-canvas: #161616;
+    --breeze-color-breeze-surface: #1f1f1f;
+    --breeze-color-breeze-raised: #262626;
+    --breeze-color-breeze-sunken: #262626;
+    --breeze-color-breeze-line: #303030;
+    --breeze-color-breeze-line-strong: #3d3d3d;
+    --breeze-color-breeze-ink: #f2f2f2;
+    --breeze-color-breeze-ink-2: #b4b4b4;
+    --breeze-color-breeze-ink-3: #949494;
+    --breeze-color-breeze-pos: #3fbf8b;
+    --breeze-color-breeze-pos-soft: #16291f;
+    --breeze-color-breeze-warn: #e0b341;
+    --breeze-color-breeze-warn-soft: #2a2314;
+    --breeze-color-breeze-danger: #f1736a;
     --breeze-shadow-panel: 0 1px 1px rgb(0 0 0/40%);
     --breeze-shadow-overlay: 0 1px 2px rgb(0 0 0/50%),
       0 8px 24px -10px rgb(0 0 0/70%);
@@ -114,22 +114,22 @@
 
 :root[data-theme='dark'] {
   color-scheme: dark;
-  --color-breeze-brand-text: #33aacf;
-  --color-breeze-brand-soft: #12313b;
-  --color-breeze-canvas: #161616;
-  --color-breeze-surface: #1f1f1f;
-  --color-breeze-raised: #262626;
-  --color-breeze-sunken: #262626;
-  --color-breeze-line: #303030;
-  --color-breeze-line-strong: #3d3d3d;
-  --color-breeze-ink: #f2f2f2;
-  --color-breeze-ink-2: #b4b4b4;
-  --color-breeze-ink-3: #949494;
-  --color-breeze-pos: #3fbf8b;
-  --color-breeze-pos-soft: #16291f;
-  --color-breeze-warn: #e0b341;
-  --color-breeze-warn-soft: #2a2314;
-  --color-breeze-danger: #f1736a;
+  --breeze-color-breeze-brand-text: #33aacf;
+  --breeze-color-breeze-brand-soft: #12313b;
+  --breeze-color-breeze-canvas: #161616;
+  --breeze-color-breeze-surface: #1f1f1f;
+  --breeze-color-breeze-raised: #262626;
+  --breeze-color-breeze-sunken: #262626;
+  --breeze-color-breeze-line: #303030;
+  --breeze-color-breeze-line-strong: #3d3d3d;
+  --breeze-color-breeze-ink: #f2f2f2;
+  --breeze-color-breeze-ink-2: #b4b4b4;
+  --breeze-color-breeze-ink-3: #949494;
+  --breeze-color-breeze-pos: #3fbf8b;
+  --breeze-color-breeze-pos-soft: #16291f;
+  --breeze-color-breeze-warn: #e0b341;
+  --breeze-color-breeze-warn-soft: #2a2314;
+  --breeze-color-breeze-danger: #f1736a;
   --breeze-shadow-panel: 0 1px 1px rgb(0 0 0/40%);
   --breeze-shadow-overlay: 0 1px 2px rgb(0 0 0/50%),
     0 8px 24px -10px rgb(0 0 0/70%);
