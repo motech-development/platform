@@ -1,0 +1,7 @@
+import{n as e}from"./rolldown-runtime-DaJ6WEGw.js";import{t}from"./jsx-runtime-cM__dR4X.js";import{i as n}from"./react-XnqUzw--.js";import{c as r,s as i}from"./blocks-noU9Sgrf.js";import{t as a}from"./mdx-react-shim-y1jXGhTh.js";function o(e){let t={h1:`h1`,h2:`h2`,p:`p`,...n(),...e.components};return(0,c.jsxs)(c.Fragment,{children:[(0,c.jsx)(i,{title:`Guides/01 Overview`,summary:`React components for building Motech Development interfaces.`}),`
+`,(0,c.jsx)(t.h1,{id:`breeze-ui`,children:`Breeze UI`}),`
+`,(0,c.jsx)(t.p,{children:`Breeze UI is the React component library used to build Motech Development applications. Its components are accessible, keyboard navigable, and styled for light and dark colour schemes.`}),`
+`,(0,c.jsx)(t.h2,{id:`getting-started`,children:`Getting started`}),`
+`,(0,c.jsxs)(t.p,{children:[`Add the package and its stylesheet as described in `,(0,c.jsx)(`a`,{href:`./?path=/docs/guides-02-installation--docs`,target:`_top`,children:`Installation`}),`, then set up the provider as described in `,(0,c.jsx)(`a`,{href:`./?path=/docs/guides-03-usage--docs`,target:`_top`,children:`Usage`}),`.`]}),`
+`,(0,c.jsx)(t.h2,{id:`components`,children:`Components`}),`
+`,(0,c.jsx)(t.p,{children:`Each component page documents the component's options with interactive examples, and lists its props under API.`})]})}function s(e={}){let{wrapper:t}={...n(),...e.components};return t?(0,c.jsx)(t,{...e,children:(0,c.jsx)(o,{...e})}):o(e)}var c;e((()=>{c=t(),a(),r()}))();export{s as default};
