@@ -1,5 +1,5 @@
 const physicalUtility =
-  /(?:^|:)(?:!)?-?(?:(?:[mp][lrtb]|left|right|top|bottom|w|h|min-w|max-w|min-h|max-h|border-[lrtb]|rounded-(?:tl|tr|bl|br|l|r|t|b))-(?:.+)|(?:text|float|clear)-(?:left|right))(?:!)?$/;
+  /(?:^|:)(?:!)?-?(?:(?:[mp][lrtb]|left|right|top|bottom|w|h|size|min-w|max-w|min-h|max-h|border-[lrtb]|rounded-(?:tl|tr|bl|br|l|r|t|b))-(?:.+)|(?:text|float|clear)-(?:left|right))(?:!)?$/;
 const physicalArbitraryProperty =
   /\[(?:(?:min-|max-)?(?:width|height)|(?:margin|padding|border)-(?:left|right|top|bottom)(?:-\w+)?|left|right|top|bottom|border-(?:top|bottom)-(?:left|right)-radius):/;
 
