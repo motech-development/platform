@@ -7,11 +7,11 @@ import { Meta } from '@storybook/addon-docs/blocks';
 
 # Provider and styles
 
-Every component requires `BreezeProvider locale="…"`. The provider creates the Breeze root and passes the locale to React Aria. Components fail clearly without that boundary. This slice has no environment configuration beyond locale.
+Wrap the part of your application that uses Breeze in `BreezeProvider locale="…"`. The provider establishes a shared locale and the root for Breeze styles. Place it above your pages and features so components share this setup.
 
 `styles.css` publishes fonts, private tokens, scoped normalization and compiled utilities. `reset.css` adds optional normalization inside the same root. Neither paints unrelated application content, even if it uses matching utility class names.
 
-Tokens and `color-scheme` belong to the document element so future document-global view-transition pseudo-elements can read them. All rules that paint are scoped to `[data-breeze-root]`. Future global rules need a named exception and an explanation of why scoped selectors cannot reach the target.
+Colour-scheme selection applies at the document level, while visual styles are scoped to the Breeze root. Your application remains responsible for the surrounding page layout and background.
 
 With no override, CSS follows `prefers-color-scheme` without JavaScript. An explicit document attribute wins:
 
@@ -19,6 +19,6 @@ With no override, CSS follows `prefers-color-scheme` without JavaScript. An expl
 <html data-theme="dark"></html>
 ```
 
-Use `light` or `dark`; removing the attribute restores the OS default. The library does not read or write browser storage. The appearance control and provider preference API are tracked in #1600.
+Use `light` or `dark`; removing the attribute restores the OS default. The library does not read or write browser storage.
 
 The brand fill stays constant between schemes to preserve white-label contrast. Brand text and the neutral ramp change. Danger fill also stays dark enough for white labels; the separate danger text token becomes lighter on dark surfaces.

@@ -2,38 +2,44 @@ import { Meta } from '@storybook/addon-docs/blocks';
 
 <Meta
   title="Guides/03 Quick start"
-  summary="Connect a semantic action to application-owned state."
+  summary="Set up Breeze across your application and build consistent interfaces."
 />
 
 # Quick start
 
-Keep application state outside the library. A Button reports an activation through `onAction`, while the application controls `loading`.
+Set up Breeze at your application root so its components share the same locale, typography and visual language across pages and features.
+
+## Set up your application
+
+Import the stylesheet once in your entry point and wrap your application with `BreezeProvider`. Choose the locale used by your application.
 
 ```tsx
-import { useState } from 'react';
-import { BreezeProvider, Button } from '@motech-development/breeze-ui';
+import { BreezeProvider } from '@motech-development/breeze-ui';
+import { createRoot } from 'react-dom/client';
+import { App } from './App';
 import '@motech-development/breeze-ui/styles.css';
 
-export function SaveAction({ save }: { save: () => Promise<void> }) {
-  const [loading, setLoading] = useState(false);
+const root = document.getElementById('root');
 
-  async function handleSave() {
-    setLoading(true);
-    try {
-      await save();
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  return (
+if (root) {
+  createRoot(root).render(
     <BreezeProvider locale="en-GB">
-      <Button loading={loading} onAction={handleSave}>
-        Save changes
-      </Button>
-    </BreezeProvider>
+      <App />
+    </BreezeProvider>,
   );
 }
 ```
 
-Handle success and errors in the application's flow. Use `type="submit"` inside a form when submission is the intended action. Use `variant="secondary"` for alternatives and `variant="danger"` for destructive actions.
+`App` is your application's root component. Keep the provider above the pages and features that use Breeze; individual components do not need their own provider.
+
+## Build your interface
+
+Use the component pages to choose the right elements for each task. Each page explains the component's purpose, supported options, interaction and accessibility requirements, with examples you can explore before using it.
+
+Compose Breeze components with your application's content and layout. Use their documented props to select appearance and behaviour; styles and interaction details are handled by the library. Keep routing, data fetching, validation and business rules in your application, passing the relevant state and callbacks to components.
+
+## Check the complete experience
+
+Review your pages with realistic content, keyboard navigation and both colour schemes. Give controls clear labels, preserve visible focus, and make loading, success and error states understandable in the context of the user's task.
+
+See <a href="./?path=/docs/guides-04-provider-and-styles--docs" target="_top">Provider and styles</a> for locale and colour-scheme setup, and <a href="./?path=/docs/guides-06-accessibility--docs" target="_top">Accessibility</a> for guidance on accessible use.

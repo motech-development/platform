@@ -2,30 +2,38 @@ import { Meta } from '@storybook/addon-docs/blocks';
 
 <Meta
   title="Guides/02 Installation"
-  summary="React peers, compiled styles and the required provider."
+  summary="Add Breeze and its styles to your React application."
 />
 
 # Installation
 
-Use the v4 release of `@motech-development/breeze-ui` with stable React and React DOM 19. This repository uses Yarn 4 and semantic-release; the package's development placeholder is replaced at release time. The foundation is a breaking release, not an upgrade path for the old component API.
+Breeze requires React and React DOM 19. Add the package to your application:
 
-Import the required compiled stylesheet once, before rendering the provider:
+```sh
+yarn add @motech-development/breeze-ui
+```
+
+Import the compiled stylesheet once in your application entry point:
 
 ```tsx
 import '@motech-development/breeze-ui/styles.css';
-import { BreezeProvider, Button } from '@motech-development/breeze-ui';
-
-export function App() {
-  return (
-    <BreezeProvider locale="en-GB">
-      <Button>Save changes</Button>
-    </BreezeProvider>
-  );
-}
 ```
 
-An application that wants Breeze's additional scoped normalization can import `reset.css` before `styles.css`. Both remain inside `[data-breeze-root]`; the application owns its document/body reset and background.
+Then follow the <a href="./?path=/docs/guides-03-quick-start--docs" target="_top">Quick start</a> to set up Breeze across your application.
 
-Consumers need no Tailwind setup, scanning, plugins or version alignment. Public Sans Latin is bundled with its licence and uses system fallback while loading. There is no external font request.
+## Optional normalization
 
-The only stylesheet entry points are `styles.css` and `reset.css`. `theme.css` and the former icon subpath are removed. CSS variables are private implementation details; do not override them.
+If you want Breeze's additional normalization, import `reset.css` before `styles.css`:
+
+```tsx
+import '@motech-development/breeze-ui/reset.css';
+import '@motech-development/breeze-ui/styles.css';
+```
+
+Both stylesheets scope their visual rules to the Breeze root. Your application owns its document and body reset, page layout and background.
+
+## Included styles
+
+Breeze ships compiled styles, so your application needs no Tailwind setup or source scanning. Public Sans Latin is bundled with its licence and uses a system fallback while loading, without an external font request.
+
+The stylesheet entry points are `styles.css` and `reset.css`. Use documented component options to customise your interface; CSS variables are private implementation details.
