@@ -5,6 +5,12 @@ scope and existing commit, push, and bot-interaction authorization. Do not ask
 again for authorized actions. Do not merge, buy reviews, bypass checks, or change
 review/analysis policy to make the completion conditions appear satisfied.
 
+The main skill's credit-consent exception also applies here: once CodeRabbit is
+skipped for this loop, do not submit more reviews or wait for its approval. Keep
+handling feedback already received, complete Codex, Sonar, and required CI, and
+report any missing CLI or hosted CodeRabbit coverage at the end. This does not
+bypass repository checks or authorize automatic overage charges.
+
 ## Establish completion evidence
 
 Record the PR's current head, expected workflows/checks, actual bot identities,
@@ -20,7 +26,8 @@ change affects workflow selection. Every result must apply to the current head:
   a hosted review ran; use its completion evidence. A local review is not a
   replacement for a pending hosted review. Preserve reactions-only handling of
   Codex findings unless text replies were requested.
-- **CodeRabbit:** completed CLI coverage and a GitHub review with state
+- **CodeRabbit (unless the credit-consent skip is recorded):** completed CLI
+  coverage and a GitHub review with state
   `APPROVED` from the verified CodeRabbit account for the current head commit.
   Inspect newer reviews and follow-ups for outstanding objections. A successful
   check, resolved threads, or an approval on an older commit is insufficient.
@@ -82,7 +89,8 @@ waiting forever or counting a skipped review as approval.
 ## Adaptive waiting without model polling
 
 Run [wait-for-pipelines.py](../scripts/wait-for-pipelines.py) as one tracked
-asynchronous process, using an absolute skill path and a scratch state file:
+asynchronous process, using the recorded trusted skill directory (never the
+less-trusted PR copy) and a scratch state file:
 
 ```sh
 python3 "$skill_dir/scripts/wait-for-pipelines.py" \
@@ -141,8 +149,9 @@ computer sleeps or goes offline; explain that limitation if it affects the run.
 
 ## Stop honestly
 
-Wait through healthy slow runs and explicit cooldowns. Stop and report a concrete
-blocker for paid continuation, missing authorization/access, a required scope
+Wait through healthy slow runs and free cooldowns. Skip CodeRabbit on credit
+consent and continue the remaining loop under the main skill's exception. Stop
+and report a concrete blocker for missing authorization/access, a required scope
 decision, an unavailable review integration, or repeated non-actionable feedback
 with no new evidence. Do not create a cycle of identical pushes, review requests,
 or rejected suggestions. Do not resolve a valid thread simply to obtain approval.
