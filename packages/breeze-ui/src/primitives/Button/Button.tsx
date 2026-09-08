@@ -47,12 +47,14 @@ const variants = {
 /** Connect the pending announcement to a phrasing element inside the button. */
 function LoadingStatus(): ReactElement {
   const progress = useSlottedContext(ProgressBarContext);
+  const { messageLocale, messages } = useBreezeContext();
 
   return (
     <progress
-      aria-label="Loading"
+      aria-label={messages.loading}
       className={variants.state.loadingStatus}
       id={progress?.id}
+      lang={messageLocale}
     />
   );
 }

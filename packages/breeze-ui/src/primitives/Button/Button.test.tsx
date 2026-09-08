@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { FormEvent } from 'react';
 import { createRef } from 'react';
@@ -15,6 +15,43 @@ expectTypeOf<ButtonProps>().not.toHaveProperty('onClick');
 expectTypeOf<ButtonProps>().not.toHaveProperty('render');
 
 describe('Button', () => {
+  it('announces provider messages and restores the English fallback when removed', async () => {
+    const { rerender } = render(
+      <BreezeProvider locale="fr-FR" messages={{ loading: 'Chargement' }}>
+        <Button>Enregistrer</Button>
+      </BreezeProvider>,
+    );
+
+    await userEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
+    rerender(
+      <BreezeProvider locale="fr-FR" messages={{ loading: 'Chargement' }}>
+        <Button loading>Enregistrer</Button>
+      </BreezeProvider>,
+    );
+
+    expect(
+      screen.getByRole('progressbar', { name: 'Chargement' }),
+    ).toHaveAttribute('lang', 'fr-FR');
+    await waitFor(() => {
+      expect(
+        screen.getByRole('img', { name: 'Enregistrer Chargement' }),
+      ).toBeInTheDocument();
+    });
+
+    rerender(
+      <BreezeProvider locale="fr-FR">
+        <Button loading>Enregistrer</Button>
+      </BreezeProvider>,
+    );
+
+    expect(
+      screen.getByRole('progressbar', { name: 'Loading' }),
+    ).toHaveAttribute('lang', 'en-GB');
+    expect(screen.getByRole('button')).toHaveAccessibleName(
+      'Enregistrer Loading',
+    );
+  });
+
   it('reports an action without exposing a DOM event', async () => {
     const onAction = vi.fn();
 
@@ -51,8 +88,8 @@ describe('Button', () => {
     ).toBeInTheDocument();
     await waitFor(() => {
       expect(
-        document.querySelector('[aria-live="assertive"] [aria-labelledby]'),
-      ).toHaveAccessibleName('Save changes Loading');
+        screen.getByRole('img', { name: 'Save changes Loading' }),
+      ).toBeInTheDocument();
     });
     expect(button.querySelector('[data-breeze-skeleton]')).toHaveAttribute(
       'aria-hidden',
