@@ -33,23 +33,43 @@ export const handler: Handler<IEvent> = wrapHandler(async (event) => {
   }
 
   const { from, key } = event;
+
   const data = await getFileData(from, key).catch((error: unknown) => {
     if (isMissingFile(error)) return undefined;
+
     throw error;
   });
-  if (!data) return { from, key };
+
+  if (!data)
+    return {
+      from,
+      key,
+    };
+
   const managed =
     event.managed || data.Metadata?.['attachment-lifecycle'] === 'v1';
+
   if (managed) {
     if (!event.to) throw new Error('No destination bucket set');
+
     if (
       (await getStagedFile(event.to, decodeURIComponent(key)))?.state !==
       'pending'
     )
-      return { from, key };
+      return {
+        from,
+        key,
+      };
   }
-  const Metadata = data.Metadata ? { ...data.Metadata } : undefined;
+
+  const Metadata = data.Metadata
+    ? {
+        ...data.Metadata,
+      }
+    : undefined;
+
   if (Metadata) delete Metadata['attachment-lifecycle'];
+
   const command = new SendMessageCommand({
     ...(Metadata && Metadata.id
       ? {}
@@ -83,6 +103,11 @@ export const handler: Handler<IEvent> = wrapHandler(async (event) => {
   return {
     from,
     key,
-    ...(managed ? { managed, to: event.to } : {}),
+    ...(managed
+      ? {
+          managed,
+          to: event.to,
+        }
+      : {}),
   };
 });

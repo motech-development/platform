@@ -20,10 +20,14 @@ export const handler: AppSyncResolverHandler<
     typeof identity.sub !== 'string' ||
     !identity.sub
   ) {
-    return { errorMessage: 'Unauthorized', errorType: 'UnauthorizedException' };
+    return {
+      errorMessage: 'Unauthorized',
+      errorType: 'UnauthorizedException',
+    };
   }
 
   const { TABLE } = process.env;
+
   if (!TABLE)
     return {
       errorMessage: 'Transaction state is unavailable',
@@ -31,24 +35,32 @@ export const handler: AppSyncResolverHandler<
     };
 
   try {
-    const { Item } = await documentClient.send(
-      new GetCommand({
-        ConsistentRead: true,
-        Key: { __typename: 'Transaction', id: transactionId },
-        TableName: TABLE,
-      }),
-    );
+    const command = new GetCommand({
+      ConsistentRead: true,
+      Key: {
+        __typename: 'Transaction',
+        id: transactionId,
+      },
+      TableName: TABLE,
+    });
+
+    const { Item } = await documentClient.send(command);
 
     // Deleted, moved and inaccessible transactions have the same nullable result.
     if (Item?.owner !== identity.sub) {
       return null;
     }
+
     const currentCompanyId = transactionCompanyId(Item);
+
     if (currentCompanyId !== companyId) {
       return null;
     }
 
-    return { ...Item, companyId: currentCompanyId };
+    return {
+      ...Item,
+      companyId: currentCompanyId,
+    };
   } catch (error) {
     if (
       error instanceof Error &&
@@ -61,6 +73,7 @@ export const handler: AppSyncResolverHandler<
         errorType: 'ConfigurationError',
       };
     }
+
     throw error;
   }
 };

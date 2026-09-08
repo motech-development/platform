@@ -42,30 +42,47 @@ describe('remove-file', () => {
       'path/to/file.pdf',
     );
   });
+
   it('revokes a rejected attachment without removing another scan’s completed copy', async () => {
     await handler(
-      { ...event, managed: true, to: 'downloads' },
+      {
+        ...event,
+        managed: true,
+        to: 'downloads',
+      },
       context,
       callback,
     );
+
     expect(deleteStagedFile).toHaveBeenCalledWith(
       event.from,
       'downloads',
       event.key,
-      { pendingOnly: true },
+      {
+        pendingOnly: true,
+      },
     );
   });
+
   it('decodes a managed event key exactly once', async () => {
     await handler(
-      { ...event, key: 'owner/%252F/file.pdf', managed: true, to: 'downloads' },
+      {
+        ...event,
+        key: 'owner/%252F/file.pdf',
+        managed: true,
+        to: 'downloads',
+      },
       context,
       callback,
     );
+
     expect(deleteStagedFile).toHaveBeenCalledWith(
       event.from,
       'downloads',
       'owner/%2F/file.pdf',
-      { pendingOnly: true },
+      {
+        pendingOnly: true,
+      },
     );
   });
 });

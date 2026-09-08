@@ -321,7 +321,10 @@ describe('insert-typeahead', () => {
         ':sales': ['Description 2', 'Description 3'],
         ':suppliers': ['Transaction 1', 'Transaction 4'],
       },
-      Key: { __typename: 'Typeahead', id: 'company-id' },
+      Key: {
+        __typename: 'Typeahead',
+        id: 'company-id',
+      },
       TableName: tableName,
     });
   });
@@ -340,13 +343,18 @@ describe('insert-typeahead', () => {
       suppliers: ['Older supplier'],
     };
 
-    ddb.on(GetCommand).resolves({ Item: existing });
+    ddb.on(GetCommand).resolves({
+      Item: existing,
+    });
 
     await Promise.all(insertTypeahead(documentClient, tableName, records));
 
     expect(ddb).toReceiveCommandWith(GetCommand, {
       ConsistentRead: true,
-      Key: { __typename: 'Typeahead', id: 'company-id' },
+      Key: {
+        __typename: 'Typeahead',
+        id: 'company-id',
+      },
       TableName: tableName,
     });
     expect(ddb).toReceiveCommandWith(UpdateCommand, {
@@ -364,7 +372,10 @@ describe('insert-typeahead', () => {
         ':sales': ['Description 2', 'Description 3', 'Older sale'],
         ':suppliers': ['Older supplier', 'Transaction 1', 'Transaction 4'],
       },
-      Key: { __typename: 'Typeahead', id: 'company-id' },
+      Key: {
+        __typename: 'Typeahead',
+        id: 'company-id',
+      },
       TableName: tableName,
     });
   });
@@ -385,7 +396,11 @@ describe('insert-typeahead', () => {
   });
 
   it('should reject updates to a typeahead record belonging to another owner', async () => {
-    ddb.on(GetCommand).resolves({ Item: { owner: 'other-owner' } });
+    ddb.on(GetCommand).resolves({
+      Item: {
+        owner: 'other-owner',
+      },
+    });
 
     await expect(
       Promise.all(insertTypeahead(documentClient, tableName, records)),
@@ -397,9 +412,15 @@ describe('insert-typeahead', () => {
     const otherOwner: DynamoDBRecord = {
       dynamodb: {
         NewImage: {
-          __typename: { S: 'Transaction' },
-          companyId: { S: 'company-id' },
-          owner: { S: 'other-owner' },
+          __typename: {
+            S: 'Transaction',
+          },
+          companyId: {
+            S: 'company-id',
+          },
+          owner: {
+            S: 'other-owner',
+          },
         },
       },
     };

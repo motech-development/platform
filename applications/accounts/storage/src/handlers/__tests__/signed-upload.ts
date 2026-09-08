@@ -123,6 +123,7 @@ describe('signed-upload', () => {
 
     it('allocates ownership before issuing the upload URL', async () => {
       await handler(event, context);
+
       expect(allocateStagedFile).toHaveBeenLastCalledWith(
         'upload-bucket',
         'download-bucket',
@@ -137,7 +138,9 @@ describe('signed-upload', () => {
         new Error('Database unavailable'),
       );
       vi.mocked(createSignedUrl).mockClear();
+
       const result = await handler(event, context);
+
       expect(result.statusCode).toBe(400);
       expect(createSignedUrl).not.toHaveBeenCalled();
     });

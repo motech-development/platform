@@ -29,6 +29,7 @@ const schema = object()
 export const handler = apiGatewayHandler(async (event) => {
   const { UPLOAD_BUCKET, DOWNLOAD_BUCKET, QUARANTINE_RETENTION_DAYS } =
     process.env;
+
   const bucket = paramCheck(UPLOAD_BUCKET, 'No bucket set', 400);
   const body = paramCheck(event.body, 'No body found', 400);
   const bodyParams = JSON.parse(body) as unknown;
@@ -46,9 +47,11 @@ export const handler = apiGatewayHandler(async (event) => {
       'No destination bucket set',
       400,
     );
+
     const retentionDays = Number(
       paramCheck(QUARANTINE_RETENTION_DAYS, 'No quarantine retention set', 400),
     );
+
     await allocateStagedFile(
       bucket,
       destination,
@@ -56,6 +59,7 @@ export const handler = apiGatewayHandler(async (event) => {
       expirationInSeconds,
       retentionDays,
     );
+
     const url = await createSignedUrl(
       'putObject',
       bucket,

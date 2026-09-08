@@ -23,10 +23,14 @@ const publishTransactionChange = async (
   id: string,
   owner: string,
   transactionId: string,
-) =>
+): ReturnType<ReturnType<typeof createAppSyncClient>['mutate']> =>
   createAppSyncClient().mutate({
     mutation,
-    variables: { id, owner, transactionId },
+    variables: {
+      id,
+      owner,
+      transactionId,
+    },
   });
 
 export default publishTransactionChange;

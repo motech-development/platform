@@ -36,19 +36,32 @@ export const handler: Handler<IEvent> = wrapHandler(async (event) => {
   }
 
   const { from, key, to } = event;
+
   const data = await getFileData(from, key).catch((error: unknown) => {
     if (isMissingFile(error)) return undefined;
+
     throw error;
   });
-  if (!data) return { ...event, cancelled: true };
+
+  if (!data)
+    return {
+      ...event,
+      cancelled: true,
+    };
+
   const managed =
     event.managed || data.Metadata?.['attachment-lifecycle'] === 'v1';
+
   if (
     managed &&
     (await getStagedFile(to, decodeURIComponent(key)))?.state !== 'pending'
   ) {
     await deleteFile(from, key);
-    return { ...event, cancelled: true };
+
+    return {
+      ...event,
+      cancelled: true,
+    };
   }
 
   const tempDir = resolve('/tmp');
@@ -66,7 +79,11 @@ export const handler: Handler<IEvent> = wrapHandler(async (event) => {
   return {
     from,
     key,
-    ...(managed ? { managed } : {}),
+    ...(managed
+      ? {
+          managed,
+        }
+      : {}),
     result,
     to,
   };

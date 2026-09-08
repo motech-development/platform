@@ -222,6 +222,7 @@ function trackNestedBoundary(
       `${bounds.height}px`,
     );
   };
+
   let motionFrame: number | undefined;
   const hasActiveBoundaryMotion = () =>
     boundary
@@ -229,6 +230,7 @@ function trackNestedBoundary(
       .some(
         (animation) => animation.pending || animation.playState === 'running',
       ) ?? false;
+
   const trackBoundaryMotion = () => {
     motionFrame = undefined;
     updateBoundary();
@@ -237,9 +239,11 @@ function trackNestedBoundary(
       motionFrame = window.requestAnimationFrame(trackBoundaryMotion);
     }
   };
+
   const scheduleBoundaryTracking = () => {
     motionFrame ??= window.requestAnimationFrame(trackBoundaryMotion);
   };
+
   const observer =
     typeof ResizeObserver === 'undefined'
       ? undefined
@@ -424,7 +428,11 @@ export function SharedModalContent({
     [parentSurface?.stack],
   );
   const surfaceContext = useMemo<ModalSurfaceContextValue>(
-    () => ({ depth: surfaceDepth, ref: surfaceRef, stack: surfaceStack }),
+    () => ({
+      depth: surfaceDepth,
+      ref: surfaceRef,
+      stack: surfaceStack,
+    }),
     [surfaceDepth, surfaceStack],
   );
   const forwardedSurfaceRef = useForwardedRef(ref);
@@ -439,6 +447,7 @@ export function SharedModalContent({
     },
     [forwardedSurfaceRef, surfaceDepth, surfaceStack],
   );
+
   const nestedOverlayCleanupRef = useRef<(() => void) | undefined>(undefined);
   const overlayRef = useCallback(
     (currentOverlay: HTMLDivElement | null) => {
@@ -469,14 +478,17 @@ export function SharedModalContent({
           suppressedBackdrops.add(exitingOverlay);
         });
       };
+
       const releaseSuppressedBackdrops = () => {
         suppressedBackdrops.forEach((suppressedOverlay) =>
           suppressedOverlay.removeAttribute(nestedBackdropSuppressedAttribute),
         );
         suppressedBackdrops.clear();
       };
+
       const bindBoundary = () => {
         syncSuppressedBackdrops();
+
         const boundary = resolveNestedBoundary(
           currentOverlay,
           portalContainer,
@@ -566,10 +578,14 @@ export function SharedModalContent({
         } as ComponentProps<typeof AriaDialog>,
         createElement(
           ModalSurfaceContext.Provider,
-          { value: surfaceContext },
+          {
+            value: surfaceContext,
+          },
           createElement(
             OverlayDescriptionContext,
-            { value: descriptionId },
+            {
+              value: descriptionId,
+            },
             children,
           ),
         ),

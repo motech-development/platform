@@ -73,9 +73,12 @@ describe('scan-files', () => {
     it('skips a cancelled attachment without scanning or downloading it', async () => {
       vi.mocked(getFileData).mockResolvedValueOnce({
         $metadata: {},
-        Metadata: { 'attachment-lifecycle': 'v1' },
+        Metadata: {
+          'attachment-lifecycle': 'v1',
+        },
       });
       vi.mocked(getStagedFile).mockResolvedValueOnce(undefined);
+
       await expect(handler(event, context, callback)).resolves.toEqual({
         ...event,
         cancelled: true,
@@ -87,8 +90,11 @@ describe('scan-files', () => {
 
     it('treats a deleted source as cancellation', async () => {
       vi.mocked(getFileData).mockRejectedValueOnce(
-        Object.assign(new Error('missing'), { name: 'NotFound' }),
+        Object.assign(new Error('missing'), {
+          name: 'NotFound',
+        }),
       );
+
       await expect(handler(event, context, callback)).resolves.toEqual({
         ...event,
         cancelled: true,
@@ -99,7 +105,9 @@ describe('scan-files', () => {
       event.key = 'owner/%252F/file.pdf';
       vi.mocked(getFileData).mockResolvedValueOnce({
         $metadata: {},
-        Metadata: { 'attachment-lifecycle': 'v1' },
+        Metadata: {
+          'attachment-lifecycle': 'v1',
+        },
       });
       vi.mocked(getStagedFile).mockResolvedValueOnce({
         from: event.from,
@@ -108,6 +116,7 @@ describe('scan-files', () => {
         state: 'pending',
         to: event.to,
       });
+
       await expect(handler(event, context, callback)).resolves.toEqual({
         ...event,
         managed: true,

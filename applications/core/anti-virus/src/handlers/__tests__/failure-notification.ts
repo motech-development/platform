@@ -137,9 +137,13 @@ describe('failure-notification', () => {
 
     it('does not report a deleted source as a failed virus scan', async () => {
       vi.mocked(getFileData).mockRejectedValueOnce(
-        Object.assign(new Error('missing'), { name: 'NotFound' }),
+        Object.assign(new Error('missing'), {
+          name: 'NotFound',
+        }),
       );
+
       await handler(event, context, callback);
+
       expect(sqs).not.toReceiveCommand(SendMessageCommand);
     });
 
@@ -160,7 +164,16 @@ describe('failure-notification', () => {
         state: 'pending',
         to: 'downloads',
       });
-      await handler({ ...event, to: 'downloads' }, context, callback);
+
+      await handler(
+        {
+          ...event,
+          to: 'downloads',
+        },
+        context,
+        callback,
+      );
+
       expect(getStagedFile).toHaveBeenCalledWith(
         'downloads',
         'owner/%2F/file.pdf',
@@ -168,7 +181,12 @@ describe('failure-notification', () => {
       expect(
         sqs.commandCalls(SendMessageCommand)[0]?.args[0].input.MessageAttributes
           ?.metadata.StringValue,
-      ).toBe(JSON.stringify({ id: 'test-id', typename: 'TestType' }));
+      ).toBe(
+        JSON.stringify({
+          id: 'test-id',
+          typename: 'TestType',
+        }),
+      );
     });
 
     describe('without metadata', () => {
