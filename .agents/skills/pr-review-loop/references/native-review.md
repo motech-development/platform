@@ -35,15 +35,15 @@ reveals a concrete need for broader inspection.
 
 ## Invoke and verify
 
-Pin **`gpt-6-astra`** and **`low` reasoning effort** for each invocation. Override
+Pin **`gpt-5.6-luna`** and **`low` reasoning effort** (Light) for each invocation. Override
 both the main model and `review_model`, which can otherwise select a different
 reviewer. Do not change the user's global settings, raise effort automatically,
 or silently fall back to another model. A later explicit user choice can override
 this default. For a CLI that supports custom review prompts on stdin:
 
 ```sh
-codex --model gpt-6-astra \
-  -c 'review_model="gpt-6-astra"' \
+codex --model gpt-5.6-luna \
+  -c 'review_model="gpt-5.6-luna"' \
   -c 'model_reasoning_effort="low"' \
   -s read-only review - < "$review_prompt_file"
 ```
@@ -72,7 +72,7 @@ Adapt this review brief:
 > start subagents, or start another review loop. Return findings or state that no
 > actionable findings were found, with any concrete verification limitation.
 
-Confirm `gpt-6-astra`, `low`, and the intended scope in the run header or tool
+Confirm `gpt-5.6-luna`, `low`, and the intended scope in the run header or tool
 metadata. A conflicting effective model or effort must be corrected before the
 review is counted; do not infer the result from the parent task's model alone.
 Launch this tracked run alongside CodeRabbit before waiting for either result.
@@ -90,9 +90,7 @@ Keep this result while CodeRabbit runs or waits for a cooldown;
 do not rerun Codex on unchanged content. Both reviewers must cover subsequent
 review-driven fixes before the combined gate is complete.
 
-The prompt and execution boundaries follow the
-[Astra guidance](https://developers.openai.com/api/docs/guides/latest-model?model=gpt-6-astra#gpt-6-astra-migrate-with-codex):
-preserve low effort, make autonomy and instruction priority explicit, constrain
-delegation to the intended workflow, and avoid redundant validation. API request
-parameters are managed by the native CLI; do not add an API migration, sampling
-settings, or cache configuration to this skill merely to mirror the guide.
+[GPT-5.6 Luna supports `low` reasoning effort](https://developers.openai.com/api/docs/models/gpt-5.6-luna).
+API request parameters are managed by the native CLI; do not add an API migration,
+sampling settings, or cache configuration to this skill merely to change the
+review model.
