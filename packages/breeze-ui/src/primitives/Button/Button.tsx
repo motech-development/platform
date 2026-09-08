@@ -1,45 +1,62 @@
 import type { ButtonHTMLAttributes, ReactElement, Ref } from 'react';
 import { createElement } from 'react';
 import { Button as AriaButton } from 'react-aria-components/Button';
+import { ProgressBarContext } from 'react-aria-components/ProgressBar';
+import { useSlottedContext } from 'react-aria-components/slots';
 import { useBreezeContext } from '../../provider/BreezeContext';
 
 const variants = {
   base: {
     button:
-      'relative inline-grid items-center justify-center gap-breeze-2 border border-solid rounded-breeze-ctl font-breeze-sans text-breeze-sm leading-breeze-snug cursor-pointer select-none [text-align:center] outline-offset-2 data-[focus-visible]:outline-2 data-[focus-visible]:outline-solid data-[focus-visible]:outline-breeze-brand any-pointer-coarse:min-block-breeze-tap any-pointer-coarse:min-inline-breeze-tap',
-    label: '[grid-area:1/1]',
+      'breeze:relative breeze:inline-grid breeze:items-center breeze:justify-center breeze:gap-breeze-2 breeze:border breeze:border-solid breeze:rounded-breeze-ctl breeze:font-breeze-sans breeze:text-breeze-sm breeze:leading-breeze-snug breeze:cursor-pointer breeze:select-none breeze:[text-align:center] breeze:outline-offset-2 breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:any-pointer-coarse:min-block-breeze-tap breeze:any-pointer-coarse:min-inline-breeze-tap',
+    label: 'breeze:[grid-area:1/1]',
     skeleton:
-      '[grid-area:1/1] inline-size-full block-size-breeze-3 rounded-breeze-xs',
+      'breeze:[grid-area:1/1] breeze:inline-size-full breeze:block-size-breeze-3 breeze:rounded-breeze-xs',
   },
   compound: {
     loading: {
-      danger: 'bg-breeze-on-brand/35',
-      primary: 'bg-breeze-on-brand/35',
-      quiet: 'bg-breeze-line-strong',
-      secondary: 'bg-breeze-line-strong',
+      danger: 'breeze:bg-breeze-on-brand/35',
+      primary: 'breeze:bg-breeze-on-brand/35',
+      quiet: 'breeze:bg-breeze-line-strong',
+      secondary: 'breeze:bg-breeze-line-strong',
     },
   },
   size: {
-    lg: 'min-block-breeze-lg ps-breeze-5 pe-breeze-5 py-breeze-3',
-    md: 'min-block-breeze-md ps-breeze-3 pe-breeze-3 py-breeze-2',
-    sm: 'min-block-breeze-sm ps-breeze-3 pe-breeze-3 py-breeze-1',
+    lg: 'breeze:min-block-breeze-lg breeze:ps-breeze-5 breeze:pe-breeze-5 breeze:py-breeze-3',
+    md: 'breeze:min-block-breeze-md breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:py-breeze-2',
+    sm: 'breeze:min-block-breeze-sm breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:py-breeze-1',
   },
   state: {
-    disabled: 'cursor-not-allowed opacity-50',
-    loading: 'cursor-wait',
-    loadingLabel: 'opacity-0',
+    disabled: 'breeze:cursor-not-allowed breeze:opacity-50',
+    loading: 'breeze:cursor-wait',
+    loadingLabel: 'breeze:opacity-0',
+    loadingStatus: 'breeze:sr-only',
   },
   variant: {
     danger:
-      'border-transparent bg-breeze-danger-fill text-breeze-on-brand data-[hovered]:bg-breeze-danger-hover data-[pressed]:bg-breeze-danger-hover',
+      'breeze:border-transparent breeze:bg-breeze-danger-fill breeze:text-breeze-on-brand breeze:data-[hovered]:bg-breeze-danger-hover breeze:data-[pressed]:bg-breeze-danger-hover',
     primary:
-      'border-transparent bg-breeze-brand text-breeze-on-brand data-[hovered]:bg-breeze-brand-hover data-[pressed]:bg-breeze-brand-hover',
+      'breeze:border-transparent breeze:bg-breeze-brand breeze:text-breeze-on-brand breeze:data-[hovered]:bg-breeze-brand-hover breeze:data-[pressed]:bg-breeze-brand-hover',
     quiet:
-      'border-transparent bg-transparent text-breeze-brand-text data-[hovered]:bg-breeze-brand-soft data-[pressed]:bg-breeze-brand-soft',
+      'breeze:border-transparent breeze:bg-transparent breeze:text-breeze-brand-text breeze:data-[hovered]:bg-breeze-brand-soft breeze:data-[pressed]:bg-breeze-brand-soft',
     secondary:
-      'border-breeze-line-strong bg-breeze-surface text-breeze-ink data-[hovered]:bg-breeze-sunken data-[pressed]:bg-breeze-sunken',
+      'breeze:border-breeze-line-strong breeze:bg-breeze-surface breeze:text-breeze-ink breeze:data-[hovered]:bg-breeze-sunken breeze:data-[pressed]:bg-breeze-sunken',
   },
 } as const;
+
+/** Connect the pending announcement to a phrasing element inside the button. */
+function LoadingStatus(): ReactElement {
+  const progress = useSlottedContext(ProgressBarContext);
+
+  return (
+    <span
+      aria-label="Loading"
+      className={variants.state.loadingStatus}
+      id={progress?.id}
+      role="progressbar"
+    />
+  );
+}
 
 /** Button-specific visual treatments. */
 export type ButtonVariant = keyof typeof variants.variant;
@@ -52,6 +69,8 @@ type NativeButtonProps = Pick<
   ButtonHTMLAttributes<HTMLButtonElement>,
   | 'aria-controls'
   | 'aria-describedby'
+  | 'aria-expanded'
+  | 'aria-haspopup'
   | 'aria-label'
   | 'aria-labelledby'
   | 'form'
@@ -83,6 +102,8 @@ export interface ButtonProps extends NativeButtonProps {
 export function Button({
   'aria-controls': ariaControls,
   'aria-describedby': ariaDescribedBy,
+  'aria-expanded': ariaExpanded,
+  'aria-haspopup': ariaHasPopup,
   'aria-label': ariaLabel,
   'aria-labelledby': ariaLabelledBy,
   children,
@@ -114,7 +135,9 @@ export function Button({
     <AriaButton
       aria-controls={ariaControls}
       aria-describedby={ariaDescribedBy}
-      aria-label={ariaLabel}
+      aria-expanded={ariaExpanded}
+      aria-haspopup={ariaHasPopup}
+      aria-label={ariaLabel ?? children}
       aria-labelledby={ariaLabelledBy}
       className={className}
       form={form}
@@ -129,7 +152,12 @@ export function Button({
           ...buttonProps,
           // React Aria filters aria-busy; Breeze owns it on the native button.
           'aria-busy': loading || undefined,
-          type: buttonProps.type === 'submit' ? 'submit' : 'button',
+          // Keep the form's default submitter while pending so Enter cannot
+          // bypass it through the browser's implicit-submission fallback.
+          onClick: loading
+            ? (event) => event.preventDefault()
+            : buttonProps.onClick,
+          type: type === 'submit' ? 'submit' : 'button',
         })
       }
       type={type}
@@ -143,14 +171,17 @@ export function Button({
         {children}
       </span>
       {loading && (
-        <span
-          aria-hidden="true"
-          className={[
-            variants.base.skeleton,
-            variants.compound.loading[variant],
-          ].join(' ')}
-          data-breeze-skeleton=""
-        />
+        <>
+          <LoadingStatus />
+          <span
+            aria-hidden="true"
+            className={[
+              variants.base.skeleton,
+              variants.compound.loading[variant],
+            ].join(' ')}
+            data-breeze-skeleton=""
+          />
+        </>
       )}
     </AriaButton>
   );

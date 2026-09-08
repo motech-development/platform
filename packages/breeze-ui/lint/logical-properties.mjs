@@ -6,7 +6,38 @@ const physicalArbitraryProperty =
 /** Reject physical utility families in literal recipes and JSX class strings. */
 const logicalProperties = {
   create(context) {
+    function isClassValue(node) {
+      let current = node;
+
+      while (current.parent) {
+        const { parent } = current;
+
+        if (parent.type === 'Property' && parent.key === current) {
+          return false;
+        }
+
+        if (parent.type === 'JSXAttribute') {
+          return parent.name.name === 'className';
+        }
+
+        if (parent.type === 'VariableDeclarator') {
+          return (
+            parent.id.type === 'Identifier' &&
+            ['variants', 'className'].includes(parent.id.name)
+          );
+        }
+
+        current = parent;
+      }
+
+      return false;
+    }
+
     function check(node, value) {
+      if (!isClassValue(node)) {
+        return;
+      }
+
       const invalid = value
         .split(/\s+/)
         .filter(

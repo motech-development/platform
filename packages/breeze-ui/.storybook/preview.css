@@ -1,0 +1,19 @@
+.breeze-story-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.breeze-story-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.breeze-story-action {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}

@@ -6,6 +6,8 @@
 
 @source '../primitives/**/*.tsx';
 @source '../provider/**/*.tsx';
+@source not '../**/*.stories.tsx';
+@source not '../**/*.test.tsx';
 
 /* Nest the generated utilities too: consumer classes outside Breeze must never
    acquire styles merely because a library component uses the same utility. */

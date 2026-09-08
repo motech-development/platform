@@ -51,6 +51,8 @@ const config: ManifestStorybookConfig = {
         ...(viteConfig.optimizeDeps?.include ?? []),
         'react-aria-components/Button',
         'react-aria-components/I18nProvider',
+        'react-aria-components/ProgressBar',
+        'react-aria-components/slots',
         'react-dom',
       ],
     },

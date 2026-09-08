@@ -8,12 +8,12 @@
 
   :where([data-breeze-root]) {
     min-inline-size: 0;
-    background: var(--color-breeze-canvas);
-    color: var(--color-breeze-ink);
-    font-family: var(--font-breeze-sans);
-    font-size: var(--text-breeze-sm);
+    background: var(--breeze-color-breeze-canvas);
+    color: var(--breeze-color-breeze-ink);
+    font-family: var(--breeze-font-breeze-sans);
+    font-size: var(--breeze-text-breeze-sm);
     font-synthesis: none;
-    line-height: var(--leading-breeze-snug);
+    line-height: var(--breeze-leading-breeze-snug);
   }
 
   :where([data-breeze-root]) button {

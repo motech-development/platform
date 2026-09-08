@@ -43,9 +43,9 @@ export const Danger: Story = {
 /** Every variant at each size. */
 export const TreatmentsAndSizes: Story = {
   render: () => (
-    <div className="gap-breeze-6 flex flex-col">
+    <div className="breeze-story-stack">
       {(['sm', 'md', 'lg'] satisfies ControlSize[]).map((size) => (
-        <div className="gap-breeze-3 flex flex-wrap items-center" key={size}>
+        <div className="breeze-story-row" key={size}>
           {(
             [
               'primary',
@@ -67,9 +67,9 @@ export const TreatmentsAndSizes: Story = {
 /** Every variant and size while loading. */
 export const Loading: Story = {
   render: () => (
-    <div className="gap-breeze-6 flex flex-col">
+    <div className="breeze-story-stack">
       {(['sm', 'md', 'lg'] satisfies ControlSize[]).map((size) => (
-        <div className="gap-breeze-3 flex flex-wrap items-center" key={size}>
+        <div className="breeze-story-row" key={size}>
           {(
             [
               'primary',
@@ -107,7 +107,7 @@ function ActionExample() {
   const [count, setCount] = useState(0);
 
   return (
-    <div className="gap-breeze-3 flex flex-col items-start">
+    <div className="breeze-story-action">
       <Button onAction={() => setCount((value) => value + 1)}>
         Save changes
       </Button>

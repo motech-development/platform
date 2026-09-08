@@ -10,7 +10,7 @@ Documentation pages follow the shape of the MUI component docs: a one-line descr
 
 Each component defines a single recipe object containing its `base`, `compound`, `size`, `state` and `variant` groups. Keep keys alphabetical, as required by the repository's `sort-keys` rule, and assemble the class list explicitly in the component; key order does not determine which styles apply.
 
-Class names must be complete literals. Select one by typed key and join the results, and never build a utility name by interpolation. Treatment unions are flat and belong to the component that uses them, and `ControlSize` is the shared `sm | md | lg` contract. Do not reintroduce `tailwind-variants`, `tailwind-merge` or a parallel recipe abstraction.
+Class names must be complete literals with the `breeze:` prefix, including before state variants. Story layouts use `.storybook/preview.css`; story and test sources are excluded from the published utility scan. Select one by typed key and join the results, and never build a utility name by interpolation. Treatment unions are flat and belong to the component that uses them, and `ControlSize` is the shared `sm | md | lg` contract. Do not reintroduce `tailwind-variants`, `tailwind-merge` or a parallel recipe abstraction.
 
 ### Logical properties
 
@@ -22,7 +22,7 @@ Props are enumerated explicitly. There is no native-event, styling or slot passt
 
 ## Tokens
 
-Tokens are prefixed inside the Tailwind namespace, so `--color-breeze-brand` generates `bg-breeze-brand`. The same pattern covers fonts, text sizes, spacing, radii and other measures. Tokens are internal: the package ships compiled CSS, and applications must not depend on them, override them or treat them as a theming API.
+Tokens are prefixed inside the Tailwind namespace. Tailwind also applies the `breeze:` utility prefix, so `--color-breeze-brand` generates `breeze:bg-breeze-brand` and is published as `--breeze-color-breeze-brand`. Use that published variable name for document overrides and authored CSS. The same pattern covers fonts, text sizes, spacing, radii and other measures. Tokens are internal: the package ships compiled CSS, and applications must not depend on them, override them or treat them as a theming API.
 
 ### Type scale
 
