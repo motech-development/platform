@@ -6,7 +6,7 @@ import { useBreezeContext } from '../../provider/BreezeContext';
 const variants = {
   base: {
     button:
-      'relative inline-grid items-center justify-center gap-breeze-2 border border-solid rounded-breeze-ctl font-breeze-sans text-breeze-sm leading-breeze-snug cursor-pointer select-none [text-align:center] outline-offset-2 data-[focus-visible]:outline-2 data-[focus-visible]:outline-solid data-[focus-visible]:outline-breeze-brand pointer-coarse:min-block-breeze-tap pointer-coarse:min-inline-breeze-tap',
+      'relative inline-grid items-center justify-center gap-breeze-2 border border-solid rounded-breeze-ctl font-breeze-sans text-breeze-sm leading-breeze-snug cursor-pointer select-none [text-align:center] outline-offset-2 data-[focus-visible]:outline-2 data-[focus-visible]:outline-solid data-[focus-visible]:outline-breeze-brand any-pointer-coarse:min-block-breeze-tap any-pointer-coarse:min-inline-breeze-tap',
     label: '[grid-area:1/1]',
     skeleton:
       '[grid-area:1/1] inline-size-full block-size-breeze-3 rounded-breeze-xs',
