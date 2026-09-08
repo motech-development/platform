@@ -1,107 +1,167 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import type { FormEvent } from 'react';
+import { createRef } from 'react';
+import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import renderBreeze from '../../../test/render';
-import { Button } from './Button';
+import { BreezeProvider } from '../../provider/BreezeProvider';
+import { Button, type ButtonProps } from './Button';
+
+// Public prop contracts are verified by the package typecheck.
+expectTypeOf<ButtonProps>().not.toHaveProperty('className');
+expectTypeOf<ButtonProps>().not.toHaveProperty('style');
+expectTypeOf<ButtonProps>().not.toHaveProperty('slot');
+expectTypeOf<ButtonProps>().not.toHaveProperty('onClick');
+expectTypeOf<ButtonProps>().not.toHaveProperty('render');
 
 describe('Button', () => {
-  it('uses accessible standard control sizing and type', () => {
-    renderBreeze(<Button>Save</Button>);
-
-    const button = screen.getByRole('button', { name: 'Save' });
-
-    expect(button).toHaveAttribute('type', 'button');
-    expect(button).toHaveClass(
-      'gap-2',
-      'leading-[1.4]',
-      'min-h-11',
-      'text-base',
-    );
-  });
-
-  it('reports pointer and keyboard activation through onAction', async () => {
-    const user = userEvent.setup();
+  it('reports an action without exposing a DOM event', async () => {
     const onAction = vi.fn();
 
-    renderBreeze(<Button onAction={onAction}>Save</Button>);
+    renderBreeze(<Button onAction={onAction}>Save changes</Button>);
 
-    await user.click(screen.getByRole('button', { name: 'Save' }));
-    screen.getByRole('button').focus();
-    await user.keyboard('{Enter}');
+    await userEvent.click(screen.getByRole('button', { name: 'Save changes' }));
 
-    expect(onAction).toHaveBeenCalledTimes(2);
+    expect(onAction).toHaveBeenCalledExactlyOnceWith();
   });
 
-  it('announces loading and prevents activation without removing focusability', async () => {
-    const user = userEvent.setup();
+  it('prevents repeat actions while loading and restores activation afterwards', async () => {
     const onAction = vi.fn();
+    const { rerender } = renderBreeze(
+      <Button onAction={onAction}>Save changes</Button>,
+    );
+    const button = screen.getByRole('button', { name: 'Save changes' });
 
-    renderBreeze(
-      <Button loading onAction={onAction}>
-        Save
-      </Button>,
+    await userEvent.click(button);
+    onAction.mockClear();
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <Button loading onAction={onAction}>
+          Save changes
+        </Button>
+      </BreezeProvider>,
     );
 
-    const button = screen.getByRole('button', { name: 'Save' });
-
-    await user.click(button);
-    expect(onAction).not.toHaveBeenCalled();
-    expect(button).not.toBeDisabled();
+    expect(button).toHaveFocus();
+    expect(button).toHaveAccessibleName('Save changes');
     expect(button).toHaveAttribute('aria-busy', 'true');
+    expect(button).toHaveAttribute('aria-disabled', 'true');
+    expect(button.querySelector('[data-breeze-skeleton]')).toHaveAttribute(
+      'aria-hidden',
+      'true',
+    );
+
+    await userEvent.click(button);
+
+    expect(onAction).not.toHaveBeenCalled();
+
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <Button onAction={onAction}>Save changes</Button>
+      </BreezeProvider>,
+    );
+    await userEvent.click(button);
+
+    expect(onAction).toHaveBeenCalledExactlyOnceWith();
+    expect(button).not.toHaveAttribute('aria-busy');
+    expect(
+      button.querySelector('[data-breeze-skeleton]'),
+    ).not.toBeInTheDocument();
   });
 
-  it('forwards relevant native attributes without changing activation semantics', () => {
+  it('does not submit its containing form unless requested', async () => {
+    const onSubmit = vi.fn((event: FormEvent) => event.preventDefault());
+
     renderBreeze(
-      <Button
-        aria-controls="editor"
-        aria-labelledby="save-label"
-        formAction="/save"
-        id="save-button"
-        type="submit"
-      >
-        Save
-      </Button>,
+      <form onSubmit={onSubmit}>
+        <Button>Preview</Button>
+        <Button type="submit">Save</Button>
+      </form>,
     );
 
-    expect(screen.getByRole('button')).toHaveAttribute('id', 'save-button');
-    expect(screen.getByRole('button')).toHaveAttribute(
-      'aria-controls',
-      'editor',
-    );
-    expect(screen.getByRole('button')).toHaveAttribute(
-      'aria-labelledby',
-      'save-label',
-    );
-    expect(screen.getByRole('button')).toHaveAttribute('formaction', '/save');
-    expect(screen.getByRole('button')).toHaveAttribute('type', 'submit');
+    await userEvent.click(screen.getByRole('button', { name: 'Preview' }));
+
+    expect(onSubmit).not.toHaveBeenCalled();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+    expect(onSubmit).toHaveBeenCalledOnce();
   });
 
-  it('renders a text action without control chrome while retaining state styles', () => {
-    renderBreeze(<Button appearance="text">Add category</Button>);
+  it('associates an external submit button with its form and submitted value', async () => {
+    const submitted = vi.fn();
 
-    expect(screen.getByRole('button', { name: 'Add category' })).toHaveClass(
-      'breeze-action',
-      'min-h-11',
-      'border-0',
-      'bg-transparent',
-      'px-1',
-      'py-0',
-      'data-[hovered]:bg-transparent',
-      'data-[pressed]:translate-y-px',
-    );
-  });
-
-  it('uses canonical ink and strong border for secondary outline actions', () => {
     renderBreeze(
-      <Button appearance="outline" variant="secondary">
-        View file
-      </Button>,
+      <>
+        <form
+          id="editor"
+          onSubmit={(event) => {
+            event.preventDefault();
+            const { submitter } = event.nativeEvent;
+
+            submitted(
+              new FormData(event.currentTarget, submitter).get('intent'),
+            );
+          }}
+        />
+        <Button form="editor" name="intent" type="submit" value="save">
+          Save
+        </Button>
+      </>,
     );
 
-    expect(screen.getByRole('button', { name: 'View file' })).toHaveClass(
-      'border-[var(--breeze-border-strong)]',
-      'bg-[var(--breeze-surface)]',
-      'text-[var(--breeze-ink)]',
+    await userEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+    expect(submitted).toHaveBeenCalledExactlyOnceWith('save');
+  });
+
+  it.each(['disabled', 'loading'] as const)(
+    'prevents actions and form submission when %s',
+    async (state) => {
+      const onAction = vi.fn();
+      const onSubmit = vi.fn((event: FormEvent) => event.preventDefault());
+
+      renderBreeze(
+        <form onSubmit={onSubmit}>
+          <Button
+            disabled={state === 'disabled'}
+            loading={state === 'loading'}
+            onAction={onAction}
+            type="submit"
+          >
+            Save
+          </Button>
+        </form>,
+      );
+
+      await userEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+      expect(onAction).not.toHaveBeenCalled();
+      expect(onSubmit).not.toHaveBeenCalled();
+    },
+  );
+
+  it('preserves accessible relationships and exposes its native focus target', () => {
+    const ref = createRef<HTMLButtonElement>();
+
+    renderBreeze(
+      <>
+        <span id="action-label">Save draft</span>
+        <span id="action-help">You can publish later.</span>
+        <Button
+          aria-describedby="action-help"
+          aria-labelledby="action-label"
+          ref={ref}
+        >
+          Save
+        </Button>
+      </>,
     );
+    const button = screen.getByRole('button', { name: 'Save draft' });
+
+    ref.current?.focus();
+
+    expect(button).toHaveFocus();
+    expect(button).toHaveAccessibleDescription('You can publish later.');
   });
 });

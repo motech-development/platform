@@ -1,22 +1,7 @@
 import { createContext, useContext } from 'react';
-import type { BreezeMessages } from './messages';
 
-/** Reading direction applied to the Breeze component subtree. */
-export type BreezeDirection = 'ltr' | 'rtl';
-
-/** Router-neutral navigation contract used by link-capable Breeze components. */
-export interface BreezeRouterAdapter {
-  /** Performs client-side navigation to an application-owned URL. */
-  navigate: (href: string) => void;
-}
-
-export interface BreezeContextValue {
-  direction: BreezeDirection;
+interface BreezeContextValue {
   locale: string;
-  messages: BreezeMessages;
-  portalContainer: HTMLElement | null;
-  router: BreezeRouterAdapter | undefined;
-  timeZone: string | undefined;
 }
 
 export const BreezeContext = createContext<BreezeContextValue | null>(null);

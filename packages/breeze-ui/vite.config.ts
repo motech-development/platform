@@ -8,8 +8,8 @@ import { defineConfig } from 'vite';
 import packageJson from './package.json' with { type: 'json' };
 
 const require = createRequire(import.meta.url);
-const cabinPackageDirectory = dirname(
-  require.resolve('@fontsource-variable/cabin/package.json'),
+const fontPackageDirectory = dirname(
+  require.resolve('@fontsource-variable/public-sans/package.json'),
 );
 const distributionDirectory = resolve(import.meta.dirname, 'lib');
 const externalPackages = Object.keys({
@@ -30,12 +30,8 @@ function distributionAssetsPlugin(): Plugin {
       }
 
       copyFileSync(
-        resolve(cabinPackageDirectory, 'LICENSE'),
-        resolve(distributionDirectory, 'Cabin-LICENSE.txt'),
-      );
-      copyFileSync(
-        resolve(import.meta.dirname, 'src/styles/theme.css'),
-        resolve(distributionDirectory, 'theme.css'),
+        resolve(fontPackageDirectory, 'LICENSE'),
+        resolve(distributionDirectory, 'Public-Sans-LICENSE.txt'),
       );
     },
   };
@@ -47,7 +43,6 @@ export default defineConfig({
     cssCodeSplit: true,
     lib: {
       entry: {
-        icons: './src/icons/index.tsx',
         index: './src/index.ts',
         reset: './src/styles/reset.css',
         styles: './src/styles/styles.css',

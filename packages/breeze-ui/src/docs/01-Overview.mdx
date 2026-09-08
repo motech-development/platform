@@ -2,48 +2,15 @@ import { Meta } from '@storybook/addon-docs/blocks';
 
 <Meta
   title="Guides/01 Overview"
-  summary="What Breeze UI v3 provides, how its primitives and patterns fit together, and where to begin."
+  summary="The Breeze v4 foundation and the boundary between library and application."
 />
 
-# Breeze UI
+# Breeze UI v4
 
-Breeze UI is Motech's accessible, domain-neutral React interface system. Version 3 is a clean break from the legacy library: use only the components documented in this Storybook and import them from the public package entry points.
+Breeze provides a consistent, domain-neutral interface for Motech applications. It carries the Accounts design language: Public Sans, a quiet neutral palette, cyan primary actions and small control corners. Its appearance is closed, with no consumer theming or styling escape hatches.
 
-## Choose the right layer
+This first v4 slice ships `BreezeProvider` and `Button`. Version 3's primitives, patterns and styling internals are removed. There are no compatibility exports. Existing applications pinned to published v2 remain outside this change.
 
-| Layer            | Responsibility                                                            | Examples                                                                      |
-| ---------------- | ------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| Primitive        | One focused, reusable interface responsibility                            | `Button`, `TextField`, `Stack`, `Dialog`                                      |
-| Pattern          | A Breeze-owned composition for a recurring, domain-neutral interface need | `PageHeader`, `Pagination`, `FileUpload`                                      |
-| Domain component | An application-owned composition that represents a business concept       | A project summary or account record built from Breeze primitives and patterns |
+Breeze owns accessible component interactions and visual consistency. Applications own domain compositions, data, business rules, copy and persistence. Additional primitives and neutral patterns follow in separate tickets; documentation describes only what currently ships.
 
-Applications own domain components, business copy, data fetching, persistence, routing decisions and business validation. Breeze owns its visual language, accessible interaction behaviour and documented public contracts.
-
-## Public entry points
-
-```tsx
-import {
-  BreezeProvider,
-  Button,
-  Stack,
-  Typography,
-} from '@motech-development/breeze-ui';
-import { AddIcon } from '@motech-development/breeze-ui/icons';
-import '@motech-development/breeze-ui/reset.css';
-import '@motech-development/breeze-ui/styles.css';
-```
-
-Do not use internal deep imports. React Aria, Lucide and internal styling helpers are implementation details rather than public API.
-
-## Core conventions
-
-- Wrap every Breeze subtree in `BreezeProvider` and provide a BCP 47 `locale`.
-- Import `styles.css` once. Greenfield applications can import `reset.css` first.
-- Use `onAction` for discrete activation, `onChange` for semantic values, and `onOpenChange` for overlay state.
-- Use `value` with `onChange` for controlled state and `defaultValue` for uncontrolled state.
-- Multi-part controls expose one compound namespace, such as `Dialog.Root`, `Dialog.Trigger` and `Dialog.Content`.
-- Use typed variants and `className` for placement and composition; internal class names are not a stable contract.
-
-## Start here
-
-Read [Installation](?path=/docs/guides-02-installation--docs), then [Quick start](?path=/docs/guides-03-quick-start--docs). The remaining guides explain provider setup, composition, state, accessibility, internationalisation, routing, styling, collections and icons. Each component page contains a public import, deliberately authored examples, anatomy, API tables and selection guidance.
+The authoritative specification is [#1598](https://github.com/motech-development/platform/issues/1598), with this foundation delivered by [#1599](https://github.com/motech-development/platform/issues/1599). The v3 ADRs are historical; their v4 amendments are tracked in #1615.

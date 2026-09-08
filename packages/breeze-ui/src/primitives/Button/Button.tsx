@@ -1,103 +1,160 @@
-import type { ComponentProps, ReactElement, ReactNode, Ref } from 'react';
+import type { ButtonHTMLAttributes, ReactElement, Ref } from 'react';
 import { createElement } from 'react';
 import { Button as AriaButton } from 'react-aria-components/Button';
-import useForwardedRef from '../../internal/hooks/useForwardedRef';
-import renderNativeButton, {
-  type NativeButtonType,
-} from '../../internal/react-aria/renderNativeButton';
-import action from '../../internal/styling/actions';
-import type {
-  ControlSize,
-  VisualAppearance,
-  VisualVariant,
-} from '../../internal/styling/visual';
-import type { NativeButtonProps } from '../../internal/types/native';
 import { useBreezeContext } from '../../provider/BreezeContext';
 
-/** Visual emphasis treatments supported by buttons with visible text. */
-export type ButtonAppearance = VisualAppearance | 'text';
+// The ordered recipe is the v4 contribution contract, not alphabetical data.
+const variants = {
+  base: {
+    button:
+      'relative inline-grid items-center justify-center gap-breeze-2 border border-solid rounded-breeze-ctl font-breeze-sans text-breeze-sm leading-breeze-snug cursor-pointer select-none [text-align:center] outline-offset-2 data-[focus-visible]:outline-2 data-[focus-visible]:outline-solid data-[focus-visible]:outline-breeze-brand pointer-coarse:min-block-breeze-tap pointer-coarse:min-inline-breeze-tap',
+    label: '[grid-area:1/1]',
+    skeleton:
+      '[grid-area:1/1] inline-size-full block-size-breeze-3 rounded-breeze-xs',
+  },
+  variant: {
+    danger:
+      'border-transparent bg-breeze-danger-fill text-breeze-on-brand data-[hovered]:bg-breeze-danger-hover data-[pressed]:bg-breeze-danger-hover',
+    primary:
+      'border-transparent bg-breeze-brand text-breeze-on-brand data-[hovered]:bg-breeze-brand-hover data-[pressed]:bg-breeze-brand-hover',
+    quiet:
+      'border-transparent bg-transparent text-breeze-brand-text data-[hovered]:bg-breeze-brand-soft data-[pressed]:bg-breeze-brand-soft',
+    secondary:
+      'border-breeze-line-strong bg-breeze-surface text-breeze-ink data-[hovered]:bg-breeze-sunken data-[pressed]:bg-breeze-sunken',
+  },
+  // eslint-disable-next-line sort-keys -- v4 recipes require base, variant, size, state, compound ordering.
+  size: {
+    lg: 'min-block-breeze-lg ps-breeze-5 pe-breeze-5 py-breeze-3',
+    md: 'min-block-breeze-md ps-breeze-3 pe-breeze-3 py-breeze-2',
+    sm: 'min-block-breeze-sm ps-breeze-3 pe-breeze-3 py-breeze-1',
+  },
+  state: {
+    disabled: 'cursor-not-allowed opacity-50',
+    loading: 'cursor-wait',
+    loadingLabel: 'opacity-0',
+  },
+  // eslint-disable-next-line sort-keys -- compound states deliberately finish every v4 recipe.
+  compound: {
+    loading: {
+      danger: 'bg-breeze-on-brand/35',
+      primary: 'bg-breeze-on-brand/35',
+      quiet: 'bg-breeze-line-strong',
+      secondary: 'bg-breeze-line-strong',
+    },
+  },
+} as const;
 
-/** Props for a semantic action button. */
+/** Button-specific visual treatments. */
+export type ButtonVariant = keyof typeof variants.variant;
+
+/** Shared control sizes: 34, 38 and 52px, with a 44px coarse-pointer floor. */
+export type ControlSize = 'sm' | 'md' | 'lg';
+
+/** An intentional native subset; styling, slots and DOM event callbacks are closed. */
+type NativeButtonProps = Pick<
+  ButtonHTMLAttributes<HTMLButtonElement>,
+  | 'aria-controls'
+  | 'aria-describedby'
+  | 'aria-label'
+  | 'aria-labelledby'
+  | 'form'
+  | 'id'
+  | 'name'
+>;
+
 export interface ButtonProps extends NativeButtonProps {
-  /** Visual emphasis treatment. Defaults to `solid`. */
-  appearance?: ButtonAppearance;
-  /** Button content. */
-  children: ReactNode;
-  /** Placement and composition classes. */
-  className?: string;
-  /** Prevents interaction. Defaults to `false`. */
+  /** Visible action label, retained as the accessible name while loading. */
+  children: string;
+  /** Prevents activation and removes the button from the tab order. */
   disabled?: boolean;
-  /** Shows and announces an in-progress state while preventing activation. Defaults to `false`. */
+  /** Shows the button's own skeleton and prevents repeat activation. */
   loading?: boolean;
-  /** Called once when the user activates the button. */
+  /** Reports a semantic activation, without a DOM event. */
   onAction?: () => void;
-  /** Ref to the rendered button. */
   ref?: Ref<HTMLButtonElement>;
-  /** Canonical control size. Defaults to `md`. */
   size?: ControlSize;
-  /** Constrained native form behavior: `button` or `submit`. Defaults to `button`. */
-  type?: NativeButtonType;
-  /** Semantic colour. Defaults to `primary`. */
-  variant?: VisualVariant;
+  type?: 'button' | 'submit';
+  value?: string;
+  variant?: ButtonVariant;
 }
 
 /**
- * Performs an application action through pointer or keyboard activation.
+ * Performs a semantic action with a visible label and an optional loading skeleton.
  *
- * @summary semantic action with accessible disabled and loading states
+ * @summary A closed, labelled action in four treatments and three sizes.
  */
 export function Button({
-  appearance,
+  'aria-controls': ariaControls,
+  'aria-describedby': ariaDescribedBy,
+  'aria-label': ariaLabel,
+  'aria-labelledby': ariaLabelledBy,
   children,
-  className,
   disabled = false,
+  form,
+  id,
   loading = false,
+  name,
   onAction,
   ref,
-  size,
+  size = 'md',
   type = 'button',
-  variant,
-  ...props
+  value,
+  variant = 'primary',
 }: Readonly<ButtonProps>): ReactElement {
   useBreezeContext();
-  const forwardedRef = useForwardedRef(ref);
 
-  return createElement(
-    AriaButton,
-    {
-      ...props,
-      'aria-busy': loading || undefined,
-      className: action({
-        appearance,
-        class: className,
-        size,
-        variant,
-      }),
-      isDisabled: disabled,
-      isPending: loading,
-      onPress: onAction,
-      ref: forwardedRef,
-      render: (renderProps) => {
-        const nativeProps = {
-          ...props,
+  const className = [
+    variants.base.button,
+    variants.variant[variant],
+    variants.size[size],
+    disabled && variants.state.disabled,
+    loading && variants.state.loading,
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  return (
+    <AriaButton
+      aria-controls={ariaControls}
+      aria-describedby={ariaDescribedBy}
+      aria-label={ariaLabel}
+      aria-labelledby={ariaLabelledBy}
+      className={className}
+      form={form}
+      id={id}
+      isDisabled={disabled}
+      isPending={loading}
+      name={name}
+      onPress={() => onAction?.()}
+      ref={ref}
+      render={(buttonProps) =>
+        createElement('button', {
+          ...buttonProps,
+          // React Aria filters aria-busy; Breeze owns it on the native button.
           'aria-busy': loading || undefined,
-          ...renderProps,
-        };
-
-        return renderNativeButton(nativeProps, type);
-      },
-      type,
-    } as ComponentProps<typeof AriaButton>,
-    loading ? (
-      <>
+          type: buttonProps.type === 'submit' ? 'submit' : 'button',
+        })
+      }
+      type={type}
+      value={value}
+    >
+      <span
+        className={[variants.base.label, loading && variants.state.loadingLabel]
+          .filter(Boolean)
+          .join(' ')}
+      >
+        {children}
+      </span>
+      {loading && (
         <span
           aria-hidden="true"
-          className="size-4 animate-spin rounded-full border-2 border-current border-r-transparent"
+          className={[
+            variants.base.skeleton,
+            variants.compound.loading[variant],
+          ].join(' ')}
+          data-breeze-skeleton=""
         />
-        <span>{children}</span>
-      </>
-    ) : (
-      children
-    ),
+      )}
+    </AriaButton>
   );
 }

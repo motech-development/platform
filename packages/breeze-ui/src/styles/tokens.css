@@ -1,63 +1,164 @@
-@layer theme {
-  :where([data-breeze-root]) {
-    --breeze-font-display: 'Cabin Variable', sans-serif;
-    --breeze-font-body: 'Helvetica Neue', helvetica, arial, sans-serif;
+/* Private tokens: visible in CSS, but not a supported customisation API. */
+@theme static {
+  --breakpoint-breeze-sm: 42.5625rem;
+  --breakpoint-breeze-md: 56.3125rem;
+  --breakpoint-breeze-lg: 73.8125rem;
 
-    --breeze-shell: #151c2b;
-    --breeze-shell-border: #0e1524;
-    --breeze-shell-soft: #222c40;
-    --breeze-canvas: #eef1f5;
-    --breeze-surface: #fff;
-    --breeze-surface-subtle: #f5f7fa;
-    --breeze-table-row-hover: #f8faff;
-    --breeze-table-row-muted: #f1f3f6;
-    --breeze-table-row-muted-hover: #e9edf2;
-    --breeze-table-section: #dfe4ec;
-    --breeze-skeleton: #dfe4eb;
-    --breeze-skeleton-danger: #f3dadd;
-    --breeze-skeleton-inverse: #566174;
-    --breeze-border: #d8dde6;
-    --breeze-border-strong: #bdc5d2;
-    --breeze-ink: #182033;
-    --breeze-ink-soft: #596274;
-    --breeze-ink-muted: #636c7d;
-    --breeze-ink-inverse: #f7f8fb;
-    --breeze-ink-inverse-muted: #cad0dc;
-    --breeze-primary: #2258d6;
-    --breeze-primary-hover: #1948b5;
-    --breeze-primary-soft: #e8efff;
-    --breeze-primary-selected: #2d5bc5;
-    --breeze-brand-mark: #4f82f3;
-    --breeze-accent: #6e36a7;
-    --breeze-accent-soft: #f2e9ff;
-    --breeze-focus: #4f86ff;
-    --breeze-success: #137a4a;
-    --breeze-success-soft: #e6f4ec;
-    --breeze-danger: #ba2e39;
-    --breeze-danger-hover: #98242e;
-    --breeze-danger-soft: #fbeaec;
-    --breeze-warning: #925400;
-    --breeze-warning-soft: #fff2dc;
-    --breeze-info: #006b99;
-    --breeze-info-border: #4d91b0;
-    --breeze-info-ink: #004966;
-    --breeze-info-soft: #e3f3fa;
-    --breeze-neutral: #596273;
-    --breeze-neutral-soft: #dfe3e9;
-    --breeze-overlay: rgb(12 18 31 / 68%);
+  --font-breeze-sans: 'Public Sans Variable', -apple-system, BlinkMacSystemFont,
+    'Segoe UI', helvetica, arial, sans-serif;
 
-    --breeze-space-xs: 0.25rem;
-    --breeze-space-sm: 0.5rem;
-    --breeze-space-control: 0.625rem;
-    --breeze-space-compact: 0.75rem;
-    --breeze-space-md: 1rem;
-    --breeze-space-lg: 1.25rem;
-    --breeze-space-xl: 1.5rem;
-    --breeze-space-xxl: 2rem;
-    --breeze-space-page: 3rem;
+  --color-breeze-brand: #007fa8;
+  --color-breeze-brand-hover: #007aa3;
+  --color-breeze-brand-text: #006884;
+  --color-breeze-brand-soft: #e3f2f8;
+  --color-breeze-on-brand: #ffffff;
+  --color-breeze-canvas: #f6f9fc;
+  --color-breeze-surface: #ffffff;
+  --color-breeze-raised: #f6f9fc;
+  --color-breeze-sunken: #eff3f8;
+  --color-breeze-line: #e3e8ee;
+  --color-breeze-line-strong: #cfd7e0;
+  --color-breeze-ink: #161616;
+  --color-breeze-ink-2: #4a4f57;
+  --color-breeze-ink-3: #66707c;
+  --color-breeze-pos: #127a4e;
+  --color-breeze-pos-soft: #e4f1ea;
+  --color-breeze-warn: #8a5a0b;
+  --color-breeze-warn-soft: #fdf3dc;
+  --color-breeze-danger: #b4231d;
 
-    --breeze-duration-fast: 120ms;
-    --breeze-duration-regular: 180ms;
-    --breeze-easing-standard: cubic-bezier(0.22, 1, 0.36, 1);
+  --text-breeze-2xs: 11px;
+  --text-breeze-xs: 12px;
+  --text-breeze-sm: 13px;
+  --text-breeze-base: 14px;
+  --text-breeze-md: 15px;
+  --text-breeze-lg: 17px;
+  --text-breeze-xl: 20px;
+  --text-breeze-2xl: 22px;
+  --text-breeze-3xl: 24px;
+  --text-breeze-4xl: 26px;
+
+  --spacing-breeze-md: 38px;
+  --spacing-breeze-lg: 52px;
+  --spacing-breeze-sm: 34px;
+  --spacing-breeze-tap: 44px;
+  --spacing-breeze-row: 64px;
+  --spacing-breeze-sheet: 610px;
+  --spacing-breeze-card: 400px;
+
+  --radius-breeze-panel: 8px;
+  --radius-breeze-ctl: 6px;
+  --radius-breeze-chip: 3px;
+  --leading-breeze-tight: 1.1;
+  --leading-breeze-snug: 1.45;
+  --leading-breeze-normal: 1.5;
+  --tracking-breeze-tight: -0.008em;
+  --tracking-breeze-tighter: -0.012em;
+  --tracking-breeze-tightest: -0.018em;
+  --tracking-breeze-caps: 0.06em;
+  --tracking-breeze-wide: 0.05em;
+  --aspect-breeze-a4: 1/1.414;
+  --aspect-breeze-photo: 3/4;
+  --container-breeze-page: 1500px;
+  --container-breeze-read: 54ch;
+  --container-breeze-prose: 52ch;
+
+  --color-breeze-scrim: #0c121f;
+  --radius-breeze-xs: 2px;
+  --radius-breeze-sm: 4px;
+
+  --color-breeze-danger-fill: #b4231d;
+  --color-breeze-danger-hover: #981e19;
+  --radius-breeze-full: 9999px;
+  --spacing-breeze-1: 4px;
+  --spacing-breeze-2: 8px;
+  --spacing-breeze-3: 12px;
+  --spacing-breeze-4: 16px;
+  --spacing-breeze-5: 20px;
+  --spacing-breeze-6: 24px;
+  --spacing-breeze-8: 32px;
+}
+
+:root {
+  color-scheme: light;
+  --breeze-shadow-panel: 0 1px 1px rgb(22 22 22 / 3%),
+    0 2px 5px rgb(22 22 22 / 4%);
+  --breeze-shadow-overlay: 0 1px 2px rgb(22 22 22 / 6%),
+    0 8px 24px -10px rgb(22 22 22 / 25%);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --color-breeze-brand-text: #33aacf;
+    --color-breeze-brand-soft: #12313b;
+    --color-breeze-canvas: #161616;
+    --color-breeze-surface: #1f1f1f;
+    --color-breeze-raised: #262626;
+    --color-breeze-sunken: #262626;
+    --color-breeze-line: #303030;
+    --color-breeze-line-strong: #3d3d3d;
+    --color-breeze-ink: #f2f2f2;
+    --color-breeze-ink-2: #b4b4b4;
+    --color-breeze-ink-3: #949494;
+    --color-breeze-pos: #3fbf8b;
+    --color-breeze-pos-soft: #16291f;
+    --color-breeze-warn: #e0b341;
+    --color-breeze-warn-soft: #2a2314;
+    --color-breeze-danger: #f1736a;
+    --breeze-shadow-panel: 0 1px 1px rgb(0 0 0/40%);
+    --breeze-shadow-overlay: 0 1px 2px rgb(0 0 0/50%),
+      0 8px 24px -10px rgb(0 0 0/70%);
   }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --color-breeze-brand-text: #33aacf;
+  --color-breeze-brand-soft: #12313b;
+  --color-breeze-canvas: #161616;
+  --color-breeze-surface: #1f1f1f;
+  --color-breeze-raised: #262626;
+  --color-breeze-sunken: #262626;
+  --color-breeze-line: #303030;
+  --color-breeze-line-strong: #3d3d3d;
+  --color-breeze-ink: #f2f2f2;
+  --color-breeze-ink-2: #b4b4b4;
+  --color-breeze-ink-3: #949494;
+  --color-breeze-pos: #3fbf8b;
+  --color-breeze-pos-soft: #16291f;
+  --color-breeze-warn: #e0b341;
+  --color-breeze-warn-soft: #2a2314;
+  --color-breeze-danger: #f1736a;
+  --breeze-shadow-panel: 0 1px 1px rgb(0 0 0/40%);
+  --breeze-shadow-overlay: 0 1px 2px rgb(0 0 0/50%),
+    0 8px 24px -10px rgb(0 0 0/70%);
+}
+
+/* @theme bakes literal shadow values into utilities. Wrappers keep both shadows
+   reactive to the document theme instead. Other theme values emit var() references. */
+@utility shadow-breeze-panel {
+  box-shadow: var(--breeze-shadow-panel);
+}
+
+@utility shadow-breeze-overlay {
+  box-shadow: var(--breeze-shadow-overlay);
+}
+
+/* Tailwind's height/width families emit physical dimensions. These logical
+   counterparts use the same private spacing namespace, including the touch floor. */
+@utility min-block-* {
+  min-block-size: --value(--spacing- *);
+}
+
+@utility min-inline-* {
+  min-inline-size: --value(--spacing- *);
+}
+
+@utility block-size-* {
+  block-size: --value(--spacing- *);
+}
+
+@utility inline-size-full {
+  inline-size: 100%;
 }

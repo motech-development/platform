@@ -20,7 +20,7 @@ const preview: Preview = {
       values: [
         {
           name: 'canvas',
-          value: '#eef1f5',
+          value: '#f6f9fc',
         },
         {
           name: 'surface',
