@@ -63,6 +63,10 @@ Repository-specific guidance for agents working in this monorepo.
 - Explicit user requirements take precedence over skill guidance. Apply each instruction only to the work it covers; do not infer extra approval steps from a skill.
 - If a skill blocks progress or changes the requested scope, link the exact `SKILL.md`, quote the relevant instruction, and explain how it applies. Distinguish an explicit requirement from your interpretation.
 
+### Code style
+
+Before writing or changing code, read `docs/agents/code-style.md` and its section for the affected app or package. Current tooling and explicit instructions take precedence.
+
 ### Issue tracker
 
 Issues and PRDs are tracked in GitHub Issues for `motech-development/platform`. See `docs/agents/issue-tracker.md`.
