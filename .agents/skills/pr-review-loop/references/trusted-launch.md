@@ -30,10 +30,12 @@ launch_parent='/absolute/path/to/verified-trusted-launch-parent'
 launch_dir=$(mktemp -d "$launch_parent/pr-review-loop.XXXXXX")
 git -C "$launch_dir" init --quiet
 git -C "$trusted_checkout" archive --format=tar \
-  --output="$launch_dir/skill.tar" "$trusted_commit" .agents/skills/pr-review-loop
+  --output="$launch_dir/skill.tar" "$trusted_commit" .agents/skills/pr-review-loop AGENTS.md
 tar -xf "$launch_dir/skill.tar" -C "$launch_dir"
 rm "$launch_dir/skill.tar"
-chmod -R a-w "$launch_dir/.agents"
+chmod -R a-w "$launch_dir/.agents" "$launch_dir/AGENTS.md"
+printf 'Trusted checkout: %s\nTrusted commit: %s\n' \
+  "$trusted_checkout" "$trusted_commit" > "$launch_dir/TRUSTED-SOURCE.txt"
 codex --cd "$launch_dir"
 ```
 
@@ -43,6 +45,17 @@ that directory, select the skill from its absolute path there, and supply the PR
 URL and scope as data. Record the trusted commit and skill directory in the batch
 record. Global and administrator configuration must also be trusted; this archive
 isolates repository skill discovery, not the entire host.
+
+The archive also includes the trusted root `AGENTS.md`. Before work begins, read
+`TRUSTED-SOURCE.txt` and retain access to that trusted checkout: the new empty Git
+repository does not contain the pinned commit's objects. For every affected PR
+path, discover applicable nested `AGENTS.md` files and referenced guidance from
+that same commit with `git -C "$trusted_checkout" ls-tree` and
+`git -C "$trusted_checkout" show "$trusted_commit:path/to/file"`. Load those rules
+before editing or executing the affected area. Resolve referenced documents from
+that pinned source too, not missing paths in the launch root, the trusted
+checkout's current working files, or PR-authored replacements. Record the source
+checkout and commit with the loaded guidance in the batch record.
 
 Keep the primary session rooted in the trusted launch directory. Inspect and edit
 the PR through explicit paths in the separate, appropriately isolated worktree.

@@ -31,7 +31,8 @@ def check(bucket='pending', workflow='QA', started=1000):
 def run(duration, created=100):
   return {
     'workflowName': 'QA', 'event': 'pull_request', 'conclusion': 'success',
-    'createdAt': iso(created), 'updatedAt': iso(created + duration), 'attempt': 1
+    'createdAt': iso(created), 'startedAt': iso(created),
+    'updatedAt': iso(created + duration), 'attempt': 1
   }
 
 
@@ -95,12 +96,50 @@ class PipelineWaitTests(unittest.TestCase):
     self.assertNotIn('private-value', str(error.exception))
     self.assertLess(len(str(error.exception)), 200)
 
+  def test_allowed_check_exit_with_no_json_keeps_safe_error_diagnostic(self):
+    result = pipeline_wait.subprocess.CompletedProcess(
+      ['gh'], 1, '', 'HTTP 403: API rate limit exceeded (token=private-value)'
+    )
+    with patch.object(pipeline_wait.subprocess, 'run', return_value=result):
+      with self.assertRaises(RuntimeError) as error:
+        pipeline_wait.gh_json(['pr', 'checks'], allowed_codes=(0, 1, 8))
+    self.assertIn('rate limit', str(error.exception))
+    self.assertNotIn('private-value', str(error.exception))
+
+  def test_allowed_failed_check_json_is_still_returned(self):
+    checks = [check('fail')]
+    result = pipeline_wait.subprocess.CompletedProcess(['gh'], 1, json.dumps(checks), '')
+    with patch.object(pipeline_wait.subprocess, 'run', return_value=result):
+      self.assertEqual(pipeline_wait.gh_json(['pr', 'checks'], allowed_codes=(0, 1, 8)), checks)
+
+  def test_rerun_estimate_excludes_historical_queue_time(self):
+    opened = {'headRefOid': 'head-a', 'state': 'OPEN'}
+    pending = {**check(), 'link': 'https://github.com/owner/repo/actions/runs/123/job/456'}
+    code, _, sleeps, _, _ = self.observe([
+      opened, [pending], opened, [{**run(720), 'startedAt': iso(700)}],
+      {'createdAt': iso(100), 'startedAt': iso(1100), 'attempt': 2},
+      opened, [check('pass')], opened
+    ])
+    self.assertEqual(code, 0)
+    self.assertEqual(sleeps, [144])
+
+  def test_rerun_without_runtime_history_uses_bounded_backoff(self):
+    opened = {'headRefOid': 'head-a', 'state': 'OPEN'}
+    pending = {**check(), 'link': 'https://github.com/owner/repo/actions/runs/123/job/456'}
+    code, _, sleeps, _, _ = self.observe([
+      opened, [pending], opened, [{**run(720), 'startedAt': None}],
+      {'createdAt': iso(100), 'startedAt': iso(1100), 'attempt': 2},
+      opened, [check('pass')], opened
+    ])
+    self.assertEqual(code, 0)
+    self.assertEqual(sleeps, [120])
+
   def test_average_uses_ten_recent_successes_and_keeps_events_separate(self):
     runs = [run(300, created=index * 100) for index in range(1, 11)]
     runs += [run(9000, created=0), {**run(8000), 'conclusion': 'failure'}]
     runs += [{**run(1200), 'event': 'push'}]
     averages = pipeline_wait.workflow_averages(runs)
-    self.assertEqual(averages[('QA', 'pull_request')], {'mean_seconds': 300, 'samples': 10})
+    self.assertEqual(averages[('QA', 'pull_request')], {'mean_seconds': 300, 'samples': 10, 'mean_runtime_seconds': 300, 'runtime_samples': 10})
     self.assertEqual(averages[('QA', 'push')]['mean_seconds'], 1200)
 
   def test_concurrent_workflows_use_longest_remaining_estimate_not_sum(self):
@@ -120,7 +159,7 @@ class PipelineWaitTests(unittest.TestCase):
     averages = pipeline_wait.workflow_averages([
       run(300), {**run(86400), 'attempt': 2}
     ])
-    self.assertEqual(averages[('QA', 'pull_request')], {'mean_seconds': 300, 'samples': 1})
+    self.assertEqual(averages[('QA', 'pull_request')], {'mean_seconds': 300, 'samples': 1, 'mean_runtime_seconds': 300, 'runtime_samples': 1})
 
   def test_timing_lookup_exhaustion_stops_without_another_poll_or_sleep(self):
     opened = {'headRefOid': 'head-a', 'state': 'OPEN'}
