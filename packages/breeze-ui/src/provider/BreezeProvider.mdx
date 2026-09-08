@@ -3,12 +3,12 @@ import * as Stories from './BreezeProvider.stories';
 
 <Meta
   of={Stories}
-  summary="The required locale and styling boundary for Breeze components."
+  summary="Provides the locale and styles that Breeze UI components require."
 />
 
 # BreezeProvider
 
-Place `BreezeProvider` around Breeze content and supply a BCP 47 `locale`. Components throw a clear error outside the provider. Its root carries `data-breeze-root`, `lang` and the direction inferred by React Aria's locale provider.
+`BreezeProvider` provides the locale and styles that Breeze UI components require. Render it once, above every Breeze UI component. Components rendered without a provider throw an error.
 
 ```tsx
 <BreezeProvider locale="en-GB">
@@ -18,8 +18,16 @@ Place `BreezeProvider` around Breeze content and supply a BCP 47 `locale`. Compo
 
 <Canvas of={Stories.Default} />
 
-This foundation exposes only `children` and `locale`. Appearance controls, routing, messages, portal hosts, time zones and toast limits arrive with their owning v4 tickets. There is no `direction` override, and no styling or slot passthrough. Direction inference is not a claim of RTL test coverage.
+## Locale
 
-The provider does not change document attributes or persist preferences. CSS alone follows the OS colour scheme unless the application sets `data-theme="light"` or `data-theme="dark"` on the document element. Tokens and `color-scheme` live there; painting is scoped to Breeze roots.
+`locale` takes a BCP 47 language tag. It sets the `lang` attribute and the text direction of the provider's root element.
+
+<Canvas of={Stories.Locale} />
+
+## Colour scheme
+
+Components follow the operating system colour scheme. To set the scheme from your application, add `data-theme="light"` or `data-theme="dark"` to the `html` element.
+
+## API
 
 <ArgTypes />

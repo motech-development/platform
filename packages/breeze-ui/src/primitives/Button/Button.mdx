@@ -1,54 +1,72 @@
 import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
 import * as Stories from './Button.stories';
 
-<Meta
-  of={Stories}
-  summary="A labelled action with four treatments, three sizes and its own loading skeleton."
-/>
+<Meta of={Stories} summary="Performs an action or submits a form." />
 
 # Button
 
-Use `Button` to perform an action or submit a form. Its visible label describes the action.
+Buttons let users perform an action, such as saving a record or submitting a form.
 
-```tsx
-import { BreezeProvider, Button } from '@motech-development/breeze-ui';
+## Basic button
 
-<BreezeProvider locale="en-GB">
-  <Button onAction={() => saveChanges()}>Save changes</Button>
-</BreezeProvider>;
-```
+`Button` comes with four variants: `primary` (default), `secondary`, `quiet` and `danger`. The `children` prop sets the visible label.
 
-<Canvas of={Stories.Activation} />
+<Canvas of={Stories.Primary} />
 
-## Treatments and sizes
+## Secondary button
 
-`variant` is one flat choice: `primary` for the principal action, `secondary` for a neutral alternative, `quiet` for low emphasis, or `danger` for destruction. Prefer one primary action per decision group. Colour never replaces a useful label.
+Secondary buttons are neutral alternatives to the primary action, such as cancelling.
 
-`size` is `sm`, `md` (default), or `lg`: minimum block sizes of 34, 38 and 52px. Coarse pointers automatically receive a 44px minimum in both dimensions. Labels may wrap and increase the height; these are minimums, not clipping constraints.
+<Canvas of={Stories.Secondary} />
+
+## Quiet button
+
+Quiet buttons are low emphasis, for actions that sit alongside content.
+
+<Canvas of={Stories.Quiet} />
+
+## Danger button
+
+Danger buttons are destructive actions. Use a label that states what will be removed.
+
+<Canvas of={Stories.Danger} />
+
+## Sizes
+
+`size` accepts `sm`, `md` (default) and `lg`, with minimum heights of 34, 38 and 52px.
 
 <Canvas of={Stories.TreatmentsAndSizes} />
 
-## Loading and disabled
+Labels wrap and increase the height of the button:
 
-`loading` replaces the visible label with the button's own static skeleton. The label still determines the width and accessible name. React Aria prevents repeat activation, retains focusability, and announces the pending state; Breeze also exposes `aria-busy`. A static skeleton avoids unrelated motion and needs no reduced-motion alternative.
+<Canvas of={Stories.LongLabel} />
 
-`disabled` prevents activation and removes the button from the tab order. Explain unavailable actions in nearby content when necessary.
+## Loading
+
+Set `loading` while the action is in progress. The label is replaced by a skeleton, and the button cannot be activated again.
 
 <Canvas of={Stories.Loading} />
+
+## Disabled
+
+`disabled` prevents activation and removes the button from the tab order.
+
 <Canvas of={Stories.Disabled} />
 
-## Forms and callbacks
+## Handling actions
 
-`onAction` reports a semantic activation with no DOM event. For a form, use `type="submit"` and handle submission on the form. The default `type="button"` is safe inside forms. The native `form`, `name` and string `value` props support form association and submission.
+`onAction` is called when the button is activated, and takes no arguments.
 
-Use `ref` for imperative focus where the surrounding interaction requires it. `id`, `aria-label`, `aria-labelledby`, `aria-describedby` and `aria-controls` are available for accessible relationships.
+<Canvas of={Stories.Activation} />
 
-## Closed styling
+## Form submission
 
-There is no `className`, `style`, `slot`, render prop, icon slot or arbitrary attribute/event passthrough. `children` is the visible string label. Layout belongs to the parent; a missing visual treatment requires a library change. Version 3's separate `appearance` axis is gone.
+Use `type="submit"` to submit the containing form, and handle submission on the form. The default is `type="button"`. The `form`, `name` and `value` props are available for form association.
 
 ## Accessibility
 
-Breeze requires `BreezeProvider`. React Aria supplies press, keyboard and pending semantics; Breeze owns the rendered label, skeleton, target sizing and focus styling. Storybook runs axe in Chromium on every story. This is automated coverage, not a screen-reader certification, third-party audit or VPAT. Firefox, WebKit and RTL are not claimed test targets.
+The label provides the accessible name and is retained while the button is loading. Buttons receive a 44px minimum target on touch devices, and `aria-label`, `aria-labelledby`, `aria-describedby` and `aria-controls` are supported.
+
+## API
 
 <ArgTypes />
