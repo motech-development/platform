@@ -192,7 +192,9 @@ messages, push, merge, or deploy.
   must use a trusted context that cannot load PR-controlled hooks; otherwise
   report the publication blocker without bypassing the required hook checks.
   Compare the committed result with the reviewed snapshot after hooks; inspect
-  and validate any substantive hook changes before publishing.
+  and validate any substantive hook changes, then send that delta through both
+  local reviewers in parallel before publishing. The committed snapshot must
+  retain complete coverage from both reviewers.
   Check CodeRabbit's no-charge boundary before pushing when a push triggers its
   hosted review; automatic hosted overages are subject to the same spending ban.
 - For authorized Codex feedback, use 👍 for accepted findings and 👎 for verified
