@@ -35,6 +35,17 @@ reveals a concrete need for broader inspection.
 
 ## Invoke and verify
 
+For less-trusted PRs, establish the host isolation required by `SKILL.md` before
+starting the reviewer, including configuration loading and MCP startup. Use trusted
+configuration and a trusted working directory outside the PR checkout; expose the
+PR snapshot only as read-only data. Do not load PR-controlled `.codex` configuration,
+plugins, or MCP definitions. The CLI's `-s read-only` setting constrains agent tool
+execution; it is not a host sandbox for startup processes. If the available native
+review service or CLI cannot maintain this separation and the required credential
+and network isolation, continue static inspection and report the native review
+blocker instead of launching it from the PR checkout. The example below assumes
+trusted source or that these isolation requirements have already been satisfied.
+
 Pin **`gpt-5.6-luna`** and **`low` reasoning effort** (Light) for each invocation. Override
 both the main model and `review_model`, which can otherwise select a different
 reviewer. Do not change the user's global settings, raise effort automatically,
