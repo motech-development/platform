@@ -30,18 +30,20 @@ def check(bucket='pending', workflow='QA', started=1000):
 def run(duration, created=100):
   return {
     'workflowName': 'QA', 'event': 'pull_request', 'conclusion': 'success',
-    'createdAt': iso(created), 'updatedAt': iso(created + duration)
+    'createdAt': iso(created), 'updatedAt': iso(created + duration), 'attempt': 1
   }
 
 
 class PipelineWaitTests(unittest.TestCase):
-  def observe(self, replies, max_wait=3600, cancel=False, missing_state_parent=False):
+  def observe(self, replies, max_wait=3600, cancel=False, missing_state_parent=False, query_durations=()):
     calls, sleeps, clock = [], [], [1100.0]
     remaining = iter(replies)
+    durations = iter(query_durations)
 
     def query(args, **kwargs):
       calls.append((args, kwargs))
       reply = next(remaining)
+      clock[0] += next(durations, 0)
       if isinstance(reply, Exception):
         raise reply
       return reply
@@ -86,6 +88,42 @@ class PipelineWaitTests(unittest.TestCase):
     )
     self.assertEqual(delay, 620)
     self.assertTrue(estimated)
+
+  def test_delayed_reruns_do_not_inflate_timing_history(self):
+    averages = pipeline_wait.workflow_averages([
+      run(300), {**run(86400), 'attempt': 2}
+    ])
+    self.assertEqual(averages[('QA', 'pull_request')], {'mean_seconds': 300, 'samples': 1})
+
+  def test_timing_lookup_exhaustion_stops_without_another_poll_or_sleep(self):
+    opened = {'headRefOid': 'head-a', 'state': 'OPEN'}
+    pending = {**check(), 'link': 'https://github.com/owner/repo/actions/runs/123/job/456'}
+    for slow_lookup in ('history', 'current_run'):
+      with self.subTest(slow_lookup=slow_lookup):
+        replies = [opened, [pending], opened, [run(600)]]
+        durations = [0, 0, 0, 101]
+        if slow_lookup == 'current_run':
+          replies.append({'createdAt': iso(1000)})
+          durations = [0, 0, 0, 0, 101]
+        code, state, sleeps, calls, _ = self.observe(
+          replies, max_wait=100, query_durations=durations
+        )
+        self.assertEqual((code, state['reason']), (3, 'inspection_needed'))
+        self.assertEqual(sleeps, [])
+        self.assertEqual(len(calls), len(replies))
+
+  def test_api_failures_after_deadline_report_expiry_but_early_errors_are_preserved(self):
+    for duration, expected in ((101, 'inspection_needed'), (10, 'observation_error')):
+      with self.subTest(duration=duration):
+        code, state, sleeps, calls, _ = self.observe(
+          [RuntimeError('Access denied')], max_wait=100, query_durations=[duration]
+        )
+        self.assertEqual(state['reason'], expected)
+        self.assertEqual(code, 3 if duration > 100 else 6)
+        if duration < 100:
+          self.assertEqual(state['error'], 'Access denied')
+        self.assertEqual(sleeps, [])
+        self.assertEqual(len(calls), 1)
 
   def test_waits_without_intermediate_model_output_then_returns_settled(self):
     opened = {'headRefOid': 'head-a', 'state': 'OPEN'}

@@ -90,9 +90,10 @@ python3 "$skill_dir/scripts/wait-for-pipelines.py" \
   --state-file "$wait_state_file"
 ```
 
-It uses read-only GitHub CLI calls. It measures up to ten recent successful runs
+It uses read-only GitHub CLI calls. It measures up to ten recent successful first-attempt runs
 per relevant workflow and event from a bounded history sample. The estimate is
 the arithmetic mean of creation-to-completion duration, including queue time;
+later attempts are excluded because their timestamps can include idle time before a rerun.
 GitHub's `updatedAt` is an approximation of completion. It reads each pending
 workflow run's creation time once, so elapsed queue time is subtracted on the
 same basis, and adds a 20% margin. Concurrent workflows contribute their longest remaining
@@ -116,6 +117,10 @@ not the PR completion verdict.** Confirm expected workflows and all review/Sonar
 conditions above. A missing check remains missing, not passed. The one-hour
 observation window is a point for inspecting a stalled or slow run, not a reason
 to fail a healthy pipeline; resume waiting when evidence shows useful progress.
+The window is checked around each API call and before sleeping. An in-flight
+call may finish after the deadline, but the helper will not start another call
+or interpret that late response as completion; individual calls time out after
+60 seconds.
 
 When only a hosted review or Sonar analysis remains, use its running status or
 reported retry deadline and the same timer approach. Prefer a deterministic
