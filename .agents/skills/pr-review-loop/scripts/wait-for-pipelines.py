@@ -14,6 +14,10 @@ import tempfile
 import time
 
 
+class ObservationExpired(Exception):
+  pass
+
+
 def timestamp(value):
   if not value:
     return None
@@ -38,7 +42,7 @@ def gh_json(args, allowed_codes=(0,)):
 def workflow_averages(runs):
   groups = defaultdict(list)
   for run in sorted(runs, key=lambda item: item.get('createdAt') or '', reverse=True):
-    if run.get('conclusion') != 'success':
+    if run.get('conclusion') != 'success' or run.get('attempt') != 1:
       continue
     key = (run.get('workflowName') or '', run.get('event') or '')
     start, end = timestamp(run.get('createdAt')), timestamp(run.get('updatedAt'))
@@ -85,6 +89,19 @@ def observe(args, query=gh_json, sleep=time.sleep, now=time.time):
   overrun = 0
   state = {'repo': args.repo, 'pr': args.pr, 'head': args.head}
 
+  def request(command, **kwargs):
+    if now() - started >= args.max_wait_seconds:
+      raise ObservationExpired()
+    try:
+      result = query(command, **kwargs)
+    except Exception:
+      if now() - started >= args.max_wait_seconds:
+        raise ObservationExpired() from None
+      raise
+    if now() - started >= args.max_wait_seconds:
+      raise ObservationExpired()
+    return result
+
   def finish(reason, code):
     state.update(reason=reason, next_wake_at=None, observed_at=now())
     try:
@@ -97,17 +114,17 @@ def observe(args, query=gh_json, sleep=time.sleep, now=time.time):
   print(json.dumps({'reason': 'started', **state, 'state_file': str(args.state_file)}), flush=True)
   try:
     while True:
-      pr = query(['pr', 'view', str(args.pr), '--repo', args.repo, '--json', 'headRefOid,state'])
+      pr = request(['pr', 'view', str(args.pr), '--repo', args.repo, '--json', 'headRefOid,state'])
       if pr['headRefOid'] != args.head:
         return finish('head_changed', 4)
       if pr['state'] != 'OPEN':
         return finish('pr_closed', 5)
-      checks = query([
+      checks = request([
         'pr', 'checks', str(args.pr), '--repo', args.repo, '--json',
         'name,bucket,state,workflow,event,startedAt,completedAt,link'
       ], allowed_codes=(0, 1, 8))
       # PR checks cannot be pinned to a SHA; validate their head before using them.
-      latest = query(['pr', 'view', str(args.pr), '--repo', args.repo, '--json', 'headRefOid,state'])
+      latest = request(['pr', 'view', str(args.pr), '--repo', args.repo, '--json', 'headRefOid,state'])
       if latest['headRefOid'] != args.head:
         return finish('head_changed', 4)
       if latest['state'] != 'OPEN':
@@ -124,9 +141,9 @@ def observe(args, query=gh_json, sleep=time.sleep, now=time.time):
       if now() - started >= args.max_wait_seconds:
         return finish('inspection_needed', 3)
       if averages is None:
-        runs = query([
+        runs = request([
           'run', 'list', '--repo', args.repo, '--status', 'success', '--limit', '100',
-          '--json', 'workflowName,event,conclusion,createdAt,updatedAt'
+          '--json', 'workflowName,event,conclusion,createdAt,updatedAt,attempt'
         ])
         averages = workflow_averages(runs)
       for check in checks:
@@ -136,7 +153,7 @@ def observe(args, query=gh_json, sleep=time.sleep, now=time.time):
         if match:
           run_id = match.group(1)
           if run_id not in run_created_at:
-            run = query(['run', 'view', run_id, '--repo', args.repo, '--json', 'createdAt'])
+            run = request(['run', 'view', run_id, '--repo', args.repo, '--json', 'createdAt'])
             run_created_at[run_id] = run.get('createdAt')
           check['workflowCreatedAt'] = run_created_at[run_id]
       state['workflow_timings'] = [
@@ -145,14 +162,19 @@ def observe(args, query=gh_json, sleep=time.sleep, now=time.time):
         if any(check.get('workflow') == workflow for check in checks)
       ]
       planned_delay, estimated = next_delay(checks, averages, now(), overrun)
+      remaining = args.max_wait_seconds - (now() - started)
+      if remaining <= 0:
+        return finish('inspection_needed', 3)
       delay = min(
         planned_delay,
-        max(0, args.max_wait_seconds - (now() - started))
+        remaining
       )
       state.update(reason='waiting', observed_at=now(), next_wake_at=now() + delay)
       write_state(args.state_file, state)
       sleep(delay)
       overrun = 0 if estimated else overrun + 1
+  except ObservationExpired:
+    return finish('inspection_needed', 3)
   except KeyboardInterrupt:
     return finish('cancelled', 130)
   except (RuntimeError, OSError, KeyError, TypeError, subprocess.TimeoutExpired) as error:
