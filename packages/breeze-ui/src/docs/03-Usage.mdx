@@ -1,0 +1,55 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta
+  title="Guides/03 Usage"
+  summary="Set up the provider and render your first component."
+/>
+
+# Usage
+
+Breeze UI components must be rendered inside `BreezeProvider`. Add it once, at the root of your application:
+
+```tsx
+import { BreezeProvider } from '@motech-development/breeze-ui';
+import { createRoot } from 'react-dom/client';
+import { App } from './App';
+import '@motech-development/breeze-ui/styles.css';
+
+const root = document.getElementById('root');
+
+if (root) {
+  createRoot(root).render(
+    <BreezeProvider locale="en-GB">
+      <App />
+    </BreezeProvider>,
+  );
+}
+```
+
+Components can then be used anywhere below the provider:
+
+```tsx
+import { Button } from '@motech-development/breeze-ui';
+
+export function SaveAction() {
+  return <Button onAction={() => saveChanges()}>Save changes</Button>;
+}
+```
+
+## Locale
+
+`BreezeProvider` takes a BCP 47 language tag, such as `en-GB` or `fr-FR`. Components use it for accessible interactions and text direction.
+
+## Dark mode
+
+Components follow the operating system colour scheme. To set the scheme from your application, add `data-theme` to the `html` element:
+
+```html
+<html data-theme="dark"></html>
+```
+
+The supported values are `light` and `dark`. Remove the attribute to follow the operating system.
+
+## Customisation
+
+Component appearance is set through the props documented on each component page. `className`, `style` and theme overrides are not supported.

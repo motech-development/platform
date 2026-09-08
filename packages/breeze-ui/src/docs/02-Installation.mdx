@@ -2,38 +2,36 @@ import { Meta } from '@storybook/addon-docs/blocks';
 
 <Meta
   title="Guides/02 Installation"
-  summary="Add Breeze and its styles to your React application."
+  summary="Install the package and import its styles."
 />
 
 # Installation
 
-Breeze requires React and React DOM 19. Add the package to your application:
+Run the following command to add Breeze UI to your application:
 
 ```sh
 yarn add @motech-development/breeze-ui
 ```
 
-Import the compiled stylesheet once in your application entry point:
+## Peer dependencies
+
+`react` and `react-dom` are peer dependencies. Breeze UI requires React 19.
+
+## Styles
+
+Import the stylesheet once, at the entry point of your application:
 
 ```tsx
 import '@motech-development/breeze-ui/styles.css';
 ```
 
-Then follow the <a href="./?path=/docs/guides-03-quick-start--docs" target="_top">Quick start</a> to set up Breeze across your application.
+## Reset
 
-## Optional normalization
-
-If you want Breeze's additional normalization, import `reset.css` before `styles.css`:
+Breeze UI provides an optional reset for browser default styles. To use it, import it before the stylesheet:
 
 ```tsx
 import '@motech-development/breeze-ui/reset.css';
 import '@motech-development/breeze-ui/styles.css';
 ```
 
-Both stylesheets scope their visual rules to the Breeze root. Your application owns its document and body reset, page layout and background.
-
-## Included styles
-
-Breeze ships compiled styles, so your application needs no Tailwind setup or source scanning. Public Sans Latin is bundled with its licence and uses a system fallback while loading, without an external font request.
-
-The stylesheet entry points are `styles.css` and `reset.css`. Use documented component options to customise your interface; CSS variables are private implementation details.
+Next, see <a href="./?path=/docs/guides-03-usage--docs" target="_top">Usage</a> to set up the provider.

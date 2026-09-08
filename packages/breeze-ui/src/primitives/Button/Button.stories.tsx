@@ -13,10 +13,10 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-/** The default action, with a visible label and medium target. */
+/** The default variant and size. */
 export const Primary: Story = {};
 
-/** A neutral action with an outlined surface. */
+/** A neutral alternative to the primary action. */
 export const Secondary: Story = {
   args: {
     children: 'Cancel',
@@ -24,7 +24,7 @@ export const Secondary: Story = {
   },
 };
 
-/** A low-emphasis action with brand-coloured text. */
+/** A low-emphasis action. */
 export const Quiet: Story = {
   args: {
     children: 'View details',
@@ -32,7 +32,7 @@ export const Quiet: Story = {
   },
 };
 
-/** A destructive action; the label explains what is removed. */
+/** A destructive action. */
 export const Danger: Story = {
   args: {
     children: 'Delete item',
@@ -40,7 +40,7 @@ export const Danger: Story = {
   },
 };
 
-/** All four treatments at 34, 38 and 52px, with the coarse-pointer floor applied automatically. */
+/** Every variant at each size. */
 export const TreatmentsAndSizes: Story = {
   render: () => (
     <div className="gap-breeze-6 flex flex-col">
@@ -64,7 +64,7 @@ export const TreatmentsAndSizes: Story = {
   ),
 };
 
-/** Each loading skeleton occupies its own label's space, preserving the target. */
+/** Every variant and size while loading. */
 export const Loading: Story = {
   render: () => (
     <div className="gap-breeze-6 flex flex-col">
@@ -88,14 +88,14 @@ export const Loading: Story = {
   ),
 };
 
-/** Disabled actions cannot be activated and leave the keyboard tab order. */
+/** A button that cannot be activated. */
 export const Disabled: Story = {
   args: {
     disabled: true,
   },
 };
 
-/** Long translated labels can wrap and grow beyond the minimum target size. */
+/** A label that wraps onto a second line. */
 export const LongLabel: Story = {
   args: {
     children: 'Save all changes and return to the previous screen',
@@ -116,7 +116,7 @@ function ActionExample() {
   );
 }
 
-/** The semantic callback updates application-owned state without exposing an event. */
+/** `onAction` updating application state. */
 export const Activation: Story = {
   render: () => <ActionExample />,
 };

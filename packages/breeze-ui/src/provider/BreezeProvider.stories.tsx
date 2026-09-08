@@ -14,10 +14,10 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-/** The locale and styling boundary required by every Breeze component. */
+/** A provider with the application's locale. */
 export const Default: Story = {};
 
-/** The provider passes the application's locale into React Aria. */
+/** A French locale applied to the components below the provider. */
 export const Locale: Story = {
   args: {
     children: <Button>Enregistrer les modifications</Button>,
