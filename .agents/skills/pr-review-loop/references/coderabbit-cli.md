@@ -22,8 +22,12 @@ can differ from the organization charged for this repository.
   are still spending. Do not change organization settings without authorization.
 - A price quote, paid continuation warning, or `action_required` /
   `awaiting_confirmation` result ends the CodeRabbit attempt. Preserve the result
-  and report the cost block. Do not follow a suggested paid retry command or
-  treat exit code zero as a successful review.
+  and activate the main skill's credit-consent exception, even for a $0
+  promotional quote. Skip further CodeRabbit submissions for this loop, retain
+  completed Codex coverage, and continue fixes, publication, and the remaining
+  checks. Do not wait for CodeRabbit approval or ask to spend; disclose the skip
+  and missing coverage in the final report. Do not follow a suggested paid retry
+  command or treat exit code zero as a successful review.
 
 Omitting the paid-review flag protects **On demand** reviews; it is not a general
 guarantee against an organization's **Automatic** billing mode. This distinction
@@ -84,6 +88,9 @@ result; report an actual failure or user cancellation honestly.
 
 ## Wait for a rate-limit deadline without busy polling
 
+This applies to free cooldowns without a credit-consent requirement. An explicit
+credit gate takes the skip path above, even if the error also says rate limited.
+
 1. On a cooldown, record the server's retry time or duration, receipt time,
    reviewed snapshot, and command. Convert it to an absolute deadline, adding a
    small safety margin for clock rounding. Do not invent a fixed hourly reset.
@@ -117,8 +124,9 @@ Require a completed review against the intended nonempty delta, with no terminal
 error or payment block. A `review_skipped` result is not coverage of changed code.
 Do not mistake saved findings from an older run for the current result. Retain
 the run identity, snapshot, and final output; merge duplicates with Codex findings
-and apply the main skill's disposition rules. A blocked CodeRabbit run leaves the
-combined gate incomplete even if Codex is clean. CLI findings do not themselves
+and apply the main skill's disposition rules. A credit-consent skip is recorded
+as missing coverage while the rest of the loop continues. Other blocked or failed
+runs leave the combined gate incomplete even if Codex is clean. CLI findings do not themselves
 create GitHub threads or authorize posting messages.
 
 Command and event details: [CLI reference](https://docs.coderabbit.ai/cli/reference).

@@ -86,7 +86,10 @@ Adapt this review brief:
 Confirm `gpt-5.6-luna`, `low`, and the intended scope in the run header or tool
 metadata. A conflicting effective model or effort must be corrected before the
 review is counted; do not infer the result from the parent task's model alone.
-Launch this tracked run alongside CodeRabbit before waiting for either result.
+Launch this tracked run alongside CodeRabbit before waiting for either result,
+unless the main skill's credit-consent exception has skipped CodeRabbit for this
+loop. In that case, run only Codex on new deltas and retain earlier completed
+coverage; do not repeat an unchanged run to compensate for the skipped review.
 Do not triage its findings until both final reports are available. Wait for
 completion without leaving an unattended nested review process. Keep
 the final result and snapshot together. A timed-out, interrupted, unavailable,
