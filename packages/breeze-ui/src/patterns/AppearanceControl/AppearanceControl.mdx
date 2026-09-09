@@ -1,0 +1,25 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './AppearanceControl.stories';
+
+<Meta
+  of={Stories}
+  summary="Lets a person choose light, automatic or dark appearance."
+/>
+
+# AppearanceControl
+
+`AppearanceControl` lets a person choose Light, Auto or Dark. It reads and updates the nearest `BreezeProvider`, which resolves Auto against the operating system preference.
+
+<Canvas of={Stories.Default} />
+
+The application owns persistence. Save the value reported by `BreezeProvider` and pass it back as `appearance` on the next visit; `AppearanceControl` does not read or write browser storage.
+
+## Theme-reactive shadows
+
+Shadows use CSS variables so they change with the resolved appearance alongside colours and native controls.
+
+<Canvas of={Stories.ThemeReactiveShadow} />
+
+## API
+
+<ArgTypes of={Stories.Default} />

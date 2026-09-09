@@ -3,12 +3,12 @@ import * as Stories from './BreezeProvider.stories';
 
 <Meta
   of={Stories}
-  summary="Provides the locale and styles that Breeze UI components require."
+  summary="Provides the locale, appearance and styles that Breeze UI components require."
 />
 
 # BreezeProvider
 
-`BreezeProvider` provides the locale and styles that Breeze UI components require. Render it once, above every Breeze UI component. Components rendered without a provider throw an error.
+`BreezeProvider` provides the locale, appearance and styles that Breeze UI components require. Render it once, above every Breeze UI component. Components rendered without a provider throw an error.
 
 ```tsx
 <BreezeProvider locale="en-GB">
@@ -22,7 +22,7 @@ import * as Stories from './BreezeProvider.stories';
 
 `locale` takes a BCP 47 language tag. It sets the `lang` attribute and the text direction of the provider's root element.
 
-Only English (`en-GB`) messages are bundled. Supply `messages` to translate Breeze's loading announcement into the provider locale. Without an override, the announcement uses the English message and is marked `lang="en-GB"`, independently of the surrounding content's language.
+Only English (`en-GB`) messages are bundled. Supply partial `messages` to translate Breeze's loading announcement and appearance control into the provider locale. Without an override, Breeze's own text uses English and is marked `lang="en-GB"`, independently of the surrounding content's language.
 
 ```tsx
 <BreezeProvider locale="fr-FR" messages={{ loading: 'Chargement' }}>
@@ -32,9 +32,35 @@ Only English (`en-GB`) messages are bundled. Supply `messages` to translate Bree
 
 <Canvas of={Stories.Locale} />
 
-## Colour scheme
+## Appearance
 
-Components follow the operating system colour scheme. To set the scheme from your application, add `data-theme="light"` or `data-theme="dark"` to the `html` element.
+Appearance defaults to `automatic`, which follows the operating system and keeps following it when the preference changes. The provider resolves the choice to `light` or `dark`, then applies that value and the matching `color-scheme` to the document element.
+
+Use `defaultAppearance` when Breeze should hold the current choice in memory:
+
+```tsx
+<BreezeProvider
+  defaultAppearance="automatic"
+  locale="en-GB"
+  onAppearanceChange={(appearance) => saveAppearance(appearance)}
+>
+  <App />
+</BreezeProvider>
+```
+
+Use `appearance` with `onAppearanceChange` when application state controls it. `appearance` and `defaultAppearance` are mutually exclusive.
+
+```tsx
+<BreezeProvider
+  appearance={appearance}
+  locale="en-GB"
+  onAppearanceChange={setAppearance}
+>
+  <App />
+</BreezeProvider>
+```
+
+The provider never reads or writes durable browser storage. The application decides whether and where to persist the reported choice. If a persisted explicit choice must apply before the application starts, stamp its resolved value on the document element before loading the stylesheet; the stylesheet's media-query default already handles automatic dark mode before script runs.
 
 ## API
 

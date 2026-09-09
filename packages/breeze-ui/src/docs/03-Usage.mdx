@@ -40,15 +40,35 @@ export function SaveAction() {
 
 `BreezeProvider` takes a BCP 47 language tag, such as `en-GB` or `fr-FR`. Components use it for accessible interactions and text direction.
 
-## Dark mode
+## Appearance
 
-Components follow the operating system colour scheme. To set the scheme from your application, add `data-theme` to the `html` element:
+Components follow the operating system colour scheme by default. Add `AppearanceControl` anywhere below the provider to let a person choose Light, Auto or Dark:
 
-```html
-<html data-theme="dark"></html>
+```tsx
+import {
+  AppearanceControl,
+  type Appearance,
+  BreezeProvider,
+} from '@motech-development/breeze-ui';
+import { useState } from 'react';
+
+export function Root() {
+  const [appearance, setAppearance] = useState<Appearance>('automatic');
+
+  return (
+    <BreezeProvider
+      appearance={appearance}
+      locale="en-GB"
+      onAppearanceChange={setAppearance}
+    >
+      <AppearanceControl />
+      <App />
+    </BreezeProvider>
+  );
+}
 ```
 
-The supported values are `light` and `dark`. Remove the attribute to follow the operating system.
+The application owns persistence. Breeze reports changes and accepts an initial or controlled value, but never reads or writes browser storage.
 
 ## Customisation
 
