@@ -34,7 +34,7 @@ export const ThemeReactiveShadow: Story = {
     <div className="breeze-story-stack">
       <AppearanceControl />
       <div
-        className="breeze-story-shadow-panel breeze:shadow-breeze-panel"
+        className="breeze-story-shadow-panel"
         data-testid="theme-reactive-shadow"
       >
         Theme-reactive panel shadow

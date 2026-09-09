@@ -9,8 +9,6 @@
 @source '../provider/**/*.tsx';
 @source not '../**/*.stories.tsx';
 @source not '../**/*.test.tsx';
-/* Ship both theme-reactive wrappers before components begin consuming them. */
-@source inline("breeze:shadow-breeze-panel breeze:shadow-breeze-overlay");
 
 /* Nest the generated utilities too: consumer classes outside Breeze must never
    acquire styles merely because a library component uses the same utility. */
