@@ -85,7 +85,7 @@ export function BreezeProvider({
   const resolvedAppearance = resolveAppearance(appearance, prefersDark);
 
   useEffect(() => {
-    if (appearance !== 'automatic' || !preferredColorSchemeQuery) {
+    if (!preferredColorSchemeQuery) {
       return undefined;
     }
 
@@ -99,21 +99,21 @@ export function BreezeProvider({
 
     return () =>
       preferredColorSchemeQuery.removeEventListener('change', handleChange);
-  }, [appearance, preferredColorSchemeQuery]);
+  }, [preferredColorSchemeQuery]);
 
   useLayoutEffect(() => {
     const { documentElement } = document;
-    const previousTheme = documentElement.getAttribute('data-theme');
+    const previousTheme = documentElement.dataset.theme;
     const previousColorScheme = documentElement.style.colorScheme;
 
-    documentElement.setAttribute('data-theme', resolvedAppearance);
+    documentElement.dataset.theme = resolvedAppearance;
     documentElement.style.colorScheme = resolvedAppearance;
 
     return () => {
-      if (previousTheme === null) {
-        documentElement.removeAttribute('data-theme');
+      if (previousTheme === undefined) {
+        delete documentElement.dataset.theme;
       } else {
-        documentElement.setAttribute('data-theme', previousTheme);
+        documentElement.dataset.theme = previousTheme;
       }
 
       documentElement.style.colorScheme = previousColorScheme;
@@ -142,8 +142,12 @@ export function BreezeProvider({
       getMessageLocale,
       locale,
       messages: {
-        ...enGB,
-        ...messages,
+        appearance: messages?.appearance ?? enGB.appearance,
+        appearanceAutomatic:
+          messages?.appearanceAutomatic ?? enGB.appearanceAutomatic,
+        appearanceDark: messages?.appearanceDark ?? enGB.appearanceDark,
+        appearanceLight: messages?.appearanceLight ?? enGB.appearanceLight,
+        loading: messages?.loading ?? enGB.loading,
       },
       resolvedAppearance,
       setAppearance,

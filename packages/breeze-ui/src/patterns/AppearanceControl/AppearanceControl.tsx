@@ -18,7 +18,7 @@ const variants = {
   size: {},
   state: {
     selected:
-      'breeze:data-[selected]:border-breeze-brand breeze:data-[selected]:bg-breeze-brand-soft breeze:data-[selected]:text-breeze-brand-text',
+      'breeze:data-[selected]:border-breeze-brand breeze:data-[selected]:bg-breeze-brand-soft breeze:data-[selected]:text-breeze-brand-text breeze:forced-colors:data-[selected]:outline-2 breeze:forced-colors:data-[selected]:outline-offset-2',
   },
   variant: {},
 } as const;

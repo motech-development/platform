@@ -23,7 +23,9 @@ describe('BreezeProvider', () => {
         _type: string,
         listener: (event: MediaQueryListEvent) => void,
       ) => mediaListeners.add(listener),
-      matches: prefersDark,
+      get matches() {
+        return prefersDark;
+      },
       media: query,
       removeEventListener: (
         _type: string,
@@ -117,9 +119,14 @@ describe('BreezeProvider', () => {
     expect(document.documentElement).toHaveAttribute('data-theme', 'dark');
   });
 
-  it('does not follow operating system changes for an explicit appearance', () => {
-    render(
-      <BreezeProvider defaultAppearance="light" locale="en-GB">
+  it('uses the current operating system preference when returning to automatic', () => {
+    const onAppearanceChange = vi.fn();
+    const { rerender } = render(
+      <BreezeProvider
+        appearance="light"
+        locale="en-GB"
+        onAppearanceChange={onAppearanceChange}
+      >
         <AppearanceProbe />
       </BreezeProvider>,
     );
@@ -130,6 +137,31 @@ describe('BreezeProvider', () => {
         listener({ matches: true } as MediaQueryListEvent),
       );
     });
+
+    expect(screen.getByText('light:light')).toBeInTheDocument();
+
+    rerender(
+      <BreezeProvider
+        appearance="automatic"
+        locale="en-GB"
+        onAppearanceChange={onAppearanceChange}
+      >
+        <AppearanceProbe />
+      </BreezeProvider>,
+    );
+
+    expect(screen.getByText('automatic:dark')).toBeInTheDocument();
+    expect(document.documentElement).toHaveAttribute('data-theme', 'dark');
+  });
+
+  it('does not follow operating system changes for an explicit appearance', () => {
+    prefersDark = true;
+
+    render(
+      <BreezeProvider defaultAppearance="light" locale="en-GB">
+        <AppearanceProbe />
+      </BreezeProvider>,
+    );
 
     expect(screen.getByText('light:light')).toBeInTheDocument();
     expect(document.documentElement).toHaveAttribute('data-theme', 'light');
@@ -147,5 +179,17 @@ describe('BreezeProvider', () => {
 
     expect(getItem).not.toHaveBeenCalled();
     expect(setItem).not.toHaveBeenCalled();
+  });
+
+  it('uses an English fallback when a message override is undefined', () => {
+    render(
+      <BreezeProvider locale="en-GB" messages={{ loading: undefined }}>
+        <Button loading>Save</Button>
+      </BreezeProvider>,
+    );
+
+    expect(
+      screen.getByRole('progressbar', { name: 'Loading' }),
+    ).toBeInTheDocument();
   });
 });
