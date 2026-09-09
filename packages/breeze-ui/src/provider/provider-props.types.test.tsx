@@ -1,10 +1,9 @@
-import type { ReactElement } from 'react';
 import { describe, expect, it } from 'vitest';
 import { BreezeProvider } from './BreezeProvider';
 
 describe('BreezeProvider appearance props', () => {
   it('accepts controlled and uncontrolled appearance forms', () => {
-    const controlled: ReactElement = (
+    const controlled = (
       <BreezeProvider
         appearance="dark"
         locale="en-GB"
@@ -13,7 +12,7 @@ describe('BreezeProvider appearance props', () => {
         Content
       </BreezeProvider>
     );
-    const uncontrolled: ReactElement = (
+    const uncontrolled = (
       <BreezeProvider defaultAppearance="automatic" locale="en-GB">
         Content
       </BreezeProvider>
@@ -24,7 +23,7 @@ describe('BreezeProvider appearance props', () => {
   });
 
   it('rejects mixed controlled and uncontrolled appearance props', () => {
-    const mixed: ReactElement = (
+    const mixed = (
       <BreezeProvider
         appearance="dark"
         // @ts-expect-error Controlled and uncontrolled appearance props are exclusive.

@@ -1,11 +1,9 @@
-import type { ReactElement } from 'react';
 import { ToggleButton } from 'react-aria-components/ToggleButton';
 import { ToggleButtonGroup } from 'react-aria-components/ToggleButtonGroup';
 import {
   type Appearance,
   useBreezeContext,
 } from '../../provider/BreezeContext';
-import type enGB from '../../provider/en-GB';
 
 const variants = {
   base: {
@@ -38,10 +36,7 @@ const appearanceOptions = [
     message: 'appearanceDark',
     value: 'dark',
   },
-] as const satisfies readonly {
-  message: keyof typeof enGB;
-  value: Appearance;
-}[];
+] as const;
 
 function isAppearance(value: unknown): value is Appearance {
   return appearanceOptions.some((option) => option.value === value);
@@ -52,7 +47,7 @@ function isAppearance(value: unknown): value is Appearance {
  *
  * @summary A three-option appearance control backed by BreezeProvider.
  */
-function AppearanceControl(): ReactElement {
+function AppearanceControl() {
   const { appearance, getMessageLocale, messages, setAppearance } =
     useBreezeContext();
 

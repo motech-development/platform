@@ -177,6 +177,16 @@ members are needed by an adapter.
 - Give public utilities explicit parameter and result types, including
   `Promise<Result>` for asynchronous operations. Allow clear local and JSX return
   types to be inferred; do not annotate every expression.
+- React components should rely on their inferred JSX return type, including
+  exported components. Do not add `ReactElement`, `JSX.Element`, or equivalent
+  return annotations when every branch clearly returns JSX. A component's props
+  are its public input contract; an explicit return type is warranted only when
+  it enforces a less obvious contract than the implementation would infer.
+- Let local variables and test expressions infer their types. Do not annotate a
+  JSX expression merely to prove that component props type-check, and do not add
+  `satisfies` when a literal's inferred type already supports every use. Add an
+  annotation or `satisfies` constraint when it catches a real category of error,
+  prevents unwanted widening, or establishes an intentional boundary.
 - Model optional values as optional. Default optional component options in the
   destructured signature rather than repeating fallback expressions in JSX.
 - Use unions when callers provide alternative shapes. Narrow by a discriminator

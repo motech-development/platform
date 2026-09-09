@@ -14,7 +14,7 @@ interface StorybookManifests extends Record<string, unknown> {
   components?: ComponentsManifest;
 }
 
-function getPublicImport(storyPath: string): string | undefined {
+function getPublicImport(storyPath: string) {
   const storyFileName = storyPath.match(/\/([^/]+)\.stories\.[^/]+$/)?.[1];
 
   if (storyFileName === 'index') {
@@ -28,7 +28,7 @@ function getPublicImport(storyPath: string): string | undefined {
   return `import { ${storyFileName} } from "${packageName}";`;
 }
 
-function normaliseEntry(entry: ManifestEntry): ManifestEntry {
+function normaliseEntry(entry: ManifestEntry) {
   const publicImport = entry.path ? getPublicImport(entry.path) : undefined;
 
   if (!publicImport) {
