@@ -1,0 +1,33 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './IconTile.stories';
+
+<Meta
+  of={Stories}
+  summary="Places curated artwork on a semantic colour wash."
+/>
+
+# IconTile
+
+`IconTile` decorates state panels, rows and other content with a fixed-size icon wash.
+
+<Canvas of={Stories.Treatments} />
+
+## Direction markers
+
+Use the compact circular form for direction markers.
+
+<Canvas of={Stories.Direction} />
+
+## Accessibility
+
+Artwork is decorative by default. Supply `label` only when no adjacent text names its meaning; never rely on the tile colour alone.
+
+## Loading
+
+Set `loading` to preserve the tile dimensions while its artwork is unavailable.
+
+<Canvas of={Stories.Loading} />
+
+## API
+
+<ArgTypes />

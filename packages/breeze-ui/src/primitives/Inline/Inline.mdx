@@ -1,0 +1,33 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Inline.stories';
+
+<Meta
+  of={Stories}
+  summary="Arranges children horizontally on the Breeze spacing scale."
+/>
+
+# Inline
+
+`Inline` lays related items out horizontally. Its gap, alignment and distribution choices are closed to the arrangements used by Breeze.
+
+<Canvas of={Stories.Default} />
+
+## Wrapping
+
+Enable `wrap` for collections of labels or actions that may not fit on one line.
+
+<Canvas of={Stories.Wrapped} />
+
+## Accessibility
+
+Choose a semantic element only when the content forms a landmark or labelled region. Visual order and document order remain the same.
+
+## Loading
+
+Set `loading` to replace the content with an accessible placeholder while preserving the row's layout.
+
+<Canvas of={Stories.Loading} />
+
+## API
+
+<ArgTypes />

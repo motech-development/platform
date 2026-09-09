@@ -1,0 +1,33 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Stack.stories';
+
+<Meta
+  of={Stories}
+  summary="Arranges children vertically on the Breeze spacing scale."
+/>
+
+# Stack
+
+`Stack` arranges related content vertically. Choose `gap` from the 4px Breeze spacing scale and use `horizontalAlign` to align the children across the row axis.
+
+<Canvas of={Stories.Default} />
+
+## Alignment
+
+The default stretches children. Use `start`, `center` or `end` when their intrinsic width should be retained.
+
+<Canvas of={Stories.Centred} />
+
+## Accessibility
+
+The default `div` adds no semantics. Select `main`, `nav` or `section` only when the content has that meaning, and label landmarks or regions with `aria-label`.
+
+## Loading
+
+Set `loading` to replace the content with an accessible placeholder while preserving the stack's layout.
+
+<Canvas of={Stories.Loading} />
+
+## API
+
+<ArgTypes />

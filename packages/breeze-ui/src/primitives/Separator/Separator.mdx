@@ -1,0 +1,30 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Separator.stories';
+
+<Meta of={Stories} summary="Separates adjacent regions along one axis." />
+
+# Separator
+
+`Separator` draws the one-token line used between related regions.
+
+<Canvas of={Stories.Horizontal} />
+
+## Vertical separators
+
+Use the vertical orientation only inside a layout with a defined block size.
+
+<Canvas of={Stories.Vertical} />
+
+## Accessibility
+
+The component exposes `role="separator"` and the selected orientation.
+
+## Loading
+
+Set `loading` when the divided content is unavailable and a placeholder should be announced.
+
+<Canvas of={Stories.Loading} />
+
+## API
+
+<ArgTypes />

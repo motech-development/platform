@@ -7235,6 +7235,7 @@ __metadata:
     "@vitest/coverage-v8": "npm:4.1.9"
     eslint: "npm:9.37.0"
     jsdom: "npm:29.1.1"
+    lucide-react: "npm:1.39.0"
     playwright: "npm:1.61.1"
     prettier: "npm:3.2.5"
     react: "npm:19.2.7"
@@ -23383,6 +23384,15 @@ __metadata:
   dependencies:
     es5-ext: "npm:~0.10.2"
   checksum: 10c0/83517032b46843601c4528be65e8aaf85f5a7860a9cfa3e4f2b5591da436e7cd748d95b450c91434c4ffb75d3ae4c069ddbdd9f71ada56a99a00c03088c51b4d
+  languageName: node
+  linkType: hard
+
+"lucide-react@npm:1.39.0":
+  version: 1.39.0
+  resolution: "lucide-react@npm:1.39.0"
+  peerDependencies:
+    react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 10c0/2e3cb76fd707a96dadeafedc0806816620fa90450c96c9ad8f71e9253d655341a6770f4fe31b0da1e82a5dbdfcb3ac5240eba130c25d04898d8380a9365896a0
   languageName: node
   linkType: hard
 
