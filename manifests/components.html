@@ -588,7 +588,7 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">2 components ok</span><span class="filter-pill ok" aria-disabled="true">11 stories ok</span><a class="filter-pill ok" data-k="docs" href="#filter-docs">5 docs ok</a></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">3 components ok</span><span class="filter-pill ok" aria-disabled="true">13 stories ok</span><a class="filter-pill ok" data-k="docs" href="#filter-docs">6 docs ok</a></div>
   </div>
 </header>
 <main>
@@ -606,15 +606,136 @@
   no-story-error
   no-doc-error"
   role="listitem"
+  aria-label="AppearanceControl">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> AppearanceControl</h2>
+      <div class="badges">
+        
+        
+        <label for="c-0-patterns-appearancecontrol-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-0-patterns-appearancecontrol-docs" class="badge ok as-toggle">1 doc</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/patterns/AppearanceControl/AppearanceControl.stories.tsx">patterns-appearancecontrol · ./src/patterns/AppearanceControl/AppearanceControl.stories.tsx</div>
+    
+    <div class="hint">Lets a person choose light, automatic or dark appearance.</div>
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-0-patterns-appearancecontrol-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-0-patterns-appearancecontrol-docs" class="tg tg-docs" type="checkbox" hidden />
+  
+  
+
+  <div class="panels">
+    
+    
+    
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { AppearanceControl } from "@motech-development/breeze-ui";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Light, automatic and dark choices backed by BreezeProvider.</div>
+              <pre><code>const Default = () =&gt; &lt;AppearanceControl /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Theme Reactive Shadow</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">The panel shadow follows the resolved appearance through its CSS variable.</div>
+              <pre><code>const ThemeReactiveShadow = () =&gt; (
+  &lt;div className=&quot;breeze-story-stack&quot;&gt;
+    &lt;AppearanceControl /&gt;
+    &lt;div
+      className=&quot;breeze-story-shadow-panel breeze:shadow-breeze-panel&quot;
+      data-testid=&quot;theme-reactive-shadow&quot;
+    &gt;
+      Theme-reactive panel shadow
+    &lt;/div&gt;
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+        </div>
+    
+        <div class="panel panel-docs">
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Docs</span>
+                <span class="badge ok">doc ok</span>
+              </div>
+              <div class="hint">./src/patterns/AppearanceControl/AppearanceControl.mdx</div>
+              <div>Lets a person choose light, automatic or dark appearance.</div>
+              <div class="mdx-content"><pre><code>import { ArgTypes, Canvas, Meta } from &#39;@storybook/addon-docs/blocks&#39;;
+import * as Stories from &#39;./AppearanceControl.stories&#39;;
+
+&lt;Meta
+  of={Stories}
+  summary=&quot;Lets a person choose light, automatic or dark appearance.&quot;
+/&gt;
+
+# AppearanceControl
+
+`AppearanceControl` lets a person choose Light, Auto or Dark. It reads and updates the nearest `BreezeProvider`, which resolves Auto against the operating system preference.
+
+&lt;Canvas of={Stories.Default} /&gt;
+
+The application owns persistence. Save the value reported by `BreezeProvider` and pass it back as `appearance` on the next visit; `AppearanceControl` does not read or write browser storage.
+
+## Theme-reactive shadows
+
+Shadows use CSS variables so they change with the resolved appearance alongside colours and native controls.
+
+&lt;Canvas of={Stories.ThemeReactiveShadow} /&gt;
+
+## API
+
+&lt;ArgTypes of={Stories.Default} /&gt;
+</code></pre></div>
+            </div>
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  no-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
   aria-label="BreezeProvider">
   <div class="head">
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> BreezeProvider</h2>
       <div class="badges">
-        <label for="c-0-foundation-breezeprovider-props" class="badge ok as-toggle">2 prop types</label>
+        <label for="c-1-foundation-breezeprovider-props" class="badge ok as-toggle">5 prop types</label>
         
-        <label for="c-0-foundation-breezeprovider-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-0-foundation-breezeprovider-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-1-foundation-breezeprovider-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-1-foundation-breezeprovider-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -627,10 +748,10 @@
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-0-foundation-breezeprovider-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-0-foundation-breezeprovider-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-1-foundation-breezeprovider-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-1-foundation-breezeprovider-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-0-foundation-breezeprovider-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-1-foundation-breezeprovider-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -640,11 +761,21 @@
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
-              <span class="badge ok">2 prop types</span>
+              <span class="badge ok">5 prop types</span>
             </div>
             <pre><code>Component: src/provider/BreezeProvider.tsx::BreezeProvider</code></pre>
             <pre><code>Props:</code></pre>
             <pre><code>/**
+ * The application-owned appearance choice.
+ */
+appearance?: Appearance
+
+/**
+ * The initial appearance choice; defaults to automatic.
+ */
+defaultAppearance?: Appearance = automatic
+
+/**
  * BCP 47 locale for accessible interactions and future formatting components.
  */
 locale: string
@@ -652,7 +783,13 @@ locale: string
 /**
  * Accessible messages translated into the provider locale; defaults to English.
  */
-messages?: { loading: string; }</code></pre>
+messages?: Partial&lt;{ appearance: string; appearanceAutomatic: string; appearanceDark: string; appearanceLight: string; loading: string; }&gt;
+
+/**
+ * Reports a semantic appearance choice so the application can persist it.
+ * Reports a semantic appearance choice without persisting it.
+ */
+onAppearanceChange?: ((appearance: Appearance) =&gt; void) | ((appearance: Appearance) =&gt; void)</code></pre>
           </div>
         </div>
     
@@ -697,18 +834,18 @@ messages?: { loading: string; }</code></pre>
                 <span class="badge ok">doc ok</span>
               </div>
               <div class="hint">./src/provider/BreezeProvider.mdx</div>
-              <div>Provides the locale and styles that Breeze UI components require.</div>
+              <div>Provides the locale, appearance and styles that Breeze UI components require.</div>
               <div class="mdx-content"><pre><code>import { ArgTypes, Canvas, Meta } from &#39;@storybook/addon-docs/blocks&#39;;
 import * as Stories from &#39;./BreezeProvider.stories&#39;;
 
 &lt;Meta
   of={Stories}
-  summary=&quot;Provides the locale and styles that Breeze UI components require.&quot;
+  summary=&quot;Provides the locale, appearance and styles that Breeze UI components require.&quot;
 /&gt;
 
 # BreezeProvider
 
-`BreezeProvider` provides the locale and styles that Breeze UI components require. Render it once, above every Breeze UI component. Components rendered without a provider throw an error.
+`BreezeProvider` provides the locale, appearance and styles that Breeze UI components require. Render it once, above every Breeze UI component. Components rendered without a provider throw an error.
 
 ```tsx
 &lt;BreezeProvider locale=&quot;en-GB&quot;&gt;
@@ -722,7 +859,7 @@ import * as Stories from &#39;./BreezeProvider.stories&#39;;
 
 `locale` takes a BCP 47 language tag. It sets the `lang` attribute and the text direction of the provider&#39;s root element.
 
-Only English (`en-GB`) messages are bundled. Supply `messages` to translate Breeze&#39;s loading announcement into the provider locale. Without an override, the announcement uses the English message and is marked `lang=&quot;en-GB&quot;`, independently of the surrounding content&#39;s language.
+Only English (`en-GB`) messages are bundled. Supply partial `messages` to translate Breeze&#39;s loading announcement and appearance control into the provider locale. Without an override, Breeze&#39;s own text uses English and is marked `lang=&quot;en-GB&quot;`, independently of the surrounding content&#39;s language.
 
 ```tsx
 &lt;BreezeProvider locale=&quot;fr-FR&quot; messages={{ loading: &#39;Chargement&#39; }}&gt;
@@ -732,9 +869,35 @@ Only English (`en-GB`) messages are bundled. Supply `messages` to translate Bree
 
 &lt;Canvas of={Stories.Locale} /&gt;
 
-## Colour scheme
+## Appearance
 
-Components follow the operating system colour scheme. To set the scheme from your application, add `data-theme=&quot;light&quot;` or `data-theme=&quot;dark&quot;` to the `html` element.
+Appearance defaults to `automatic`, which follows the operating system and keeps following it when the preference changes. The provider resolves the choice to `light` or `dark`, then applies that value and the matching `color-scheme` to the document element.
+
+Use `defaultAppearance` when Breeze should hold the current choice in memory:
+
+```tsx
+&lt;BreezeProvider
+  defaultAppearance=&quot;automatic&quot;
+  locale=&quot;en-GB&quot;
+  onAppearanceChange={(appearance) =&gt; saveAppearance(appearance)}
+&gt;
+  &lt;App /&gt;
+&lt;/BreezeProvider&gt;
+```
+
+Use `appearance` with `onAppearanceChange` when application state controls it. `appearance` and `defaultAppearance` are mutually exclusive.
+
+```tsx
+&lt;BreezeProvider
+  appearance={appearance}
+  locale=&quot;en-GB&quot;
+  onAppearanceChange={setAppearance}
+&gt;
+  &lt;App /&gt;
+&lt;/BreezeProvider&gt;
+```
+
+The provider never reads or writes durable browser storage. The application decides whether and where to persist the reported choice. If a persisted explicit choice must apply before the application starts, stamp its resolved value on the document element before loading the stylesheet; the stylesheet&#39;s media-query default already handles automatic dark mode before script runs.
 
 ## API
 
@@ -757,10 +920,10 @@ Components follow the operating system colour scheme. To set the scheme from you
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Button</h2>
       <div class="badges">
-        <label for="c-1-actions-button-props" class="badge ok as-toggle">18 prop types</label>
+        <label for="c-2-actions-button-props" class="badge ok as-toggle">18 prop types</label>
         
-        <label for="c-1-actions-button-stories" class="badge ok as-toggle">9 stories</label>
-        <label for="c-1-actions-button-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-2-actions-button-stories" class="badge ok as-toggle">9 stories</label>
+        <label for="c-2-actions-button-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -773,10 +936,10 @@ Components follow the operating system colour scheme. To set the scheme from you
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-1-actions-button-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-1-actions-button-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-2-actions-button-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-2-actions-button-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-1-actions-button-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-2-actions-button-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -1270,15 +1433,35 @@ export function SaveAction() {
 
 `BreezeProvider` takes a BCP 47 language tag, such as `en-GB` or `fr-FR`. Components use it for accessible interactions and text direction.
 
-## Dark mode
+## Appearance
 
-Components follow the operating system colour scheme. To set the scheme from your application, add `data-theme` to the `html` element:
+Components follow the operating system colour scheme by default. Add `AppearanceControl` anywhere below the provider to let a person choose Light, Auto or Dark:
 
-```html
-&lt;html data-theme=&quot;dark&quot;&gt;&lt;/html&gt;
+```tsx
+import {
+  AppearanceControl,
+  type Appearance,
+  BreezeProvider,
+} from &#39;@motech-development/breeze-ui&#39;;
+import { useState } from &#39;react&#39;;
+
+export function Root() {
+  const [appearance, setAppearance] = useState&lt;Appearance&gt;(&#39;automatic&#39;);
+
+  return (
+    &lt;BreezeProvider
+      appearance={appearance}
+      locale=&quot;en-GB&quot;
+      onAppearanceChange={setAppearance}
+    &gt;
+      &lt;AppearanceControl /&gt;
+      &lt;App /&gt;
+    &lt;/BreezeProvider&gt;
+  );
+}
 ```
 
-The supported values are `light` and `dark`. Remove the attribute to follow the operating system.
+The application owns persistence. Breeze reports changes and accepts an initial or controlled value, but never reads or writes browser storage.
 
 ## Customisation
 
