@@ -41,6 +41,7 @@
   --spacing-breeze-md: 38px;
   --spacing-breeze-lg: 52px;
   --spacing-breeze-sm: 34px;
+  --spacing-breeze-px: 1px;
   --spacing-breeze-tap: 44px;
   --spacing-breeze-row: 64px;
   --spacing-breeze-sheet: 610px;
@@ -76,6 +77,7 @@
   --spacing-breeze-4: 16px;
   --spacing-breeze-5: 20px;
   --spacing-breeze-6: 24px;
+  --spacing-breeze-7: 28px;
   --spacing-breeze-8: 32px;
 }
 
@@ -161,4 +163,12 @@
 
 @utility inline-size-full {
   inline-size: 100%;
+}
+
+@utility inline-size-* {
+  inline-size: --value(--spacing- *);
+}
+
+@utility max-inline-* {
+  max-inline-size: --value(--container- *);
 }

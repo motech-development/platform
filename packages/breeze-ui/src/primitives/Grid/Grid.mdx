@@ -1,0 +1,30 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Grid.stories';
+
+<Meta of={Stories} summary="Arranges content in equal, responsive columns." />
+
+# Grid
+
+`Grid` provides one, two or three equal columns on the Breeze spacing scale. Multi-column grids collapse to one column below `md` by default.
+
+<Canvas of={Stories.Responsive} />
+
+## Fixed columns
+
+Set `collapseBelow="none"` only for content that remains understandable at narrow widths.
+
+<Canvas of={Stories.Fixed} />
+
+## Accessibility
+
+Grid changes visual arrangement, not reading order. Author children in the order they should be read.
+
+## Loading
+
+Set `loading` to replace each expected column with a placeholder and announce the loading state once.
+
+<Canvas of={Stories.Loading} />
+
+## API
+
+<ArgTypes />

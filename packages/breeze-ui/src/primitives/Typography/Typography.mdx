@@ -1,0 +1,41 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Typography.stories';
+
+<Meta
+  of={Stories}
+  summary="Applies Breeze text roles and locale-aware formatting."
+/>
+
+# Typography
+
+`Typography` provides the money, heading, title, body, caption, label and micro roles. Money uses negative tracking and tabular numerals. Set `numeric` on other figure text; interface text retains normal tracking.
+
+<Canvas of={Stories.Roles} />
+
+## Numeric figures
+
+Set `numeric` on figures outside the money role. They gain tabular numerals, negative tracking and logical end alignment without tightening interface headings.
+
+<Canvas of={Stories.FiguresAndInterfaceText} />
+
+## Money and dates
+
+Pass semantic values with `format="currency"` or `format="date"`. Dates use the exported `IsoCalendarDate` string contract. Formatting uses the nearest `BreezeProvider` locale. Currency comes from the data field, and signs are rendered separately with a true minus character.
+
+<Canvas of={Stories.Formatting} />
+
+No separate formatting components are exported.
+
+## Accessibility
+
+Choose the `element` for document semantics; the visual role does not force a heading level. Do not use colour alone to communicate direction or status.
+
+## Loading
+
+Set `loading` to preserve the text's place while its value is unavailable.
+
+<Canvas of={Stories.Loading} />
+
+## API
+
+<ArgTypes />

@@ -1,0 +1,29 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Icon.stories';
+
+<Meta
+  of={Stories}
+  summary="Renders curated artwork under Breeze semantic names."
+/>
+
+# Icon
+
+`Icon` exposes a curated Lucide set under names that describe Breeze meanings. Consumers never import Lucide directly, and the dependency is confined to this component.
+
+<Canvas of={Stories.Gallery} />
+
+## Accessible names
+
+Icons are decorative by default. Supply `label` only when the icon conveys meaning without adjacent text.
+
+<Canvas of={Stories.Named} />
+
+## Loading
+
+Set `loading` to preserve the icon's dimensions and announce that its artwork is unavailable.
+
+<Canvas of={Stories.Loading} />
+
+## API
+
+<ArgTypes />

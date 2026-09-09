@@ -1,0 +1,58 @@
+import type { CSSProperties } from 'react';
+import { useBreezeContext } from '../../provider/BreezeContext';
+
+const variants = {
+  base: {
+    skeleton:
+      'breeze:block breeze:animate-pulse breeze:bg-breeze-sunken breeze:pointer-events-none',
+  },
+  compound: {},
+  size: {},
+  state: {},
+  variant: {
+    circle: 'breeze:aspect-square breeze:rounded-breeze-full',
+    rectangle: 'breeze:rounded-breeze-sm',
+    text: 'breeze:block-size-breeze-3 breeze:inline-size-full breeze:rounded-breeze-xs',
+  },
+} as const;
+
+export type SkeletonShape = keyof typeof variants.variant;
+
+export interface SkeletonProps {
+  /** Any CSS length; Skeleton is the deliberate exception to token-only dimensions. */
+  blockSize?: number | string;
+  /** Any CSS length; Skeleton is the deliberate exception to token-only dimensions. */
+  inlineSize?: number | string;
+  /** Announces the loading region. Omit when another component owns the announcement. */
+  label?: string;
+  shape?: SkeletonShape;
+}
+
+/**
+ * Draws an arbitrary placeholder shaped like the content it will replace.
+ *
+ * @summary A flexible indeterminate content placeholder.
+ */
+export function Skeleton({
+  blockSize,
+  inlineSize,
+  label,
+  shape = 'text',
+}: Readonly<SkeletonProps>) {
+  useBreezeContext();
+
+  const dimensions: CSSProperties = {
+    blockSize,
+    inlineSize,
+  };
+
+  return (
+    <span
+      aria-hidden={label === undefined ? true : undefined}
+      aria-label={label}
+      className={[variants.base.skeleton, variants.variant[shape]].join(' ')}
+      role={label === undefined ? undefined : 'progressbar'}
+      style={dimensions}
+    />
+  );
+}

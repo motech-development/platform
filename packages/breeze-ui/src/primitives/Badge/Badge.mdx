@@ -1,0 +1,24 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Badge.stories';
+
+<Meta of={Stories} summary="Marks a short status or count." />
+
+# Badge
+
+`Badge` is compact, non-interactive status content. Its `neutral`, `brand`, `positive`, `warning` and `danger` variants are Badge treatments—not shared control variants.
+
+<Canvas of={Stories.Treatments} />
+
+## Accessibility
+
+Keep wording meaningful without colour. Do not put controls inside a badge, and do not use it for long prose.
+
+## Loading
+
+Set `loading` to preserve the badge shape while its status text is unavailable.
+
+<Canvas of={Stories.Loading} />
+
+## API
+
+<ArgTypes />

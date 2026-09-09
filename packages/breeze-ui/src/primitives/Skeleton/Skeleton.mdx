@@ -1,0 +1,21 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Skeleton.stories';
+
+<Meta
+  of={Stories}
+  summary="Draws a placeholder shaped like forthcoming content."
+/>
+
+# Skeleton
+
+`Skeleton` represents content while it loads. Unlike layout primitives, its block and inline dimensions deliberately accept arbitrary CSS lengths so it can match the content it replaces.
+
+<Canvas of={Stories.Shapes} />
+
+## Accessibility
+
+Supply `label` when the skeleton owns the loading announcement. Omit it when a parent component already announces loading; the skeleton is then hidden from assistive technology.
+
+## API
+
+<ArgTypes />

@@ -1,0 +1,25 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './VisuallyHidden.stories';
+
+<Meta
+  of={Stories}
+  summary="Preserves content for assistive technology without displaying it."
+/>
+
+# VisuallyHidden
+
+Use `VisuallyHidden` when essential wording would duplicate an adjacent visual cue, such as the name of an icon-only control.
+
+<Canvas of={Stories.IconLabel} />
+
+Do not use it to hide focusable content or information sighted users also need.
+
+## Loading
+
+Set `loading` to replace the hidden content with an assistive-technology announcement while it is unavailable.
+
+<Canvas of={Stories.Loading} />
+
+## API
+
+<ArgTypes />

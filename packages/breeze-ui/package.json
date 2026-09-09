@@ -46,6 +46,7 @@
   },
   "dependencies": {
     "@internationalized/date": "3.12.2",
+    "lucide-react": "1.39.0",
     "react-aria-components": "1.19.0",
     "remark-gfm": "4.0.1"
   },
