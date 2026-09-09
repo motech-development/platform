@@ -1,11 +1,10 @@
 import type { Preview } from '@storybook/react-vite';
-import type { Appearance } from '../src/provider/BreezeContext';
 import { BreezeProvider } from '../src/provider/BreezeProvider';
 import '../src/styles/reset.css';
 import '../src/styles/styles.css';
 import './preview.css';
 
-function getAppearance(value: unknown): Appearance {
+function getAppearance(value: unknown) {
   if (value === 'dark' || value === 'light') {
     return value;
   }

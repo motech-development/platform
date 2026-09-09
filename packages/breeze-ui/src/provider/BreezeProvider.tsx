@@ -7,11 +7,7 @@ import {
   useState,
 } from 'react';
 import { I18nProvider, useLocale } from 'react-aria-components/I18nProvider';
-import {
-  type Appearance,
-  BreezeContext,
-  type ResolvedAppearance,
-} from './BreezeContext';
+import { type Appearance, BreezeContext } from './BreezeContext';
 import enGB from './en-GB';
 
 interface BreezeProviderBaseProps {
@@ -42,10 +38,7 @@ interface UncontrolledAppearanceProps {
 export type BreezeProviderProps = BreezeProviderBaseProps &
   (ControlledAppearanceProps | UncontrolledAppearanceProps);
 
-function resolveAppearance(
-  appearance: Appearance,
-  prefersDark: boolean,
-): ResolvedAppearance {
+function resolveAppearance(appearance: Appearance, prefersDark: boolean) {
   if (appearance === 'automatic') {
     return prefersDark ? 'dark' : 'light';
   }

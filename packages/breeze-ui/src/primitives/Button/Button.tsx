@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, ReactElement, Ref } from 'react';
+import type { ButtonHTMLAttributes, Ref } from 'react';
 import { createElement } from 'react';
 import { Button as AriaButton } from 'react-aria-components/Button';
 import { ProgressBarContext } from 'react-aria-components/ProgressBar';
@@ -45,7 +45,7 @@ const variants = {
 } as const;
 
 /** Connect the pending announcement to a phrasing element inside the button. */
-function LoadingStatus(): ReactElement {
+function LoadingStatus() {
   const progress = useSlottedContext(ProgressBarContext);
   const { getMessageLocale, messages } = useBreezeContext();
 
@@ -119,7 +119,7 @@ export function Button({
   type = 'button',
   value,
   variant = 'primary',
-}: Readonly<ButtonProps>): ReactElement {
+}: Readonly<ButtonProps>) {
   useBreezeContext();
 
   const className = [
