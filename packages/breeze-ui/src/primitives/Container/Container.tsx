@@ -1,8 +1,6 @@
 import type { ReactNode } from 'react';
 import { createElement } from 'react';
-import { useBreezeContext } from '../../provider/BreezeContext';
 import type { LayoutElement } from '../layout.types';
-import { Skeleton } from '../Skeleton/Skeleton';
 
 const variants = {
   base: {
@@ -31,8 +29,6 @@ export interface ContainerProps {
   children: ReactNode;
   /** Selects the semantic HTML element. Defaults to `div`. */
   element?: LayoutElement;
-  /** Replaces the content with an accessible full-width placeholder. */
-  loading?: boolean;
   /** Adds responsive inline page gutters. Defaults to `true`. */
   padded?: boolean;
   /** Selects the maximum content measure. Defaults to `page`. */
@@ -48,17 +44,14 @@ export function Container({
   'aria-label': ariaLabel,
   children,
   element = 'div',
-  loading = false,
   padded = true,
   width = 'page',
 }: Readonly<ContainerProps>) {
-  const { messages } = useBreezeContext();
   const accessibleLabel = ariaLabel?.trim() || undefined;
 
   return createElement(
     element,
     {
-      'aria-busy': loading || undefined,
       'aria-label': accessibleLabel,
       className: [
         variants.base.container,
@@ -72,15 +65,6 @@ export function Container({
           ? 'group'
           : undefined,
     },
-    loading ? (
-      <Skeleton
-        blockSize={96}
-        inlineSize="100%"
-        label={messages.loading}
-        shape="rectangle"
-      />
-    ) : (
-      children
-    ),
+    children,
   );
 }

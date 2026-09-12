@@ -1,6 +1,4 @@
-import { useBreezeContext } from '../../provider/BreezeContext';
 import { Icon, type IconName } from '../Icon/Icon';
-import { Skeleton } from '../Skeleton/Skeleton';
 
 const variants = {
   base: {
@@ -34,8 +32,6 @@ export type IconTileTone = keyof typeof variants.variant.tone;
 export interface IconTileProps {
   /** Names meaningful artwork; omit when nearby text already describes it. */
   label?: string;
-  /** Replaces the artwork with an accessible placeholder while preserving the tile. */
-  loading?: boolean;
   /** Selects artwork from the curated Breeze icon set. */
   name: IconName;
   /** Selects a circular or rounded-square tile. Defaults to `rounded`. */
@@ -53,14 +49,11 @@ export interface IconTileProps {
  */
 export function IconTile({
   label,
-  loading = false,
   name,
   shape = 'square',
   size = 'lg',
   tone = 'brand',
 }: Readonly<IconTileProps>) {
-  const { messages } = useBreezeContext();
-
   return (
     <span
       className={[
@@ -70,16 +63,7 @@ export function IconTile({
         variants.size[size],
       ].join(' ')}
     >
-      {loading ? (
-        <Skeleton
-          blockSize="100%"
-          inlineSize="100%"
-          label={messages.loading}
-          shape={shape === 'circle' ? 'circle' : 'rectangle'}
-        />
-      ) : (
-        <Icon label={label} name={name} size={size === 'lg' ? 'md' : 'sm'} />
-      )}
+      <Icon label={label} name={name} size={size === 'lg' ? 'md' : 'sm'} />
     </span>
   );
 }

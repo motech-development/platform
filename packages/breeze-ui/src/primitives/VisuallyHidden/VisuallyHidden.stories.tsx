@@ -22,11 +22,3 @@ export const IconLabel: Story = {
     </button>
   ),
 };
-
-/** Announces loading when hidden content is not ready. */
-export const Loading: Story = {
-  args: {
-    children: 'Pending content',
-    loading: true,
-  },
-};

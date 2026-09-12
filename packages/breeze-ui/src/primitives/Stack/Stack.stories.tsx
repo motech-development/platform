@@ -28,8 +28,3 @@ export const Centred: Story = {
     horizontalAlign: 'center',
   },
 };
-
-/** Replaces the stack's content while data is loading. */
-export const Loading: Story = {
-  args: { loading: true },
-};

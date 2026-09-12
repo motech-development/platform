@@ -51,8 +51,3 @@ export const Gallery: Story = {
     </Inline>
   ),
 };
-
-/** Preserves icon dimensions while artwork is loading. */
-export const Loading: Story = {
-  args: { loading: true },
-};

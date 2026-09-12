@@ -4,6 +4,7 @@ import renderBreeze from '../../../test/render';
 import { Card, type CardProps } from './Card';
 
 expectTypeOf<CardProps>().not.toHaveProperty('className');
+expectTypeOf<CardProps>().not.toHaveProperty('loading');
 expectTypeOf<CardProps>().not.toHaveProperty('style');
 expectTypeOf<CardProps['padding']>().toEqualTypeOf<
   0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | undefined
@@ -28,14 +29,5 @@ describe('Card', () => {
     expect(
       screen.getByRole('group', { name: 'Current balance' }),
     ).toBeInTheDocument();
-  });
-
-  it('replaces unavailable content with an accessible placeholder', () => {
-    renderBreeze(<Card loading>Card content</Card>);
-
-    expect(screen.getByRole('progressbar', { name: 'Loading' })).toHaveStyle({
-      inlineSize: '100%',
-    });
-    expect(screen.queryByText('Card content')).not.toBeInTheDocument();
   });
 });

@@ -1,8 +1,6 @@
 import type { ReactNode } from 'react';
 import { createElement } from 'react';
-import { useBreezeContext } from '../../provider/BreezeContext';
 import type { LayoutElement, LayoutGap } from '../layout.types';
-import { Skeleton } from '../Skeleton/Skeleton';
 
 const variants = {
   base: {
@@ -61,8 +59,6 @@ export interface GridProps {
   element?: LayoutElement;
   /** Applies space between items from the Breeze spacing scale. Defaults to `4`. */
   gap?: LayoutGap;
-  /** Replaces items with accessible placeholders while preserving the column layout. */
-  loading?: boolean;
 }
 
 /**
@@ -77,26 +73,12 @@ export function Grid({
   columns = 2,
   element = 'div',
   gap = 4,
-  loading = false,
 }: Readonly<GridProps>) {
-  const { messages } = useBreezeContext();
   const accessibleLabel = ariaLabel?.trim() || undefined;
-  const content = loading
-    ? Array.from({ length: columns }, (_, index) => (
-        <Skeleton
-          blockSize={96}
-          inlineSize="100%"
-          key={index}
-          label={index === 0 ? messages.loading : undefined}
-          shape="rectangle"
-        />
-      ))
-    : children;
 
   return createElement(
     element,
     {
-      'aria-busy': loading || undefined,
       'aria-label': accessibleLabel,
       className: [
         variants.base.grid,
@@ -108,6 +90,6 @@ export function Grid({
           ? 'group'
           : undefined,
     },
-    content,
+    children,
   );
 }

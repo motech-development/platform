@@ -25,8 +25,3 @@ export const Vertical: Story = {
     ),
   ],
 };
-
-/** Shows a placeholder while the divided content is loading. */
-export const Loading: Story = {
-  args: { loading: true },
-};

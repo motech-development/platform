@@ -30,8 +30,3 @@ export const Raised: Story = {
     variant: 'raised',
   },
 };
-
-/** Preserves the card surface while its content is loading. */
-export const Loading: Story = {
-  args: { loading: true },
-};

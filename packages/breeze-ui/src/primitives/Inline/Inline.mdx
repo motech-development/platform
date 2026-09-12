@@ -22,11 +22,7 @@ Enable `wrap` for collections of labels or actions that may not fit on one line.
 
 Choose a semantic element only when the content forms a landmark or labelled region. Visual order and document order remain the same.
 
-## Loading
-
-Set `loading` to replace the content with an accessible placeholder while preserving the row's layout.
-
-<Canvas of={Stories.Loading} />
+Loading belongs to the items inside the row. Compose loading-capable children or explicit `Skeleton` elements so placeholders retain the intended item sizes.
 
 ## API
 

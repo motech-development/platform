@@ -1,9 +1,6 @@
 import type { ReactNode } from 'react';
-import { Children, createElement } from 'react';
-import { useBreezeContext } from '../../provider/BreezeContext';
-import flattenLayoutChildren from '../layout.children';
+import { createElement } from 'react';
 import type { LayoutAlign, LayoutElement, LayoutGap } from '../layout.types';
-import { Skeleton } from '../Skeleton/Skeleton';
 
 const variants = {
   base: {
@@ -41,8 +38,6 @@ export interface StackProps {
   gap?: LayoutGap;
   /** Aligns items along the inline axis. Defaults to `stretch`. */
   horizontalAlign?: LayoutAlign;
-  /** Replaces each item with an accessible placeholder while preserving the stack. */
-  loading?: boolean;
 }
 
 /**
@@ -56,32 +51,12 @@ export function Stack({
   element = 'div',
   gap = 3,
   horizontalAlign = 'stretch',
-  loading = false,
 }: Readonly<StackProps>) {
-  const { messages } = useBreezeContext();
   const accessibleLabel = ariaLabel?.trim() || undefined;
-  let content = children;
-
-  if (loading) {
-    const layoutChildren = flattenLayoutChildren(children);
-
-    content =
-      layoutChildren.length === 0 ? (
-        <Skeleton inlineSize="100%" label={messages.loading} />
-      ) : (
-        Children.map(layoutChildren, (_, index) => (
-          <Skeleton
-            inlineSize="100%"
-            label={index === 0 ? messages.loading : undefined}
-          />
-        ))
-      );
-  }
 
   return createElement(
     element,
     {
-      'aria-busy': loading || undefined,
       'aria-label': accessibleLabel,
       className: [
         variants.base.stack,
@@ -93,6 +68,6 @@ export function Stack({
           ? 'group'
           : undefined,
     },
-    content,
+    children,
   );
 }

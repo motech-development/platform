@@ -1,6 +1,3 @@
-import { useBreezeContext } from '../../provider/BreezeContext';
-import { Skeleton } from '../Skeleton/Skeleton';
-
 const variants = {
   base: {
     separator:
@@ -18,8 +15,6 @@ const variants = {
 export type SeparatorOrientation = keyof typeof variants.variant;
 
 export interface SeparatorProps {
-  /** Replaces the divider with a decorative placeholder of the same orientation. */
-  loading?: boolean;
   /** Sets the divider axis. Defaults to `horizontal`. */
   orientation?: SeparatorOrientation;
 }
@@ -30,22 +25,8 @@ export interface SeparatorProps {
  * @summary A semantic one-token divider.
  */
 export function Separator({
-  loading = false,
   orientation = 'horizontal',
 }: Readonly<SeparatorProps>) {
-  const { messages } = useBreezeContext();
-
-  if (loading) {
-    return (
-      <Skeleton
-        blockSize={orientation === 'horizontal' ? 1 : '100%'}
-        inlineSize={orientation === 'horizontal' ? '100%' : 1}
-        label={messages.loading}
-        shape="rectangle"
-      />
-    );
-  }
-
   return (
     <hr
       aria-orientation={orientation}

@@ -1,9 +1,6 @@
 import type { ReactNode } from 'react';
-import { Children, createElement } from 'react';
-import { useBreezeContext } from '../../provider/BreezeContext';
-import flattenLayoutChildren from '../layout.children';
+import { createElement } from 'react';
 import type { LayoutAlign, LayoutElement, LayoutGap } from '../layout.types';
-import { Skeleton } from '../Skeleton/Skeleton';
 
 const variants = {
   base: {
@@ -53,8 +50,6 @@ export interface InlineProps {
   gap?: LayoutGap;
   /** Distributes items along the inline axis. Defaults to `start`. */
   justify?: InlineJustify;
-  /** Replaces each item with an accessible placeholder while preserving the row. */
-  loading?: boolean;
   /** Aligns items along the block axis. Defaults to `center`. */
   verticalAlign?: LayoutAlign;
   /** Allows items to wrap onto additional rows. Defaults to `false`. */
@@ -72,41 +67,14 @@ export function Inline({
   element = 'div',
   gap = 3,
   justify = 'start',
-  loading = false,
   verticalAlign = 'center',
   wrap = false,
 }: Readonly<InlineProps>) {
-  const { messages } = useBreezeContext();
   const accessibleLabel = ariaLabel?.trim() || undefined;
-  let content = children;
-
-  if (loading) {
-    const layoutChildren = flattenLayoutChildren(children);
-
-    content =
-      layoutChildren.length === 0 ? (
-        <Skeleton
-          blockSize={28}
-          inlineSize={96}
-          label={messages.loading}
-          shape="rectangle"
-        />
-      ) : (
-        Children.map(layoutChildren, (_, index) => (
-          <Skeleton
-            blockSize={28}
-            inlineSize={96}
-            label={index === 0 ? messages.loading : undefined}
-            shape="rectangle"
-          />
-        ))
-      );
-  }
 
   return createElement(
     element,
     {
-      'aria-busy': loading || undefined,
       'aria-label': accessibleLabel,
       className: [
         variants.base.inline,
@@ -122,6 +90,6 @@ export function Inline({
           ? 'group'
           : undefined,
     },
-    content,
+    children,
   );
 }
