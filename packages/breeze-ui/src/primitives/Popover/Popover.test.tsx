@@ -186,7 +186,7 @@ describe('Popover', () => {
     );
   });
 
-  it('tracks focus when its portal belongs to another document', async () => {
+  it('rejects a portal container from another runtime document', () => {
     const iframe = document.createElement('iframe');
     document.body.append(iframe);
     const secondaryDocument = iframe.contentDocument;
@@ -199,58 +199,27 @@ describe('Popover', () => {
     secondaryDocument.body.append(appContainer);
     secondaryDocument.body.append(portalContainer);
 
-    function Example() {
-      const [loading, setLoading] = useState(false);
-      return (
-        <Popover
-          defaultOpen
-          loading={loading}
-          title="Details"
-          trigger="Open details"
-        >
-          <Button onAction={() => setLoading(true)}>Load details</Button>
-        </Popover>
-      );
-    }
-
-    render(
-      <BreezeProvider locale="en-GB" portalContainer={portalContainer}>
-        <Example />
-      </BreezeProvider>,
-      { baseElement: secondaryDocument.body, container: appContainer },
+    expect(() =>
+      render(
+        <BreezeProvider locale="en-GB" portalContainer={portalContainer}>
+          <Popover defaultOpen title="Details" trigger="Open details">
+            Delivery information
+          </Popover>
+        </BreezeProvider>,
+        { baseElement: secondaryDocument.body, container: appContainer },
+      ),
+    ).toThrow(
+      'BreezeProvider portalContainer must belong to the current document and light DOM.',
     );
-    const surface = await waitFor(() => {
-      const element = within(portalContainer).queryByRole('dialog', {
-        name: 'Details',
-      });
-      expect(element).toBeTruthy();
-      return element as HTMLElement;
-    });
-    await waitFor(() => expect(secondaryDocument.activeElement).toBe(surface));
-
-    await new Promise((resolve) => {
-      setTimeout(resolve, 550);
-    });
-    const loadButton = within(surface).getByRole('button', {
-      name: 'Load details',
-    });
-    loadButton.focus();
-    expect(secondaryDocument.activeElement).toBe(loadButton);
-    await userEvent.setup({ document: secondaryDocument }).click(loadButton);
-    await waitFor(() => expect(secondaryDocument.activeElement).toBe(surface));
     iframe.remove();
   });
 
-  it('rejects a portal container from another document', () => {
-    const iframe = document.createElement('iframe');
-    document.body.append(iframe);
-    const secondaryDocument = iframe.contentDocument;
-    if (!secondaryDocument) {
-      iframe.remove();
-      throw new Error('Expected the iframe to have a document');
-    }
-    const portalContainer = secondaryDocument.createElement('section');
-    secondaryDocument.body.append(portalContainer);
+  it('rejects a portal container inside a shadow root', () => {
+    const host = document.createElement('div');
+    document.body.append(host);
+    const shadowRoot = host.attachShadow({ mode: 'open' });
+    const portalContainer = document.createElement('section');
+    shadowRoot.append(portalContainer);
 
     expect(() =>
       render(
@@ -261,9 +230,9 @@ describe('Popover', () => {
         </BreezeProvider>,
       ),
     ).toThrow(
-      'Breeze overlay triggers and portal containers must belong to the same document.',
+      'BreezeProvider portalContainer must belong to the current document and light DOM.',
     );
-    iframe.remove();
+    host.remove();
   });
 
   it('keeps a non-dismissible surface open on Escape and outside presses but allows closing', async () => {

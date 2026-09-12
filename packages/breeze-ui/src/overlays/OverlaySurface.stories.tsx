@@ -56,6 +56,14 @@ export const SheetPopover: Story = {
     await expect(
       reopenedPopover.closest('[data-breeze-overlay]'),
     ).toHaveAttribute('data-breeze-topmost', 'false');
+    await userEvent.click(trigger);
+    await waitFor(async () => {
+      await expect(reopenedPopover).toBeVisible();
+      await expect(
+        reopenedPopover.contains(canvasElement.ownerDocument.activeElement),
+      ).toBe(true);
+    });
+    await userEvent.keyboard('{Escape}');
     await waitFor(async () => {
       await expect(trigger).toHaveFocus();
     });
