@@ -1,4 +1,10 @@
-import { fireEvent, screen, waitFor, within } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
@@ -9,6 +15,47 @@ import { Popover } from '../primitives/Popover/Popover';
 import OverlaySurface from './OverlaySurface';
 
 describe('Overlay stack', () => {
+  it('updates layer kind metadata without changing its stack position', async () => {
+    let changeKind: (kind: 'popover' | 'dialog') => void = () => {};
+    function Example() {
+      const [kind, setKind] = useState<'popover' | 'dialog'>('popover');
+      changeKind = (nextKind) => setKind(nextKind);
+      return (
+        <Drawer defaultOpen title="Sheet" trigger="Open sheet">
+          <OverlaySurface
+            defaultOpen
+            kind={kind}
+            title="Upper surface"
+            trigger="Open upper"
+          >
+            Upper content
+          </OverlaySurface>
+        </Drawer>
+      );
+    }
+
+    renderBreeze(<Example />);
+    const sheet = screen.getByRole('dialog', { name: 'Sheet' });
+    const sheetLayer = sheet.closest('[data-breeze-overlay]');
+    expect(
+      screen.getByRole('dialog', { name: 'Upper surface' }),
+    ).toBeInTheDocument();
+    expect(sheetLayer).not.toHaveAttribute('inert');
+
+    act(() => changeKind('dialog'));
+    await waitFor(() => {
+      expect(
+        screen.getByRole('dialog', { name: 'Upper surface' }),
+      ).toBeInTheDocument();
+      expect(sheetLayer).toHaveAttribute('inert');
+    });
+    const upperLayer = screen
+      .getByRole('dialog', { name: 'Upper surface' })
+      .closest('[data-breeze-overlay]');
+    expect(upperLayer).toHaveAttribute('data-breeze-overlay', 'dialog');
+    expect(upperLayer).toHaveAttribute('data-breeze-scrim', 'true');
+  });
+
   it('keeps the sheet mounted and its scrim owned while fullscreen is active', async () => {
     renderBreeze(
       <Drawer title="Sheet" trigger="Open sheet">

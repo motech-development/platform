@@ -62,6 +62,35 @@ describe('Popover', () => {
     await waitFor(() => expect(trigger).toHaveFocus());
   });
 
+  it('toggles from its trigger with pointer and keyboard activation', async () => {
+    renderBreeze(
+      <Popover title="Details" trigger="Open details">
+        Delivery information
+      </Popover>,
+    );
+    const trigger = screen.getByRole('button', { name: 'Open details' });
+
+    await userEvent.click(trigger);
+    expect(screen.getByRole('dialog', { name: 'Details' })).toBeInTheDocument();
+    await userEvent.click(trigger);
+    await waitFor(() =>
+      expect(
+        screen.queryByRole('dialog', { name: 'Details' }),
+      ).not.toBeInTheDocument(),
+    );
+
+    trigger.focus();
+    await userEvent.keyboard('{Enter}');
+    expect(screen.getByRole('dialog', { name: 'Details' })).toBeInTheDocument();
+    trigger.focus();
+    await userEvent.keyboard('{Enter}');
+    await waitFor(() =>
+      expect(
+        screen.queryByRole('dialog', { name: 'Details' }),
+      ).not.toBeInTheDocument(),
+    );
+  });
+
   it('reports changes while respecting application-controlled state', async () => {
     const onOpenChange = vi.fn();
     const { rerender } = render(

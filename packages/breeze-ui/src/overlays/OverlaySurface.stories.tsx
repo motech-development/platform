@@ -34,9 +34,16 @@ export const SheetPopover: Story = {
     await expect(sheetLayer).not.toHaveAttribute('inert');
     await expect(page.getByRole('dialog', { name: 'Delivery' })).toBe(sheet);
     await expect(sheetLayer).toHaveAttribute('data-breeze-scrim', 'true');
+    await waitFor(async () => {
+      const { activeElement } = canvasElement.ownerDocument;
+      await expect(
+        activeElement === trigger || popover.contains(activeElement),
+      ).toBe(true);
+    });
     await userEvent.tab({ shift: true });
     await waitFor(async () => {
-      await expect(trigger).toHaveFocus();
+      const { activeElement } = canvasElement.ownerDocument;
+      await expect(sheet.contains(activeElement)).toBe(true);
       await expect(
         page.queryByRole('dialog', { name: 'Actions' }),
       ).not.toBeInTheDocument();
@@ -169,8 +176,13 @@ export const CloseOuterFirst: Story = {
       document.querySelector('[data-breeze-topmost="true"]'),
     ).toBeNull();
     await expect(
-      document.querySelector('[data-breeze-scrim="true"]'),
+      document.querySelector(
+        '[data-breeze-overlay][data-breeze-scrim="true"][data-breeze-topmost="true"]',
+      ),
     ).toBeNull();
+    await expect(
+      document.querySelector('[data-breeze-overlay="drawer"][data-exiting]'),
+    ).toHaveAttribute('data-breeze-scrim', 'true');
     await waitFor(async () => {
       await expect(document.querySelector('[data-breeze-overlay]')).toBeNull();
       await expect(trigger).toHaveFocus();
