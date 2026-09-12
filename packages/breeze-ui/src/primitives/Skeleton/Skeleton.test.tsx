@@ -56,4 +56,15 @@ describe('Skeleton', () => {
     expect(container.querySelector('[aria-hidden="true"]')).toBeInTheDocument();
     expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
   });
+
+  it('uses one dimension for circle skeletons', () => {
+    const { container } = renderBreeze(
+      <Skeleton blockSize={24} inlineSize={48} shape="circle" />,
+    );
+
+    expect(container.querySelector('progress')).toHaveStyle({
+      blockSize: '24px',
+      inlineSize: '24px',
+    });
+  });
 });
