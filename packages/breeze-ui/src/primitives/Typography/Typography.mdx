@@ -20,7 +20,7 @@ Set `numeric` on figures outside the money role. They gain tabular numerals, neg
 
 ## Money and dates
 
-Pass semantic values with `format="currency"` or `format="date"`. Dates use the exported `IsoCalendarDate` string contract. Formatting uses the nearest `BreezeProvider` locale. Currency comes from the data field, and signs are rendered separately with a true minus character.
+Pass semantic values with `format="currency"` or `format="date"`. Dates use the exported `IsoCalendarDate` string contract. Formatting uses the nearest `BreezeProvider` locale. Currency signs retain that locale's placement and use a true minus character.
 
 <Canvas of={Stories.Formatting} />
 
