@@ -9,10 +9,17 @@ wait for both → assess and fix → validate → review in parallel again**. Re
 until both local reviewers are clear. Handling one round's findings does not
 complete this gate; every resulting fix must go through the next local round.
 
-1. Capture the starting revision and affected paths. Make the smallest durable
-   fix. For behavior changes, add a regression through the existing test setup
-   and demonstrate the failure before the fix when practical. Do not introduce
-   testing infrastructure merely to satisfy a review comment.
+1. Capture the starting revision and affected paths. When a valid in-scope
+   finding needs a fix, the parent orchestrator records it and delegates the
+   smallest durable edit-and-test assignment to an `implementer` configured as
+   `gpt-5.6-luna` with `max` reasoning effort. Give it the finding, scope
+   record, affected paths, and targeted checks. Independent assignments may run
+   in parallel when their paths do not overlap. The implementer may edit and
+   test the assigned paths, but must not delegate, review, commit, push, or
+   merge; the parent inspects its result and owns the loop. For behavior
+   changes, add a regression through the existing test setup and demonstrate
+   the failure before the fix when practical. Do not introduce testing
+   infrastructure merely to satisfy a review comment.
    On the first invocation, reuse recorded local review coverage when available.
    Otherwise review the requested change set once to establish that coverage,
    even if no feedback fix was needed; subsequent rounds cover only new edits.
@@ -22,7 +29,7 @@ complete this gate; every resulting fix must go through the next local round.
    Tests must establish behavior or a regression; do not add tests that merely
    restate a style edit. The fixing agent owns validation, so neither reviewer
    needs to rerun the supplied passing checks.
-3. Run **one native Codex review with `gpt-5.6-luna` at `low` effort and one
+3. Run **one native Codex review with `gpt-5.6-luna` at `high` effort and one
    CodeRabbit CLI review of the same new delta**. Follow
    [native-review.md](native-review.md) and
    [coderabbit-cli.md](coderabbit-cli.md). After preparing both inputs
