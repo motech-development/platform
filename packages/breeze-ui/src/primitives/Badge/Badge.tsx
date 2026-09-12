@@ -50,7 +50,7 @@ export function Badge({
     >
       {loading ? (
         <Skeleton
-          blockSize={11}
+          blockSize="1lh"
           inlineSize={48}
           label={messages.loading}
           shape="rectangle"

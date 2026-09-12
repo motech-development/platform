@@ -194,6 +194,18 @@ describe('Typography', () => {
     ).toContainElement(screen.getByRole('link', { name: 'Profile' }));
   });
 
+  it('preserves native heading semantics for labelled rich content', () => {
+    renderBreeze(
+      <Typography element="h1" aria-label="Accounts">
+        <em>Accounts</em>
+      </Typography>,
+    );
+
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'Accounts' }),
+    ).toBeInTheDocument();
+  });
+
   it('honours the provider locale for money and dates', () => {
     render(
       <BreezeProvider locale="fr-FR">
