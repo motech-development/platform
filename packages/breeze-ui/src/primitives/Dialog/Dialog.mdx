@@ -5,7 +5,7 @@ import * as Stories from './Dialog.stories';
 
 # Dialog
 
-Use `Dialog` for a focused task that temporarily takes priority over the surrounding page. Render it inside `BreezeProvider`.
+Use `Dialog` for a focused task that needs a centred modal surface and temporarily takes priority over the surrounding page. It remains part of Breeze's public component inventory. Render it inside `BreezeProvider`.
 
 ## Basic usage
 
@@ -45,12 +45,6 @@ To control the surface from application state, supply both `open` and `onOpenCha
 Set `loading` while content is being prepared. Breeze provides its loading presentation and accessible announcement while retaining the surface title.
 
 <Canvas of={Stories.Loading} />
-
-## Nested surfaces
-
-Place another overlay inside a dialog's content to open it above the dialog. Breeze orders nested surfaces and gives the top dialog or drawer ownership of the scrim. Closing the inner surface restores focus through the remaining surface; closing the outer surface also removes its nested surfaces from the active stack.
-
-<Canvas of={Stories.Nested} />
 
 ## Accessibility and motion
 

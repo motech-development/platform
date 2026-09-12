@@ -89,13 +89,21 @@ export function useOverlayLayer(kind: OverlayKind, open: boolean) {
     return layer.active && (!ancestor || isActive(ancestor));
   };
   const active = ordered.filter(isActive);
+  const activeIndex = active.findIndex((layer) => layer.id === id);
+  const interactive =
+    open &&
+    activeIndex !== -1 &&
+    !active.slice(activeIndex + 1).some((layer) => layer.kind !== 'popover');
   const topmost = open && active.at(-1)?.id === id;
   const scrim =
     open &&
-    active.filter((layer) => layer.kind !== 'popover').at(-1)?.id === id;
+    active
+      .filter((layer) => layer.kind === 'drawer' || layer.kind === 'dialog')
+      .at(-1)?.id === id;
 
   return {
     id,
+    interactive,
     scrim,
     topmost,
     zIndex:

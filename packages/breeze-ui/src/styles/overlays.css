@@ -24,12 +24,13 @@
   }
 
   :where([data-breeze-root]) [data-breeze-overlay][data-exiting],
-  :where([data-breeze-root]) [data-breeze-topmost='false'] {
+  :where([data-breeze-root]) [data-breeze-interactive='false'] {
     pointer-events: none;
   }
 
   :where([data-breeze-root]) .breeze-dialog,
   :where([data-breeze-root]) .breeze-drawer,
+  :where([data-breeze-root]) .breeze-fullscreen,
   :where([data-breeze-root]) .breeze-popover {
     box-sizing: border-box;
     min-inline-size: 0;
@@ -51,6 +52,25 @@
     max-inline-size: calc(100vw - 24px);
     outline: none;
   }
+  :where([data-breeze-root]) .breeze-fullscreen {
+    /* The kit owns lifecycle and portal focus scopes; this unanchored surface
+       replaces its trigger-relative positioning with viewport geometry. */
+    position: fixed !important;
+    inset: 0 !important;
+    inline-size: 100%;
+    block-size: 100dvh;
+    max-block-size: none !important;
+    border: 0;
+    border-radius: 0;
+    outline: none;
+  }
+  :where([data-breeze-root]) .breeze-fullscreen[data-entering] {
+    animation: breeze-overlay-fade-in 200ms ease-out;
+  }
+  :where([data-breeze-root]) .breeze-fullscreen[data-exiting] {
+    animation: breeze-overlay-fade-out 160ms ease-in;
+  }
+
   :where([data-breeze-root]) .breeze-overlay-content {
     padding: 24px;
     outline: none;

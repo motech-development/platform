@@ -27,4 +27,4 @@ interface UncontrolledOverlayProps {
 
 export type OverlayProps = OverlayBaseProps &
   (ControlledOverlayProps | UncontrolledOverlayProps);
-export type OverlayKind = 'dialog' | 'drawer' | 'popover';
+export type OverlayKind = 'dialog' | 'drawer' | 'fullscreen' | 'popover';

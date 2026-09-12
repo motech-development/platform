@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import renderBreeze from '../../../test/render';
 import { BreezeProvider } from '../../provider/BreezeProvider';
+import { Button } from '../Button/Button';
 import { Drawer } from '../Drawer/Drawer';
 import { Popover, type PopoverProps } from './Popover';
 
@@ -153,6 +154,27 @@ describe('Popover', () => {
 });
 
 describe('Popover inside Drawer', () => {
+  it('leaves the sheet interactive and accessible while the non-modal popover is open', async () => {
+    const onAction = vi.fn();
+    renderBreeze(
+      <Drawer defaultOpen title="Sheet" trigger="Open sheet">
+        <Button onAction={onAction}>Sheet action</Button>
+        <Popover title="Dates" trigger="Open dates">
+          Choose a date.
+        </Popover>
+      </Drawer>,
+    );
+    const sheet = screen.getByRole('dialog', { name: 'Sheet' });
+    await userEvent.click(screen.getByRole('button', { name: 'Open dates' }));
+    const popover = screen.getByRole('dialog', { name: 'Dates' });
+    expect(popover).not.toHaveAttribute('aria-modal', 'true');
+    expect(sheet.closest('[data-breeze-overlay]')).not.toHaveAttribute('inert');
+    expect(screen.getByRole('dialog', { name: 'Sheet' })).toBe(sheet);
+    await userEvent.click(screen.getByRole('button', { name: 'Sheet action' }));
+    expect(onAction).toHaveBeenCalledOnce();
+    expect(sheet).toBeInTheDocument();
+  });
+
   it('keeps the drawer scrim while the popover is topmost and restores focus', async () => {
     renderBreeze(
       <Drawer title="Delivery" trigger="Open delivery">
