@@ -4,6 +4,7 @@ import renderBreeze from '../../../test/render';
 import { Separator, type SeparatorProps } from './Separator';
 
 expectTypeOf<SeparatorProps>().not.toHaveProperty('className');
+expectTypeOf<SeparatorProps>().not.toHaveProperty('loading');
 expectTypeOf<SeparatorProps>().not.toHaveProperty('style');
 
 describe('Separator', () => {
@@ -19,12 +20,5 @@ describe('Separator', () => {
       'breeze:block-size-full',
       'breeze:forced-colors:bg-[CanvasText]',
     );
-  });
-
-  it('renders an accessible placeholder while loading', () => {
-    renderBreeze(<Separator loading />);
-
-    expect(screen.getByRole('progressbar', { name: 'Loading' })).toBeVisible();
-    expect(screen.queryByRole('separator')).not.toBeInTheDocument();
   });
 });

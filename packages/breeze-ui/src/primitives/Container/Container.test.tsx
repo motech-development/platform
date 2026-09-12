@@ -4,6 +4,7 @@ import renderBreeze from '../../../test/render';
 import { Container, type ContainerProps } from './Container';
 
 expectTypeOf<ContainerProps>().not.toHaveProperty('className');
+expectTypeOf<ContainerProps>().not.toHaveProperty('loading');
 expectTypeOf<ContainerProps>().not.toHaveProperty('style');
 expectTypeOf<ContainerProps['width']>().toEqualTypeOf<
   'page' | 'prose' | 'read' | undefined
@@ -28,14 +29,5 @@ describe('Container', () => {
     expect(screen.getByRole('group', { name: 'Accounts' })).toHaveTextContent(
       'Page content',
     );
-  });
-
-  it('replaces unavailable content with an accessible placeholder', () => {
-    renderBreeze(<Container loading>Container content</Container>);
-
-    expect(screen.getByRole('progressbar', { name: 'Loading' })).toHaveStyle({
-      inlineSize: '100%',
-    });
-    expect(screen.queryByText('Container content')).not.toBeInTheDocument();
   });
 });

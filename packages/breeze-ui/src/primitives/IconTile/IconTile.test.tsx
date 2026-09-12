@@ -4,6 +4,7 @@ import renderBreeze from '../../../test/render';
 import { IconTile, type IconTileProps } from './IconTile';
 
 expectTypeOf<IconTileProps>().not.toHaveProperty('className');
+expectTypeOf<IconTileProps>().not.toHaveProperty('loading');
 expectTypeOf<IconTileProps>().not.toHaveProperty('style');
 
 describe('IconTile', () => {
@@ -15,12 +16,5 @@ describe('IconTile', () => {
     expect(
       screen.getByRole('img', { name: 'Money received' }),
     ).toBeInTheDocument();
-  });
-
-  it('renders an accessible placeholder while loading', () => {
-    renderBreeze(<IconTile loading name="calendar" />);
-
-    expect(screen.getByRole('progressbar', { name: 'Loading' })).toBeVisible();
-    expect(screen.queryByRole('img')).not.toBeInTheDocument();
   });
 });

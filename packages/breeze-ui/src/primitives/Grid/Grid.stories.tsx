@@ -30,8 +30,3 @@ export const Fixed: Story = {
     columns: 2,
   },
 };
-
-/** Preserves the grid structure while data is loading. */
-export const Loading: Story = {
-  args: { loading: true },
-};

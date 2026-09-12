@@ -44,8 +44,3 @@ export const Direction: Story = {
     tone: 'positive',
   },
 };
-
-/** Preserves the tile dimensions while artwork is loading. */
-export const Loading: Story = {
-  args: { loading: true },
-};

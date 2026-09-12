@@ -4,6 +4,7 @@ import renderBreeze from '../../../test/render';
 import { Stack, type StackProps } from './Stack';
 
 expectTypeOf<StackProps>().not.toHaveProperty('className');
+expectTypeOf<StackProps>().not.toHaveProperty('loading');
 expectTypeOf<StackProps>().not.toHaveProperty('style');
 expectTypeOf<StackProps['gap']>().toEqualTypeOf<
   0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | undefined
@@ -28,44 +29,6 @@ describe('Stack', () => {
 
     expect(screen.getByRole('group', { name: 'Summary' })).toHaveTextContent(
       'Balance',
-    );
-  });
-
-  it('replaces unavailable content with an accessible placeholder', () => {
-    renderBreeze(
-      <Stack loading>
-        <span>Balance</span>
-        <span>VAT owed</span>
-      </Stack>,
-    );
-
-    expect(screen.getByRole('progressbar', { name: 'Loading' })).toBeVisible();
-    expect(screen.getAllByRole('progressbar', { hidden: true })).toHaveLength(
-      2,
-    );
-    expect(screen.queryByText('Balance')).not.toBeInTheDocument();
-    expect(screen.queryByText('VAT owed')).not.toBeInTheDocument();
-  });
-
-  it('announces loading when children are empty', () => {
-    renderBreeze(<Stack loading>{null}</Stack>);
-
-    expect(screen.getByRole('progressbar', { name: 'Loading' })).toBeVisible();
-  });
-
-  it('preserves the item count when children use fragments', () => {
-    renderBreeze(
-      <Stack loading>
-        <>
-          <span>Balance</span>
-          <span>VAT owed</span>
-          <span>Next payment</span>
-        </>
-      </Stack>,
-    );
-
-    expect(screen.getAllByRole('progressbar', { hidden: true })).toHaveLength(
-      3,
     );
   });
 });

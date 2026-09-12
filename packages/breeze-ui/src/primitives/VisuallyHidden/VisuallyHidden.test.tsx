@@ -4,6 +4,7 @@ import renderBreeze from '../../../test/render';
 import { VisuallyHidden, type VisuallyHiddenProps } from './VisuallyHidden';
 
 expectTypeOf<VisuallyHiddenProps>().not.toHaveProperty('className');
+expectTypeOf<VisuallyHiddenProps>().not.toHaveProperty('loading');
 expectTypeOf<VisuallyHiddenProps>().not.toHaveProperty('style');
 
 describe('VisuallyHidden', () => {
@@ -18,14 +19,5 @@ describe('VisuallyHidden', () => {
     expect(
       screen.getByRole('button', { name: 'Add transaction' }),
     ).toBeInTheDocument();
-  });
-
-  it('replaces unavailable content with an accessible placeholder', () => {
-    renderBreeze(<VisuallyHidden loading>Hidden content</VisuallyHidden>);
-
-    expect(
-      screen.getByRole('progressbar', { name: 'Loading' }).parentElement,
-    ).toHaveClass('breeze:sr-only');
-    expect(screen.queryByText('Hidden content')).not.toBeInTheDocument();
   });
 });

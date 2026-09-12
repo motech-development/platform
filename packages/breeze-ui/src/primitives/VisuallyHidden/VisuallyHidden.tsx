@@ -1,6 +1,4 @@
 import type { ReactNode } from 'react';
-import { useBreezeContext } from '../../provider/BreezeContext';
-import { Skeleton } from '../Skeleton/Skeleton';
 
 const variants = {
   base: {
@@ -15,8 +13,6 @@ const variants = {
 export interface VisuallyHiddenProps {
   /** Content hidden visually but retained for assistive technology. */
   children: ReactNode;
-  /** Replaces the hidden content with an accessible loading announcement. */
-  loading?: boolean;
 }
 
 /**
@@ -24,15 +20,6 @@ export interface VisuallyHiddenProps {
  *
  * @summary Accessible content with no visual footprint.
  */
-export function VisuallyHidden({
-  children,
-  loading = false,
-}: Readonly<VisuallyHiddenProps>) {
-  const { messages } = useBreezeContext();
-
-  return (
-    <span className={variants.base.hidden}>
-      {loading ? <Skeleton label={messages.loading} /> : children}
-    </span>
-  );
+export function VisuallyHidden({ children }: Readonly<VisuallyHiddenProps>) {
+  return <span className={variants.base.hidden}>{children}</span>;
 }

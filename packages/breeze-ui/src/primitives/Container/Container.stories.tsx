@@ -27,8 +27,3 @@ export const Reading: Story = {
     width: 'read',
   },
 };
-
-/** Replaces the contained content while data is loading. */
-export const Loading: Story = {
-  args: { loading: true },
-};

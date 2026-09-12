@@ -4,6 +4,7 @@ import renderBreeze from '../../../test/render';
 import { Grid, type GridProps } from './Grid';
 
 expectTypeOf<GridProps>().not.toHaveProperty('className');
+expectTypeOf<GridProps>().not.toHaveProperty('loading');
 expectTypeOf<GridProps>().not.toHaveProperty('style');
 expectTypeOf<GridProps['columns']>().toEqualTypeOf<1 | 2 | 3 | undefined>();
 expectTypeOf<GridProps['gap']>().toEqualTypeOf<
@@ -31,17 +32,5 @@ describe('Grid', () => {
     expect(screen.getByRole('group', { name: 'Figures' })).toHaveTextContent(
       'Balance',
     );
-  });
-
-  it('replaces unavailable content with accessible placeholders', () => {
-    const { container } = renderBreeze(
-      <Grid columns={3} loading>
-        Grid content
-      </Grid>,
-    );
-
-    expect(screen.getByRole('progressbar', { name: 'Loading' })).toBeVisible();
-    expect(container.querySelectorAll('[aria-hidden="true"]')).toHaveLength(2);
-    expect(screen.queryByText('Grid content')).not.toBeInTheDocument();
   });
 });

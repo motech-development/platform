@@ -22,11 +22,7 @@ The default stretches children. Use `start`, `center` or `end` when their intrin
 
 The default `div` adds no semantics. Select `main`, `nav` or `section` only when the content has that meaning, and label landmarks or regions with `aria-label`.
 
-## Loading
-
-Set `loading` to replace the content with an accessible placeholder while preserving the stack's layout.
-
-<Canvas of={Stories.Loading} />
+Loading belongs to the items inside the stack. Compose loading-capable children or explicit `Skeleton` elements so placeholders match the final vertical rhythm.
 
 ## API
 

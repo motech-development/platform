@@ -1,8 +1,6 @@
 import type { ReactNode } from 'react';
 import { createElement } from 'react';
-import { useBreezeContext } from '../../provider/BreezeContext';
 import type { LayoutGap } from '../layout.types';
-import { Skeleton } from '../Skeleton/Skeleton';
 
 const variants = {
   base: {
@@ -41,8 +39,6 @@ export interface CardProps {
   clipped?: boolean;
   /** Selects the semantic HTML element. Defaults to `div`. */
   element?: CardElement;
-  /** Replaces the content with an accessible full-width placeholder. */
-  loading?: boolean;
   /** Applies padding from the Breeze spacing scale. Defaults to `4`. */
   padding?: LayoutGap;
   /** Selects the card surface treatment. Defaults to `surface`. */
@@ -59,17 +55,14 @@ export function Card({
   children,
   clipped = true,
   element = 'div',
-  loading = false,
   padding = 4,
   variant = 'surface',
 }: Readonly<CardProps>) {
-  const { messages } = useBreezeContext();
   const accessibleLabel = ariaLabel?.trim() || undefined;
 
   return createElement(
     element,
     {
-      'aria-busy': loading || undefined,
       'aria-label': accessibleLabel,
       className: [
         variants.base.card,
@@ -84,15 +77,6 @@ export function Card({
           ? 'group'
           : undefined,
     },
-    loading ? (
-      <Skeleton
-        blockSize={64}
-        inlineSize="100%"
-        label={messages.loading}
-        shape="rectangle"
-      />
-    ) : (
-      children
-    ),
+    children,
   );
 }

@@ -29,8 +29,3 @@ export const Wrapped: Story = {
     wrap: true,
   },
 };
-
-/** Replaces the row's content while data is loading. */
-export const Loading: Story = {
-  args: { loading: true },
-};

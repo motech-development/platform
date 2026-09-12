@@ -22,11 +22,7 @@ Use `raised` for a group nested inside another surface, not to create stronger e
 
 Cards do not become interactive. Use `article`, `aside` or `section` only when that semantic grouping is meaningful, and provide a label where the element creates a region.
 
-## Loading
-
-Set `loading` to keep the card surface in place and replace its contents with an accessible placeholder.
-
-<Canvas of={Stories.Loading} />
+Loading belongs to the content inside the card. Compose loading-capable children or explicit `Skeleton` elements so placeholders match the final content structure.
 
 ## API
 

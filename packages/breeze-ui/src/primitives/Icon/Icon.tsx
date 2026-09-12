@@ -26,8 +26,6 @@ import {
   Users,
   X,
 } from 'lucide-react';
-import { useBreezeContext } from '../../provider/BreezeContext';
-import { Skeleton } from '../Skeleton/Skeleton';
 
 const artwork = {
   add: Plus,
@@ -76,20 +74,12 @@ const variants = {
 
 const logicalDirectionIcons = new Set<IconName>(['back', 'forward', 'next']);
 
-const iconDimensions = {
-  lg: 24,
-  md: 20,
-  sm: 16,
-} as const;
-
 export type IconName = keyof typeof artwork;
 export type IconSize = keyof typeof variants.size;
 
 export interface IconProps {
   /** Names meaningful artwork; omit for an icon already described by nearby text. */
   label?: string;
-  /** Replaces the artwork with an accessible circular placeholder. */
-  loading?: boolean;
   /** Selects artwork from the curated Breeze icon set. */
   name: IconName;
   /** Sets the icon dimensions in pixels. Defaults to `20`. */
@@ -101,25 +91,7 @@ export interface IconProps {
  *
  * @summary The single dependency boundary for Breeze icon artwork.
  */
-export function Icon({
-  label,
-  loading = false,
-  name,
-  size = 'md',
-}: Readonly<IconProps>) {
-  const { messages } = useBreezeContext();
-
-  if (loading) {
-    return (
-      <Skeleton
-        blockSize={iconDimensions[size]}
-        inlineSize={iconDimensions[size]}
-        label={messages.loading}
-        shape="circle"
-      />
-    );
-  }
-
+export function Icon({ label, name, size = 'md' }: Readonly<IconProps>) {
   const Artwork = artwork[name];
   const accessibleLabel = label?.trim() || undefined;
 
