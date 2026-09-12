@@ -76,7 +76,7 @@ Read-only file permissions prevent accidental edits; they are not a security
 boundary against another process running as the same user. If PR-authored skill
 instructions were already loaded into the primary session, do not continue by
 adding a warning: stop that session and restart from the trusted source. The
-execution isolation requirements in `SKILL.md` still apply to PR-controlled tools
+execution isolation requirements in [execution-isolation.md](execution-isolation.md) still apply to PR-controlled tools
 and reviewer startup.
 
 Codex discovers repository skills from its working directory and ancestors, and

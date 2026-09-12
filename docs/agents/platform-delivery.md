@@ -1,15 +1,15 @@
 # Platform delivery agent guide
 
-Use this guide when changing an application, infrastructure relationship, delivery workflow, Release behaviour, Preview Environment, or the Deployment Catalog.
+Use this guide when changing deployment relationships, packaging, infrastructure dependencies, delivery workflows, Release behaviour, Preview Environments, or the Deployment Catalog. Ordinary application edits that do not affect these concerns do not require this guide.
 
 The delivery catalog and generator described here are outputs of the agreed specification and may not exist until that implementation is complete. During implementation, create them at the specified paths; afterwards, absence or drift is an error.
 
-## Read first
+## Supporting context
 
-1. [`../../CONTEXT-MAP.md`](../../CONTEXT-MAP.md)
-2. [`../../.github/CONTEXT.md`](../../.github/CONTEXT.md)
-3. Relevant ADRs in [`../../.github/docs/adr/`](../../.github/docs/adr/)
-4. [`../../AGENTS.md`](../../AGENTS.md)
+- Use [`CONTEXT-MAP.md`](../../CONTEXT-MAP.md) when locating an affected domain boundary.
+- Use [Platform Delivery context](../../.github/CONTEXT.md) for delivery behaviour and terminology.
+- Consult relevant [ADRs](../../.github/docs/adr/) when changing a recorded delivery decision.
+- Reuse applicable `AGENTS.md` guidance already loaded; do not reread it for each step.
 
 The normative implementation specification is [GitHub issue #1492](https://github.com/motech-development/platform/issues/1492). ADRs explain decisions; do not silently contradict them.
 

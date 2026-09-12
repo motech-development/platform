@@ -124,7 +124,7 @@ Require a completed review against the intended nonempty delta, with no terminal
 error or payment block. A `review_skipped` result is not coverage of changed code.
 Do not mistake saved findings from an older run for the current result. Retain
 the run identity, snapshot, and final output; merge duplicates with Codex findings
-and apply the main skill's disposition rules. A credit-consent skip is recorded
+and apply the [batch disposition rules](batch-scope.md#decide-before-editing). A credit-consent skip is recorded
 as missing coverage while the rest of the loop continues. Other blocked or failed
 runs leave the combined gate incomplete even if Codex is clean. CLI findings do not themselves
 create GitHub threads or authorize posting messages.

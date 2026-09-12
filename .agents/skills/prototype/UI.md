@@ -97,12 +97,9 @@ Surface the URL (and the `?variant=` keys). The user will flip through whenever 
 
 ### 6. Capture the answer and clean up
 
-Once a variant has won, capture the answer (which variant and why), then capture the prototype the way the [SKILL](SKILL.md) describes. Fold the winner into the real code and move the rest onto the throwaway branch, not into main:
+Report what the variants demonstrate and any choice still awaiting feedback. A runnable comparison completes a prototype-only request; do not require the user to pick a winner before handing it over.
 
-- **Sub-shape A**: fold the winner into the existing page; drop the losing variants and the switcher from main.
-- **Sub-shape B**: promote the winning variant to a real route; drop the throwaway route and the switcher from main.
-
-The full set of variants is the primary source, so it lands on the throwaway branch, not the bin, since variant components and the switcher left in the main branch rot fast and confuse the next reader.
+When production implementation is also authorized, incorporate the chosen design with production checks and remove the temporary switcher and losing variants from the production result. Follow the [scope and completion rules](SKILL.md) for preserving the prototype, branch commits, and issue updates.
 
 ## Anti-patterns
 

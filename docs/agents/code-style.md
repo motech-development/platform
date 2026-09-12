@@ -1,6 +1,7 @@
 # Code style for agents
 
-Use the shared rules and the section for the affected app or package together.
+Read the shared rules and only the section for the affected app or package.
+Use the headings to locate that section; unrelated package sections need not be loaded.
 Explicit task instructions, `AGENTS.md`, workspace configuration, and public API
 contracts take precedence. Examples illustrate code shape; adapt their names and
 behavior to the task. They are not new dependencies or abstractions to introduce.

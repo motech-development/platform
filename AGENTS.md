@@ -65,7 +65,7 @@ Repository-specific guidance for agents working in this monorepo.
 
 ### Code style
 
-Before writing or changing code, read `docs/agents/code-style.md` and its section for the affected app or package. Current tooling and explicit instructions take precedence.
+For code changes, consult the shared guidance and only the affected app or package section in `docs/agents/code-style.md`; do not read unrelated package sections. Reuse guidance already read during the task. Current tooling and explicit instructions take precedence.
 
 ### Issue tracker
 
@@ -77,4 +77,4 @@ Domain documentation uses a multi-context layout indexed by `CONTEXT-MAP.md`. Se
 
 ### Platform delivery
 
-Deployment workflows are generated from a catalog and reconcile exact Release tags. Before changing applications, infrastructure dependencies, releases, previews, or delivery workflows, see `docs/agents/platform-delivery.md`.
+Deployment workflows are generated from a catalog and reconcile exact Release tags. For changes to deployment relationships, packaging, infrastructure dependencies, releases, previews, or delivery workflows, see `docs/agents/platform-delivery.md`.

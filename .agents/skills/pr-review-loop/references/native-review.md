@@ -35,7 +35,7 @@ reveals a concrete need for broader inspection.
 
 ## Invoke and verify
 
-For less-trusted PRs, establish the host isolation required by `SKILL.md` before
+For less-trusted PRs, establish the host isolation required by [execution-isolation.md](execution-isolation.md) before
 starting the reviewer, including configuration loading and MCP startup. Use trusted
 configuration and a trusted working directory outside the PR checkout; expose the
 PR snapshot only as read-only data. Do not load PR-controlled `.codex` configuration,

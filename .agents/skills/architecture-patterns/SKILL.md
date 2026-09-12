@@ -1,23 +1,17 @@
 ---
 name: architecture-patterns
-description: Implement proven backend architecture patterns including Clean Architecture, Hexagonal Architecture, and Domain-Driven Design. Use this skill when designing clean architecture for a new microservice, when refactoring a monolith to use bounded contexts, when implementing hexagonal or onion architecture patterns, or when debugging dependency cycles between application layers.
+description: Choose or apply backend architecture patterns when designing service boundaries, separating domain and infrastructure concerns, or resolving cross-layer dependency cycles.
 ---
 
 # Architecture Patterns
 
-Master proven backend architecture patterns including Clean Architecture, Hexagonal Architecture, and Domain-Driven Design to build maintainable, testable, and scalable systems.
+Choose the smallest structure that resolves the requested dependency or domain-boundary problem. Preserve established architecture and ADRs; a small handler does not need new layers merely to match a pattern.
 
-**Given:** a service boundary or module to architect.
-**Produces:** layered structure with clear dependency rules, interface definitions, and test boundaries.
+- Use Clean Architecture when business rules need independence from delivery or persistence concerns.
+- Use ports and adapters when an external boundary needs substitution or isolation. An existing function or module contract may suffice; do not create an interface for every call.
+- Use DDD when domain language, invariants, or distinct bounded contexts drive the design. Do not introduce aggregates, repositories, or events without a concrete need.
 
-## When to Use This Skill
-
-- Designing new backend services or microservices from scratch
-- Refactoring monolithic applications where business logic is entangled with ORM models or HTTP concerns
-- Establishing bounded contexts before splitting a system into services
-- Debugging dependency cycles where infrastructure code bleeds into the domain layer
-- Creating testable codebases where use-case tests do not require a running database
-- Implementing domain-driven design tactical patterns (aggregates, value objects, domain events)
+Completion means the requested boundary is clear, affected callers remain consistent, and relevant behaviour is verified. Explain any tradeoff that matters to the change.
 
 ## Core Concepts
 
@@ -34,7 +28,7 @@ Master proven backend architecture patterns including Clean Architecture, Hexago
 
 - Dependencies point inward only; inner layers know nothing about outer layers
 - Business logic is independent of frameworks, databases, and delivery mechanisms
-- Every layer boundary is crossed via an abstract interface
+- Introduce explicit ports where dependency inversion is needed; reuse existing contracts elsewhere
 - Testable without UI, database, or external services
 
 ### 2. Hexagonal Architecture (Ports and Adapters)
@@ -69,66 +63,13 @@ Master proven backend architecture patterns including Clean Architecture, Hexago
 
 ## Detailed patterns and worked examples
 
-Detailed pattern documentation lives in `references/details.md`. Read that file when the navigation tier above is insufficient.
-
-## Testing — In-Memory Adapters
-
-The hallmark of correctly applied Clean Architecture is that every use case can be exercised in a plain unit test with no real database, no Docker, and no network:
-
-```python
-# tests/unit/test_create_user.py
-import asyncio
-from typing import Dict, Optional
-from domain.entities.user import User
-from domain.interfaces.user_repository import IUserRepository
-from use_cases.create_user import CreateUserUseCase, CreateUserRequest
-
-
-class InMemoryUserRepository(IUserRepository):
-    def __init__(self):
-        self._store: Dict[str, User] = {}
-
-    async def find_by_id(self, user_id: str) -> Optional[User]:
-        return self._store.get(user_id)
-
-    async def find_by_email(self, email: str) -> Optional[User]:
-        return next((u for u in self._store.values() if u.email == email), None)
-
-    async def save(self, user: User) -> User:
-        self._store[user.id] = user
-        return user
-
-    async def delete(self, user_id: str) -> bool:
-        return self._store.pop(user_id, None) is not None
-
-
-async def test_create_user_succeeds():
-    repo = InMemoryUserRepository()
-    use_case = CreateUserUseCase(user_repository=repo)
-
-    response = await use_case.execute(CreateUserRequest(email="alice@example.com", name="Alice"))
-
-    assert response.success
-    assert response.user.email == "alice@example.com"
-    assert response.user.id is not None
-
-
-async def test_duplicate_email_rejected():
-    repo = InMemoryUserRepository()
-    use_case = CreateUserUseCase(user_repository=repo)
-
-    await use_case.execute(CreateUserRequest(email="alice@example.com", name="Alice"))
-    response = await use_case.execute(CreateUserRequest(email="alice@example.com", name="Alice2"))
-
-    assert not response.success
-    assert "already exists" in response.error
-```
+Read [detailed patterns](references/details.md) when a selected pattern needs implementation examples, and [in-memory adapter testing](references/testing.md) when isolating a use case from persistence. Examples are illustrative, not mandatory project layouts.
 
 ## Troubleshooting
 
 ### Use case tests require a running database
 
-Business logic has leaked into the infrastructure layer. Move all database calls behind an `IRepository` interface and inject an in-memory implementation in tests (see Testing section above). The use case constructor must accept the abstract port, not the concrete class.
+Determine whether the test intentionally verifies persistence or whether pure business rules are unnecessarily coupled to it. For the latter, isolate the external call behind an appropriate existing contract or port; see [testing examples](references/testing.md). A database-backed integration test alone is not evidence of an architecture defect.
 
 ### Circular imports between layers
 
