@@ -34,11 +34,11 @@ export interface IconTileProps {
   label?: string;
   /** Selects artwork from the curated Breeze icon set. */
   name: IconName;
-  /** Selects a circular or rounded-square tile. Defaults to `rounded`. */
+  /** Selects a circular or rounded-square tile. Defaults to `square`. */
   shape?: IconTileShape;
-  /** Selects the tile dimensions. Defaults to `md`. */
+  /** Selects the tile dimensions. Defaults to `lg`. */
   size?: IconTileSize;
-  /** Selects the semantic colour treatment. Defaults to `neutral`. */
+  /** Selects the semantic colour treatment. Defaults to `brand`. */
   tone?: IconTileTone;
 }
 
