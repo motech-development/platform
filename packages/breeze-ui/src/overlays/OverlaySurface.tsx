@@ -34,6 +34,9 @@ const variants = {
   },
 } as const;
 
+const triggerBoundaryError =
+  'Breeze overlay triggers and portal containers must belong to the current document and light DOM.';
+
 function isNode(value: EventTarget | null): value is Node {
   return (
     value !== null &&
@@ -95,11 +98,12 @@ function OverlaySurface({
     if (
       host &&
       triggerRef.current &&
-      triggerRef.current.ownerDocument !== host.ownerDocument
+      (triggerRef.current.ownerDocument !== document ||
+        triggerRef.current.getRootNode() !== document ||
+        host.ownerDocument !== document ||
+        host.getRootNode() !== document)
     ) {
-      throw new Error(
-        'Breeze overlay triggers and portal containers must belong to the same document.',
-      );
+      throw new Error(triggerBoundaryError);
     }
   }, [host]);
   // Full-screen surfaces belong to the viewport, not the sheet's scrollable
@@ -224,15 +228,53 @@ function OverlaySurface({
     surface.focus({ preventScroll: true });
   }, [loading, open]);
 
+  const clearRefocusTimer = useCallback(() => {
+    if (refocusTimerRef.current !== null) {
+      clearTimeout(refocusTimerRef.current);
+      refocusTimerRef.current = null;
+    }
+  }, []);
+  const focusSurface = useCallback(
+    (element: HTMLElement) => {
+      queueMicrotask(() => {
+        if (
+          !element.isConnected ||
+          element.closest('[inert], [data-exiting]')
+        ) {
+          return;
+        }
+        clearRefocusTimer();
+        element.focus({ preventScroll: true });
+        refocusTimerRef.current = setTimeout(() => {
+          const { ownerDocument } = element;
+          const { activeElement: focused } = ownerDocument;
+          if (
+            element.isConnected &&
+            !element.closest('[inert], [data-exiting]') &&
+            (focused === element || focused === ownerDocument.body)
+          ) {
+            refocusingRef.current = true;
+            element.blur();
+            element.focus({ preventScroll: true });
+            refocusingRef.current = false;
+          }
+          refocusTimerRef.current = null;
+        }, 500);
+      });
+    },
+    [clearRefocusTimer],
+  );
+  const previousOpenRef = useRef(open);
+  useEffect(() => {
+    const wasOpen = previousOpenRef.current;
+    previousOpenRef.current = open;
+    if (!nonModal || !open || wasOpen || !contentRef.current) return;
+    focusSurface(contentRef.current);
+  }, [focusSurface, nonModal, open]);
+
   const surfaceRef = useCallback(
     (element: HTMLElement | null) => {
       contentRef.current = element;
-      const clearRefocusTimer = () => {
-        if (refocusTimerRef.current !== null) {
-          clearTimeout(refocusTimerRef.current);
-          refocusTimerRef.current = null;
-        }
-      };
       const cleanup = () => {
         clearRefocusTimer();
         contentRef.current = null;
@@ -244,36 +286,12 @@ function OverlaySurface({
         return undefined;
       }
       setSurfaceMounted(true);
-      if (nonModal) {
-        queueMicrotask(() => {
-          if (
-            element.isConnected &&
-            !element.closest('[inert], [data-exiting]')
-          ) {
-            element.focus({ preventScroll: true });
-            refocusTimerRef.current = setTimeout(() => {
-              const { ownerDocument } = element;
-              const { activeElement: focused } = ownerDocument;
-              if (
-                element.isConnected &&
-                !element.closest('[inert], [data-exiting]') &&
-                (focused === element || focused === ownerDocument.body)
-              ) {
-                refocusingRef.current = true;
-                element.blur();
-                element.focus({ preventScroll: true });
-                refocusingRef.current = false;
-              }
-              refocusTimerRef.current = null;
-            }, 500);
-          }
-        });
-      }
+      if (nonModal) focusSurface(element);
       // React Aria restores ordinary closes. Nested simultaneous exits can leave
       // focus on body; repair only that gap after its focus-scope cleanup runs.
       return cleanup;
     },
-    [nonModal, restoreFocus],
+    [clearRefocusTimer, focusSurface, nonModal, restoreFocus],
   );
 
   const parentContext = useMemo(

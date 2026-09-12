@@ -10,6 +10,8 @@ import { useLocale } from 'react-aria-components/I18nProvider';
 import { createOverlayStack, OverlayStackContext } from './OverlayStack';
 
 const PortalContext = createContext<HTMLElement | null>(null);
+const portalBoundaryError =
+  'BreezeProvider portalContainer must belong to the current document and light DOM.';
 
 /** A dedicated host keeps locale and scoped styles on every portalled surface. */
 export function OverlayProvider({
@@ -27,6 +29,12 @@ export function OverlayProvider({
 
   useLayoutEffect(() => {
     const container = portalContainer ?? document.body;
+    if (
+      container.ownerDocument !== document ||
+      container.getRootNode() !== document
+    ) {
+      throw new Error(portalBoundaryError);
+    }
     const element = container.ownerDocument.createElement('div');
     element.dataset.breezeRoot = '';
     element.dataset.breezePortal = '';
