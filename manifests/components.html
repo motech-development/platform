@@ -588,13 +588,13 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">3 components ok</span><span class="filter-pill ok" aria-disabled="true">13 stories ok</span><a class="filter-pill ok" data-k="docs" href="#filter-docs">6 docs ok</a></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">15 components ok</span><span class="filter-pill ok" aria-disabled="true">41 stories ok</span><a class="filter-pill ok" data-k="docs" href="#filter-docs">18 docs ok</a></div>
   </div>
 </header>
 <main>
   <div class="wrap">
     <div class="note ok" style="margin-bottom: 16px;">
-              Using <code>react-docgen-typescript</code>. Generation took <strong>2.2s</strong>.
+              Using <code>react-docgen-typescript</code>. Generation took <strong>2.0s</strong>.
             </div>
     <h2 class="section-title">Components</h2>
     <div class="grid" role="list">
@@ -727,15 +727,171 @@ Shadows use CSS variables so they change with the resolved appearance alongside 
   no-story-error
   no-doc-error"
   role="listitem"
+  aria-label="Badge">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> Badge</h2>
+      <div class="badges">
+        <label for="c-1-content-badge-props" class="badge ok as-toggle">4 prop types</label>
+        
+        <label for="c-1-content-badge-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-1-content-badge-docs" class="badge ok as-toggle">1 doc</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/primitives/Badge/Badge.stories.tsx">content-badge · ./src/primitives/Badge/Badge.stories.tsx</div>
+    
+    <div class="hint">Marks a short status or count with a Badge-specific treatment.</div>
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-1-content-badge-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-1-content-badge-docs" class="tg tg-docs" type="checkbox" hidden />
+  
+  <input id="c-1-content-badge-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
+              <span class="badge ok">4 prop types</span>
+            </div>
+            <pre><code>Component: src/primitives/Badge/Badge.tsx::Badge</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>/**
+ * Provides expanded screen-reader text when the visible badge is abbreviated.
+ */
+aria-label?: string
+
+/**
+ * Short status text or a numeric count displayed by the badge.
+ */
+children: string | number
+
+/**
+ * Replaces the status with an accessible placeholder while preserving its size.
+ */
+loading?: boolean = false
+
+/**
+ * Selects the semantic colour treatment. Defaults to `neutral`.
+ */
+variant?: &quot;brand&quot; | &quot;danger&quot; | &quot;neutral&quot; | &quot;positive&quot; | &quot;warning&quot; = neutral</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Badge } from "@motech-development/breeze-ui";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">The neutral treatment for ordinary metadata.</div>
+              <pre><code>const Default = () =&gt; &lt;Badge&gt;Pending&lt;/Badge&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Treatments</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Badge&#39;s own five status treatments.</div>
+              <pre><code>const Treatments = () =&gt; (
+  &lt;Inline gap={2} wrap&gt;
+    {variants.map((variant) =&gt; (
+      &lt;Badge key={variant} variant={variant}&gt;
+        {variant}
+      &lt;/Badge&gt;
+    ))}
+  &lt;/Inline&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Loading</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Preserves the badge shape while its status is loading.</div>
+              <pre><code>const Loading = () =&gt; &lt;Badge loading&gt;Pending&lt;/Badge&gt;;</code></pre>
+            </div>
+        </div>
+    
+        <div class="panel panel-docs">
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Docs</span>
+                <span class="badge ok">doc ok</span>
+              </div>
+              <div class="hint">./src/primitives/Badge/Badge.mdx</div>
+              <div>Marks a short status or count.</div>
+              <div class="mdx-content"><pre><code>import { ArgTypes, Canvas, Meta } from &#39;@storybook/addon-docs/blocks&#39;;
+import * as Stories from &#39;./Badge.stories&#39;;
+
+&lt;Meta of={Stories} summary=&quot;Marks a short status or count.&quot; /&gt;
+
+# Badge
+
+`Badge` is compact, non-interactive status content. Its `neutral`, `brand`, `positive`, `warning` and `danger` variants are Badge treatments—not shared control variants.
+
+&lt;Canvas of={Stories.Treatments} /&gt;
+
+## Accessibility
+
+Keep wording meaningful without colour. Do not put controls inside a badge, and do not use it for long prose.
+
+## Loading
+
+Set `loading` to preserve the badge shape while its status text is unavailable.
+
+&lt;Canvas of={Stories.Loading} /&gt;
+
+## API
+
+&lt;ArgTypes /&gt;
+</code></pre></div>
+            </div>
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  no-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
   aria-label="BreezeProvider">
   <div class="head">
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> BreezeProvider</h2>
       <div class="badges">
-        <label for="c-1-foundation-breezeprovider-props" class="badge ok as-toggle">5 prop types</label>
+        <label for="c-2-foundation-breezeprovider-props" class="badge ok as-toggle">6 prop types</label>
         
-        <label for="c-1-foundation-breezeprovider-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-1-foundation-breezeprovider-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-2-foundation-breezeprovider-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-2-foundation-breezeprovider-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -748,10 +904,10 @@ Shadows use CSS variables so they change with the resolved appearance alongside 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-1-foundation-breezeprovider-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-1-foundation-breezeprovider-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-2-foundation-breezeprovider-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-2-foundation-breezeprovider-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-1-foundation-breezeprovider-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-2-foundation-breezeprovider-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -761,22 +917,29 @@ Shadows use CSS variables so they change with the resolved appearance alongside 
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
-              <span class="badge ok">5 prop types</span>
+              <span class="badge ok">6 prop types</span>
             </div>
             <pre><code>Component: src/provider/BreezeProvider.tsx::BreezeProvider</code></pre>
             <pre><code>Props:</code></pre>
             <pre><code>/**
  * The application-owned appearance choice.
+ * Unavailable when the provider manages its own appearance state.
  */
 appearance?: Appearance
 
 /**
+ * Breeze components and application content rendered inside the provider.
+ */
+children: ReactNode
+
+/**
+ * Unavailable when `appearance` is controlled by the application.
  * The initial appearance choice; defaults to automatic.
  */
 defaultAppearance?: Appearance = automatic
 
 /**
- * BCP 47 locale for accessible interactions and future formatting components.
+ * BCP 47 locale for accessible interactions and content formatting.
  */
 locale: string
 
@@ -920,10 +1083,10 @@ The provider never reads or writes durable browser storage. The application deci
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Button</h2>
       <div class="badges">
-        <label for="c-2-actions-button-props" class="badge ok as-toggle">18 prop types</label>
+        <label for="c-3-actions-button-props" class="badge ok as-toggle">18 prop types</label>
         
-        <label for="c-2-actions-button-stories" class="badge ok as-toggle">9 stories</label>
-        <label for="c-2-actions-button-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-3-actions-button-stories" class="badge ok as-toggle">9 stories</label>
+        <label for="c-3-actions-button-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -936,10 +1099,10 @@ The provider never reads or writes durable browser storage. The application deci
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-2-actions-button-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-2-actions-button-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-3-actions-button-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-3-actions-button-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-2-actions-button-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-3-actions-button-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -954,36 +1117,32 @@ The provider never reads or writes durable browser storage. The application deci
             <pre><code>Component: src/primitives/Button/Button.tsx::Button</code></pre>
             <pre><code>Props:</code></pre>
             <pre><code>/**
- * Identifies the element (or elements) whose contents or presence are controlled by the current element.
- * @see aria-owns.
+ * Identifies the element whose contents or presence this button controls.
  */
 aria-controls?: string
 
 /**
- * Identifies the element (or elements) that describes the object.
- * @see aria-labelledby
+ * Identifies elements that provide additional information about the button.
  */
 aria-describedby?: string
 
 /**
- * Indicates whether the element, or another grouping element it controls, is currently expanded or collapsed.
+ * Indicates whether the controlled element is currently expanded.
  */
 aria-expanded?: Booleanish
 
 /**
- * Indicates the availability and type of interactive popup element, such as menu or dialog, that can be triggered by an element.
+ * Indicates the type of interactive popup opened by the button.
  */
 aria-haspopup?: &quot;dialog&quot; | &quot;false&quot; | &quot;grid&quot; | &quot;listbox&quot; | &quot;menu&quot; | &quot;tree&quot; | &quot;true&quot; | boolean
 
 /**
- * Defines a string value that labels the current element.
- * @see aria-labelledby.
+ * Provides an accessible name when it should differ from the visible label.
  */
 aria-label?: string
 
 /**
- * Identifies the element (or elements) that labels the current element.
- * @see aria-describedby.
+ * Identifies elements whose text provides the button&#39;s accessible name.
  */
 aria-labelledby?: string
 
@@ -997,8 +1156,14 @@ children: string
  */
 disabled?: boolean = false
 
+/**
+ * Associates a submit button with a form by its HTML `id`.
+ */
 form?: string
 
+/**
+ * Sets the rendered button&#39;s HTML `id`.
+ */
 id?: string
 
 /**
@@ -1006,6 +1171,9 @@ id?: string
  */
 loading?: boolean = false
 
+/**
+ * Sets the name submitted with the button&#39;s form value.
+ */
 name?: string
 
 /**
@@ -1013,14 +1181,29 @@ name?: string
  */
 onAction?: (() =&gt; void)
 
+/**
+ * Provides access to the rendered button element.
+ */
 ref?: Ref&lt;HTMLButtonElement&gt;
 
+/**
+ * Selects the button&#39;s dimensions. Defaults to `md`.
+ */
 size?: ControlSize = md
 
+/**
+ * Selects ordinary or form-submission behaviour. Defaults to `button`.
+ */
 type?: &quot;button&quot; | &quot;submit&quot; = button
 
+/**
+ * Sets the value submitted when this button submits a form.
+ */
 value?: string
 
+/**
+ * Selects the button&#39;s visual and semantic treatment. Defaults to `primary`.
+ */
 variant?: &quot;danger&quot; | &quot;primary&quot; | &quot;quiet&quot; | &quot;secondary&quot; = primary</code></pre>
           </div>
         </div>
@@ -1236,6 +1419,1778 @@ Use `type=&quot;submit&quot;` to submit the containing form, and handle submissi
 ## Accessibility
 
 The label provides the accessible name and is retained while the button is loading. Buttons receive a 44px minimum target on touch devices, and `aria-label`, `aria-labelledby`, `aria-describedby`, `aria-controls`, `aria-expanded` and `aria-haspopup` are supported.
+
+## API
+
+&lt;ArgTypes /&gt;
+</code></pre></div>
+            </div>
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  no-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="Card">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> Card</h2>
+      <div class="badges">
+        <label for="c-4-content-card-props" class="badge ok as-toggle">6 prop types</label>
+        
+        <label for="c-4-content-card-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-4-content-card-docs" class="badge ok as-toggle">1 doc</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/primitives/Card/Card.stories.tsx">content-card · ./src/primitives/Card/Card.stories.tsx</div>
+    
+    <div class="hint">Decorates related content as a bordered Breeze panel.</div>
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-4-content-card-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-4-content-card-docs" class="tg tg-docs" type="checkbox" hidden />
+  
+  <input id="c-4-content-card-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
+              <span class="badge ok">6 prop types</span>
+            </div>
+            <pre><code>Component: src/primitives/Card/Card.tsx::Card</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>/**
+ * Names the card region when its visible content does not provide a suitable label.
+ */
+aria-label?: string
+
+/**
+ * Content displayed inside the card.
+ */
+children: ReactNode
+
+/**
+ * Clips content to the rounded card boundary. Defaults to `true`.
+ */
+clipped?: boolean = true
+
+/**
+ * Selects the semantic HTML element. Defaults to `div`.
+ */
+element?: CardElement = div
+
+/**
+ * Applies padding from the Breeze spacing scale. Defaults to `4`.
+ */
+padding?: LayoutGap = 4
+
+/**
+ * Selects the card surface treatment. Defaults to `surface`.
+ */
+variant?: &quot;raised&quot; | &quot;surface&quot; = surface</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Card } from "@motech-development/breeze-ui";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Surface</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">The default surface card with panel elevation.</div>
+              <pre><code>const Surface = () =&gt; &lt;Card&gt;(&lt;Stack gap={1}&gt;
+      &lt;Typography variant=&quot;title&quot;&gt;Release notes&lt;/Typography&gt;
+      &lt;Typography tone=&quot;secondary&quot; variant=&quot;body&quot;&gt;
+        Updated guidance for three components
+      &lt;/Typography&gt;
+    &lt;/Stack&gt;)&lt;/Card&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Raised</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A raised neutral card for content nested within a surface.</div>
+              <pre><code>const Raised = () =&gt; &lt;Card variant=&quot;raised&quot;&gt;(&lt;Stack gap={1}&gt;
+      &lt;Typography variant=&quot;title&quot;&gt;Release notes&lt;/Typography&gt;
+      &lt;Typography tone=&quot;secondary&quot; variant=&quot;body&quot;&gt;
+        Updated guidance for three components
+      &lt;/Typography&gt;
+    &lt;/Stack&gt;)&lt;/Card&gt;;</code></pre>
+            </div>
+        </div>
+    
+        <div class="panel panel-docs">
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Docs</span>
+                <span class="badge ok">doc ok</span>
+              </div>
+              <div class="hint">./src/primitives/Card/Card.mdx</div>
+              <div>Decorates related content as a bordered Breeze panel.</div>
+              <div class="mdx-content"><pre><code>import { ArgTypes, Canvas, Meta } from &#39;@storybook/addon-docs/blocks&#39;;
+import * as Stories from &#39;./Card.stories&#39;;
+
+&lt;Meta
+  of={Stories}
+  summary=&quot;Decorates related content as a bordered Breeze panel.&quot;
+/&gt;
+
+# Card
+
+`Card` groups related non-interactive content on a surface with panel elevation. Padding is selected from the Breeze spacing scale.
+
+&lt;Canvas of={Stories.Surface} /&gt;
+
+## Raised cards
+
+Use `raised` for a group nested inside another surface, not to create stronger elevation.
+
+&lt;Canvas of={Stories.Raised} /&gt;
+
+## Accessibility
+
+Cards do not become interactive. Use `article`, `aside` or `section` only when that semantic grouping is meaningful, and provide a label where the element creates a region.
+
+Loading belongs to the content inside the card. Compose loading-capable children or explicit `Skeleton` elements so placeholders match the final content structure.
+
+## API
+
+&lt;ArgTypes /&gt;
+</code></pre></div>
+            </div>
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  no-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="Container">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> Container</h2>
+      <div class="badges">
+        <label for="c-5-layout-container-props" class="badge ok as-toggle">5 prop types</label>
+        
+        <label for="c-5-layout-container-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-5-layout-container-docs" class="badge ok as-toggle">1 doc</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/primitives/Container/Container.stories.tsx">layout-container · ./src/primitives/Container/Container.stories.tsx</div>
+    
+    <div class="hint">Centres content within a named Breeze reading or page measure.</div>
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-5-layout-container-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-5-layout-container-docs" class="tg tg-docs" type="checkbox" hidden />
+  
+  <input id="c-5-layout-container-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
+              <span class="badge ok">5 prop types</span>
+            </div>
+            <pre><code>Component: src/primitives/Container/Container.tsx::Container</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>/**
+ * Names the content boundary when its visible content does not provide a label.
+ */
+aria-label?: string
+
+/**
+ * Content constrained by the container.
+ */
+children: ReactNode
+
+/**
+ * Selects the semantic HTML element. Defaults to `div`.
+ */
+element?: LayoutElement = div
+
+/**
+ * Adds responsive inline page gutters. Defaults to `true`.
+ */
+padded?: boolean = true
+
+/**
+ * Selects the maximum content measure. Defaults to `page`.
+ */
+width?: &quot;page&quot; | &quot;prose&quot; | &quot;read&quot; = page</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Container } from "@motech-development/breeze-ui";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Page</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">The 1500px page boundary with responsive page padding.</div>
+              <pre><code>const Page = () =&gt; &lt;Container&gt;(&lt;Typography variant=&quot;body&quot;&gt;Container centres content and gives page layouts their responsive inline
+              padding.
+            &lt;/Typography&gt;)&lt;/Container&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Reading</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A narrower measure for sustained reading.</div>
+              <pre><code>const Reading = () =&gt; &lt;Container width=&quot;read&quot;&gt;(&lt;Typography variant=&quot;body&quot;&gt;Container centres content and gives page layouts their responsive inline
+              padding.
+            &lt;/Typography&gt;)&lt;/Container&gt;;</code></pre>
+            </div>
+        </div>
+    
+        <div class="panel panel-docs">
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Docs</span>
+                <span class="badge ok">doc ok</span>
+              </div>
+              <div class="hint">./src/primitives/Container/Container.mdx</div>
+              <div>Centres content within a named Breeze measure.</div>
+              <div class="mdx-content"><pre><code>import { ArgTypes, Canvas, Meta } from &#39;@storybook/addon-docs/blocks&#39;;
+import * as Stories from &#39;./Container.stories&#39;;
+
+&lt;Meta of={Stories} summary=&quot;Centres content within a named Breeze measure.&quot; /&gt;
+
+# Container
+
+`Container` caps and centres page or reading content. The page width includes 16px inline padding below `md` and 28px at and above it.
+
+&lt;Canvas of={Stories.Page} /&gt;
+
+## Reading widths
+
+Use `read` for longer explanatory text and `prose` for compact supporting copy.
+
+&lt;Canvas of={Stories.Reading} /&gt;
+
+## Accessibility
+
+Use `element=&quot;main&quot;` only once per page. Label multiple navigation or region containers so they can be distinguished.
+
+Loading belongs to the content inside the container. Compose loading-capable children or explicit `Skeleton` elements so placeholders match the final page structure.
+
+## API
+
+&lt;ArgTypes /&gt;
+</code></pre></div>
+            </div>
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  no-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="Grid">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> Grid</h2>
+      <div class="badges">
+        <label for="c-6-layout-grid-props" class="badge ok as-toggle">6 prop types</label>
+        
+        <label for="c-6-layout-grid-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-6-layout-grid-docs" class="badge ok as-toggle">1 doc</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/primitives/Grid/Grid.stories.tsx">layout-grid · ./src/primitives/Grid/Grid.stories.tsx</div>
+    
+    <div class="hint">Arranges children in equal columns and can collapse at a Breeze breakpoint.</div>
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-6-layout-grid-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-6-layout-grid-docs" class="tg tg-docs" type="checkbox" hidden />
+  
+  <input id="c-6-layout-grid-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
+              <span class="badge ok">6 prop types</span>
+            </div>
+            <pre><code>Component: src/primitives/Grid/Grid.tsx::Grid</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>/**
+ * Names the grid when its visible content does not provide a suitable label.
+ */
+aria-label?: string
+
+/**
+ * Items arranged in the grid.
+ */
+children: ReactNode
+
+/**
+ * Breakpoint below which multiple columns collapse to one. Defaults to `md`.
+ */
+collapseBelow?: GridCollapseBelow = md
+
+/**
+ * Number of equal-width columns. Defaults to `2`.
+ */
+columns?: GridColumns = 2
+
+/**
+ * Selects the semantic HTML element. Defaults to `div`.
+ */
+element?: LayoutElement = div
+
+/**
+ * Applies space between items from the Breeze spacing scale. Defaults to `4`.
+ */
+gap?: LayoutGap = 4</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Grid } from "@motech-development/breeze-ui";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Responsive</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Three equal columns that collapse below Breeze&#39;s structural breakpoint.</div>
+              <pre><code>const Responsive = () =&gt; &lt;Grid columns={3}&gt;(&lt;&gt;
+      &lt;Card&gt;Primary content&lt;/Card&gt;
+      &lt;Card&gt;Supporting content&lt;/Card&gt;
+      &lt;Card&gt;Related content&lt;/Card&gt;
+    &lt;/&gt;)&lt;/Grid&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Fixed</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Two columns that remain side by side at every width.</div>
+              <pre><code>const Fixed = () =&gt; &lt;Grid columns={2} collapseBelow=&quot;none&quot;&gt;(&lt;&gt;
+      &lt;Card&gt;Primary content&lt;/Card&gt;
+      &lt;Card&gt;Supporting content&lt;/Card&gt;
+      &lt;Card&gt;Related content&lt;/Card&gt;
+    &lt;/&gt;)&lt;/Grid&gt;;</code></pre>
+            </div>
+        </div>
+    
+        <div class="panel panel-docs">
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Docs</span>
+                <span class="badge ok">doc ok</span>
+              </div>
+              <div class="hint">./src/primitives/Grid/Grid.mdx</div>
+              <div>Arranges content in equal, responsive columns.</div>
+              <div class="mdx-content"><pre><code>import { ArgTypes, Canvas, Meta } from &#39;@storybook/addon-docs/blocks&#39;;
+import * as Stories from &#39;./Grid.stories&#39;;
+
+&lt;Meta of={Stories} summary=&quot;Arranges content in equal, responsive columns.&quot; /&gt;
+
+# Grid
+
+`Grid` provides one, two or three equal columns on the Breeze spacing scale. Multi-column grids collapse to one column below `md` by default.
+
+&lt;Canvas of={Stories.Responsive} /&gt;
+
+## Fixed columns
+
+Set `collapseBelow=&quot;none&quot;` only for content that remains understandable at narrow widths.
+
+&lt;Canvas of={Stories.Fixed} /&gt;
+
+## Accessibility
+
+Grid changes visual arrangement, not reading order. Author children in the order they should be read.
+
+Loading belongs to the items inside the grid. Compose loading-capable children or explicit `Skeleton` elements so each placeholder matches its final item.
+
+## API
+
+&lt;ArgTypes /&gt;
+</code></pre></div>
+            </div>
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  no-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="Icon">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> Icon</h2>
+      <div class="badges">
+        <label for="c-7-content-icon-props" class="badge ok as-toggle">3 prop types</label>
+        
+        <label for="c-7-content-icon-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-7-content-icon-docs" class="badge ok as-toggle">1 doc</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/primitives/Icon/Icon.stories.tsx">content-icon · ./src/primitives/Icon/Icon.stories.tsx</div>
+    
+    <div class="hint">Renders one curated Lucide glyph under Breeze&#39;s semantic artwork names.</div>
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-7-content-icon-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-7-content-icon-docs" class="tg tg-docs" type="checkbox" hidden />
+  
+  <input id="c-7-content-icon-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
+              <span class="badge ok">3 prop types</span>
+            </div>
+            <pre><code>Component: src/primitives/Icon/Icon.tsx::Icon</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>/**
+ * Names meaningful artwork; omit for an icon already described by nearby text.
+ */
+label?: string
+
+/**
+ * Selects artwork from the curated Breeze icon set.
+ */
+name: &quot;add&quot; | &quot;back&quot; | &quot;building&quot; | &quot;calendar&quot; | &quot;camera&quot; | &quot;check&quot; | &quot;clock&quot; | &quot;close&quot; | &quot;delete&quot; | &quot;document&quot; | &quot;download&quot; | &quot;expand&quot; | &quot;forward&quot; | &quot;lock&quot; | &quot;money&quot; | &quot;moneyIn&quot; | &quot;moneyOut&quot; | &quot;more&quot; | &quot;next&quot; | &quot;notifications&quot; | &quot;overview&quot; | &quot;people&quot; | &quot;settings&quot; | &quot;signOut&quot; | &quot;upload&quot; | &quot;warning&quot;
+
+/**
+ * Selects `sm`, `md`, or `lg` dimensions. Defaults to `md`.
+ */
+size?: &quot;lg&quot; | &quot;md&quot; | &quot;sm&quot; = md</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Icon } from "@motech-development/breeze-ui";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Decorative</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Decorative artwork inherits the surrounding text colour.</div>
+              <pre><code>const Decorative = () =&gt; &lt;Icon name=&quot;calendar&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Named</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A named icon used without an accompanying text label.</div>
+              <pre><code>const Named = () =&gt; &lt;Icon name=&quot;calendar&quot; label=&quot;Choose a date&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Gallery</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A sample of the curated semantic artwork names.</div>
+              <pre><code>const Gallery = () =&gt; (
+  &lt;Inline gap={5} wrap&gt;
+    {names.map((name) =&gt; (
+      &lt;Stack gap={1} horizontalAlign=&quot;center&quot; key={name}&gt;
+        &lt;Icon name={name} /&gt;
+        &lt;Typography variant=&quot;caption&quot;&gt;{name}&lt;/Typography&gt;
+      &lt;/Stack&gt;
+    ))}
+  &lt;/Inline&gt;
+);</code></pre>
+            </div>
+        </div>
+    
+        <div class="panel panel-docs">
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Docs</span>
+                <span class="badge ok">doc ok</span>
+              </div>
+              <div class="hint">./src/primitives/Icon/Icon.mdx</div>
+              <div>Renders curated artwork under Breeze semantic names.</div>
+              <div class="mdx-content"><pre><code>import { ArgTypes, Canvas, Meta } from &#39;@storybook/addon-docs/blocks&#39;;
+import * as Stories from &#39;./Icon.stories&#39;;
+
+&lt;Meta
+  of={Stories}
+  summary=&quot;Renders curated artwork under Breeze semantic names.&quot;
+/&gt;
+
+# Icon
+
+`Icon` exposes curated artwork under names that describe its meaning in a Breeze interface.
+
+&lt;Canvas of={Stories.Gallery} /&gt;
+
+## Accessible names
+
+Icons are decorative by default. Supply `label` only when the icon conveys meaning without adjacent text.
+
+&lt;Canvas of={Stories.Named} /&gt;
+
+## API
+
+&lt;ArgTypes /&gt;
+</code></pre></div>
+            </div>
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  no-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="IconTile">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> IconTile</h2>
+      <div class="badges">
+        <label for="c-8-content-icontile-props" class="badge ok as-toggle">5 prop types</label>
+        
+        <label for="c-8-content-icontile-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-8-content-icontile-docs" class="badge ok as-toggle">1 doc</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/primitives/IconTile/IconTile.stories.tsx">content-icontile · ./src/primitives/IconTile/IconTile.stories.tsx</div>
+    
+    <div class="hint">Places curated artwork on a semantic colour wash.</div>
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-8-content-icontile-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-8-content-icontile-docs" class="tg tg-docs" type="checkbox" hidden />
+  
+  <input id="c-8-content-icontile-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
+              <span class="badge ok">5 prop types</span>
+            </div>
+            <pre><code>Component: src/primitives/IconTile/IconTile.tsx::IconTile</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>/**
+ * Names meaningful artwork; omit when nearby text already describes it.
+ */
+label?: string
+
+/**
+ * Selects artwork from the curated Breeze icon set.
+ */
+name: &quot;add&quot; | &quot;back&quot; | &quot;building&quot; | &quot;calendar&quot; | &quot;camera&quot; | &quot;check&quot; | &quot;clock&quot; | &quot;close&quot; | &quot;delete&quot; | &quot;document&quot; | &quot;download&quot; | &quot;expand&quot; | &quot;forward&quot; | &quot;lock&quot; | &quot;money&quot; | &quot;moneyIn&quot; | &quot;moneyOut&quot; | &quot;more&quot; | &quot;next&quot; | &quot;notifications&quot; | &quot;overview&quot; | &quot;people&quot; | &quot;settings&quot; | &quot;signOut&quot; | &quot;upload&quot; | &quot;warning&quot;
+
+/**
+ * Selects a circular or rounded-square tile. Defaults to `square`.
+ */
+shape?: &quot;circle&quot; | &quot;square&quot; = square
+
+/**
+ * Selects the tile dimensions. Defaults to `lg`.
+ */
+size?: &quot;lg&quot; | &quot;sm&quot; = lg
+
+/**
+ * Selects the semantic colour treatment. Defaults to `brand`.
+ */
+tone?: &quot;brand&quot; | &quot;danger&quot; | &quot;neutral&quot; | &quot;positive&quot; | &quot;warning&quot; = brand</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { IconTile } from "@motech-development/breeze-ui";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A 44px square brand wash for content states.</div>
+              <pre><code>const Default = () =&gt; &lt;IconTile name=&quot;document&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Treatments</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Every semantic colour treatment.</div>
+              <pre><code>const Treatments = () =&gt; (
+  &lt;Inline gap={3}&gt;
+    {tones.map((tone) =&gt; (
+      &lt;IconTile key={tone} name=&quot;document&quot; tone={tone} /&gt;
+    ))}
+  &lt;/Inline&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Direction</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A compact circular direction marker.</div>
+              <pre><code>const Direction = () =&gt; &lt;IconTile name=&quot;forward&quot; shape=&quot;circle&quot; size=&quot;sm&quot; tone=&quot;brand&quot; /&gt;;</code></pre>
+            </div>
+        </div>
+    
+        <div class="panel panel-docs">
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Docs</span>
+                <span class="badge ok">doc ok</span>
+              </div>
+              <div class="hint">./src/primitives/IconTile/IconTile.mdx</div>
+              <div>Places curated artwork on a semantic colour wash.</div>
+              <div class="mdx-content"><pre><code>import { ArgTypes, Canvas, Meta } from &#39;@storybook/addon-docs/blocks&#39;;
+import * as Stories from &#39;./IconTile.stories&#39;;
+
+&lt;Meta
+  of={Stories}
+  summary=&quot;Places curated artwork on a semantic colour wash.&quot;
+/&gt;
+
+# IconTile
+
+`IconTile` decorates state panels, rows and other content with a fixed-size icon wash.
+
+&lt;Canvas of={Stories.Treatments} /&gt;
+
+## Direction markers
+
+Use the compact circular form for direction markers.
+
+&lt;Canvas of={Stories.Direction} /&gt;
+
+## Accessibility
+
+Artwork is decorative by default. Supply `label` only when no adjacent text names its meaning; never rely on the tile colour alone.
+
+## API
+
+&lt;ArgTypes /&gt;
+</code></pre></div>
+            </div>
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  no-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="Inline">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> Inline</h2>
+      <div class="badges">
+        <label for="c-9-layout-inline-props" class="badge ok as-toggle">7 prop types</label>
+        
+        <label for="c-9-layout-inline-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-9-layout-inline-docs" class="badge ok as-toggle">1 doc</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/primitives/Inline/Inline.stories.tsx">layout-inline · ./src/primitives/Inline/Inline.stories.tsx</div>
+    
+    <div class="hint">Arranges children horizontally on the Breeze spacing scale.</div>
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-9-layout-inline-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-9-layout-inline-docs" class="tg tg-docs" type="checkbox" hidden />
+  
+  <input id="c-9-layout-inline-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
+              <span class="badge ok">7 prop types</span>
+            </div>
+            <pre><code>Component: src/primitives/Inline/Inline.tsx::Inline</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>/**
+ * Names the row when its visible content does not provide a suitable label.
+ */
+aria-label?: string
+
+/**
+ * Items arranged horizontally.
+ */
+children: ReactNode
+
+/**
+ * Selects the semantic HTML element. Defaults to `div`.
+ */
+element?: LayoutElement = div
+
+/**
+ * Applies space between items from the Breeze spacing scale. Defaults to `3`.
+ */
+gap?: LayoutGap = 3
+
+/**
+ * Distributes items along the inline axis. Defaults to `start`.
+ */
+justify?: &quot;between&quot; | &quot;center&quot; | &quot;end&quot; | &quot;start&quot; = start
+
+/**
+ * Aligns items along the block axis. Defaults to `center`.
+ */
+verticalAlign?: LayoutAlign = center
+
+/**
+ * Allows items to wrap onto additional rows. Defaults to `false`.
+ */
+wrap?: boolean = false</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Inline } from "@motech-development/breeze-ui";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A horizontal row using the default three-token gap.</div>
+              <pre><code>const Default = () =&gt; &lt;Inline&gt;(&lt;&gt;
+      &lt;Badge&gt;Draft&lt;/Badge&gt;
+      &lt;Badge variant=&quot;positive&quot;&gt;Published&lt;/Badge&gt;
+      &lt;Badge variant=&quot;warning&quot;&gt;Needs review&lt;/Badge&gt;
+    &lt;/&gt;)&lt;/Inline&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Wrapped</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A row whose items wrap rather than overflow.</div>
+              <pre><code>const Wrapped = () =&gt; &lt;Inline gap={2} wrap&gt;(&lt;&gt;
+      &lt;Badge&gt;Draft&lt;/Badge&gt;
+      &lt;Badge variant=&quot;positive&quot;&gt;Published&lt;/Badge&gt;
+      &lt;Badge variant=&quot;warning&quot;&gt;Needs review&lt;/Badge&gt;
+    &lt;/&gt;)&lt;/Inline&gt;;</code></pre>
+            </div>
+        </div>
+    
+        <div class="panel panel-docs">
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Docs</span>
+                <span class="badge ok">doc ok</span>
+              </div>
+              <div class="hint">./src/primitives/Inline/Inline.mdx</div>
+              <div>Arranges children horizontally on the Breeze spacing scale.</div>
+              <div class="mdx-content"><pre><code>import { ArgTypes, Canvas, Meta } from &#39;@storybook/addon-docs/blocks&#39;;
+import * as Stories from &#39;./Inline.stories&#39;;
+
+&lt;Meta
+  of={Stories}
+  summary=&quot;Arranges children horizontally on the Breeze spacing scale.&quot;
+/&gt;
+
+# Inline
+
+`Inline` lays related items out horizontally. Its gap, alignment and distribution choices are closed to the arrangements used by Breeze.
+
+&lt;Canvas of={Stories.Default} /&gt;
+
+## Wrapping
+
+Enable `wrap` for collections of labels or actions that may not fit on one line.
+
+&lt;Canvas of={Stories.Wrapped} /&gt;
+
+## Accessibility
+
+Choose a semantic element only when the content forms a landmark or labelled region. Visual order and document order remain the same.
+
+Loading belongs to the items inside the row. Compose loading-capable children or explicit `Skeleton` elements so placeholders retain the intended item sizes.
+
+## API
+
+&lt;ArgTypes /&gt;
+</code></pre></div>
+            </div>
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  no-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="Separator">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> Separator</h2>
+      <div class="badges">
+        <label for="c-10-content-separator-props" class="badge ok as-toggle">1 prop type</label>
+        
+        <label for="c-10-content-separator-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-10-content-separator-docs" class="badge ok as-toggle">1 doc</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/primitives/Separator/Separator.stories.tsx">content-separator · ./src/primitives/Separator/Separator.stories.tsx</div>
+    
+    <div class="hint">Separates adjacent regions along a horizontal or vertical axis.</div>
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-10-content-separator-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-10-content-separator-docs" class="tg tg-docs" type="checkbox" hidden />
+  
+  <input id="c-10-content-separator-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
+              <span class="badge ok">1 prop type</span>
+            </div>
+            <pre><code>Component: src/primitives/Separator/Separator.tsx::Separator</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>/**
+ * Sets the divider axis. Defaults to `horizontal`.
+ */
+orientation?: &quot;horizontal&quot; | &quot;vertical&quot; = horizontal</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Separator } from "@motech-development/breeze-ui";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Horizontal</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A divider between vertically stacked regions.</div>
+              <pre><code>const Horizontal = () =&gt; &lt;Separator /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Vertical</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A divider between horizontally arranged regions.</div>
+              <pre><code>const Vertical = () =&gt; &lt;Separator orientation=&quot;vertical&quot; /&gt;;</code></pre>
+            </div>
+        </div>
+    
+        <div class="panel panel-docs">
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Docs</span>
+                <span class="badge ok">doc ok</span>
+              </div>
+              <div class="hint">./src/primitives/Separator/Separator.mdx</div>
+              <div>Separates adjacent regions along one axis.</div>
+              <div class="mdx-content"><pre><code>import { ArgTypes, Canvas, Meta } from &#39;@storybook/addon-docs/blocks&#39;;
+import * as Stories from &#39;./Separator.stories&#39;;
+
+&lt;Meta of={Stories} summary=&quot;Separates adjacent regions along one axis.&quot; /&gt;
+
+# Separator
+
+`Separator` draws the one-token line used between related regions.
+
+&lt;Canvas of={Stories.Horizontal} /&gt;
+
+## Vertical separators
+
+Use the vertical orientation only inside a layout with a defined block size.
+
+&lt;Canvas of={Stories.Vertical} /&gt;
+
+## Accessibility
+
+The component exposes `role=&quot;separator&quot;` and the selected orientation.
+
+## API
+
+&lt;ArgTypes /&gt;
+</code></pre></div>
+            </div>
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  no-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="Skeleton">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> Skeleton</h2>
+      <div class="badges">
+        <label for="c-11-content-skeleton-props" class="badge ok as-toggle">4 prop types</label>
+        
+        <label for="c-11-content-skeleton-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-11-content-skeleton-docs" class="badge ok as-toggle">1 doc</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/primitives/Skeleton/Skeleton.stories.tsx">content-skeleton · ./src/primitives/Skeleton/Skeleton.stories.tsx</div>
+    
+    <div class="hint">Draws an arbitrary placeholder shaped like the content it will replace.</div>
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-11-content-skeleton-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-11-content-skeleton-docs" class="tg tg-docs" type="checkbox" hidden />
+  
+  <input id="c-11-content-skeleton-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
+              <span class="badge ok">4 prop types</span>
+            </div>
+            <pre><code>Component: src/primitives/Skeleton/Skeleton.tsx::Skeleton</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>/**
+ * Any CSS length; Skeleton is the deliberate exception to token-only dimensions.
+ */
+blockSize?: string | number
+
+/**
+ * Any CSS length; Skeleton is the deliberate exception to token-only dimensions.
+ */
+inlineSize?: string | number
+
+/**
+ * Announces the loading region. Omit when another component owns the announcement.
+ */
+label?: string
+
+/**
+ * Selects the placeholder geometry. Defaults to `text`.
+ */
+shape?: &quot;circle&quot; | &quot;rectangle&quot; | &quot;text&quot; = text</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Skeleton } from "@motech-development/breeze-ui";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Text</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A labelled text placeholder.</div>
+              <pre><code>const Text = () =&gt; &lt;Skeleton label=&quot;Loading content&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Shapes</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Arbitrary dimensions let placeholders match the content they replace.</div>
+              <pre><code>const Shapes = ({ label }) =&gt; (
+  &lt;Stack gap={4}&gt;
+    &lt;Skeleton inlineSize=&quot;72%&quot; label={label} /&gt;
+    &lt;Inline gap={3}&gt;
+      &lt;Skeleton blockSize={44} inlineSize={44} shape=&quot;circle&quot; /&gt;
+      &lt;Skeleton blockSize={96} inlineSize=&quot;14rem&quot; shape=&quot;rectangle&quot; /&gt;
+    &lt;/Inline&gt;
+  &lt;/Stack&gt;
+);</code></pre>
+            </div>
+        </div>
+    
+        <div class="panel panel-docs">
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Docs</span>
+                <span class="badge ok">doc ok</span>
+              </div>
+              <div class="hint">./src/primitives/Skeleton/Skeleton.mdx</div>
+              <div>Draws a placeholder shaped like forthcoming content.</div>
+              <div class="mdx-content"><pre><code>import { ArgTypes, Canvas, Meta } from &#39;@storybook/addon-docs/blocks&#39;;
+import * as Stories from &#39;./Skeleton.stories&#39;;
+
+&lt;Meta
+  of={Stories}
+  summary=&quot;Draws a placeholder shaped like forthcoming content.&quot;
+/&gt;
+
+# Skeleton
+
+`Skeleton` represents content while it loads. Unlike layout primitives, its block and inline dimensions deliberately accept arbitrary CSS lengths so it can match the content it replaces.
+
+&lt;Canvas of={Stories.Shapes} /&gt;
+
+## Accessibility
+
+Supply `label` when the skeleton owns the loading announcement. Omit it when a parent component already announces loading; the skeleton is then hidden from assistive technology.
+
+## API
+
+&lt;ArgTypes /&gt;
+</code></pre></div>
+            </div>
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  no-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="Stack">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> Stack</h2>
+      <div class="badges">
+        <label for="c-12-layout-stack-props" class="badge ok as-toggle">5 prop types</label>
+        
+        <label for="c-12-layout-stack-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-12-layout-stack-docs" class="badge ok as-toggle">1 doc</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/primitives/Stack/Stack.stories.tsx">layout-stack · ./src/primitives/Stack/Stack.stories.tsx</div>
+    
+    <div class="hint">Arranges children vertically on the Breeze spacing scale.</div>
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-12-layout-stack-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-12-layout-stack-docs" class="tg tg-docs" type="checkbox" hidden />
+  
+  <input id="c-12-layout-stack-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
+              <span class="badge ok">5 prop types</span>
+            </div>
+            <pre><code>Component: src/primitives/Stack/Stack.tsx::Stack</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>/**
+ * Names the stack when its visible content does not provide a suitable label.
+ */
+aria-label?: string
+
+/**
+ * Items arranged vertically.
+ */
+children: ReactNode
+
+/**
+ * Selects the semantic HTML element. Defaults to `div`.
+ */
+element?: LayoutElement = div
+
+/**
+ * Applies space between items from the Breeze spacing scale. Defaults to `3`.
+ */
+gap?: LayoutGap = 3
+
+/**
+ * Aligns items along the inline axis. Defaults to `stretch`.
+ */
+horizontalAlign?: LayoutAlign = stretch</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Stack } from "@motech-development/breeze-ui";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A vertical stack using the default three-token gap.</div>
+              <pre><code>const Default = () =&gt; &lt;Stack&gt;(&lt;&gt;
+      &lt;Card&gt;First item&lt;/Card&gt;
+      &lt;Card&gt;Second item&lt;/Card&gt;
+      &lt;Card&gt;Third item&lt;/Card&gt;
+    &lt;/&gt;)&lt;/Stack&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Centred</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Content centred along the horizontal axis.</div>
+              <pre><code>const Centred = () =&gt; &lt;Stack horizontalAlign=&quot;center&quot;&gt;(&lt;&gt;
+      &lt;Card&gt;First item&lt;/Card&gt;
+      &lt;Card&gt;Second item&lt;/Card&gt;
+      &lt;Card&gt;Third item&lt;/Card&gt;
+    &lt;/&gt;)&lt;/Stack&gt;;</code></pre>
+            </div>
+        </div>
+    
+        <div class="panel panel-docs">
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Docs</span>
+                <span class="badge ok">doc ok</span>
+              </div>
+              <div class="hint">./src/primitives/Stack/Stack.mdx</div>
+              <div>Arranges children vertically on the Breeze spacing scale.</div>
+              <div class="mdx-content"><pre><code>import { ArgTypes, Canvas, Meta } from &#39;@storybook/addon-docs/blocks&#39;;
+import * as Stories from &#39;./Stack.stories&#39;;
+
+&lt;Meta
+  of={Stories}
+  summary=&quot;Arranges children vertically on the Breeze spacing scale.&quot;
+/&gt;
+
+# Stack
+
+`Stack` arranges related content vertically. Choose `gap` from the 4px Breeze spacing scale and use `horizontalAlign` to align the children across the row axis.
+
+&lt;Canvas of={Stories.Default} /&gt;
+
+## Alignment
+
+The default stretches children. Use `start`, `center` or `end` when their intrinsic width should be retained.
+
+&lt;Canvas of={Stories.Centred} /&gt;
+
+## Accessibility
+
+The default `div` adds no semantics. Select `main`, `nav` or `section` only when the content has that meaning, and label landmarks or regions with `aria-label`.
+
+Loading belongs to the items inside the stack. Compose loading-capable children or explicit `Skeleton` elements so placeholders match the final vertical rhythm.
+
+## API
+
+&lt;ArgTypes /&gt;
+</code></pre></div>
+            </div>
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  no-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="Typography">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> Typography</h2>
+      <div class="badges">
+        <label for="c-13-content-typography-props" class="badge ok as-toggle">15 prop types</label>
+        
+        <label for="c-13-content-typography-stories" class="badge ok as-toggle">4 stories</label>
+        <label for="c-13-content-typography-docs" class="badge ok as-toggle">1 doc</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/primitives/Typography/Typography.stories.tsx">content-typography · ./src/primitives/Typography/Typography.stories.tsx</div>
+    
+    <div class="hint">Applies Breeze text roles and locale-aware money or calendar-date formatting.</div>
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-13-content-typography-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-13-content-typography-docs" class="tg tg-docs" type="checkbox" hidden />
+  
+  <input id="c-13-content-typography-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
+              <span class="badge ok">15 prop types</span>
+            </div>
+            <pre><code>Component: src/primitives/Typography/Typography.tsx::Typography</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>/**
+ * Aligns text along the inline axis. Numeric content defaults to `end`.
+ */
+align?: &quot;center&quot; | &quot;end&quot; | &quot;start&quot;
+
+/**
+ * Provides expanded screen-reader text or names rich content.
+ */
+aria-label?: string
+
+/**
+ * Unavailable when displaying a formatted currency value.
+ * Unavailable when displaying a formatted date value.
+ * Text or inline content; optional while loading.
+ * Text or inline content to display.
+ */
+children?: ReactNode
+
+/**
+ * ISO 4217 currency code used for locale-aware formatting.
+ * Unavailable when formatting a date.
+ * Unavailable when displaying text content.
+ */
+currency?: string
+
+/**
+ * Unavailable when formatting currency.
+ * Selects the locale-aware date verbosity. Defaults to `long`.
+ * Unavailable when displaying text content.
+ */
+dateStyle?: &quot;full&quot; | &quot;long&quot; | &quot;medium&quot; | &quot;short&quot;
+
+/**
+ * Overrides the semantic HTML element selected by the text role.
+ */
+element?: TypographyElement
+
+/**
+ * Formats `value` as locale-aware currency.
+ * Formats `value` as a locale-aware calendar date.
+ * Omit to display `children` without value formatting.
+ */
+format?: &quot;currency&quot; | &quot;date&quot;
+
+/**
+ * Sets the rendered element&#39;s HTML `id`.
+ */
+id?: string
+
+/**
+ * Replaces the formatted value with a loading placeholder.
+ * Displays the formatted value instead of a loading placeholder.
+ * Replaces the content with a loading placeholder.
+ * Displays the content instead of a loading placeholder.
+ */
+loading?: boolean
+
+/**
+ * Applies tabular numerals, logical end alignment and figure tracking.
+ */
+numeric?: boolean
+
+/**
+ * Controls whether the formatted amount displays its sign. Defaults to `auto`.
+ * Unavailable when formatting a date.
+ * Unavailable when displaying text content.
+ */
+sign?: &quot;always&quot; | &quot;auto&quot; | &quot;never&quot;
+
+/**
+ * Selects the semantic text colour. Defaults to `default`.
+ */
+tone?: &quot;brand&quot; | &quot;danger&quot; | &quot;default&quot; | &quot;muted&quot; | &quot;positive&quot; | &quot;secondary&quot; | &quot;warning&quot;
+
+/**
+ * Truncates a single line with an ellipsis when space is constrained.
+ */
+truncate?: boolean
+
+/**
+ * Numeric amount to format; optional while loading.
+ * Numeric amount to format as currency.
+ * ISO calendar date to format; optional while loading.
+ * ISO calendar date to format for the provider locale.
+ * Unavailable when displaying text content.
+ */
+value?: number | `${number}-${number}-${number}`
+
+/**
+ * Uses the dedicated money text role required for currency formatting.
+ * Selects the visual and typographic text role. Defaults to `body`.
+ */
+variant?: &quot;body&quot; | &quot;caption&quot; | &quot;heading&quot; | &quot;label&quot; | &quot;micro&quot; | &quot;money&quot; | &quot;title&quot;</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Typography } from "@motech-development/breeze-ui";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Roles</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">The text hierarchy used by Breeze interfaces.</div>
+              <pre><code>const Roles = () =&gt; (
+  &lt;Stack gap={3}&gt;
+    &lt;Typography variant=&quot;heading&quot;&gt;Page heading&lt;/Typography&gt;
+    &lt;Typography variant=&quot;title&quot;&gt;Panel title&lt;/Typography&gt;
+    &lt;Typography variant=&quot;body&quot;&gt;Body text explains the content.&lt;/Typography&gt;
+    &lt;Typography tone=&quot;muted&quot; variant=&quot;caption&quot;&gt;
+      Caption and metadata
+    &lt;/Typography&gt;
+    &lt;Typography tone=&quot;muted&quot; variant=&quot;label&quot;&gt;
+      Field label
+    &lt;/Typography&gt;
+    &lt;Typography tone=&quot;muted&quot; variant=&quot;micro&quot;&gt;
+      Column heading
+    &lt;/Typography&gt;
+  &lt;/Stack&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Figures And Interface Text</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Numeric headings use figure styling without tightening interface headings.</div>
+              <pre><code>const FiguresAndInterfaceText = () =&gt; (
+  &lt;Stack gap={2} horizontalAlign=&quot;start&quot;&gt;
+    &lt;Typography variant=&quot;heading&quot;&gt;Overview&lt;/Typography&gt;
+    &lt;Typography numeric variant=&quot;heading&quot;&gt;
+      128
+    &lt;/Typography&gt;
+  &lt;/Stack&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Formatting</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Money and calendar dates formatted from semantic values.</div>
+              <pre><code>const Formatting = () =&gt; (
+  &lt;Stack gap={2} horizontalAlign=&quot;start&quot;&gt;
+    &lt;Typography
+      currency=&quot;EUR&quot;
+      format=&quot;currency&quot;
+      sign=&quot;always&quot;
+      value={1234.56}
+      variant=&quot;money&quot;
+    /&gt;
+    &lt;Typography format=&quot;date&quot; value=&quot;2026-09-03&quot; variant=&quot;caption&quot; /&gt;
+  &lt;/Stack&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Loading</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Preserves the text&#39;s place while its value is loading.</div>
+              <pre><code>const Loading = () =&gt; &lt;Typography loading&gt;Loading text&lt;/Typography&gt;;</code></pre>
+            </div>
+        </div>
+    
+        <div class="panel panel-docs">
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Docs</span>
+                <span class="badge ok">doc ok</span>
+              </div>
+              <div class="hint">./src/primitives/Typography/Typography.mdx</div>
+              <div>Applies Breeze text roles and locale-aware formatting.</div>
+              <div class="mdx-content"><pre><code>import { ArgTypes, Canvas, Meta } from &#39;@storybook/addon-docs/blocks&#39;;
+import * as Stories from &#39;./Typography.stories&#39;;
+
+&lt;Meta
+  of={Stories}
+  summary=&quot;Applies Breeze text roles and locale-aware formatting.&quot;
+/&gt;
+
+# Typography
+
+`Typography` provides the money, heading, title, body, caption, label and micro roles. Money uses negative tracking and tabular numerals. Set `numeric` on other figure text; interface text retains normal tracking.
+
+&lt;Canvas of={Stories.Roles} /&gt;
+
+## Numeric figures
+
+Set `numeric` on figures outside the money role. They gain tabular numerals, negative tracking and logical end alignment without tightening interface headings.
+
+&lt;Canvas of={Stories.FiguresAndInterfaceText} /&gt;
+
+## Money and dates
+
+Pass semantic values with `format=&quot;currency&quot;` or `format=&quot;date&quot;`. Dates use the exported `IsoCalendarDate` string contract. Formatting uses the nearest `BreezeProvider` locale. Currency signs retain that locale&#39;s placement and use a true minus character.
+
+&lt;Canvas of={Stories.Formatting} /&gt;
+
+No separate formatting components are exported.
+
+## Accessibility
+
+Choose the `element` for document semantics; the visual role does not force a heading level. Do not use colour alone to communicate direction or status.
+
+## Loading
+
+Set `loading` to preserve the text&#39;s place while its value is unavailable.
+
+&lt;Canvas of={Stories.Loading} /&gt;
+
+## API
+
+&lt;ArgTypes /&gt;
+</code></pre></div>
+            </div>
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  no-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="VisuallyHidden">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> VisuallyHidden</h2>
+      <div class="badges">
+        <label for="c-14-content-visuallyhidden-props" class="badge ok as-toggle">1 prop type</label>
+        
+        <label for="c-14-content-visuallyhidden-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-14-content-visuallyhidden-docs" class="badge ok as-toggle">1 doc</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/primitives/VisuallyHidden/VisuallyHidden.stories.tsx">content-visuallyhidden · ./src/primitives/VisuallyHidden/VisuallyHidden.stories.tsx</div>
+    
+    <div class="hint">Hides explanatory content visually while preserving it for assistive technology.</div>
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-14-content-visuallyhidden-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-14-content-visuallyhidden-docs" class="tg tg-docs" type="checkbox" hidden />
+  
+  <input id="c-14-content-visuallyhidden-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
+              <span class="badge ok">1 prop type</span>
+            </div>
+            <pre><code>Component: src/primitives/VisuallyHidden/VisuallyHidden.tsx::VisuallyHidden</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>/**
+ * Content hidden visually but retained for assistive technology.
+ */
+children: ReactNode</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { VisuallyHidden } from "@motech-development/breeze-ui";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Icon Label</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">An icon-only native example whose accessible name remains available.</div>
+              <pre><code>const IconLabel = () =&gt; &lt;button type=&quot;button&quot;&gt;
+    &lt;Icon name=&quot;add&quot; /&gt;
+    &lt;VisuallyHidden&gt;Create item&lt;/VisuallyHidden&gt;
+&lt;/button&gt;;</code></pre>
+            </div>
+        </div>
+    
+        <div class="panel panel-docs">
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Docs</span>
+                <span class="badge ok">doc ok</span>
+              </div>
+              <div class="hint">./src/primitives/VisuallyHidden/VisuallyHidden.mdx</div>
+              <div>Preserves content for assistive technology without displaying it.</div>
+              <div class="mdx-content"><pre><code>import { ArgTypes, Canvas, Meta } from &#39;@storybook/addon-docs/blocks&#39;;
+import * as Stories from &#39;./VisuallyHidden.stories&#39;;
+
+&lt;Meta
+  of={Stories}
+  summary=&quot;Preserves content for assistive technology without displaying it.&quot;
+/&gt;
+
+# VisuallyHidden
+
+Use `VisuallyHidden` when essential wording would duplicate an adjacent visual cue, such as the name of an icon-only control.
+
+&lt;Canvas of={Stories.IconLabel} /&gt;
+
+Do not use it to hide focusable content or information sighted users also need.
 
 ## API
 

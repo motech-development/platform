@@ -1,0 +1,8 @@
+import{n as e}from"./rolldown-runtime-DaJ6WEGw.js";import{t}from"./jsx-runtime-cM__dR4X.js";import{i as n}from"./react-XnqUzw--.js";import{c as r,n as i,r as a,s as o}from"./blocks-Cc7JIfAL.js";import{t as s}from"./mdx-react-shim-y1jXGhTh.js";import{Shapes as c,n as l,t as u}from"./Skeleton.stories-CuatPsXg.js";function d(e){let t={code:`code`,h1:`h1`,h2:`h2`,p:`p`,...n(),...e.components};return(0,p.jsxs)(p.Fragment,{children:[(0,p.jsx)(o,{of:u,summary:`Draws a placeholder shaped like forthcoming content.`}),`
+`,(0,p.jsx)(t.h1,{id:`skeleton`,children:`Skeleton`}),`
+`,(0,p.jsxs)(t.p,{children:[(0,p.jsx)(t.code,{children:`Skeleton`}),` represents content while it loads. Unlike layout primitives, its block and inline dimensions deliberately accept arbitrary CSS lengths so it can match the content it replaces.`]}),`
+`,(0,p.jsx)(a,{of:c}),`
+`,(0,p.jsx)(t.h2,{id:`accessibility`,children:`Accessibility`}),`
+`,(0,p.jsxs)(t.p,{children:[`Supply `,(0,p.jsx)(t.code,{children:`label`}),` when the skeleton owns the loading announcement. Omit it when a parent component already announces loading; the skeleton is then hidden from assistive technology.`]}),`
+`,(0,p.jsx)(t.h2,{id:`api`,children:`API`}),`
+`,(0,p.jsx)(i,{})]})}function f(e={}){let{wrapper:t}={...n(),...e.components};return t?(0,p.jsx)(t,{...e,children:(0,p.jsx)(d,{...e})}):d(e)}var p;e((()=>{p=t(),s(),r(),l()}))();export{f as default};

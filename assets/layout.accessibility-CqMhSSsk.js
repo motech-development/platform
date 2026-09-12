@@ -1,0 +1,1 @@
+import{n as e}from"./rolldown-runtime-DaJ6WEGw.js";function t(e,t){let n=e?.trim()||void 0;return{accessibleLabel:n,role:n!==void 0&&t===`div`?`group`:void 0}}var n=e((()=>{}));export{n,t};
