@@ -29,9 +29,12 @@ describe('Badge', () => {
     renderBreeze(<Badge loading>Badge content</Badge>);
 
     expect(screen.getByRole('progressbar', { name: 'Loading' })).toHaveStyle({
-      blockSize: '1lh',
+      blockSize: '8px',
       inlineSize: '100%',
     });
+    expect(
+      screen.getByRole('progressbar', { name: 'Loading' }).parentElement,
+    ).toHaveClass('breeze:grid', 'breeze:items-center');
     expect(screen.getByText('Badge content')).toHaveClass('breeze:opacity-0');
     expect(screen.getByText('Badge content')).toHaveAttribute(
       'aria-hidden',

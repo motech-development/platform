@@ -7,7 +7,8 @@ const variants = {
     badge:
       'breeze:inline-grid breeze:shrink-0 breeze:items-center breeze:whitespace-nowrap breeze:rounded-breeze-chip breeze:ps-breeze-2 breeze:pe-breeze-2 breeze:py-breeze-px breeze:text-breeze-2xs breeze:font-bold breeze:leading-breeze-snug breeze:tracking-breeze-wide',
     content: 'breeze:[grid-area:1/1]',
-    skeleton: 'breeze:[grid-area:1/1] breeze:inline-size-full',
+    skeleton:
+      'breeze:[grid-area:1/1] breeze:grid breeze:inline-size-full breeze:items-center',
   },
   compound: {},
   size: {},
@@ -54,7 +55,7 @@ export function Badge({
     statusContent = (
       <span className={variants.base.skeleton}>
         <Skeleton
-          blockSize="1lh"
+          blockSize={8}
           inlineSize="100%"
           label={messages.loading}
           shape="rectangle"
