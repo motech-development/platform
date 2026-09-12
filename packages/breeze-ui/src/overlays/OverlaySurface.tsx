@@ -68,13 +68,20 @@ function OverlaySurface({
   const open = requestedOpen && parentOpen;
   const triggerRef = useRef<HTMLButtonElement>(null);
   const contentRef = useRef<HTMLElement | null>(null);
+  const [surfaceMounted, setSurfaceMounted] = useState(false);
+  const refocusingRef = useRef(false);
+  const refocusTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Full-screen surfaces belong to the viewport, not the sheet's scrollable
   // trigger. Keep the actual trigger separately for focus restoration.
   const positionRef = useMemo(
     () => (kind === 'fullscreen' ? { current: host } : triggerRef),
     [host, kind],
   );
-  const layer = useOverlayLayer(kind, open && portalReady && host !== null);
+  const layer = useOverlayLayer(
+    kind,
+    open && portalReady && host !== null,
+    open || surfaceMounted,
+  );
   const changeOpen = useCallback(
     (nextOpen: boolean) => {
       if (controlledOpen === undefined) setUncontrolledOpen(nextOpen);
@@ -114,6 +121,7 @@ function OverlaySurface({
     const focused = document?.activeElement;
     if (
       !document ||
+      !host ||
       (focused !== document.body && !focused?.closest('[data-exiting]'))
     )
       return;
@@ -133,7 +141,23 @@ function OverlaySurface({
   const surfaceRef = useCallback(
     (element: HTMLElement | null) => {
       contentRef.current = element;
-      if (!element) return undefined;
+      const clearRefocusTimer = () => {
+        if (refocusTimerRef.current !== null) {
+          clearTimeout(refocusTimerRef.current);
+          refocusTimerRef.current = null;
+        }
+      };
+      const cleanup = () => {
+        clearRefocusTimer();
+        contentRef.current = null;
+        setSurfaceMounted(false);
+        requestAnimationFrame(restoreFocus);
+      };
+      if (!element) {
+        cleanup();
+        return undefined;
+      }
+      setSurfaceMounted(true);
       if (nonModal) {
         queueMicrotask(() => {
           if (
@@ -141,14 +165,27 @@ function OverlaySurface({
             !element.closest('[inert], [data-exiting]')
           ) {
             element.focus({ preventScroll: true });
+            refocusTimerRef.current = setTimeout(() => {
+              const { ownerDocument } = element;
+              const { activeElement: focused } = ownerDocument;
+              if (
+                element.isConnected &&
+                !element.closest('[inert], [data-exiting]') &&
+                (focused === element || focused === ownerDocument.body)
+              ) {
+                refocusingRef.current = true;
+                element.blur();
+                element.focus({ preventScroll: true });
+                refocusingRef.current = false;
+              }
+              refocusTimerRef.current = null;
+            }, 500);
           }
         });
       }
       // React Aria restores ordinary closes. Nested simultaneous exits can leave
       // focus on body; repair only that gap after its focus-scope cleanup runs.
-      return () => {
-        requestAnimationFrame(restoreFocus);
-      };
+      return cleanup;
     },
     [nonModal, restoreFocus],
   );
@@ -181,6 +218,9 @@ function OverlaySurface({
           aria-label={title}
           className={variants.base.content}
           id={layer.id}
+          onBlur={(event) => {
+            if (refocusingRef.current) event.stopPropagation();
+          }}
           ref={surfaceRef}
           role="dialog"
           tabIndex={-1}
@@ -206,7 +246,7 @@ function OverlaySurface({
         aria-controls={open ? layer.id : undefined}
         aria-expanded={open}
         aria-haspopup="dialog"
-        onAction={() => changeOpen(true)}
+        onAction={() => changeOpen(nonModal ? !open : true)}
         ref={triggerRef}
       >
         {trigger}
@@ -225,8 +265,12 @@ function OverlaySurface({
             isKeyboardDismissDisabled={!dismissible || !layer.topmost}
             onOpenChange={changeOpen}
             placement={placement}
-            shouldCloseOnInteractOutside={() =>
-              kind === 'popover' && dismissible && layer.topmost
+            // Leave the trigger in the blur scope so its action can toggle the popover.
+            shouldCloseOnInteractOutside={(element) =>
+              kind === 'popover' &&
+              dismissible &&
+              layer.topmost &&
+              !triggerRef.current?.contains(element)
             }
             style={{ zIndex: layer.zIndex }}
             triggerRef={positionRef}

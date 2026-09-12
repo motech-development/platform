@@ -12,6 +12,7 @@ interface Layer {
   id: string;
   kind: OverlayKind;
   parent?: string;
+  visual: boolean;
 }
 
 /** Breeze owns ordering; React Aria still owns modality, focus and animations. */
@@ -28,11 +29,16 @@ export function createOverlayStack() {
     },
     set: (layer: Layer) => {
       const previous = layers.find((entry) => entry.id === layer.id);
-      if (previous?.active === layer.active && previous.parent === layer.parent)
+      if (
+        previous?.active === layer.active &&
+        previous.kind === layer.kind &&
+        previous.parent === layer.parent &&
+        previous.visual === layer.visual
+      )
         return;
       // Reopening goes above other siblings, while closing retains exit geometry.
       layers =
-        previous && !layer.active
+        previous && (!layer.active || previous.active)
           ? layers.map((entry) => (entry.id === layer.id ? layer : entry))
           : [...layers.filter((entry) => entry.id !== layer.id), layer];
       publish();
@@ -55,7 +61,11 @@ export const ParentOverlayContext = createContext<{
   restoreFocus: () => void;
 } | null>(null);
 
-export function useOverlayLayer(kind: OverlayKind, open: boolean) {
+export function useOverlayLayer(
+  kind: OverlayKind,
+  open: boolean,
+  visual: boolean,
+) {
   const store = useContext(OverlayStackContext);
   const parent = useContext(ParentOverlayContext);
   const id = useId();
@@ -72,8 +82,8 @@ export function useOverlayLayer(kind: OverlayKind, open: boolean) {
 
   useLayoutEffect(() => () => store.remove(id), [id, store]);
   useLayoutEffect(() => {
-    store.set({ active: open, id, kind, parent: parentId });
-  }, [id, kind, open, parentId, store]);
+    store.set({ active: open, id, kind, parent: parentId, visual });
+  }, [id, kind, open, parentId, store, visual]);
 
   // Effects mount children first. Walk ancestry rather than relying on effect order.
   const ordered: Layer[] = [];
@@ -96,10 +106,18 @@ export function useOverlayLayer(kind: OverlayKind, open: boolean) {
     !active.slice(activeIndex + 1).some((layer) => layer.kind !== 'popover');
   const topmost = open && active.at(-1)?.id === id;
   const scrim =
-    open &&
-    active
-      .filter((layer) => layer.kind === 'drawer' || layer.kind === 'dialog')
-      .at(-1)?.id === id;
+    (
+      active
+        .filter((layer) => layer.kind === 'drawer' || layer.kind === 'dialog')
+        .at(-1) ??
+      ordered
+        .filter(
+          (layer) =>
+            layer.visual &&
+            (layer.kind === 'drawer' || layer.kind === 'dialog'),
+        )
+        .at(-1)
+    )?.id === id;
 
   return {
     id,
