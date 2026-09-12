@@ -40,6 +40,7 @@ export function Skeleton({
   shape = 'text',
 }: Readonly<SkeletonProps>) {
   const { getMessageLocale, messages } = useBreezeContext();
+  const accessibleLabel = label?.trim() || undefined;
 
   const dimensions: CSSProperties = {
     blockSize,
@@ -48,11 +49,13 @@ export function Skeleton({
 
   return (
     <progress
-      aria-hidden={label === undefined ? true : undefined}
-      aria-label={label}
+      aria-hidden={accessibleLabel === undefined ? true : undefined}
+      aria-label={accessibleLabel}
       className={[variants.base.skeleton, variants.variant[shape]].join(' ')}
       lang={
-        label === messages.loading ? getMessageLocale('loading') : undefined
+        accessibleLabel === messages.loading.trim()
+          ? getMessageLocale('loading')
+          : undefined
       }
       style={dimensions}
     />
