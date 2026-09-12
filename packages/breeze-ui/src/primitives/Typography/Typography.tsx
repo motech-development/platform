@@ -214,7 +214,9 @@ export function Typography(props: Readonly<TypographyProps>) {
   let content: ReactNode;
 
   if (loading) {
-    content = <Skeleton inlineSize="8em" label={messages.loading} />;
+    content = (
+      <Skeleton blockSize="1lh" inlineSize="8em" label={messages.loading} />
+    );
   } else if (format === 'currency' && value !== undefined) {
     content = formatCurrency(value, currency, locale, sign ?? 'auto');
   } else if (format === 'date' && value !== undefined) {

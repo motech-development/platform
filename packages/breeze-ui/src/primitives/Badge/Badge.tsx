@@ -5,7 +5,9 @@ import { VisuallyHidden } from '../VisuallyHidden/VisuallyHidden';
 const variants = {
   base: {
     badge:
-      'breeze:inline-flex breeze:shrink-0 breeze:items-center breeze:whitespace-nowrap breeze:rounded-breeze-chip breeze:ps-breeze-2 breeze:pe-breeze-2 breeze:py-breeze-px breeze:text-breeze-2xs breeze:font-bold breeze:leading-breeze-snug breeze:tracking-breeze-wide',
+      'breeze:inline-grid breeze:shrink-0 breeze:items-center breeze:whitespace-nowrap breeze:rounded-breeze-chip breeze:ps-breeze-2 breeze:pe-breeze-2 breeze:py-breeze-px breeze:text-breeze-2xs breeze:font-bold breeze:leading-breeze-snug breeze:tracking-breeze-wide',
+    content: 'breeze:[grid-area:1/1]',
+    skeleton: 'breeze:[grid-area:1/1] breeze:inline-size-full',
   },
   compound: {},
   size: {},
@@ -42,29 +44,39 @@ export function Badge({
 }: Readonly<BadgeProps>) {
   const { messages } = useBreezeContext();
   const accessibleLabel = ariaLabel?.trim() || undefined;
+  let statusContent;
+
+  if (loading) {
+    statusContent = (
+      <span className={variants.base.skeleton}>
+        <Skeleton
+          blockSize="1lh"
+          inlineSize="100%"
+          label={messages.loading}
+          shape="rectangle"
+        />
+      </span>
+    );
+  } else if (accessibleLabel !== undefined) {
+    statusContent = <VisuallyHidden>{accessibleLabel}</VisuallyHidden>;
+  }
 
   return (
     <span
       aria-busy={loading || undefined}
       className={[variants.base.badge, variants.variant[variant]].join(' ')}
     >
-      {loading ? (
-        <Skeleton
-          blockSize="1lh"
-          inlineSize={48}
-          label={messages.loading}
-          shape="rectangle"
-        />
-      ) : (
-        <>
-          <span aria-hidden={accessibleLabel === undefined ? undefined : true}>
-            {children}
-          </span>
-          {accessibleLabel === undefined ? undefined : (
-            <VisuallyHidden>{accessibleLabel}</VisuallyHidden>
-          )}
-        </>
-      )}
+      <span
+        aria-hidden={
+          loading || accessibleLabel !== undefined ? true : undefined
+        }
+        className={[variants.base.content, loading && 'breeze:opacity-0']
+          .filter(Boolean)
+          .join(' ')}
+      >
+        {children}
+      </span>
+      {statusContent}
     </span>
   );
 }

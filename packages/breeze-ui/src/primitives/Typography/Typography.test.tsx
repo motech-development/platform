@@ -229,7 +229,9 @@ describe('Typography', () => {
   it('replaces unavailable content with an accessible placeholder', () => {
     renderBreeze(<Typography loading>Typography content</Typography>);
 
-    expect(screen.getByRole('progressbar', { name: 'Loading' })).toBeVisible();
+    expect(screen.getByRole('progressbar', { name: 'Loading' })).toHaveStyle({
+      blockSize: '1lh',
+    });
     expect(screen.queryByText('Typography content')).not.toBeInTheDocument();
   });
 });
