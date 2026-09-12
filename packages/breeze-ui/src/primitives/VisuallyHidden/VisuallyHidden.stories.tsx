@@ -13,7 +13,7 @@ type Story = StoryObj<typeof meta>;
 /** An icon-only native example whose accessible name remains available. */
 export const IconLabel: Story = {
   args: {
-    children: 'Add transaction',
+    children: 'Create item',
   },
   render: (args) => (
     <button type="button">

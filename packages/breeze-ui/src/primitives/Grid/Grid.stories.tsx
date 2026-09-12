@@ -6,9 +6,9 @@ const meta = {
   args: {
     children: (
       <>
-        <Card>Current balance</Card>
-        <Card>Balance less VAT</Card>
-        <Card>VAT owed</Card>
+        <Card>Primary content</Card>
+        <Card>Supporting content</Card>
+        <Card>Related content</Card>
       </>
     ),
     columns: 3,

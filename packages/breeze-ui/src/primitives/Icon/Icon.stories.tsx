@@ -6,7 +6,6 @@ import { Icon, type IconName } from './Icon';
 
 const names = [
   'overview',
-  'money',
   'people',
   'calendar',
   'document',

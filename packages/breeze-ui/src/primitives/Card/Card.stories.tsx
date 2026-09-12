@@ -7,9 +7,9 @@ const meta = {
   args: {
     children: (
       <Stack gap={1}>
-        <Typography variant="title">Recent activity</Typography>
+        <Typography variant="title">Release notes</Typography>
         <Typography tone="secondary" variant="body">
-          Three confirmed transactions
+          Updated guidance for three components
         </Typography>
       </Stack>
     ),

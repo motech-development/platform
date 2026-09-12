@@ -38,9 +38,9 @@ export const Treatments: Story = {
 /** A compact circular direction marker. */
 export const Direction: Story = {
   args: {
-    name: 'moneyIn',
+    name: 'forward',
     shape: 'circle',
     size: 'sm',
-    tone: 'positive',
+    tone: 'brand',
   },
 };
