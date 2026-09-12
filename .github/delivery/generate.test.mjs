@@ -2209,3 +2209,66 @@ test('required status checks match the pull-request quality job names', async ()
     );
   }
 });
+
+test('Chromatic builds Storybook only for pull requests with Breeze changes', async () => {
+  const workflow = await readFile(
+    new URL('../workflows/quality-assurance.yml', import.meta.url),
+    'utf8',
+  );
+  const job = workflowJob(workflow, 'chromatic');
+  for (const step of ['Setup dependencies', 'Run Chromatic']) {
+    assert.ok(
+      job.includes(
+        `- name: ${step}\n        if: steps.breeze-changes.outputs.changed == 'true'`,
+      ),
+    );
+  }
+  assert.match(job, /fetch-depth: 0/);
+  assert.match(job, /BASE_SHA: \$\{\{ github.event.pull_request.base.sha \}\}/);
+  assert.match(job, /HEAD_SHA: \$\{\{ github.event.pull_request.head.sha \}\}/);
+  const script = job
+    .match(/        run: \|\n((?:          .*\n)+)/)[1]
+    .split('\n')
+    .map((line) => line.slice(10))
+    .join('\n');
+  const directory = await mkdtemp(join(tmpdir(), 'chromatic-changes-'));
+  const git = (...args) => execFileAsync('git', args, { cwd: directory });
+  try {
+    await git('init');
+    await git('config', 'user.email', 'test@example.com');
+    await git('config', 'user.name', 'Test');
+    await mkdir(join(directory, 'packages/breeze-ui'), { recursive: true });
+    await writeFile(join(directory, 'packages/breeze-ui/story.ts'), 'initial');
+    await git('add', '.');
+    await git('commit', '-m', 'test: initial');
+    const { stdout: base } = await git('rev-parse', 'HEAD');
+    const output = join(directory, 'output');
+    const check = async (expected) => {
+      await writeFile(output, '');
+      const { stdout: head } = await git('rev-parse', 'HEAD');
+      await execFileAsync('bash', ['-eo', 'pipefail', '-c', script], {
+        cwd: directory,
+        env: {
+          ...process.env,
+          BASE_SHA: base.trim(),
+          HEAD_SHA: head.trim(),
+          GITHUB_OUTPUT: output,
+        },
+      });
+      assert.equal(await readFile(output, 'utf8'), `changed=${expected}\n`);
+    };
+    await writeFile(join(directory, 'unrelated.txt'), 'unrelated');
+    await git('add', 'unrelated.txt');
+    await git('commit', '-m', 'test: unrelated change');
+    await check(false);
+    await git('rm', 'packages/breeze-ui/story.ts');
+    await git('commit', '-m', 'test: delete Breeze story');
+    await check(true);
+    await writeFile(join(directory, 'unrelated.txt'), 'another change');
+    await git('add', 'unrelated.txt');
+    await git('commit', '-m', 'test: subsequent unrelated change');
+    await check(true);
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});

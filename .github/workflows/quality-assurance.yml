@@ -161,10 +161,25 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Detect Breeze changes
+        id: breeze-changes
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          changed_files=$(git diff --name-only "$BASE_SHA...$HEAD_SHA" -- packages/breeze-ui/)
+          if [ -n "$changed_files" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Setup dependencies
+        if: steps.breeze-changes.outputs.changed == 'true'
         uses: ./.github/actions/setup-dependencies
 
       - name: Run Chromatic
+        if: steps.breeze-changes.outputs.changed == 'true'
         uses: chromaui/action@94713c544284a14195de3b50ef24301579f1877e # v18.0.1
         with:
           workingDir: packages/breeze-ui
