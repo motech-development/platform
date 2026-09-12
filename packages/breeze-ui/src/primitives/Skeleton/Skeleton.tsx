@@ -42,7 +42,7 @@ export function Skeleton({
 }: Readonly<SkeletonProps>) {
   const { getMessageLocale, messages } = useBreezeContext();
   const accessibleLabel = label?.trim() || undefined;
-  const circleSize = blockSize ?? inlineSize;
+  const circleSize = blockSize ?? inlineSize ?? '0.75rem';
 
   const dimensions: CSSProperties = {
     blockSize: shape === 'circle' ? circleSize : blockSize,

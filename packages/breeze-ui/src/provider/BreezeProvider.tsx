@@ -13,7 +13,7 @@ import enGB from './en-GB';
 interface BreezeProviderBaseProps {
   /** Breeze components and application content rendered inside the provider. */
   children: ReactNode;
-  /** BCP 47 locale for accessible interactions and future formatting components. */
+  /** BCP 47 locale for accessible interactions and content formatting. */
   locale: string;
   /** Accessible messages translated into the provider locale; defaults to English. */
   messages?: Partial<typeof enGB>;

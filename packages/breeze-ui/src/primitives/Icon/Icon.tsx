@@ -82,7 +82,7 @@ export interface IconProps {
   label?: string;
   /** Selects artwork from the curated Breeze icon set. */
   name: IconName;
-  /** Sets the icon dimensions in pixels. Defaults to `20`. */
+  /** Selects `sm`, `md`, or `lg` dimensions. Defaults to `md`. */
   size?: IconSize;
 }
 

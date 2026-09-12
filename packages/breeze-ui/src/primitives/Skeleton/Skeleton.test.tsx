@@ -67,4 +67,13 @@ describe('Skeleton', () => {
       inlineSize: '24px',
     });
   });
+
+  it('gives dimensionless circle skeletons a square default size', () => {
+    const { container } = renderBreeze(<Skeleton shape="circle" />);
+
+    expect(container.querySelector('progress')).toHaveStyle({
+      blockSize: '0.75rem',
+      inlineSize: '0.75rem',
+    });
+  });
 });
