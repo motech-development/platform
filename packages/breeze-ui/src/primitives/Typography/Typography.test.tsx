@@ -174,6 +174,26 @@ describe('Typography', () => {
     ).not.toHaveClass('breeze:inline-block');
   });
 
+  it('keeps a selected inline element inline while loading', () => {
+    renderBreeze(<Typography element="span" loading variant="body" />);
+
+    expect(
+      screen.getByRole('progressbar', { name: 'Loading' }).parentElement,
+    ).toHaveClass('breeze:inline-block');
+  });
+
+  it('does not hide interactive text children from assistive technology', () => {
+    renderBreeze(
+      <Typography aria-label="Visit profile">
+        <a href="/profile">Profile</a>
+      </Typography>,
+    );
+
+    expect(
+      screen.getByRole('group', { name: 'Visit profile' }),
+    ).toContainElement(screen.getByRole('link', { name: 'Profile' }));
+  });
+
   it('honours the provider locale for money and dates', () => {
     render(
       <BreezeProvider locale="fr-FR">

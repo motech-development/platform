@@ -153,6 +153,14 @@
   margin: 0;
 }
 
+@utility p-0 {
+  padding: 0;
+}
+
+@utility gap-0 {
+  gap: 0;
+}
+
 @utility font-normal {
   font-weight: 400;
 }

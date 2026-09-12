@@ -209,9 +209,6 @@ export function Typography(props: Readonly<TypographyProps>) {
   const accessibleLabel = ariaLabel?.trim() || undefined;
   const resolvedAlign =
     align ?? (variant === 'money' || numeric ? 'end' : 'start');
-  const isInlineVariant = ['caption', 'label', 'micro', 'money'].includes(
-    variant,
-  );
   const needsAlignmentBox =
     align !== undefined || variant === 'money' || numeric;
   let content: ReactNode;
@@ -226,7 +223,18 @@ export function Typography(props: Readonly<TypographyProps>) {
     content = children;
   }
 
-  if (!loading && accessibleLabel !== undefined) {
+  const canReplaceWithAccessibleLabel =
+    format !== undefined ||
+    typeof children === 'string' ||
+    typeof children === 'number';
+  const usesLabelledGroup =
+    !loading && accessibleLabel !== undefined && !canReplaceWithAccessibleLabel;
+
+  if (
+    !loading &&
+    accessibleLabel !== undefined &&
+    canReplaceWithAccessibleLabel
+  ) {
     content = (
       <>
         <span aria-hidden="true">{content}</span>
@@ -239,6 +247,7 @@ export function Typography(props: Readonly<TypographyProps>) {
     element,
     {
       'aria-busy': loading || undefined,
+      'aria-label': usesLabelledGroup ? accessibleLabel : undefined,
       className: [
         variants.base.text,
         variants.variant.role[variant],
@@ -246,7 +255,6 @@ export function Typography(props: Readonly<TypographyProps>) {
         variants.variant.align[resolvedAlign],
         needsAlignmentBox && variants.state.aligned,
         loading &&
-          isInlineVariant &&
           element === 'span' &&
           !needsAlignmentBox &&
           variants.state.inlineLoading,
@@ -257,6 +265,7 @@ export function Typography(props: Readonly<TypographyProps>) {
         .join(' '),
       id,
       lang: locale,
+      role: usesLabelledGroup ? 'group' : undefined,
     },
     content,
   );
