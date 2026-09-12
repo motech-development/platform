@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { createElement } from 'react';
+import getLayoutAccessibility from '../layout.accessibility';
 import type { LayoutElement, LayoutGap } from '../layout.types';
 
 const variants = {
@@ -74,7 +75,7 @@ export function Grid({
   element = 'div',
   gap = 4,
 }: Readonly<GridProps>) {
-  const accessibleLabel = ariaLabel?.trim() || undefined;
+  const { accessibleLabel, role } = getLayoutAccessibility(ariaLabel, element);
 
   return createElement(
     element,
@@ -85,10 +86,7 @@ export function Grid({
         variants.compound.columns[columns][collapseBelow],
         variants.size[gap],
       ].join(' '),
-      role:
-        accessibleLabel !== undefined && element === 'div'
-          ? 'group'
-          : undefined,
+      role,
     },
     children,
   );
