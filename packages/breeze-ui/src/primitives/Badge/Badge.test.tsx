@@ -16,6 +16,15 @@ describe('Badge', () => {
     expect(screen.getByText('No receipt')).toBeInTheDocument();
   });
 
+  it('exposes an expanded accessible label without naming a generic span', () => {
+    renderBreeze(<Badge aria-label="5 unread notifications">5</Badge>);
+
+    expect(screen.getByText('5 unread notifications')).toHaveClass(
+      'breeze:sr-only',
+    );
+    expect(screen.getByText('5')).toHaveAttribute('aria-hidden', 'true');
+  });
+
   it('replaces unavailable content with an accessible placeholder', () => {
     renderBreeze(<Badge loading>Badge content</Badge>);
 

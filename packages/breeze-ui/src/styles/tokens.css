@@ -157,6 +157,10 @@
   min-inline-size: --value(--spacing- *);
 }
 
+@utility block-size-full {
+  block-size: 100%;
+}
+
 @utility block-size-* {
   block-size: --value(--spacing- *);
 }

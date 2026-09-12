@@ -4,7 +4,7 @@ import { useBreezeContext } from '../../provider/BreezeContext';
 const variants = {
   base: {
     skeleton:
-      'breeze:block breeze:animate-pulse breeze:bg-breeze-sunken breeze:pointer-events-none',
+      'breeze:block breeze:animate-pulse breeze:appearance-none breeze:bg-breeze-sunken breeze:pointer-events-none breeze:forced-colors:outline breeze:forced-colors:outline-1 breeze:forced-colors:outline-[CanvasText]',
   },
   compound: {},
   size: {},
@@ -39,7 +39,7 @@ export function Skeleton({
   label,
   shape = 'text',
 }: Readonly<SkeletonProps>) {
-  useBreezeContext();
+  const { getMessageLocale, messages } = useBreezeContext();
 
   const dimensions: CSSProperties = {
     blockSize,
@@ -47,11 +47,13 @@ export function Skeleton({
   };
 
   return (
-    <span
+    <progress
       aria-hidden={label === undefined ? true : undefined}
       aria-label={label}
       className={[variants.base.skeleton, variants.variant[shape]].join(' ')}
-      role={label === undefined ? undefined : 'progressbar'}
+      lang={
+        label === messages.loading ? getMessageLocale('loading') : undefined
+      }
       style={dimensions}
     />
   );

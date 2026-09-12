@@ -22,6 +22,14 @@ describe('Card', () => {
     ).toHaveTextContent('£24,180.50');
   });
 
+  it('gives a labelled default card nameable group semantics', () => {
+    renderBreeze(<Card aria-label="Current balance">£24,180.50</Card>);
+
+    expect(
+      screen.getByRole('group', { name: 'Current balance' }),
+    ).toBeInTheDocument();
+  });
+
   it('replaces unavailable content with an accessible placeholder', () => {
     renderBreeze(<Card loading>Card content</Card>);
 

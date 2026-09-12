@@ -1,6 +1,7 @@
-import { screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { describe, expect, expectTypeOf, it } from 'vitest';
 import renderBreeze from '../../../test/render';
+import { BreezeProvider } from '../../provider/BreezeProvider';
 import { Skeleton, type SkeletonProps } from './Skeleton';
 
 expectTypeOf<SkeletonProps>().not.toHaveProperty('className');
@@ -25,7 +26,19 @@ describe('Skeleton', () => {
 
     expect(
       screen.getByRole('progressbar', { name: 'Loading receipt preview' }),
-    ).toBeInTheDocument();
+    ).toHaveClass('breeze:forced-colors:outline-[CanvasText]');
+  });
+
+  it('retains the fallback loading message language', () => {
+    render(
+      <BreezeProvider locale="fr-FR">
+        <Skeleton label="Loading" />
+      </BreezeProvider>,
+    );
+
+    expect(
+      screen.getByRole('progressbar', { name: 'Loading' }),
+    ).toHaveAttribute('lang', 'en-GB');
   });
 
   it('is decorative when no loading label is supplied', () => {

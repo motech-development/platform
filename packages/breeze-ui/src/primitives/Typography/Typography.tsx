@@ -13,7 +13,7 @@ const variants = {
   state: {
     numeric: 'breeze:tabular-nums breeze:tracking-breeze-tighter',
     truncate:
-      'breeze:min-inline-size-0 breeze:overflow-hidden breeze:text-ellipsis breeze:whitespace-nowrap',
+      'breeze:block breeze:min-inline-size-0 breeze:inline-size-full breeze:overflow-hidden breeze:text-ellipsis breeze:whitespace-nowrap',
   },
   variant: {
     align: {
@@ -67,35 +67,31 @@ interface TypographyBaseProps {
   align?: TypographyAlign;
   element?: TypographyElement;
   id?: string;
-  loading?: boolean;
   /** Applies tabular numerals, logical end alignment and figure tracking. */
   numeric?: boolean;
   tone?: TypographyTone;
   truncate?: boolean;
 }
 
-interface CurrencyTypographyProps extends TypographyBaseProps {
+interface CurrencyTypographyContent extends TypographyBaseProps {
   children?: never;
   currency: string;
   dateStyle?: never;
   format: 'currency';
   sign?: 'always' | 'auto' | 'never';
-  value: number;
   variant: 'money';
 }
 
-interface DateTypographyProps extends TypographyBaseProps {
+interface DateTypographyContent extends TypographyBaseProps {
   children?: never;
   currency?: never;
   dateStyle?: 'full' | 'long' | 'medium' | 'short';
   format: 'date';
   sign?: never;
-  value: IsoCalendarDate;
   variant?: Exclude<TypographyVariant, 'money'>;
 }
 
-interface TextTypographyProps extends TypographyBaseProps {
-  children: ReactNode;
+interface TextTypographyContent extends TypographyBaseProps {
   currency?: never;
   dateStyle?: never;
   format?: never;
@@ -105,9 +101,18 @@ interface TextTypographyProps extends TypographyBaseProps {
 }
 
 export type TypographyProps =
-  | CurrencyTypographyProps
-  | DateTypographyProps
-  | TextTypographyProps;
+  | (CurrencyTypographyContent &
+      ({ loading: true; value?: number } | { loading?: false; value: number }))
+  | (DateTypographyContent &
+      (
+        | { loading: true; value?: IsoCalendarDate }
+        | { loading?: false; value: IsoCalendarDate }
+      ))
+  | (TextTypographyContent &
+      (
+        | { children?: ReactNode; loading: true }
+        | { children: ReactNode; loading?: false }
+      ));
 
 function getDefaultElement(variant: TypographyVariant): TypographyElement {
   if (variant === 'heading') {
@@ -129,31 +134,31 @@ function formatCurrency(
   value: number,
   currency: string,
   locale: string,
-  sign: CurrencyTypographyProps['sign'],
+  sign: CurrencyTypographyContent['sign'],
 ): string {
-  let signCharacter = '';
-
-  if (sign === 'never') {
-    signCharacter = '';
-  } else if (value < 0) {
-    signCharacter = '−';
-  } else if (sign === 'always') {
-    signCharacter = '+';
-  }
-  const formatted = new Intl.NumberFormat(locale, {
+  const parts = new Intl.NumberFormat(locale, {
     currency,
+    signDisplay: sign ?? 'auto',
     style: 'currency',
-  }).format(Math.abs(value));
+  }).formatToParts(value);
 
-  return `${signCharacter}${formatted}`;
+  return parts
+    .map((part) => (part.type === 'minusSign' ? '−' : part.value))
+    .join('');
 }
 
 function formatDate(
   value: string,
   locale: string,
-  dateStyle: DateTypographyProps['dateStyle'],
+  dateStyle: DateTypographyContent['dateStyle'],
 ): string {
-  const date = parseDate(value).toDate('UTC');
+  let date: Date;
+
+  try {
+    date = parseDate(value).toDate('UTC');
+  } catch {
+    return value;
+  }
 
   return new Intl.DateTimeFormat(locale, {
     dateStyle: dateStyle ?? 'long',
@@ -192,9 +197,9 @@ export function Typography(props: Readonly<TypographyProps>) {
 
   if (loading) {
     content = <Skeleton inlineSize="8em" label={messages.loading} />;
-  } else if (format === 'currency') {
+  } else if (format === 'currency' && value !== undefined) {
     content = formatCurrency(value, currency, locale, sign ?? 'auto');
-  } else if (format === 'date') {
+  } else if (format === 'date' && value !== undefined) {
     content = formatDate(value, locale, dateStyle);
   } else {
     content = children;

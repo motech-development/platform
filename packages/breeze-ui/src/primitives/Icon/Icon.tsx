@@ -68,9 +68,13 @@ const variants = {
     md: 'breeze:block-size-breeze-5 breeze:inline-size-breeze-5',
     sm: 'breeze:block-size-breeze-4 breeze:inline-size-breeze-4',
   },
-  state: {},
+  state: {
+    logicalDirection: 'breeze:rtl:rotate-180',
+  },
   variant: {},
 } as const;
+
+const logicalDirectionIcons = new Set<IconName>(['back', 'forward', 'next']);
 
 const iconDimensions = {
   lg: 24,
@@ -114,14 +118,21 @@ export function Icon({
   }
 
   const Artwork = artwork[name];
+  const accessibleLabel = label?.trim() || undefined;
 
   return (
     <Artwork
-      aria-hidden={label === undefined ? true : undefined}
-      aria-label={label}
-      className={[variants.base.icon, variants.size[size]].join(' ')}
+      aria-hidden={accessibleLabel === undefined ? true : undefined}
+      aria-label={accessibleLabel}
+      className={[
+        variants.base.icon,
+        variants.size[size],
+        logicalDirectionIcons.has(name) && variants.state.logicalDirection,
+      ]
+        .filter(Boolean)
+        .join(' ')}
       focusable="false"
-      role={label === undefined ? undefined : 'img'}
+      role={accessibleLabel === undefined ? undefined : 'img'}
       strokeWidth={1.75}
     />
   );

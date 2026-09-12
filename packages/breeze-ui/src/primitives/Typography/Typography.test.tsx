@@ -7,6 +7,22 @@ import { Typography, type TypographyProps } from './Typography';
 expectTypeOf<TypographyProps>().not.toHaveProperty('className');
 expectTypeOf<TypographyProps>().not.toHaveProperty('style');
 
+const loadingTypographyProps = [
+  { currency: 'GBP', format: 'currency', loading: true, variant: 'money' },
+  { format: 'date', loading: true },
+  { loading: true },
+] as const satisfies readonly TypographyProps[];
+const readyTypographyProps = [
+  { currency: 'GBP', format: 'currency', value: 10, variant: 'money' },
+  { format: 'date', value: '2026-09-12' },
+  { children: 'Ready' },
+] as const satisfies readonly TypographyProps[];
+
+expectTypeOf(loadingTypographyProps).toMatchTypeOf<
+  readonly TypographyProps[]
+>();
+expectTypeOf(readyTypographyProps).toMatchTypeOf<readonly TypographyProps[]>();
+
 describe('Typography', () => {
   it('renders semantic interface text', () => {
     renderBreeze(
@@ -48,6 +64,21 @@ describe('Typography', () => {
     expect(screen.getByText('£10.00')).toBeInTheDocument();
   });
 
+  it('preserves locale-specific currency sign placement', () => {
+    render(
+      <BreezeProvider locale="nl-NL">
+        <Typography
+          currency="EUR"
+          format="currency"
+          value={-1234.5}
+          variant="money"
+        />
+      </BreezeProvider>,
+    );
+
+    expect(screen.getByText(/1\.234,50/)).toHaveTextContent('€ −1.234,50');
+  });
+
   it('formats calendar dates without shifting an ISO date', () => {
     renderBreeze(
       <Typography format="date" value="2026-09-03" variant="body" />,
@@ -56,6 +87,27 @@ describe('Typography', () => {
     expect(screen.getByText('3 September 2026')).toHaveAttribute(
       'lang',
       'en-GB',
+    );
+  });
+
+  it('does not throw when given a calendar-invalid date', () => {
+    renderBreeze(
+      <Typography format="date" value="2026-02-30" variant="body" />,
+    );
+
+    expect(screen.getByText('2026-02-30')).toBeInTheDocument();
+  });
+
+  it('blockifies truncated inline text so ellipsis can apply', () => {
+    renderBreeze(
+      <Typography truncate variant="caption">
+        Long caption
+      </Typography>,
+    );
+
+    expect(screen.getByText('Long caption')).toHaveClass(
+      'breeze:block',
+      'breeze:inline-size-full',
     );
   });
 
