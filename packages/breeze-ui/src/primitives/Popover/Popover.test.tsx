@@ -1,5 +1,6 @@
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { useState } from 'react';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import renderBreeze from '../../../test/render';
 import { BreezeProvider } from '../../provider/BreezeProvider';
@@ -122,6 +123,66 @@ describe('Popover', () => {
     );
     await waitFor(() =>
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument(),
+    );
+  });
+
+  it('reports one outside dismissal per controlled pointer interaction', async () => {
+    const onOpenChange = vi.fn();
+    renderBreeze(
+      <>
+        <Popover
+          onOpenChange={onOpenChange}
+          open
+          title="Details"
+          trigger="Open details"
+        >
+          Delivery information
+        </Popover>
+        <Button>Outside action</Button>
+      </>,
+    );
+    const surface = await screen.findByRole('dialog', { name: 'Details' });
+    const outside = screen.getByRole('button', { name: 'Outside action' });
+    await waitFor(() => expect(surface).toHaveFocus());
+
+    await userEvent.click(outside);
+    expect(onOpenChange).toHaveBeenCalledTimes(1);
+
+    await userEvent.click(outside);
+    expect(onOpenChange).toHaveBeenCalledTimes(2);
+  });
+
+  it('returns focus to the surface when loading removes the focused content', async () => {
+    function Example() {
+      const [loading, setLoading] = useState(false);
+      return (
+        <Popover
+          defaultOpen
+          loading={loading}
+          title="Details"
+          trigger="Open details"
+        >
+          <Button onAction={() => setLoading(true)}>Load details</Button>
+        </Popover>
+      );
+    }
+
+    renderBreeze(<Example />);
+    const surface = await screen.findByRole('dialog', { name: 'Details' });
+    await waitFor(() => expect(surface).toHaveFocus());
+    await new Promise((resolve) => {
+      setTimeout(resolve, 550);
+    });
+    await userEvent.click(
+      within(surface).getByRole('button', { name: 'Load details' }),
+    );
+    await waitFor(() => expect(surface).toHaveFocus());
+
+    await userEvent.keyboard('{Escape}');
+    await waitFor(() =>
+      expect(
+        screen.queryByRole('dialog', { name: 'Details' }),
+      ).not.toBeInTheDocument(),
     );
   });
 

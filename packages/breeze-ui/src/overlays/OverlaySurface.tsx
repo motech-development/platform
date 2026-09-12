@@ -71,6 +71,9 @@ function OverlaySurface({
   const [surfaceMounted, setSurfaceMounted] = useState(false);
   const refocusingRef = useRef(false);
   const refocusTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const focusedChildRef = useRef<HTMLElement | null>(null);
+  const pointerDownTargetRef = useRef<Node | null>(null);
+  const blurDismissTargetRef = useRef<Node | null>(null);
   // Full-screen surfaces belong to the viewport, not the sheet's scrollable
   // trigger. Keep the actual trigger separately for focus restoration.
   const positionRef = useMemo(
@@ -99,6 +102,13 @@ function OverlaySurface({
       return undefined;
     // RAC non-modal popovers close on blur, but not on outside clicks. Wait for
     // click so the sheet's pointer gesture completes while the popover is topmost.
+    const onPointerDown = (event: PointerEvent) => {
+      // A blur caused by a previous keyboard interaction must not suppress a
+      // later pointer dismissal.
+      blurDismissTargetRef.current = null;
+      pointerDownTargetRef.current =
+        event.target instanceof Node ? event.target : null;
+    };
     const onOutsideClick = (event: MouseEvent) => {
       const { target } = event;
       if (
@@ -106,25 +116,50 @@ function OverlaySurface({
         !contentRef.current?.contains(target) &&
         !triggerRef.current?.contains(target)
       ) {
+        const blurTarget = blurDismissTargetRef.current;
+        const pointerTarget = pointerDownTargetRef.current;
+        blurDismissTargetRef.current = null;
+        pointerDownTargetRef.current = null;
+        const sameTarget = (left: Node | null, right: Node | null) =>
+          !!left &&
+          !!right &&
+          (left === right || left.contains(right) || right.contains(left));
+        if (
+          sameTarget(blurTarget, target) &&
+          sameTarget(blurTarget, pointerTarget)
+        ) {
+          return;
+        }
         changeOpen(false);
       }
     };
+    host.ownerDocument.addEventListener('pointerdown', onPointerDown, true);
     host.ownerDocument.addEventListener('click', onOutsideClick, true);
-    return () =>
+    return () => {
+      host.ownerDocument.removeEventListener(
+        'pointerdown',
+        onPointerDown,
+        true,
+      );
       host.ownerDocument.removeEventListener('click', onOutsideClick, true);
+      blurDismissTargetRef.current = null;
+      pointerDownTargetRef.current = null;
+    };
   }, [changeOpen, dismissible, host, kind, layer.topmost, open]);
 
   const restoreParentFocus = parent?.restoreFocus;
+  const parentId = parent?.id;
   const restoreFocus = useCallback(() => {
     const target = triggerRef.current;
     const document = host?.ownerDocument;
     const focused = document?.activeElement;
-    if (
-      !document ||
-      !host ||
-      (focused !== document.body && !focused?.closest('[data-exiting]'))
-    )
-      return;
+    if (!document || !host) return;
+    const parentSurface = parentId ? document.getElementById(parentId) : null;
+    const focusLost =
+      focused === document.body ||
+      focused === parentSurface ||
+      !!focused?.closest('[data-exiting]');
+    if (!focusLost) return;
     if (!target?.isConnected) {
       restoreParentFocus?.();
       return;
@@ -136,7 +171,23 @@ function OverlaySurface({
     ) {
       target.focus({ preventScroll: true });
     }
-  }, [host, restoreParentFocus]);
+  }, [host, parentId, restoreParentFocus]);
+
+  useEffect(() => {
+    if (!loading || !open) return;
+    const surface = contentRef.current;
+    const focusedChild = focusedChildRef.current;
+    if (
+      !surface ||
+      !focusedChild ||
+      focusedChild.isConnected ||
+      surface.ownerDocument.activeElement !== surface.ownerDocument.body ||
+      surface.closest('[inert], [data-exiting]')
+    )
+      return;
+    focusedChildRef.current = null;
+    surface.focus({ preventScroll: true });
+  }, [loading, open]);
 
   const surfaceRef = useCallback(
     (element: HTMLElement | null) => {
@@ -218,8 +269,33 @@ function OverlaySurface({
           aria-label={title}
           className={variants.base.content}
           id={layer.id}
+          onFocus={(event) => {
+            if (
+              event.target !== event.currentTarget &&
+              event.target instanceof HTMLElement
+            ) {
+              focusedChildRef.current = event.target;
+            }
+          }}
           onBlur={(event) => {
-            if (refocusingRef.current) event.stopPropagation();
+            if (refocusingRef.current) {
+              event.stopPropagation();
+              return;
+            }
+            if (event.relatedTarget instanceof HTMLElement) {
+              focusedChildRef.current = null;
+            }
+            const { relatedTarget } = event;
+            if (
+              kind === 'popover' &&
+              dismissible &&
+              layer.topmost &&
+              relatedTarget instanceof Node &&
+              !event.currentTarget.contains(relatedTarget) &&
+              !triggerRef.current?.contains(relatedTarget)
+            ) {
+              blurDismissTargetRef.current = relatedTarget;
+            }
           }}
           ref={surfaceRef}
           role="dialog"
