@@ -58,7 +58,7 @@ only when the selected Git delta matches the batch. Omit `--include-untracked`
 when additions are staged or none exist. Older versions may use `--prompt-only`
 and `--type uncommitted` instead. Never use `--show-prompts` as a fresh review.
 Do not automatically enable `--light`: preserve the selected review depth unless
-the user requests a lighter CodeRabbit review. Codex's low reasoning effort does
+the user requests a lighter CodeRabbit review. Codex's high reasoning effort does
 not imply an equivalent CodeRabbit setting.
 
 For later uncommitted passes, or unrelated local edits, use an isolated temporary

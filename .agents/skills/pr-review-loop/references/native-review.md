@@ -48,7 +48,7 @@ static inspection and report the native review
 blocker instead of launching it from the PR checkout. The example below assumes
 trusted source or that these isolation requirements have already been satisfied.
 
-Pin **`gpt-5.6-luna`** and **`low` reasoning effort** (Light) for each invocation. Override
+Pin **`gpt-5.6-luna`** and **`high` reasoning effort** (High) for each invocation. Override
 both the main model and `review_model`, which can otherwise select a different
 reviewer. Do not change the user's global settings, raise effort automatically,
 or silently fall back to another model. A later explicit user choice can override
@@ -57,7 +57,7 @@ this default. For a CLI that supports custom review prompts on stdin:
 ```sh
 codex --model gpt-5.6-luna \
   -c 'review_model="gpt-5.6-luna"' \
-  -c 'model_reasoning_effort="low"' \
+  -c 'model_reasoning_effort="high"' \
   -s read-only review - < "$review_prompt_file"
 ```
 
@@ -85,7 +85,7 @@ Adapt this review brief:
 > start subagents, or start another review loop. Return findings or state that no
 > actionable findings were found, with any concrete verification limitation.
 
-Confirm `gpt-5.6-luna`, `low`, and the intended scope in the run header or tool
+Confirm `gpt-5.6-luna`, `high`, and the intended scope in the run header or tool
 metadata. A conflicting effective model or effort must be corrected before the
 review is counted; do not infer the result from the parent task's model alone.
 Launch this tracked run alongside CodeRabbit before waiting for either result,
@@ -106,7 +106,7 @@ Keep this result while CodeRabbit runs or waits for a cooldown;
 do not rerun Codex on unchanged content. Both reviewers must cover subsequent
 review-driven fixes before the combined gate is complete.
 
-[GPT-5.6 Luna supports `low` reasoning effort](https://developers.openai.com/api/docs/models/gpt-5.6-luna).
+[GPT-5.6 Luna supports `high` reasoning effort](https://developers.openai.com/api/docs/models/gpt-5.6-luna).
 API request parameters are managed by the native CLI; do not add an API migration,
 sampling settings, or cache configuration to this skill merely to change the
 review model.

@@ -12,11 +12,19 @@ This skill grants no permission to send messages, push, merge, or deploy.
 
 ## Review and completion contract
 
-- Use native Codex **`gpt-5.6-luna` at `low` reasoning effort** and CodeRabbit CLI
-  concurrently on the same frozen delta. Launch both before waiting; wait for
-  both final reports before assessing or fixing findings. Do not substitute
-  reviewer agents or the separate `code-review` workflow. Honor explicit user
-  effort, time, and usage budgets; do not escalate effort automatically.
+- Use one native Codex review with **`gpt-5.6-luna` at `high` reasoning effort**
+  and one CodeRabbit CLI review concurrently on the same frozen delta. Launch
+  both before waiting; wait for both final reports before assessing or fixing
+  findings. Preserve these native review clients as the required reviewers; do
+  not substitute reviewer agents or the separate `code-review` workflow. Honor
+  explicit user effort, time, and usage budgets; do not escalate effort
+  automatically.
+- The parent orchestrator owns the loop, scope record, finding triage,
+  validation, and publication decisions. For valid in-scope fixes, delegate a
+  bounded edit-and-test assignment to an `implementer` configured as
+  `gpt-5.6-luna` with `max` reasoning effort. The implementer must not delegate,
+  review, commit, push, or merge; the parent inspects its result and resumes
+  the required native-plus-CodeRabbit round on the new delta.
 - Every resulting fix passes validation and another local review round before
   publication. Reuse completed coverage; review only new deltas after the initial
   requested change set. Do not rerun unchanged reviews or passing checks without

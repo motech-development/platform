@@ -30,7 +30,23 @@ Use applicable repository guidance, including shared code-style guidance and the
 
 ## Review and report
 
-Keep small reviews local. For substantial changes where independent Standards and Spec passes add value, delegate those axes in parallel when tools permit. Give reviewers the same resolved change set (including requested local/untracked content), relevant requirements, and standards. Use the same two axes locally when delegation is unavailable.
+For a small change, delegate one `standards_reviewer` agent configured as
+`gpt-5.6-luna` with `high` reasoning effort to cover both Standards and Spec.
+For a substantial change where independent passes add value, delegate these
+two named agents in parallel, each configured as `gpt-5.6-luna` with `high`
+reasoning effort:
+
+- `standards_reviewer`: repository conventions, maintainability, and the
+  applicable standards guidance.
+- `spec_reviewer`: requested behaviour, acceptance criteria, and scope.
+
+Give each reviewer the same resolved change set (including requested
+local/untracked content), relevant requirements, and standards. Reviewers only
+inspect and report; they do not edit, commit, delegate, or start another review
+loop. The parent orchestrator aggregates their reports, owns finding triage,
+and assigns any approved fixes separately. If delegation is unavailable, the
+parent performs both axes locally with the same separation and reports the
+missing independent reviewer coverage.
 
 For Standards, cite the applicable rule and affected code; distinguish violations from judgement calls. For Spec, identify missing, incorrect, or unrequested behaviour and connect it to a requirement. Check relevant callers when needed to substantiate a finding.
 
