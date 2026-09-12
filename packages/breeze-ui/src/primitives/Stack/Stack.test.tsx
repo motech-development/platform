@@ -32,9 +32,24 @@ describe('Stack', () => {
   });
 
   it('replaces unavailable content with an accessible placeholder', () => {
-    renderBreeze(<Stack loading>Stack content</Stack>);
+    renderBreeze(
+      <Stack loading>
+        <span>Balance</span>
+        <span>VAT owed</span>
+      </Stack>,
+    );
 
     expect(screen.getByRole('progressbar', { name: 'Loading' })).toBeVisible();
-    expect(screen.queryByText('Stack content')).not.toBeInTheDocument();
+    expect(screen.getAllByRole('progressbar', { hidden: true })).toHaveLength(
+      2,
+    );
+    expect(screen.queryByText('Balance')).not.toBeInTheDocument();
+    expect(screen.queryByText('VAT owed')).not.toBeInTheDocument();
+  });
+
+  it('announces loading when children are empty', () => {
+    renderBreeze(<Stack loading>{null}</Stack>);
+
+    expect(screen.getByRole('progressbar', { name: 'Loading' })).toBeVisible();
   });
 });
