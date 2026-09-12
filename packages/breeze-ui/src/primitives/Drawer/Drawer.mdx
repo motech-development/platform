@@ -46,6 +46,14 @@ Set `loading` while content is being prepared. Breeze provides its loading prese
 
 <Canvas of={Stories.Loading} />
 
+## Surfaces above a sheet
+
+A `Popover` can open above the drawer without blocking interaction with the sheet or hiding its content from assistive technology. The drawer keeps its scrim, and Escape dismisses the popover before the sheet.
+
+The internal overlay foundation also supports a full-screen surface for a future `DocumentViewer`. It covers the sheet while keeping it mounted and preserving its scrim. Escape closes the full-screen surface and restores focus to its trigger in the sheet. This foundation is not an additional public component.
+
+The `Foundations/Overlay stack` stories cover sheet/popover and sheet/full-screen compositions, including closing the outer sheet first and starting with nested surfaces open.
+
 ## Accessibility and motion
 
 Breeze manages focus on opening and restores it on closing. Modal surfaces contain keyboard focus while open. The provider's portal host keeps the surface's locale, direction and scoped styles intact.

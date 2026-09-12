@@ -5,7 +5,7 @@ import * as Stories from './Popover.stories';
 
 # Popover
 
-Use `Popover` for contextual content anchored to a trigger. Focus stays inside the open surface until it closes; it has no dimmed scrim. Render it inside `BreezeProvider`.
+Use `Popover` for non-modal contextual content anchored to a trigger. The surrounding surface remains interactive and available to assistive technology; the popover has no dimmed scrim. Render it inside `BreezeProvider`.
 
 ## Basic usage
 
@@ -52,7 +52,9 @@ Set `loading` while content is being prepared. Breeze provides its loading prese
 
 ## Accessibility and motion
 
-Breeze manages focus on opening and restores it on closing. The provider's portal host keeps the surface's locale, direction and scoped styles intact.
+Breeze manages focus on opening and restores it on closing without trapping focus inside the popover. The provider's portal host keeps the surface's locale, direction and scoped styles intact.
+
+Inside a drawer, a popover appears above the sheet while its content remains interactive and accessible. The sheet keeps its scrim. Escape closes the popover first and restores focus to its trigger; a subsequent Escape closes the sheet. The `Foundations/Overlay stack` stories exercise this composition.
 
 Enter and exit motion respects reduced-motion preferences. A closing surface immediately leaves the active stack while its exit animation completes.
 

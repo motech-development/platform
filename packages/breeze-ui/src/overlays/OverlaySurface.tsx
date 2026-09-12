@@ -28,6 +28,7 @@ const variants = {
   variant: {
     dialog: 'breeze-dialog',
     drawer: 'breeze-drawer',
+    fullscreen: 'breeze-fullscreen',
     popover: 'breeze-popover',
   },
 } as const;
@@ -53,6 +54,7 @@ function OverlaySurface({
   }
 >) {
   const { getMessageLocale, messages } = useBreezeContext();
+  const nonModal = kind === 'popover' || kind === 'fullscreen';
   const host = useOverlayPortal();
   const [portalReady, setPortalReady] = useState(false);
 
@@ -65,6 +67,13 @@ function OverlaySurface({
   const parentOpen = parent?.open ?? true;
   const open = requestedOpen && parentOpen;
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const contentRef = useRef<HTMLElement | null>(null);
+  // Full-screen surfaces belong to the viewport, not the sheet's scrollable
+  // trigger. Keep the actual trigger separately for focus restoration.
+  const positionRef = useMemo(
+    () => (kind === 'fullscreen' ? { current: host } : triggerRef),
+    [host, kind],
+  );
   const layer = useOverlayLayer(kind, open && portalReady && host !== null);
   const changeOpen = useCallback(
     (nextOpen: boolean) => {
@@ -77,6 +86,26 @@ function OverlaySurface({
   useEffect(() => {
     if (!parentOpen && requestedOpen) changeOpen(false);
   }, [changeOpen, parentOpen, requestedOpen]);
+
+  useEffect(() => {
+    if (kind !== 'popover' || !open || !dismissible || !layer.topmost || !host)
+      return undefined;
+    // RAC non-modal popovers close on blur, but not on outside clicks. Wait for
+    // click so the sheet's pointer gesture completes while the popover is topmost.
+    const onOutsideClick = (event: MouseEvent) => {
+      const { target } = event;
+      if (
+        target instanceof Node &&
+        !contentRef.current?.contains(target) &&
+        !triggerRef.current?.contains(target)
+      ) {
+        changeOpen(false);
+      }
+    };
+    host.ownerDocument.addEventListener('click', onOutsideClick, true);
+    return () =>
+      host.ownerDocument.removeEventListener('click', onOutsideClick, true);
+  }, [changeOpen, dismissible, host, kind, layer.topmost, open]);
 
   const restoreParentFocus = parent?.restoreFocus;
   const restoreFocus = useCallback(() => {
@@ -103,46 +132,71 @@ function OverlaySurface({
 
   const surfaceRef = useCallback(
     (element: HTMLElement | null) => {
+      contentRef.current = element;
       if (!element) return undefined;
+      if (nonModal) {
+        queueMicrotask(() => {
+          if (
+            element.isConnected &&
+            !element.closest('[inert], [data-exiting]')
+          ) {
+            element.focus({ preventScroll: true });
+          }
+        });
+      }
       // React Aria restores ordinary closes. Nested simultaneous exits can leave
       // focus on body; repair only that gap after its focus-scope cleanup runs.
       return () => {
         requestAnimationFrame(restoreFocus);
       };
     },
-    [restoreFocus],
+    [nonModal, restoreFocus],
   );
 
   const parentContext = useMemo(
     () => ({ id: layer.id, open, restoreFocus }),
     [layer.id, open, restoreFocus],
   );
+  const body = (
+    <>
+      <div className={variants.base.header}>
+        <h2 className={variants.base.title}>{title}</h2>
+        <span lang={getMessageLocale('close')}>
+          <Button onAction={() => changeOpen(false)} variant="quiet">
+            {messages.close}
+          </Button>
+        </span>
+      </div>
+      {loading ? (
+        <Skeleton blockSize="6rem" label={messages.loading} shape="rectangle" />
+      ) : (
+        children
+      )}
+    </>
+  );
   const content = (
     <ParentOverlayContext value={parentContext}>
-      <AriaDialog
-        aria-label={title}
-        className={variants.base.content}
-        id={layer.id}
-        ref={surfaceRef}
-      >
-        <div className={variants.base.header}>
-          <h2 className={variants.base.title}>{title}</h2>
-          <span lang={getMessageLocale('close')}>
-            <Button onAction={() => changeOpen(false)} variant="quiet">
-              {messages.close}
-            </Button>
-          </span>
-        </div>
-        {loading ? (
-          <Skeleton
-            blockSize="6rem"
-            label={messages.loading}
-            shape="rectangle"
-          />
-        ) : (
-          children
-        )}
-      </AriaDialog>
+      {nonModal ? (
+        <section
+          aria-label={title}
+          className={variants.base.content}
+          id={layer.id}
+          ref={surfaceRef}
+          role="dialog"
+          tabIndex={-1}
+        >
+          {body}
+        </section>
+      ) : (
+        <AriaDialog
+          aria-label={title}
+          className={variants.base.content}
+          id={layer.id}
+          ref={surfaceRef}
+        >
+          {body}
+        </AriaDialog>
+      )}
     </ParentOverlayContext>
   );
 
@@ -159,19 +213,23 @@ function OverlaySurface({
       </Button>
       {host &&
         portalReady &&
-        (kind === 'popover' ? (
+        (nonModal ? (
           <AriaPopover
-            className={variants.variant.popover}
+            className={variants.variant[kind]}
             data-breeze-overlay={kind}
             data-breeze-topmost={layer.topmost}
-            inert={!layer.topmost}
+            data-breeze-interactive={layer.interactive}
+            inert={!layer.interactive}
+            isNonModal
             isOpen={open}
             isKeyboardDismissDisabled={!dismissible || !layer.topmost}
             onOpenChange={changeOpen}
             placement={placement}
-            shouldCloseOnInteractOutside={() => dismissible && layer.topmost}
+            shouldCloseOnInteractOutside={() =>
+              kind === 'popover' && dismissible && layer.topmost
+            }
             style={{ zIndex: layer.zIndex }}
-            triggerRef={triggerRef}
+            triggerRef={positionRef}
             UNSTABLE_portalContainer={host}
           >
             {content}
@@ -182,7 +240,8 @@ function OverlaySurface({
             data-breeze-overlay={kind}
             data-breeze-scrim={layer.scrim}
             data-breeze-topmost={layer.topmost}
-            inert={!layer.topmost}
+            data-breeze-interactive={layer.interactive}
+            inert={!layer.interactive}
             isDismissable={dismissible && layer.topmost}
             isKeyboardDismissDisabled={!dismissible || !layer.topmost}
             isOpen={open}
