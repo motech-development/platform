@@ -227,8 +227,16 @@ export function Typography(props: Readonly<TypographyProps>) {
     format !== undefined ||
     typeof children === 'string' ||
     typeof children === 'number';
+  const usesNativeLabel =
+    !loading &&
+    accessibleLabel !== undefined &&
+    !canReplaceWithAccessibleLabel &&
+    ['h1', 'h2', 'h3', 'h4'].includes(element);
   const usesLabelledGroup =
-    !loading && accessibleLabel !== undefined && !canReplaceWithAccessibleLabel;
+    !loading &&
+    accessibleLabel !== undefined &&
+    !canReplaceWithAccessibleLabel &&
+    !usesNativeLabel;
 
   if (
     !loading &&
@@ -247,7 +255,8 @@ export function Typography(props: Readonly<TypographyProps>) {
     element,
     {
       'aria-busy': loading || undefined,
-      'aria-label': usesLabelledGroup ? accessibleLabel : undefined,
+      'aria-label':
+        usesLabelledGroup || usesNativeLabel ? accessibleLabel : undefined,
       className: [
         variants.base.text,
         variants.variant.role[variant],

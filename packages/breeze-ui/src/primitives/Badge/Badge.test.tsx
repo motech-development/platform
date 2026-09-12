@@ -28,7 +28,9 @@ describe('Badge', () => {
   it('replaces unavailable content with an accessible placeholder', () => {
     renderBreeze(<Badge loading>Badge content</Badge>);
 
-    expect(screen.getByRole('progressbar', { name: 'Loading' })).toBeVisible();
+    expect(screen.getByRole('progressbar', { name: 'Loading' })).toHaveStyle({
+      blockSize: '1lh',
+    });
     expect(screen.queryByText('Badge content')).not.toBeInTheDocument();
   });
 });
