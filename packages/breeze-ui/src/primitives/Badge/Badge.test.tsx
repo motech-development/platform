@@ -30,7 +30,12 @@ describe('Badge', () => {
 
     expect(screen.getByRole('progressbar', { name: 'Loading' })).toHaveStyle({
       blockSize: '1lh',
+      inlineSize: '100%',
     });
-    expect(screen.queryByText('Badge content')).not.toBeInTheDocument();
+    expect(screen.getByText('Badge content')).toHaveClass('breeze:opacity-0');
+    expect(screen.getByText('Badge content')).toHaveAttribute(
+      'aria-hidden',
+      'true',
+    );
   });
 });
