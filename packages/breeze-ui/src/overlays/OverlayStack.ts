@@ -105,19 +105,14 @@ export function useOverlayLayer(
     activeIndex !== -1 &&
     !active.slice(activeIndex + 1).some((layer) => layer.kind !== 'popover');
   const topmost = open && active.at(-1)?.id === id;
-  const scrim =
-    (
-      active
-        .filter((layer) => layer.kind === 'drawer' || layer.kind === 'dialog')
-        .at(-1) ??
-      ordered
-        .filter(
-          (layer) =>
-            layer.visual &&
-            (layer.kind === 'drawer' || layer.kind === 'dialog'),
-        )
-        .at(-1)
-    )?.id === id;
+  const activeModal = active.findLast(
+    (layer) => layer.kind === 'drawer' || layer.kind === 'dialog',
+  );
+  const visualModal = ordered.findLast(
+    (layer) =>
+      layer.visual && (layer.kind === 'drawer' || layer.kind === 'dialog'),
+  );
+  const scrim = (activeModal ?? visualModal)?.id === id;
 
   return {
     id,

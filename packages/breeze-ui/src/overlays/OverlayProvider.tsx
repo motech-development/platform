@@ -5,6 +5,7 @@ import {
   useLayoutEffect,
   useState,
 } from 'react';
+import { UNSAFE_PortalProvider as PortalProvider } from 'react-aria/PortalProvider';
 import { useLocale } from 'react-aria-components/I18nProvider';
 import { createOverlayStack, OverlayStackContext } from './OverlayStack';
 
@@ -42,9 +43,11 @@ export function OverlayProvider({
   }, [direction, host, locale]);
 
   return (
-    <OverlayStackContext value={stack}>
-      <PortalContext value={host}>{children}</PortalContext>
-    </OverlayStackContext>
+    <PortalProvider getContainer={() => host}>
+      <OverlayStackContext value={stack}>
+        <PortalContext value={host}>{children}</PortalContext>
+      </OverlayStackContext>
+    </PortalProvider>
   );
 }
 

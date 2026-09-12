@@ -33,6 +33,22 @@ const variants = {
   },
 } as const;
 
+function isNode(value: EventTarget | null): value is Node {
+  return (
+    value !== null &&
+    typeof value === 'object' &&
+    'nodeType' in value &&
+    typeof (value as Node).contains === 'function'
+  );
+}
+
+function hasOverlayMarker(element: Element) {
+  return (
+    (element as Element & { dataset?: DOMStringMap }).dataset?.breezeOverlay !==
+    undefined
+  );
+}
+
 function OverlaySurface({
   children,
   defaultOpen = false,
@@ -71,7 +87,7 @@ function OverlaySurface({
   const [surfaceMounted, setSurfaceMounted] = useState(false);
   const refocusingRef = useRef(false);
   const refocusTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const focusedChildRef = useRef<HTMLElement | null>(null);
+  const focusedChildRef = useRef<Node | null>(null);
   const pointerDownTargetRef = useRef<Node | null>(null);
   const blurDismissTargetRef = useRef<Node | null>(null);
   // Full-screen surfaces belong to the viewport, not the sheet's scrollable
@@ -106,13 +122,12 @@ function OverlaySurface({
       // A blur caused by a previous keyboard interaction must not suppress a
       // later pointer dismissal.
       blurDismissTargetRef.current = null;
-      pointerDownTargetRef.current =
-        event.target instanceof Node ? event.target : null;
+      pointerDownTargetRef.current = isNode(event.target) ? event.target : null;
     };
     const onOutsideClick = (event: MouseEvent) => {
       const { target } = event;
       if (
-        target instanceof Node &&
+        isNode(target) &&
         !contentRef.current?.contains(target) &&
         !triggerRef.current?.contains(target)
       ) {
@@ -270,10 +285,7 @@ function OverlaySurface({
           className={variants.base.content}
           id={layer.id}
           onFocus={(event) => {
-            if (
-              event.target !== event.currentTarget &&
-              event.target instanceof HTMLElement
-            ) {
+            if (event.target !== event.currentTarget && isNode(event.target)) {
               focusedChildRef.current = event.target;
             }
           }}
@@ -282,7 +294,7 @@ function OverlaySurface({
               event.stopPropagation();
               return;
             }
-            if (event.relatedTarget instanceof HTMLElement) {
+            if (isNode(event.relatedTarget)) {
               focusedChildRef.current = null;
             }
             const { relatedTarget } = event;
@@ -290,7 +302,7 @@ function OverlaySurface({
               kind === 'popover' &&
               dismissible &&
               layer.topmost &&
-              relatedTarget instanceof Node &&
+              isNode(relatedTarget) &&
               !event.currentTarget.contains(relatedTarget) &&
               !triggerRef.current?.contains(relatedTarget)
             ) {
@@ -350,7 +362,6 @@ function OverlaySurface({
             }
             style={{ zIndex: layer.zIndex }}
             triggerRef={positionRef}
-            UNSTABLE_portalContainer={host}
           >
             {content}
           </AriaPopover>
@@ -367,10 +378,9 @@ function OverlaySurface({
             isOpen={open}
             onOpenChange={changeOpen}
             shouldCloseOnInteractOutside={(element) =>
-              layer.topmost && element.hasAttribute('data-breeze-overlay')
+              layer.topmost && hasOverlayMarker(element)
             }
             style={{ zIndex: layer.zIndex }}
-            UNSTABLE_portalContainer={host}
           >
             <Modal className={variants.variant[kind]}>{content}</Modal>
           </ModalOverlay>
