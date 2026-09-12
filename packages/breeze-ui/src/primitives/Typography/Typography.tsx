@@ -181,6 +181,31 @@ function formatDate(
   }).format(date);
 }
 
+function getTypographyContent(
+  props: Readonly<TypographyProps>,
+  locale: string,
+  loadingMessage: string,
+): ReactNode {
+  if (props.loading) {
+    return <Skeleton blockSize="1lh" inlineSize="8em" label={loadingMessage} />;
+  }
+
+  if (props.format === 'currency') {
+    return formatCurrency(
+      props.value,
+      props.currency,
+      locale,
+      props.sign ?? 'auto',
+    );
+  }
+
+  if (props.format === 'date') {
+    return formatDate(props.value, locale, props.dateStyle);
+  }
+
+  return props.children;
+}
+
 /**
  * Applies Breeze text roles and locale-aware money or calendar-date formatting.
  *
@@ -192,17 +217,13 @@ export function Typography(props: Readonly<TypographyProps>) {
     'aria-label': ariaLabel,
     align,
     children,
-    currency,
-    dateStyle,
     element: requestedElement,
     format,
     id,
     loading = false,
     numeric = false,
-    sign,
     tone = 'default',
     truncate = false,
-    value,
     variant = 'body',
   } = props;
   const element = requestedElement ?? getDefaultElement(variant);
@@ -211,19 +232,7 @@ export function Typography(props: Readonly<TypographyProps>) {
     align ?? (variant === 'money' || numeric ? 'end' : 'start');
   const needsAlignmentBox =
     align !== undefined || variant === 'money' || numeric;
-  let content: ReactNode;
-
-  if (loading) {
-    content = (
-      <Skeleton blockSize="1lh" inlineSize="8em" label={messages.loading} />
-    );
-  } else if (format === 'currency' && value !== undefined) {
-    content = formatCurrency(value, currency, locale, sign ?? 'auto');
-  } else if (format === 'date' && value !== undefined) {
-    content = formatDate(value, locale, dateStyle);
-  } else {
-    content = children;
-  }
+  let content = getTypographyContent(props, locale, messages.loading);
 
   const canReplaceWithAccessibleLabel =
     format !== undefined ||
