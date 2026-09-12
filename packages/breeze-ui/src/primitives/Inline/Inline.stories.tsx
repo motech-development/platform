@@ -7,8 +7,8 @@ const meta = {
     children: (
       <>
         <Badge>Draft</Badge>
-        <Badge variant="positive">Paid</Badge>
-        <Badge variant="warning">No receipt</Badge>
+        <Badge variant="positive">Published</Badge>
+        <Badge variant="warning">Needs review</Badge>
       </>
     ),
   },

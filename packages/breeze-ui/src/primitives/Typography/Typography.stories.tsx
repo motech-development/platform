@@ -41,8 +41,8 @@ export const FiguresAndInterfaceText: Story = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const figure = canvas.getByText('208');
-    const interfaceHeading = canvas.getByText('Accounting year');
+    const figure = canvas.getByText('128');
+    const interfaceHeading = canvas.getByText('Overview');
 
     await expect(getComputedStyle(figure).fontVariantNumeric).toContain(
       'tabular-nums',
@@ -54,9 +54,9 @@ export const FiguresAndInterfaceText: Story = {
   },
   render: () => (
     <Stack gap={2} horizontalAlign="start">
-      <Typography variant="heading">Accounting year</Typography>
+      <Typography variant="heading">Overview</Typography>
       <Typography numeric variant="heading">
-        208
+        128
       </Typography>
     </Stack>
   ),
@@ -70,10 +70,10 @@ export const Formatting: Story = {
   render: () => (
     <Stack gap={2} horizontalAlign="start">
       <Typography
-        currency="GBP"
+        currency="EUR"
         format="currency"
         sign="always"
-        value={24180.5}
+        value={1234.56}
         variant="money"
       />
       <Typography format="date" value="2026-09-03" variant="caption" />
