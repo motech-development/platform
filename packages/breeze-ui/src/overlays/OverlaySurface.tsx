@@ -2,6 +2,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -73,7 +74,6 @@ function OverlaySurface({
   const nonModal = kind === 'popover' || kind === 'fullscreen';
   const host = useOverlayPortal();
   const [portalReady, setPortalReady] = useState(false);
-
   // Mount nested portals after the parent's modality effects. Otherwise a
   // default-open parent can aria-hide its already mounted child portal.
   useEffect(() => setPortalReady(true), []);
@@ -90,6 +90,18 @@ function OverlaySurface({
   const focusedChildRef = useRef<Node | null>(null);
   const pointerDownTargetRef = useRef<Node | null>(null);
   const blurDismissTargetRef = useRef<Node | null>(null);
+  const parentCloseReportedRef = useRef(false);
+  useLayoutEffect(() => {
+    if (
+      host &&
+      triggerRef.current &&
+      triggerRef.current.ownerDocument !== host.ownerDocument
+    ) {
+      throw new Error(
+        'Breeze overlay triggers and portal containers must belong to the same document.',
+      );
+    }
+  }, [host]);
   // Full-screen surfaces belong to the viewport, not the sheet's scrollable
   // trigger. Keep the actual trigger separately for focus restoration.
   const positionRef = useMemo(
@@ -103,14 +115,22 @@ function OverlaySurface({
   );
   const changeOpen = useCallback(
     (nextOpen: boolean) => {
+      if (!nextOpen && !parentOpen) {
+        if (parentCloseReportedRef.current) return;
+        if (requestedOpen) parentCloseReportedRef.current = true;
+      }
       if (controlledOpen === undefined) setUncontrolledOpen(nextOpen);
       onOpenChange?.(nextOpen);
     },
-    [controlledOpen, onOpenChange],
+    [controlledOpen, onOpenChange, parentOpen, requestedOpen],
   );
 
   useEffect(() => {
-    if (!parentOpen && requestedOpen) changeOpen(false);
+    if (parentOpen) {
+      parentCloseReportedRef.current = false;
+    } else if (requestedOpen) {
+      changeOpen(false);
+    }
   }, [changeOpen, parentOpen, requestedOpen]);
 
   useEffect(() => {

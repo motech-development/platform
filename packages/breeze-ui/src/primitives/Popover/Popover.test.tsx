@@ -194,7 +194,9 @@ describe('Popover', () => {
       iframe.remove();
       throw new Error('Expected the iframe to have a document');
     }
+    const appContainer = secondaryDocument.createElement('div');
     const portalContainer = secondaryDocument.createElement('section');
+    secondaryDocument.body.append(appContainer);
     secondaryDocument.body.append(portalContainer);
 
     function Example() {
@@ -215,6 +217,7 @@ describe('Popover', () => {
       <BreezeProvider locale="en-GB" portalContainer={portalContainer}>
         <Example />
       </BreezeProvider>,
+      { baseElement: secondaryDocument.body, container: appContainer },
     );
     const surface = await waitFor(() => {
       const element = within(portalContainer).queryByRole('dialog', {
@@ -235,6 +238,31 @@ describe('Popover', () => {
     expect(secondaryDocument.activeElement).toBe(loadButton);
     await userEvent.setup({ document: secondaryDocument }).click(loadButton);
     await waitFor(() => expect(secondaryDocument.activeElement).toBe(surface));
+    iframe.remove();
+  });
+
+  it('rejects a portal container from another document', () => {
+    const iframe = document.createElement('iframe');
+    document.body.append(iframe);
+    const secondaryDocument = iframe.contentDocument;
+    if (!secondaryDocument) {
+      iframe.remove();
+      throw new Error('Expected the iframe to have a document');
+    }
+    const portalContainer = secondaryDocument.createElement('section');
+    secondaryDocument.body.append(portalContainer);
+
+    expect(() =>
+      render(
+        <BreezeProvider locale="en-GB" portalContainer={portalContainer}>
+          <Popover defaultOpen title="Details" trigger="Open details">
+            Delivery information
+          </Popover>
+        </BreezeProvider>,
+      ),
+    ).toThrow(
+      'Breeze overlay triggers and portal containers must belong to the same document.',
+    );
     iframe.remove();
   });
 
