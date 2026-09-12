@@ -1,8 +1,10 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { useState } from 'react';
 import { describe, expect, it } from 'vitest';
 import renderBreeze from '../../../test/render';
 import { BreezeProvider } from '../../provider/BreezeProvider';
+import { Button } from '../Button/Button';
 import { Dialog } from './Dialog';
 
 describe('Dialog', () => {
@@ -48,5 +50,36 @@ describe('Dialog', () => {
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument(),
     );
     await waitFor(() => expect(trigger).toHaveFocus());
+  });
+
+  it('keeps focus in the dialog when loading removes the focused content', async () => {
+    let startLoading = () => {};
+    function Example() {
+      const [loading, setLoading] = useState(false);
+      startLoading = () => setLoading(true);
+      return (
+        <Dialog
+          defaultOpen
+          loading={loading}
+          title="Confirm change"
+          trigger="Open dialog"
+        >
+          <Button onAction={() => setLoading(true)}>Load details</Button>
+        </Dialog>
+      );
+    }
+
+    renderBreeze(<Example />);
+    const dialog = screen.getByRole('dialog', { name: 'Confirm change' });
+    const loadButton = within(dialog).getByRole('button', {
+      name: 'Load details',
+    });
+    loadButton.focus();
+    act(startLoading);
+    expect(dialog).toHaveFocus();
+    await userEvent.keyboard('{Escape}');
+    await waitFor(() =>
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument(),
+    );
   });
 });
