@@ -22,7 +22,7 @@ import * as Stories from './BreezeProvider.stories';
 
 `locale` takes a BCP 47 language tag. It sets the `lang` attribute and the text direction of the provider's root element.
 
-Only English (`en-GB`) messages are bundled. Supply partial `messages` to translate Breeze's loading announcement and appearance control into the provider locale. Without an override, Breeze's own text uses English and is marked `lang="en-GB"`, independently of the surrounding content's language.
+Only English (`en-GB`) messages are bundled. Supply partial `messages` to translate Breeze's loading announcement, appearance control and overlay close button into the provider locale. Without an override, Breeze's own text uses English and is marked `lang="en-GB"`, independently of the surrounding content's language.
 
 ```tsx
 <BreezeProvider locale="fr-FR" messages={{ loading: 'Chargement' }}>
@@ -61,6 +61,20 @@ Use `appearance` with `onAppearanceChange` when application state controls it. `
 ```
 
 The provider never reads or writes durable browser storage. The application decides whether and where to persist the reported choice. If a persisted explicit choice must apply before the application starts, stamp its resolved value on the document element before loading the stylesheet; the stylesheet's media-query default already handles automatic dark mode before script runs.
+
+## Overlay portal
+
+`Dialog`, `Drawer` and `Popover` render into a dedicated portal host owned by the provider. By default, the host is appended to `document.body`. Set `portalContainer` to an existing light DOM `HTMLElement` in the current runtime document when overlays need to render in another container, such as an embedded application or a test fixture.
+
+```tsx
+<BreezeProvider locale="en-GB" portalContainer={overlayContainer}>
+  <App />
+</BreezeProvider>
+```
+
+The provider creates and removes its own host inside that container. The host carries the Breeze root marker, locale and text direction so overlays retain scoped styling and language outside the provider's normal content tree.
+
+`portalContainer` and every overlay trigger must belong to the current runtime `Document` and its light DOM. Cross-document and shadow-root portals are unsupported because React Aria positions and manages overlays against the runtime document.
 
 ## API
 

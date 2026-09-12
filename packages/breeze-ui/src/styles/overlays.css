@@ -1,0 +1,201 @@
+@layer components {
+  :where([data-breeze-root]) [data-breeze-overlay],
+  :where([data-breeze-root]) [data-breeze-overlay] * {
+    /* Overlay lifecycle must never acquire shared-element transition names. */
+    view-transition-name: none !important;
+  }
+
+  :where([data-breeze-root]) .breeze-overlay-backdrop {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    overflow: auto;
+    background: transparent;
+  }
+
+  :where([data-breeze-root]) [data-breeze-scrim='true'] {
+    background: color-mix(
+      in srgb,
+      var(--breeze-color-breeze-scrim) 45%,
+      transparent
+    );
+  }
+
+  :where([data-breeze-root]) [data-breeze-overlay][data-exiting],
+  :where([data-breeze-root]) [data-breeze-interactive='false'] {
+    pointer-events: none;
+  }
+
+  :where([data-breeze-root]) .breeze-dialog,
+  :where([data-breeze-root]) .breeze-drawer,
+  :where([data-breeze-root]) .breeze-fullscreen,
+  :where([data-breeze-root]) .breeze-popover {
+    box-sizing: border-box;
+    min-inline-size: 0;
+    max-inline-size: 100%;
+    max-block-size: 100%;
+    overflow: auto;
+    border: 1px solid var(--breeze-color-breeze-line);
+    border-radius: var(--breeze-radius-breeze-panel);
+    background: var(--breeze-color-breeze-surface);
+    color: var(--breeze-color-breeze-ink);
+    box-shadow: var(--breeze-shadow-overlay);
+  }
+
+  :where([data-breeze-root]) .breeze-dialog {
+    inline-size: 480px;
+  }
+  :where([data-breeze-root]) .breeze-popover {
+    inline-size: 320px;
+    max-inline-size: calc(100vw - 24px);
+    outline: none;
+  }
+  :where([data-breeze-root]) .breeze-fullscreen {
+    /* The kit owns lifecycle and portal focus scopes; this unanchored surface
+       replaces its trigger-relative positioning with viewport geometry. */
+    position: fixed !important;
+    inset: 0 !important;
+    inline-size: 100%;
+    block-size: 100dvh;
+    max-block-size: none !important;
+    border: 0;
+    border-radius: 0;
+    outline: none;
+  }
+  :where([data-breeze-root]) .breeze-fullscreen[data-entering] {
+    animation: breeze-overlay-fade-in 200ms ease-out;
+  }
+  :where([data-breeze-root]) .breeze-fullscreen[data-exiting] {
+    animation: breeze-overlay-fade-out 160ms ease-in;
+  }
+
+  :where([data-breeze-root]) .breeze-overlay-content {
+    padding: 24px;
+    outline: none;
+  }
+  :where([data-breeze-root]) .breeze-overlay-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-block-end: 20px;
+  }
+  :where([data-breeze-root]) .breeze-overlay-title {
+    margin: 0;
+    font-size: var(--breeze-text-breeze-lg);
+    font-weight: 600;
+    overflow-wrap: anywhere;
+  }
+  :where([data-breeze-root]) [data-breeze-overlay='drawer'] {
+    padding: 0;
+    justify-items: end;
+  }
+  :where([data-breeze-root]) .breeze-drawer {
+    inline-size: 610px;
+    block-size: 100%;
+    border-radius: 0;
+  }
+
+  :where([data-breeze-root]) .breeze-overlay-backdrop[data-entering] {
+    animation: breeze-overlay-fade-in 200ms ease-out;
+  }
+  :where([data-breeze-root]) .breeze-overlay-backdrop[data-exiting] {
+    animation: breeze-overlay-fade-out 160ms ease-in;
+  }
+  :where([data-breeze-root]) .breeze-dialog[data-entering],
+  :where([data-breeze-root]) .breeze-popover[data-entering] {
+    animation: breeze-surface-in 200ms ease-out;
+  }
+  :where([data-breeze-root]) .breeze-dialog[data-exiting],
+  :where([data-breeze-root]) .breeze-popover[data-exiting] {
+    animation: breeze-surface-out 160ms ease-in;
+  }
+  :where([data-breeze-root]) .breeze-drawer[data-entering] {
+    animation: breeze-drawer-in 240ms ease-out;
+  }
+  :where([data-breeze-root]) .breeze-drawer[data-exiting] {
+    animation: breeze-drawer-out 180ms ease-in;
+  }
+
+  @media (width >= 768px) {
+    :where([data-breeze-root]) .breeze-drawer:dir(rtl) {
+      --breeze-drawer-x: -100%;
+    }
+  }
+
+  @media (width < 768px) {
+    :where([data-breeze-root]) [data-breeze-overlay='drawer'] {
+      align-items: end;
+    }
+    :where([data-breeze-root]) .breeze-drawer {
+      inline-size: 100%;
+      block-size: auto;
+      max-block-size: 90dvh;
+      border-start-start-radius: var(--breeze-radius-breeze-panel);
+      border-start-end-radius: var(--breeze-radius-breeze-panel);
+      --breeze-drawer-x: 0;
+      --breeze-drawer-y: 100%;
+    }
+  }
+}
+
+@keyframes breeze-overlay-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes breeze-overlay-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes breeze-surface-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes breeze-surface-out {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+}
+@keyframes breeze-drawer-in {
+  from {
+    transform: translate(
+      var(--breeze-drawer-x, 100%),
+      var(--breeze-drawer-y, 0)
+    );
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes breeze-drawer-out {
+  from {
+    transform: none;
+  }
+  to {
+    transform: translate(
+      var(--breeze-drawer-x, 100%),
+      var(--breeze-drawer-y, 0)
+    );
+  }
+}

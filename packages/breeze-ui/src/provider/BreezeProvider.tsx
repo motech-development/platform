@@ -7,6 +7,7 @@ import {
   useState,
 } from 'react';
 import { I18nProvider, useLocale } from 'react-aria-components/I18nProvider';
+import { OverlayProvider } from '../overlays/OverlayProvider';
 import { type Appearance, BreezeContext } from './BreezeContext';
 import enGB from './en-GB';
 
@@ -17,6 +18,11 @@ interface BreezeProviderBaseProps {
   locale: string;
   /** Accessible messages translated into the provider locale; defaults to English. */
   messages?: Partial<typeof enGB>;
+  /**
+   * Container for the provider-owned overlay host; defaults to document.body.
+   * The container must belong to the same document as the overlay triggers.
+   */
+  portalContainer?: HTMLElement;
 }
 
 interface ControlledAppearanceProps {
@@ -73,6 +79,7 @@ export function BreezeProvider({
   locale,
   messages,
   onAppearanceChange,
+  portalContainer,
 }: Readonly<BreezeProviderProps>) {
   const [preferredColorSchemeQuery] = useState(() =>
     typeof window === 'undefined' || !window.matchMedia
@@ -150,6 +157,7 @@ export function BreezeProvider({
           messages?.appearanceAutomatic ?? enGB.appearanceAutomatic,
         appearanceDark: messages?.appearanceDark ?? enGB.appearanceDark,
         appearanceLight: messages?.appearanceLight ?? enGB.appearanceLight,
+        close: messages?.close ?? enGB.close,
         loading: messages?.loading ?? enGB.loading,
       },
       resolvedAppearance,
@@ -168,7 +176,9 @@ export function BreezeProvider({
   return (
     <I18nProvider locale={locale}>
       <BreezeContext value={context}>
-        <BreezeRoot>{children}</BreezeRoot>
+        <OverlayProvider locale={locale} portalContainer={portalContainer}>
+          <BreezeRoot>{children}</BreezeRoot>
+        </OverlayProvider>
       </BreezeContext>
     </I18nProvider>
   );

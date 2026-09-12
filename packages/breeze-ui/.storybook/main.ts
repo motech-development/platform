@@ -50,6 +50,9 @@ const config: ManifestStorybookConfig = {
       include: [
         ...(viteConfig.optimizeDeps?.include ?? []),
         'react-aria-components/Button',
+        'react-aria-components/Dialog',
+        'react-aria-components/Modal',
+        'react-aria-components/Popover',
         'react-aria-components/I18nProvider',
         'react-aria-components/ProgressBar',
         'react-aria-components/slots',
