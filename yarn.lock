@@ -7239,6 +7239,7 @@ __metadata:
     playwright: "npm:1.61.1"
     prettier: "npm:3.2.5"
     react: "npm:19.2.7"
+    react-aria: "npm:3.50.0"
     react-aria-components: "npm:1.19.0"
     react-dom: "npm:19.2.7"
     remark-gfm: "npm:4.0.1"
