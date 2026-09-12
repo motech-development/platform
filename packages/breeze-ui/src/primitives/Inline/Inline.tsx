@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { createElement } from 'react';
+import { Children, createElement } from 'react';
 import { useBreezeContext } from '../../provider/BreezeContext';
 import type { LayoutAlign, LayoutElement, LayoutGap } from '../layout.types';
 import { Skeleton } from '../Skeleton/Skeleton';
@@ -69,6 +69,28 @@ export function Inline({
 }: Readonly<InlineProps>) {
   const { messages } = useBreezeContext();
   const accessibleLabel = ariaLabel?.trim() || undefined;
+  let content = children;
+
+  if (loading) {
+    content =
+      Children.count(children) === 0 ? (
+        <Skeleton
+          blockSize={28}
+          inlineSize={96}
+          label={messages.loading}
+          shape="rectangle"
+        />
+      ) : (
+        Children.map(children, (_, index) => (
+          <Skeleton
+            blockSize={28}
+            inlineSize={96}
+            label={index === 0 ? messages.loading : undefined}
+            shape="rectangle"
+          />
+        ))
+      );
+  }
 
   return createElement(
     element,
@@ -89,10 +111,6 @@ export function Inline({
           ? 'group'
           : undefined,
     },
-    loading ? (
-      <Skeleton blockSize={28} inlineSize={96} label={messages.loading} />
-    ) : (
-      children
-    ),
+    content,
   );
 }

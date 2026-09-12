@@ -78,7 +78,12 @@ export function Card({
           : undefined,
     },
     loading ? (
-      <Skeleton blockSize={64} label={messages.loading} shape="rectangle" />
+      <Skeleton
+        blockSize={64}
+        inlineSize="100%"
+        label={messages.loading}
+        shape="rectangle"
+      />
     ) : (
       children
     ),

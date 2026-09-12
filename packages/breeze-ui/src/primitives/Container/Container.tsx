@@ -67,7 +67,12 @@ export function Container({
           : undefined,
     },
     loading ? (
-      <Skeleton blockSize={96} label={messages.loading} shape="rectangle" />
+      <Skeleton
+        blockSize={96}
+        inlineSize="100%"
+        label={messages.loading}
+        shape="rectangle"
+      />
     ) : (
       children
     ),

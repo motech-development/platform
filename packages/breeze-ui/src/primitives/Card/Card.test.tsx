@@ -33,7 +33,9 @@ describe('Card', () => {
   it('replaces unavailable content with an accessible placeholder', () => {
     renderBreeze(<Card loading>Card content</Card>);
 
-    expect(screen.getByRole('progressbar', { name: 'Loading' })).toBeVisible();
+    expect(screen.getByRole('progressbar', { name: 'Loading' })).toHaveStyle({
+      inlineSize: '100%',
+    });
     expect(screen.queryByText('Card content')).not.toBeInTheDocument();
   });
 });
