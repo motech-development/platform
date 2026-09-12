@@ -15,6 +15,7 @@ describe('Separator', () => {
       'vertical',
     );
     expect(screen.getByRole('separator')).toHaveClass(
+      'breeze:m-0',
       'breeze:block-size-full',
       'breeze:forced-colors:bg-[CanvasText]',
     );

@@ -25,6 +25,14 @@ describe('Grid', () => {
     );
   });
 
+  it('gives a labelled default container nameable semantics', () => {
+    renderBreeze(<Grid aria-label="Figures">Balance</Grid>);
+
+    expect(screen.getByRole('group', { name: 'Figures' })).toHaveTextContent(
+      'Balance',
+    );
+  });
+
   it('replaces unavailable content with accessible placeholders', () => {
     const { container } = renderBreeze(
       <Grid columns={3} loading>

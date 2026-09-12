@@ -47,12 +47,13 @@ export function Container({
   width = 'page',
 }: Readonly<ContainerProps>) {
   const { messages } = useBreezeContext();
+  const accessibleLabel = ariaLabel?.trim() || undefined;
 
   return createElement(
     element,
     {
       'aria-busy': loading || undefined,
-      'aria-label': ariaLabel,
+      'aria-label': accessibleLabel,
       className: [
         variants.base.container,
         variants.size[width],
@@ -60,6 +61,10 @@ export function Container({
       ]
         .filter(Boolean)
         .join(' '),
+      role:
+        accessibleLabel !== undefined && element === 'div'
+          ? 'group'
+          : undefined,
     },
     loading ? (
       <Skeleton blockSize={96} label={messages.loading} shape="rectangle" />

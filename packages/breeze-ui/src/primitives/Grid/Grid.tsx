@@ -73,6 +73,7 @@ export function Grid({
   loading = false,
 }: Readonly<GridProps>) {
   const { messages } = useBreezeContext();
+  const accessibleLabel = ariaLabel?.trim() || undefined;
   const content = loading
     ? Array.from({ length: columns }, (_, index) => (
         <Skeleton
@@ -89,12 +90,16 @@ export function Grid({
     element,
     {
       'aria-busy': loading || undefined,
-      'aria-label': ariaLabel,
+      'aria-label': accessibleLabel,
       className: [
         variants.base.grid,
         variants.compound.columns[columns][collapseBelow],
         variants.size[gap],
       ].join(' '),
+      role:
+        accessibleLabel !== undefined && element === 'div'
+          ? 'group'
+          : undefined,
     },
     content,
   );
