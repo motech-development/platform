@@ -74,6 +74,8 @@ The provider never reads or writes durable browser storage. The application deci
 
 The provider creates and removes its own host inside that container. The host carries the Breeze root marker, locale and text direction so overlays retain scoped styling and language outside the provider's normal content tree.
 
+`portalContainer` and every overlay trigger must belong to the same `Document`. Cross-document portals are unsupported because positioned overlays use the trigger and portal viewport together.
+
 ## API
 
 <ArgTypes />

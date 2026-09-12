@@ -18,7 +18,10 @@ interface BreezeProviderBaseProps {
   locale: string;
   /** Accessible messages translated into the provider locale; defaults to English. */
   messages?: Partial<typeof enGB>;
-  /** Container for the provider-owned overlay host; defaults to document.body. */
+  /**
+   * Container for the provider-owned overlay host; defaults to document.body.
+   * The container must belong to the same document as the overlay triggers.
+   */
   portalContainer?: HTMLElement;
 }
 
