@@ -57,12 +57,13 @@ export function Card({
   variant = 'surface',
 }: Readonly<CardProps>) {
   const { messages } = useBreezeContext();
+  const accessibleLabel = ariaLabel?.trim() || undefined;
 
   return createElement(
     element,
     {
       'aria-busy': loading || undefined,
-      'aria-label': ariaLabel,
+      'aria-label': accessibleLabel,
       className: [
         variants.base.card,
         variants.variant[variant],
@@ -71,6 +72,10 @@ export function Card({
       ]
         .filter(Boolean)
         .join(' '),
+      role:
+        accessibleLabel !== undefined && element === 'div'
+          ? 'group'
+          : undefined,
     },
     loading ? (
       <Skeleton blockSize={64} label={messages.loading} shape="rectangle" />

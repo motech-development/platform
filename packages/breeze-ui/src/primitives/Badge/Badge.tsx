@@ -1,5 +1,6 @@
 import { useBreezeContext } from '../../provider/BreezeContext';
 import { Skeleton } from '../Skeleton/Skeleton';
+import { VisuallyHidden } from '../VisuallyHidden/VisuallyHidden';
 
 const variants = {
   base: {
@@ -40,10 +41,10 @@ export function Badge({
   variant = 'neutral',
 }: Readonly<BadgeProps>) {
   const { messages } = useBreezeContext();
+  const accessibleLabel = ariaLabel?.trim() || undefined;
 
   return (
     <span
-      aria-label={ariaLabel}
       aria-busy={loading || undefined}
       className={[variants.base.badge, variants.variant[variant]].join(' ')}
     >
@@ -55,7 +56,14 @@ export function Badge({
           shape="rectangle"
         />
       ) : (
-        children
+        <>
+          <span aria-hidden={accessibleLabel === undefined ? undefined : true}>
+            {children}
+          </span>
+          {accessibleLabel === undefined ? undefined : (
+            <VisuallyHidden>{accessibleLabel}</VisuallyHidden>
+          )}
+        </>
       )}
     </span>
   );

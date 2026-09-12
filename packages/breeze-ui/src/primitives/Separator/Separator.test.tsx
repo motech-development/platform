@@ -14,6 +14,10 @@ describe('Separator', () => {
       'aria-orientation',
       'vertical',
     );
+    expect(screen.getByRole('separator')).toHaveClass(
+      'breeze:block-size-full',
+      'breeze:forced-colors:bg-[CanvasText]',
+    );
   });
 
   it('renders an accessible placeholder while loading', () => {

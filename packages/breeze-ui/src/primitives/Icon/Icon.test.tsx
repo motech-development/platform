@@ -25,6 +25,22 @@ describe('Icon', () => {
     expect(screen.queryByRole('img')).not.toBeInTheDocument();
   });
 
+  it('treats a whitespace-only label as absent', () => {
+    const { container } = renderBreeze(<Icon label="   " name="calendar" />);
+
+    expect(container.querySelector('svg')).toHaveAttribute(
+      'aria-hidden',
+      'true',
+    );
+    expect(screen.queryByRole('img')).not.toBeInTheDocument();
+  });
+
+  it('marks logical navigation artwork for RTL mirroring', () => {
+    const { container } = renderBreeze(<Icon name="back" />);
+
+    expect(container.querySelector('svg')).toHaveClass('breeze:rtl:rotate-180');
+  });
+
   it('renders an accessible placeholder while loading', () => {
     renderBreeze(<Icon loading name="calendar" />);
 

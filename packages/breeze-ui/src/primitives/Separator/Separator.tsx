@@ -3,7 +3,8 @@ import { Skeleton } from '../Skeleton/Skeleton';
 
 const variants = {
   base: {
-    separator: 'breeze:shrink-0 breeze:border-0 breeze:bg-breeze-line',
+    separator:
+      'breeze:shrink-0 breeze:border-0 breeze:bg-breeze-line breeze:forced-colors:bg-[CanvasText]',
   },
   compound: {},
   size: {},
@@ -44,12 +45,11 @@ export function Separator({
   }
 
   return (
-    <div
+    <hr
       aria-orientation={orientation}
       className={[variants.base.separator, variants.variant[orientation]].join(
         ' ',
       )}
-      role="separator"
     />
   );
 }

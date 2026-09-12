@@ -23,7 +23,9 @@ describe('VisuallyHidden', () => {
   it('replaces unavailable content with an accessible placeholder', () => {
     renderBreeze(<VisuallyHidden loading>Hidden content</VisuallyHidden>);
 
-    expect(screen.getByRole('progressbar', { name: 'Loading' })).toBeVisible();
+    expect(
+      screen.getByRole('progressbar', { name: 'Loading' }).parentElement,
+    ).toHaveClass('breeze:sr-only');
     expect(screen.queryByText('Hidden content')).not.toBeInTheDocument();
   });
 });
