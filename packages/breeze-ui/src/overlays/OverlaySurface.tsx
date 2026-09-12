@@ -94,6 +94,11 @@ function OverlaySurface({
   const pointerDownTargetRef = useRef<Node | null>(null);
   const blurDismissTargetRef = useRef<Node | null>(null);
   const parentCloseReportedRef = useRef(false);
+  const trackFocusedChild = useCallback((event: Event) => {
+    if (event.target !== event.currentTarget && isNode(event.target)) {
+      focusedChildRef.current = event.target;
+    }
+  }, []);
   useLayoutEffect(() => {
     if (
       host &&
@@ -276,6 +281,7 @@ function OverlaySurface({
     (element: HTMLElement | null) => {
       contentRef.current = element;
       const cleanup = () => {
+        element?.removeEventListener('focusin', trackFocusedChild);
         clearRefocusTimer();
         contentRef.current = null;
         setSurfaceMounted(false);
@@ -285,13 +291,22 @@ function OverlaySurface({
         cleanup();
         return undefined;
       }
+      // React Aria filters focus events from AriaDialog props. Observe the
+      // shared surface directly so modal and non-modal content are tracked.
+      element.addEventListener('focusin', trackFocusedChild);
       setSurfaceMounted(true);
       if (nonModal) focusSurface(element);
       // React Aria restores ordinary closes. Nested simultaneous exits can leave
       // focus on body; repair only that gap after its focus-scope cleanup runs.
       return cleanup;
     },
-    [clearRefocusTimer, focusSurface, nonModal, restoreFocus],
+    [
+      clearRefocusTimer,
+      focusSurface,
+      nonModal,
+      restoreFocus,
+      trackFocusedChild,
+    ],
   );
 
   const parentContext = useMemo(
@@ -322,11 +337,6 @@ function OverlaySurface({
           aria-label={title}
           className={variants.base.content}
           id={layer.id}
-          onFocus={(event) => {
-            if (event.target !== event.currentTarget && isNode(event.target)) {
-              focusedChildRef.current = event.target;
-            }
-          }}
           onBlur={(event) => {
             if (refocusingRef.current) {
               event.stopPropagation();
