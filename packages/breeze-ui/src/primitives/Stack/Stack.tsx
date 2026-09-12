@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { Children, createElement } from 'react';
 import { useBreezeContext } from '../../provider/BreezeContext';
+import flattenLayoutChildren from '../layout.children';
 import type { LayoutAlign, LayoutElement, LayoutGap } from '../layout.types';
 import { Skeleton } from '../Skeleton/Skeleton';
 
@@ -56,11 +57,13 @@ export function Stack({
   let content = children;
 
   if (loading) {
+    const layoutChildren = flattenLayoutChildren(children);
+
     content =
-      Children.count(children) === 0 ? (
+      layoutChildren.length === 0 ? (
         <Skeleton inlineSize="100%" label={messages.loading} />
       ) : (
-        Children.map(children, (_, index) => (
+        Children.map(layoutChildren, (_, index) => (
           <Skeleton
             inlineSize="100%"
             label={index === 0 ? messages.loading : undefined}

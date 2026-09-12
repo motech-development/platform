@@ -26,7 +26,10 @@ describe('Skeleton', () => {
 
     expect(
       screen.getByRole('progressbar', { name: 'Loading receipt preview' }),
-    ).toHaveClass('breeze:forced-colors:outline-[CanvasText]');
+    ).toHaveClass(
+      'breeze:bg-breeze-ink-3',
+      'breeze:forced-colors:outline-[CanvasText]',
+    );
   });
 
   it('retains the fallback loading message language', () => {

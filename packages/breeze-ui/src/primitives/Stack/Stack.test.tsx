@@ -52,4 +52,20 @@ describe('Stack', () => {
 
     expect(screen.getByRole('progressbar', { name: 'Loading' })).toBeVisible();
   });
+
+  it('preserves the item count when children use fragments', () => {
+    renderBreeze(
+      <Stack loading>
+        <>
+          <span>Balance</span>
+          <span>VAT owed</span>
+          <span>Next payment</span>
+        </>
+      </Stack>,
+    );
+
+    expect(screen.getAllByRole('progressbar', { hidden: true })).toHaveLength(
+      3,
+    );
+  });
 });

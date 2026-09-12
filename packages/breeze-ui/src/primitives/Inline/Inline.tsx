@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { Children, createElement } from 'react';
 import { useBreezeContext } from '../../provider/BreezeContext';
+import flattenLayoutChildren from '../layout.children';
 import type { LayoutAlign, LayoutElement, LayoutGap } from '../layout.types';
 import { Skeleton } from '../Skeleton/Skeleton';
 
@@ -72,8 +73,10 @@ export function Inline({
   let content = children;
 
   if (loading) {
+    const layoutChildren = flattenLayoutChildren(children);
+
     content =
-      Children.count(children) === 0 ? (
+      layoutChildren.length === 0 ? (
         <Skeleton
           blockSize={28}
           inlineSize={96}
@@ -81,7 +84,7 @@ export function Inline({
           shape="rectangle"
         />
       ) : (
-        Children.map(children, (_, index) => (
+        Children.map(layoutChildren, (_, index) => (
           <Skeleton
             blockSize={28}
             inlineSize={96}
