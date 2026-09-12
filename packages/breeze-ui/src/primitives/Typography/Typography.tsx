@@ -11,6 +11,8 @@ const variants = {
   compound: {},
   size: {},
   state: {
+    aligned: 'breeze:block breeze:inline-size-full',
+    inlineLoading: 'breeze:inline-block',
     numeric: 'breeze:tabular-nums breeze:tracking-breeze-tighter',
     truncate:
       'breeze:block breeze:min-inline-size-0 breeze:inline-size-full breeze:overflow-hidden breeze:text-ellipsis breeze:whitespace-nowrap',
@@ -136,11 +138,23 @@ function formatCurrency(
   locale: string,
   sign: CurrencyTypographyContent['sign'],
 ): string {
-  const parts = new Intl.NumberFormat(locale, {
-    currency,
-    signDisplay: sign ?? 'auto',
-    style: 'currency',
-  }).formatToParts(value);
+  let parts: Intl.NumberFormatPart[];
+
+  try {
+    parts = new Intl.NumberFormat(locale, {
+      currency,
+      signDisplay: sign ?? 'auto',
+      style: 'currency',
+    }).formatToParts(value);
+  } catch (error) {
+    if (!(error instanceof RangeError)) {
+      throw error;
+    }
+
+    parts = new Intl.NumberFormat(locale, {
+      signDisplay: sign ?? 'auto',
+    }).formatToParts(value);
+  }
 
   return parts
     .map((part) => (part.type === 'minusSign' ? '−' : part.value))
@@ -193,6 +207,11 @@ export function Typography(props: Readonly<TypographyProps>) {
   const element = requestedElement ?? getDefaultElement(variant);
   const resolvedAlign =
     align ?? (variant === 'money' || numeric ? 'end' : 'start');
+  const isInlineVariant = ['caption', 'label', 'micro', 'money'].includes(
+    variant,
+  );
+  const needsAlignmentBox =
+    align !== undefined || variant === 'money' || numeric;
   let content: ReactNode;
 
   if (loading) {
@@ -215,6 +234,12 @@ export function Typography(props: Readonly<TypographyProps>) {
         variants.variant.role[variant],
         variants.variant.tone[tone],
         variants.variant.align[resolvedAlign],
+        needsAlignmentBox && variants.state.aligned,
+        loading &&
+          isInlineVariant &&
+          element === 'span' &&
+          !needsAlignmentBox &&
+          variants.state.inlineLoading,
         numeric && variant !== 'money' && variants.state.numeric,
         truncate && variants.state.truncate,
       ]

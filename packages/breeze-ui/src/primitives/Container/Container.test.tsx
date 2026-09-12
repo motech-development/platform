@@ -22,6 +22,14 @@ describe('Container', () => {
     );
   });
 
+  it('gives a labelled default container nameable semantics', () => {
+    renderBreeze(<Container aria-label="Accounts">Page content</Container>);
+
+    expect(screen.getByRole('group', { name: 'Accounts' })).toHaveTextContent(
+      'Page content',
+    );
+  });
+
   it('replaces unavailable content with an accessible placeholder', () => {
     renderBreeze(<Container loading>Container content</Container>);
 

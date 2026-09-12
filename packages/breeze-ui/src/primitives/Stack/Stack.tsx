@@ -52,17 +52,22 @@ export function Stack({
   loading = false,
 }: Readonly<StackProps>) {
   const { messages } = useBreezeContext();
+  const accessibleLabel = ariaLabel?.trim() || undefined;
 
   return createElement(
     element,
     {
       'aria-busy': loading || undefined,
-      'aria-label': ariaLabel,
+      'aria-label': accessibleLabel,
       className: [
         variants.base.stack,
         variants.variant[horizontalAlign],
         variants.size[gap],
       ].join(' '),
+      role:
+        accessibleLabel !== undefined && element === 'div'
+          ? 'group'
+          : undefined,
     },
     loading ? <Skeleton label={messages.loading} /> : children,
   );

@@ -68,12 +68,13 @@ export function Inline({
   wrap = false,
 }: Readonly<InlineProps>) {
   const { messages } = useBreezeContext();
+  const accessibleLabel = ariaLabel?.trim() || undefined;
 
   return createElement(
     element,
     {
       'aria-busy': loading || undefined,
-      'aria-label': ariaLabel,
+      'aria-label': accessibleLabel,
       className: [
         variants.base.inline,
         variants.variant.align[verticalAlign],
@@ -83,6 +84,10 @@ export function Inline({
       ]
         .filter(Boolean)
         .join(' '),
+      role:
+        accessibleLabel !== undefined && element === 'div'
+          ? 'group'
+          : undefined,
     },
     loading ? (
       <Skeleton blockSize={28} inlineSize={96} label={messages.loading} />

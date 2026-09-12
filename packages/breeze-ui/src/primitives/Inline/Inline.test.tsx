@@ -23,6 +23,14 @@ describe('Inline', () => {
     ).toHaveTextContent('CancelSave');
   });
 
+  it('gives a labelled default layout nameable semantics', () => {
+    renderBreeze(<Inline aria-label="Actions">Save</Inline>);
+
+    expect(screen.getByRole('group', { name: 'Actions' })).toHaveTextContent(
+      'Save',
+    );
+  });
+
   it('replaces unavailable content with an accessible placeholder', () => {
     renderBreeze(<Inline loading>Inline content</Inline>);
 

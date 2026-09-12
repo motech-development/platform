@@ -23,6 +23,14 @@ describe('Stack', () => {
     );
   });
 
+  it('gives a labelled default layout nameable semantics', () => {
+    renderBreeze(<Stack aria-label="Summary">Balance</Stack>);
+
+    expect(screen.getByRole('group', { name: 'Summary' })).toHaveTextContent(
+      'Balance',
+    );
+  });
+
   it('replaces unavailable content with an accessible placeholder', () => {
     renderBreeze(<Stack loading>Stack content</Stack>);
 

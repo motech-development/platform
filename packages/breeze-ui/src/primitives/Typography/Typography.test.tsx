@@ -79,6 +79,19 @@ describe('Typography', () => {
     expect(screen.getByText(/1\.234,50/)).toHaveTextContent('€ −1.234,50');
   });
 
+  it('falls back to locale-aware number formatting for malformed currency codes', () => {
+    renderBreeze(
+      <Typography
+        currency="US"
+        format="currency"
+        value={-1234.5}
+        variant="money"
+      />,
+    );
+
+    expect(screen.getByText('−1,234.5')).toBeInTheDocument();
+  });
+
   it('formats calendar dates without shifting an ISO date', () => {
     renderBreeze(
       <Typography format="date" value="2026-09-03" variant="body" />,
@@ -109,6 +122,39 @@ describe('Typography', () => {
       'breeze:block',
       'breeze:inline-size-full',
     );
+  });
+
+  it('provides a full-width box when inline text needs alignment', () => {
+    renderBreeze(
+      <Typography
+        variant="money"
+        currency="GBP"
+        format="currency"
+        value={10}
+      />,
+    );
+
+    expect(screen.getByText('£10.00')).toHaveClass(
+      'breeze:block',
+      'breeze:inline-size-full',
+      'breeze:text-end',
+    );
+  });
+
+  it('keeps loading placeholders inline for inline text roles', () => {
+    renderBreeze(<Typography loading variant="caption" />);
+
+    expect(
+      screen.getByRole('progressbar', { name: 'Loading' }).parentElement,
+    ).toHaveClass('breeze:inline-block');
+  });
+
+  it('preserves explicitly selected block elements while loading', () => {
+    renderBreeze(<Typography element="div" loading variant="caption" />);
+
+    expect(
+      screen.getByRole('progressbar', { name: 'Loading' }).parentElement,
+    ).not.toHaveClass('breeze:inline-block');
   });
 
   it('honours the provider locale for money and dates', () => {

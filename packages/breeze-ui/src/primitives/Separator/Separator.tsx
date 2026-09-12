@@ -4,7 +4,7 @@ import { Skeleton } from '../Skeleton/Skeleton';
 const variants = {
   base: {
     separator:
-      'breeze:shrink-0 breeze:border-0 breeze:bg-breeze-line breeze:forced-colors:bg-[CanvasText]',
+      'breeze:m-0 breeze:shrink-0 breeze:border-0 breeze:bg-breeze-line breeze:forced-colors:bg-[CanvasText]',
   },
   compound: {},
   size: {},
