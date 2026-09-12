@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { createElement } from 'react';
 import { useBreezeContext } from '../../provider/BreezeContext';
 import { Skeleton } from '../Skeleton/Skeleton';
+import { VisuallyHidden } from '../VisuallyHidden/VisuallyHidden';
 
 const variants = {
   base: {
@@ -205,6 +206,7 @@ export function Typography(props: Readonly<TypographyProps>) {
     variant = 'body',
   } = props;
   const element = requestedElement ?? getDefaultElement(variant);
+  const accessibleLabel = ariaLabel?.trim() || undefined;
   const resolvedAlign =
     align ?? (variant === 'money' || numeric ? 'end' : 'start');
   const isInlineVariant = ['caption', 'label', 'micro', 'money'].includes(
@@ -224,11 +226,19 @@ export function Typography(props: Readonly<TypographyProps>) {
     content = children;
   }
 
+  if (!loading && accessibleLabel !== undefined) {
+    content = (
+      <>
+        <span aria-hidden="true">{content}</span>
+        <VisuallyHidden>{accessibleLabel}</VisuallyHidden>
+      </>
+    );
+  }
+
   return createElement(
     element,
     {
       'aria-busy': loading || undefined,
-      'aria-label': ariaLabel,
       className: [
         variants.base.text,
         variants.variant.role[variant],

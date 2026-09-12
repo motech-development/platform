@@ -147,6 +147,38 @@
   box-shadow: var(--breeze-shadow-overlay);
 }
 
+/* Tailwind only emits these core utilities when their theme namespaces exist.
+   Breeze owns the values explicitly so required styles do not depend on reset.css. */
+@utility m-0 {
+  margin: 0;
+}
+
+@utility font-normal {
+  font-weight: 400;
+}
+
+@utility font-medium {
+  font-weight: 500;
+}
+
+@utility font-semibold {
+  font-weight: 600;
+}
+
+@utility font-bold {
+  font-weight: 700;
+}
+
+@utility animate-pulse {
+  animation: breeze-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes breeze-pulse {
+  50% {
+    opacity: 0.5;
+  }
+}
+
 /* Tailwind's height/width families emit physical dimensions. These logical
    counterparts use the same private spacing namespace, including the touch floor. */
 @utility min-block-* {
@@ -155,6 +187,10 @@
 
 @utility min-inline-* {
   min-inline-size: --value(--spacing- *);
+}
+
+@utility min-inline-size-0 {
+  min-inline-size: 0;
 }
 
 @utility block-size-full {

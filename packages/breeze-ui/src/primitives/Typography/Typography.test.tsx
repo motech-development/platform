@@ -36,6 +36,23 @@ describe('Typography', () => {
     ).toBeInTheDocument();
   });
 
+  it('uses hidden alternative text for expanded accessible labels', () => {
+    renderBreeze(
+      <Typography
+        aria-label="Five pounds overdue"
+        currency="GBP"
+        format="currency"
+        value={5}
+        variant="money"
+      />,
+    );
+
+    expect(screen.getByText('£5.00')).toHaveAttribute('aria-hidden', 'true');
+    expect(screen.getByText('Five pounds overdue')).toHaveClass(
+      'breeze:sr-only',
+    );
+  });
+
   it('formats currency in the provider locale with a real separate sign', () => {
     renderBreeze(
       <Typography

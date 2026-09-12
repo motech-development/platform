@@ -46,4 +46,11 @@ describe('Skeleton', () => {
 
     expect(container.querySelector('[aria-hidden="true"]')).toBeInTheDocument();
   });
+
+  it('is decorative when its loading label is blank', () => {
+    const { container } = renderBreeze(<Skeleton label="   " />);
+
+    expect(container.querySelector('[aria-hidden="true"]')).toBeInTheDocument();
+    expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
+  });
 });
