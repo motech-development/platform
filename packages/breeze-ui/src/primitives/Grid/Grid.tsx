@@ -49,12 +49,19 @@ export type GridColumns = 1 | 2 | 3;
 export type GridCollapseBelow = 'lg' | 'md' | 'none' | 'sm';
 
 export interface GridProps {
+  /** Names the grid when its visible content does not provide a suitable label. */
   'aria-label'?: string;
+  /** Items arranged in the grid. */
   children: ReactNode;
+  /** Breakpoint below which multiple columns collapse to one. Defaults to `md`. */
   collapseBelow?: GridCollapseBelow;
+  /** Number of equal-width columns. Defaults to `2`. */
   columns?: GridColumns;
+  /** Selects the semantic HTML element. Defaults to `div`. */
   element?: LayoutElement;
+  /** Applies space between items from the Breeze spacing scale. Defaults to `4`. */
   gap?: LayoutGap;
+  /** Replaces items with accessible placeholders while preserving the column layout. */
   loading?: boolean;
 }
 

@@ -18,7 +18,9 @@ const variants = {
 export type SeparatorOrientation = keyof typeof variants.variant;
 
 export interface SeparatorProps {
+  /** Replaces the divider with a decorative placeholder of the same orientation. */
   loading?: boolean;
+  /** Sets the divider axis. Defaults to `horizontal`. */
   orientation?: SeparatorOrientation;
 }
 

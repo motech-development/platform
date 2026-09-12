@@ -66,55 +66,112 @@ export type TypographyVariant = keyof typeof variants.variant.role;
 export type TypographyTone = keyof typeof variants.variant.tone;
 
 interface TypographyBaseProps {
+  /** Provides expanded screen-reader text or names rich content. */
   'aria-label'?: string;
+  /** Aligns text along the inline axis. Numeric content defaults to `end`. */
   align?: TypographyAlign;
+  /** Overrides the semantic HTML element selected by the text role. */
   element?: TypographyElement;
+  /** Sets the rendered element's HTML `id`. */
   id?: string;
   /** Applies tabular numerals, logical end alignment and figure tracking. */
   numeric?: boolean;
+  /** Selects the semantic text colour. Defaults to `default`. */
   tone?: TypographyTone;
+  /** Truncates a single line with an ellipsis when space is constrained. */
   truncate?: boolean;
 }
 
 interface CurrencyTypographyContent extends TypographyBaseProps {
+  /** Unavailable when displaying a formatted currency value. */
   children?: never;
+  /** ISO 4217 currency code used for locale-aware formatting. */
   currency: string;
+  /** Unavailable when formatting currency. */
   dateStyle?: never;
+  /** Formats `value` as locale-aware currency. */
   format: 'currency';
+  /** Controls whether the formatted amount displays its sign. Defaults to `auto`. */
   sign?: 'always' | 'auto' | 'never';
+  /** Uses the dedicated money text role required for currency formatting. */
   variant: 'money';
 }
 
 interface DateTypographyContent extends TypographyBaseProps {
+  /** Unavailable when displaying a formatted date value. */
   children?: never;
+  /** Unavailable when formatting a date. */
   currency?: never;
+  /** Selects the locale-aware date verbosity. Defaults to `long`. */
   dateStyle?: 'full' | 'long' | 'medium' | 'short';
+  /** Formats `value` as a locale-aware calendar date. */
   format: 'date';
+  /** Unavailable when formatting a date. */
   sign?: never;
+  /** Selects the visual and typographic text role. Defaults to `body`. */
   variant?: Exclude<TypographyVariant, 'money'>;
 }
 
 interface TextTypographyContent extends TypographyBaseProps {
+  /** Unavailable when displaying text content. */
   currency?: never;
+  /** Unavailable when displaying text content. */
   dateStyle?: never;
+  /** Omit to display `children` without value formatting. */
   format?: never;
+  /** Unavailable when displaying text content. */
   sign?: never;
+  /** Unavailable when displaying text content. */
   value?: never;
+  /** Selects the visual and typographic text role. Defaults to `body`. */
   variant?: Exclude<TypographyVariant, 'money'>;
 }
 
 export type TypographyProps =
   | (CurrencyTypographyContent &
-      ({ loading: true; value?: number } | { loading?: false; value: number }))
+      (
+        | {
+            /** Replaces the formatted value with a loading placeholder. */
+            loading: true;
+            /** Numeric amount to format; optional while loading. */
+            value?: number;
+          }
+        | {
+            /** Displays the formatted value instead of a loading placeholder. */
+            loading?: false;
+            /** Numeric amount to format as currency. */
+            value: number;
+          }
+      ))
   | (DateTypographyContent &
       (
-        | { loading: true; value?: IsoCalendarDate }
-        | { loading?: false; value: IsoCalendarDate }
+        | {
+            /** Replaces the formatted value with a loading placeholder. */
+            loading: true;
+            /** ISO calendar date to format; optional while loading. */
+            value?: IsoCalendarDate;
+          }
+        | {
+            /** Displays the formatted value instead of a loading placeholder. */
+            loading?: false;
+            /** ISO calendar date to format for the provider locale. */
+            value: IsoCalendarDate;
+          }
       ))
   | (TextTypographyContent &
       (
-        | { children?: ReactNode; loading: true }
-        | { children: ReactNode; loading?: false }
+        | {
+            /** Text or inline content; optional while loading. */
+            children?: ReactNode;
+            /** Replaces the content with a loading placeholder. */
+            loading: true;
+          }
+        | {
+            /** Text or inline content to display. */
+            children: ReactNode;
+            /** Displays the content instead of a loading placeholder. */
+            loading?: false;
+          }
       ));
 
 function getDefaultElement(variant: TypographyVariant): TypographyElement {

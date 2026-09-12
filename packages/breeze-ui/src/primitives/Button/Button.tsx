@@ -65,33 +65,42 @@ export type ButtonVariant = keyof typeof variants.variant;
 /** Shared control sizes: 34, 38 and 52px, with a 44px coarse-pointer floor. */
 export type ControlSize = 'sm' | 'md' | 'lg';
 
-/** An intentional native subset; styling, slots and DOM event callbacks are closed. */
-type NativeButtonProps = Pick<
-  ButtonHTMLAttributes<HTMLButtonElement>,
-  | 'aria-controls'
-  | 'aria-describedby'
-  | 'aria-expanded'
-  | 'aria-haspopup'
-  | 'aria-label'
-  | 'aria-labelledby'
-  | 'form'
-  | 'id'
-  | 'name'
->;
-
-export interface ButtonProps extends NativeButtonProps {
+export interface ButtonProps {
+  /** Identifies the element whose contents or presence this button controls. */
+  'aria-controls'?: ButtonHTMLAttributes<HTMLButtonElement>['aria-controls'];
+  /** Identifies elements that provide additional information about the button. */
+  'aria-describedby'?: ButtonHTMLAttributes<HTMLButtonElement>['aria-describedby'];
+  /** Indicates whether the controlled element is currently expanded. */
+  'aria-expanded'?: ButtonHTMLAttributes<HTMLButtonElement>['aria-expanded'];
+  /** Indicates the type of interactive popup opened by the button. */
+  'aria-haspopup'?: ButtonHTMLAttributes<HTMLButtonElement>['aria-haspopup'];
+  /** Provides an accessible name when it should differ from the visible label. */
+  'aria-label'?: ButtonHTMLAttributes<HTMLButtonElement>['aria-label'];
+  /** Identifies elements whose text provides the button's accessible name. */
+  'aria-labelledby'?: ButtonHTMLAttributes<HTMLButtonElement>['aria-labelledby'];
   /** Visible action label, retained as the accessible name while loading. */
   children: string;
   /** Prevents activation and removes the button from the tab order. */
   disabled?: boolean;
+  /** Associates a submit button with a form by its HTML `id`. */
+  form?: ButtonHTMLAttributes<HTMLButtonElement>['form'];
+  /** Sets the rendered button's HTML `id`. */
+  id?: ButtonHTMLAttributes<HTMLButtonElement>['id'];
   /** Shows the button's own skeleton and prevents repeat activation. */
   loading?: boolean;
+  /** Sets the name submitted with the button's form value. */
+  name?: ButtonHTMLAttributes<HTMLButtonElement>['name'];
   /** Reports a semantic activation, without a DOM event. */
   onAction?: () => void;
+  /** Provides access to the rendered button element. */
   ref?: Ref<HTMLButtonElement>;
+  /** Selects the button's dimensions. Defaults to `md`. */
   size?: ControlSize;
+  /** Selects ordinary or form-submission behaviour. Defaults to `button`. */
   type?: 'button' | 'submit';
+  /** Sets the value submitted when this button submits a form. */
   value?: string;
+  /** Selects the button's visual and semantic treatment. Defaults to `primary`. */
   variant?: ButtonVariant;
 }
 

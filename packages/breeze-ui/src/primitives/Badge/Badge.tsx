@@ -25,9 +25,13 @@ const variants = {
 export type BadgeVariant = keyof typeof variants.variant;
 
 export interface BadgeProps {
+  /** Provides expanded screen-reader text when the visible badge is abbreviated. */
   'aria-label'?: string;
+  /** Short status text or a numeric count displayed by the badge. */
   children: number | string;
+  /** Replaces the status with an accessible placeholder while preserving its size. */
   loading?: boolean;
+  /** Selects the semantic colour treatment. Defaults to `neutral`. */
   variant?: BadgeVariant;
 }
 

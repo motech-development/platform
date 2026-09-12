@@ -25,11 +25,17 @@ const variants = {
 export type ContainerWidth = keyof typeof variants.size;
 
 export interface ContainerProps {
+  /** Names the content boundary when its visible content does not provide a label. */
   'aria-label'?: string;
+  /** Content constrained by the container. */
   children: ReactNode;
+  /** Selects the semantic HTML element. Defaults to `div`. */
   element?: LayoutElement;
+  /** Replaces the content with an accessible full-width placeholder. */
   loading?: boolean;
+  /** Adds responsive inline page gutters. Defaults to `true`. */
   padded?: boolean;
+  /** Selects the maximum content measure. Defaults to `page`. */
   width?: ContainerWidth;
 }
 

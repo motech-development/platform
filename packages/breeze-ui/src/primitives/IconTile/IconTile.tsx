@@ -32,11 +32,17 @@ export type IconTileSize = keyof typeof variants.size;
 export type IconTileTone = keyof typeof variants.variant.tone;
 
 export interface IconTileProps {
+  /** Names meaningful artwork; omit when nearby text already describes it. */
   label?: string;
+  /** Replaces the artwork with an accessible placeholder while preserving the tile. */
   loading?: boolean;
+  /** Selects artwork from the curated Breeze icon set. */
   name: IconName;
+  /** Selects a circular or rounded-square tile. Defaults to `rounded`. */
   shape?: IconTileShape;
+  /** Selects the tile dimensions. Defaults to `md`. */
   size?: IconTileSize;
+  /** Selects the semantic colour treatment. Defaults to `neutral`. */
   tone?: IconTileTone;
 }
 

@@ -31,11 +31,17 @@ const variants = {
 } as const;
 
 export interface StackProps {
+  /** Names the stack when its visible content does not provide a suitable label. */
   'aria-label'?: string;
+  /** Items arranged vertically. */
   children: ReactNode;
+  /** Selects the semantic HTML element. Defaults to `div`. */
   element?: LayoutElement;
+  /** Applies space between items from the Breeze spacing scale. Defaults to `3`. */
   gap?: LayoutGap;
+  /** Aligns items along the inline axis. Defaults to `stretch`. */
   horizontalAlign?: LayoutAlign;
+  /** Replaces each item with an accessible placeholder while preserving the stack. */
   loading?: boolean;
 }
 
