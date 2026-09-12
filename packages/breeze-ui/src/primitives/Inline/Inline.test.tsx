@@ -52,4 +52,20 @@ describe('Inline', () => {
 
     expect(screen.getByRole('progressbar', { name: 'Loading' })).toBeVisible();
   });
+
+  it('preserves the item count when children use fragments', () => {
+    renderBreeze(
+      <Inline loading>
+        <>
+          <span>Cancel</span>
+          <span>Save</span>
+          <span>Continue</span>
+        </>
+      </Inline>,
+    );
+
+    expect(screen.getAllByRole('progressbar', { hidden: true })).toHaveLength(
+      3,
+    );
+  });
 });

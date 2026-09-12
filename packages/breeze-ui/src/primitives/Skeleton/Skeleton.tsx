@@ -4,7 +4,7 @@ import { useBreezeContext } from '../../provider/BreezeContext';
 const variants = {
   base: {
     skeleton:
-      'breeze:block breeze:animate-pulse breeze:appearance-none breeze:bg-breeze-sunken breeze:pointer-events-none breeze:forced-colors:outline breeze:forced-colors:outline-1 breeze:forced-colors:outline-[CanvasText]',
+      'breeze:block breeze:animate-pulse breeze:appearance-none breeze:bg-breeze-ink-3 breeze:pointer-events-none breeze:forced-colors:outline breeze:forced-colors:outline-1 breeze:forced-colors:outline-[CanvasText]',
   },
   compound: {},
   size: {},
