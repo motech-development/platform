@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { createElement } from 'react';
+import getLayoutAccessibility from '../layout.accessibility';
 import type { LayoutElement } from '../layout.types';
 
 const variants = {
@@ -47,7 +48,7 @@ export function Container({
   padded = true,
   width = 'page',
 }: Readonly<ContainerProps>) {
-  const accessibleLabel = ariaLabel?.trim() || undefined;
+  const { accessibleLabel, role } = getLayoutAccessibility(ariaLabel, element);
 
   return createElement(
     element,
@@ -60,10 +61,7 @@ export function Container({
       ]
         .filter(Boolean)
         .join(' '),
-      role:
-        accessibleLabel !== undefined && element === 'div'
-          ? 'group'
-          : undefined,
+      role,
     },
     children,
   );

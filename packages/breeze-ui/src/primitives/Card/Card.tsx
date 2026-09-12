@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { createElement } from 'react';
+import getLayoutAccessibility from '../layout.accessibility';
 import type { LayoutGap } from '../layout.types';
 
 const variants = {
@@ -58,7 +59,7 @@ export function Card({
   padding = 4,
   variant = 'surface',
 }: Readonly<CardProps>) {
-  const accessibleLabel = ariaLabel?.trim() || undefined;
+  const { accessibleLabel, role } = getLayoutAccessibility(ariaLabel, element);
 
   return createElement(
     element,
@@ -72,10 +73,7 @@ export function Card({
       ]
         .filter(Boolean)
         .join(' '),
-      role:
-        accessibleLabel !== undefined && element === 'div'
-          ? 'group'
-          : undefined,
+      role,
     },
     children,
   );

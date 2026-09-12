@@ -12,7 +12,9 @@ const variants = {
   },
   compound: {},
   size: {},
-  state: {},
+  state: {
+    contentLoading: 'breeze:opacity-0',
+  },
   variant: {
     brand: 'breeze:bg-breeze-brand-soft breeze:text-breeze-brand-text',
     danger: 'breeze:bg-breeze-danger/10 breeze:text-breeze-danger',
@@ -75,7 +77,10 @@ export function Badge({
         aria-hidden={
           loading || accessibleLabel !== undefined ? true : undefined
         }
-        className={[variants.base.content, loading && 'breeze:opacity-0']
+        className={[
+          variants.base.content,
+          loading && variants.state.contentLoading,
+        ]
           .filter(Boolean)
           .join(' ')}
       >

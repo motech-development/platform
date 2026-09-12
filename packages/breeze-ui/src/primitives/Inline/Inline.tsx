@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { createElement } from 'react';
+import getLayoutAccessibility from '../layout.accessibility';
 import type { LayoutAlign, LayoutElement, LayoutGap } from '../layout.types';
 
 const variants = {
@@ -70,7 +71,7 @@ export function Inline({
   verticalAlign = 'center',
   wrap = false,
 }: Readonly<InlineProps>) {
-  const accessibleLabel = ariaLabel?.trim() || undefined;
+  const { accessibleLabel, role } = getLayoutAccessibility(ariaLabel, element);
 
   return createElement(
     element,
@@ -85,10 +86,7 @@ export function Inline({
       ]
         .filter(Boolean)
         .join(' '),
-      role:
-        accessibleLabel !== undefined && element === 'div'
-          ? 'group'
-          : undefined,
+      role,
     },
     children,
   );
