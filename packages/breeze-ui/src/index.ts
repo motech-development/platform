@@ -18,6 +18,10 @@ export type {
   ContainerWidth,
 } from './primitives/Container/Container';
 export { Container } from './primitives/Container/Container';
+export type { DialogProps } from './primitives/Dialog/Dialog';
+export { Dialog } from './primitives/Dialog/Dialog';
+export type { DrawerProps } from './primitives/Drawer/Drawer';
+export { Drawer } from './primitives/Drawer/Drawer';
 export type {
   GridCollapseBelow,
   GridColumns,
@@ -40,6 +44,8 @@ export type {
   LayoutElement,
   LayoutGap,
 } from './primitives/layout.types';
+export type { PopoverProps } from './primitives/Popover/Popover';
+export { Popover } from './primitives/Popover/Popover';
 export type {
   SeparatorOrientation,
   SeparatorProps,

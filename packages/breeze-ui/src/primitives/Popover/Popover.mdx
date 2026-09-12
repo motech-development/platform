@@ -1,0 +1,61 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Popover.stories';
+
+<Meta of={Stories} summary="Opens contextual content beside its trigger." />
+
+# Popover
+
+Use `Popover` for contextual content anchored to a trigger. Focus stays inside the open surface until it closes; it has no dimmed scrim. Render it inside `BreezeProvider`.
+
+## Basic usage
+
+`trigger` supplies the label for the button Breeze renders. `title` supplies the surface's visible heading and accessible name; `children` supplies its content. Breeze also renders a close button with a label from the provider's messages.
+
+```tsx
+<Popover title="Delivery details" trigger="View delivery details">
+  <Typography>Your delivery details appear here.</Typography>
+</Popover>
+```
+
+<Canvas of={Stories.Default} />
+
+## Open state
+
+By default, the component manages its own open state. Set `defaultOpen` to start open, and optionally use `onOpenChange` to observe changes.
+
+To control the surface from application state, supply both `open` and `onOpenChange`. `open` and `defaultOpen` are mutually exclusive.
+
+```tsx
+<Popover
+  onOpenChange={setOpen}
+  open={open}
+  title="Delivery details"
+  trigger="View delivery details"
+>
+  <Typography>Your delivery details appear here.</Typography>
+</Popover>
+```
+
+## Dismissal
+
+`dismissible` defaults to `true`, allowing Escape and interaction outside the surface to dismiss it. Set it to `false` when those interactions should leave the surface open. The close button remains available.
+
+## Loading
+
+Set `loading` while content is being prepared. Breeze provides its loading presentation and accessible announcement while retaining the surface title.
+
+<Canvas of={Stories.Loading} />
+
+## Placement
+
+`placement` accepts `top`, `bottom` (default), `start` or `end`. Start and end follow the provider's text direction. The surface can adjust its position to fit the available space.
+
+## Accessibility and motion
+
+Breeze manages focus on opening and restores it on closing. The provider's portal host keeps the surface's locale, direction and scoped styles intact.
+
+Enter and exit motion respects reduced-motion preferences. A closing surface immediately leaves the active stack while its exit animation completes.
+
+## API
+
+<ArgTypes />
