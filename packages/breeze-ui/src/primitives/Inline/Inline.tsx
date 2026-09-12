@@ -43,13 +43,21 @@ const variants = {
 export type InlineJustify = keyof typeof variants.variant.justify;
 
 export interface InlineProps {
+  /** Names the row when its visible content does not provide a suitable label. */
   'aria-label'?: string;
+  /** Items arranged horizontally. */
   children: ReactNode;
+  /** Selects the semantic HTML element. Defaults to `div`. */
   element?: LayoutElement;
+  /** Applies space between items from the Breeze spacing scale. Defaults to `3`. */
   gap?: LayoutGap;
+  /** Distributes items along the inline axis. Defaults to `start`. */
   justify?: InlineJustify;
+  /** Replaces each item with an accessible placeholder while preserving the row. */
   loading?: boolean;
+  /** Aligns items along the block axis. Defaults to `center`. */
   verticalAlign?: LayoutAlign;
+  /** Allows items to wrap onto additional rows. Defaults to `false`. */
   wrap?: boolean;
 }
 

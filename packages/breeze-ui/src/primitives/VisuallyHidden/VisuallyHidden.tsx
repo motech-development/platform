@@ -13,7 +13,9 @@ const variants = {
 } as const;
 
 export interface VisuallyHiddenProps {
+  /** Content hidden visually but retained for assistive technology. */
   children: ReactNode;
+  /** Replaces the hidden content with an accessible loading announcement. */
   loading?: boolean;
 }
 

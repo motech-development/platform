@@ -88,8 +88,11 @@ export type IconSize = keyof typeof variants.size;
 export interface IconProps {
   /** Names meaningful artwork; omit for an icon already described by nearby text. */
   label?: string;
+  /** Replaces the artwork with an accessible circular placeholder. */
   loading?: boolean;
+  /** Selects artwork from the curated Breeze icon set. */
   name: IconName;
+  /** Sets the icon dimensions in pixels. Defaults to `20`. */
   size?: IconSize;
 }
 

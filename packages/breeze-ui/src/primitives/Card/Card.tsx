@@ -33,12 +33,19 @@ export type CardVariant = keyof typeof variants.variant;
 export type CardElement = 'article' | 'aside' | 'div' | 'section';
 
 export interface CardProps {
+  /** Names the card region when its visible content does not provide a suitable label. */
   'aria-label'?: string;
+  /** Content displayed inside the card. */
   children: ReactNode;
+  /** Clips content to the rounded card boundary. Defaults to `true`. */
   clipped?: boolean;
+  /** Selects the semantic HTML element. Defaults to `div`. */
   element?: CardElement;
+  /** Replaces the content with an accessible full-width placeholder. */
   loading?: boolean;
+  /** Applies padding from the Breeze spacing scale. Defaults to `4`. */
   padding?: LayoutGap;
+  /** Selects the card surface treatment. Defaults to `surface`. */
   variant?: CardVariant;
 }
 

@@ -25,6 +25,7 @@ export interface SkeletonProps {
   inlineSize?: number | string;
   /** Announces the loading region. Omit when another component owns the announcement. */
   label?: string;
+  /** Selects the placeholder geometry. Defaults to `text`. */
   shape?: SkeletonShape;
 }
 

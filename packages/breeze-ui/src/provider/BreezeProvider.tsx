@@ -11,6 +11,7 @@ import { type Appearance, BreezeContext } from './BreezeContext';
 import enGB from './en-GB';
 
 interface BreezeProviderBaseProps {
+  /** Breeze components and application content rendered inside the provider. */
   children: ReactNode;
   /** BCP 47 locale for accessible interactions and future formatting components. */
   locale: string;
@@ -21,12 +22,14 @@ interface BreezeProviderBaseProps {
 interface ControlledAppearanceProps {
   /** The application-owned appearance choice. */
   appearance: Appearance;
+  /** Unavailable when `appearance` is controlled by the application. */
   defaultAppearance?: never;
   /** Reports a semantic appearance choice so the application can persist it. */
   onAppearanceChange: (appearance: Appearance) => void;
 }
 
 interface UncontrolledAppearanceProps {
+  /** Unavailable when the provider manages its own appearance state. */
   appearance?: never;
   /** The initial appearance choice; defaults to automatic. */
   defaultAppearance?: Appearance;
