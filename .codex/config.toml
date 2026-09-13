@@ -1,3 +1,7 @@
+developer_instructions = '''
+Use a single tracked non-model watcher per external wait. Let that watcher poll and surface actionable changes, completion, and errors; do not separately query unchanged status. Retain completed reviews and checks. Keep subagent briefs bounded and evidence summaries concise; keep full logs in scratch storage and read only relevant excerpts. Continue the full authorized review loop until completion without round limits. Send commentary only for meaningful changes unless a higher-priority requirement applies; otherwise provide brief updates without extra polling or reanalysis.
+'''
+
 [agents]
 enabled = true
 default_subagent_model = "gpt-5.6-luna"
