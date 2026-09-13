@@ -1,15 +1,15 @@
-import { act, render, screen, waitFor, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { useState } from 'react';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import renderBreeze from '../../../test/render';
 import { BreezeProvider } from '../../provider/BreezeProvider';
-import { Button } from '../Button/Button';
+import { Skeleton } from '../Skeleton/Skeleton';
 import { Drawer, type DrawerProps } from './Drawer';
 
 expectTypeOf<DrawerProps>().not.toHaveProperty('className');
 expectTypeOf<DrawerProps>().not.toHaveProperty('style');
 expectTypeOf<DrawerProps>().not.toHaveProperty('slot');
+expectTypeOf<DrawerProps>().not.toHaveProperty('loading');
 expectTypeOf<{
   children: string;
   title: string;
@@ -119,14 +119,14 @@ describe('Drawer', () => {
     );
   });
 
-  it('localizes loading and the close action while preserving its heading', () => {
+  it('renders caller-owned loading content and localizes the close action', () => {
     render(
       <BreezeProvider
         locale="fr-FR"
         messages={{ close: 'Fermer', loading: 'Chargement' }}
       >
-        <Drawer defaultOpen loading title="Livraison" trigger="Ouvrir">
-          Delivery information
+        <Drawer defaultOpen title="Livraison" trigger="Ouvrir">
+          <Skeleton blockSize="6rem" label="Chargement" shape="rectangle" />
         </Drawer>
       </BreezeProvider>,
     );
@@ -139,35 +139,6 @@ describe('Drawer', () => {
     expect(
       screen.getByRole('button', { name: 'Fermer' }).closest('[lang]'),
     ).toHaveAttribute('lang', 'fr-FR');
-    expect(screen.queryByText('Delivery information')).not.toBeInTheDocument();
-  });
-
-  it('keeps focus in the drawer when loading removes the focused content', async () => {
-    let startLoading = () => {};
-    function Example() {
-      const [loading, setLoading] = useState(false);
-      startLoading = () => setLoading(true);
-      return (
-        <Drawer
-          defaultOpen
-          loading={loading}
-          title="Details"
-          trigger="Open details"
-        >
-          <Button onAction={() => setLoading(true)}>Load details</Button>
-        </Drawer>
-      );
-    }
-
-    renderBreeze(<Example />);
-    const drawer = screen.getByRole('dialog', { name: 'Details' });
-    within(drawer).getByRole('button', { name: 'Load details' }).focus();
-    act(startLoading);
-    expect(drawer).toHaveFocus();
-    await userEvent.keyboard('{Escape}');
-    await waitFor(() =>
-      expect(screen.queryByRole('dialog')).not.toBeInTheDocument(),
-    );
   });
 
   it('requires a BreezeProvider', () => {

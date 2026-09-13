@@ -42,10 +42,3 @@ export const Default: Story = {
     });
   },
 };
-
-/** The open surface announces loading while content is prepared. */
-export const Loading: Story = {
-  args: {
-    loading: true,
-  },
-};

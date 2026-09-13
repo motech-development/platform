@@ -1,12 +1,10 @@
 import type { ReactNode } from 'react';
 
 interface OverlayBaseProps {
-  /** Content inside the labelled surface. */
+  /** Content rendered inside the labelled surface, including any loading UI. */
   children: ReactNode;
   /** Allows Escape and outside presses to close the surface. Defaults to true. */
   dismissible?: boolean;
-  /** Replaces content with the surface's skeleton, retaining its title and close action. */
-  loading?: boolean;
   /** Visible and accessible surface title. */
   title: string;
   /** Label for the library-owned trigger button. */

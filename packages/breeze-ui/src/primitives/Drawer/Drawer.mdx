@@ -40,12 +40,6 @@ To control the surface from application state, supply both `open` and `onOpenCha
 
 `dismissible` defaults to `true`, allowing Escape and interaction outside the surface to dismiss it. Set it to `false` when those interactions should leave the surface open. The close button remains available.
 
-## Loading
-
-Set `loading` while content is being prepared. Breeze provides its loading presentation and accessible announcement while retaining the surface title.
-
-<Canvas of={Stories.Loading} />
-
 ## Surfaces above a sheet
 
 A `Popover` can open above the drawer without blocking interaction with the sheet or hiding its content from assistive technology. The drawer keeps its scrim, and Escape dismisses the popover before the sheet.

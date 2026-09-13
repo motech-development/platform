@@ -11,7 +11,6 @@ export function Dialog({
   children,
   defaultOpen,
   dismissible,
-  loading,
   onOpenChange,
   open,
   title,
@@ -21,7 +20,6 @@ export function Dialog({
     <OverlaySurface
       defaultOpen={defaultOpen}
       dismissible={dismissible}
-      loading={loading}
       onOpenChange={onOpenChange}
       open={open}
       title={title}

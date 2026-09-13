@@ -11,7 +11,6 @@ import { Dialog as AriaDialog } from 'react-aria-components/Dialog';
 import { Modal, ModalOverlay } from 'react-aria-components/Modal';
 import { Popover as AriaPopover } from 'react-aria-components/Popover';
 import { Button } from '../primitives/Button/Button';
-import { Skeleton } from '../primitives/Skeleton/Skeleton';
 import { useBreezeContext } from '../provider/BreezeContext';
 import type { OverlayKind, OverlayProps } from './overlay.types';
 import { useOverlayPortal } from './OverlayProvider';
@@ -58,7 +57,6 @@ function OverlaySurface({
   defaultOpen = false,
   dismissible = true,
   kind,
-  loading = false,
   onOpenChange,
   open: controlledOpen,
   placement = 'bottom',
@@ -90,15 +88,9 @@ function OverlaySurface({
   const [surfaceMounted, setSurfaceMounted] = useState(false);
   const refocusingRef = useRef(false);
   const refocusTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const focusedChildRef = useRef<Node | null>(null);
   const pointerDownTargetRef = useRef<Node | null>(null);
   const blurDismissTargetRef = useRef<Node | null>(null);
   const parentCloseReportedRef = useRef(false);
-  const trackFocusedChild = useCallback((event: Event) => {
-    if (event.target !== event.currentTarget && isNode(event.target)) {
-      focusedChildRef.current = event.target;
-    }
-  }, []);
   useLayoutEffect(() => {
     if (
       host &&
@@ -217,22 +209,6 @@ function OverlaySurface({
     }
   }, [host, parentId, restoreParentFocus]);
 
-  useEffect(() => {
-    if (!loading || !open) return;
-    const surface = contentRef.current;
-    const focusedChild = focusedChildRef.current;
-    if (
-      !surface ||
-      !focusedChild ||
-      focusedChild.isConnected ||
-      surface.ownerDocument.activeElement !== surface.ownerDocument.body ||
-      surface.closest('[inert], [data-exiting]')
-    )
-      return;
-    focusedChildRef.current = null;
-    surface.focus({ preventScroll: true });
-  }, [loading, open]);
-
   const clearRefocusTimer = useCallback(() => {
     if (refocusTimerRef.current !== null) {
       clearTimeout(refocusTimerRef.current);
@@ -281,7 +257,6 @@ function OverlaySurface({
     (element: HTMLElement | null) => {
       contentRef.current = element;
       const cleanup = () => {
-        element?.removeEventListener('focusin', trackFocusedChild);
         clearRefocusTimer();
         contentRef.current = null;
         setSurfaceMounted(false);
@@ -291,22 +266,13 @@ function OverlaySurface({
         cleanup();
         return undefined;
       }
-      // React Aria filters focus events from AriaDialog props. Observe the
-      // shared surface directly so modal and non-modal content are tracked.
-      element.addEventListener('focusin', trackFocusedChild);
       setSurfaceMounted(true);
       if (nonModal) focusSurface(element);
       // React Aria restores ordinary closes. Nested simultaneous exits can leave
       // focus on body; repair only that gap after its focus-scope cleanup runs.
       return cleanup;
     },
-    [
-      clearRefocusTimer,
-      focusSurface,
-      nonModal,
-      restoreFocus,
-      trackFocusedChild,
-    ],
+    [clearRefocusTimer, focusSurface, nonModal, restoreFocus],
   );
 
   const parentContext = useMemo(
@@ -323,11 +289,7 @@ function OverlaySurface({
           </Button>
         </span>
       </div>
-      {loading ? (
-        <Skeleton blockSize="6rem" label={messages.loading} shape="rectangle" />
-      ) : (
-        children
-      )}
+      {children}
     </>
   );
   const content = (
@@ -341,9 +303,6 @@ function OverlaySurface({
             if (refocusingRef.current) {
               event.stopPropagation();
               return;
-            }
-            if (isNode(event.relatedTarget)) {
-              focusedChildRef.current = null;
             }
             const { relatedTarget } = event;
             if (
