@@ -1,0 +1,1 @@
+import{a as e,n as t}from"./rolldown-runtime-DaJ6WEGw.js";import{t as n}from"./react-DvlgmmzG.js";function r(){let e=(0,i.useContext)(a);if(e===null)throw Error(`Breeze components must be rendered within BreezeProvider.`);return e}var i,a,o=t((()=>{i=e(n(),1),a=(0,i.createContext)(null)}));export{o as n,r,a as t};

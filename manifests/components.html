@@ -588,13 +588,13 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">15 components ok</span><span class="filter-pill ok" aria-disabled="true">41 stories ok</span><a class="filter-pill ok" data-k="docs" href="#filter-docs">18 docs ok</a></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">19 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">1/19 info</a><span class="filter-pill ok" aria-disabled="true">48 stories ok</span><a class="filter-pill ok" data-k="docs" href="#filter-docs">21 docs ok</a></div>
   </div>
 </header>
 <main>
   <div class="wrap">
     <div class="note ok" style="margin-bottom: 16px;">
-              Using <code>react-docgen-typescript</code>. Generation took <strong>2.0s</strong>.
+              Using <code>react-docgen-typescript</code>. Generation took <strong>1.8s</strong>.
             </div>
     <h2 class="section-title">Components</h2>
     <div class="grid" role="list">
@@ -888,7 +888,7 @@ Set `loading` to preserve the badge shape while its status text is unavailable.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> BreezeProvider</h2>
       <div class="badges">
-        <label for="c-2-foundation-breezeprovider-props" class="badge ok as-toggle">6 prop types</label>
+        <label for="c-2-foundation-breezeprovider-props" class="badge ok as-toggle">7 prop types</label>
         
         <label for="c-2-foundation-breezeprovider-stories" class="badge ok as-toggle">2 stories</label>
         <label for="c-2-foundation-breezeprovider-docs" class="badge ok as-toggle">1 doc</label>
@@ -917,7 +917,7 @@ Set `loading` to preserve the badge shape while its status text is unavailable.
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
-              <span class="badge ok">6 prop types</span>
+              <span class="badge ok">7 prop types</span>
             </div>
             <pre><code>Component: src/provider/BreezeProvider.tsx::BreezeProvider</code></pre>
             <pre><code>Props:</code></pre>
@@ -946,13 +946,19 @@ locale: string
 /**
  * Accessible messages translated into the provider locale; defaults to English.
  */
-messages?: Partial&lt;{ appearance: string; appearanceAutomatic: string; appearanceDark: string; appearanceLight: string; loading: string; }&gt;
+messages?: Partial&lt;{ appearance: string; appearanceAutomatic: string; appearanceDark: string; appearanceLight: string; close: string; loading: string; }&gt;
 
 /**
  * Reports a semantic appearance choice so the application can persist it.
  * Reports a semantic appearance choice without persisting it.
  */
-onAppearanceChange?: ((appearance: Appearance) =&gt; void) | ((appearance: Appearance) =&gt; void)</code></pre>
+onAppearanceChange?: ((appearance: Appearance) =&gt; void) | ((appearance: Appearance) =&gt; void)
+
+/**
+ * Container for the provider-owned overlay host; defaults to document.body.
+ * The container must belong to the same document as the overlay triggers.
+ */
+portalContainer?: HTMLElement</code></pre>
           </div>
         </div>
     
@@ -1022,7 +1028,7 @@ import * as Stories from &#39;./BreezeProvider.stories&#39;;
 
 `locale` takes a BCP 47 language tag. It sets the `lang` attribute and the text direction of the provider&#39;s root element.
 
-Only English (`en-GB`) messages are bundled. Supply partial `messages` to translate Breeze&#39;s loading announcement and appearance control into the provider locale. Without an override, Breeze&#39;s own text uses English and is marked `lang=&quot;en-GB&quot;`, independently of the surrounding content&#39;s language.
+Only English (`en-GB`) messages are bundled. Supply partial `messages` to translate Breeze&#39;s loading announcement, appearance control and overlay close button into the provider locale. Without an override, Breeze&#39;s own text uses English and is marked `lang=&quot;en-GB&quot;`, independently of the surrounding content&#39;s language.
 
 ```tsx
 &lt;BreezeProvider locale=&quot;fr-FR&quot; messages={{ loading: &#39;Chargement&#39; }}&gt;
@@ -1061,6 +1067,20 @@ Use `appearance` with `onAppearanceChange` when application state controls it. `
 ```
 
 The provider never reads or writes durable browser storage. The application decides whether and where to persist the reported choice. If a persisted explicit choice must apply before the application starts, stamp its resolved value on the document element before loading the stylesheet; the stylesheet&#39;s media-query default already handles automatic dark mode before script runs.
+
+## Overlay portal
+
+`Dialog`, `Drawer` and `Popover` render into a dedicated portal host owned by the provider. By default, the host is appended to `document.body`. Set `portalContainer` to an existing light DOM `HTMLElement` in the current runtime document when overlays need to render in another container, such as an embedded application or a test fixture.
+
+```tsx
+&lt;BreezeProvider locale=&quot;en-GB&quot; portalContainer={overlayContainer}&gt;
+  &lt;App /&gt;
+&lt;/BreezeProvider&gt;
+```
+
+The provider creates and removes its own host inside that container. The host carries the Breeze root marker, locale and text direction so overlays retain scoped styling and language outside the provider&#39;s normal content tree.
+
+`portalContainer` and every overlay trigger must belong to the current runtime `Document` and its light DOM. Cross-document and shadow-root portals are unsupported because React Aria positions and manages overlays against the runtime document.
 
 ## API
 
@@ -1750,15 +1770,349 @@ Loading belongs to the content inside the container. Compose loading-capable chi
   no-story-error
   no-doc-error"
   role="listitem"
+  aria-label="Dialog">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> Dialog</h2>
+      <div class="badges">
+        <label for="c-6-overlays-dialog-props" class="badge ok as-toggle">7 prop types</label>
+        
+        <label for="c-6-overlays-dialog-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-6-overlays-dialog-docs" class="badge ok as-toggle">1 doc</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/primitives/Dialog/Dialog.stories.tsx">overlays-dialog · ./src/primitives/Dialog/Dialog.stories.tsx</div>
+    
+    <div class="hint">Opens a labelled dialog with library-owned nesting and motion.</div>
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-6-overlays-dialog-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-6-overlays-dialog-docs" class="tg tg-docs" type="checkbox" hidden />
+  
+  <input id="c-6-overlays-dialog-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
+              <span class="badge ok">7 prop types</span>
+            </div>
+            <pre><code>Component: src/primitives/Dialog/Dialog.tsx::Dialog</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>/**
+ * Content rendered inside the labelled surface, including any loading UI.
+ */
+children: ReactNode
+
+defaultOpen?: boolean
+
+/**
+ * Allows Escape and outside presses to close the surface. Defaults to true.
+ */
+dismissible?: boolean
+
+onOpenChange?: ((open: boolean) =&gt; void) | ((open: boolean) =&gt; void)
+
+open?: boolean
+
+/**
+ * Visible and accessible surface title.
+ */
+title: string
+
+/**
+ * Label for the library-owned trigger button.
+ */
+trigger: string</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Dialog } from "@motech-development/breeze-ui";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">An open surface that can be closed and reopened from its trigger.</div>
+              <pre><code>const Default = () =&gt; &lt;Dialog defaultOpen title=&quot;Delivery details&quot; trigger=&quot;View delivery details&quot;&gt;&lt;Typography&gt;Your delivery arrives on Monday.&lt;/Typography&gt;&lt;/Dialog&gt;;</code></pre>
+            </div>
+        </div>
+    
+        <div class="panel panel-docs">
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Docs</span>
+                <span class="badge ok">doc ok</span>
+              </div>
+              <div class="hint">./src/primitives/Dialog/Dialog.mdx</div>
+              <div>Opens a modal surface for a focused task.</div>
+              <div class="mdx-content"><pre><code>import { ArgTypes, Canvas, Meta } from &#39;@storybook/addon-docs/blocks&#39;;
+import * as Stories from &#39;./Dialog.stories&#39;;
+
+&lt;Meta of={Stories} summary=&quot;Opens a modal surface for a focused task.&quot; /&gt;
+
+# Dialog
+
+Use `Dialog` for a focused task that needs a centred modal surface and temporarily takes priority over the surrounding page. It remains part of Breeze&#39;s public component inventory. Render it inside `BreezeProvider`.
+
+## Basic usage
+
+`trigger` supplies the label for the button Breeze renders. `title` supplies the surface&#39;s visible heading and accessible name; `children` supplies its content. Breeze also renders a close button with a label from the provider&#39;s messages.
+
+```tsx
+&lt;Dialog title=&quot;Delivery details&quot; trigger=&quot;View delivery details&quot;&gt;
+  &lt;Typography&gt;Your delivery details appear here.&lt;/Typography&gt;
+&lt;/Dialog&gt;
+```
+
+&lt;Canvas of={Stories.Default} /&gt;
+
+## Open state
+
+By default, the component manages its own open state. Set `defaultOpen` to start open, and optionally use `onOpenChange` to observe changes.
+
+To control the surface from application state, supply both `open` and `onOpenChange`. `open` and `defaultOpen` are mutually exclusive.
+
+```tsx
+&lt;Dialog
+  onOpenChange={setOpen}
+  open={open}
+  title=&quot;Delivery details&quot;
+  trigger=&quot;View delivery details&quot;
+&gt;
+  &lt;Typography&gt;Your delivery details appear here.&lt;/Typography&gt;
+&lt;/Dialog&gt;
+```
+
+## Dismissal
+
+`dismissible` defaults to `true`, allowing Escape and interaction outside the surface to dismiss it. Set it to `false` when those interactions should leave the surface open. The close button remains available.
+
+## Accessibility and motion
+
+Breeze manages focus on opening and restores it on closing. Modal surfaces contain keyboard focus while open. The provider&#39;s portal host keeps the surface&#39;s locale, direction and scoped styles intact.
+
+Enter and exit motion respects reduced-motion preferences. A closing surface immediately leaves the active stack while its exit animation completes.
+
+## API
+
+&lt;ArgTypes /&gt;
+</code></pre></div>
+            </div>
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  no-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="Drawer">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> Drawer</h2>
+      <div class="badges">
+        <label for="c-7-overlays-drawer-props" class="badge ok as-toggle">7 prop types</label>
+        
+        <label for="c-7-overlays-drawer-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-7-overlays-drawer-docs" class="badge ok as-toggle">1 doc</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/primitives/Drawer/Drawer.stories.tsx">overlays-drawer · ./src/primitives/Drawer/Drawer.stories.tsx</div>
+    
+    <div class="hint">Opens a labelled drawer with library-owned nesting and motion.</div>
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-7-overlays-drawer-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-7-overlays-drawer-docs" class="tg tg-docs" type="checkbox" hidden />
+  
+  <input id="c-7-overlays-drawer-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
+              <span class="badge ok">7 prop types</span>
+            </div>
+            <pre><code>Component: src/primitives/Drawer/Drawer.tsx::Drawer</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>/**
+ * Content rendered inside the labelled surface, including any loading UI.
+ */
+children: ReactNode
+
+defaultOpen?: boolean
+
+/**
+ * Allows Escape and outside presses to close the surface. Defaults to true.
+ */
+dismissible?: boolean
+
+onOpenChange?: ((open: boolean) =&gt; void) | ((open: boolean) =&gt; void)
+
+open?: boolean
+
+/**
+ * Visible and accessible surface title.
+ */
+title: string
+
+/**
+ * Label for the library-owned trigger button.
+ */
+trigger: string</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Drawer } from "@motech-development/breeze-ui";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">An open surface that can be closed and reopened from its trigger.</div>
+              <pre><code>const Default = () =&gt; &lt;Drawer defaultOpen title=&quot;Delivery details&quot; trigger=&quot;View delivery details&quot;&gt;&lt;Typography&gt;Your delivery arrives on Monday.&lt;/Typography&gt;&lt;/Drawer&gt;;</code></pre>
+            </div>
+        </div>
+    
+        <div class="panel panel-docs">
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Docs</span>
+                <span class="badge ok">doc ok</span>
+              </div>
+              <div class="hint">./src/primitives/Drawer/Drawer.mdx</div>
+              <div>Opens a modal surface from the edge of the page.</div>
+              <div class="mdx-content"><pre><code>import { ArgTypes, Canvas, Meta } from &#39;@storybook/addon-docs/blocks&#39;;
+import * as Stories from &#39;./Drawer.stories&#39;;
+
+&lt;Meta of={Stories} summary=&quot;Opens a modal surface from the edge of the page.&quot; /&gt;
+
+# Drawer
+
+Use `Drawer` for a task or supporting content that needs a modal surface at the edge of the page. Render it inside `BreezeProvider`.
+
+## Basic usage
+
+`trigger` supplies the label for the button Breeze renders. `title` supplies the surface&#39;s visible heading and accessible name; `children` supplies its content. Breeze also renders a close button with a label from the provider&#39;s messages.
+
+```tsx
+&lt;Drawer title=&quot;Delivery details&quot; trigger=&quot;View delivery details&quot;&gt;
+  &lt;Typography&gt;Your delivery details appear here.&lt;/Typography&gt;
+&lt;/Drawer&gt;
+```
+
+&lt;Canvas of={Stories.Default} /&gt;
+
+## Open state
+
+By default, the component manages its own open state. Set `defaultOpen` to start open, and optionally use `onOpenChange` to observe changes.
+
+To control the surface from application state, supply both `open` and `onOpenChange`. `open` and `defaultOpen` are mutually exclusive.
+
+```tsx
+&lt;Drawer
+  onOpenChange={setOpen}
+  open={open}
+  title=&quot;Delivery details&quot;
+  trigger=&quot;View delivery details&quot;
+&gt;
+  &lt;Typography&gt;Your delivery details appear here.&lt;/Typography&gt;
+&lt;/Drawer&gt;
+```
+
+## Dismissal
+
+`dismissible` defaults to `true`, allowing Escape and interaction outside the surface to dismiss it. Set it to `false` when those interactions should leave the surface open. The close button remains available.
+
+## Surfaces above a sheet
+
+A `Popover` can open above the drawer without blocking interaction with the sheet or hiding its content from assistive technology. The drawer keeps its scrim, and Escape dismisses the popover before the sheet.
+
+The internal overlay foundation also supports a full-screen surface for a future `DocumentViewer`. It covers the sheet while keeping it mounted and preserving its scrim. Escape closes the full-screen surface and restores focus to its trigger in the sheet. This foundation is not an additional public component.
+
+The `Foundations/Overlay stack` stories cover sheet/popover and sheet/full-screen compositions, including closing the outer sheet first and starting with nested surfaces open.
+
+## Accessibility and motion
+
+Breeze manages focus on opening and restores it on closing. Modal surfaces contain keyboard focus while open. The provider&#39;s portal host keeps the surface&#39;s locale, direction and scoped styles intact.
+
+Enter and exit motion respects reduced-motion preferences. A closing surface immediately leaves the active stack while its exit animation completes.
+
+## API
+
+&lt;ArgTypes /&gt;
+</code></pre></div>
+            </div>
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  no-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
   aria-label="Grid">
   <div class="head">
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Grid</h2>
       <div class="badges">
-        <label for="c-6-layout-grid-props" class="badge ok as-toggle">6 prop types</label>
+        <label for="c-8-layout-grid-props" class="badge ok as-toggle">6 prop types</label>
         
-        <label for="c-6-layout-grid-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-6-layout-grid-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-8-layout-grid-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-8-layout-grid-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -1771,10 +2125,10 @@ Loading belongs to the content inside the container. Compose loading-capable chi
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-6-layout-grid-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-6-layout-grid-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-8-layout-grid-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-8-layout-grid-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-6-layout-grid-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-8-layout-grid-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -1914,10 +2268,10 @@ Loading belongs to the items inside the grid. Compose loading-capable children o
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Icon</h2>
       <div class="badges">
-        <label for="c-7-content-icon-props" class="badge ok as-toggle">3 prop types</label>
+        <label for="c-9-content-icon-props" class="badge ok as-toggle">3 prop types</label>
         
-        <label for="c-7-content-icon-stories" class="badge ok as-toggle">3 stories</label>
-        <label for="c-7-content-icon-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-9-content-icon-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-9-content-icon-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -1930,10 +2284,10 @@ Loading belongs to the items inside the grid. Compose loading-capable children o
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-7-content-icon-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-7-content-icon-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-9-content-icon-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-9-content-icon-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-7-content-icon-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-9-content-icon-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -2065,10 +2419,10 @@ Icons are decorative by default. Supply `label` only when the icon conveys meani
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> IconTile</h2>
       <div class="badges">
-        <label for="c-8-content-icontile-props" class="badge ok as-toggle">5 prop types</label>
+        <label for="c-10-content-icontile-props" class="badge ok as-toggle">5 prop types</label>
         
-        <label for="c-8-content-icontile-stories" class="badge ok as-toggle">3 stories</label>
-        <label for="c-8-content-icontile-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-10-content-icontile-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-10-content-icontile-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -2081,10 +2435,10 @@ Icons are decorative by default. Supply `label` only when the icon conveys meani
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-8-content-icontile-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-8-content-icontile-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-10-content-icontile-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-10-content-icontile-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-8-content-icontile-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-10-content-icontile-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -2227,10 +2581,10 @@ Artwork is decorative by default. Supply `label` only when no adjacent text name
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Inline</h2>
       <div class="badges">
-        <label for="c-9-layout-inline-props" class="badge ok as-toggle">7 prop types</label>
+        <label for="c-11-layout-inline-props" class="badge ok as-toggle">7 prop types</label>
         
-        <label for="c-9-layout-inline-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-9-layout-inline-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-11-layout-inline-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-11-layout-inline-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -2243,10 +2597,10 @@ Artwork is decorative by default. Supply `label` only when no adjacent text name
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-9-layout-inline-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-9-layout-inline-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-11-layout-inline-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-11-layout-inline-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-9-layout-inline-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-11-layout-inline-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -2385,6 +2739,342 @@ Loading belongs to the items inside the row. Compose loading-capable children or
 <article
   class="card 
   no-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="OverlaySurface">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> OverlaySurface</h2>
+      <div class="badges">
+        <label for="c-12-foundations-overlay-stack-props" class="badge ok as-toggle">9 prop types</label>
+        <label for="c-12-foundations-overlay-stack-info" class="badge info as-toggle">1 info</label>
+        <label for="c-12-foundations-overlay-stack-stories" class="badge ok as-toggle">4 stories</label>
+        
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/overlays/OverlaySurface.stories.tsx">foundations-overlay-stack · ./src/overlays/OverlaySurface.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  <input id="c-12-foundations-overlay-stack-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-12-foundations-overlay-stack-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+  <input id="c-12-foundations-overlay-stack-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
+              <span class="badge ok">9 prop types</span>
+            </div>
+            <pre><code>Component: src/overlays/OverlaySurface.tsx::default</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>/**
+ * Content rendered inside the labelled surface, including any loading UI.
+ */
+children: ReactNode
+
+defaultOpen?: boolean = false
+
+/**
+ * Allows Escape and outside presses to close the surface. Defaults to true.
+ */
+dismissible?: boolean = true
+
+kind: OverlayKind
+
+onOpenChange?: ((open: boolean) =&gt; void)
+
+open?: boolean
+
+placement?: &quot;bottom&quot; | &quot;end&quot; | &quot;start&quot; | &quot;top&quot; = bottom
+
+/**
+ * Visible and accessible surface title.
+ */
+title: string
+
+/**
+ * Label for the library-owned trigger button.
+ */
+trigger: string</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { OverlaySurface } from "@motech-development/breeze-ui";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Sheet Popover</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">An action popover leaves its sheet available and preserves the sheet scrim.</div>
+              <pre><code>const SheetPopover = () =&gt; (
+  &lt;Drawer defaultOpen title=&quot;Delivery&quot; trigger=&quot;Open delivery&quot;&gt;
+    &lt;Button&gt;Sheet action&lt;/Button&gt;
+    &lt;Button disabled&gt;Disabled sheet action&lt;/Button&gt;
+    &lt;Popover title=&quot;Actions&quot; trigger=&quot;Open actions&quot;&gt;
+      &lt;Typography&gt;Choose a delivery action.&lt;/Typography&gt;
+    &lt;/Popover&gt;
+  &lt;/Drawer&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Sheet Fullscreen</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Internal fullscreen content covers a mounted sheet without another scrim.</div>
+              <pre><code>const SheetFullscreen = () =&gt; (
+  &lt;Drawer defaultOpen title=&quot;Delivery&quot; trigger=&quot;Open delivery&quot;&gt;
+    &lt;OverlaySurface kind=&quot;fullscreen&quot; title=&quot;Viewer&quot; trigger=&quot;Open viewer&quot;&gt;
+      &lt;Typography&gt;Delivery document&lt;/Typography&gt;
+    &lt;/OverlaySurface&gt;
+  &lt;/Drawer&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Close Outer First</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Closing the sheet retires the entire branch before its exit animations finish.</div>
+              <pre><code>const CloseOuterFirst = () =&gt; &lt;OuterCloseExample /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Initially Nested</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Initially open surfaces retain their ancestry and restore focus into the sheet.</div>
+              <pre><code>const InitiallyNested = () =&gt; (
+  &lt;Drawer defaultOpen title=&quot;Delivery&quot; trigger=&quot;Open delivery&quot;&gt;
+    &lt;OverlaySurface
+      defaultOpen
+      kind=&quot;fullscreen&quot;
+      title=&quot;Viewer&quot;
+      trigger=&quot;Open viewer&quot;
+    &gt;
+      &lt;Typography&gt;Delivery document&lt;/Typography&gt;
+    &lt;/OverlaySurface&gt;
+  &lt;/Drawer&gt;
+);</code></pre>
+            </div>
+        </div>
+    
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  no-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="Popover">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> Popover</h2>
+      <div class="badges">
+        <label for="c-13-overlays-popover-props" class="badge ok as-toggle">8 prop types</label>
+        
+        <label for="c-13-overlays-popover-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-13-overlays-popover-docs" class="badge ok as-toggle">1 doc</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/primitives/Popover/Popover.stories.tsx">overlays-popover · ./src/primitives/Popover/Popover.stories.tsx</div>
+    
+    <div class="hint">Opens a labelled popover with library-owned nesting and motion.</div>
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-13-overlays-popover-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-13-overlays-popover-docs" class="tg tg-docs" type="checkbox" hidden />
+  
+  <input id="c-13-overlays-popover-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
+              <span class="badge ok">8 prop types</span>
+            </div>
+            <pre><code>Component: src/primitives/Popover/Popover.tsx::Popover</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>/**
+ * Content rendered inside the labelled surface, including any loading UI.
+ */
+children: ReactNode
+
+defaultOpen?: boolean
+
+/**
+ * Allows Escape and outside presses to close the surface. Defaults to true.
+ */
+dismissible?: boolean
+
+onOpenChange?: ((open: boolean) =&gt; void) | ((open: boolean) =&gt; void)
+
+open?: boolean
+
+/**
+ * Preferred logical placement; flips when space is limited.
+ */
+placement?: &quot;bottom&quot; | &quot;end&quot; | &quot;start&quot; | &quot;top&quot;
+
+/**
+ * Visible and accessible surface title.
+ */
+title: string
+
+/**
+ * Label for the library-owned trigger button.
+ */
+trigger: string</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Popover } from "@motech-development/breeze-ui";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">An open surface that can be closed and reopened from its trigger.</div>
+              <pre><code>const Default = () =&gt; &lt;Popover defaultOpen title=&quot;Delivery details&quot; trigger=&quot;View delivery details&quot;&gt;&lt;Typography&gt;Your delivery arrives on Monday.&lt;/Typography&gt;&lt;/Popover&gt;;</code></pre>
+            </div>
+        </div>
+    
+        <div class="panel panel-docs">
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Docs</span>
+                <span class="badge ok">doc ok</span>
+              </div>
+              <div class="hint">./src/primitives/Popover/Popover.mdx</div>
+              <div>Opens contextual content beside its trigger.</div>
+              <div class="mdx-content"><pre><code>import { ArgTypes, Canvas, Meta } from &#39;@storybook/addon-docs/blocks&#39;;
+import * as Stories from &#39;./Popover.stories&#39;;
+
+&lt;Meta of={Stories} summary=&quot;Opens contextual content beside its trigger.&quot; /&gt;
+
+# Popover
+
+Use `Popover` for non-modal contextual content anchored to a trigger. The surrounding surface remains interactive and available to assistive technology; the popover has no dimmed scrim. Render it inside `BreezeProvider`.
+
+## Basic usage
+
+`trigger` supplies the label for the button Breeze renders. `title` supplies the surface&#39;s visible heading and accessible name; `children` supplies its content. Breeze also renders a close button with a label from the provider&#39;s messages.
+
+```tsx
+&lt;Popover title=&quot;Delivery details&quot; trigger=&quot;View delivery details&quot;&gt;
+  &lt;Typography&gt;Your delivery details appear here.&lt;/Typography&gt;
+&lt;/Popover&gt;
+```
+
+&lt;Canvas of={Stories.Default} /&gt;
+
+## Open state
+
+By default, the component manages its own open state. Set `defaultOpen` to start open, and optionally use `onOpenChange` to observe changes.
+
+To control the surface from application state, supply both `open` and `onOpenChange`. `open` and `defaultOpen` are mutually exclusive.
+
+```tsx
+&lt;Popover
+  onOpenChange={setOpen}
+  open={open}
+  title=&quot;Delivery details&quot;
+  trigger=&quot;View delivery details&quot;
+&gt;
+  &lt;Typography&gt;Your delivery details appear here.&lt;/Typography&gt;
+&lt;/Popover&gt;
+```
+
+## Dismissal
+
+`dismissible` defaults to `true`, allowing Escape and interaction outside the surface to dismiss it. Set it to `false` when those interactions should leave the surface open. The close button remains available.
+
+## Placement
+
+`placement` accepts `top`, `bottom` (default), `start` or `end`. Start and end follow the provider&#39;s text direction. The surface can adjust its position to fit the available space.
+
+## Accessibility and motion
+
+Breeze manages focus on opening and restores it on closing without trapping focus inside the popover. The provider&#39;s portal host keeps the surface&#39;s locale, direction and scoped styles intact.
+
+Inside a drawer, a popover appears above the sheet while its content remains interactive and accessible. The sheet keeps its scrim. Escape closes the popover first and restores focus to its trigger; a subsequent Escape closes the sheet. The `Foundations/Overlay stack` stories exercise this composition.
+
+Enter and exit motion respects reduced-motion preferences. A closing surface immediately leaves the active stack while its exit animation completes.
+
+## API
+
+&lt;ArgTypes /&gt;
+</code></pre></div>
+            </div>
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
   no-info 
   no-story-error
   no-doc-error"
@@ -2394,10 +3084,10 @@ Loading belongs to the items inside the row. Compose loading-capable children or
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Separator</h2>
       <div class="badges">
-        <label for="c-10-content-separator-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-14-content-separator-props" class="badge ok as-toggle">1 prop type</label>
         
-        <label for="c-10-content-separator-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-10-content-separator-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-14-content-separator-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-14-content-separator-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -2410,10 +3100,10 @@ Loading belongs to the items inside the row. Compose loading-capable children or
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-10-content-separator-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-10-content-separator-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-14-content-separator-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-14-content-separator-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-10-content-separator-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-14-content-separator-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -2518,10 +3208,10 @@ The component exposes `role=&quot;separator&quot;` and the selected orientation.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Skeleton</h2>
       <div class="badges">
-        <label for="c-11-content-skeleton-props" class="badge ok as-toggle">4 prop types</label>
+        <label for="c-15-content-skeleton-props" class="badge ok as-toggle">4 prop types</label>
         
-        <label for="c-11-content-skeleton-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-11-content-skeleton-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-15-content-skeleton-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-15-content-skeleton-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -2534,10 +3224,10 @@ The component exposes `role=&quot;separator&quot;` and the selected orientation.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-11-content-skeleton-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-11-content-skeleton-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-15-content-skeleton-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-15-content-skeleton-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-11-content-skeleton-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-15-content-skeleton-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -2662,10 +3352,10 @@ Supply `label` when the skeleton owns the loading announcement. Omit it when a p
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Stack</h2>
       <div class="badges">
-        <label for="c-12-layout-stack-props" class="badge ok as-toggle">5 prop types</label>
+        <label for="c-16-layout-stack-props" class="badge ok as-toggle">5 prop types</label>
         
-        <label for="c-12-layout-stack-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-12-layout-stack-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-16-layout-stack-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-16-layout-stack-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -2678,10 +3368,10 @@ Supply `label` when the skeleton owns the loading announcement. Omit it when a p
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-12-layout-stack-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-12-layout-stack-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-16-layout-stack-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-16-layout-stack-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-12-layout-stack-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-16-layout-stack-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -2819,10 +3509,10 @@ Loading belongs to the items inside the stack. Compose loading-capable children 
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Typography</h2>
       <div class="badges">
-        <label for="c-13-content-typography-props" class="badge ok as-toggle">15 prop types</label>
+        <label for="c-17-content-typography-props" class="badge ok as-toggle">15 prop types</label>
         
-        <label for="c-13-content-typography-stories" class="badge ok as-toggle">4 stories</label>
-        <label for="c-13-content-typography-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-17-content-typography-stories" class="badge ok as-toggle">4 stories</label>
+        <label for="c-17-content-typography-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -2835,10 +3525,10 @@ Loading belongs to the items inside the stack. Compose loading-capable children 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-13-content-typography-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-13-content-typography-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-17-content-typography-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-17-content-typography-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-13-content-typography-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-17-content-typography-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -3100,10 +3790,10 @@ Set `loading` to preserve the text&#39;s place while its value is unavailable.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> VisuallyHidden</h2>
       <div class="badges">
-        <label for="c-14-content-visuallyhidden-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-18-content-visuallyhidden-props" class="badge ok as-toggle">1 prop type</label>
         
-        <label for="c-14-content-visuallyhidden-stories" class="badge ok as-toggle">1 story</label>
-        <label for="c-14-content-visuallyhidden-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-18-content-visuallyhidden-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-18-content-visuallyhidden-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -3116,10 +3806,10 @@ Set `loading` to preserve the text&#39;s place while its value is unavailable.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-14-content-visuallyhidden-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-14-content-visuallyhidden-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-18-content-visuallyhidden-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-18-content-visuallyhidden-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-14-content-visuallyhidden-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-18-content-visuallyhidden-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
