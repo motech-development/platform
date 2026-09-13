@@ -75,6 +75,62 @@
     padding: 24px;
     outline: none;
   }
+
+  :where([data-breeze-root]) .breeze-toast-region {
+    position: fixed;
+    z-index: 100;
+    inset-block-start: 76px;
+    inset-inline-end: max(28px, calc((100vw - 1500px) / 2 + 28px));
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    inline-size: 288px;
+    max-inline-size: calc(100vw - 32px);
+    pointer-events: none;
+  }
+
+  :where([data-breeze-root]) .breeze-toast {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    inline-size: 288px;
+    max-inline-size: calc(100vw - 32px);
+    box-sizing: border-box;
+    padding-block: 12px;
+    padding-inline: 14px;
+    border: 1px solid
+      color-mix(in srgb, var(--breeze-color-breeze-pos) 30%, transparent);
+    border-radius: var(--breeze-radius-breeze-panel);
+    background: var(--breeze-color-breeze-pos-soft);
+    color: var(--breeze-color-breeze-ink);
+    box-shadow: var(--breeze-shadow-overlay);
+    font-size: var(--breeze-text-breeze-sm);
+    font-weight: 500;
+    line-height: var(--breeze-leading-breeze-snug);
+    overflow-wrap: anywhere;
+    animation: breeze-toast-in 160ms ease-out both;
+  }
+
+  :where([data-breeze-root]) .breeze-toast svg {
+    color: var(--breeze-color-breeze-pos);
+  }
+
+  @media (width < 901px) {
+    :where([data-breeze-root]) .breeze-toast-region {
+      inset-inline-end: 16px;
+    }
+  }
+
+  @keyframes breeze-toast-in {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
   :where([data-breeze-root]) .breeze-overlay-header {
     display: flex;
     align-items: center;

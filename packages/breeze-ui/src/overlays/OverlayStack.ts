@@ -55,6 +55,23 @@ export function createOverlayStack() {
 export const OverlayStackContext = createContext<ReturnType<
   typeof createOverlayStack
 > | null>(null);
+
+/** Returns the next layer above every registered overlay for provider-owned UI. */
+export function useOverlayToastZIndex() {
+  const store = useContext(OverlayStackContext);
+  if (!store)
+    throw new Error(
+      'Breeze components must be rendered within BreezeProvider.',
+    );
+  const layers = useSyncExternalStore(
+    store.subscribe,
+    store.getSnapshot,
+    store.getSnapshot,
+  );
+
+  return 100 + layers.length * 2;
+}
+
 export const ParentOverlayContext = createContext<{
   id: string;
   open: boolean;
