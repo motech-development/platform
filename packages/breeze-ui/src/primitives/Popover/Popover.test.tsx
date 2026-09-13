@@ -153,6 +153,53 @@ describe('Popover', () => {
     expect(onOpenChange).toHaveBeenCalledTimes(2);
   });
 
+  it.each([false, true])(
+    'reports the generated DismissButton dismissal once (%s controlled)',
+    async (controlled) => {
+      const onOpenChange = vi.fn();
+      function Example() {
+        const children = 'Delivery information';
+        return controlled ? (
+          <Popover
+            onOpenChange={onOpenChange}
+            open
+            title="Details"
+            trigger="Open details"
+          >
+            {children}
+          </Popover>
+        ) : (
+          <Popover
+            defaultOpen
+            onOpenChange={onOpenChange}
+            title="Details"
+            trigger="Open details"
+          >
+            {children}
+          </Popover>
+        );
+      }
+
+      renderBreeze(<Example />);
+      await screen.findByRole('dialog', { name: 'Details' });
+      const dismissButton = screen.getByRole('button', {
+        hidden: true,
+        name: 'Dismiss',
+      });
+
+      dismissButton.focus();
+      await userEvent.keyboard('{Enter}');
+
+      await waitFor(() =>
+        expect(screen.queryByRole('dialog', { name: 'Details' }) === null).toBe(
+          !controlled,
+        ),
+      );
+      expect(onOpenChange).toHaveBeenCalledTimes(1);
+      expect(onOpenChange).toHaveBeenCalledWith(false);
+    },
+  );
+
   it('rejects a portal container from another runtime document', () => {
     const iframe = document.createElement('iframe');
     document.body.append(iframe);

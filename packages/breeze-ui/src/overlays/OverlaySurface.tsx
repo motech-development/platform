@@ -84,6 +84,7 @@ function OverlaySurface({
   const parentOpen = parent?.open ?? true;
   const open = requestedOpen && parentOpen;
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const popoverRef = useRef<HTMLElement | null>(null);
   const contentRef = useRef<HTMLElement | null>(null);
   const [surfaceMounted, setSurfaceMounted] = useState(false);
   const refocusingRef = useRef(false);
@@ -149,7 +150,7 @@ function OverlaySurface({
       const { target } = event;
       if (
         isNode(target) &&
-        !contentRef.current?.contains(target) &&
+        !popoverRef.current?.contains(target) &&
         !triggerRef.current?.contains(target)
       ) {
         const blurTarget = blurDismissTargetRef.current;
@@ -360,6 +361,7 @@ function OverlaySurface({
             isKeyboardDismissDisabled={!dismissible || !layer.topmost}
             onOpenChange={changeOpen}
             placement={placement}
+            ref={popoverRef}
             // Leave the trigger in the blur scope so its action can toggle the popover.
             shouldCloseOnInteractOutside={(element) =>
               kind === 'popover' &&
