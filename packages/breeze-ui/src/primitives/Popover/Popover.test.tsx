@@ -1,16 +1,17 @@
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { useState } from 'react';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import renderBreeze from '../../../test/render';
 import { BreezeProvider } from '../../provider/BreezeProvider';
 import { Button } from '../Button/Button';
 import { Drawer } from '../Drawer/Drawer';
+import { Skeleton } from '../Skeleton/Skeleton';
 import { Popover, type PopoverProps } from './Popover';
 
 expectTypeOf<PopoverProps>().not.toHaveProperty('className');
 expectTypeOf<PopoverProps>().not.toHaveProperty('style');
 expectTypeOf<PopoverProps>().not.toHaveProperty('slot');
+expectTypeOf<PopoverProps>().not.toHaveProperty('loading');
 expectTypeOf<{
   children: string;
   title: string;
@@ -152,40 +153,6 @@ describe('Popover', () => {
     expect(onOpenChange).toHaveBeenCalledTimes(2);
   });
 
-  it('returns focus to the surface when loading removes the focused content', async () => {
-    function Example() {
-      const [loading, setLoading] = useState(false);
-      return (
-        <Popover
-          defaultOpen
-          loading={loading}
-          title="Details"
-          trigger="Open details"
-        >
-          <Button onAction={() => setLoading(true)}>Load details</Button>
-        </Popover>
-      );
-    }
-
-    renderBreeze(<Example />);
-    const surface = await screen.findByRole('dialog', { name: 'Details' });
-    await waitFor(() => expect(surface).toHaveFocus());
-    await new Promise((resolve) => {
-      setTimeout(resolve, 550);
-    });
-    await userEvent.click(
-      within(surface).getByRole('button', { name: 'Load details' }),
-    );
-    await waitFor(() => expect(surface).toHaveFocus());
-
-    await userEvent.keyboard('{Escape}');
-    await waitFor(() =>
-      expect(
-        screen.queryByRole('dialog', { name: 'Details' }),
-      ).not.toBeInTheDocument(),
-    );
-  });
-
   it('rejects a portal container from another runtime document', () => {
     const iframe = document.createElement('iframe');
     document.body.append(iframe);
@@ -258,14 +225,14 @@ describe('Popover', () => {
     );
   });
 
-  it('localizes loading and the close action while preserving its heading', () => {
+  it('renders caller-owned loading content and localizes the close action', () => {
     render(
       <BreezeProvider
         locale="fr-FR"
         messages={{ close: 'Fermer', loading: 'Chargement' }}
       >
-        <Popover defaultOpen loading title="Livraison" trigger="Ouvrir">
-          Delivery information
+        <Popover defaultOpen title="Livraison" trigger="Ouvrir">
+          <Skeleton blockSize="6rem" label="Chargement" shape="rectangle" />
         </Popover>
       </BreezeProvider>,
     );

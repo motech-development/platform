@@ -14,7 +14,6 @@ export function Popover({
   children,
   defaultOpen,
   dismissible,
-  loading,
   onOpenChange,
   open,
   title,
@@ -25,7 +24,6 @@ export function Popover({
     <OverlaySurface
       defaultOpen={defaultOpen}
       dismissible={dismissible}
-      loading={loading}
       onOpenChange={onOpenChange}
       open={open}
       title={title}

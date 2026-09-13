@@ -40,12 +40,6 @@ To control the surface from application state, supply both `open` and `onOpenCha
 
 `dismissible` defaults to `true`, allowing Escape and interaction outside the surface to dismiss it. Set it to `false` when those interactions should leave the surface open. The close button remains available.
 
-## Loading
-
-Set `loading` while content is being prepared. Breeze provides its loading presentation and accessible announcement while retaining the surface title.
-
-<Canvas of={Stories.Loading} />
-
 ## Accessibility and motion
 
 Breeze manages focus on opening and restores it on closing. Modal surfaces contain keyboard focus while open. The provider's portal host keeps the surface's locale, direction and scoped styles intact.
