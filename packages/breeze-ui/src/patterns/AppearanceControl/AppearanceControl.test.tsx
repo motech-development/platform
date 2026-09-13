@@ -1,9 +1,14 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import type { ComponentProps } from 'react';
+import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import renderBreeze from '../../../test/render';
 import { BreezeProvider } from '../../provider/BreezeProvider';
 import AppearanceControl from './AppearanceControl';
+
+expectTypeOf<ComponentProps<typeof AppearanceControl>>().not.toHaveProperty(
+  'loading',
+);
 
 describe('AppearanceControl', () => {
   it('reports a new appearance choice', async () => {
