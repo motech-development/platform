@@ -74,11 +74,11 @@ function OverlaySurface({
   const { getMessageLocale, messages } = useBreezeContext();
   const nonModal = kind === 'popover' || kind === 'fullscreen';
   const host = useOverlayPortal();
-  const [portalReady, setPortalReady] = useState(false);
+  const parent = useContext(ParentOverlayContext);
+  const [portalReady, setPortalReady] = useState(parent === null);
   // Mount nested portals after the parent's modality effects. Otherwise a
   // default-open parent can aria-hide its already mounted child portal.
   useEffect(() => setPortalReady(true), []);
-  const parent = useContext(ParentOverlayContext);
   const [uncontrolledOpen, setUncontrolledOpen] = useState(defaultOpen);
   const requestedOpen = controlledOpen ?? uncontrolledOpen;
   const parentOpen = parent?.open ?? true;
