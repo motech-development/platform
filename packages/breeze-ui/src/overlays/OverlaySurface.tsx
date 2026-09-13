@@ -89,6 +89,9 @@ function OverlaySurface({
   const [surfaceMounted, setSurfaceMounted] = useState(false);
   const refocusingRef = useRef(false);
   const refocusTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pointerDismissTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
   const pointerDownTargetRef = useRef<Node | null>(null);
   const blurDismissTargetRef = useRef<Node | null>(null);
   const parentCloseReportedRef = useRef(false);
@@ -139,28 +142,64 @@ function OverlaySurface({
     if (kind !== 'popover' || !open || !dismissible || !layer.topmost || !host)
       return undefined;
     // RAC non-modal popovers close on blur, but not on outside clicks. Wait for
-    // click so the sheet's pointer gesture completes while the popover is topmost.
+    // click when available, falling back after a completed outside pointerup.
+    const clearPointerDismissTimer = () => {
+      if (pointerDismissTimerRef.current !== null) {
+        clearTimeout(pointerDismissTimerRef.current);
+        pointerDismissTimerRef.current = null;
+      }
+    };
+    const sameTarget = (left: Node | null, right: Node | null) =>
+      !!left &&
+      !!right &&
+      (left === right || left.contains(right) || right.contains(left));
+    const isPrimaryPointer = (event: PointerEvent) => event.button === 0;
+    const isOutside = (target: Node | null) =>
+      isNode(target) &&
+      !popoverRef.current?.contains(target) &&
+      !triggerRef.current?.contains(target);
     const onPointerDown = (event: PointerEvent) => {
+      if (!isPrimaryPointer(event)) return;
       // A blur caused by a previous keyboard interaction must not suppress a
       // later pointer dismissal.
+      clearPointerDismissTimer();
       blurDismissTargetRef.current = null;
       pointerDownTargetRef.current = isNode(event.target) ? event.target : null;
     };
-    const onOutsideClick = (event: MouseEvent) => {
-      const { target } = event;
-      if (
-        isNode(target) &&
-        !popoverRef.current?.contains(target) &&
-        !triggerRef.current?.contains(target)
-      ) {
+    const onPointerUp = (event: PointerEvent) => {
+      if (!isPrimaryPointer(event)) return;
+      const pointerDownTarget = pointerDownTargetRef.current;
+      const pointerUpTarget = isNode(event.target) ? event.target : null;
+      if (!isOutside(pointerDownTarget) || !isOutside(pointerUpTarget)) return;
+      clearPointerDismissTimer();
+      pointerDismissTimerRef.current = setTimeout(() => {
+        pointerDismissTimerRef.current = null;
         const blurTarget = blurDismissTargetRef.current;
         const pointerTarget = pointerDownTargetRef.current;
         blurDismissTargetRef.current = null;
         pointerDownTargetRef.current = null;
-        const sameTarget = (left: Node | null, right: Node | null) =>
-          !!left &&
-          !!right &&
-          (left === right || left.contains(right) || right.contains(left));
+        if (
+          sameTarget(blurTarget, pointerUpTarget) &&
+          sameTarget(blurTarget, pointerTarget)
+        ) {
+          return;
+        }
+        changeOpen(false);
+      }, 0);
+    };
+    const onPointerCancel = () => {
+      clearPointerDismissTimer();
+      blurDismissTargetRef.current = null;
+      pointerDownTargetRef.current = null;
+    };
+    const onOutsideClick = (event: MouseEvent) => {
+      const target = isNode(event.target) ? event.target : null;
+      clearPointerDismissTimer();
+      if (isOutside(target)) {
+        const blurTarget = blurDismissTargetRef.current;
+        const pointerTarget = pointerDownTargetRef.current;
+        blurDismissTargetRef.current = null;
+        pointerDownTargetRef.current = null;
         if (
           sameTarget(blurTarget, target) &&
           sameTarget(blurTarget, pointerTarget)
@@ -171,11 +210,20 @@ function OverlaySurface({
       }
     };
     host.ownerDocument.addEventListener('pointerdown', onPointerDown, true);
+    host.ownerDocument.addEventListener('pointerup', onPointerUp, true);
+    host.ownerDocument.addEventListener('pointercancel', onPointerCancel, true);
     host.ownerDocument.addEventListener('click', onOutsideClick, true);
     return () => {
+      clearPointerDismissTimer();
       host.ownerDocument.removeEventListener(
         'pointerdown',
         onPointerDown,
+        true,
+      );
+      host.ownerDocument.removeEventListener('pointerup', onPointerUp, true);
+      host.ownerDocument.removeEventListener(
+        'pointercancel',
+        onPointerCancel,
         true,
       );
       host.ownerDocument.removeEventListener('click', onOutsideClick, true);

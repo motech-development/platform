@@ -1,4 +1,10 @@
-import { render, screen, waitFor, within } from '@testing-library/react';
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import renderBreeze from '../../../test/render';
@@ -152,6 +158,57 @@ describe('Popover', () => {
     await userEvent.click(outside);
     expect(onOpenChange).toHaveBeenCalledTimes(2);
   });
+
+  it('dismisses after a primary outside pointerup when a disabled control suppresses click', async () => {
+    renderBreeze(
+      <>
+        <Popover defaultOpen title="Details" trigger="Open details">
+          Delivery information
+        </Popover>
+        <Button disabled>Disabled outside</Button>
+      </>,
+    );
+    const outside = screen.getByRole('button', { name: 'Disabled outside' });
+    fireEvent.pointerDown(outside, { button: 0 });
+    fireEvent.pointerUp(outside, { button: 0 });
+
+    await waitFor(() =>
+      expect(
+        screen.queryByRole('dialog', { name: 'Details' }),
+      ).not.toBeInTheDocument(),
+    );
+  });
+
+  it.each([1, 2])(
+    'ignores a non-primary outside pointerup (%s)',
+    async (button) => {
+      const onOpenChange = vi.fn();
+      renderBreeze(
+        <>
+          <Popover
+            onOpenChange={onOpenChange}
+            open
+            title="Details"
+            trigger="Open details"
+          >
+            Delivery information
+          </Popover>
+          <Button>Outside action</Button>
+        </>,
+      );
+      const outside = screen.getByRole('button', { name: 'Outside action' });
+      fireEvent.pointerDown(outside, { button });
+      fireEvent.pointerUp(outside, { button });
+
+      await new Promise<void>((resolve) => {
+        setTimeout(resolve, 10);
+      });
+      expect(onOpenChange).not.toHaveBeenCalled();
+      expect(
+        screen.getByRole('dialog', { name: 'Details' }),
+      ).toBeInTheDocument();
+    },
+  );
 
   it.each([false, true])(
     'reports the generated DismissButton dismissal once (%s controlled)',

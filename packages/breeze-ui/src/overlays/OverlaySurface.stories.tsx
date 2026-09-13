@@ -29,11 +29,23 @@ export const SheetPopover: Story = {
     const sheetLayer = sheet.closest('[data-breeze-overlay]');
     const trigger = within(sheet).getByRole('button', { name: 'Open actions' });
     await userEvent.click(trigger);
-    const popover = await page.findByRole('dialog', { name: 'Actions' });
-    await expect(popover).not.toHaveAttribute('aria-modal', 'true');
+    const initialPopover = await page.findByRole('dialog', { name: 'Actions' });
+    await expect(initialPopover).not.toHaveAttribute('aria-modal', 'true');
     await expect(sheetLayer).not.toHaveAttribute('inert');
     await expect(page.getByRole('dialog', { name: 'Delivery' })).toBe(sheet);
     await expect(sheetLayer).toHaveAttribute('data-breeze-scrim', 'true');
+    await userEvent.click(
+      within(sheet).getByRole('button', { name: 'Disabled sheet action' }),
+    );
+    await waitFor(async () => {
+      await expect(
+        page.queryByRole('dialog', { name: 'Actions' }),
+      ).not.toBeInTheDocument();
+    });
+    await expect(sheet).toBeVisible();
+    await expect(sheetLayer).toHaveAttribute('data-breeze-scrim', 'true');
+    await userEvent.click(trigger);
+    const popover = await page.findByRole('dialog', { name: 'Actions' });
     await waitFor(async () => {
       const { activeElement } = canvasElement.ownerDocument;
       await expect(
@@ -94,6 +106,7 @@ export const SheetPopover: Story = {
   render: () => (
     <Drawer defaultOpen title="Delivery" trigger="Open delivery">
       <Button>Sheet action</Button>
+      <Button disabled>Disabled sheet action</Button>
       <Popover title="Actions" trigger="Open actions">
         <Typography>Choose a delivery action.</Typography>
       </Popover>
