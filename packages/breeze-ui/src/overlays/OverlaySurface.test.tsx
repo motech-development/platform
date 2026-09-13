@@ -6,7 +6,7 @@ import {
   within,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import renderBreeze from '../../test/render';
 import { Button } from '../primitives/Button/Button';
@@ -16,6 +16,35 @@ import { ParentOverlayContext } from './OverlayStack';
 import OverlaySurface from './OverlaySurface';
 
 describe('Overlay stack', () => {
+  it('mounts a top-level open surface before passive effects', async () => {
+    let mountedDuringLayout = false;
+    function Example() {
+      const [open, setOpen] = useState(false);
+      useEffect(() => setOpen(true), []);
+      useLayoutEffect(() => {
+        if (open) {
+          mountedDuringLayout =
+            document.querySelector('[data-breeze-overlay="drawer"]') !== null;
+        }
+      }, [open]);
+      return (
+        <Drawer
+          key={open ? 'open' : 'closed'}
+          onOpenChange={() => {}}
+          open={open}
+          title="Sheet"
+          trigger="Open sheet"
+        >
+          Sheet content
+        </Drawer>
+      );
+    }
+
+    renderBreeze(<Example />);
+
+    await waitFor(() => expect(mountedDuringLayout).toBe(true));
+  });
+
   it('updates layer kind metadata without changing its stack position', async () => {
     let changeKind: (kind: 'popover' | 'dialog') => void = () => {};
     function Example() {
