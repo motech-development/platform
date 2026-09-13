@@ -58,6 +58,8 @@ export type {
 export { Skeleton } from './primitives/Skeleton/Skeleton';
 export type { StackProps } from './primitives/Stack/Stack';
 export { Stack } from './primitives/Stack/Stack';
+export type { ToastEnqueue, ToastProps } from './primitives/Toast/Toast';
+export { Toast, useToast } from './primitives/Toast/Toast';
 export type {
   IsoCalendarDate,
   TypographyAlign,
