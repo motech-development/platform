@@ -22,7 +22,7 @@ Props are enumerated explicitly. There is no native-event, styling or slot passt
 
 Loading belongs on a component only when it owns the shape of a potentially unavailable value that it replaces. `Button` owns the action label's control footprint and skeleton, `Badge` owns the short status or count footprint, and `Typography` owns text and formatted currency or date output. `TypographyProps` is the reference discriminated union: currency and date branches forbid `children` and unrelated formatting fields, the text branch forbids `value` and formatting fields, and content may be omitted only when `loading` is `true`.
 
-Components that render arbitrary children must forbid `loading` and assert its absence with `expectTypeOf`; their children define their own loading state. `IconTile` follows this rule because its icon is selected synchronously by name, so it has no unavailable value to replace. Judge future components by what they own rather than by a fixed list: a component such as `AttachmentRow` qualifies only if it owns the shape of the unavailable value it replaces.
+Containers and components that render arbitrary child compositions must forbid `loading` and assert its absence with `expectTypeOf`; their descendants define their own loading state. Typography's text branch is different: its ReactNode children are the text presentation it owns, so it can replace that value with its own skeleton. `IconTile` follows the absence rule because its icon is selected synchronously by name, so it has no unavailable value to replace. Judge future components by what they own rather than by a fixed list: a component such as `AttachmentRow` qualifies only if it owns the shape of the unavailable value it replaces.
 
 ## Tokens
 
