@@ -1,8 +1,9 @@
 import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { afterEach, describe, expect, expectTypeOf, it, vi } from 'vitest';
 import { BreezeProvider } from '../../provider/BreezeProvider';
+import { Dialog } from '../Dialog/Dialog';
 import { Toast, type ToastEnqueue, type ToastProps, useToast } from './Toast';
 
 function ToastTrigger() {
@@ -42,6 +43,7 @@ expectTypeOf<ToastProps>().not.toHaveProperty('loading');
 
 afterEach(() => {
   vi.useRealTimers();
+  vi.unstubAllGlobals();
 });
 
 describe('Toast', () => {
@@ -64,7 +66,22 @@ describe('Toast', () => {
     ).toThrow('BreezeProvider toastLimit must be a positive integer.');
   });
 
-  it('announces an enqueued confirmation without moving focus', () => {
+  it('updates a pre-mounted direct status after mount', async () => {
+    render(
+      <BreezeProvider locale="en-GB">
+        <Toast>Changes saved</Toast>
+      </BreezeProvider>,
+    );
+
+    const status = screen.getByRole('status');
+    expect(status).not.toHaveAttribute('aria-label');
+    expect(status.textContent).toBe('');
+    expect(
+      await screen.findByRole('status', { name: 'Changes saved' }),
+    ).toBeInTheDocument();
+  });
+
+  it('announces an enqueued confirmation without moving focus', async () => {
     render(
       <BreezeProvider locale="en-GB">
         <ToastTrigger />
@@ -72,7 +89,7 @@ describe('Toast', () => {
     );
 
     const region = document.querySelector('[data-breeze-toast-region]');
-    expect(region).toHaveAttribute('aria-live', 'polite');
+    expect(region).not.toHaveAttribute('aria-live');
     expect(region).toHaveAttribute('data-live-announcer');
     expect(region).toHaveAttribute('data-react-aria-top-layer');
     expect(region).toBeEmptyDOMElement();
@@ -84,9 +101,12 @@ describe('Toast', () => {
       trigger.click();
     });
 
-    const toast = screen.getByRole('status');
+    const toast = await screen.findByRole('status', {
+      name: 'Changes saved',
+    });
     expect(toast).toHaveTextContent('Changes saved');
     expect(toast).toHaveAttribute('aria-live', 'polite');
+    expect(document.querySelectorAll('[aria-live="polite"]')).toHaveLength(1);
     expect(toast).not.toHaveAttribute('tabindex');
     expect(document.activeElement).toBe(trigger);
   });
@@ -132,6 +152,9 @@ describe('Toast', () => {
         screen.getByRole('button', { name: message }).click();
       });
     });
+    act(() => {
+      vi.advanceTimersByTime(0);
+    });
 
     expect(screen.getAllByRole('status')).toHaveLength(3);
     expect(screen.getByRole('status', { name: 'One' })).toBeInTheDocument();
@@ -143,6 +166,9 @@ describe('Toast', () => {
 
     act(() => {
       vi.advanceTimersByTime(2600);
+    });
+    act(() => {
+      vi.advanceTimersByTime(0);
     });
 
     expect(screen.getAllByRole('status')).toHaveLength(2);
@@ -163,6 +189,9 @@ describe('Toast', () => {
       screen.getByRole('button', { name: 'First' }).click();
     });
     act(() => {
+      vi.advanceTimersByTime(0);
+    });
+    act(() => {
       vi.advanceTimersByTime(2000);
       screen.getByRole('button', { name: 'Second' }).click();
     });
@@ -174,6 +203,9 @@ describe('Toast', () => {
 
     act(() => {
       vi.advanceTimersByTime(600);
+    });
+    act(() => {
+      vi.advanceTimersByTime(0);
     });
 
     expect(screen.getByRole('status', { name: 'Second' })).toBeInTheDocument();
@@ -207,6 +239,9 @@ describe('Toast', () => {
         screen.getByRole('button', { name: message }).click();
       });
     });
+    act(() => {
+      vi.advanceTimersByTime(0);
+    });
 
     expect(screen.getAllByRole('status')).toHaveLength(2);
     expect(
@@ -228,6 +263,9 @@ describe('Toast', () => {
     act(() => {
       screen.getByRole('button', { name: 'Saved' }).click();
     });
+    act(() => {
+      vi.advanceTimersByTime(0);
+    });
 
     const toast = screen.getByRole('status', { name: 'Saved' });
     expect(toast.closest('[data-breeze-portal]')).toBeInTheDocument();
@@ -239,7 +277,7 @@ describe('Toast', () => {
     portalContainer.remove();
   });
 
-  it('keeps nested provider queues isolated', () => {
+  it('keeps nested provider queues isolated', async () => {
     function NestedProviders() {
       const enqueue = useToast();
 
@@ -265,12 +303,86 @@ describe('Toast', () => {
       screen.getByRole('button', { name: 'Outer' }).click();
       screen.getByRole('button', { name: 'Inner' }).click();
     });
-
-    const outerToast = screen.getByRole('status', { name: 'Outer' });
-    const innerToast = screen.getByRole('status', { name: 'Inner' });
+    const outerToast = await screen.findByRole('status', { name: 'Outer' });
+    const innerToast = await screen.findByRole('status', { name: 'Inner' });
 
     expect(outerToast.closest('[data-breeze-portal]')).not.toBe(
       innerToast.closest('[data-breeze-portal]'),
     );
+  });
+
+  it('observes only direct cards when a nested portal host is inside a dialog', () => {
+    vi.useFakeTimers();
+
+    const observers: Array<{ observed: Element[] }> = [];
+    class TestIntersectionObserver {
+      disconnected = false;
+
+      observed: Element[] = [];
+
+      constructor() {
+        observers.push(this);
+      }
+
+      observe(element: Element) {
+        this.observed.push(element);
+      }
+
+      disconnect() {
+        this.disconnected = true;
+      }
+    }
+    vi.stubGlobal('IntersectionObserver', TestIntersectionObserver);
+
+    function NestedPortalProviders() {
+      const [portalContainer, setPortalContainer] =
+        useState<HTMLDivElement | null>(null);
+
+      return (
+        <BreezeProvider locale="en-GB">
+          <Dialog defaultOpen title="Confirm change" trigger="Open dialog">
+            <div ref={setPortalContainer}>
+              <ToastButtons messages={['Outer']} />
+              {portalContainer && (
+                <BreezeProvider
+                  locale="en-GB"
+                  portalContainer={portalContainer}
+                >
+                  <ToastButtons messages={['Inner']} />
+                </BreezeProvider>
+              )}
+            </div>
+          </Dialog>
+        </BreezeProvider>
+      );
+    }
+
+    render(<NestedPortalProviders />);
+    act(() => {
+      screen.getByRole('button', { name: 'Outer' }).click();
+      screen.getByRole('button', { name: 'Inner' }).click();
+    });
+    act(() => {
+      vi.runAllTimers();
+    });
+    act(() => {
+      vi.runAllTimers();
+    });
+
+    const outerToast = screen.getByRole('status', { name: 'Outer' });
+    const innerToast = screen.getByRole('status', { name: 'Inner' });
+    const outerCard = outerToast.parentElement;
+    const innerCard = innerToast.parentElement;
+    expect(outerCard).toBeInTheDocument();
+    expect(innerCard).toBeInTheDocument();
+
+    const outerObservers = observers.filter(({ observed }) =>
+      observed.includes(outerCard!),
+    );
+    expect(outerObservers.length).toBeGreaterThan(0);
+    outerObservers.forEach(({ observed }) => {
+      expect(observed).toEqual([outerCard]);
+      expect(observed).not.toContain(innerCard);
+    });
   });
 });
