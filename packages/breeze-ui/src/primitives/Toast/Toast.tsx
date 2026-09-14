@@ -80,6 +80,9 @@ export function ToastProviderBoundary({
 
     setQueue((current) => [...current, { id, message }]);
   }, []);
+  const expireToast = useCallback((id: number) => {
+    setQueue((current) => current.filter((toast) => toast.id !== id));
+  }, []);
 
   useEffect(() => {
     if (host === null) {
@@ -93,9 +96,7 @@ export function ToastProviderBoundary({
       if (!timers.current.has(toast.id)) {
         timers.current.set(
           toast.id,
-          setTimeout(() => {
-            setQueue((current) => current.filter(({ id }) => id !== toast.id));
-          }, toastLifetime),
+          setTimeout(() => expireToast(toast.id), toastLifetime),
         );
       }
     });
@@ -106,7 +107,7 @@ export function ToastProviderBoundary({
         timers.current.delete(id);
       }
     });
-  }, [host, limit, queue]);
+  }, [expireToast, host, limit, queue]);
 
   useEffect(
     () => () => {
