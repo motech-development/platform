@@ -12,9 +12,15 @@ import * as Stories from './Toast.stories';
 Use `useToast` below `BreezeProvider` to enqueue a translated message:
 
 ```tsx
-const enqueue = useToast();
+import { Button, useToast } from '@motech-development/breeze-ui';
 
-enqueue('Changes saved');
+function SaveAction() {
+  const enqueue = useToast();
+
+  return (
+    <Button onAction={() => enqueue('Changes saved')}>Save changes</Button>
+  );
+}
 ```
 
 The provider renders up to three confirmations at once and queues additional messages in FIFO order. Set `toastLimit` on `BreezeProvider` when the application needs a different visible limit.
