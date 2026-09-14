@@ -1,0 +1,40 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Toast.stories';
+
+<Meta of={Stories} summary="Confirms a completed action." />
+
+# Toast
+
+`Toast` is a presentational positive confirmation card. It announces a completed action with `role="status"` and never moves focus. A `Toast` rendered directly stays mounted until its owner removes it; `useToast` supplies the provider-owned queue that expires each visible confirmation after 2.6 seconds.
+
+<Canvas of={Stories.Default} />
+
+Use `useToast` below `BreezeProvider` to enqueue a translated message:
+
+```tsx
+import { Button, useToast } from '@motech-development/breeze-ui';
+
+function SaveAction() {
+  const enqueue = useToast();
+
+  return (
+    <Button onAction={() => enqueue('Changes saved')}>Save changes</Button>
+  );
+}
+```
+
+The provider renders up to three confirmations at once and queues additional messages in FIFO order. Set `toastLimit` on `BreezeProvider` when the application needs a different visible limit.
+
+<Canvas of={Stories.Enqueued} />
+
+The card stays 288px wide on desktop and mobile, aligned to the content gutter below the top bar. Provider-enqueued confirmations have no action, dismiss or undo control.
+
+<Canvas of={Stories.Mobile} />
+
+## Accessibility
+
+`Toast` is a non-interactive status. It has no tab stop and handles no keyboard events: Tab and Shift+Tab continue normal document movement while skipping the card, Escape does not dismiss it, and provider-enqueued confirmations do not move focus.
+
+## API
+
+<ArgTypes />

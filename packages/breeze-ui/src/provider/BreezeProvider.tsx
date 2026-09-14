@@ -8,6 +8,7 @@ import {
 } from 'react';
 import { I18nProvider, useLocale } from 'react-aria-components/I18nProvider';
 import { OverlayProvider } from '../overlays/OverlayProvider';
+import { ToastProviderBoundary } from '../primitives/Toast/Toast';
 import { type Appearance, BreezeContext } from './BreezeContext';
 import enGB from './en-GB';
 
@@ -23,6 +24,8 @@ interface BreezeProviderBaseProps {
    * The container must belong to the same document as the overlay triggers.
    */
   portalContainer?: HTMLElement;
+  /** Maximum number of visible confirmations; additional messages wait in FIFO order. */
+  toastLimit?: number;
 }
 
 interface ControlledAppearanceProps {
@@ -80,6 +83,7 @@ export function BreezeProvider({
   messages,
   onAppearanceChange,
   portalContainer,
+  toastLimit = 3,
 }: Readonly<BreezeProviderProps>) {
   const [preferredColorSchemeQuery] = useState(() =>
     typeof window === 'undefined' || !window.matchMedia
@@ -177,7 +181,9 @@ export function BreezeProvider({
     <I18nProvider locale={locale}>
       <BreezeContext value={context}>
         <OverlayProvider locale={locale} portalContainer={portalContainer}>
-          <BreezeRoot>{children}</BreezeRoot>
+          <ToastProviderBoundary limit={toastLimit}>
+            <BreezeRoot>{children}</BreezeRoot>
+          </ToastProviderBoundary>
         </OverlayProvider>
       </BreezeContext>
     </I18nProvider>
