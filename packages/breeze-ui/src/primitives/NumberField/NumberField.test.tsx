@@ -123,7 +123,8 @@ describe('NumberField', () => {
 
     expect(inputRef.current).toBe(input);
     expect(input).toBeDisabled();
-    expect(input).toHaveClass('breeze:invisible');
+    expect(input).toHaveClass('breeze:!opacity-0');
+    expect(input).not.toHaveClass('breeze:invisible');
     expect(input).toHaveAttribute('aria-busy', 'true');
     expect(
       screen.getByRole('progressbar', { name: 'Loading' }),
@@ -131,7 +132,8 @@ describe('NumberField', () => {
 
     const increment = screen.getByRole('button', { name: /increase/i });
 
-    expect(increment).toHaveClass('breeze:invisible');
+    expect(increment).toHaveClass('breeze:!opacity-0');
+    expect(increment).not.toHaveClass('breeze:invisible');
 
     await user.click(increment);
 
