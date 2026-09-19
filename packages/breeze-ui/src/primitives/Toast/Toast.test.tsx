@@ -248,6 +248,9 @@ describe('Toast', () => {
     const firstToast = screen.getByRole('status', { name: 'First' });
     const focusTarget = screen.getByRole('button', { name: 'Keep focus' });
     focusTarget.focus();
+    act(() => {
+      vi.advanceTimersByTime(1000);
+    });
 
     act(() => {
       hidden.mockReturnValue(true);
@@ -266,7 +269,7 @@ describe('Toast', () => {
       document.dispatchEvent(new Event('visibilitychange'));
     });
     act(() => {
-      vi.advanceTimersByTime(2599);
+      vi.advanceTimersByTime(1599);
     });
     expect(firstToast).toBeInTheDocument();
 
@@ -283,6 +286,100 @@ describe('Toast', () => {
     expect(firstToast).not.toBeInTheDocument();
     expect(screen.getByRole('status', { name: 'Second' })).toBeInTheDocument();
     expect(document.activeElement).toBe(focusTarget);
+  });
+
+  it('preserves the remaining lifetime while a card is clipped', () => {
+    vi.useFakeTimers();
+
+    const observers: TestIntersectionObserver[] = [];
+    class TestIntersectionObserver {
+      callback: IntersectionObserverCallback;
+
+      disconnected = false;
+
+      observed: Element[] = [];
+
+      constructor(callback: IntersectionObserverCallback) {
+        this.callback = callback;
+        observers.push(this);
+      }
+
+      observe(element: Element) {
+        this.observed.push(element);
+      }
+
+      disconnect() {
+        this.disconnected = true;
+      }
+
+      emit(isVisible: boolean) {
+        const [target] = this.observed;
+        if (!target) return;
+
+        this.callback(
+          [
+            {
+              intersectionRatio: isVisible ? 1 : 0,
+              isIntersecting: isVisible,
+              target,
+            } as IntersectionObserverEntry,
+          ],
+          this as unknown as IntersectionObserver,
+        );
+      }
+    }
+    vi.stubGlobal('IntersectionObserver', TestIntersectionObserver);
+
+    render(
+      <BreezeProvider locale="en-GB" toastLimit={1}>
+        <ToastButtons messages={['First', 'Second']} />
+      </BreezeProvider>,
+    );
+
+    act(() => {
+      screen.getByRole('button', { name: 'First' }).click();
+      screen.getByRole('button', { name: 'Second' }).click();
+    });
+    act(() => {
+      vi.advanceTimersByTime(0);
+    });
+    act(() => {
+      vi.advanceTimersByTime(0);
+    });
+
+    const firstToast = screen.getByRole('status', { name: 'First' });
+    const observer = observers.find(({ observed }) => observed.length > 0);
+    expect(observer).toBeDefined();
+
+    observer!.emit(true);
+    act(() => {
+      vi.advanceTimersByTime(1000);
+    });
+    observer!.emit(false);
+    act(() => {
+      vi.advanceTimersByTime(1000);
+    });
+
+    expect(firstToast).toBeInTheDocument();
+
+    observer!.emit(true);
+    act(() => {
+      vi.advanceTimersByTime(1599);
+    });
+    expect(firstToast).toBeInTheDocument();
+
+    act(() => {
+      vi.advanceTimersByTime(1);
+    });
+    act(() => {
+      vi.advanceTimersByTime(0);
+    });
+    act(() => {
+      vi.advanceTimersByTime(0);
+    });
+
+    expect(firstToast).not.toBeInTheDocument();
+    expect(screen.getByRole('status', { name: 'Second' })).toBeInTheDocument();
   });
 
   it('honours a configured visible limit', () => {
