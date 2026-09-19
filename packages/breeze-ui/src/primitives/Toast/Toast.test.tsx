@@ -1,6 +1,6 @@
 import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { afterEach, describe, expect, expectTypeOf, it, vi } from 'vitest';
 import { BreezeProvider } from '../../provider/BreezeProvider';
 import { Toast, type ToastEnqueue, type ToastProps, useToast } from './Toast';
@@ -31,6 +31,22 @@ function ToastButtons({ messages }: Readonly<{ messages: string[] }>) {
         </button>
       ))}
     </div>
+  );
+}
+
+function AdjustableToastExample() {
+  const [limit, setLimit] = useState(3);
+
+  return (
+    <BreezeProvider locale="en-GB" toastLimit={limit}>
+      <button type="button" onClick={() => setLimit(1)}>
+        Show one toast
+      </button>
+      <button type="button" onClick={() => setLimit(3)}>
+        Show all toasts
+      </button>
+      <ToastButtons messages={['One', 'Two', 'Three']} />
+    </BreezeProvider>
   );
 }
 
@@ -109,6 +125,90 @@ describe('Toast', () => {
     expect(document.querySelectorAll('[aria-live="polite"]')).toHaveLength(1);
     expect(toast).not.toHaveAttribute('tabindex');
     expect(document.activeElement).toBe(trigger);
+  });
+
+  it('defers the initial status update until the document is visible', () => {
+    vi.useFakeTimers();
+    const hidden = vi.spyOn(document, 'hidden', 'get');
+    hidden.mockReturnValue(true);
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <ToastTrigger />
+      </BreezeProvider>,
+    );
+
+    const trigger = screen.getByRole('button', { name: 'Save' });
+    trigger.focus();
+    act(() => {
+      trigger.click();
+    });
+    act(() => {
+      vi.advanceTimersByTime(0);
+    });
+
+    const status = screen.getByRole('status');
+    expect(status).not.toHaveAttribute('aria-label');
+    expect(status.textContent).toBe('');
+    expect(document.activeElement).toBe(trigger);
+
+    act(() => {
+      hidden.mockReturnValue(false);
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+    act(() => {
+      vi.advanceTimersByTime(0);
+    });
+
+    expect(
+      screen.getByRole('status', { name: 'Changes saved' }),
+    ).toBeInTheDocument();
+    expect(document.activeElement).toBe(trigger);
+  });
+
+  it('defers a hidden demoted card until it becomes visible', () => {
+    vi.useFakeTimers();
+    const hidden = vi.spyOn(document, 'hidden', 'get');
+    hidden.mockReturnValue(true);
+
+    render(<AdjustableToastExample />);
+
+    act(() => {
+      screen.getByRole('button', { name: 'One' }).click();
+      screen.getByRole('button', { name: 'Two' }).click();
+    });
+
+    const [firstToast, secondToast] = screen.getAllByRole('status');
+    expect(firstToast.textContent).toBe('');
+    expect(secondToast.textContent).toBe('');
+
+    act(() => {
+      screen.getByRole('button', { name: 'Show one toast' }).click();
+    });
+    expect(secondToast.closest('[data-breeze-toast-id]')).toHaveAttribute(
+      'hidden',
+    );
+
+    act(() => {
+      hidden.mockReturnValue(false);
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+    act(() => {
+      vi.advanceTimersByTime(0);
+    });
+
+    expect(firstToast).toHaveAttribute('aria-label', 'One');
+    expect(secondToast).not.toHaveAttribute('aria-label');
+    expect(secondToast.textContent).toBe('');
+
+    act(() => {
+      screen.getByRole('button', { name: 'Show all toasts' }).click();
+    });
+    act(() => {
+      vi.advanceTimersByTime(0);
+    });
+
+    expect(screen.getByRole('status', { name: 'Two' })).toBe(secondToast);
   });
 
   it('does not add a focus stop or dismiss from keyboard input', async () => {
@@ -380,6 +480,67 @@ describe('Toast', () => {
 
     expect(firstToast).not.toBeInTheDocument();
     expect(screen.getByRole('status', { name: 'Second' })).toBeInTheDocument();
+  });
+
+  it('preserves a demoted card identity and remaining lifetime', () => {
+    vi.useFakeTimers();
+
+    render(<AdjustableToastExample />);
+
+    ['One', 'Two', 'Three'].forEach((message) => {
+      act(() => {
+        screen.getByRole('button', { name: message }).click();
+      });
+    });
+    act(() => {
+      vi.advanceTimersByTime(0);
+    });
+
+    const firstToast = screen.getByRole('status', { name: 'One' });
+    const secondToast = screen.getByRole('status', { name: 'Two' });
+    expect(screen.getAllByRole('status')).toHaveLength(3);
+
+    act(() => {
+      vi.advanceTimersByTime(1000);
+      screen.getByRole('button', { name: 'Show one toast' }).click();
+    });
+
+    expect(screen.getAllByRole('status')).toHaveLength(1);
+    expect(secondToast).toBeInTheDocument();
+    expect(secondToast.closest('[data-breeze-toast-id]')).toHaveAttribute(
+      'hidden',
+    );
+
+    act(() => {
+      vi.advanceTimersByTime(1000);
+      screen.getByRole('button', { name: 'Show all toasts' }).click();
+    });
+
+    expect(screen.getByRole('status', { name: 'Two' })).toBe(secondToast);
+    expect(secondToast.closest('[data-breeze-toast-id]')).not.toHaveAttribute(
+      'hidden',
+    );
+
+    act(() => {
+      vi.advanceTimersByTime(599);
+    });
+    expect(firstToast).toBeInTheDocument();
+
+    act(() => {
+      vi.advanceTimersByTime(1);
+    });
+    expect(firstToast).not.toBeInTheDocument();
+    expect(secondToast).toBeInTheDocument();
+
+    act(() => {
+      vi.advanceTimersByTime(999);
+    });
+    expect(secondToast).toBeInTheDocument();
+
+    act(() => {
+      vi.advanceTimersByTime(1);
+    });
+    expect(secondToast).not.toBeInTheDocument();
   });
 
   it('honours a configured visible limit', () => {

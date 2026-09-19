@@ -4,6 +4,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
 } from 'react';
@@ -52,6 +53,7 @@ function handleToastIntersection(
 export type ToastEnqueue = (message: string) => void;
 
 const ToastContext = createContext<ToastEnqueue | null>(null);
+const ToastAnnouncementContext = createContext(true);
 
 export interface ToastProps {
   /** Translated confirmation message. */
@@ -65,12 +67,21 @@ export interface ToastProps {
  */
 export function Toast({ children }: Readonly<ToastProps>) {
   useBreezeContext();
+  const isDocumentVisible = useContext(ToastAnnouncementContext);
   const [message, setMessage] = useState<string | null>(null);
 
   useEffect(() => {
+    if (
+      !isDocumentVisible ||
+      (typeof document !== 'undefined' && document.hidden) ||
+      message === children
+    ) {
+      return undefined;
+    }
+
     const update = setTimeout(() => setMessage(children), 0);
     return () => clearTimeout(update);
-  }, [children]);
+  }, [children, isDocumentVisible, message]);
 
   return (
     <div
@@ -105,6 +116,7 @@ export function ToastProviderBoundary({
   const [queue, setQueue] = useState<ToastItem[]>([]);
   const nextId = useRef(0);
   const timers = useRef(new Map<number, ToastTimer>());
+  const renderedToastIds = useRef(new Set<number>());
 
   if (!Number.isInteger(limit) || limit < 1) {
     throw new RangeError(toastLimitError);
@@ -118,6 +130,7 @@ export function ToastProviderBoundary({
   }, []);
   const expireToast = useCallback((id: number) => {
     timers.current.delete(id);
+    renderedToastIds.current.delete(id);
     setQueue((current) => current.filter((toast) => toast.id !== id));
   }, []);
   const clearToastTimers = useCallback(() => {
@@ -130,9 +143,9 @@ export function ToastProviderBoundary({
     (id: number, now = Date.now()) => {
       const timer = timers.current.get(id);
       if (
-        timer === undefined ||
-        timer.handle === null ||
-        timer.startedAt === null
+        timer?.handle === null ||
+        timer?.startedAt === null ||
+        timer === undefined
       ) {
         return;
       }
@@ -204,16 +217,27 @@ export function ToastProviderBoundary({
       document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, [pauseToastTimers]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const visible = queue.slice(0, limit);
     const visibleIds = new Set(visible.map(({ id }) => id));
+    const queuedIds = new Set(queue.map(({ id }) => id));
+
+    visible.forEach(({ id }) => renderedToastIds.current.add(id));
 
     Array.from(timers.current.keys()).forEach((id) => {
       if (!visibleIds.has(id)) {
-        removeToastTimer(id);
+        if (queuedIds.has(id)) {
+          pauseToastTimer(id);
+        } else {
+          removeToastTimer(id);
+        }
       }
     });
+  }, [limit, pauseToastTimer, queue, removeToastTimer]);
 
+  useEffect(() => {
+    const visible = queue.slice(0, limit);
+    const visibleIds = new Set(visible.map(({ id }) => id));
     const region = regionRef.current;
     if (host === null || region === null || !isDocumentVisible) {
       return undefined;
@@ -243,7 +267,8 @@ export function ToastProviderBoundary({
       Array.from(region.children).forEach((element) => {
         if (
           element instanceof HTMLElement &&
-          element.dataset.breezeToastId !== undefined
+          element.dataset.breezeToastId !== undefined &&
+          !element.hidden
         ) {
           observer?.observe(element);
         }
@@ -268,29 +293,48 @@ export function ToastProviderBoundary({
   useEffect(() => clearToastTimers, [clearToastTimers]);
 
   const visible = queue.slice(0, limit);
+  const visibleIds = new Set(visible.map(({ id }) => id));
+  const rendered = queue.filter(
+    ({ id }) => visibleIds.has(id) || renderedToastIds.current.has(id),
+  );
 
   return (
-    <ToastContext value={enqueue}>
-      {children}
-      {host &&
-        createPortal(
-          <div
-            ref={regionRef}
-            className="breeze-toast-region"
-            data-breeze-toast-region=""
-            data-live-announcer=""
-            data-react-aria-top-layer=""
-            style={{ zIndex }}
-          >
-            {visible.map(({ id, message }) => (
-              <div key={id} data-breeze-toast-id={id}>
-                <Toast>{message}</Toast>
-              </div>
-            ))}
-          </div>,
-          host,
-        )}
-    </ToastContext>
+    <ToastAnnouncementContext value={isDocumentVisible}>
+      <ToastContext value={enqueue}>
+        {children}
+        {host &&
+          createPortal(
+            <div
+              ref={regionRef}
+              className="breeze-toast-region"
+              data-breeze-toast-region=""
+              data-live-announcer=""
+              data-react-aria-top-layer=""
+              style={{ zIndex }}
+            >
+              {rendered.map(({ id, message }) => {
+                const demoted = !visibleIds.has(id);
+
+                return (
+                  <div
+                    key={id}
+                    aria-hidden={demoted ? 'true' : undefined}
+                    data-breeze-toast-id={id}
+                    hidden={demoted}
+                  >
+                    <ToastAnnouncementContext
+                      value={isDocumentVisible && !demoted}
+                    >
+                      <Toast>{message}</Toast>
+                    </ToastAnnouncementContext>
+                  </div>
+                );
+              })}
+            </div>,
+            host,
+          )}
+      </ToastContext>
+    </ToastAnnouncementContext>
   );
 }
 
