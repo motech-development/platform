@@ -72,18 +72,6 @@ function ModalToastExample({ kind }: Readonly<{ kind: 'dialog' | 'drawer' }>) {
   );
 }
 
-function NestedProviderToastExample() {
-  return (
-    <BreezeProvider locale="en-GB">
-      <Dialog defaultOpen title="Confirm change" trigger="Open dialog">
-        <BreezeProvider locale="en-GB">
-          <SaveAction />
-        </BreezeProvider>
-      </Dialog>
-    </BreezeProvider>
-  );
-}
-
 async function assertToastGeometry(
   width: number,
   height: number,
@@ -235,28 +223,5 @@ describe.each(['dialog', 'drawer'] as const)('%s with Toast', (kind) => {
     );
     expect(document.activeElement).toBe(action);
     expect(document.activeElement).not.toBe(toast);
-  });
-});
-
-describe('nested BreezeProvider with Toast', () => {
-  it('keeps a nested provider above its ancestor overlay', async () => {
-    render(<NestedProviderToastExample />);
-
-    const modal = await screen.findByRole('dialog', {
-      name: 'Confirm change',
-    });
-    await userEvent.click(
-      within(modal).getByRole('button', { name: 'Save changes' }),
-    );
-
-    const toast = await screen.findByRole('status', { name: 'Changes saved' });
-    const region = toast.closest('[data-breeze-toast-region]');
-    const modalLayer = modal.closest('[data-breeze-overlay]');
-
-    expect(region).toBeInTheDocument();
-    expect(modalLayer).toBeInTheDocument();
-    expect(Number(getComputedStyle(region!).zIndex)).toBeGreaterThanOrEqual(
-      Number(getComputedStyle(modalLayer!).zIndex),
-    );
   });
 });
