@@ -1,6 +1,6 @@
 import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { afterEach, describe, expect, expectTypeOf, it, vi } from 'vitest';
 import { BreezeProvider } from '../../provider/BreezeProvider';
 import { Toast, type ToastEnqueue, type ToastProps, useToast } from './Toast';
@@ -48,6 +48,16 @@ function AdjustableToastExample() {
       <ToastButtons messages={['One', 'Two', 'Three']} />
     </BreezeProvider>
   );
+}
+
+function VisibilityRaceExample({
+  onLayout,
+}: Readonly<{ onLayout: () => void }>) {
+  useLayoutEffect(() => {
+    onLayout();
+  }, [onLayout]);
+
+  return <ToastTrigger />;
 }
 
 expectTypeOf<ToastEnqueue>().toEqualTypeOf<(message: string) => void>();
@@ -164,6 +174,34 @@ describe('Toast', () => {
       screen.getByRole('status', { name: 'Changes saved' }),
     ).toBeInTheDocument();
     expect(document.activeElement).toBe(trigger);
+  });
+
+  it('reconciles document visibility after subscribing', () => {
+    vi.useFakeTimers();
+    const hidden = vi.spyOn(document, 'hidden', 'get');
+    hidden.mockReturnValue(true);
+    const revealDocument = () => {
+      hidden.mockReturnValue(false);
+      document.dispatchEvent(new Event('visibilitychange'));
+    };
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <VisibilityRaceExample onLayout={revealDocument} />
+      </BreezeProvider>,
+    );
+
+    const trigger = screen.getByRole('button', { name: 'Save' });
+    act(() => {
+      trigger.click();
+    });
+    act(() => {
+      vi.advanceTimersByTime(0);
+    });
+
+    expect(
+      screen.getByRole('status', { name: 'Changes saved' }),
+    ).toBeInTheDocument();
   });
 
   it('defers a hidden demoted card until it becomes visible', () => {
@@ -593,5 +631,52 @@ describe('Toast', () => {
 
     expect(portalContainer).toBeEmptyDOMElement();
     portalContainer.remove();
+  });
+
+  it('preserves an announced status when the portal host changes', () => {
+    vi.useFakeTimers();
+    const firstPortal = document.createElement('section');
+    const secondPortal = document.createElement('section');
+    document.body.append(firstPortal, secondPortal);
+
+    function PortalSwitchExample() {
+      const [portalContainer, setPortalContainer] = useState(firstPortal);
+
+      return (
+        <BreezeProvider locale="en-GB" portalContainer={portalContainer}>
+          <button
+            type="button"
+            onClick={() => setPortalContainer(secondPortal)}
+          >
+            Switch portal
+          </button>
+          <ToastButtons messages={['Saved']} />
+        </BreezeProvider>
+      );
+    }
+
+    const { unmount } = render(<PortalSwitchExample />);
+    act(() => {
+      screen.getByRole('button', { name: 'Saved' }).click();
+    });
+    act(() => {
+      vi.advanceTimersByTime(0);
+    });
+
+    const originalToast = screen.getByRole('status', { name: 'Saved' });
+    expect(firstPortal).toContainElement(originalToast);
+
+    act(() => {
+      screen.getByRole('button', { name: 'Switch portal' }).click();
+    });
+
+    const migratedToast = screen.getByRole('status', { name: 'Saved' });
+    expect(migratedToast).not.toBe(originalToast);
+    expect(secondPortal).toContainElement(migratedToast);
+    expect(migratedToast).toHaveTextContent('Saved');
+
+    unmount();
+    firstPortal.remove();
+    secondPortal.remove();
   });
 });
