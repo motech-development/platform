@@ -133,18 +133,19 @@ describe('TextField', () => {
     expect(input).toHaveClass('breeze:!opacity-0');
     expect(input).not.toHaveClass('breeze:invisible');
     expect(input).toHaveAttribute('aria-busy', 'true');
-    expect(
-      screen.getByRole('progressbar', { name: 'Loading' }),
-    ).toBeInTheDocument();
+    const loadingPlaceholder = screen.getByRole('progressbar', {
+      name: 'Loading',
+    });
+
+    expect(loadingPlaceholder).toHaveClass('breeze:rounded-breeze-sm');
+    expect(loadingPlaceholder.parentElement).not.toHaveClass(
+      'breeze:rounded-breeze-ctl',
+    );
 
     await user.type(input, ' changed');
 
     expect(onChange).not.toHaveBeenCalled();
 
-    await waitFor(() =>
-      expect(
-        screen.getByRole('progressbar', { name: 'Loading' }),
-      ).toBeVisible(),
-    );
+    await waitFor(() => expect(loadingPlaceholder).toBeVisible());
   });
 });

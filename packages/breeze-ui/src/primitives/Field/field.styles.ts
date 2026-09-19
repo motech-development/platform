@@ -13,7 +13,7 @@ export const fieldVariants = {
       'breeze:m-0 breeze:text-breeze-xs breeze:font-medium breeze:leading-breeze-snug breeze:text-breeze-ink',
     root: 'breeze:flex breeze:min-inline-size-0 breeze:flex-col breeze:gap-breeze-2',
     skeleton:
-      'breeze:pointer-events-none breeze:[grid-area:1/1] breeze:min-block-breeze-md breeze:rounded-breeze-ctl',
+      'breeze:pointer-events-none breeze:absolute breeze:[inset-block:0] breeze:[inset-inline:0]',
   },
   compound: {},
   size: {},

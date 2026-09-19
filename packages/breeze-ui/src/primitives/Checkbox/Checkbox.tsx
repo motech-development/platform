@@ -7,7 +7,7 @@ import {
 import { FieldError as AriaFieldError } from 'react-aria-components/FieldError';
 import { Text as AriaText } from 'react-aria-components/Text';
 import { useBreezeContext } from '../../provider/BreezeContext';
-import { fieldVariants, joinClassNames } from '../Field/field.styles';
+import { fieldVariants } from '../Field/field.styles';
 import { Skeleton } from '../Skeleton/Skeleton';
 
 const variants = {
@@ -17,11 +17,9 @@ const variants = {
     indicator:
       'breeze:inline-grid breeze:block-size-breeze-5 breeze:inline-size-breeze-5 breeze:shrink-0 breeze:place-items-center breeze:rounded-breeze-chip breeze:border breeze:border-solid breeze:border-breeze-line-strong breeze:bg-breeze-surface breeze:text-breeze-on-brand breeze:transition-colors breeze:data-[selected]:border-breeze-brand breeze:data-[selected]:bg-breeze-brand breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand',
     label: 'breeze:[grid-area:1/2]',
-    loadingContent: 'breeze:opacity-0',
-    skeleton:
-      'breeze:pointer-events-none breeze:[grid-area:1/2] breeze:rounded-breeze-chip',
+    skeleton: 'breeze:pointer-events-none breeze:[grid-area:1/2]',
     skeletonIndicator:
-      'breeze:pointer-events-none breeze:[grid-area:1/1] breeze:block-size-breeze-5 breeze:inline-size-breeze-5 breeze:overflow-hidden breeze:rounded-breeze-chip',
+      'breeze:pointer-events-none breeze:[grid-area:1/1] breeze:block-size-breeze-5 breeze:inline-size-breeze-5',
   },
   compound: {},
   size: {},
@@ -128,26 +126,6 @@ export function Checkbox({
       <AriaCheckboxButton className={variants.base.control}>
         {({ isFocusVisible, isSelected }) => (
           <>
-            <span
-              aria-hidden="true"
-              className={joinClassNames(
-                variants.base.indicator,
-                loading && variants.base.loadingContent,
-              )}
-              data-focus-visible={isFocusVisible || undefined}
-              data-selected={isSelected || undefined}
-            >
-              {isSelected ? '✓' : ''}
-            </span>
-            <span
-              aria-hidden={loading || undefined}
-              className={joinClassNames(
-                variants.base.label,
-                loading && variants.base.loadingContent,
-              )}
-            >
-              {label}
-            </span>
             {loading && (
               <>
                 <span
@@ -168,6 +146,19 @@ export function Checkbox({
                     shape="rectangle"
                   />
                 </span>
+              </>
+            )}
+            {!loading && (
+              <>
+                <span
+                  aria-hidden="true"
+                  className={variants.base.indicator}
+                  data-focus-visible={isFocusVisible || undefined}
+                  data-selected={isSelected || undefined}
+                >
+                  {isSelected ? '✓' : ''}
+                </span>
+                <span className={variants.base.label}>{label}</span>
               </>
             )}
           </>
