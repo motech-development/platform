@@ -19,7 +19,7 @@ const variants = {
     skeleton:
       'breeze:pointer-events-none breeze:absolute breeze:[inset-block:0] breeze:[inset-inline:0] breeze:rounded-breeze-ctl',
     stepButton:
-      'breeze:min-inline-breeze-md breeze:border-0 breeze:bg-transparent breeze:ps-breeze-2 breeze:pe-breeze-2 breeze:font-breeze-sans breeze:text-breeze-md breeze:font-semibold breeze:leading-none breeze:text-breeze-ink breeze:disabled:cursor-not-allowed breeze:disabled:opacity-50 breeze:hover:text-breeze-brand breeze:focus-visible:outline-2 breeze:focus-visible:outline-solid breeze:focus-visible:outline-breeze-brand',
+      'breeze:min-inline-breeze-md breeze:border-0 breeze:bg-transparent breeze:ps-breeze-2 breeze:pe-breeze-2 breeze:font-breeze-sans breeze:text-breeze-md breeze:font-semibold breeze:leading-none breeze:text-breeze-ink breeze:disabled:cursor-not-allowed breeze:disabled:opacity-50 breeze:any-pointer-coarse:min-block-breeze-tap breeze:any-pointer-coarse:min-inline-breeze-tap breeze:hover:text-breeze-brand breeze:focus-visible:outline-2 breeze:focus-visible:outline-solid breeze:focus-visible:outline-breeze-brand breeze:outline-offset-[-2px]',
   },
   compound: {},
   size: {},
@@ -35,8 +35,6 @@ interface NumberFieldCommonProps {
   autoComplete?: string;
   /** Focuses the input when the component is mounted. */
   autoFocus?: boolean;
-  /** Controls when values outside min/max or step are committed. */
-  commitBehavior?: 'snap' | 'validate';
   /** Supporting guidance announced with the input. */
   description?: string;
   /** Prevents editing, stepping, and focus. Defaults to `false`. */
@@ -102,7 +100,6 @@ export type NumberFieldProps = NumberFieldCommonProps &
 export function NumberField({
   autoComplete,
   autoFocus,
-  commitBehavior,
   defaultValue,
   description,
   disabled = false,
@@ -132,7 +129,6 @@ export function NumberField({
     <AriaNumberField
       autoFocus={autoFocus}
       className={fieldVariants.base.root}
-      commitBehavior={commitBehavior}
       defaultValue={defaultValue}
       form={form}
       formatOptions={formatOptions}

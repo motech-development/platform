@@ -112,7 +112,7 @@ export function Checkbox({
       form={form}
       id={id}
       inputRef={inputRef}
-      aria-label={loading ? `${label} ${messages.loading}` : label}
+      aria-label={loading ? label : undefined}
       isDisabled={interactionDisabled}
       isInvalid={visibleError !== undefined}
       isReadOnly={readOnly}
@@ -127,7 +127,7 @@ export function Checkbox({
         {({ isFocusVisible, isSelected }) => (
           <>
             <span
-              aria-hidden={loading || undefined}
+              aria-hidden="true"
               className={joinClassNames(
                 variants.base.indicator,
                 loading && variants.base.loadingContent,
