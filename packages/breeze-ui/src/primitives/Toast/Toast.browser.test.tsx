@@ -46,9 +46,9 @@ function WrappedToastContent() {
   ));
 }
 
-function WrappedToastExample() {
+function WrappedToastExample({ limit = 3 }: Readonly<{ limit?: number }> = {}) {
   return (
-    <BreezeProvider locale="en-GB">
+    <BreezeProvider locale="en-GB" toastLimit={limit}>
       <WrappedToastContent />
     </BreezeProvider>
   );
@@ -165,27 +165,41 @@ describe('Toast browser geometry', () => {
     ).not.toBeInTheDocument();
   }, 10000);
 
-  it('continues a queue when a card is taller than the remaining viewport', async () => {
+  it('waits for a clipped card to become fully visible before expiring', async () => {
     await page.viewport(375, 120);
     expect(window.innerWidth).toBe(375);
 
-    render(<WrappedToastExample />);
-    await wrappedMessages.reduce(
-      (previous, message) =>
-        previous.then(() =>
-          userEvent.click(page.getByRole('button', { name: message })),
-        ),
-      Promise.resolve(),
+    render(<WrappedToastExample limit={1} />);
+    await userEvent.click(
+      page.getByRole('button', { name: wrappedMessages[0] }),
     );
 
     const firstToast = await screen.findByRole('status', {
       name: wrappedMessages[0],
     });
+    await userEvent.click(
+      page.getByRole('button', { name: wrappedMessages[1] }),
+    );
+    expect(
+      screen.queryByRole('status', { name: wrappedMessages[1] }),
+    ).not.toBeInTheDocument();
     expect(firstToast.getBoundingClientRect().bottom).toBeGreaterThan(
       window.innerHeight,
     );
 
     await waitForTime(2700);
+    expect(firstToast).toBeInTheDocument();
+
+    await page.viewport(375, 240);
+    expect(window.innerHeight).toBe(240);
+    await waitFor(() => {
+      expect(firstToast.getBoundingClientRect().bottom).toBeLessThanOrEqual(
+        window.innerHeight,
+      );
+    });
+
+    await waitForTime(2700);
+    expect(firstToast).not.toBeInTheDocument();
     expect(
       await screen.findByRole('status', { name: wrappedMessages[1] }),
     ).toBeInTheDocument();

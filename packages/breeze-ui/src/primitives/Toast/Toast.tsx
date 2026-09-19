@@ -23,20 +23,8 @@ interface ToastItem {
   message: string;
 }
 
-const toastTopInset = 76;
-
 function isToastVisible(entry: IntersectionObserverEntry) {
-  const viewportHeight = entry.rootBounds?.height ?? window.innerHeight;
-  const availableHeight = viewportHeight - toastTopInset;
-  const { height, top } = entry.boundingClientRect;
-
-  return (
-    entry.isIntersecting &&
-    (entry.intersectionRatio >= 1 ||
-      (height > availableHeight &&
-        top >= toastTopInset &&
-        top < viewportHeight))
-  );
+  return entry.isIntersecting && entry.intersectionRatio >= 1;
 }
 
 function handleToastIntersection(
