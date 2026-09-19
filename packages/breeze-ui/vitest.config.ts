@@ -24,7 +24,6 @@ export default defineConfig({
         plugins: [react()],
         test: {
           environment: 'jsdom',
-          exclude: ['src/**/*.browser.test.{ts,tsx}'],
           include: ['src/**/*.test.{ts,tsx}'],
           name: 'unit',
           setupFiles: ['./test/setup.ts'],
@@ -45,24 +44,8 @@ export default defineConfig({
             provider: playwright(),
           },
           // Focus, keyboard, and portalled stories share browser document state.
-          exclude: ['src/**/*.browser.test.{ts,tsx}'],
           fileParallelism: false,
           name: 'storybook',
-        },
-      },
-      {
-        plugins: [react(), tailwindcss()],
-        test: {
-          browser: {
-            enabled: true,
-            headless: true,
-            instances: [{ browser: 'chromium' }],
-            provider: playwright(),
-          },
-          fileParallelism: false,
-          include: ['src/primitives/Toast/Toast.browser.test.tsx'],
-          name: 'toast-browser',
-          setupFiles: ['./test/setup.ts'],
         },
       },
     ],

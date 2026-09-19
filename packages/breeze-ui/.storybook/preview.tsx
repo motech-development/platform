@@ -16,12 +16,17 @@ const preview: Preview = {
   decorators: [
     (Story, context) => {
       const appearance = getAppearance(context.globals.appearance);
+      const toastLimit =
+        typeof context.parameters.toastLimit === 'number'
+          ? context.parameters.toastLimit
+          : undefined;
 
       return (
         <BreezeProvider
           defaultAppearance={appearance}
           key={appearance}
           locale="en-GB"
+          toastLimit={toastLimit}
         >
           <Story />
         </BreezeProvider>
