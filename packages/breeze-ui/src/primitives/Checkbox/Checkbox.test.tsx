@@ -121,6 +121,27 @@ describe('Checkbox', () => {
     expect(
       screen.getByRole('progressbar', { name: 'Loading' }),
     ).toBeInTheDocument();
+    expect(screen.getAllByRole('progressbar')).toHaveLength(1);
+
+    const placeholders = Array.from(
+      checkbox.closest('label')?.querySelectorAll('span') ?? [],
+    ).filter((element) =>
+      String(element.className).includes('breeze:pointer-events-none'),
+    );
+    const indicatorPlaceholder = placeholders.find((element) =>
+      String(element.className).includes('breeze:[grid-area:1/1]'),
+    );
+    const labelPlaceholder = placeholders.find((element) =>
+      String(element.className).includes('breeze:[grid-area:1/2]'),
+    );
+
+    expect(indicatorPlaceholder).toHaveAttribute('aria-hidden', 'true');
+    expect(indicatorPlaceholder).toHaveClass(
+      'breeze:block-size-breeze-5',
+      'breeze:inline-size-breeze-5',
+      'breeze:rounded-breeze-chip',
+    );
+    expect(labelPlaceholder).toHaveClass('breeze:[grid-area:1/2]');
     expect(checkbox).toHaveAttribute('name', 'alerts');
     expect(checkbox).toHaveAttribute('value', 'email');
 

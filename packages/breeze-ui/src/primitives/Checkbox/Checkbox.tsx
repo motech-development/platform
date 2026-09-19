@@ -20,6 +20,8 @@ const variants = {
     loadingContent: 'breeze:opacity-0',
     skeleton:
       'breeze:pointer-events-none breeze:[grid-area:1/2] breeze:rounded-breeze-chip',
+    skeletonIndicator:
+      'breeze:pointer-events-none breeze:[grid-area:1/1] breeze:block-size-breeze-5 breeze:inline-size-breeze-5 breeze:overflow-hidden breeze:rounded-breeze-chip',
   },
   compound: {},
   size: {},
@@ -147,14 +149,26 @@ export function Checkbox({
               {label}
             </span>
             {loading && (
-              <span className={variants.base.skeleton}>
-                <Skeleton
-                  blockSize="1lh"
-                  inlineSize="12em"
-                  label={messages.loading}
-                  shape="rectangle"
-                />
-              </span>
+              <>
+                <span
+                  aria-hidden="true"
+                  className={variants.base.skeletonIndicator}
+                >
+                  <Skeleton
+                    blockSize="100%"
+                    inlineSize="100%"
+                    shape="rectangle"
+                  />
+                </span>
+                <span className={variants.base.skeleton}>
+                  <Skeleton
+                    blockSize="1lh"
+                    inlineSize="12em"
+                    label={messages.loading}
+                    shape="rectangle"
+                  />
+                </span>
+              </>
             )}
           </>
         )}
