@@ -129,26 +129,34 @@ export function ToastProviderBoundary({
   const nextId = useRef(0);
   const timers = useRef(new Map<number, ToastTimer>());
   const renderedToastIds = useRef(new Set<number>());
-  const announcementMessages = useRef(new Map<number, string>());
+  const announcementStates = useRef(new Map<number, ToastContentState>());
 
   if (!Number.isInteger(limit) || limit < 1) {
     throw new RangeError(toastLimitError);
   }
 
-  const enqueue = useCallback<ToastEnqueue>((message) => {
-    const id = nextId.current;
-    nextId.current += 1;
-
-    setQueue((current) => [...current, { id, message }]);
+  const rememberToastMessage = useCallback((id: number, message: string) => {
+    const state = announcementStates.current.get(id);
+    if (state !== undefined) state.message = message;
   }, []);
+  const enqueue = useCallback<ToastEnqueue>(
+    (message) => {
+      const id = nextId.current;
+      nextId.current += 1;
+      announcementStates.current.set(id, {
+        message: null,
+        remember: (nextMessage) => rememberToastMessage(id, nextMessage),
+      });
+
+      setQueue((current) => [...current, { id, message }]);
+    },
+    [rememberToastMessage],
+  );
   const expireToast = useCallback((id: number) => {
     timers.current.delete(id);
     renderedToastIds.current.delete(id);
-    announcementMessages.current.delete(id);
+    announcementStates.current.delete(id);
     setQueue((current) => current.filter((toast) => toast.id !== id));
-  }, []);
-  const rememberToastMessage = useCallback((id: number, message: string) => {
-    announcementMessages.current.set(id, message);
   }, []);
   const clearToastTimers = useCallback(() => {
     Array.from(timers.current.values()).forEach(({ handle }) => {
@@ -341,11 +349,7 @@ export function ToastProviderBoundary({
                     hidden={demoted}
                   >
                     <ToastContentContext
-                      value={{
-                        message: announcementMessages.current.get(id) ?? null,
-                        remember: (nextMessage) =>
-                          rememberToastMessage(id, nextMessage),
-                      }}
+                      value={announcementStates.current.get(id) ?? null}
                     >
                       <ToastAnnouncementContext
                         value={isDocumentVisible && !demoted}
