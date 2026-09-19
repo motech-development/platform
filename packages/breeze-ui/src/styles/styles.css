@@ -6,6 +6,7 @@
 @import './overlays.css';
 
 @source '../primitives/**/*.tsx';
+@source '../primitives/**/*.ts';
 @source '../patterns/**/*.tsx';
 @source '../provider/**/*.tsx';
 @source not '../**/*.stories.tsx';

@@ -9,6 +9,7 @@ expectTypeOf<NumberFieldProps>().not.toHaveProperty('className');
 expectTypeOf<NumberFieldProps>().not.toHaveProperty('style');
 expectTypeOf<NumberFieldProps>().not.toHaveProperty('slot');
 expectTypeOf<NumberFieldProps>().not.toHaveProperty('render');
+expectTypeOf<NumberFieldProps>().not.toHaveProperty('commitBehavior');
 expectTypeOf<NumberFieldProps['onChange']>().toEqualTypeOf<
   ((value: number) => void) | undefined
 >();
@@ -52,6 +53,11 @@ describe('NumberField', () => {
     const increment = screen.getByRole('button', { name: /increase/i });
 
     expect(input).toHaveClass('breeze:tabular-nums');
+    expect(increment).toHaveClass(
+      'breeze:any-pointer-coarse:min-block-breeze-tap',
+      'breeze:any-pointer-coarse:min-inline-breeze-tap',
+      'breeze:outline-offset-[-2px]',
+    );
     expect(input).toHaveValue('1');
 
     await user.click(increment);

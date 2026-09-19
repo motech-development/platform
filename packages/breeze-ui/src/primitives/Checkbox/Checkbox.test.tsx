@@ -113,7 +113,7 @@ describe('Checkbox', () => {
     );
 
     const checkbox = screen.getByRole('checkbox', {
-      name: 'Email alerts Loading',
+      name: 'Email alerts',
     });
 
     expect(inputRef.current).toBe(checkbox);
@@ -127,6 +127,17 @@ describe('Checkbox', () => {
     await user.click(checkbox);
 
     expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it('keeps the visual checkmark decorative', () => {
+    renderBreeze(<Checkbox defaultSelected label="Accept terms" />);
+
+    const checkbox = screen.getByRole('checkbox', { name: 'Accept terms' });
+    const indicator = checkbox
+      .closest('label')
+      ?.querySelector('span[data-selected]');
+
+    expect(indicator).toHaveAttribute('aria-hidden', 'true');
   });
 
   it('keeps controlled selection application-owned', async () => {
