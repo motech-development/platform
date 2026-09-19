@@ -46,7 +46,6 @@ function handleToastIntersection(
 export type ToastEnqueue = (message: string) => void;
 
 const ToastContext = createContext<ToastEnqueue | null>(null);
-const ToastLayerContext = createContext<number | null>(null);
 
 export interface ToastProps {
   /** Translated confirmation message. */
@@ -92,10 +91,11 @@ export function ToastProviderBoundary({
   limit,
 }: Readonly<ToastProviderBoundaryProps>) {
   const host = useOverlayPortal();
-  const parentToastZIndex = useContext(ToastLayerContext);
-  const localZIndex = useOverlayToastZIndex();
-  const zIndex = Math.max(localZIndex, parentToastZIndex ?? 0);
+  const zIndex = useOverlayToastZIndex();
   const regionRef = useRef<HTMLDivElement>(null);
+  const [isDocumentVisible, setIsDocumentVisible] = useState(
+    () => typeof document === 'undefined' || !document.hidden,
+  );
   const [queue, setQueue] = useState<ToastItem[]>([]);
   const nextId = useRef(0);
   const timers = useRef(new Map<number, ReturnType<typeof setTimeout>>());
@@ -114,6 +114,10 @@ export function ToastProviderBoundary({
     timers.current.delete(id);
     setQueue((current) => current.filter((toast) => toast.id !== id));
   }, []);
+  const clearToastTimers = useCallback(() => {
+    Array.from(timers.current.values()).forEach((timer) => clearTimeout(timer));
+    timers.current.clear();
+  }, []);
   const clearToastTimer = useCallback((id: number) => {
     const timer = timers.current.get(id);
     if (timer !== undefined) {
@@ -123,15 +127,31 @@ export function ToastProviderBoundary({
   }, []);
   const scheduleToast = useCallback(
     (id: number) => {
-      if (!timers.current.has(id)) {
+      if (
+        isDocumentVisible &&
+        (typeof document === 'undefined' || !document.hidden) &&
+        !timers.current.has(id)
+      ) {
         timers.current.set(
           id,
           setTimeout(() => expireToast(id), toastLifetime),
         );
       }
     },
-    [expireToast],
+    [expireToast, isDocumentVisible],
   );
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      const visible = !document.hidden;
+      if (!visible) clearToastTimers();
+      setIsDocumentVisible(visible);
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () =>
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [clearToastTimers]);
 
   useEffect(() => {
     const visible = queue.slice(0, limit);
@@ -145,7 +165,9 @@ export function ToastProviderBoundary({
     });
 
     const region = regionRef.current;
-    if (host === null || region === null) return undefined;
+    if (host === null || region === null || !isDocumentVisible) {
+      return undefined;
+    }
 
     if (typeof IntersectionObserver === 'undefined') {
       visible.forEach((toast) => scheduleToast(toast.id));
@@ -183,44 +205,34 @@ export function ToastProviderBoundary({
       clearTimeout(observeTask);
       observer?.disconnect();
     };
-  }, [clearToastTimer, host, limit, queue, scheduleToast]);
+  }, [clearToastTimer, host, isDocumentVisible, limit, queue, scheduleToast]);
 
-  useEffect(
-    () => () => {
-      Array.from(timers.current.values()).forEach((timer) =>
-        clearTimeout(timer),
-      );
-      timers.current.clear();
-    },
-    [],
-  );
+  useEffect(() => clearToastTimers, [clearToastTimers]);
 
   const visible = queue.slice(0, limit);
 
   return (
-    <ToastLayerContext value={zIndex}>
-      <ToastContext value={enqueue}>
-        {children}
-        {host &&
-          createPortal(
-            <div
-              ref={regionRef}
-              className="breeze-toast-region"
-              data-breeze-toast-region=""
-              data-live-announcer=""
-              data-react-aria-top-layer=""
-              style={{ zIndex }}
-            >
-              {visible.map(({ id, message }) => (
-                <div key={id} data-breeze-toast-id={id}>
-                  <Toast>{message}</Toast>
-                </div>
-              ))}
-            </div>,
-            host,
-          )}
-      </ToastContext>
-    </ToastLayerContext>
+    <ToastContext value={enqueue}>
+      {children}
+      {host &&
+        createPortal(
+          <div
+            ref={regionRef}
+            className="breeze-toast-region"
+            data-breeze-toast-region=""
+            data-live-announcer=""
+            data-react-aria-top-layer=""
+            style={{ zIndex }}
+          >
+            {visible.map(({ id, message }) => (
+              <div key={id} data-breeze-toast-id={id}>
+                <Toast>{message}</Toast>
+              </div>
+            ))}
+          </div>,
+          host,
+        )}
+    </ToastContext>
   );
 }
 

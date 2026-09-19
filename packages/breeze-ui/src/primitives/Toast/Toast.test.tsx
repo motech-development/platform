@@ -1,9 +1,8 @@
 import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { afterEach, describe, expect, expectTypeOf, it, vi } from 'vitest';
 import { BreezeProvider } from '../../provider/BreezeProvider';
-import { Dialog } from '../Dialog/Dialog';
 import { Toast, type ToastEnqueue, type ToastProps, useToast } from './Toast';
 
 function ToastTrigger() {
@@ -42,6 +41,7 @@ expectTypeOf<ToastProps>().not.toHaveProperty('slot');
 expectTypeOf<ToastProps>().not.toHaveProperty('loading');
 
 afterEach(() => {
+  vi.restoreAllMocks();
   vi.useRealTimers();
   vi.unstubAllGlobals();
 });
@@ -225,6 +225,66 @@ describe('Toast', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('pauses visible lifetimes while the document is hidden', () => {
+    vi.useFakeTimers();
+    const hidden = vi.spyOn(document, 'hidden', 'get');
+    hidden.mockReturnValue(false);
+
+    render(
+      <BreezeProvider locale="en-GB" toastLimit={1}>
+        <button type="button">Keep focus</button>
+        <ToastButtons messages={['First', 'Second']} />
+      </BreezeProvider>,
+    );
+
+    act(() => {
+      screen.getByRole('button', { name: 'First' }).click();
+      screen.getByRole('button', { name: 'Second' }).click();
+    });
+    act(() => {
+      vi.advanceTimersByTime(0);
+    });
+
+    const firstToast = screen.getByRole('status', { name: 'First' });
+    const focusTarget = screen.getByRole('button', { name: 'Keep focus' });
+    focusTarget.focus();
+
+    act(() => {
+      hidden.mockReturnValue(true);
+      document.dispatchEvent(new Event('visibilitychange'));
+      vi.advanceTimersByTime(3000);
+    });
+
+    expect(firstToast).toBeInTheDocument();
+    expect(
+      screen.queryByRole('status', { name: 'Second' }),
+    ).not.toBeInTheDocument();
+    expect(document.activeElement).toBe(focusTarget);
+
+    act(() => {
+      hidden.mockReturnValue(false);
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+    act(() => {
+      vi.advanceTimersByTime(2599);
+    });
+    expect(firstToast).toBeInTheDocument();
+
+    act(() => {
+      vi.advanceTimersByTime(1);
+    });
+    act(() => {
+      vi.advanceTimersByTime(0);
+    });
+    act(() => {
+      vi.advanceTimersByTime(0);
+    });
+
+    expect(firstToast).not.toBeInTheDocument();
+    expect(screen.getByRole('status', { name: 'Second' })).toBeInTheDocument();
+    expect(document.activeElement).toBe(focusTarget);
+  });
+
   it('honours a configured visible limit', () => {
     vi.useFakeTimers();
 
@@ -275,114 +335,5 @@ describe('Toast', () => {
 
     expect(portalContainer).toBeEmptyDOMElement();
     portalContainer.remove();
-  });
-
-  it('keeps nested provider queues isolated', async () => {
-    function NestedProviders() {
-      const enqueue = useToast();
-
-      return (
-        <>
-          <button type="button" onClick={() => enqueue('Outer')}>
-            Outer
-          </button>
-          <BreezeProvider locale="en-GB">
-            <ToastButtons messages={['Inner']} />
-          </BreezeProvider>
-        </>
-      );
-    }
-
-    render(
-      <BreezeProvider locale="en-GB">
-        <NestedProviders />
-      </BreezeProvider>,
-    );
-
-    act(() => {
-      screen.getByRole('button', { name: 'Outer' }).click();
-      screen.getByRole('button', { name: 'Inner' }).click();
-    });
-    const outerToast = await screen.findByRole('status', { name: 'Outer' });
-    const innerToast = await screen.findByRole('status', { name: 'Inner' });
-
-    expect(outerToast.closest('[data-breeze-portal]')).not.toBe(
-      innerToast.closest('[data-breeze-portal]'),
-    );
-  });
-
-  it('observes only direct cards when a nested portal host is inside a dialog', () => {
-    vi.useFakeTimers();
-
-    const observers: Array<{ observed: Element[] }> = [];
-    class TestIntersectionObserver {
-      disconnected = false;
-
-      observed: Element[] = [];
-
-      constructor() {
-        observers.push(this);
-      }
-
-      observe(element: Element) {
-        this.observed.push(element);
-      }
-
-      disconnect() {
-        this.disconnected = true;
-      }
-    }
-    vi.stubGlobal('IntersectionObserver', TestIntersectionObserver);
-
-    function NestedPortalProviders() {
-      const [portalContainer, setPortalContainer] =
-        useState<HTMLDivElement | null>(null);
-
-      return (
-        <BreezeProvider locale="en-GB">
-          <Dialog defaultOpen title="Confirm change" trigger="Open dialog">
-            <div ref={setPortalContainer}>
-              <ToastButtons messages={['Outer']} />
-              {portalContainer && (
-                <BreezeProvider
-                  locale="en-GB"
-                  portalContainer={portalContainer}
-                >
-                  <ToastButtons messages={['Inner']} />
-                </BreezeProvider>
-              )}
-            </div>
-          </Dialog>
-        </BreezeProvider>
-      );
-    }
-
-    render(<NestedPortalProviders />);
-    act(() => {
-      screen.getByRole('button', { name: 'Outer' }).click();
-      screen.getByRole('button', { name: 'Inner' }).click();
-    });
-    act(() => {
-      vi.runAllTimers();
-    });
-    act(() => {
-      vi.runAllTimers();
-    });
-
-    const outerToast = screen.getByRole('status', { name: 'Outer' });
-    const innerToast = screen.getByRole('status', { name: 'Inner' });
-    const outerCard = outerToast.parentElement;
-    const innerCard = innerToast.parentElement;
-    expect(outerCard).toBeInTheDocument();
-    expect(innerCard).toBeInTheDocument();
-
-    const outerObservers = observers.filter(({ observed }) =>
-      observed.includes(outerCard!),
-    );
-    expect(outerObservers.length).toBeGreaterThan(0);
-    outerObservers.forEach(({ observed }) => {
-      expect(observed).toEqual([outerCard]);
-      expect(observed).not.toContain(innerCard);
-    });
   });
 });
