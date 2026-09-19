@@ -24,8 +24,8 @@ const variants = {
   compound: {},
   size: {},
   state: {
-    loadingInput: 'breeze:invisible',
-    loadingStepButton: 'breeze:invisible',
+    loadingInput: 'breeze:!opacity-0',
+    loadingStepButton: 'breeze:!opacity-0',
   },
   variant: {},
 } as const;
