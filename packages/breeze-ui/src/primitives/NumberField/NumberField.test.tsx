@@ -104,6 +104,62 @@ describe('NumberField', () => {
     );
   });
 
+  it('keeps disabled and read-only surfaces distinct', async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn<(value: number) => void>();
+
+    renderBreeze(
+      <>
+        <NumberField
+          defaultValue={1}
+          disabled
+          label="Disabled amount"
+          onChange={onChange}
+        />
+        <NumberField
+          defaultValue={2}
+          label="Read-only amount"
+          onChange={onChange}
+          readOnly
+        />
+      </>,
+    );
+
+    const disabledInput = screen.getByRole('textbox', {
+      name: 'Disabled amount',
+    });
+    const readOnlyInput = screen.getByRole('textbox', {
+      name: 'Read-only amount',
+    });
+    const disabledGroup = disabledInput.parentElement;
+    const readOnlyGroup = readOnlyInput.parentElement;
+    const readOnlyIncrement = readOnlyGroup?.querySelector<HTMLButtonElement>(
+      'button[aria-label="Increase"]',
+    );
+
+    expect(disabledInput).toBeDisabled();
+    expect(disabledGroup).toHaveAttribute('data-disabled', 'true');
+    expect(readOnlyInput).not.toBeDisabled();
+    expect(readOnlyInput).toHaveAttribute('aria-readonly', 'true');
+    expect(readOnlyGroup).toHaveClass('breeze:!bg-breeze-sunken');
+
+    if (!readOnlyIncrement) {
+      throw new Error(
+        'Expected the read-only increment button to be rendered.',
+      );
+    }
+
+    expect(readOnlyIncrement).toBeDisabled();
+    expect(readOnlyIncrement).toHaveClass('breeze:bg-transparent');
+
+    await user.click(readOnlyInput);
+    await user.type(readOnlyInput, '3');
+
+    expect(readOnlyInput).toHaveFocus();
+    expect(readOnlyInput).toHaveValue('2');
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
   it('forwards the native input ref and prevents interaction while loading', async () => {
     const user = userEvent.setup();
     const inputRef = createRef<HTMLInputElement>();
@@ -126,7 +182,12 @@ describe('NumberField', () => {
     expect(input).toHaveClass('breeze:!opacity-0');
     expect(input).not.toHaveClass('breeze:invisible');
     expect(input).toHaveAttribute('aria-busy', 'true');
-    expect(input.parentElement).toHaveClass('breeze:!overflow-visible');
+    expect(input.parentElement).toHaveClass(
+      'breeze:!bg-transparent',
+      'breeze:!border-transparent',
+      'breeze:!opacity-100',
+      'breeze:!overflow-visible',
+    );
     const loadingPlaceholder = screen.getByRole('progressbar', {
       name: 'Loading',
     });
