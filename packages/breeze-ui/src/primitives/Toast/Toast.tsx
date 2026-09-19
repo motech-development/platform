@@ -30,6 +30,11 @@ interface ToastTimer {
   startedAt: number | null;
 }
 
+interface ToastContentState {
+  message: string | null;
+  remember: (message: string) => void;
+}
+
 function isToastVisible(entry: IntersectionObserverEntry) {
   return entry.isIntersecting && entry.intersectionRatio >= 1;
 }
@@ -54,6 +59,7 @@ export type ToastEnqueue = (message: string) => void;
 
 const ToastContext = createContext<ToastEnqueue | null>(null);
 const ToastAnnouncementContext = createContext(true);
+const ToastContentContext = createContext<ToastContentState | null>(null);
 
 export interface ToastProps {
   /** Translated confirmation message. */
@@ -68,7 +74,10 @@ export interface ToastProps {
 export function Toast({ children }: Readonly<ToastProps>) {
   useBreezeContext();
   const isDocumentVisible = useContext(ToastAnnouncementContext);
-  const [message, setMessage] = useState<string | null>(null);
+  const contentState = useContext(ToastContentContext);
+  const [message, setMessage] = useState<string | null>(
+    () => contentState?.message ?? null,
+  );
 
   useEffect(() => {
     if (
@@ -79,9 +88,12 @@ export function Toast({ children }: Readonly<ToastProps>) {
       return undefined;
     }
 
-    const update = setTimeout(() => setMessage(children), 0);
+    const update = setTimeout(() => {
+      setMessage(children);
+      contentState?.remember(children);
+    }, 0);
     return () => clearTimeout(update);
-  }, [children, isDocumentVisible, message]);
+  }, [children, contentState, isDocumentVisible, message]);
 
   return (
     <div
@@ -117,6 +129,7 @@ export function ToastProviderBoundary({
   const nextId = useRef(0);
   const timers = useRef(new Map<number, ToastTimer>());
   const renderedToastIds = useRef(new Set<number>());
+  const announcementMessages = useRef(new Map<number, string>());
 
   if (!Number.isInteger(limit) || limit < 1) {
     throw new RangeError(toastLimitError);
@@ -131,7 +144,11 @@ export function ToastProviderBoundary({
   const expireToast = useCallback((id: number) => {
     timers.current.delete(id);
     renderedToastIds.current.delete(id);
+    announcementMessages.current.delete(id);
     setQueue((current) => current.filter((toast) => toast.id !== id));
+  }, []);
+  const rememberToastMessage = useCallback((id: number, message: string) => {
+    announcementMessages.current.set(id, message);
   }, []);
   const clearToastTimers = useCallback(() => {
     Array.from(timers.current.values()).forEach(({ handle }) => {
@@ -213,6 +230,7 @@ export function ToastProviderBoundary({
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
+    handleVisibilityChange();
     return () =>
       document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, [pauseToastTimers]);
@@ -322,11 +340,19 @@ export function ToastProviderBoundary({
                     data-breeze-toast-id={id}
                     hidden={demoted}
                   >
-                    <ToastAnnouncementContext
-                      value={isDocumentVisible && !demoted}
+                    <ToastContentContext
+                      value={{
+                        message: announcementMessages.current.get(id) ?? null,
+                        remember: (nextMessage) =>
+                          rememberToastMessage(id, nextMessage),
+                      }}
                     >
-                      <Toast>{message}</Toast>
-                    </ToastAnnouncementContext>
+                      <ToastAnnouncementContext
+                        value={isDocumentVisible && !demoted}
+                      >
+                        <Toast>{message}</Toast>
+                      </ToastAnnouncementContext>
+                    </ToastContentContext>
                   </div>
                 );
               })}
