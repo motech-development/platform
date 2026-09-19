@@ -23,6 +23,12 @@ interface ToastItem {
   message: string;
 }
 
+interface ToastTimer {
+  handle: ReturnType<typeof setTimeout> | null;
+  remaining: number;
+  startedAt: number | null;
+}
+
 function isToastVisible(entry: IntersectionObserverEntry) {
   return entry.isIntersecting && entry.intersectionRatio >= 1;
 }
@@ -31,7 +37,7 @@ function handleToastIntersection(
   entry: IntersectionObserverEntry,
   visibleIds: Set<number>,
   scheduleToast: (id: number) => void,
-  clearToastTimer: (id: number) => void,
+  pauseToastTimer: (id: number) => void,
 ) {
   const id = Number((entry.target as HTMLElement).dataset.breezeToastId);
   if (!visibleIds.has(id)) return;
@@ -39,7 +45,7 @@ function handleToastIntersection(
   if (isToastVisible(entry)) {
     scheduleToast(id);
   } else {
-    clearToastTimer(id);
+    pauseToastTimer(id);
   }
 }
 
@@ -98,7 +104,7 @@ export function ToastProviderBoundary({
   );
   const [queue, setQueue] = useState<ToastItem[]>([]);
   const nextId = useRef(0);
-  const timers = useRef(new Map<number, ReturnType<typeof setTimeout>>());
+  const timers = useRef(new Map<number, ToastTimer>());
 
   if (!Number.isInteger(limit) || limit < 1) {
     throw new RangeError(toastLimitError);
@@ -115,28 +121,73 @@ export function ToastProviderBoundary({
     setQueue((current) => current.filter((toast) => toast.id !== id));
   }, []);
   const clearToastTimers = useCallback(() => {
-    Array.from(timers.current.values()).forEach((timer) => clearTimeout(timer));
+    Array.from(timers.current.values()).forEach(({ handle }) => {
+      if (handle !== null) clearTimeout(handle);
+    });
     timers.current.clear();
   }, []);
-  const clearToastTimer = useCallback((id: number) => {
+  const pauseToastTimer = useCallback(
+    (id: number, now = Date.now()) => {
+      const timer = timers.current.get(id);
+      if (
+        timer === undefined ||
+        timer.handle === null ||
+        timer.startedAt === null
+      ) {
+        return;
+      }
+
+      timer.remaining = Math.max(
+        0,
+        timer.remaining - Math.max(0, now - timer.startedAt),
+      );
+      clearTimeout(timer.handle);
+      timer.handle = null;
+      timer.startedAt = null;
+
+      if (timer.remaining === 0) {
+        expireToast(id);
+      }
+    },
+    [expireToast],
+  );
+  const pauseToastTimers = useCallback(() => {
+    const now = Date.now();
+    Array.from(timers.current.keys()).forEach((id) => {
+      pauseToastTimer(id, now);
+    });
+  }, [pauseToastTimer]);
+  const removeToastTimer = useCallback((id: number) => {
     const timer = timers.current.get(id);
-    if (timer !== undefined) {
-      clearTimeout(timer);
-      timers.current.delete(id);
+    if (timer?.handle !== null && timer?.handle !== undefined) {
+      clearTimeout(timer.handle);
     }
+    timers.current.delete(id);
   }, []);
   const scheduleToast = useCallback(
     (id: number) => {
+      const current = timers.current.get(id);
       if (
-        isDocumentVisible &&
-        (typeof document === 'undefined' || !document.hidden) &&
-        !timers.current.has(id)
+        !isDocumentVisible ||
+        (typeof document !== 'undefined' && document.hidden) ||
+        (current !== undefined && current.handle !== null)
       ) {
-        timers.current.set(
-          id,
-          setTimeout(() => expireToast(id), toastLifetime),
-        );
+        return;
       }
+
+      const timer = current ?? {
+        handle: null,
+        remaining: toastLifetime,
+        startedAt: null,
+      };
+      if (timer.remaining <= 0) {
+        expireToast(id);
+        return;
+      }
+
+      timer.startedAt = Date.now();
+      timer.handle = setTimeout(() => expireToast(id), timer.remaining);
+      timers.current.set(id, timer);
     },
     [expireToast, isDocumentVisible],
   );
@@ -144,23 +195,22 @@ export function ToastProviderBoundary({
   useEffect(() => {
     const handleVisibilityChange = () => {
       const visible = !document.hidden;
-      if (!visible) clearToastTimers();
+      if (!visible) pauseToastTimers();
       setIsDocumentVisible(visible);
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
     return () =>
       document.removeEventListener('visibilitychange', handleVisibilityChange);
-  }, [clearToastTimers]);
+  }, [pauseToastTimers]);
 
   useEffect(() => {
     const visible = queue.slice(0, limit);
     const visibleIds = new Set(visible.map(({ id }) => id));
 
-    Array.from(timers.current.entries()).forEach(([id, timer]) => {
+    Array.from(timers.current.keys()).forEach((id) => {
       if (!visibleIds.has(id)) {
-        clearTimeout(timer);
-        timers.current.delete(id);
+        removeToastTimer(id);
       }
     });
 
@@ -183,7 +233,7 @@ export function ToastProviderBoundary({
               entry,
               visibleIds,
               scheduleToast,
-              clearToastTimer,
+              pauseToastTimer,
             ),
           );
         },
@@ -205,7 +255,15 @@ export function ToastProviderBoundary({
       clearTimeout(observeTask);
       observer?.disconnect();
     };
-  }, [clearToastTimer, host, isDocumentVisible, limit, queue, scheduleToast]);
+  }, [
+    host,
+    isDocumentVisible,
+    limit,
+    pauseToastTimer,
+    queue,
+    removeToastTimer,
+    scheduleToast,
+  ]);
 
   useEffect(() => clearToastTimers, [clearToastTimers]);
 
