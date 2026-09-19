@@ -588,13 +588,13 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">19 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">1/19 info</a><span class="filter-pill ok" aria-disabled="true">48 stories ok</span><a class="filter-pill ok" data-k="docs" href="#filter-docs">21 docs ok</a></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">20 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">1/20 info</a><span class="filter-pill ok" aria-disabled="true">56 stories ok</span><a class="filter-pill ok" data-k="docs" href="#filter-docs">22 docs ok</a></div>
   </div>
 </header>
 <main>
   <div class="wrap">
     <div class="note ok" style="margin-bottom: 16px;">
-              Using <code>react-docgen-typescript</code>. Generation took <strong>1.8s</strong>.
+              Using <code>react-docgen-typescript</code>. Generation took <strong>2.2s</strong>.
             </div>
     <h2 class="section-title">Components</h2>
     <div class="grid" role="list">
@@ -888,7 +888,7 @@ Set `loading` to preserve the badge shape while its status text is unavailable.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> BreezeProvider</h2>
       <div class="badges">
-        <label for="c-2-foundation-breezeprovider-props" class="badge ok as-toggle">7 prop types</label>
+        <label for="c-2-foundation-breezeprovider-props" class="badge ok as-toggle">8 prop types</label>
         
         <label for="c-2-foundation-breezeprovider-stories" class="badge ok as-toggle">2 stories</label>
         <label for="c-2-foundation-breezeprovider-docs" class="badge ok as-toggle">1 doc</label>
@@ -917,7 +917,7 @@ Set `loading` to preserve the badge shape while its status text is unavailable.
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
-              <span class="badge ok">7 prop types</span>
+              <span class="badge ok">8 prop types</span>
             </div>
             <pre><code>Component: src/provider/BreezeProvider.tsx::BreezeProvider</code></pre>
             <pre><code>Props:</code></pre>
@@ -958,7 +958,12 @@ onAppearanceChange?: ((appearance: Appearance) =&gt; void) | ((appearance: Appea
  * Container for the provider-owned overlay host; defaults to document.body.
  * The container must belong to the same document as the overlay triggers.
  */
-portalContainer?: HTMLElement</code></pre>
+portalContainer?: HTMLElement
+
+/**
+ * Maximum number of visible confirmations; additional messages wait in FIFO order.
+ */
+toastLimit?: number = 3</code></pre>
           </div>
         </div>
     
@@ -1081,6 +1086,22 @@ The provider never reads or writes durable browser storage. The application deci
 The provider creates and removes its own host inside that container. The host carries the Breeze root marker, locale and text direction so overlays retain scoped styling and language outside the provider&#39;s normal content tree.
 
 `portalContainer` and every overlay trigger must belong to the current runtime `Document` and its light DOM. Cross-document and shadow-root portals are unsupported because React Aria positions and manages overlays against the runtime document.
+
+## Confirmations
+
+Use `useToast` below the provider to announce a completed action. The provider owns the status region, displays up to three messages at once and queues additional messages in FIFO order. Each message remains visible for 2.6 seconds after it becomes visible.
+
+```tsx
+import { useToast } from &#39;@motech-development/breeze-ui&#39;;
+
+function SaveAction() {
+  const enqueue = useToast();
+
+  return &lt;Button onAction={() =&gt; enqueue(&#39;Changes saved&#39;)}&gt;Save&lt;/Button&gt;;
+}
+```
+
+Set `toastLimit` when the application needs a different number of visible confirmations. Provider-enqueued confirmations stay 288px wide at every supported viewport, have no action or dismissal control, and expire after 2.6 seconds once visible.
 
 ## API
 
@@ -3504,15 +3525,209 @@ Loading belongs to the items inside the stack. Compose loading-capable children 
   no-story-error
   no-doc-error"
   role="listitem"
+  aria-label="Toast">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> Toast</h2>
+      <div class="badges">
+        <label for="c-17-feedback-toast-props" class="badge ok as-toggle">1 prop type</label>
+        
+        <label for="c-17-feedback-toast-stories" class="badge ok as-toggle">8 stories</label>
+        <label for="c-17-feedback-toast-docs" class="badge ok as-toggle">1 doc</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/primitives/Toast/Toast.stories.tsx">feedback-toast · ./src/primitives/Toast/Toast.stories.tsx</div>
+    
+    <div class="hint">Displays a positive, non-interactive confirmation.</div>
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-17-feedback-toast-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-17-feedback-toast-docs" class="tg tg-docs" type="checkbox" hidden />
+  
+  <input id="c-17-feedback-toast-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
+              <span class="badge ok">1 prop type</span>
+            </div>
+            <pre><code>Component: src/primitives/Toast/Toast.tsx::Toast</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>/**
+ * Translated confirmation message.
+ */
+children: string</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Toast } from "@motech-development/breeze-ui";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A positive status card with no action or dismissal control.</div>
+              <pre><code>const Default = () =&gt; &lt;Toast&gt;Changes saved&lt;/Toast&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Enqueued</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Enqueues a confirmation and keeps focus on the action that caused it.</div>
+              <pre><code>const Enqueued = () =&gt; &lt;EnqueueExample /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Mobile</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">The same fixed-width confirmation at a phone viewport.</div>
+              <pre><code>const Mobile = () =&gt; &lt;EnqueueExample /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Short Viewport Clipped</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A clipped confirmation waits until the short viewport can show it fully.</div>
+              <pre><code>const ShortViewportClipped = () =&gt; &lt;WrappedToastContent /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Short Viewport Queue</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Queued cards wait for a visible slot and then receive their full lifetime.</div>
+              <pre><code>const ShortViewportQueue = () =&gt; &lt;WrappedToastContent /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Short Viewport Promotion</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A fully visible card expires before the queued card is promoted.</div>
+              <pre><code>const ShortViewportPromotion = () =&gt; &lt;WrappedToastContent /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Dialog Layering</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A dialog keeps the live status above its surface without taking focus.</div>
+              <pre><code>const DialogLayering = () =&gt; &lt;ModalToastExample kind=&quot;dialog&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Drawer Layering</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A drawer keeps the live status above its surface without taking focus.</div>
+              <pre><code>const DrawerLayering = () =&gt; &lt;ModalToastExample kind=&quot;drawer&quot; /&gt;;</code></pre>
+            </div>
+        </div>
+    
+        <div class="panel panel-docs">
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Docs</span>
+                <span class="badge ok">doc ok</span>
+              </div>
+              <div class="hint">./src/primitives/Toast/Toast.mdx</div>
+              <div>Confirms a completed action.</div>
+              <div class="mdx-content"><pre><code>import { ArgTypes, Canvas, Meta } from &#39;@storybook/addon-docs/blocks&#39;;
+import * as Stories from &#39;./Toast.stories&#39;;
+
+&lt;Meta of={Stories} summary=&quot;Confirms a completed action.&quot; /&gt;
+
+# Toast
+
+`Toast` is a presentational positive confirmation card. It announces a completed action with `role=&quot;status&quot;` and never moves focus. A `Toast` rendered directly stays mounted until its owner removes it; `useToast` supplies the provider-owned queue that expires each visible confirmation after 2.6 seconds.
+
+&lt;Canvas of={Stories.Default} /&gt;
+
+Use `useToast` below `BreezeProvider` to enqueue a translated message:
+
+```tsx
+import { Button, useToast } from &#39;@motech-development/breeze-ui&#39;;
+
+function SaveAction() {
+  const enqueue = useToast();
+
+  return (
+    &lt;Button onAction={() =&gt; enqueue(&#39;Changes saved&#39;)}&gt;Save changes&lt;/Button&gt;
+  );
+}
+```
+
+The provider renders up to three confirmations at once and queues additional messages in FIFO order. Set `toastLimit` on `BreezeProvider` when the application needs a different visible limit.
+
+&lt;Canvas of={Stories.Enqueued} /&gt;
+
+The card stays 288px wide on desktop and mobile, aligned to the content gutter below the top bar. Provider-enqueued confirmations have no action, dismiss or undo control.
+
+&lt;Canvas of={Stories.Mobile} /&gt;
+
+## Accessibility
+
+`Toast` is a non-interactive status. It has no tab stop and handles no keyboard events: Tab and Shift+Tab continue normal document movement while skipping the card, Escape does not dismiss it, and provider-enqueued confirmations do not move focus.
+
+## API
+
+&lt;ArgTypes /&gt;
+</code></pre></div>
+            </div>
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  no-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
   aria-label="Typography">
   <div class="head">
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Typography</h2>
       <div class="badges">
-        <label for="c-17-content-typography-props" class="badge ok as-toggle">15 prop types</label>
+        <label for="c-18-content-typography-props" class="badge ok as-toggle">15 prop types</label>
         
-        <label for="c-17-content-typography-stories" class="badge ok as-toggle">4 stories</label>
-        <label for="c-17-content-typography-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-18-content-typography-stories" class="badge ok as-toggle">4 stories</label>
+        <label for="c-18-content-typography-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -3525,10 +3740,10 @@ Loading belongs to the items inside the stack. Compose loading-capable children 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-17-content-typography-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-17-content-typography-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-18-content-typography-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-18-content-typography-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-17-content-typography-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-18-content-typography-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -3790,10 +4005,10 @@ Set `loading` to preserve the text&#39;s place while its value is unavailable.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> VisuallyHidden</h2>
       <div class="badges">
-        <label for="c-18-content-visuallyhidden-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-19-content-visuallyhidden-props" class="badge ok as-toggle">1 prop type</label>
         
-        <label for="c-18-content-visuallyhidden-stories" class="badge ok as-toggle">1 story</label>
-        <label for="c-18-content-visuallyhidden-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-19-content-visuallyhidden-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-19-content-visuallyhidden-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -3806,10 +4021,10 @@ Set `loading` to preserve the text&#39;s place while its value is unavailable.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-18-content-visuallyhidden-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-18-content-visuallyhidden-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-19-content-visuallyhidden-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-19-content-visuallyhidden-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-18-content-visuallyhidden-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-19-content-visuallyhidden-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
