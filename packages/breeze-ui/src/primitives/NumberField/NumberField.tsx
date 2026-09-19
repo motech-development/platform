@@ -18,13 +18,14 @@ const variants = {
     input:
       'breeze:min-block-breeze-md breeze:min-inline-size-0 breeze:flex-1 breeze:border-0 breeze:rounded-none breeze:bg-transparent breeze:tabular-nums breeze:outline-none breeze:placeholder:text-breeze-ink-3 breeze:data-[hovered]:border-transparent breeze:data-[focus-visible]:outline-none breeze:data-[invalid]:border-transparent breeze:disabled:cursor-not-allowed breeze:read-only:cursor-default',
     skeleton:
-      'breeze:pointer-events-none breeze:absolute breeze:[inset-block:0] breeze:[inset-inline:0] breeze:rounded-breeze-ctl',
+      'breeze:pointer-events-none breeze:absolute breeze:[inset-block:0] breeze:[inset-inline:0]',
     stepButton:
       'breeze:min-inline-breeze-md breeze:border-0 breeze:bg-transparent breeze:ps-breeze-2 breeze:pe-breeze-2 breeze:font-breeze-sans breeze:text-breeze-md breeze:font-semibold breeze:leading-none breeze:text-breeze-ink breeze:disabled:cursor-not-allowed breeze:disabled:opacity-50 breeze:any-pointer-coarse:min-block-breeze-tap breeze:any-pointer-coarse:min-inline-breeze-tap breeze:hover:text-breeze-brand breeze:focus-visible:outline-2 breeze:focus-visible:outline-solid breeze:focus-visible:outline-breeze-brand breeze:outline-offset-[-2px]',
   },
   compound: {},
   size: {},
   state: {
+    loadingGroup: 'breeze:!overflow-visible',
     loadingInput: 'breeze:!opacity-0',
     loadingStepButton: 'breeze:!opacity-0',
   },
@@ -147,7 +148,12 @@ export function NumberField({
       value={value}
     >
       <AriaLabel className={fieldVariants.base.label}>{label}</AriaLabel>
-      <AriaGroup className={variants.base.group}>
+      <AriaGroup
+        className={joinClassNames(
+          variants.base.group,
+          loading && variants.state.loadingGroup,
+        )}
+      >
         <AriaInput
           aria-busy={loading || undefined}
           className={joinClassNames(

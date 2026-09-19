@@ -139,9 +139,20 @@ describe('Checkbox', () => {
     expect(indicatorPlaceholder).toHaveClass(
       'breeze:block-size-breeze-5',
       'breeze:inline-size-breeze-5',
+    );
+    expect(indicatorPlaceholder).not.toHaveClass(
+      'breeze:overflow-hidden',
       'breeze:rounded-breeze-chip',
     );
+    expect(indicatorPlaceholder?.querySelector('progress')).toHaveClass(
+      'breeze:rounded-breeze-sm',
+    );
     expect(labelPlaceholder).toHaveClass('breeze:[grid-area:1/2]');
+    expect(labelPlaceholder).not.toHaveClass('breeze:rounded-breeze-chip');
+    expect(labelPlaceholder?.querySelector('progress')).toHaveClass(
+      'breeze:rounded-breeze-sm',
+    );
+    expect(placeholders).toHaveLength(2);
     expect(checkbox).toHaveAttribute('name', 'alerts');
     expect(checkbox).toHaveAttribute('value', 'email');
 
