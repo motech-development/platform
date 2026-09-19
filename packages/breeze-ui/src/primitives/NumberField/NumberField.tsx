@@ -25,9 +25,11 @@ const variants = {
   compound: {},
   size: {},
   state: {
-    loadingGroup: 'breeze:!overflow-visible',
+    loadingGroup:
+      'breeze:!bg-transparent breeze:!border-transparent breeze:!opacity-100 breeze:!overflow-visible',
     loadingInput: 'breeze:!opacity-0',
     loadingStepButton: 'breeze:!opacity-0',
+    readOnlyGroup: 'breeze:!bg-breeze-sunken',
   },
   variant: {},
 } as const;
@@ -151,6 +153,7 @@ export function NumberField({
       <AriaGroup
         className={joinClassNames(
           variants.base.group,
+          readOnly && !loading && variants.state.readOnlyGroup,
           loading && variants.state.loadingGroup,
         )}
       >
