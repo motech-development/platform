@@ -130,6 +130,8 @@ describe('TextField', () => {
 
     expect(inputRef.current).toBe(input);
     expect(input).toBeDisabled();
+    expect(input).toHaveClass('breeze:!opacity-0');
+    expect(input).not.toHaveClass('breeze:invisible');
     expect(input).toHaveAttribute('aria-busy', 'true');
     expect(
       screen.getByRole('progressbar', { name: 'Loading' }),

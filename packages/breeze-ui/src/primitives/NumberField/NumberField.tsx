@@ -1,4 +1,5 @@
 import type { Ref } from 'react';
+import { createElement } from 'react';
 import { Button as AriaButton } from 'react-aria-components/Button';
 import { FieldError as AriaFieldError } from 'react-aria-components/FieldError';
 import { Group as AriaGroup } from 'react-aria-components/Group';
@@ -164,6 +165,13 @@ export function NumberField({
             variants.base.stepButton,
             loading && variants.state.loadingStepButton,
           )}
+          render={(buttonProps) =>
+            createElement('button', {
+              ...buttonProps,
+              'aria-hidden': loading || undefined,
+              type: 'button',
+            })
+          }
           slot="decrement"
           type="button"
         >
@@ -174,6 +182,13 @@ export function NumberField({
             variants.base.stepButton,
             loading && variants.state.loadingStepButton,
           )}
+          render={(buttonProps) =>
+            createElement('button', {
+              ...buttonProps,
+              'aria-hidden': loading || undefined,
+              type: 'button',
+            })
+          }
           slot="increment"
           type="button"
         >

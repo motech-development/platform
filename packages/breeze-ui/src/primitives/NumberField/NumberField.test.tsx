@@ -130,10 +130,20 @@ describe('NumberField', () => {
       screen.getByRole('progressbar', { name: 'Loading' }),
     ).toBeInTheDocument();
 
-    const increment = screen.getByRole('button', { name: /increase/i });
+    const increment = screen
+      .getAllByRole('button', { hidden: true })
+      .find((button) => button.getAttribute('aria-label') === 'Increase');
+
+    if (!increment) {
+      throw new Error('Expected the loading increment button to be rendered.');
+    }
 
     expect(increment).toHaveClass('breeze:!opacity-0');
     expect(increment).not.toHaveClass('breeze:invisible');
+    expect(increment).toHaveAttribute('aria-hidden', 'true');
+    expect(
+      screen.queryByRole('button', { name: /increase/i }),
+    ).not.toBeInTheDocument();
 
     await user.click(increment);
 

@@ -18,7 +18,7 @@ export const fieldVariants = {
   compound: {},
   size: {},
   state: {
-    loadingInput: 'breeze:opacity-0',
+    loadingInput: 'breeze:!opacity-0',
   },
   variant: {},
 } as const;
