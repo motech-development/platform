@@ -1,0 +1,56 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './TextField.stories';
+
+<Meta
+  of={Stories}
+  summary="A flat labelled text input with accessible validation."
+/>
+
+# TextField
+
+`TextField` is a closed, single-line text input. Its `label`, optional
+`description` and optional `error` are flat props, so applications do not need
+to compose field parts or provide an escape hatch.
+
+<Canvas of={Stories.Default} />
+
+## Supporting text and errors
+
+Use `description` for guidance. A non-empty `error` marks the field invalid and
+associates the message with the native input. There is no separate invalid prop.
+
+<Canvas of={Stories.Description} />
+
+<Canvas of={Stories.Error} />
+
+## States
+
+`required`, `disabled` and `readOnly` map to the corresponding accessible input
+semantics. `loading` keeps the field's shape, announces the provider loading
+message and prevents interaction until it is removed.
+
+<Canvas of={Stories.Required} />
+
+<Canvas of={Stories.Disabled} />
+
+<Canvas of={Stories.ReadOnly} />
+
+<Canvas of={Stories.Loading} />
+
+## Controlled values
+
+Provide both `value` and `onChange` for controlled usage. The callback receives
+the next string value, never a DOM event. Use `defaultValue` and an optional
+`onChange` for uncontrolled usage; the two forms cannot be mixed.
+
+<Canvas of={Stories.Controlled} />
+
+## Accessibility
+
+The visible label names the native input. Descriptions and errors are announced
+through React Aria's field relationships, and the field exposes its native
+input through `ref`.
+
+## API
+
+<ArgTypes />

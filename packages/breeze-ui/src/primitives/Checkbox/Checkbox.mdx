@@ -1,0 +1,57 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Checkbox.stories';
+
+<Meta
+  of={Stories}
+  summary="A flat labelled checkbox with semantic boolean changes."
+/>
+
+# Checkbox
+
+`Checkbox` is a closed, labelled boolean control. Its label, optional
+description and optional error are flat props, so applications do not need to
+compose checkbox parts or provide an escape hatch.
+
+<Canvas of={Stories.Default} />
+
+## Supporting text and errors
+
+Use `description` for guidance. A non-empty `error` marks the checkbox invalid
+and associates the message with the native input. There is no separate invalid
+prop.
+
+<Canvas of={Stories.Description} />
+
+<Canvas of={Stories.Error} />
+
+## States
+
+`required`, `disabled` and `readOnly` map to the corresponding accessible input
+semantics. `loading` keeps the checkbox's shape, announces the provider loading
+message and prevents selection until it is removed.
+
+<Canvas of={Stories.Required} />
+
+<Canvas of={Stories.Disabled} />
+
+<Canvas of={Stories.ReadOnly} />
+
+<Canvas of={Stories.Loading} />
+
+## Controlled values
+
+Provide both `selected` and `onChange` for controlled usage. The callback
+receives the next boolean, never a DOM event. Use `defaultSelected` and an
+optional `onChange` for uncontrolled usage; the two forms cannot be mixed.
+
+<Canvas of={Stories.Controlled} />
+
+## Accessibility
+
+The visible label names the native checkbox. Descriptions and errors are
+announced through React Aria's field relationships, and the field exposes its
+native input through `ref`.
+
+## API
+
+<ArgTypes />

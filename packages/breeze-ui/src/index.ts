@@ -13,6 +13,8 @@ export type {
   CardVariant,
 } from './primitives/Card/Card';
 export { Card } from './primitives/Card/Card';
+export type { CheckboxProps } from './primitives/Checkbox/Checkbox';
+export { Checkbox } from './primitives/Checkbox/Checkbox';
 export type {
   ContainerProps,
   ContainerWidth,
@@ -44,6 +46,8 @@ export type {
   LayoutElement,
   LayoutGap,
 } from './primitives/layout.types';
+export type { NumberFieldProps } from './primitives/NumberField/NumberField';
+export { NumberField } from './primitives/NumberField/NumberField';
 export type { PopoverProps } from './primitives/Popover/Popover';
 export { Popover } from './primitives/Popover/Popover';
 export type {
@@ -58,6 +62,8 @@ export type {
 export { Skeleton } from './primitives/Skeleton/Skeleton';
 export type { StackProps } from './primitives/Stack/Stack';
 export { Stack } from './primitives/Stack/Stack';
+export type { TextFieldProps } from './primitives/TextField/TextField';
+export { TextField } from './primitives/TextField/TextField';
 export type { ToastEnqueue, ToastProps } from './primitives/Toast/Toast';
 export { Toast, useToast } from './primitives/Toast/Toast';
 export type {

@@ -1,0 +1,59 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './NumberField.stories';
+
+<Meta
+  of={Stories}
+  summary="Locale-aware numeric entry with semantic number changes."
+/>
+
+# NumberField
+
+`NumberField` is a flat labelled numeric input backed by React Aria. It uses
+the Breeze locale, includes increment and decrement controls, and displays
+figures with tabular numerals. Values remain unformatted except for React
+Aria's locale-aware input behaviour.
+
+<Canvas of={Stories.Default} />
+
+## Supporting text and errors
+
+Use `description` for guidance. A non-empty `error` marks the field invalid and
+associates the message with the native input. There is no separate invalid prop.
+
+<Canvas of={Stories.Description} />
+
+<Canvas of={Stories.Error} />
+
+## States
+
+`required`, `disabled` and `readOnly` map to the corresponding accessible input
+semantics. `loading` keeps the field's shape, announces the provider loading
+message and prevents typing or stepping until it is removed.
+
+<Canvas of={Stories.Required} />
+
+<Canvas of={Stories.Disabled} />
+
+<Canvas of={Stories.ReadOnly} />
+
+<Canvas of={Stories.Loading} />
+
+## Controlled values
+
+Provide both `value` and `onChange` for controlled usage. The callback receives
+the next number, never a DOM event. React Aria reports `NaN` while the input is
+empty, which lets applications distinguish an empty value from zero. Use
+`defaultValue` and an optional `onChange` for uncontrolled usage; the two forms
+cannot be mixed.
+
+<Canvas of={Stories.Controlled} />
+
+## Accessibility
+
+The visible label names the native input. Descriptions and errors are announced
+through React Aria's field relationships, and the field exposes its native
+input through `ref`.
+
+## API
+
+<ArgTypes />
