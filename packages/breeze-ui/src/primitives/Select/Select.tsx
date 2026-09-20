@@ -301,7 +301,6 @@ export function Select<T>({
     [decoratedItems],
   );
   const state = useSelectState<SelectItem<T>>({
-    allowsEmptyCollection: true,
     children: collectionChildren,
     defaultValue: defaultValueKey,
     isDisabled: stateDisabled,
@@ -350,6 +349,12 @@ export function Select<T>({
             .flatMap((labelledBy) => (labelledBy ? labelledBy.split(' ') : [])),
         ),
       ).join(' ') || undefined;
+
+  useEffect(() => {
+    if (decoratedItems.length === 0 && state.isOpen) {
+      state.setOpen(false);
+    }
+  }, [decoratedItems.length, state]);
 
   useEffect(() => {
     if (isControlled) return undefined;
@@ -440,10 +445,15 @@ export function Select<T>({
       <FieldSupportingContent
         description={visibleDescription}
         descriptionId={descriptionId}
-        error={visibleError}
+        error={loading ? visibleError : undefined}
         errorId={errorId}
         loading={loading}
       />
+      {visibleError && !loading && (
+        <span className={fieldVariants.base.error} id={errorId}>
+          {visibleError}
+        </span>
+      )}
     </div>
   );
 }

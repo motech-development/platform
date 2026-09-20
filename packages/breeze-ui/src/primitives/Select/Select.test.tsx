@@ -179,6 +179,69 @@ describe('Select', () => {
     expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
   });
 
+  it('renders non-loading errors as an accessible description', () => {
+    renderBreeze(
+      <Select
+        description="Choose an account."
+        error="Choose an active payment method."
+        getItem={getItem}
+        items={choices}
+        label="Payment method"
+      />,
+    );
+
+    const trigger = screen.getByRole('combobox', { name: 'Payment method' });
+
+    expect(screen.getByText('Choose an active payment method.')).toBeVisible();
+    expect(trigger).toHaveAccessibleDescription(
+      'Choose an account. Choose an active payment method.',
+    );
+
+    const describedBy = trigger.getAttribute('aria-describedby');
+    expect(describedBy).toBeTruthy();
+    expect(
+      describedBy?.split(' ').every((id) => document.getElementById(id)),
+    ).toBe(true);
+  });
+
+  it('does not open a blank listbox when there are no choices', async () => {
+    const user = userEvent.setup();
+
+    renderBreeze(
+      <Select getItem={getItem} items={[]} label="Payment method" />,
+    );
+
+    const trigger = screen.getByRole('combobox', { name: 'Payment method' });
+
+    await user.click(trigger);
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+
+    await user.keyboard('{ArrowDown}');
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+  });
+
+  it('closes an open listbox when choices are removed', async () => {
+    const user = userEvent.setup();
+    const { rerender } = renderBreeze(
+      <Select getItem={getItem} items={choices} label="Payment method" />,
+    );
+
+    const trigger = screen.getByRole('combobox', { name: 'Payment method' });
+    await user.click(trigger);
+    expect(screen.getByRole('listbox')).toBeInTheDocument();
+
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <Select getItem={getItem} items={[]} label="Payment method" />
+      </BreezeProvider>,
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+      expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    });
+  });
+
   it('derives invalid semantics and preserves its shape while loading', () => {
     renderBreeze(
       <Select

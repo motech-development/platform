@@ -31,6 +31,7 @@ const suppliers = [
 ] satisfies ItemDescriptor[];
 
 const getItem = (item: (typeof suppliers)[number]) => item;
+type Supplier = (typeof suppliers)[number];
 type SupplierValue = (typeof suppliers)[number] | string | null;
 
 function EchoingCustomComboBox() {
@@ -90,10 +91,88 @@ const mixedComboBox = (
     value={suppliers[0]}
   />
 );
+const nonCustomCallbackComboBox = (
+  <ComboBox<(typeof suppliers)[number]>
+    getItem={getItem}
+    items={suppliers}
+    label="Supplier"
+    onChange={(value: Supplier | null) => value}
+  />
+);
+const customComboBox = (
+  <ComboBox<(typeof suppliers)[number]>
+    allowsCustomValue
+    getItem={getItem}
+    items={suppliers}
+    label="Supplier"
+    onChange={(value: Supplier | string | null) => value}
+    value="New supplier"
+  />
+);
+const customDefaultValueComboBox = (
+  <ComboBox<(typeof suppliers)[number]>
+    allowsCustomValue
+    defaultValue="New supplier"
+    getItem={getItem}
+    items={suppliers}
+    label="Supplier"
+    onChange={(value: Supplier | string | null) => value}
+  />
+);
+const nonCustomStringValueComboBox = (
+  // @ts-expect-error Custom strings require allowsCustomValue.
+  <ComboBox<(typeof suppliers)[number]>
+    getItem={getItem}
+    items={suppliers}
+    label="Supplier"
+    value="New supplier"
+  />
+);
+const nonCustomStringDefaultValueComboBox = (
+  // @ts-expect-error Custom strings require allowsCustomValue.
+  <ComboBox<(typeof suppliers)[number]>
+    defaultValue="New supplier"
+    getItem={getItem}
+    items={suppliers}
+    label="Supplier"
+  />
+);
+const stringOnlyOnChange = (value: string) => value;
+const nonCustomStringCallbackComboBox = (
+  <ComboBox<(typeof suppliers)[number]>
+    getItem={getItem}
+    items={suppliers}
+    label="Supplier"
+    // @ts-expect-error Non-custom callbacks receive the item or null.
+    onChange={stringOnlyOnChange}
+  />
+);
 
 expectTypeOf(controlledComboBox).toBeObject();
 expectTypeOf(uncontrolledComboBox).toBeObject();
 expectTypeOf(mixedComboBox).toBeObject();
+expectTypeOf(nonCustomCallbackComboBox).toBeObject();
+expectTypeOf(customComboBox).toBeObject();
+expectTypeOf(customDefaultValueComboBox).toBeObject();
+expectTypeOf(nonCustomStringValueComboBox).toBeObject();
+expectTypeOf(nonCustomStringDefaultValueComboBox).toBeObject();
+expectTypeOf(nonCustomStringCallbackComboBox).toBeObject();
+
+type NonCustomComboBoxChange = Extract<
+  ComboBoxProps<Supplier>,
+  { allowsCustomValue?: false }
+>['onChange'];
+type CustomComboBoxChange = Extract<
+  ComboBoxProps<Supplier>,
+  { allowsCustomValue: true }
+>['onChange'];
+
+expectTypeOf<NonCustomComboBoxChange>().toMatchTypeOf<
+  ((value: Supplier | null) => void) | undefined
+>();
+expectTypeOf<CustomComboBoxChange>().toMatchTypeOf<
+  ((value: Supplier | string | null) => void) | undefined
+>();
 
 describe('ComboBox', () => {
   it('filters suggestions while typing and reports selected items', async () => {
@@ -170,6 +249,93 @@ describe('ComboBox', () => {
         name: 'Café',
       }),
     ).toBeVisible();
+  });
+
+  it('treats restricted string values as descriptor-backed items', () => {
+    const drinks = ['Tea', 'Coffee'];
+    const getDrinkItem = (item: string) => ({
+      id: item.toLowerCase(),
+      label: `${item} drink`,
+    });
+    const onChange = vi.fn<(value: string | null) => void>();
+
+    renderBreeze(
+      <form>
+        <ComboBox
+          getItem={getDrinkItem}
+          items={drinks}
+          label="Drink"
+          name="drink"
+          onChange={onChange}
+          value="Tea"
+        />
+      </form>,
+    );
+
+    const input = screen.getByRole('combobox', { name: 'Drink' });
+    expect(input).toHaveValue('Tea drink');
+    expect(
+      new FormData(document.querySelector('form') as HTMLFormElement).get(
+        'drink',
+      ),
+    ).toBe('tea');
+  });
+
+  it('uses descriptors for off-list restricted controlled strings', () => {
+    const drinks = ['Tea', 'Coffee'];
+    const getDrinkItem = (item: string) => ({
+      id: item.toLowerCase(),
+      label: item === 'Remote' ? 'Remote drink' : `${item} drink`,
+    });
+
+    renderBreeze(
+      <form>
+        <ComboBox
+          getItem={getDrinkItem}
+          items={drinks}
+          label="Drink"
+          name="drink"
+          onChange={() => undefined}
+          value="Remote"
+        />
+      </form>,
+    );
+
+    const input = screen.getByRole('combobox', { name: 'Drink' });
+    expect(input).toHaveValue('Remote drink');
+    expect(
+      new FormData(document.querySelector('form') as HTMLFormElement).get(
+        'drink',
+      ),
+    ).toBe('remote');
+  });
+
+  it('uses descriptors for off-list restricted default strings', () => {
+    const drinks = ['Tea', 'Coffee'];
+    const getDrinkItem = (item: string) => ({
+      id: item.toLowerCase(),
+      label: item === 'Remote' ? 'Remote drink' : `${item} drink`,
+    });
+
+    renderBreeze(
+      <form>
+        <ComboBox
+          defaultValue="Remote"
+          getItem={getDrinkItem}
+          items={drinks}
+          label="Drink"
+          name="drink"
+        />
+      </form>,
+    );
+
+    const input = screen.getByRole('combobox', { name: 'Drink' });
+    expect(input).toHaveValue('Remote drink');
+    expect(
+      new FormData(document.querySelector('form') as HTMLFormElement).get(
+        'drink',
+      ),
+    ).toBe('remote');
   });
 
   it('keeps free text distinct from string items', async () => {
@@ -689,6 +855,33 @@ describe('ComboBox', () => {
     const input = screen.getByRole('combobox', { name: 'Supplier' });
     expect(input).toHaveValue('Remote supplier');
     expect(input).not.toHaveValue('[object Object]');
+  });
+
+  it('submits the descriptor id for a missing controlled object', () => {
+    const missingSupplier = {
+      ...suppliers[0],
+      id: 'remote',
+      label: 'Remote supplier',
+    };
+
+    renderBreeze(
+      <form>
+        <ComboBox
+          getItem={getItem}
+          items={suppliers}
+          label="Supplier"
+          name="supplier"
+          onChange={() => undefined}
+          value={missingSupplier}
+        />
+      </form>,
+    );
+
+    const form = document.querySelector('form');
+    expect(form).not.toBeNull();
+    expect(new FormData(form as HTMLFormElement).get('supplier')).toBe(
+      'remote',
+    );
   });
 
   it('does not report synchronization for a missing controlled object', () => {
