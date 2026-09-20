@@ -133,12 +133,18 @@ describe('NumberField', () => {
     });
     const disabledGroup = disabledInput.parentElement;
     const readOnlyGroup = readOnlyInput.parentElement;
+    const disabledIncrement = disabledGroup?.querySelector<HTMLButtonElement>(
+      'button[slot="increment"]',
+    );
     const readOnlyIncrement = readOnlyGroup?.querySelector<HTMLButtonElement>(
       'button[aria-label="Increase"]',
     );
 
     expect(disabledInput).toBeDisabled();
     expect(disabledGroup).toHaveAttribute('data-disabled', 'true');
+    expect(disabledGroup).not.toHaveClass('breeze:data-[disabled]:opacity-60');
+    expect(disabledInput).toHaveClass('breeze:disabled:opacity-60');
+    expect(disabledIncrement).toHaveClass('breeze:disabled:opacity-50');
     expect(readOnlyInput).not.toBeDisabled();
     expect(readOnlyInput).toHaveAttribute('aria-readonly', 'true');
     expect(readOnlyGroup).toHaveClass('breeze:!bg-breeze-sunken');
@@ -182,6 +188,7 @@ describe('NumberField', () => {
     expect(inputRef.current).toBe(input);
     expect(input).toHaveAccessibleName('Amount');
     expect(input).toBeDisabled();
+    expect(input).not.toBeInvalid();
     expect(screen.queryByText('Amount')).not.toBeInTheDocument();
     expect(
       screen.queryByText('Shown beneath the amount.'),

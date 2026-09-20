@@ -121,6 +121,7 @@ describe('Checkbox', () => {
     expect(inputRef.current).toBe(checkbox);
     expect(checkbox).toHaveAccessibleName('Email alerts');
     expect(checkbox).toBeDisabled();
+    expect(checkbox).not.toBeInvalid();
     expect(screen.queryByText('Email alerts')).not.toBeInTheDocument();
     expect(
       screen.queryByText('Choose whether email alerts are enabled.'),
