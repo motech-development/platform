@@ -114,7 +114,7 @@ export function Checkbox({
       inputRef={inputRef}
       aria-label={loading ? label : undefined}
       isDisabled={interactionDisabled}
-      isInvalid={visibleError !== undefined}
+      isInvalid={!loading && visibleError !== undefined}
       isReadOnly={readOnly}
       isRequired={required}
       isSelected={selected}
@@ -173,15 +173,16 @@ export function Checkbox({
           )}
         </AriaText>
       )}
-      {visibleError && (
-        <AriaFieldError className={fieldVariants.base.error}>
-          {loading ? (
+      {visibleError &&
+        (loading ? (
+          <span aria-hidden="true" className={fieldVariants.base.error}>
             <Skeleton blockSize="1lh" inlineSize="12em" shape="rectangle" />
-          ) : (
-            visibleError
-          )}
-        </AriaFieldError>
-      )}
+          </span>
+        ) : (
+          <AriaFieldError className={fieldVariants.base.error}>
+            {visibleError}
+          </AriaFieldError>
+        ))}
     </AriaCheckboxField>
   );
 }

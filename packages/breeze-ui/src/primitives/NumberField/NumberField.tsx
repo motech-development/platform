@@ -14,7 +14,7 @@ import { Skeleton } from '../Skeleton/Skeleton';
 const variants = {
   base: {
     group:
-      'breeze:relative breeze:inline-flex breeze:min-block-breeze-md breeze:min-inline-size-0 breeze:inline-size-full breeze:items-stretch breeze:overflow-hidden breeze:rounded-breeze-ctl breeze:border breeze:border-solid breeze:border-breeze-line-strong breeze:bg-breeze-surface breeze:has-[input[data-focus-visible]]:outline-2 breeze:has-[input[data-focus-visible]]:outline-solid breeze:has-[input[data-focus-visible]]:outline-breeze-brand breeze:has-[input[data-invalid]]:border-breeze-danger breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:bg-breeze-sunken breeze:data-[disabled]:opacity-60',
+      'breeze:relative breeze:inline-flex breeze:min-block-breeze-md breeze:min-inline-size-0 breeze:inline-size-full breeze:items-stretch breeze:overflow-hidden breeze:rounded-breeze-ctl breeze:border breeze:border-solid breeze:border-breeze-line-strong breeze:bg-breeze-surface breeze:has-[input[data-focus-visible]]:outline-2 breeze:has-[input[data-focus-visible]]:outline-solid breeze:has-[input[data-focus-visible]]:outline-breeze-brand breeze:has-[input[data-invalid]]:border-breeze-danger breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:bg-breeze-sunken',
     input:
       'breeze:min-block-breeze-md breeze:min-inline-size-0 breeze:flex-1 breeze:border-0 breeze:rounded-none breeze:bg-transparent breeze:tabular-nums breeze:outline-none breeze:placeholder:text-breeze-ink-3 breeze:data-[hovered]:border-transparent breeze:data-[focus-visible]:outline-none breeze:data-[invalid]:border-transparent breeze:disabled:cursor-not-allowed breeze:read-only:cursor-default',
     skeleton:
@@ -139,7 +139,7 @@ export function NumberField({
       formatOptions={formatOptions}
       id={id}
       isDisabled={interactionDisabled}
-      isInvalid={visibleError !== undefined}
+      isInvalid={!loading && visibleError !== undefined}
       isReadOnly={readOnly}
       isRequired={required}
       maxValue={maxValue}
@@ -230,15 +230,16 @@ export function NumberField({
           )}
         </AriaText>
       )}
-      {visibleError && (
-        <AriaFieldError className={fieldVariants.base.error}>
-          {loading ? (
+      {visibleError &&
+        (loading ? (
+          <span aria-hidden="true" className={fieldVariants.base.error}>
             <Skeleton blockSize="1lh" inlineSize="12em" shape="rectangle" />
-          ) : (
-            visibleError
-          )}
-        </AriaFieldError>
-      )}
+          </span>
+        ) : (
+          <AriaFieldError className={fieldVariants.base.error}>
+            {visibleError}
+          </AriaFieldError>
+        ))}
     </AriaNumberField>
   );
 }

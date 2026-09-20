@@ -103,7 +103,7 @@ export function TextField({
       aria-label={loading ? label : undefined}
       id={id}
       isDisabled={interactionDisabled}
-      isInvalid={visibleError !== undefined}
+      isInvalid={!loading && visibleError !== undefined}
       isReadOnly={readOnly}
       isRequired={required}
       name={name}
@@ -152,15 +152,16 @@ export function TextField({
           )}
         </AriaText>
       )}
-      {visibleError && (
-        <AriaFieldError className={fieldVariants.base.error}>
-          {loading ? (
+      {visibleError &&
+        (loading ? (
+          <span aria-hidden="true" className={fieldVariants.base.error}>
             <Skeleton blockSize="1lh" inlineSize="12em" shape="rectangle" />
-          ) : (
-            visibleError
-          )}
-        </AriaFieldError>
-      )}
+          </span>
+        ) : (
+          <AriaFieldError className={fieldVariants.base.error}>
+            {visibleError}
+          </AriaFieldError>
+        ))}
     </AriaTextField>
   );
 }

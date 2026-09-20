@@ -133,6 +133,7 @@ describe('TextField', () => {
     expect(inputRef.current).toBe(input);
     expect(input).toHaveAccessibleName('Title');
     expect(input).toBeDisabled();
+    expect(input).not.toBeInvalid();
     expect(screen.queryByText('Title')).not.toBeInTheDocument();
     expect(
       screen.queryByText('Shown beneath the title.'),
