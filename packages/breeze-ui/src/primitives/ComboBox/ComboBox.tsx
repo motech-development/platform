@@ -186,22 +186,34 @@ function findItem<T>(
 
 interface ComboBoxPopoverProps<T> {
   getItem: (item: T) => ItemDescriptor;
+  isDisabled: boolean;
+  isReadOnly: boolean;
   items: T[];
   triggerRef: RefObject<Element | null>;
 }
 
 function ComboBoxPopover<T>({
   getItem,
+  isDisabled,
+  isReadOnly,
   items,
   triggerRef,
 }: Readonly<ComboBoxPopoverProps<T>>) {
   const state = useContext(AriaComboBoxStateContext);
+  const isBlocked = isDisabled || isReadOnly;
+  const isOpen = !isBlocked && (state?.isOpen ?? false);
+
+  useEffect(() => {
+    if (isBlocked && state?.isOpen) {
+      state?.setOpen(false);
+    }
+  }, [isBlocked, state]);
 
   return (
     <CollectionPopover
       className={variants.base.popover}
-      isOpen={state?.isOpen ?? false}
-      onOpenChange={(isOpen) => state?.setOpen(isOpen)}
+      isOpen={isOpen}
+      onOpenChange={(open) => state?.setOpen(open)}
       triggerRef={triggerRef}
     >
       <AriaListBox items={items}>
@@ -657,6 +669,8 @@ function ComboBoxBase<T>({ props }: Readonly<{ props: ComboBoxProps<T> }>) {
       </AriaGroup>
       <ComboBoxPopover
         getItem={getItem}
+        isDisabled={interactionDisabled}
+        isReadOnly={readOnly}
         items={model.visibleItems}
         triggerRef={groupRef}
       />
