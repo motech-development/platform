@@ -528,6 +528,45 @@ describe('ComboBox', () => {
     await user.type(input, 'changed');
   });
 
+  it.each([
+    ['disabled', { disabled: true, loading: false, readOnly: false }],
+    ['readOnly', { disabled: false, loading: false, readOnly: true }],
+    ['loading', { disabled: false, loading: true, readOnly: false }],
+  ] as const)(
+    'closes open suggestions when becoming %s',
+    async (_, { disabled, loading, readOnly }) => {
+      const user = userEvent.setup();
+      const { rerender } = renderBreeze(
+        <ComboBox
+          getItem={getItem}
+          items={suppliers}
+          label="Supplier"
+          onChange={() => undefined}
+        />,
+      );
+
+      const input = screen.getByRole('combobox', { name: 'Supplier' });
+      await user.type(input, 'Acme');
+      expect(screen.getByRole('listbox')).toBeVisible();
+
+      rerender(
+        <BreezeProvider locale="en-GB">
+          <ComboBox
+            getItem={getItem}
+            items={suppliers}
+            label="Supplier"
+            onChange={() => undefined}
+            disabled={disabled}
+            loading={loading}
+            readOnly={readOnly}
+          />
+        </BreezeProvider>,
+      );
+
+      expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+    },
+  );
+
   it('keeps selection identity by descriptor id and clears controlled values', () => {
     const onChange =
       vi.fn<(value: (typeof suppliers)[number] | string | null) => void>();
