@@ -50,8 +50,6 @@ interface ComboBoxCommonProps<T> {
   autoComplete?: string;
   /** Focuses the input when the component is mounted. */
   autoFocus?: boolean;
-  /** Allows a value that is not one of the suggestions. */
-  allowsCustomValue?: boolean;
   /** Prevents editing and opening the suggestions. Defaults to `false`. */
   disabled?: boolean;
   /** Supporting guidance announced with the input. */
@@ -80,30 +78,43 @@ interface ComboBoxCommonProps<T> {
   required?: boolean;
 }
 
-interface ControlledComboBoxProps<T> {
+/** The application value emitted by a ComboBox. */
+type ComboBoxValue<T> = T | string | null;
+
+interface ControlledComboBoxProps<Value> {
   /** Current selected item or free-text value. */
-  value: ComboBoxValue<T>;
+  value: Value;
   /** Reports the next selected item or free-text value without exposing a DOM event. */
-  onChange: (value: ComboBoxValue<T>) => void;
+  onChange: (value: Value) => void;
   /** Controlled and uncontrolled value props are mutually exclusive. */
   defaultValue?: never;
 }
 
-interface UncontrolledComboBoxProps<T> {
+interface UncontrolledComboBoxProps<Value> {
   /** Initial selected item or free-text value. */
-  defaultValue?: ComboBoxValue<T>;
+  defaultValue?: Value;
   /** Reports the next selected item or free-text value without exposing a DOM event. */
-  onChange?: (value: ComboBoxValue<T>) => void;
+  onChange?: (value: Value) => void;
   /** Controlled and uncontrolled value props are mutually exclusive. */
   value?: never;
 }
 
 /** Props for controlled or uncontrolled suggestion entry. */
-export type ComboBoxProps<T> = ComboBoxCommonProps<T> &
-  (ControlledComboBoxProps<T> | UncontrolledComboBoxProps<T>);
-
-/** The application value emitted by a ComboBox. */
-type ComboBoxValue<T> = T | string | null;
+export type ComboBoxProps<T> =
+  | (ComboBoxCommonProps<T> & {
+      /** Allows a value that is not one of the suggestions. */
+      allowsCustomValue: true;
+    } & (
+        | ControlledComboBoxProps<ComboBoxValue<NoInfer<T>>>
+        | UncontrolledComboBoxProps<ComboBoxValue<NoInfer<T>>>
+      ))
+  | (ComboBoxCommonProps<T> & {
+      /** Disallows values that are not one of the suggestions. */
+      allowsCustomValue?: false;
+    } & (
+        | ControlledComboBoxProps<NoInfer<T> | null>
+        | UncontrolledComboBoxProps<NoInfer<T> | null>
+      ));
 
 interface ComboBoxItem<T> {
   descriptor: ItemDescriptor;
@@ -121,15 +132,34 @@ function itemKey<T>(item: ComboBoxItem<T>) {
   return item.descriptor.id;
 }
 
+function getSelectedKey<T>(
+  value: ComboBoxValue<T> | undefined,
+  selectedItem: ComboBoxItem<T> | undefined,
+  getItem: (item: T) => ItemDescriptor,
+  allowsCustomValue: boolean,
+) {
+  if (selectedItem) return itemKey(selectedItem);
+  if (
+    value === undefined ||
+    value === null ||
+    (typeof value === 'string' && allowsCustomValue)
+  ) {
+    return null;
+  }
+
+  return getItem(value as T).id;
+}
+
 function getControlledTextValue<T>(
   value: ComboBoxValue<T>,
   selectedItem: ComboBoxItem<T> | undefined,
   getItem: (item: T) => ItemDescriptor,
+  allowsCustomValue: boolean,
 ) {
   if (value === null) return '';
   if (selectedItem) return selectedItem.descriptor.label;
-  if (typeof value === 'string') return value;
-  return getItem(value).label;
+  if (typeof value === 'string' && allowsCustomValue) return value;
+  return getItem(value as T).label;
 }
 
 function findItem<T>(
@@ -185,23 +215,29 @@ function getDefaultTextValue<T>(
   value: ComboBoxValue<T> | undefined,
   selectedItem: ComboBoxItem<T> | undefined,
   getItem: (item: T) => ItemDescriptor,
+  allowsCustomValue: boolean,
 ) {
   if (value === null || value === undefined) return undefined;
   if (selectedItem) return selectedItem.descriptor.label;
-  if (typeof value === 'string') return value;
-  return getItem(value).label;
+  if (typeof value === 'string' && allowsCustomValue) return value;
+  return getItem(value as T).label;
 }
 
 function getControlledSelectionDescriptor<T>(
   value: ComboBoxValue<T>,
   selectedItem: ComboBoxItem<T> | undefined,
   getItem: (item: T) => ItemDescriptor,
+  allowsCustomValue: boolean,
 ) {
-  if (selectedItem || value === null || typeof value === 'string') {
+  if (
+    selectedItem ||
+    value === null ||
+    (typeof value === 'string' && allowsCustomValue)
+  ) {
     return selectedItem?.descriptor;
   }
 
-  return getItem(value);
+  return getItem(value as T);
 }
 
 function matchesControlledSelection(
@@ -219,11 +255,14 @@ function matchesControlledSelection(
 function canDraftControlledValue<T>(
   value: ComboBoxValue<T> | undefined,
   selectedItem: ComboBoxItem<T> | undefined,
+  allowsCustomValue: boolean,
 ) {
   return (
     value !== undefined &&
     value !== null &&
-    (selectedItem !== undefined || typeof value !== 'string')
+    (selectedItem !== undefined ||
+      !allowsCustomValue ||
+      typeof value !== 'string')
   );
 }
 
@@ -244,6 +283,7 @@ function getControlledSelectionUpdate<T>(
   selectedItem: ComboBoxItem<T> | undefined,
   getItem: (item: T) => ItemDescriptor,
   previousSelection: ControlledSelection | null,
+  allowsCustomValue: boolean,
 ): ControlledSelectionUpdate {
   if (value === undefined) {
     return { selection: null };
@@ -253,6 +293,7 @@ function getControlledSelectionUpdate<T>(
     value,
     selectedItem,
     getItem,
+    allowsCustomValue,
   );
   const nextSelection = {
     id: descriptor?.id ?? null,
@@ -326,29 +367,40 @@ function useComboBoxModel<T>(
   );
   const selectedValue = value !== undefined ? value : defaultValue ?? null;
   const selectedItem = findItem(decoratedItems, selectedValue, getItem);
-  const selectedKey = selectedItem ? itemKey(selectedItem) : null;
+  const selectedKey = getSelectedKey(
+    value,
+    selectedItem,
+    getItem,
+    allowsCustomValue,
+  );
   const defaultSelectedItem = findItem(
     decoratedItems,
     defaultValue ?? null,
     getItem,
   );
-  const defaultSelectedKey = defaultSelectedItem
-    ? itemKey(defaultSelectedItem)
-    : undefined;
+  const defaultSelectedKey =
+    getSelectedKey(
+      defaultValue,
+      defaultSelectedItem,
+      getItem,
+      allowsCustomValue,
+    ) ?? undefined;
   const baseControlledTextValue =
     value === undefined
       ? undefined
-      : getControlledTextValue(value, selectedItem, getItem);
+      : getControlledTextValue(value, selectedItem, getItem, allowsCustomValue);
   const defaultTextValue = getDefaultTextValue(
     defaultValue,
     defaultSelectedItem,
     getItem,
+    allowsCustomValue,
   );
   const controlledSelectionUpdate = getControlledSelectionUpdate(
     value,
     selectedItem,
     getItem,
     controlledSelectionRef.current,
+    allowsCustomValue,
   );
   controlledSelectionRef.current = controlledSelectionUpdate.selection;
   const controlledSelection = controlledSelectionUpdate.selection;
@@ -434,12 +486,12 @@ function useComboBoxModel<T>(
     selectionResetLabelRef.current = null;
     setFilterText(inputValue);
 
-    if (canDraftControlledValue(value, selectedItem)) {
+    if (canDraftControlledValue(value, selectedItem, allowsCustomValue)) {
       setControlledInputDraft(inputValue);
       controlledDraftSelectionRef.current = controlledSelection;
     }
 
-    if (!allowsCustomValue) {
+    if (props.allowsCustomValue !== true) {
       if (inputValue === '' && value !== undefined) {
         onChange?.(null);
       }
@@ -452,7 +504,7 @@ function useComboBoxModel<T>(
       pendingCustomValueRef.current = nextValue;
     }
     lastCustomChangeRef.current = nextValue;
-    onChange?.(nextValue);
+    props.onChange?.(nextValue);
   };
 
   const handleValueChange = (key: ComboBoxChangeKey) => {
