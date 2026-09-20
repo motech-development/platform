@@ -1,13 +1,14 @@
 import type { Ref } from 'react';
 import { createElement } from 'react';
 import { Button as AriaButton } from 'react-aria-components/Button';
-import { FieldError as AriaFieldError } from 'react-aria-components/FieldError';
 import { Group as AriaGroup } from 'react-aria-components/Group';
 import { Input as AriaInput } from 'react-aria-components/Input';
-import { Label as AriaLabel } from 'react-aria-components/Label';
 import { NumberField as AriaNumberField } from 'react-aria-components/NumberField';
-import { Text as AriaText } from 'react-aria-components/Text';
 import { useBreezeContext } from '../../provider/BreezeContext';
+import {
+  FieldLabel,
+  FieldSupportingContent,
+} from '../Field/field.presentation';
 import { fieldVariants, joinClassNames } from '../Field/field.styles';
 import { Skeleton } from '../Skeleton/Skeleton';
 
@@ -150,13 +151,7 @@ export function NumberField({
       validationBehavior="aria"
       value={value}
     >
-      <AriaLabel className={fieldVariants.base.label}>
-        {loading ? (
-          <Skeleton blockSize="1lh" inlineSize="12em" shape="rectangle" />
-        ) : (
-          label
-        )}
-      </AriaLabel>
+      <FieldLabel label={label} loading={loading} />
       <AriaGroup
         className={joinClassNames(
           variants.base.group,
@@ -221,25 +216,11 @@ export function NumberField({
           </span>
         )}
       </AriaGroup>
-      {visibleDescription && (
-        <AriaText className={fieldVariants.base.description} slot="description">
-          {loading ? (
-            <Skeleton blockSize="1lh" inlineSize="12em" shape="rectangle" />
-          ) : (
-            visibleDescription
-          )}
-        </AriaText>
-      )}
-      {visibleError &&
-        (loading ? (
-          <span aria-hidden="true" className={fieldVariants.base.error}>
-            <Skeleton blockSize="1lh" inlineSize="12em" shape="rectangle" />
-          </span>
-        ) : (
-          <AriaFieldError className={fieldVariants.base.error}>
-            {visibleError}
-          </AriaFieldError>
-        ))}
+      <FieldSupportingContent
+        description={visibleDescription}
+        error={visibleError}
+        loading={loading}
+      />
     </AriaNumberField>
   );
 }
