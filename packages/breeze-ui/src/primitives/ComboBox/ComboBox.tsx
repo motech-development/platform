@@ -1,5 +1,5 @@
 import type { RefObject } from 'react';
-import { useContext, useId, useMemo, useRef, useState } from 'react';
+import { useContext, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { Button as AriaButton } from 'react-aria-components/Button';
 import {
   ComboBox as AriaComboBox,
@@ -127,7 +127,7 @@ function getControlledTextValue<T>(
   getItem: (item: T) => ItemDescriptor,
 ) {
   if (value === null) return '';
-  if (selectedItem) return undefined;
+  if (selectedItem) return selectedItem.descriptor.label;
   if (typeof value === 'string') return value;
   return getItem(value).label;
 }
@@ -204,6 +204,36 @@ function getControlledSelectionDescriptor<T>(
   return getItem(value);
 }
 
+function matchesControlledSelection(
+  current: ControlledSelection | null,
+  next: ControlledSelection | null,
+) {
+  return (
+    current !== null &&
+    next !== null &&
+    current.id === next.id &&
+    current.label === next.label
+  );
+}
+
+function canDraftControlledValue<T>(
+  value: ComboBoxValue<T> | undefined,
+  selectedItem: ComboBoxItem<T> | undefined,
+) {
+  return (
+    value !== undefined &&
+    value !== null &&
+    (selectedItem !== undefined || typeof value !== 'string')
+  );
+}
+
+function matchesControlledCustomValue<T>(
+  value: ComboBoxValue<T> | undefined,
+  pendingValue: string | null | undefined,
+) {
+  return pendingValue !== undefined && value === pendingValue;
+}
+
 interface ControlledSelectionUpdate {
   resetLabel?: string;
   selection: ControlledSelection | null;
@@ -226,7 +256,7 @@ function getControlledSelectionUpdate<T>(
   );
   const nextSelection = {
     id: descriptor?.id ?? null,
-    label: descriptor?.label ?? '',
+    label: descriptor?.label ?? (typeof value === 'string' ? value : ''),
   };
 
   return {
@@ -278,7 +308,12 @@ function useComboBoxModel<T>(
     value,
   } = props;
   const [filterText, setFilterText] = useState('');
+  const [controlledInputDraft, setControlledInputDraft] = useState<
+    string | undefined
+  >();
   const controlledSelectionRef = useRef<ControlledSelection | null>(null);
+  const controlledDraftSelectionRef = useRef<ControlledSelection | null>(null);
+  const pendingCustomValueRef = useRef<string | null | undefined>(undefined);
   const selectionResetLabelRef = useRef<string | null>(null);
   const lastCustomChangeRef = useRef<ComboBoxValue<T> | undefined>(undefined);
   const decoratedItems = useMemo<ComboBoxItem<T>[]>(
@@ -300,7 +335,7 @@ function useComboBoxModel<T>(
   const defaultSelectedKey = defaultSelectedItem
     ? itemKey(defaultSelectedItem)
     : undefined;
-  const controlledTextValue =
+  const baseControlledTextValue =
     value === undefined
       ? undefined
       : getControlledTextValue(value, selectedItem, getItem);
@@ -309,14 +344,6 @@ function useComboBoxModel<T>(
     defaultSelectedItem,
     getItem,
   );
-  const { contains } = useFilter({ sensitivity: 'base' });
-  const visibleItems = getVisibleItems(
-    items,
-    decoratedItems,
-    filterText,
-    contains,
-  );
-
   const controlledSelectionUpdate = getControlledSelectionUpdate(
     value,
     selectedItem,
@@ -324,12 +351,68 @@ function useComboBoxModel<T>(
     controlledSelectionRef.current,
   );
   controlledSelectionRef.current = controlledSelectionUpdate.selection;
+  const controlledSelection = controlledSelectionUpdate.selection;
+  const isControlledCustomEcho =
+    controlledSelectionUpdate.resetLabel !== undefined &&
+    allowsCustomValue &&
+    matchesControlledCustomValue(value, pendingCustomValueRef.current);
   if (controlledSelectionUpdate.resetLabel !== undefined) {
-    selectionResetLabelRef.current = controlledSelectionUpdate.resetLabel;
+    if (isControlledCustomEcho) {
+      pendingCustomValueRef.current = undefined;
+    } else {
+      selectionResetLabelRef.current = controlledSelectionUpdate.resetLabel;
+      pendingCustomValueRef.current = undefined;
+    }
+  }
+  const controlledSelectionChanged =
+    controlledSelectionUpdate.resetLabel !== undefined &&
+    !isControlledCustomEcho;
+  const hasControlledInputDraft =
+    value !== undefined &&
+    controlledInputDraft !== undefined &&
+    matchesControlledSelection(
+      controlledDraftSelectionRef.current,
+      controlledSelection,
+    );
+
+  if (controlledInputDraft !== undefined && !hasControlledInputDraft) {
+    controlledDraftSelectionRef.current = null;
   }
 
+  const { contains } = useFilter({ sensitivity: 'base' });
+  const visibleItems = getVisibleItems(
+    items,
+    decoratedItems,
+    controlledSelectionChanged ? '' : filterText,
+    contains,
+  );
+  const controlledTextValue = hasControlledInputDraft
+    ? controlledInputDraft
+    : baseControlledTextValue;
+
+  useEffect(() => {
+    if (!controlledSelectionChanged) return;
+
+    setFilterText('');
+    setControlledInputDraft(undefined);
+    controlledDraftSelectionRef.current = null;
+  }, [
+    controlledSelectionChanged,
+    controlledSelection?.id,
+    controlledSelection?.label,
+  ]);
+
+  const resetInputDraft = () => {
+    setFilterText('');
+    setControlledInputDraft(undefined);
+    controlledDraftSelectionRef.current = null;
+    pendingCustomValueRef.current = undefined;
+  };
+
   const handleOpenChange = (isOpen: boolean) => {
-    if (!isOpen) setFilterText('');
+    if (!isOpen) {
+      resetInputDraft();
+    }
   };
 
   const handleInputChange = (inputValue: string) => {
@@ -338,21 +421,53 @@ function useComboBoxModel<T>(
       inputValue === selectionResetLabelRef.current
     ) {
       selectionResetLabelRef.current = null;
-      setFilterText('');
+      resetInputDraft();
+      return;
+    }
+
+    if (value !== undefined && selectedItem?.descriptor.label === inputValue) {
+      selectionResetLabelRef.current = null;
+      resetInputDraft();
       return;
     }
 
     selectionResetLabelRef.current = null;
     setFilterText(inputValue);
 
-    if (!allowsCustomValue) return;
+    if (canDraftControlledValue(value, selectedItem)) {
+      setControlledInputDraft(inputValue);
+      controlledDraftSelectionRef.current = controlledSelection;
+    }
+
+    if (!allowsCustomValue) {
+      if (inputValue === '' && value !== undefined) {
+        onChange?.(null);
+      }
+
+      return;
+    }
 
     const nextValue = inputValue || null;
+    if (value !== undefined) {
+      pendingCustomValueRef.current = nextValue;
+    }
     lastCustomChangeRef.current = nextValue;
     onChange?.(nextValue);
   };
 
   const handleValueChange = (key: ComboBoxChangeKey) => {
+    const isDraftCommit =
+      key !== null &&
+      value !== undefined &&
+      controlledInputDraft !== undefined &&
+      key === selectedKey;
+
+    if (isDraftCommit) {
+      selectionResetLabelRef.current = selectedItem?.descriptor.label ?? '';
+      resetInputDraft();
+      return;
+    }
+
     if (key === null) {
       if (allowsCustomValue && lastCustomChangeRef.current !== undefined) {
         return;
@@ -367,7 +482,7 @@ function useComboBoxModel<T>(
     );
     selectionResetLabelRef.current = nextItem?.descriptor.label ?? '';
     lastCustomChangeRef.current = undefined;
-    setFilterText('');
+    resetInputDraft();
     onChange?.(nextItem?.item ?? null);
   };
 
