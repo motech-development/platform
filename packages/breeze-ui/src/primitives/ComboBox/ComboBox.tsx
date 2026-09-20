@@ -82,18 +82,18 @@ interface ComboBoxCommonProps<T> {
 
 interface ControlledComboBoxProps<T> {
   /** Current selected item or free-text value. */
-  value: T | string | null;
+  value: ComboBoxValue<T>;
   /** Reports the next selected item or free-text value without exposing a DOM event. */
-  onChange: (value: T | string | null) => void;
+  onChange: (value: ComboBoxValue<T>) => void;
   /** Controlled and uncontrolled value props are mutually exclusive. */
   defaultValue?: never;
 }
 
 interface UncontrolledComboBoxProps<T> {
   /** Initial selected item or free-text value. */
-  defaultValue?: T | string | null;
+  defaultValue?: ComboBoxValue<T>;
   /** Reports the next selected item or free-text value without exposing a DOM event. */
-  onChange?: (value: T | string | null) => void;
+  onChange?: (value: ComboBoxValue<T>) => void;
   /** Controlled and uncontrolled value props are mutually exclusive. */
   value?: never;
 }
@@ -101,6 +101,9 @@ interface UncontrolledComboBoxProps<T> {
 /** Props for controlled or uncontrolled suggestion entry. */
 export type ComboBoxProps<T> = ComboBoxCommonProps<T> &
   (ControlledComboBoxProps<T> | UncontrolledComboBoxProps<T>);
+
+/** The application value emitted by a ComboBox. */
+type ComboBoxValue<T> = T | string | null;
 
 interface ComboBoxItem<T> {
   descriptor: ItemDescriptor;
@@ -112,22 +115,26 @@ interface ControlledSelection {
   label: string;
 }
 
+type ComboBoxChangeKey = string | number | null;
+
 function itemKey<T>(item: ComboBoxItem<T>) {
   return item.descriptor.id;
 }
 
 function getControlledTextValue<T>(
-  value: T | string | null,
+  value: ComboBoxValue<T>,
   selectedItem: ComboBoxItem<T> | undefined,
+  getItem: (item: T) => ItemDescriptor,
 ) {
   if (value === null) return '';
   if (selectedItem) return undefined;
-  return String(value);
+  if (typeof value === 'string') return value;
+  return getItem(value).label;
 }
 
 function findItem<T>(
   items: ComboBoxItem<T>[],
-  value: T | string | null,
+  value: ComboBoxValue<T>,
   getItem: (item: T) => ItemDescriptor,
 ) {
   if (value === null) {
@@ -140,13 +147,9 @@ function findItem<T>(
     return directItem;
   }
 
-  let valueId: string | undefined;
+  if (typeof value === 'string') return undefined;
 
-  try {
-    valueId = getItem(value as T)?.id;
-  } catch {
-    valueId = undefined;
-  }
+  const valueId = getItem(value).id;
 
   return items.find(({ descriptor }) => descriptor.id === valueId);
 }
@@ -178,6 +181,208 @@ function ComboBoxPopover<T>({
   );
 }
 
+function getDefaultTextValue<T>(
+  value: ComboBoxValue<T> | undefined,
+  selectedItem: ComboBoxItem<T> | undefined,
+  getItem: (item: T) => ItemDescriptor,
+) {
+  if (value === null || value === undefined) return undefined;
+  if (selectedItem) return selectedItem.descriptor.label;
+  if (typeof value === 'string') return value;
+  return getItem(value).label;
+}
+
+function getControlledSelectionDescriptor<T>(
+  value: ComboBoxValue<T>,
+  selectedItem: ComboBoxItem<T> | undefined,
+  getItem: (item: T) => ItemDescriptor,
+) {
+  if (selectedItem || value === null || typeof value === 'string') {
+    return selectedItem?.descriptor;
+  }
+
+  return getItem(value);
+}
+
+interface ControlledSelectionUpdate {
+  resetLabel?: string;
+  selection: ControlledSelection | null;
+}
+
+function getControlledSelectionUpdate<T>(
+  value: ComboBoxValue<T> | undefined,
+  selectedItem: ComboBoxItem<T> | undefined,
+  getItem: (item: T) => ItemDescriptor,
+  previousSelection: ControlledSelection | null,
+): ControlledSelectionUpdate {
+  if (value === undefined) {
+    return { selection: null };
+  }
+
+  const descriptor = getControlledSelectionDescriptor(
+    value,
+    selectedItem,
+    getItem,
+  );
+  const nextSelection = {
+    id: descriptor?.id ?? null,
+    label: descriptor?.label ?? '',
+  };
+
+  return {
+    resetLabel:
+      previousSelection !== null &&
+      (previousSelection.id !== nextSelection.id ||
+        previousSelection.label !== nextSelection.label)
+        ? nextSelection.label
+        : undefined,
+    selection: nextSelection,
+  };
+}
+
+function getVisibleItems<T>(
+  items: T[],
+  decoratedItems: ComboBoxItem<T>[],
+  filterText: string,
+  contains: (value: string, search: string) => boolean,
+) {
+  const query = filterText.trim();
+
+  if (!query) return items;
+
+  return decoratedItems
+    .filter(({ descriptor }) => contains(descriptor.label, query))
+    .map(({ item }) => item);
+}
+
+interface ComboBoxModel<T> {
+  controlledTextValue: string | undefined;
+  defaultSelectedKey: string | undefined;
+  defaultTextValue: string | undefined;
+  handleInputChange: (inputValue: string) => void;
+  handleOpenChange: (isOpen: boolean) => void;
+  handleValueChange: (key: ComboBoxChangeKey) => void;
+  selectedKey: string | null;
+  visibleItems: T[];
+}
+
+function useComboBoxModel<T>(
+  props: Readonly<ComboBoxProps<T>>,
+): ComboBoxModel<T> {
+  const {
+    allowsCustomValue = false,
+    defaultValue,
+    getItem,
+    items,
+    onChange,
+    value,
+  } = props;
+  const [filterText, setFilterText] = useState('');
+  const controlledSelectionRef = useRef<ControlledSelection | null>(null);
+  const selectionResetLabelRef = useRef<string | null>(null);
+  const lastCustomChangeRef = useRef<ComboBoxValue<T> | undefined>(undefined);
+  const decoratedItems = useMemo<ComboBoxItem<T>[]>(
+    () =>
+      items.map((item) => ({
+        descriptor: getItem(item),
+        item,
+      })),
+    [getItem, items],
+  );
+  const selectedValue = value !== undefined ? value : defaultValue ?? null;
+  const selectedItem = findItem(decoratedItems, selectedValue, getItem);
+  const selectedKey = selectedItem ? itemKey(selectedItem) : null;
+  const defaultSelectedItem = findItem(
+    decoratedItems,
+    defaultValue ?? null,
+    getItem,
+  );
+  const defaultSelectedKey = defaultSelectedItem
+    ? itemKey(defaultSelectedItem)
+    : undefined;
+  const controlledTextValue =
+    value === undefined
+      ? undefined
+      : getControlledTextValue(value, selectedItem, getItem);
+  const defaultTextValue = getDefaultTextValue(
+    defaultValue,
+    defaultSelectedItem,
+    getItem,
+  );
+  const { contains } = useFilter({ sensitivity: 'base' });
+  const visibleItems = getVisibleItems(
+    items,
+    decoratedItems,
+    filterText,
+    contains,
+  );
+
+  const controlledSelectionUpdate = getControlledSelectionUpdate(
+    value,
+    selectedItem,
+    getItem,
+    controlledSelectionRef.current,
+  );
+  controlledSelectionRef.current = controlledSelectionUpdate.selection;
+  if (controlledSelectionUpdate.resetLabel !== undefined) {
+    selectionResetLabelRef.current = controlledSelectionUpdate.resetLabel;
+  }
+
+  const handleOpenChange = (isOpen: boolean) => {
+    if (!isOpen) setFilterText('');
+  };
+
+  const handleInputChange = (inputValue: string) => {
+    if (
+      selectionResetLabelRef.current !== null &&
+      inputValue === selectionResetLabelRef.current
+    ) {
+      selectionResetLabelRef.current = null;
+      setFilterText('');
+      return;
+    }
+
+    selectionResetLabelRef.current = null;
+    setFilterText(inputValue);
+
+    if (!allowsCustomValue) return;
+
+    const nextValue = inputValue || null;
+    lastCustomChangeRef.current = nextValue;
+    onChange?.(nextValue);
+  };
+
+  const handleValueChange = (key: ComboBoxChangeKey) => {
+    if (key === null) {
+      if (allowsCustomValue && lastCustomChangeRef.current !== undefined) {
+        return;
+      }
+
+      onChange?.(null);
+      return;
+    }
+
+    const nextItem = decoratedItems.find(
+      (item) => itemKey(item) === String(key),
+    );
+    selectionResetLabelRef.current = nextItem?.descriptor.label ?? '';
+    lastCustomChangeRef.current = undefined;
+    setFilterText('');
+    onChange?.(nextItem?.item ?? null);
+  };
+
+  return {
+    controlledTextValue,
+    defaultSelectedKey,
+    defaultTextValue,
+    handleInputChange,
+    handleOpenChange,
+    handleValueChange,
+    selectedKey,
+    visibleItems,
+  };
+}
+
 /**
  * Renders a filtered suggestion field with closed descriptor content and
  * optional application-owned free text.
@@ -189,30 +394,25 @@ function ComboBoxBase<T>({ props }: Readonly<{ props: ComboBoxProps<T> }>) {
     allowsCustomValue = false,
     autoComplete,
     autoFocus,
-    defaultValue,
     description,
     disabled = false,
     error,
     form,
     getItem,
     id,
-    items,
     label,
     loading = false,
     name,
-    onChange,
     placeholder,
     readOnly = false,
     required = false,
     value,
   } = props;
   const { messages } = useBreezeContext();
+  const model = useComboBoxModel(props);
   const visibleDescription = description?.trim() || undefined;
   const visibleError = error?.trim() || undefined;
   const interactionDisabled = disabled || loading;
-  const [filterText, setFilterText] = useState('');
-  const controlledSelectionRef = useRef<ControlledSelection | null>(null);
-  const selectionResetLabelRef = useRef<string | null>(null);
   const groupRef = useRef<HTMLDivElement>(null);
   const fieldId = useId();
   const descriptionId = `${fieldId}-description`;
@@ -221,67 +421,7 @@ function ComboBoxBase<T>({ props }: Readonly<{ props: ComboBoxProps<T> }>) {
     [visibleDescription && descriptionId, visibleError && errorId]
       .filter(Boolean)
       .join(' ') || undefined;
-  const decoratedItems = useMemo<ComboBoxItem<T>[]>(
-    () =>
-      items.map((item) => ({
-        descriptor: getItem(item),
-        item,
-      })),
-    [getItem, items],
-  );
-  let selectedValue = defaultValue ?? null;
-
-  if (value !== undefined) {
-    selectedValue = value;
-  }
-
-  const selectedItem = findItem(decoratedItems, selectedValue, getItem);
-  const selectedKey = selectedItem ? itemKey(selectedItem) : null;
-  if (value !== undefined) {
-    const nextControlledSelection = {
-      id: selectedItem?.descriptor.id ?? null,
-      label: selectedItem?.descriptor.label ?? '',
-    };
-    const previousControlledSelection = controlledSelectionRef.current;
-
-    if (
-      previousControlledSelection !== null &&
-      (previousControlledSelection.id !== nextControlledSelection.id ||
-        previousControlledSelection.label !== nextControlledSelection.label)
-    ) {
-      selectionResetLabelRef.current = nextControlledSelection.label;
-    }
-
-    controlledSelectionRef.current = nextControlledSelection;
-  } else {
-    controlledSelectionRef.current = null;
-  }
-  const defaultSelectedItem = findItem(
-    decoratedItems,
-    defaultValue ?? null,
-    getItem,
-  );
-  const defaultSelectedKey = defaultSelectedItem
-    ? itemKey(defaultSelectedItem)
-    : undefined;
-  let controlledTextValue: string | undefined;
-
-  if (value !== undefined) {
-    controlledTextValue = getControlledTextValue(value, selectedItem);
-  }
-
-  const defaultTextValue =
-    defaultValue === null || defaultValue === undefined
-      ? undefined
-      : defaultSelectedItem?.descriptor.label ?? String(defaultValue);
-  const { contains } = useFilter({ sensitivity: 'base' });
-  let visibleItems = items;
-
-  if (filterText.trim()) {
-    visibleItems = decoratedItems
-      .filter(({ descriptor }) => contains(descriptor.label, filterText.trim()))
-      .map(({ item }) => item);
-  }
+  const submittedName = interactionDisabled ? undefined : name;
 
   return (
     <AriaComboBox
@@ -289,52 +429,22 @@ function ComboBoxBase<T>({ props }: Readonly<{ props: ComboBoxProps<T> }>) {
       allowsEmptyCollection={allowsCustomValue}
       aria-label={loading ? label : undefined}
       className={fieldVariants.base.root}
-      defaultInputValue={defaultTextValue}
-      defaultSelectedKey={defaultSelectedKey}
+      defaultInputValue={model.defaultTextValue}
+      defaultValue={model.defaultSelectedKey}
       form={form}
       id={id}
-      inputValue={controlledTextValue}
+      inputValue={model.controlledTextValue}
       isDisabled={interactionDisabled}
       isInvalid={!loading && visibleError !== undefined}
       isReadOnly={readOnly}
       isRequired={required}
-      items={visibleItems}
+      items={model.visibleItems}
       menuTrigger="input"
-      name={name}
-      onOpenChange={(isOpen) => {
-        if (!isOpen) {
-          setFilterText('');
-        }
-      }}
-      onInputChange={(inputValue) => {
-        if (
-          selectionResetLabelRef.current !== null &&
-          inputValue === selectionResetLabelRef.current
-        ) {
-          selectionResetLabelRef.current = null;
-          setFilterText('');
-          return;
-        }
-
-        selectionResetLabelRef.current = null;
-        setFilterText(inputValue);
-
-        if (allowsCustomValue && onChange) {
-          onChange(inputValue || null);
-        }
-      }}
-      onSelectionChange={(key) => {
-        if (typeof key !== 'string' || !onChange) {
-          return;
-        }
-
-        const nextItem = decoratedItems.find((item) => itemKey(item) === key);
-
-        selectionResetLabelRef.current = nextItem?.descriptor.label ?? '';
-        setFilterText('');
-        onChange(nextItem?.item ?? null);
-      }}
-      selectedKey={value !== undefined ? selectedKey : undefined}
+      name={submittedName}
+      onChange={model.handleValueChange}
+      onInputChange={model.handleInputChange}
+      onOpenChange={model.handleOpenChange}
+      value={value !== undefined ? model.selectedKey : undefined}
       validationBehavior="aria"
     >
       <FieldLabel label={label} loading={loading} />
@@ -380,7 +490,7 @@ function ComboBoxBase<T>({ props }: Readonly<{ props: ComboBoxProps<T> }>) {
       </AriaGroup>
       <ComboBoxPopover
         getItem={getItem}
-        items={visibleItems}
+        items={model.visibleItems}
         triggerRef={groupRef}
       />
       <FieldSupportingContent

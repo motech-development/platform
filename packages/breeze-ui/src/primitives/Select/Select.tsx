@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react';
-import { useId, useMemo, useRef } from 'react';
+import { useEffect, useId, useMemo, useRef } from 'react';
+import { mergeProps } from 'react-aria/mergeProps';
 import { useButton } from 'react-aria/useButton';
+import { useHover } from 'react-aria/useHover';
 import { useListBox, useOption } from 'react-aria/useListBox';
 import { useSelect } from 'react-aria/useSelect';
 // The low-level Select state is required to avoid RAC's native HiddenSelect.
@@ -17,6 +19,19 @@ import {
 import { fieldVariants, joinClassNames } from '../Field/field.styles';
 import { Icon } from '../Icon/Icon';
 import { Skeleton } from '../Skeleton/Skeleton';
+
+const selectVariants = {
+  base: {
+    trigger:
+      'breeze:flex breeze:min-block-breeze-md breeze:any-pointer-coarse:min-block-breeze-tap breeze:min-inline-size-0 breeze:inline-size-full breeze:items-center breeze:justify-between breeze:rounded-breeze-ctl breeze:border breeze:border-solid breeze:border-breeze-line-strong breeze:bg-breeze-surface breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:py-breeze-2 breeze:font-breeze-sans breeze:text-breeze-sm breeze:text-breeze-ink breeze:outline-offset-2 breeze:data-[hovered]:border-breeze-brand breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[invalid]:border-breeze-danger breeze:disabled:cursor-not-allowed breeze:disabled:bg-breeze-sunken breeze:disabled:opacity-60',
+  },
+  compound: {},
+  size: {},
+  state: {
+    readOnlyTrigger: 'breeze:cursor-default breeze:bg-breeze-sunken',
+  },
+  variant: {},
+} as const;
 
 interface SelectCommonProps<T> {
   /** Hints at the browser's autocomplete behaviour for this field. */
@@ -144,14 +159,16 @@ function SelectOption<T>({
 }>) {
   const optionRef = useRef<HTMLDivElement>(null);
   const { value } = node;
-  const { optionProps, isSelected } = useOption(
-    {
-      isDisabled: value?.descriptor.disabled,
-      key: node.key,
-    },
-    state,
-    optionRef,
-  );
+  const { optionProps, isDisabled, isFocused, isFocusVisible, isSelected } =
+    useOption(
+      {
+        isDisabled: value?.descriptor.disabled,
+        key: node.key,
+      },
+      state,
+      optionRef,
+    );
+  const { hoverProps, isHovered } = useHover({ isDisabled });
 
   if (!value) return null;
 
@@ -159,9 +176,14 @@ function SelectOption<T>({
     <div
       // React Aria supplies the complete keyboard and accessibility contract.
       // eslint-disable-next-line react/jsx-props-no-spreading
-      {...optionProps}
-      className={collectionVariants.base.item}
+      {...mergeProps(optionProps, hoverProps)}
       ref={optionRef}
+      className={collectionVariants.base.item}
+      data-disabled={isDisabled || undefined}
+      data-focused={isFocused || undefined}
+      data-focus-visible={isFocusVisible || undefined}
+      data-hovered={isHovered || undefined}
+      data-selected={isSelected || undefined}
     >
       <DescriptorContent
         descriptor={value.descriptor}
@@ -252,16 +274,17 @@ export function Select<T>({
     [getItem, items],
   );
   const isControlled = value !== undefined;
-  const selectedItem = findItem(decoratedItems, value ?? null, getItem);
+  const selectedValueItem = findItem(decoratedItems, value ?? null, getItem);
   const defaultSelectedItem = findItem(
     decoratedItems,
     defaultValue ?? null,
     getItem,
   );
-  const selectedKey = isControlled
-    ? selectedItem?.descriptor.id ?? null
+  const controlledValueKey = isControlled
+    ? selectedValueItem?.descriptor.id ?? null
     : undefined;
-  const defaultSelectedKey = defaultSelectedItem?.descriptor.id;
+  const defaultValueKey = defaultSelectedItem?.descriptor.id ?? null;
+  const initialDefaultValueRef = useRef(defaultValueKey);
   const collectionChildren = useMemo(
     () =>
       decoratedItems.map(({ descriptor, item }) => (
@@ -280,22 +303,25 @@ export function Select<T>({
   const state = useSelectState<SelectItem<T>>({
     allowsEmptyCollection: true,
     children: collectionChildren,
-    defaultSelectedKey,
+    defaultValue: defaultValueKey,
     isDisabled: stateDisabled,
     isInvalid: !loading && visibleError !== undefined,
     isRequired: required,
     items: decoratedItems,
-    onSelectionChange: (key) => {
-      if (typeof key !== 'string') return;
+    onChange: (key) => {
+      if (key === null) {
+        onChange?.(null);
+        return;
+      }
 
       const nextItem = decoratedItems.find(
         (item) => item.descriptor.id === key,
       );
       onChange?.(nextItem?.item ?? null);
     },
-    selectedKey,
     shouldCloseOnSelect: true,
     validationBehavior: 'aria',
+    value: controlledValueKey,
   });
   const { menuProps, triggerProps, valueProps } = useSelect(
     {
@@ -308,13 +334,37 @@ export function Select<T>({
       isInvalid: !loading && visibleError !== undefined,
       isRequired: required,
       name,
-      selectedKey,
       validationBehavior: 'aria',
+      value: state.value,
     },
     state,
     triggerRef,
   );
   const { buttonProps } = useButton(triggerProps, triggerRef);
+  const triggerLabelledBy = loading
+    ? undefined
+    : Array.from(
+        new Set(
+          [buttonProps['aria-labelledby'], valueProps.id]
+            .filter(Boolean)
+            .flatMap((labelledBy) => (labelledBy ? labelledBy.split(' ') : [])),
+        ),
+      ).join(' ') || undefined;
+
+  useEffect(() => {
+    if (isControlled) return undefined;
+
+    const associatedForm = form
+      ? document.getElementById(form)
+      : triggerRef.current?.form;
+
+    if (!(associatedForm instanceof HTMLFormElement)) return undefined;
+
+    const reset = () => state.setValue(initialDefaultValueRef.current);
+    associatedForm.addEventListener('reset', reset);
+
+    return () => associatedForm.removeEventListener('reset', reset);
+  }, [form, isControlled, state]);
 
   return (
     <div className={fieldVariants.base.root}>
@@ -326,24 +376,27 @@ export function Select<T>({
       />
       <div className={fieldVariants.base.control}>
         {/* React Aria supplies the complete keyboard and accessibility contract. */}
-        {/* eslint-disable-next-line jsx-a11y/role-supports-aria-props */}
         <button
           type="button"
           // React Aria supplies the complete keyboard and accessibility contract.
           // eslint-disable-next-line react/jsx-props-no-spreading
           {...buttonProps}
-          aria-label={loading ? label : undefined}
-          aria-labelledby={loading ? undefined : labelId}
-          aria-required={required || undefined}
+          aria-controls={buttonProps['aria-controls']}
+          aria-expanded={buttonProps['aria-expanded']}
+          aria-labelledby={triggerLabelledBy}
           aria-readonly={readOnly || undefined}
+          aria-required={required || undefined}
           // eslint-disable-next-line jsx-a11y/no-autofocus
           autoFocus={autoFocus}
           className={joinClassNames(
-            fieldVariants.base.input,
+            selectVariants.base.trigger,
+            readOnly && selectVariants.state.readOnlyTrigger,
             loading && 'breeze:!opacity-0',
           )}
           disabled={interactionDisabled}
+          form={form}
           id={controlId}
+          role="combobox"
           ref={triggerRef}
         >
           <span
@@ -352,7 +405,7 @@ export function Select<T>({
             {...valueProps}
             className={collectionVariants.base.content}
           >
-            {state.selectedItem?.textValue ?? placeholder}
+            {state.selectedItems[0]?.textValue ?? placeholder}
           </span>
           <Icon name="expand" size="sm" />
         </button>
@@ -367,13 +420,13 @@ export function Select<T>({
           </span>
         )}
       </div>
-      {name && (
+      {name && !interactionDisabled && (
         <input
           autoComplete={autoComplete}
           form={form}
           name={name}
           type="hidden"
-          value={state.selectedKey ?? ''}
+          value={state.value ?? ''}
         />
       )}
       <CollectionPopover

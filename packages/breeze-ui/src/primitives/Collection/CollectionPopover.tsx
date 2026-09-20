@@ -1,11 +1,21 @@
 import type { ReactNode, RefObject } from 'react';
-import { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import { Popover as AriaPopover } from 'react-aria-components/Popover';
 import { useOverlayPortal } from '../../overlays/OverlayProvider';
 import {
   ParentOverlayContext,
   useOverlayLayer,
 } from '../../overlays/OverlayStack';
+
+const triggerBoundaryError =
+  'Breeze overlay triggers and portal containers must belong to the current document and light DOM.';
 
 interface CollectionPopoverProps {
   children: ReactNode;
@@ -42,6 +52,19 @@ export default function CollectionPopover({
     (element: Element | null) => setSurfaceMounted(element !== null),
     [],
   );
+
+  useLayoutEffect(() => {
+    if (
+      host &&
+      triggerRef.current &&
+      (triggerRef.current.ownerDocument !== document ||
+        triggerRef.current.getRootNode() !== document ||
+        host.ownerDocument !== document ||
+        host.getRootNode() !== document)
+    ) {
+      throw new Error(triggerBoundaryError);
+    }
+  });
 
   useEffect(() => setPortalReady(true), []);
   useEffect(() => {
