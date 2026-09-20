@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { useEffect, useId, useMemo, useRef } from 'react';
+import { useEffect, useId, useLayoutEffect, useMemo, useRef } from 'react';
 import { mergeProps } from 'react-aria/mergeProps';
 import { useButton } from 'react-aria/useButton';
 import { useHover } from 'react-aria/useHover';
@@ -350,7 +350,7 @@ export function Select<T>({
         ),
       ).join(' ') || undefined;
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (decoratedItems.length === 0 && state.isOpen) {
       state.setOpen(false);
     }
