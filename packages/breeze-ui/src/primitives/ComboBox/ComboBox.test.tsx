@@ -1,4 +1,4 @@
-import { screen, within } from '@testing-library/react';
+import { fireEvent, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import renderBreeze from '../../../test/render';
@@ -203,6 +203,65 @@ describe('ComboBox', () => {
     expect(screen.getByRole('listbox')).toBeInTheDocument();
   });
 
+  it('keeps accepted custom text after editing a selected suggestion', async () => {
+    const user = userEvent.setup();
+    const onChange =
+      vi.fn<(value: (typeof suppliers)[number] | string | null) => void>();
+
+    renderBreeze(
+      <ComboBox
+        allowsCustomValue
+        defaultValue={suppliers[0]}
+        getItem={getItem}
+        items={suppliers}
+        label="Supplier"
+        onChange={onChange}
+      />,
+    );
+
+    const input = screen.getByRole('combobox', { name: 'Supplier' });
+    await user.click(input);
+    await user.clear(input);
+    await user.type(input, 'New supplier');
+    await user.tab();
+
+    expect(input).toHaveValue('New supplier');
+    expect(onChange).toHaveBeenLastCalledWith('New supplier');
+    expect(onChange.mock.calls.at(-1)).not.toEqual([null]);
+    expect(
+      onChange.mock.calls.filter(([value]) => value === null),
+    ).toHaveLength(1);
+  });
+
+  it('keeps accepted custom text after pressing Enter', async () => {
+    const user = userEvent.setup();
+    const onChange =
+      vi.fn<(value: (typeof suppliers)[number] | string | null) => void>();
+
+    renderBreeze(
+      <ComboBox
+        allowsCustomValue
+        defaultValue={suppliers[0]}
+        getItem={getItem}
+        items={suppliers}
+        label="Supplier"
+        onChange={onChange}
+      />,
+    );
+
+    const input = screen.getByRole('combobox', { name: 'Supplier' });
+    await user.click(input);
+    await user.clear(input);
+    await user.type(input, 'New supplier');
+    await user.keyboard('{Enter}');
+
+    expect(input).toHaveValue('New supplier');
+    expect(onChange).toHaveBeenLastCalledWith('New supplier');
+    expect(
+      onChange.mock.calls.filter(([value]) => value === null),
+    ).toHaveLength(1);
+  });
+
   it('does not report a selected label as trailing custom text', async () => {
     const user = userEvent.setup();
     const onChange =
@@ -328,6 +387,171 @@ describe('ComboBox', () => {
     );
 
     expect(input).toHaveValue('');
+  });
+
+  it('displays the descriptor label for a controlled object missing from items', () => {
+    const missingSupplier = {
+      ...suppliers[0],
+      id: 'remote',
+      label: 'Remote supplier',
+    };
+
+    renderBreeze(
+      <ComboBox
+        getItem={getItem}
+        items={suppliers}
+        label="Supplier"
+        onChange={() => undefined}
+        value={missingSupplier}
+      />,
+    );
+
+    const input = screen.getByRole('combobox', { name: 'Supplier' });
+    expect(input).toHaveValue('Remote supplier');
+    expect(input).not.toHaveValue('[object Object]');
+  });
+
+  it('does not report synchronization for a missing controlled object', () => {
+    const missingValue = {
+      ...suppliers[0],
+      id: 'remote',
+      label: 'Remote supplier',
+    };
+    const updatedValue = {
+      ...missingValue,
+      label: 'Updated remote supplier',
+    };
+    const onChange =
+      vi.fn<(value: (typeof suppliers)[number] | string | null) => void>();
+    const { rerender } = renderBreeze(
+      <ComboBox
+        allowsCustomValue
+        getItem={getItem}
+        items={suppliers}
+        label="Supplier"
+        onChange={onChange}
+        value={null}
+      />,
+    );
+
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <ComboBox
+          allowsCustomValue
+          getItem={getItem}
+          items={suppliers}
+          label="Supplier"
+          onChange={onChange}
+          value={missingValue}
+        />
+      </BreezeProvider>,
+    );
+
+    const input = screen.getByRole('combobox', { name: 'Supplier' });
+    expect(input).toHaveValue('Remote supplier');
+    fireEvent.input(input, { target: { value: 'Remote supplier' } });
+    expect(onChange).not.toHaveBeenCalled();
+
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <ComboBox
+          allowsCustomValue
+          getItem={getItem}
+          items={suppliers}
+          label="Supplier"
+          onChange={onChange}
+          value={updatedValue}
+        />
+      </BreezeProvider>,
+    );
+
+    expect(input).toHaveValue('Updated remote supplier');
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it('reports clearing an uncontrolled non-custom value as null', async () => {
+    const user = userEvent.setup();
+    const onChange =
+      vi.fn<(value: (typeof suppliers)[number] | string | null) => void>();
+
+    renderBreeze(
+      <ComboBox
+        defaultValue={suppliers[0]}
+        getItem={getItem}
+        items={suppliers}
+        label="Supplier"
+        onChange={onChange}
+      />,
+    );
+
+    await user.clear(screen.getByRole('combobox', { name: 'Supplier' }));
+
+    expect(onChange).toHaveBeenLastCalledWith(null);
+  });
+
+  it('reports clearing a controlled non-custom value as null', async () => {
+    const user = userEvent.setup();
+    const onChange =
+      vi.fn<(value: (typeof suppliers)[number] | string | null) => void>();
+
+    renderBreeze(
+      <ComboBox
+        getItem={getItem}
+        items={suppliers}
+        label="Supplier"
+        onChange={onChange}
+        value={suppliers[0]}
+      />,
+    );
+
+    await user.clear(screen.getByRole('combobox', { name: 'Supplier' }));
+
+    expect(onChange).toHaveBeenLastCalledWith(null);
+  });
+
+  it.each([
+    { disabled: true, state: 'disabled' },
+    { loading: true, state: 'loading' },
+  ])(
+    'excludes a named $state ComboBox from FormData',
+    ({ disabled, loading }) => {
+      renderBreeze(
+        <form>
+          <ComboBox
+            defaultValue={suppliers[0]}
+            disabled={disabled}
+            getItem={getItem}
+            items={suppliers}
+            label="Supplier"
+            loading={loading}
+            name="supplier"
+          />
+        </form>,
+      );
+
+      const form = document.querySelector('form');
+      expect(form).not.toBeNull();
+      expect(new FormData(form as HTMLFormElement).has('supplier')).toBe(false);
+    },
+  );
+
+  it('includes a named readOnly ComboBox in FormData', () => {
+    renderBreeze(
+      <form>
+        <ComboBox
+          defaultValue={suppliers[0]}
+          getItem={getItem}
+          items={suppliers}
+          label="Supplier"
+          name="supplier"
+          readOnly
+        />
+      </form>,
+    );
+
+    const form = document.querySelector('form');
+    expect(form).not.toBeNull();
+    expect(new FormData(form as HTMLFormElement).get('supplier')).toBe('acme');
   });
 
   it('does not report controlled item synchronization as custom text', () => {

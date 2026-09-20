@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import renderBreeze from '../../../test/render';
@@ -87,10 +87,13 @@ describe('Select', () => {
       />,
     );
 
-    const trigger = screen.getByRole('button', { name: 'Payment method' });
+    const trigger = screen.getByRole('combobox', {
+      name: 'Choose a method Payment method',
+    });
 
-    expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
-    expect(screen.getAllByRole('button')).toHaveLength(1);
+    expect(document.querySelector('select')).not.toBeInTheDocument();
+    expect(screen.getAllByRole('combobox')).toHaveLength(1);
+    expect(trigger).toHaveAttribute('role', 'combobox');
     expect(trigger).toHaveAttribute('aria-haspopup', 'listbox');
     expect(trigger).toHaveAttribute('aria-expanded', 'false');
 
@@ -114,7 +117,9 @@ describe('Select', () => {
       />,
     );
 
-    const trigger = screen.getByRole('button', { name: 'Payment method' });
+    const trigger = screen.getByRole('combobox', {
+      name: 'Choose a method Payment method',
+    });
     const label = screen.getByText('Payment method');
 
     expect(label).toHaveAttribute('for', trigger.id);
@@ -141,24 +146,31 @@ describe('Select', () => {
       />,
     );
 
-    const trigger = screen.getByRole('button', { name: 'Payment method' });
+    const trigger = screen.getByRole('combobox', { name: 'Payment method' });
 
     expect(document.querySelector('select')).not.toBeInTheDocument();
     expect(trigger).toHaveAccessibleDescription(
       'Choose the account used for this payment.',
     );
 
-    await user.click(trigger);
+    trigger.focus();
+    await user.keyboard('{ArrowDown}');
 
     const listbox = screen.getByRole('listbox');
     expect(listbox).toBeInTheDocument();
     expect(
       screen.getByRole('option', { name: /Bank account/ }),
     ).toHaveTextContent('Current account ending in 1234');
-    expect(screen.getByRole('option', { name: /Cash/ })).toHaveAttribute(
-      'aria-disabled',
-      'true',
-    );
+    const bankOption = screen.getByRole('option', { name: /Bank account/ });
+    const cashOption = screen.getByRole('option', { name: /Cash/ });
+    expect(cashOption).toHaveAttribute('aria-disabled', 'true');
+    expect(bankOption).toHaveAttribute('data-focused', 'true');
+    expect(bankOption).toHaveAttribute('data-focus-visible', 'true');
+
+    await user.hover(bankOption);
+    expect(bankOption).toHaveAttribute('data-hovered', 'true');
+    await user.unhover(bankOption);
+    expect(bankOption).not.toHaveAttribute('data-hovered');
 
     await user.click(screen.getByRole('option', { name: /Bank account/ }));
 
@@ -179,7 +191,7 @@ describe('Select', () => {
       />,
     );
 
-    const trigger = screen.getByRole('button', { name: 'Payment method' });
+    const trigger = screen.getByRole('combobox', { name: 'Payment method' });
     expect(document.querySelector('select')).not.toBeInTheDocument();
     expect(trigger).toBeDisabled();
     expect(trigger).not.toBeInvalid();
@@ -189,6 +201,26 @@ describe('Select', () => {
     ).not.toBeInTheDocument();
     expect(screen.getByRole('progressbar', { name: 'Loading' })).toBeVisible();
   });
+
+  it.each(['disabled', 'loading'] as const)(
+    'excludes named %s controls from form data',
+    (state) => {
+      renderBreeze(
+        <form aria-label="Payment form">
+          <Select
+            disabled={state === 'disabled'}
+            getItem={getItem}
+            items={choices}
+            label="Payment method"
+            loading={state === 'loading'}
+            name="payment"
+          />
+        </form>,
+      );
+
+      expect(new FormData(document.forms[0]).has('payment')).toBe(false);
+    },
+  );
 
   it('keeps an item selected by descriptor id across recreated values and allows changes', async () => {
     const user = userEvent.setup();
@@ -221,7 +253,9 @@ describe('Select', () => {
       </BreezeProvider>,
     );
 
-    const trigger = screen.getByRole('button', { name: 'Payment method' });
+    const trigger = screen.getByRole('combobox', {
+      name: 'Bank account Payment method',
+    });
     expect(trigger).toHaveTextContent('Bank account');
 
     await user.click(trigger);
@@ -245,11 +279,48 @@ describe('Select', () => {
       </form>,
     );
 
-    await user.click(screen.getByRole('button', { name: 'Payment method' }));
+    await user.click(screen.getByRole('combobox', { name: 'Payment method' }));
     await user.click(screen.getByRole('option', { name: /Bank account/ }));
 
     const form = document.forms[0];
     expect(new FormData(form).get('payment')).toBe('bank');
+  });
+
+  it('restores the uncontrolled default selection and submitted value on form reset', async () => {
+    const user = userEvent.setup();
+    const resetChoices = choices.map((choice) => ({
+      ...choice,
+      disabled: false,
+    }));
+
+    renderBreeze(
+      <form aria-label="Payment form">
+        <Select
+          defaultValue={resetChoices[0]}
+          getItem={(item) => item}
+          items={resetChoices}
+          label="Payment method"
+          name="payment"
+        />
+      </form>,
+    );
+
+    const form = document.forms[0];
+    const trigger = screen.getByRole('combobox', {
+      name: 'Bank account Payment method',
+    });
+    expect(new FormData(form).get('payment')).toBe('bank');
+
+    await user.click(trigger);
+    await user.click(screen.getByRole('option', { name: /Cash/ }));
+    expect(new FormData(form).get('payment')).toBe('cash');
+
+    fireEvent.reset(form);
+
+    await waitFor(() => {
+      expect(trigger).toHaveTextContent('Bank account');
+      expect(new FormData(form).get('payment')).toBe('bank');
+    });
   });
 
   it('keeps read-only controls focusable and prevents opening or changing', async () => {
@@ -270,7 +341,9 @@ describe('Select', () => {
       </form>,
     );
 
-    const trigger = screen.getByRole('button', { name: 'Payment method' });
+    const trigger = screen.getByRole('combobox', {
+      name: 'Bank account Payment method',
+    });
     expect(trigger).toHaveAttribute('aria-readonly', 'true');
     expect(trigger).not.toBeDisabled();
 
@@ -281,6 +354,7 @@ describe('Select', () => {
 
     expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
     expect(onChange).not.toHaveBeenCalled();
+    expect(trigger).toHaveClass('breeze:bg-breeze-sunken');
     expect(new FormData(document.forms[0]).get('payment')).toBe('bank');
   });
 
@@ -296,7 +370,9 @@ describe('Select', () => {
       />,
     );
 
-    const trigger = screen.getByRole('button', { name: 'Payment method' });
+    const trigger = screen.getByRole('combobox', {
+      name: 'Bank account Payment method',
+    });
     expect(trigger).toHaveTextContent('Bank account');
 
     rerender(
@@ -321,7 +397,7 @@ describe('Select', () => {
     );
 
     await userEvent.click(
-      screen.getByRole('button', { name: 'Payment method' }),
+      screen.getByRole('combobox', { name: 'Payment method' }),
     );
 
     const listbox = screen.getByRole('listbox');
