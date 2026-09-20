@@ -1,0 +1,55 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Select.stories';
+
+<Meta
+  of={Stories}
+  summary="A fixed-choice field backed by a React Aria popover listbox."
+/>
+
+# Select
+
+`Select` is a fixed-choice field. It opens a popover listbox and never renders
+a native `<select>`, so the same Breeze control is used across applications.
+
+<Canvas of={Stories.Default} />
+
+## Descriptor content
+
+Pass `items` and a `getItem` mapping function. The mapping returns the closed
+`ItemDescriptor` data contract: `id`, `label`, optional `description`, `icon`,
+`badge` and `disabled`. It cannot return JSX, classes, styles or slot props.
+If an item needs content outside that contract, extend Breeze deliberately rather
+than reopening a markup escape hatch.
+
+<Canvas of={Stories.Description} />
+
+## States
+
+`required`, `disabled` and `readOnly` map to the field's accessible semantics. A
+non-empty `error` marks the field invalid; there is no separate `invalid` prop.
+`loading` preserves the control shape and prevents interaction until the value
+is available.
+
+<Canvas of={Stories.Error} />
+
+<Canvas of={Stories.Disabled} />
+
+<Canvas of={Stories.Loading} />
+
+## Controlled values
+
+Provide both `value` and `onChange` for controlled usage. The callback receives
+the selected item or `null`, never a DOM event. Use `defaultValue` and an
+optional `onChange` for uncontrolled usage; the two forms cannot be mixed.
+
+<Canvas of={Stories.Controlled} />
+
+## Accessibility
+
+The visible label names the control, while descriptions and errors are announced
+through React Aria's field relationships. React Aria supplies listbox keyboard
+navigation and focus management.
+
+## API
+
+<ArgTypes />
