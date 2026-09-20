@@ -63,6 +63,7 @@ describe('TextField', () => {
     expect(input).toHaveAttribute('autocomplete', 'email');
     expect(input).toHaveAttribute('name', 'email');
     expect(input).toHaveAttribute('placeholder', 'name@example.com');
+    expect(input).toHaveClass('breeze:any-pointer-coarse:min-block-breeze-tap');
     expect(input).toHaveAccessibleDescription('Used for account notices.');
 
     await user.type(input, 'Ada');

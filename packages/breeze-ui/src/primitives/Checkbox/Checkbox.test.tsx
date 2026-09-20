@@ -67,6 +67,7 @@ describe('Checkbox', () => {
 
     expect(checkbox).toHaveFocus();
     expect(indicator).toHaveAttribute('data-focus-visible', 'true');
+    expect(indicator).toHaveClass('breeze:border-breeze-ink-3');
     expect(indicator).toHaveClass(
       'breeze:data-[focus-visible]:outline-2',
       'breeze:data-[focus-visible]:outline-solid',

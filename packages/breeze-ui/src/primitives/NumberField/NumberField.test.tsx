@@ -53,6 +53,10 @@ describe('NumberField', () => {
     const increment = screen.getByRole('button', { name: /increase/i });
 
     expect(input).toHaveClass('breeze:tabular-nums');
+    expect(input).toHaveClass(
+      'breeze:any-pointer-coarse:min-block-breeze-tap',
+      'breeze:data-[focus-visible]:!outline-none',
+    );
     expect(increment).toHaveClass(
       'breeze:any-pointer-coarse:min-block-breeze-tap',
       'breeze:any-pointer-coarse:min-inline-breeze-tap',
