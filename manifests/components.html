@@ -588,13 +588,13 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">20 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">1/20 info</a><span class="filter-pill ok" aria-disabled="true">56 stories ok</span><a class="filter-pill ok" data-k="docs" href="#filter-docs">22 docs ok</a></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">23 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">1/23 info</a><span class="filter-pill ok" aria-disabled="true">80 stories ok</span><a class="filter-pill ok" data-k="docs" href="#filter-docs">25 docs ok</a></div>
   </div>
 </header>
 <main>
   <div class="wrap">
     <div class="note ok" style="margin-bottom: 16px;">
-              Using <code>react-docgen-typescript</code>. Generation took <strong>2.2s</strong>.
+              Using <code>react-docgen-typescript</code>. Generation took <strong>2.0s</strong>.
             </div>
     <h2 class="section-title">Components</h2>
     <div class="grid" role="list">
@@ -1641,15 +1641,300 @@ Loading belongs to the content inside the card. Compose loading-capable children
   no-story-error
   no-doc-error"
   role="listitem"
+  aria-label="Checkbox">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> Checkbox</h2>
+      <div class="badges">
+        <label for="c-5-forms-checkbox-props" class="badge ok as-toggle">15 prop types</label>
+        
+        <label for="c-5-forms-checkbox-stories" class="badge ok as-toggle">8 stories</label>
+        <label for="c-5-forms-checkbox-docs" class="badge ok as-toggle">1 doc</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/primitives/Checkbox/Checkbox.stories.tsx">forms-checkbox · ./src/primitives/Checkbox/Checkbox.stories.tsx</div>
+    
+    <div class="hint">Renders an accessible checkbox with a visible label, validation messages, semantic boolean changes, and a closed loading presentation.</div>
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-5-forms-checkbox-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-5-forms-checkbox-docs" class="tg tg-docs" type="checkbox" hidden />
+  
+  <input id="c-5-forms-checkbox-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
+              <span class="badge ok">15 prop types</span>
+            </div>
+            <pre><code>Component: src/primitives/Checkbox/Checkbox.tsx::Checkbox</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>/**
+ * Controlled and uncontrolled selection props are mutually exclusive.
+ * Initial selected state. Defaults to `false`.
+ */
+defaultSelected?: boolean
+
+/**
+ * Supporting guidance announced with the checkbox.
+ */
+description?: string
+
+/**
+ * Prevents selection and focus. Defaults to `false`.
+ */
+disabled?: boolean = false
+
+/**
+ * Visible validation message; any non-empty value marks the checkbox invalid.
+ */
+error?: string
+
+/**
+ * Associates the checkbox with a form outside its ancestor tree.
+ */
+form?: string
+
+/**
+ * Sets the native input id.
+ */
+id?: string
+
+/**
+ * Accessible checkbox label, shown as text outside loading state.
+ */
+label: string
+
+/**
+ * Replaces the checkbox content with a shape-preserving loading presentation.
+ */
+loading?: boolean = false
+
+/**
+ * Sets the submitted name of the checkbox.
+ */
+name?: string
+
+/**
+ * Reports the next selected state without exposing a DOM event.
+ */
+onChange?: ((selected: boolean) =&gt; void) | ((selected: boolean) =&gt; void)
+
+/**
+ * Prevents editing while retaining focus and form participation.
+ */
+readOnly?: boolean = false
+
+/**
+ * Ref to the native checkbox input.
+ */
+ref?: Ref&lt;HTMLInputElement&gt;
+
+/**
+ * Marks the checkbox as required. Defaults to `false`.
+ */
+required?: boolean = false
+
+/**
+ * Current selected state.
+ * Controlled and uncontrolled selection props are mutually exclusive.
+ */
+selected?: boolean
+
+/**
+ * Native value submitted when the checkbox is selected.
+ */
+value?: string</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Checkbox } from "@motech-development/breeze-ui";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A labelled boolean choice.</div>
+              <pre><code>const Default = () =&gt; &lt;Checkbox label=&quot;Send me account notices&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Description</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Supporting guidance is announced with the checkbox.</div>
+              <pre><code>const Description = () =&gt; &lt;Checkbox
+    label=&quot;Send me account notices&quot;
+    description=&quot;We only send messages about account activity.&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Error</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A visible error marks the checkbox invalid and is announced with it.</div>
+              <pre><code>const Error = () =&gt; &lt;Checkbox label=&quot;Send me account notices&quot; error=&quot;Accept the notices to continue.&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Disabled</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Disabled checkboxes cannot be selected.</div>
+              <pre><code>const Disabled = () =&gt; &lt;Checkbox label=&quot;Send me account notices&quot; defaultSelected disabled /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Read Only</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Read-only selection retains focus without changing.</div>
+              <pre><code>const ReadOnly = () =&gt; &lt;Checkbox label=&quot;Send me account notices&quot; defaultSelected readOnly /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Required</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Required state is exposed to assistive technology.</div>
+              <pre><code>const Required = () =&gt; &lt;Checkbox label=&quot;Send me account notices&quot; required /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Loading</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Loading preserves the checkbox shape while preventing interaction.</div>
+              <pre><code>const Loading = () =&gt; &lt;Checkbox label=&quot;Send me account notices&quot; defaultSelected loading /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Controlled</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">The application owns the selection and receives semantic boolean changes.</div>
+              <pre><code>const Controlled = () =&gt; &lt;ControlledExample /&gt;;</code></pre>
+            </div>
+        </div>
+    
+        <div class="panel panel-docs">
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Docs</span>
+                <span class="badge ok">doc ok</span>
+              </div>
+              <div class="hint">./src/primitives/Checkbox/Checkbox.mdx</div>
+              <div>A flat labelled checkbox with semantic boolean changes.</div>
+              <div class="mdx-content"><pre><code>import { ArgTypes, Canvas, Meta } from &#39;@storybook/addon-docs/blocks&#39;;
+import * as Stories from &#39;./Checkbox.stories&#39;;
+
+&lt;Meta
+  of={Stories}
+  summary=&quot;A flat labelled checkbox with semantic boolean changes.&quot;
+/&gt;
+
+# Checkbox
+
+`Checkbox` is a closed, labelled boolean control. Its label, optional
+description and optional error are flat props, so applications do not need to
+compose checkbox parts or provide an escape hatch.
+
+&lt;Canvas of={Stories.Default} /&gt;
+
+## Supporting text and errors
+
+Use `description` for guidance. A non-empty `error` marks the checkbox invalid
+and associates the message with the native input. There is no separate invalid
+prop.
+
+&lt;Canvas of={Stories.Description} /&gt;
+
+&lt;Canvas of={Stories.Error} /&gt;
+
+## States
+
+`required`, `disabled` and `readOnly` map to the corresponding accessible input
+semantics. `loading` keeps the checkbox&#39;s shape, announces the provider loading
+message and prevents selection until it is removed.
+
+&lt;Canvas of={Stories.Required} /&gt;
+
+&lt;Canvas of={Stories.Disabled} /&gt;
+
+&lt;Canvas of={Stories.ReadOnly} /&gt;
+
+&lt;Canvas of={Stories.Loading} /&gt;
+
+## Controlled values
+
+Provide both `selected` and `onChange` for controlled usage. The callback
+receives the next boolean, never a DOM event. Use `defaultSelected` and an
+optional `onChange` for uncontrolled usage; the two forms cannot be mixed.
+
+&lt;Canvas of={Stories.Controlled} /&gt;
+
+## Accessibility
+
+The visible label names the native checkbox. Descriptions and errors are
+announced through React Aria&#39;s field relationships, and the field exposes its
+native input through `ref`.
+
+## API
+
+&lt;ArgTypes /&gt;
+</code></pre></div>
+            </div>
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  no-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
   aria-label="Container">
   <div class="head">
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Container</h2>
       <div class="badges">
-        <label for="c-5-layout-container-props" class="badge ok as-toggle">5 prop types</label>
+        <label for="c-6-layout-container-props" class="badge ok as-toggle">5 prop types</label>
         
-        <label for="c-5-layout-container-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-5-layout-container-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-6-layout-container-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-6-layout-container-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -1662,10 +1947,10 @@ Loading belongs to the content inside the card. Compose loading-capable children
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-5-layout-container-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-5-layout-container-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-6-layout-container-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-6-layout-container-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-5-layout-container-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-6-layout-container-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -1796,10 +2081,10 @@ Loading belongs to the content inside the container. Compose loading-capable chi
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Dialog</h2>
       <div class="badges">
-        <label for="c-6-overlays-dialog-props" class="badge ok as-toggle">7 prop types</label>
+        <label for="c-7-overlays-dialog-props" class="badge ok as-toggle">7 prop types</label>
         
-        <label for="c-6-overlays-dialog-stories" class="badge ok as-toggle">1 story</label>
-        <label for="c-6-overlays-dialog-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-7-overlays-dialog-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-7-overlays-dialog-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -1812,10 +2097,10 @@ Loading belongs to the content inside the container. Compose loading-capable chi
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-6-overlays-dialog-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-6-overlays-dialog-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-7-overlays-dialog-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-7-overlays-dialog-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-6-overlays-dialog-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-7-overlays-dialog-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -1959,10 +2244,10 @@ Enter and exit motion respects reduced-motion preferences. A closing surface imm
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Drawer</h2>
       <div class="badges">
-        <label for="c-7-overlays-drawer-props" class="badge ok as-toggle">7 prop types</label>
+        <label for="c-8-overlays-drawer-props" class="badge ok as-toggle">7 prop types</label>
         
-        <label for="c-7-overlays-drawer-stories" class="badge ok as-toggle">1 story</label>
-        <label for="c-7-overlays-drawer-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-8-overlays-drawer-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-8-overlays-drawer-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -1975,10 +2260,10 @@ Enter and exit motion respects reduced-motion preferences. A closing surface imm
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-7-overlays-drawer-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-7-overlays-drawer-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-8-overlays-drawer-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-8-overlays-drawer-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-7-overlays-drawer-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-8-overlays-drawer-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -2130,10 +2415,10 @@ Enter and exit motion respects reduced-motion preferences. A closing surface imm
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Grid</h2>
       <div class="badges">
-        <label for="c-8-layout-grid-props" class="badge ok as-toggle">6 prop types</label>
+        <label for="c-9-layout-grid-props" class="badge ok as-toggle">6 prop types</label>
         
-        <label for="c-8-layout-grid-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-8-layout-grid-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-9-layout-grid-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-9-layout-grid-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -2146,10 +2431,10 @@ Enter and exit motion respects reduced-motion preferences. A closing surface imm
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-8-layout-grid-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-8-layout-grid-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-9-layout-grid-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-9-layout-grid-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-8-layout-grid-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-9-layout-grid-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -2289,10 +2574,10 @@ Loading belongs to the items inside the grid. Compose loading-capable children o
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Icon</h2>
       <div class="badges">
-        <label for="c-9-content-icon-props" class="badge ok as-toggle">3 prop types</label>
+        <label for="c-10-content-icon-props" class="badge ok as-toggle">3 prop types</label>
         
-        <label for="c-9-content-icon-stories" class="badge ok as-toggle">3 stories</label>
-        <label for="c-9-content-icon-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-10-content-icon-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-10-content-icon-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -2305,10 +2590,10 @@ Loading belongs to the items inside the grid. Compose loading-capable children o
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-9-content-icon-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-9-content-icon-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-10-content-icon-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-10-content-icon-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-9-content-icon-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-10-content-icon-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -2440,10 +2725,10 @@ Icons are decorative by default. Supply `label` only when the icon conveys meani
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> IconTile</h2>
       <div class="badges">
-        <label for="c-10-content-icontile-props" class="badge ok as-toggle">5 prop types</label>
+        <label for="c-11-content-icontile-props" class="badge ok as-toggle">5 prop types</label>
         
-        <label for="c-10-content-icontile-stories" class="badge ok as-toggle">3 stories</label>
-        <label for="c-10-content-icontile-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-11-content-icontile-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-11-content-icontile-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -2456,10 +2741,10 @@ Icons are decorative by default. Supply `label` only when the icon conveys meani
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-10-content-icontile-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-10-content-icontile-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-11-content-icontile-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-11-content-icontile-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-10-content-icontile-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-11-content-icontile-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -2602,10 +2887,10 @@ Artwork is decorative by default. Supply `label` only when no adjacent text name
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Inline</h2>
       <div class="badges">
-        <label for="c-11-layout-inline-props" class="badge ok as-toggle">7 prop types</label>
+        <label for="c-12-layout-inline-props" class="badge ok as-toggle">7 prop types</label>
         
-        <label for="c-11-layout-inline-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-11-layout-inline-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-12-layout-inline-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-12-layout-inline-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -2618,10 +2903,10 @@ Artwork is decorative by default. Supply `label` only when no adjacent text name
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-11-layout-inline-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-11-layout-inline-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-12-layout-inline-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-12-layout-inline-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-11-layout-inline-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-12-layout-inline-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -2760,6 +3045,329 @@ Loading belongs to the items inside the row. Compose loading-capable children or
 <article
   class="card 
   no-error 
+  no-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="NumberField">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> NumberField</h2>
+      <div class="badges">
+        <label for="c-13-forms-numberfield-props" class="badge ok as-toggle">21 prop types</label>
+        
+        <label for="c-13-forms-numberfield-stories" class="badge ok as-toggle">8 stories</label>
+        <label for="c-13-forms-numberfield-docs" class="badge ok as-toggle">1 doc</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/primitives/NumberField/NumberField.stories.tsx">forms-numberfield · ./src/primitives/NumberField/NumberField.stories.tsx</div>
+    
+    <div class="hint">Renders locale-aware numeric entry with React Aria stepper controls, validation, tabular figures, and a closed loading presentation.</div>
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-13-forms-numberfield-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-13-forms-numberfield-docs" class="tg tg-docs" type="checkbox" hidden />
+  
+  <input id="c-13-forms-numberfield-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
+              <span class="badge ok">21 prop types</span>
+            </div>
+            <pre><code>Component: src/primitives/NumberField/NumberField.tsx::NumberField</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>/**
+ * Hints at the browser&#39;s autocomplete behaviour for this field.
+ */
+autoComplete?: string
+
+/**
+ * Focuses the input when the component is mounted.
+ */
+autoFocus?: boolean
+
+/**
+ * Controlled and uncontrolled value props are mutually exclusive.
+ * Initial number. Defaults to an empty numeric input.
+ */
+defaultValue?: number
+
+/**
+ * Supporting guidance announced with the input.
+ */
+description?: string
+
+/**
+ * Prevents editing, stepping, and focus. Defaults to `false`.
+ */
+disabled?: boolean = false
+
+/**
+ * Visible validation message; any non-empty value marks the field invalid.
+ */
+error?: string
+
+/**
+ * Associates the field with a form outside its ancestor tree.
+ */
+form?: string
+
+/**
+ * Locale-aware formatting options used by React Aria.
+ */
+formatOptions?: NumberFormatOptions
+
+/**
+ * Sets the native input id used by the field label.
+ */
+id?: string
+
+/**
+ * Accessible field label, shown as text outside loading state.
+ */
+label: string
+
+/**
+ * Replaces the input with a shape-preserving loading presentation.
+ */
+loading?: boolean = false
+
+/**
+ * Largest permitted value.
+ */
+maxValue?: number
+
+/**
+ * Smallest permitted value.
+ */
+minValue?: number
+
+/**
+ * Sets the submitted name of the field&#39;s hidden native input.
+ */
+name?: string
+
+/**
+ * Reports the next number without exposing a DOM event.
+ */
+onChange?: ((value: number) =&gt; void) | ((value: number) =&gt; void)
+
+/**
+ * Temporary text shown while the input is empty.
+ */
+placeholder?: string
+
+/**
+ * Prevents editing while retaining focus and form participation.
+ */
+readOnly?: boolean = false
+
+/**
+ * Ref to the native numeric input.
+ */
+ref?: Ref&lt;HTMLInputElement&gt;
+
+/**
+ * Marks the input as required. Defaults to `false`.
+ */
+required?: boolean = false
+
+/**
+ * Amount applied by arrow keys and stepper buttons. Defaults to `1`.
+ */
+step?: number
+
+/**
+ * Current number. React Aria reports `NaN` while the input is empty.
+ * Controlled and uncontrolled value props are mutually exclusive.
+ */
+value?: number</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { NumberField } from "@motech-development/breeze-ui";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Locale-aware numeric entry with increment and decrement controls.</div>
+              <pre><code>const Default = () =&gt; &lt;NumberField defaultValue={2} label=&quot;Quantity&quot; step={1} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Description</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Supporting guidance is announced with the spinbutton.</div>
+              <pre><code>const Description = () =&gt; &lt;NumberField
+    defaultValue={2}
+    label=&quot;Quantity&quot;
+    step={1}
+    description=&quot;Choose the number of seats for this workspace.&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Error</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A visible error marks the field invalid and is announced with the input.</div>
+              <pre><code>const Error = () =&gt; &lt;NumberField
+    defaultValue={2}
+    label=&quot;Quantity&quot;
+    step={1}
+    error=&quot;Choose at least one seat.&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Disabled</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Disabled fields cannot receive input or stepper actions.</div>
+              <pre><code>const Disabled = () =&gt; &lt;NumberField defaultValue={2} label=&quot;Quantity&quot; step={1} disabled /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Read Only</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Read-only values retain their form semantics without editing.</div>
+              <pre><code>const ReadOnly = () =&gt; &lt;NumberField defaultValue={12} label=&quot;Quantity&quot; step={1} readOnly /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Required</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Required state is exposed to assistive technology.</div>
+              <pre><code>const Required = () =&gt; &lt;NumberField defaultValue={2} label=&quot;Quantity&quot; step={1} required /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Loading</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Loading preserves the numeric control shape while preventing interaction.</div>
+              <pre><code>const Loading = () =&gt; &lt;NumberField defaultValue={2} label=&quot;Quantity&quot; step={1} loading /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Controlled</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">The application owns the value and receives semantic number changes.</div>
+              <pre><code>const Controlled = () =&gt; &lt;ControlledExample /&gt;;</code></pre>
+            </div>
+        </div>
+    
+        <div class="panel panel-docs">
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Docs</span>
+                <span class="badge ok">doc ok</span>
+              </div>
+              <div class="hint">./src/primitives/NumberField/NumberField.mdx</div>
+              <div>Locale-aware numeric entry with semantic number changes.</div>
+              <div class="mdx-content"><pre><code>import { ArgTypes, Canvas, Meta } from &#39;@storybook/addon-docs/blocks&#39;;
+import * as Stories from &#39;./NumberField.stories&#39;;
+
+&lt;Meta
+  of={Stories}
+  summary=&quot;Locale-aware numeric entry with semantic number changes.&quot;
+/&gt;
+
+# NumberField
+
+`NumberField` is a flat labelled numeric input backed by React Aria. It uses
+the Breeze locale, includes increment and decrement controls, and displays
+figures with tabular numerals. Values remain unformatted except for React
+Aria&#39;s locale-aware input behaviour.
+
+&lt;Canvas of={Stories.Default} /&gt;
+
+## Supporting text and errors
+
+Use `description` for guidance. A non-empty `error` marks the field invalid and
+associates the message with the native input. There is no separate invalid prop.
+
+&lt;Canvas of={Stories.Description} /&gt;
+
+&lt;Canvas of={Stories.Error} /&gt;
+
+## States
+
+`required`, `disabled` and `readOnly` map to the corresponding accessible input
+semantics. `loading` keeps the field&#39;s shape, announces the provider loading
+message and prevents typing or stepping until it is removed.
+
+&lt;Canvas of={Stories.Required} /&gt;
+
+&lt;Canvas of={Stories.Disabled} /&gt;
+
+&lt;Canvas of={Stories.ReadOnly} /&gt;
+
+&lt;Canvas of={Stories.Loading} /&gt;
+
+## Controlled values
+
+Provide both `value` and `onChange` for controlled usage. The callback receives
+the next number, never a DOM event. React Aria reports `NaN` while the input is
+empty, which lets applications distinguish an empty value from zero. Use
+`defaultValue` and an optional `onChange` for uncontrolled usage; the two forms
+cannot be mixed.
+
+&lt;Canvas of={Stories.Controlled} /&gt;
+
+## Accessibility
+
+The visible label names the native input. Descriptions and errors are announced
+through React Aria&#39;s field relationships, and the field exposes its native
+input through `ref`.
+
+## API
+
+&lt;ArgTypes /&gt;
+</code></pre></div>
+            </div>
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
   has-info 
   no-story-error
   no-doc-error"
@@ -2769,9 +3377,9 @@ Loading belongs to the items inside the row. Compose loading-capable children or
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> OverlaySurface</h2>
       <div class="badges">
-        <label for="c-12-foundations-overlay-stack-props" class="badge ok as-toggle">9 prop types</label>
-        <label for="c-12-foundations-overlay-stack-info" class="badge info as-toggle">1 info</label>
-        <label for="c-12-foundations-overlay-stack-stories" class="badge ok as-toggle">4 stories</label>
+        <label for="c-14-foundations-overlay-stack-props" class="badge ok as-toggle">9 prop types</label>
+        <label for="c-14-foundations-overlay-stack-info" class="badge info as-toggle">1 info</label>
+        <label for="c-14-foundations-overlay-stack-stories" class="badge ok as-toggle">4 stories</label>
         
         
       </div>
@@ -2784,11 +3392,11 @@ Loading belongs to the items inside the row. Compose loading-capable children or
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-12-foundations-overlay-stack-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-12-foundations-overlay-stack-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-14-foundations-overlay-stack-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-14-foundations-overlay-stack-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
-  <input id="c-12-foundations-overlay-stack-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-14-foundations-overlay-stack-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -2931,10 +3539,10 @@ trigger: string</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Popover</h2>
       <div class="badges">
-        <label for="c-13-overlays-popover-props" class="badge ok as-toggle">8 prop types</label>
+        <label for="c-15-overlays-popover-props" class="badge ok as-toggle">8 prop types</label>
         
-        <label for="c-13-overlays-popover-stories" class="badge ok as-toggle">1 story</label>
-        <label for="c-13-overlays-popover-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-15-overlays-popover-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-15-overlays-popover-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -2947,10 +3555,10 @@ trigger: string</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-13-overlays-popover-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-13-overlays-popover-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-15-overlays-popover-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-15-overlays-popover-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-13-overlays-popover-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-15-overlays-popover-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -3105,10 +3713,10 @@ Enter and exit motion respects reduced-motion preferences. A closing surface imm
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Separator</h2>
       <div class="badges">
-        <label for="c-14-content-separator-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-16-content-separator-props" class="badge ok as-toggle">1 prop type</label>
         
-        <label for="c-14-content-separator-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-14-content-separator-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-16-content-separator-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-16-content-separator-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -3121,10 +3729,10 @@ Enter and exit motion respects reduced-motion preferences. A closing surface imm
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-14-content-separator-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-14-content-separator-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-16-content-separator-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-16-content-separator-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-14-content-separator-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-16-content-separator-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -3229,10 +3837,10 @@ The component exposes `role=&quot;separator&quot;` and the selected orientation.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Skeleton</h2>
       <div class="badges">
-        <label for="c-15-content-skeleton-props" class="badge ok as-toggle">4 prop types</label>
+        <label for="c-17-content-skeleton-props" class="badge ok as-toggle">4 prop types</label>
         
-        <label for="c-15-content-skeleton-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-15-content-skeleton-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-17-content-skeleton-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-17-content-skeleton-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -3245,10 +3853,10 @@ The component exposes `role=&quot;separator&quot;` and the selected orientation.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-15-content-skeleton-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-15-content-skeleton-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-17-content-skeleton-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-17-content-skeleton-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-15-content-skeleton-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-17-content-skeleton-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -3373,10 +3981,10 @@ Supply `label` when the skeleton owns the loading announcement. Omit it when a p
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Stack</h2>
       <div class="badges">
-        <label for="c-16-layout-stack-props" class="badge ok as-toggle">5 prop types</label>
+        <label for="c-18-layout-stack-props" class="badge ok as-toggle">5 prop types</label>
         
-        <label for="c-16-layout-stack-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-16-layout-stack-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-18-layout-stack-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-18-layout-stack-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -3389,10 +3997,10 @@ Supply `label` when the skeleton owns the loading announcement. Omit it when a p
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-16-layout-stack-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-16-layout-stack-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-18-layout-stack-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-18-layout-stack-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-16-layout-stack-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-18-layout-stack-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -3525,15 +4133,314 @@ Loading belongs to the items inside the stack. Compose loading-capable children 
   no-story-error
   no-doc-error"
   role="listitem"
+  aria-label="TextField">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> TextField</h2>
+      <div class="badges">
+        <label for="c-19-forms-textfield-props" class="badge ok as-toggle">18 prop types</label>
+        
+        <label for="c-19-forms-textfield-stories" class="badge ok as-toggle">8 stories</label>
+        <label for="c-19-forms-textfield-docs" class="badge ok as-toggle">1 doc</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/primitives/TextField/TextField.stories.tsx">forms-textfield · ./src/primitives/TextField/TextField.stories.tsx</div>
+    
+    <div class="hint">Renders a labelled, accessible single-line text input with validation and a closed loading presentation.</div>
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-19-forms-textfield-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-19-forms-textfield-docs" class="tg tg-docs" type="checkbox" hidden />
+  
+  <input id="c-19-forms-textfield-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
+              <span class="badge ok">18 prop types</span>
+            </div>
+            <pre><code>Component: src/primitives/TextField/TextField.tsx::TextField</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>/**
+ * Hints at the browser&#39;s autocomplete behaviour for this field.
+ */
+autoComplete?: string
+
+/**
+ * Focuses the input when the component is mounted.
+ */
+autoFocus?: boolean
+
+/**
+ * Controlled and uncontrolled value props are mutually exclusive.
+ * Initial text value. Defaults to an empty string.
+ */
+defaultValue?: string
+
+/**
+ * Supporting guidance announced with the input.
+ */
+description?: string
+
+/**
+ * Prevents editing and focus. Defaults to `false`.
+ */
+disabled?: boolean = false
+
+/**
+ * Visible validation message; any non-empty value marks the field invalid.
+ */
+error?: string
+
+/**
+ * Associates the input with a form outside its ancestor tree.
+ */
+form?: string
+
+/**
+ * Sets the native input id used by the field label.
+ */
+id?: string
+
+/**
+ * Accessible field label, shown as text outside loading state.
+ */
+label: string
+
+/**
+ * Replaces the input with a shape-preserving loading presentation.
+ */
+loading?: boolean = false
+
+/**
+ * Sets the submitted name of the input.
+ */
+name?: string
+
+/**
+ * Reports the next text value without exposing a DOM event.
+ */
+onChange?: ((value: string) =&gt; void) | ((value: string) =&gt; void)
+
+/**
+ * Temporary text shown while the input is empty.
+ */
+placeholder?: string
+
+/**
+ * Prevents editing while retaining focus and form participation.
+ */
+readOnly?: boolean = false
+
+/**
+ * Ref to the native text input.
+ */
+ref?: Ref&lt;HTMLInputElement&gt;
+
+/**
+ * Marks the input as required. Defaults to `false`.
+ */
+required?: boolean = false
+
+/**
+ * Selects the browser input purpose. Defaults to `text`.
+ */
+type?: TextInputType = text
+
+/**
+ * Current text value.
+ * Controlled and uncontrolled value props are mutually exclusive.
+ */
+value?: string</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { TextField } from "@motech-development/breeze-ui";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A single-line text input with a persistent accessible label.</div>
+              <pre><code>const Default = () =&gt; &lt;TextField label=&quot;Display name&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Description</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Supporting guidance is announced with the input.</div>
+              <pre><code>const Description = () =&gt; &lt;TextField
+    label=&quot;Display name&quot;
+    description=&quot;Use the name shown to other members of your team.&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Error</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A visible error marks the field invalid and is announced with the input.</div>
+              <pre><code>const Error = () =&gt; &lt;TextField label=&quot;Display name&quot; error=&quot;Enter a display name.&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Disabled</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Disabled fields cannot receive input.</div>
+              <pre><code>const Disabled = () =&gt; &lt;TextField label=&quot;Display name&quot; defaultValue=&quot;Unavailable&quot; disabled /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Read Only</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Read-only fields retain focus and form participation without editing.</div>
+              <pre><code>const ReadOnly = () =&gt; &lt;TextField label=&quot;Display name&quot; defaultValue=&quot;Application-owned value&quot; readOnly /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Required</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Required state is exposed to assistive technology.</div>
+              <pre><code>const Required = () =&gt; &lt;TextField label=&quot;Display name&quot; required /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Loading</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Loading preserves the input shape while preventing interaction.</div>
+              <pre><code>const Loading = () =&gt; &lt;TextField label=&quot;Display name&quot; defaultValue=&quot;Loading value&quot; loading /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Controlled</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">The application owns the value and receives semantic string changes.</div>
+              <pre><code>const Controlled = () =&gt; &lt;ControlledExample /&gt;;</code></pre>
+            </div>
+        </div>
+    
+        <div class="panel panel-docs">
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Docs</span>
+                <span class="badge ok">doc ok</span>
+              </div>
+              <div class="hint">./src/primitives/TextField/TextField.mdx</div>
+              <div>A flat labelled text input with accessible validation.</div>
+              <div class="mdx-content"><pre><code>import { ArgTypes, Canvas, Meta } from &#39;@storybook/addon-docs/blocks&#39;;
+import * as Stories from &#39;./TextField.stories&#39;;
+
+&lt;Meta
+  of={Stories}
+  summary=&quot;A flat labelled text input with accessible validation.&quot;
+/&gt;
+
+# TextField
+
+`TextField` is a closed, single-line text input. Its `label`, optional
+`description` and optional `error` are flat props, so applications do not need
+to compose field parts or provide an escape hatch.
+
+&lt;Canvas of={Stories.Default} /&gt;
+
+## Supporting text and errors
+
+Use `description` for guidance. A non-empty `error` marks the field invalid and
+associates the message with the native input. There is no separate invalid prop.
+
+&lt;Canvas of={Stories.Description} /&gt;
+
+&lt;Canvas of={Stories.Error} /&gt;
+
+## States
+
+`required`, `disabled` and `readOnly` map to the corresponding accessible input
+semantics. `loading` keeps the field&#39;s shape, announces the provider loading
+message and prevents interaction until it is removed.
+
+&lt;Canvas of={Stories.Required} /&gt;
+
+&lt;Canvas of={Stories.Disabled} /&gt;
+
+&lt;Canvas of={Stories.ReadOnly} /&gt;
+
+&lt;Canvas of={Stories.Loading} /&gt;
+
+## Controlled values
+
+Provide both `value` and `onChange` for controlled usage. The callback receives
+the next string value, never a DOM event. Use `defaultValue` and an optional
+`onChange` for uncontrolled usage; the two forms cannot be mixed.
+
+&lt;Canvas of={Stories.Controlled} /&gt;
+
+## Accessibility
+
+The visible label names the native input. Descriptions and errors are announced
+through React Aria&#39;s field relationships, and the field exposes its native
+input through `ref`.
+
+## API
+
+&lt;ArgTypes /&gt;
+</code></pre></div>
+            </div>
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  no-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
   aria-label="Toast">
   <div class="head">
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Toast</h2>
       <div class="badges">
-        <label for="c-17-feedback-toast-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-20-feedback-toast-props" class="badge ok as-toggle">1 prop type</label>
         
-        <label for="c-17-feedback-toast-stories" class="badge ok as-toggle">8 stories</label>
-        <label for="c-17-feedback-toast-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-20-feedback-toast-stories" class="badge ok as-toggle">8 stories</label>
+        <label for="c-20-feedback-toast-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -3546,10 +4453,10 @@ Loading belongs to the items inside the stack. Compose loading-capable children 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-17-feedback-toast-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-17-feedback-toast-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-20-feedback-toast-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-20-feedback-toast-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-17-feedback-toast-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-20-feedback-toast-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -3724,10 +4631,10 @@ The card stays 288px wide on desktop and mobile, aligned to the content gutter b
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Typography</h2>
       <div class="badges">
-        <label for="c-18-content-typography-props" class="badge ok as-toggle">15 prop types</label>
+        <label for="c-21-content-typography-props" class="badge ok as-toggle">15 prop types</label>
         
-        <label for="c-18-content-typography-stories" class="badge ok as-toggle">4 stories</label>
-        <label for="c-18-content-typography-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-21-content-typography-stories" class="badge ok as-toggle">4 stories</label>
+        <label for="c-21-content-typography-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -3740,10 +4647,10 @@ The card stays 288px wide on desktop and mobile, aligned to the content gutter b
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-18-content-typography-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-18-content-typography-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-21-content-typography-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-21-content-typography-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-18-content-typography-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-21-content-typography-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -4005,10 +4912,10 @@ Set `loading` to preserve the text&#39;s place while its value is unavailable.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> VisuallyHidden</h2>
       <div class="badges">
-        <label for="c-19-content-visuallyhidden-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-22-content-visuallyhidden-props" class="badge ok as-toggle">1 prop type</label>
         
-        <label for="c-19-content-visuallyhidden-stories" class="badge ok as-toggle">1 story</label>
-        <label for="c-19-content-visuallyhidden-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-22-content-visuallyhidden-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-22-content-visuallyhidden-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -4021,10 +4928,10 @@ Set `loading` to preserve the text&#39;s place while its value is unavailable.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-19-content-visuallyhidden-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-19-content-visuallyhidden-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-22-content-visuallyhidden-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-22-content-visuallyhidden-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-19-content-visuallyhidden-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-22-content-visuallyhidden-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
