@@ -103,6 +103,8 @@ describe('Checkbox', () => {
     renderBreeze(
       <Checkbox
         defaultSelected
+        description="Choose whether email alerts are enabled."
+        error="Email alert preference is unavailable."
         label="Email alerts"
         loading
         name="alerts"
@@ -117,11 +119,30 @@ describe('Checkbox', () => {
     });
 
     expect(inputRef.current).toBe(checkbox);
+    expect(checkbox).toHaveAccessibleName('Email alerts');
     expect(checkbox).toBeDisabled();
+    expect(screen.queryByText('Email alerts')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('Choose whether email alerts are enabled.'),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('Email alert preference is unavailable.'),
+    ).not.toBeInTheDocument();
     expect(
       screen.getByRole('progressbar', { name: 'Loading' }),
     ).toBeInTheDocument();
     expect(screen.getAllByRole('progressbar')).toHaveLength(1);
+    const allSkeletons = screen.getAllByRole('progressbar', { hidden: true });
+
+    expect(allSkeletons).toHaveLength(4);
+    expect(
+      allSkeletons.filter(
+        (element) => element.getAttribute('aria-hidden') === 'true',
+      ),
+    ).toHaveLength(3);
+    allSkeletons.forEach((skeleton) => {
+      expect(skeleton).toHaveClass('breeze:rounded-breeze-sm');
+    });
 
     const placeholders = Array.from(
       checkbox.closest('label')?.querySelectorAll('span') ?? [],

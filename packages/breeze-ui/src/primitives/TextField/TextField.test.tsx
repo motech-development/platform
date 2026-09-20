@@ -119,6 +119,8 @@ describe('TextField', () => {
     renderBreeze(
       <TextField
         defaultValue="Draft"
+        description="Shown beneath the title."
+        error="The title could not be loaded."
         label="Title"
         loading
         onChange={onChange}
@@ -129,7 +131,15 @@ describe('TextField', () => {
     const input = screen.getByRole('textbox', { name: 'Title' });
 
     expect(inputRef.current).toBe(input);
+    expect(input).toHaveAccessibleName('Title');
     expect(input).toBeDisabled();
+    expect(screen.queryByText('Title')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('Shown beneath the title.'),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('The title could not be loaded.'),
+    ).not.toBeInTheDocument();
     expect(input).toHaveClass('breeze:!opacity-0');
     expect(input).not.toHaveClass('breeze:invisible');
     expect(input).toHaveAttribute('aria-busy', 'true');
@@ -141,6 +151,17 @@ describe('TextField', () => {
     expect(loadingPlaceholder.parentElement).not.toHaveClass(
       'breeze:rounded-breeze-ctl',
     );
+    const allSkeletons = screen.getAllByRole('progressbar', { hidden: true });
+
+    expect(allSkeletons).toHaveLength(4);
+    expect(
+      allSkeletons.filter(
+        (element) => element.getAttribute('aria-hidden') === 'true',
+      ),
+    ).toHaveLength(3);
+    allSkeletons.forEach((skeleton) => {
+      expect(skeleton).toHaveClass('breeze:rounded-breeze-sm');
+    });
 
     await user.type(input, ' changed');
 

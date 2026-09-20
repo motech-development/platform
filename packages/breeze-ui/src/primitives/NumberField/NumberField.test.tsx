@@ -168,6 +168,8 @@ describe('NumberField', () => {
     renderBreeze(
       <NumberField
         defaultValue={2}
+        description="Shown beneath the amount."
+        error="The amount could not be loaded."
         label="Amount"
         loading
         onChange={onChange}
@@ -178,7 +180,15 @@ describe('NumberField', () => {
     const input = screen.getByRole('textbox', { name: 'Amount' });
 
     expect(inputRef.current).toBe(input);
+    expect(input).toHaveAccessibleName('Amount');
     expect(input).toBeDisabled();
+    expect(screen.queryByText('Amount')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('Shown beneath the amount.'),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('The amount could not be loaded.'),
+    ).not.toBeInTheDocument();
     expect(input).toHaveClass('breeze:!opacity-0');
     expect(input).not.toHaveClass('breeze:invisible');
     expect(input).toHaveAttribute('aria-busy', 'true');
@@ -196,10 +206,21 @@ describe('NumberField', () => {
     expect(loadingPlaceholder.parentElement).not.toHaveClass(
       'breeze:rounded-breeze-ctl',
     );
+    const allSkeletons = screen.getAllByRole('progressbar', { hidden: true });
+
+    expect(allSkeletons).toHaveLength(4);
+    expect(
+      allSkeletons.filter(
+        (element) => element.getAttribute('aria-hidden') === 'true',
+      ),
+    ).toHaveLength(3);
+    allSkeletons.forEach((skeleton) => {
+      expect(skeleton).toHaveClass('breeze:rounded-breeze-sm');
+    });
 
     const increment = screen
       .getAllByRole('button', { hidden: true })
-      .find((button) => button.getAttribute('aria-label') === 'Increase');
+      .find((button) => button.getAttribute('slot') === 'increment');
 
     if (!increment) {
       throw new Error('Expected the loading increment button to be rendered.');
