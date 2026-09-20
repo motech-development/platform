@@ -34,7 +34,7 @@ interface CheckboxCommonProps {
   form?: string;
   /** Sets the native input id. */
   id?: string;
-  /** Persistent accessible and visible checkbox label. */
+  /** Accessible checkbox label, shown as text outside loading state. */
   label: string;
   /** Replaces the checkbox content with a shape-preserving loading presentation. */
   loading?: boolean;
@@ -166,12 +166,20 @@ export function Checkbox({
       </AriaCheckboxButton>
       {visibleDescription && (
         <AriaText className={fieldVariants.base.description} slot="description">
-          {visibleDescription}
+          {loading ? (
+            <Skeleton blockSize="1lh" inlineSize="12em" shape="rectangle" />
+          ) : (
+            visibleDescription
+          )}
         </AriaText>
       )}
       {visibleError && (
         <AriaFieldError className={fieldVariants.base.error}>
-          {visibleError}
+          {loading ? (
+            <Skeleton blockSize="1lh" inlineSize="12em" shape="rectangle" />
+          ) : (
+            visibleError
+          )}
         </AriaFieldError>
       )}
     </AriaCheckboxField>

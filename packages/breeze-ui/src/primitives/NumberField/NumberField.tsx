@@ -49,9 +49,9 @@ interface NumberFieldCommonProps {
   form?: string;
   /** Locale-aware formatting options used by React Aria. */
   formatOptions?: Intl.NumberFormatOptions;
-  /** Sets the native input id used by the visible label. */
+  /** Sets the native input id used by the field label. */
   id?: string;
-  /** Persistent accessible and visible field label. */
+  /** Accessible field label, shown as text outside loading state. */
   label: string;
   /** Replaces the input with a shape-preserving loading presentation. */
   loading?: boolean;
@@ -132,6 +132,7 @@ export function NumberField({
   return (
     <AriaNumberField
       autoFocus={autoFocus}
+      aria-label={loading ? label : undefined}
       className={fieldVariants.base.root}
       defaultValue={defaultValue}
       form={form}
@@ -149,7 +150,13 @@ export function NumberField({
       validationBehavior="aria"
       value={value}
     >
-      <AriaLabel className={fieldVariants.base.label}>{label}</AriaLabel>
+      <AriaLabel className={fieldVariants.base.label}>
+        {loading ? (
+          <Skeleton blockSize="1lh" inlineSize="12em" shape="rectangle" />
+        ) : (
+          label
+        )}
+      </AriaLabel>
       <AriaGroup
         className={joinClassNames(
           variants.base.group,
@@ -216,12 +223,20 @@ export function NumberField({
       </AriaGroup>
       {visibleDescription && (
         <AriaText className={fieldVariants.base.description} slot="description">
-          {visibleDescription}
+          {loading ? (
+            <Skeleton blockSize="1lh" inlineSize="12em" shape="rectangle" />
+          ) : (
+            visibleDescription
+          )}
         </AriaText>
       )}
       {visibleError && (
         <AriaFieldError className={fieldVariants.base.error}>
-          {visibleError}
+          {loading ? (
+            <Skeleton blockSize="1lh" inlineSize="12em" shape="rectangle" />
+          ) : (
+            visibleError
+          )}
         </AriaFieldError>
       )}
     </AriaNumberField>

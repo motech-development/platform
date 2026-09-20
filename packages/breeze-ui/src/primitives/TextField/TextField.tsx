@@ -23,9 +23,9 @@ interface TextFieldCommonProps {
   error?: string;
   /** Associates the input with a form outside its ancestor tree. */
   form?: string;
-  /** Sets the native input id used by the visible label. */
+  /** Sets the native input id used by the field label. */
   id?: string;
-  /** Persistent accessible and visible field label. */
+  /** Accessible field label, shown as text outside loading state. */
   label: string;
   /** Replaces the input with a shape-preserving loading presentation. */
   loading?: boolean;
@@ -100,6 +100,7 @@ export function TextField({
     <AriaTextField
       className={fieldVariants.base.root}
       defaultValue={defaultValue}
+      aria-label={loading ? label : undefined}
       id={id}
       isDisabled={interactionDisabled}
       isInvalid={visibleError !== undefined}
@@ -111,7 +112,13 @@ export function TextField({
       validationBehavior="aria"
       value={value}
     >
-      <AriaLabel className={fieldVariants.base.label}>{label}</AriaLabel>
+      <AriaLabel className={fieldVariants.base.label}>
+        {loading ? (
+          <Skeleton blockSize="1lh" inlineSize="12em" shape="rectangle" />
+        ) : (
+          label
+        )}
+      </AriaLabel>
       <span className={fieldVariants.base.control}>
         <AriaInput
           aria-busy={loading || undefined}
@@ -138,12 +145,20 @@ export function TextField({
       </span>
       {visibleDescription && (
         <AriaText className={fieldVariants.base.description} slot="description">
-          {visibleDescription}
+          {loading ? (
+            <Skeleton blockSize="1lh" inlineSize="12em" shape="rectangle" />
+          ) : (
+            visibleDescription
+          )}
         </AriaText>
       )}
       {visibleError && (
         <AriaFieldError className={fieldVariants.base.error}>
-          {visibleError}
+          {loading ? (
+            <Skeleton blockSize="1lh" inlineSize="12em" shape="rectangle" />
+          ) : (
+            visibleError
+          )}
         </AriaFieldError>
       )}
     </AriaTextField>
