@@ -4,9 +4,8 @@ import {
   CheckboxButton as AriaCheckboxButton,
   CheckboxField as AriaCheckboxField,
 } from 'react-aria-components/Checkbox';
-import { FieldError as AriaFieldError } from 'react-aria-components/FieldError';
-import { Text as AriaText } from 'react-aria-components/Text';
 import { useBreezeContext } from '../../provider/BreezeContext';
+import { FieldSupportingContent } from '../Field/field.presentation';
 import { fieldVariants } from '../Field/field.styles';
 import { Skeleton } from '../Skeleton/Skeleton';
 
@@ -164,25 +163,11 @@ export function Checkbox({
           </>
         )}
       </AriaCheckboxButton>
-      {visibleDescription && (
-        <AriaText className={fieldVariants.base.description} slot="description">
-          {loading ? (
-            <Skeleton blockSize="1lh" inlineSize="12em" shape="rectangle" />
-          ) : (
-            visibleDescription
-          )}
-        </AriaText>
-      )}
-      {visibleError &&
-        (loading ? (
-          <span aria-hidden="true" className={fieldVariants.base.error}>
-            <Skeleton blockSize="1lh" inlineSize="12em" shape="rectangle" />
-          </span>
-        ) : (
-          <AriaFieldError className={fieldVariants.base.error}>
-            {visibleError}
-          </AriaFieldError>
-        ))}
+      <FieldSupportingContent
+        description={visibleDescription}
+        error={visibleError}
+        loading={loading}
+      />
     </AriaCheckboxField>
   );
 }

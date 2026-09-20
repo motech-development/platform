@@ -1,10 +1,11 @@
 import type { Ref } from 'react';
-import { FieldError as AriaFieldError } from 'react-aria-components/FieldError';
 import { Input as AriaInput } from 'react-aria-components/Input';
-import { Label as AriaLabel } from 'react-aria-components/Label';
-import { Text as AriaText } from 'react-aria-components/Text';
 import { TextField as AriaTextField } from 'react-aria-components/TextField';
 import { useBreezeContext } from '../../provider/BreezeContext';
+import {
+  FieldLabel,
+  FieldSupportingContent,
+} from '../Field/field.presentation';
 import { fieldVariants, joinClassNames } from '../Field/field.styles';
 import { Skeleton } from '../Skeleton/Skeleton';
 
@@ -112,13 +113,7 @@ export function TextField({
       validationBehavior="aria"
       value={value}
     >
-      <AriaLabel className={fieldVariants.base.label}>
-        {loading ? (
-          <Skeleton blockSize="1lh" inlineSize="12em" shape="rectangle" />
-        ) : (
-          label
-        )}
-      </AriaLabel>
+      <FieldLabel label={label} loading={loading} />
       <span className={fieldVariants.base.control}>
         <AriaInput
           aria-busy={loading || undefined}
@@ -143,25 +138,11 @@ export function TextField({
           </span>
         )}
       </span>
-      {visibleDescription && (
-        <AriaText className={fieldVariants.base.description} slot="description">
-          {loading ? (
-            <Skeleton blockSize="1lh" inlineSize="12em" shape="rectangle" />
-          ) : (
-            visibleDescription
-          )}
-        </AriaText>
-      )}
-      {visibleError &&
-        (loading ? (
-          <span aria-hidden="true" className={fieldVariants.base.error}>
-            <Skeleton blockSize="1lh" inlineSize="12em" shape="rectangle" />
-          </span>
-        ) : (
-          <AriaFieldError className={fieldVariants.base.error}>
-            {visibleError}
-          </AriaFieldError>
-        ))}
+      <FieldSupportingContent
+        description={visibleDescription}
+        error={visibleError}
+        loading={loading}
+      />
     </AriaTextField>
   );
 }
