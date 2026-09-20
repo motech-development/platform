@@ -16,6 +16,12 @@ export { Card } from './primitives/Card/Card';
 export type { CheckboxProps } from './primitives/Checkbox/Checkbox';
 export { Checkbox } from './primitives/Checkbox/Checkbox';
 export type {
+  ItemDescriptor,
+  ItemDescriptorBadge,
+} from './primitives/Collection/item.types';
+export type { ComboBoxProps } from './primitives/ComboBox/ComboBox';
+export { ComboBox } from './primitives/ComboBox/ComboBox';
+export type {
   ContainerProps,
   ContainerWidth,
 } from './primitives/Container/Container';
@@ -50,6 +56,8 @@ export type { NumberFieldProps } from './primitives/NumberField/NumberField';
 export { NumberField } from './primitives/NumberField/NumberField';
 export type { PopoverProps } from './primitives/Popover/Popover';
 export { Popover } from './primitives/Popover/Popover';
+export type { SelectProps } from './primitives/Select/Select';
+export { Select } from './primitives/Select/Select';
 export type {
   SeparatorOrientation,
   SeparatorProps,

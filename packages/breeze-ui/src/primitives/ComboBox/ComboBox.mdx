@@ -1,0 +1,61 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './ComboBox.stories';
+
+<Meta
+  of={Stories}
+  summary="A filterable suggestion field with optional free text."
+/>
+
+# ComboBox
+
+`ComboBox` combines text entry with a React Aria popover listbox. Suggestions
+filter while the user types, and the same closed descriptor contract is used for
+every item.
+
+<Canvas of={Stories.Default} />
+
+## Descriptor content
+
+Pass `items` and a `getItem` mapping function. The mapping returns only
+`ItemDescriptor` data: `id`, `label`, optional `description`, `icon`, `badge` and
+`disabled`. It cannot return JSX, classes, styles or slot props. A content gap is
+a deliberate Breeze library change, not an application markup escape hatch.
+
+<Canvas of={Stories.Description} />
+
+## Filtering and free text
+
+Typing filters suggestions by their descriptor labels. Set `allowsCustomValue`
+when the field should also accept text that is not one of the suggestions; the
+semantic callback then receives either an item, the entered string or `null`.
+
+<Canvas of={Stories.FreeText} />
+
+## States
+
+`required`, `disabled` and `readOnly` map to the field's accessible semantics. A
+non-empty `error` marks the field invalid; there is no separate `invalid` prop.
+`loading` preserves the input shape and prevents interaction until the value is
+available.
+
+<Canvas of={Stories.Error} />
+
+<Canvas of={Stories.Loading} />
+
+## Controlled values
+
+Provide both `value` and `onChange` for controlled usage. The callback receives a
+selected item, custom text or `null`, never a DOM event. Use `defaultValue` and
+an optional `onChange` for uncontrolled usage; the two forms cannot be mixed.
+
+<Canvas of={Stories.Controlled} />
+
+## Accessibility
+
+The visible label names the input, while descriptions and errors are announced
+through React Aria's field relationships. React Aria supplies listbox keyboard
+navigation and focus management.
+
+## API
+
+<ArgTypes />

@@ -7242,6 +7242,7 @@ __metadata:
     react-aria: "npm:3.50.0"
     react-aria-components: "npm:1.19.0"
     react-dom: "npm:19.2.7"
+    react-stately: "npm:3.48.0"
     remark-gfm: "npm:4.0.1"
     storybook: "npm:10.4.6"
     tailwindcss: "npm:4.3.2"
