@@ -179,6 +179,209 @@ describe('Select', () => {
     expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
   });
 
+  it('forwards trigger interaction state to its visual states', async () => {
+    const user = userEvent.setup();
+
+    renderBreeze(
+      <Select
+        error="Choose an active payment method."
+        getItem={getItem}
+        items={choices}
+        label="Payment method"
+      />,
+    );
+
+    const trigger = screen.getByRole('combobox', {
+      name: 'Payment method',
+    });
+
+    expect(trigger).toHaveAttribute('data-invalid', 'true');
+
+    await user.hover(trigger);
+    expect(trigger).toHaveAttribute('data-hovered', 'true');
+
+    await user.tab();
+    expect(trigger).toHaveAttribute('data-focus-visible', 'true');
+  });
+
+  it('keeps its autofill surrogate synchronized with uncontrolled selection', () => {
+    const onChange = vi.fn<(value: (typeof choices)[number] | null) => void>();
+
+    renderBreeze(
+      <form aria-label="Payment form">
+        <Select
+          autoComplete="organization"
+          getItem={getItem}
+          items={choices}
+          label="Payment method"
+          name="payment"
+          onChange={onChange}
+        />
+      </form>,
+    );
+
+    const surrogate = document.querySelector<HTMLInputElement>(
+      'input[name="payment"]',
+    );
+    const surrogateWrapper = surrogate?.closest(
+      '[data-react-aria-prevent-focus]',
+    );
+    expect(surrogate).toHaveAttribute('autocomplete', 'organization');
+    expect(surrogateWrapper).toHaveAttribute('aria-hidden', 'true');
+    expect(surrogateWrapper).toHaveAttribute(
+      'data-a11y-ignore',
+      'aria-hidden-focus',
+    );
+    expect(surrogate).toHaveAttribute('type', 'text');
+    expect(surrogate).toHaveAttribute('tabindex', '-1');
+
+    fireEvent.input(surrogate as HTMLInputElement, {
+      target: { value: 'bank' },
+    });
+
+    expect(onChange).toHaveBeenCalledWith(choices[0]);
+    expect(surrogate).toHaveValue('bank');
+    expect(screen.getByRole('combobox')).toHaveTextContent('Bank account');
+  });
+
+  it('restores its semantic value for unmatched browser autofill values', () => {
+    const onChange = vi.fn<(value: (typeof choices)[number] | null) => void>();
+
+    renderBreeze(
+      <form aria-label="Payment form">
+        <Select
+          autoComplete="organization"
+          defaultValue={choices[0]}
+          getItem={getItem}
+          items={choices}
+          label="Payment method"
+          name="payment"
+          onChange={onChange}
+        />
+      </form>,
+    );
+
+    const surrogate = document.querySelector<HTMLInputElement>(
+      'input[name="payment"]',
+    );
+
+    fireEvent.input(surrogate as HTMLInputElement, {
+      target: { value: 'browser-only-value' },
+    });
+
+    expect(onChange).not.toHaveBeenCalled();
+    expect(surrogate).toHaveValue('bank');
+    expect(screen.getByRole('combobox')).toHaveTextContent('Bank account');
+    expect(new FormData(document.forms[0]).get('payment')).toBe('bank');
+  });
+
+  it('does not select a disabled item from browser autofill', () => {
+    const onChange = vi.fn<(value: (typeof choices)[number] | null) => void>();
+
+    renderBreeze(
+      <form aria-label="Payment form">
+        <Select
+          autoComplete="organization"
+          defaultValue={choices[0]}
+          getItem={getItem}
+          items={choices}
+          label="Payment method"
+          name="payment"
+          onChange={onChange}
+        />
+      </form>,
+    );
+
+    const surrogate = document.querySelector<HTMLInputElement>(
+      'input[name="payment"]',
+    );
+
+    fireEvent.input(surrogate as HTMLInputElement, {
+      target: { value: 'cash' },
+    });
+
+    expect(onChange).not.toHaveBeenCalled();
+    expect(surrogate).toHaveValue('bank');
+    expect(screen.getByRole('combobox')).toHaveTextContent('Bank account');
+    expect(new FormData(document.forms[0]).get('payment')).toBe('bank');
+  });
+
+  it('synchronizes the autofill surrogate when controlled value changes', () => {
+    const onChange = vi.fn<(value: (typeof choices)[number] | null) => void>();
+    const { rerender } = renderBreeze(
+      <Select
+        autoComplete="organization"
+        getItem={getItem}
+        items={choices}
+        label="Payment method"
+        name="payment"
+        onChange={onChange}
+        value={choices[0]}
+      />,
+    );
+
+    const surrogate = document.querySelector<HTMLInputElement>(
+      'input[name="payment"]',
+    );
+    expect(surrogate).toHaveValue('bank');
+
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <Select
+          autoComplete="organization"
+          getItem={getItem}
+          items={choices}
+          label="Payment method"
+          name="payment"
+          onChange={onChange}
+          value={choices[1]}
+        />
+      </BreezeProvider>,
+    );
+
+    expect(surrogate).toHaveValue('cash');
+  });
+
+  it('does not let a read-only autofill surrogate mutate selection', () => {
+    const onChange = vi.fn<(value: (typeof choices)[number] | null) => void>();
+
+    renderBreeze(
+      <form aria-label="Payment form">
+        <Select
+          autoComplete="organization"
+          defaultValue={choices[0]}
+          getItem={getItem}
+          items={choices}
+          label="Payment method"
+          name="payment"
+          onChange={onChange}
+          readOnly
+        />
+      </form>,
+    );
+
+    const surrogate = document.querySelector<HTMLInputElement>(
+      'input[name="payment"]',
+    );
+    expect(surrogate).toHaveValue('bank');
+    expect(surrogate).toHaveAttribute('readonly');
+    expect(
+      surrogate?.closest('[data-react-aria-prevent-focus]'),
+    ).toHaveAttribute('aria-hidden', 'true');
+
+    fireEvent.input(surrogate as HTMLInputElement, {
+      target: { value: 'cash' },
+    });
+    fireEvent.change(surrogate as HTMLInputElement, {
+      target: { value: 'cash' },
+    });
+
+    expect(onChange).not.toHaveBeenCalled();
+    expect(surrogate).toHaveValue('bank');
+    expect(screen.getByRole('combobox')).toHaveTextContent('Bank account');
+    expect(new FormData(document.forms[0]).get('payment')).toBe('bank');
+  });
+
   it('renders non-loading errors as an accessible description', () => {
     renderBreeze(
       <Select
