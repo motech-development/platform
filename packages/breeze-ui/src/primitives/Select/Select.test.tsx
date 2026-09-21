@@ -535,6 +535,7 @@ describe('Select', () => {
     const trigger = screen.getByRole('combobox', { name: 'Payment method' });
     expect(document.querySelector('select')).not.toBeInTheDocument();
     expect(trigger).toBeDisabled();
+    expect(trigger).toHaveAttribute('aria-busy', 'true');
     expect(trigger).not.toBeInvalid();
     expect(trigger).toHaveAttribute('aria-required', 'true');
     expect(
