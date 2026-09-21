@@ -351,10 +351,20 @@ export function Select<T>({
       ).join(' ') || undefined;
 
   useLayoutEffect(() => {
-    if (decoratedItems.length === 0 && state.isOpen) {
+    if ((decoratedItems.length === 0 || stateDisabled) && state.isOpen) {
       state.setOpen(false);
     }
-  }, [decoratedItems.length, state]);
+  }, [decoratedItems.length, state, stateDisabled]);
+
+  useLayoutEffect(() => {
+    if (
+      !isControlled &&
+      state.value !== null &&
+      !decoratedItems.some(({ descriptor }) => descriptor.id === state.value)
+    ) {
+      state.setValue(null);
+    }
+  }, [decoratedItems, isControlled, state]);
 
   useEffect(() => {
     if (isControlled) return undefined;
@@ -436,7 +446,7 @@ export function Select<T>({
       )}
       <CollectionPopover
         className={collectionVariants.base.popover}
-        isOpen={state.isOpen}
+        isOpen={state.isOpen && !stateDisabled}
         onOpenChange={(isOpen) => state.setOpen(isOpen)}
         triggerRef={triggerRef}
       >

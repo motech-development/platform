@@ -1,6 +1,6 @@
-import { fireEvent, screen, within } from '@testing-library/react';
+import { act, fireEvent, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { useState } from 'react';
+import { startTransition, Suspense, useState } from 'react';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import renderBreeze from '../../../test/render';
 import { BreezeProvider } from '../../provider/BreezeProvider';
@@ -748,6 +748,70 @@ describe('ComboBox', () => {
     expect(onChange).toHaveBeenLastCalledWith(null);
   });
 
+  it('does not retain selection bookkeeping from an abandoned render', async () => {
+    const user = userEvent.setup();
+    let shouldSuspend = false;
+    let didSuspend = false;
+    const suspendedRender = Object.assign(new Error('Suspended render'), {
+      then: () => undefined,
+    });
+    let startSuspendedRender = () => undefined;
+    let restoreSelection = () => undefined;
+
+    function Suspender() {
+      if (shouldSuspend) {
+        didSuspend = true;
+        throw suspendedRender;
+      }
+
+      return null;
+    }
+
+    function SuspenseHarness() {
+      const [value, setValue] = useState<Supplier>(suppliers[0]);
+      startSuspendedRender = () => {
+        shouldSuspend = true;
+        startTransition(() => setValue(suppliers[1]));
+      };
+      restoreSelection = () => {
+        shouldSuspend = false;
+        setValue(suppliers[0]);
+      };
+
+      return (
+        <Suspense fallback={<span>Loading selection</span>}>
+          <ComboBox
+            getItem={getItem}
+            items={suppliers}
+            label="Supplier"
+            onChange={() => undefined}
+            value={value}
+          />
+          <Suspender />
+        </Suspense>
+      );
+    }
+
+    renderBreeze(<SuspenseHarness />);
+
+    const input = screen.getByRole('combobox', { name: 'Supplier' });
+    await user.click(input);
+    await user.clear(input);
+    await user.type(input, 'Br');
+    expect(input).toHaveValue('Br');
+
+    act(startSuspendedRender);
+    act(restoreSelection);
+
+    expect(didSuspend).toBe(true);
+    expect(input).toHaveValue('Br');
+    expect(
+      within(screen.getByRole('listbox')).getByRole('option', {
+        name: /Brass & Co/,
+      }),
+    ).toBeVisible();
+  });
+
   it('does not report a selected label when reselecting the current item', async () => {
     const user = userEvent.setup();
     const onChange =
@@ -1025,6 +1089,37 @@ describe('ComboBox', () => {
 
     expect(onChange).toHaveBeenCalledTimes(1);
     expect(onChange).toHaveBeenLastCalledWith(null);
+  });
+
+  it('preserves a controlled off-list value when focus leaves', async () => {
+    const user = userEvent.setup();
+    const missingSupplier = {
+      ...suppliers[0],
+      id: 'remote',
+      label: 'Remote supplier',
+    };
+    const onChange = vi.fn<(value: Supplier | null) => void>();
+
+    renderBreeze(
+      <>
+        <ComboBox
+          getItem={getItem}
+          items={suppliers}
+          label="Supplier"
+          onChange={onChange}
+          value={missingSupplier}
+        />
+        <button type="button">Next</button>
+      </>,
+    );
+
+    const input = screen.getByRole('combobox', { name: 'Supplier' });
+    await user.click(input);
+    await user.tab();
+
+    expect(onChange).toHaveBeenCalledTimes(1);
+    expect(onChange).toHaveBeenLastCalledWith(missingSupplier);
+    expect(onChange).not.toHaveBeenCalledWith(null);
   });
 
   it.each([
