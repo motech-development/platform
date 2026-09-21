@@ -251,6 +251,38 @@ describe('ComboBox', () => {
     ).toBeVisible();
   });
 
+  it('keeps an empty non-custom collection closed but allows custom entry', async () => {
+    const user = userEvent.setup();
+    const { rerender } = renderBreeze(
+      <ComboBox
+        getItem={(item: string) => ({ id: item, label: item })}
+        items={[]}
+        label="Drink"
+      />,
+    );
+
+    const input = screen.getByRole('combobox', { name: 'Drink' });
+    await user.click(input);
+
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <ComboBox
+          allowsCustomValue
+          getItem={(item: string) => ({ id: item, label: item })}
+          items={[]}
+          label="Drink"
+        />
+      </BreezeProvider>,
+    );
+
+    await user.click(input);
+    await user.type(input, 'Juice');
+
+    expect(screen.getByRole('listbox')).toBeInTheDocument();
+  });
+
   it('treats restricted string values as descriptor-backed items', () => {
     const drinks = ['Tea', 'Coffee'];
     const getDrinkItem = (item: string) => ({
@@ -336,6 +368,116 @@ describe('ComboBox', () => {
         'drink',
       ),
     ).toBe('remote');
+  });
+
+  it('does not expose an off-list default in the suggestion list', async () => {
+    const user = userEvent.setup();
+    const drinks = ['Tea', 'Coffee'];
+    const onChange = vi.fn<(value: string | null) => void>();
+    const getDrinkItem = (item: string) => ({
+      id: item.toLowerCase(),
+      label: item === 'Remote' ? 'Remote drink' : `${item} drink`,
+    });
+
+    renderBreeze(
+      <ComboBox
+        defaultValue="Remote"
+        getItem={getDrinkItem}
+        items={drinks}
+        label="Drink"
+        onChange={onChange}
+      />,
+    );
+
+    const input = screen.getByRole('combobox', { name: 'Drink' });
+    await user.click(screen.getByRole('button', { name: /Show suggestions/ }));
+
+    const listbox = screen.getByRole('listbox');
+    expect(
+      within(listbox).getByRole('option', { name: 'Tea drink' }),
+    ).toBeVisible();
+    expect(
+      within(listbox).queryByRole('option', { name: 'Remote drink' }),
+    ).not.toBeInTheDocument();
+    expect(input).toHaveValue('Remote drink');
+
+    input.focus();
+    await user.keyboard('{ArrowUp}');
+    await user.keyboard('{ArrowDown}');
+    await user.keyboard('{ArrowDown}');
+
+    const activeDescendant = input.getAttribute('aria-activedescendant');
+    expect(activeDescendant).toBeTruthy();
+    const activeOption = document.getElementById(activeDescendant as string);
+    expect(activeOption).toBeInTheDocument();
+    expect(activeOption).toHaveAttribute('role', 'option');
+    expect(activeOption).not.toHaveTextContent('Remote drink');
+
+    await user.keyboard('{Enter}');
+
+    expect(onChange).not.toHaveBeenCalledWith('Remote');
+  });
+
+  it('keeps an off-list default out of an empty suggestion collection', async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn<(value: string | null) => void>();
+    const getDrinkItem = (item: string) => ({
+      id: item.toLowerCase(),
+      label: `${item} drink`,
+    });
+
+    renderBreeze(
+      <ComboBox
+        defaultValue="Remote"
+        getItem={getDrinkItem}
+        items={[]}
+        label="Drink"
+        onChange={onChange}
+      />,
+    );
+
+    const input = screen.getByRole('combobox', { name: 'Drink' });
+    expect(input).toHaveValue('Remote drink');
+
+    await user.click(screen.getByRole('button', { name: /Show suggestions/ }));
+
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+
+    input.focus();
+    await user.keyboard('{ArrowDown}');
+    await user.keyboard('{Enter}');
+
+    expect(input).not.toHaveAttribute('aria-activedescendant');
+    expect(onChange).not.toHaveBeenCalledWith('Remote');
+  });
+
+  it('preserves an off-list uncontrolled default through focus and blur', async () => {
+    const user = userEvent.setup();
+    const drinks = ['Tea', 'Coffee'];
+    const getDrinkItem = (item: string) => ({
+      id: item.toLowerCase(),
+      label: item === 'Remote' ? 'Remote drink' : `${item} drink`,
+    });
+
+    renderBreeze(
+      <>
+        <ComboBox
+          defaultValue="Remote"
+          getItem={getDrinkItem}
+          items={drinks}
+          label="Drink"
+        />
+        <button type="button">Next</button>
+      </>,
+    );
+
+    const input = screen.getByRole('combobox', { name: 'Drink' });
+    expect(input).toHaveValue('Remote drink');
+
+    await user.click(input);
+    await user.tab();
+
+    expect(input).toHaveValue('Remote drink');
   });
 
   it('keeps free text distinct from string items', async () => {

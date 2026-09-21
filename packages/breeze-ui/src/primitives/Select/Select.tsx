@@ -2,9 +2,11 @@ import type { ReactNode } from 'react';
 import { useEffect, useId, useLayoutEffect, useMemo, useRef } from 'react';
 import { mergeProps } from 'react-aria/mergeProps';
 import { useButton } from 'react-aria/useButton';
+import { useFocusRing } from 'react-aria/useFocusRing';
 import { useHover } from 'react-aria/useHover';
 import { useListBox, useOption } from 'react-aria/useListBox';
 import { useSelect } from 'react-aria/useSelect';
+import { useVisuallyHidden } from 'react-aria/VisuallyHidden';
 // The low-level Select state is required to avoid RAC's native HiddenSelect.
 import { useSelectState } from 'react-stately/useSelectState';
 import { useBreezeContext } from '../../provider/BreezeContext';
@@ -251,6 +253,13 @@ export function Select<T>({
   value,
 }: Readonly<SelectProps<T>>) {
   const { messages } = useBreezeContext();
+  const { visuallyHiddenProps } = useVisuallyHidden({
+    style: {
+      left: 0,
+      position: 'fixed',
+      top: 0,
+    },
+  });
   const visibleDescription = description?.trim() || undefined;
   const visibleError = error?.trim() || undefined;
   const interactionDisabled = disabled || loading;
@@ -265,6 +274,7 @@ export function Select<T>({
       .filter(Boolean)
       .join(' ') || undefined;
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const autofillRef = useRef<HTMLInputElement>(null);
   const decoratedItems = useMemo<SelectItem<T>[]>(
     () =>
       items.map((item) => ({
@@ -340,6 +350,38 @@ export function Select<T>({
     triggerRef,
   );
   const { buttonProps } = useButton(triggerProps, triggerRef);
+  const { focusProps, isFocusVisible } = useFocusRing();
+  const { hoverProps, isHovered } = useHover({
+    isDisabled: interactionDisabled,
+  });
+  const isInvalid = !loading && visibleError !== undefined;
+  const handleAutofill = (nextValue: string) => {
+    if (readOnly) {
+      if (autofillRef.current) {
+        autofillRef.current.value = String(state.value ?? '');
+      }
+
+      return;
+    }
+
+    const nextItem = decoratedItems.find(
+      ({ descriptor }) => descriptor.id === nextValue,
+    );
+
+    if (!nextItem || nextItem.descriptor.disabled) {
+      if (autofillRef.current) {
+        autofillRef.current.value = String(state.value ?? '');
+      }
+
+      return;
+    }
+
+    const nextKey = nextItem.descriptor.id;
+
+    if (state.value !== nextKey) {
+      state.setValue(nextKey);
+    }
+  };
   const triggerLabelledBy = loading
     ? undefined
     : Array.from(
@@ -395,7 +437,7 @@ export function Select<T>({
           type="button"
           // React Aria supplies the complete keyboard and accessibility contract.
           // eslint-disable-next-line react/jsx-props-no-spreading
-          {...buttonProps}
+          {...mergeProps(buttonProps, focusProps, hoverProps)}
           aria-controls={buttonProps['aria-controls']}
           aria-expanded={buttonProps['aria-expanded']}
           aria-labelledby={triggerLabelledBy}
@@ -408,6 +450,9 @@ export function Select<T>({
             readOnly && selectVariants.state.readOnlyTrigger,
             loading && 'breeze:!opacity-0',
           )}
+          data-focus-visible={isFocusVisible || undefined}
+          data-hovered={isHovered || undefined}
+          data-invalid={isInvalid || undefined}
           disabled={interactionDisabled}
           form={form}
           id={controlId}
@@ -436,13 +481,32 @@ export function Select<T>({
         )}
       </div>
       {name && !interactionDisabled && (
-        <input
-          autoComplete={autoComplete}
-          form={form}
-          name={name}
-          type="hidden"
-          value={state.value ?? ''}
-        />
+        <div
+          // React Aria's hidden-control pattern keeps autofill and form
+          // submission while preventing an aria-hidden control from focus.
+          // eslint-disable-next-line react/jsx-props-no-spreading
+          {...visuallyHiddenProps}
+          aria-hidden="true"
+          data-a11y-ignore="aria-hidden-focus"
+          data-react-aria-prevent-focus
+        >
+          <label htmlFor={`${controlId}-autofill`}>
+            {label}
+            <input
+              autoComplete={autoComplete}
+              form={form}
+              id={`${controlId}-autofill`}
+              name={name}
+              onChange={(event) => handleAutofill(event.currentTarget.value)}
+              onInput={(event) => handleAutofill(event.currentTarget.value)}
+              readOnly={readOnly || undefined}
+              ref={autofillRef}
+              tabIndex={-1}
+              type="text"
+              value={state.value ?? ''}
+            />
+          </label>
+        </div>
       )}
       <CollectionPopover
         className={collectionVariants.base.popover}
