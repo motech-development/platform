@@ -1,4 +1,4 @@
-import type { ContextType, RefObject } from 'react';
+import type { ContextType, FormEvent, RefObject } from 'react';
 import {
   useContext,
   useEffect,
@@ -307,6 +307,162 @@ function ComboBoxPopover<T>({
   );
 }
 
+function ComboBoxReadOnlyReset({
+  allowsCustomValue,
+  currentTextValue,
+  isControlled,
+  isReadOnly,
+  resetTextValue,
+}: Readonly<{
+  allowsCustomValue: boolean;
+  currentTextValue: string;
+  isControlled: boolean;
+  isReadOnly: boolean;
+  resetTextValue: string;
+}>) {
+  const state = useContext(AriaComboBoxStateContext);
+  const wasReadOnly = useRef(isReadOnly);
+  const committedCustomValue = useRef(resetTextValue);
+  const wasFocused = useRef(state?.isFocused ?? false);
+  const wasOpen = useRef(state?.isOpen ?? false);
+
+  useLayoutEffect(() => {
+    if (
+      allowsCustomValue &&
+      state &&
+      !isReadOnly &&
+      state.selectedKey === null
+    ) {
+      const committedOnBlur = wasFocused.current && !state.isFocused;
+      const committedOnClose = wasOpen.current && !state.isOpen;
+
+      if (committedOnBlur || committedOnClose) {
+        committedCustomValue.current = state.inputValue;
+      }
+    }
+
+    wasFocused.current = state?.isFocused ?? false;
+    wasOpen.current = state?.isOpen ?? false;
+  }, [allowsCustomValue, isReadOnly, state]);
+
+  useLayoutEffect(() => {
+    if (isReadOnly && !wasReadOnly.current) {
+      if (allowsCustomValue && state && state.selectedKey === null) {
+        let resetValue = committedCustomValue.current;
+        if (isControlled) {
+          resetValue = currentTextValue;
+        } else if (state.isFocused && !state.isOpen) {
+          resetValue = state.inputValue;
+        }
+        state.setInputValue(resetValue);
+      } else {
+        state?.revert();
+      }
+    }
+
+    wasReadOnly.current = isReadOnly;
+  }, [
+    allowsCustomValue,
+    currentTextValue,
+    isControlled,
+    isReadOnly,
+    resetTextValue,
+    state,
+  ]);
+
+  return null;
+}
+
+interface ComboBoxInputProps<T> {
+  allowsCustomValue: boolean;
+  autoComplete?: string;
+  autoFocus?: boolean;
+  'aria-describedby'?: string;
+  className: string;
+  disabled: boolean;
+  form?: string;
+  getItem: (item: T) => ItemDescriptor;
+  items: T[];
+  loading: boolean;
+  placeholder?: string;
+  readOnly: boolean;
+}
+
+function ComboBoxInput<T>({
+  allowsCustomValue,
+  autoComplete,
+  autoFocus,
+  'aria-describedby': ariaDescribedBy,
+  className,
+  disabled,
+  form,
+  getItem,
+  items,
+  loading,
+  placeholder,
+  readOnly,
+}: Readonly<ComboBoxInputProps<T>>) {
+  const state = useContext(AriaComboBoxStateContext);
+  const handledAutofillEvent = useRef<Event | null>(null);
+
+  const handleBlockedInput = (event: FormEvent<HTMLInputElement>) => {
+    if (!disabled && !readOnly) return;
+
+    if (state) {
+      const { currentTarget } = event;
+      currentTarget.value = state.inputValue;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+  };
+
+  const handleAutofill = (event: FormEvent<HTMLInputElement>) => {
+    if (allowsCustomValue || disabled || readOnly || !state) return;
+
+    const { nativeEvent } = event;
+    if (handledAutofillEvent.current === nativeEvent) return;
+
+    const { inputType } = nativeEvent as InputEvent;
+    if (inputType && inputType !== 'insertReplacementText') return;
+
+    handledAutofillEvent.current = nativeEvent;
+
+    const matchingItems = items
+      .map((item) => ({ descriptor: getItem(item), item }))
+      .filter(
+        ({ descriptor }) =>
+          descriptor.label === event.currentTarget.value &&
+          !descriptor.disabled,
+      );
+
+    if (matchingItems.length !== 1) return;
+
+    const [nextItem] = matchingItems;
+    if (state.selectedKey === nextItem.descriptor.id) return;
+
+    state.setInputValue(nextItem.descriptor.label);
+    state.setSelectedKey(nextItem.descriptor.id);
+  };
+
+  return (
+    <AriaInput
+      aria-busy={loading || undefined}
+      aria-describedby={ariaDescribedBy}
+      autoComplete={autoComplete}
+      autoFocus={autoFocus}
+      className={className}
+      form={form}
+      onChange={handleAutofill}
+      onChangeCapture={handleBlockedInput}
+      onInput={handleAutofill}
+      onInputCapture={handleBlockedInput}
+      placeholder={placeholder}
+      readOnly={readOnly || undefined}
+    />
+  );
+}
+
 function getDefaultTextValue<T>(
   value: ComboBoxValue<T> | undefined,
   selectedItem: ComboBoxItem<T> | undefined,
@@ -425,6 +581,7 @@ function getVisibleItems<T>(
 interface ComboBoxModel<T> {
   collectionItems: T[];
   controlledTextValue: string | undefined;
+  currentTextValue: string;
   defaultSelectedKey: string | undefined;
   defaultTextValue: string | undefined;
   handleInputChange: (inputValue: string) => void;
@@ -444,6 +601,7 @@ function useComboBoxModel<T>(
     getItem,
     items,
     onChange,
+    readOnly = false,
     value,
   } = props;
   const [filterText, setFilterText] = useState('');
@@ -455,6 +613,20 @@ function useComboBoxModel<T>(
   const pendingCustomValueRef = useRef<string | null | undefined>(undefined);
   const selectionResetLabelRef = useRef<string | null>(null);
   const lastCustomChangeRef = useRef<ComboBoxValue<T> | undefined>(undefined);
+  const wasReadOnly = useRef(readOnly);
+
+  useLayoutEffect(() => {
+    if (readOnly && !wasReadOnly.current) {
+      setFilterText('');
+      setControlledInputDraft(undefined);
+      controlledDraftSelectionRef.current = null;
+      pendingCustomValueRef.current = undefined;
+      selectionResetLabelRef.current = null;
+      lastCustomChangeRef.current = undefined;
+    }
+
+    wasReadOnly.current = readOnly;
+  }, [readOnly]);
   const decoratedItems = useMemo<ComboBoxItem<T>[]>(
     () =>
       items.map((item) => ({
@@ -463,7 +635,6 @@ function useComboBoxModel<T>(
       })),
     [getItem, items],
   );
-  const selectedValue = value !== undefined ? value : defaultValue ?? null;
   const suppliedDefaultSelectedItem = findItem(
     decoratedItems,
     defaultValue ?? null,
@@ -488,18 +659,6 @@ function useComboBoxModel<T>(
       })),
     [getItem, selectionItems],
   );
-  const selectedItem = findItem(
-    selectionDecoratedItems,
-    selectedValue,
-    getItem,
-    allowsCustomValue,
-  );
-  const selectedKey = getSelectedKey(
-    value,
-    selectedItem,
-    getItem,
-    allowsCustomValue,
-  );
   const defaultSelectedItem = findItem(
     selectionDecoratedItems,
     defaultValue ?? null,
@@ -513,6 +672,20 @@ function useComboBoxModel<T>(
       getItem,
       allowsCustomValue,
     ) ?? undefined;
+  const uncontrolledSelectedKeyRef = useRef<string | null>(
+    defaultSelectedKey ?? null,
+  );
+  const selectedItem =
+    value !== undefined
+      ? findItem(selectionDecoratedItems, value, getItem, allowsCustomValue)
+      : selectionDecoratedItems.find(
+          ({ descriptor }) =>
+            descriptor.id === uncontrolledSelectedKeyRef.current,
+        );
+  const selectedKey =
+    value !== undefined
+      ? getSelectedKey(value, selectedItem, getItem, allowsCustomValue)
+      : uncontrolledSelectedKeyRef.current;
   const baseControlledTextValue =
     value === undefined
       ? undefined
@@ -523,6 +696,7 @@ function useComboBoxModel<T>(
     getItem,
     allowsCustomValue,
   );
+  const currentTextValue = baseControlledTextValue ?? defaultTextValue ?? '';
   const controlledSelectionUpdate = getControlledSelectionUpdate(
     value,
     selectedItem,
@@ -580,13 +754,7 @@ function useComboBoxModel<T>(
     controlledSelectionChanged ? '' : filterText,
     contains,
   );
-  const collectionItems = useMemo(
-    () =>
-      preserveOffListDefault
-        ? [...visibleItems, defaultValue as T]
-        : visibleItems,
-    [defaultValue, preserveOffListDefault, visibleItems],
-  );
+  const collectionItems = selectionItems;
   const collectionDecoratedItems = useMemo<ComboBoxItem<T>[]>(
     () =>
       collectionItems.map((item) => ({
@@ -595,9 +763,15 @@ function useComboBoxModel<T>(
       })),
     [collectionItems, getItem],
   );
-  const hiddenItemKeys = preserveOffListDefault
-    ? [getItem(defaultValue as T).id]
-    : [];
+  const hiddenItemKeys = useMemo(() => {
+    const visibleItemKeys = new Set(
+      visibleItems.map((item) => getItem(item).id),
+    );
+
+    return selectionDecoratedItems
+      .filter(({ descriptor }) => !visibleItemKeys.has(descriptor.id))
+      .map(({ descriptor }) => descriptor.id);
+  }, [getItem, selectionDecoratedItems, visibleItems]);
   const controlledTextValue = hasControlledInputDraft
     ? controlledInputDraft
     : baseControlledTextValue;
@@ -628,6 +802,11 @@ function useComboBoxModel<T>(
   };
 
   const handleInputChange = (inputValue: string) => {
+    if (readOnly) {
+      resetInputDraft();
+      return;
+    }
+
     if (
       selectionResetLabelRef.current !== null &&
       inputValue === selectionResetLabelRef.current
@@ -681,6 +860,10 @@ function useComboBoxModel<T>(
     }
 
     if (key === null) {
+      if (value === undefined) {
+        uncontrolledSelectedKeyRef.current = null;
+      }
+
       if (allowsCustomValue && lastCustomChangeRef.current !== undefined) {
         return;
       }
@@ -689,9 +872,13 @@ function useComboBoxModel<T>(
       return;
     }
 
-    const nextItem = collectionDecoratedItems.find(
-      (item) => itemKey(item) === String(key),
-    );
+    if (value === undefined) {
+      uncontrolledSelectedKeyRef.current = String(key);
+    }
+
+    const nextItem =
+      collectionDecoratedItems.find((item) => itemKey(item) === String(key)) ??
+      decoratedItems.find((item) => itemKey(item) === String(key));
     const nextValue =
       nextItem?.item ??
       (value !== undefined &&
@@ -708,6 +895,7 @@ function useComboBoxModel<T>(
   return {
     collectionItems,
     controlledTextValue,
+    currentTextValue,
     defaultSelectedKey,
     defaultTextValue,
     handleInputChange,
@@ -736,6 +924,7 @@ function ComboBoxBase<T>({ props }: Readonly<{ props: ComboBoxProps<T> }>) {
     form,
     getItem,
     id,
+    items,
     label,
     loading = false,
     name,
@@ -792,8 +981,15 @@ function ComboBoxBase<T>({ props }: Readonly<{ props: ComboBoxProps<T> }>) {
         )}
         ref={groupRef}
       >
-        <AriaInput
-          aria-busy={loading || undefined}
+        <ComboBoxReadOnlyReset
+          allowsCustomValue={allowsCustomValue}
+          currentTextValue={model.currentTextValue}
+          isControlled={value !== undefined}
+          isReadOnly={readOnly}
+          resetTextValue={model.defaultTextValue ?? ''}
+        />
+        <ComboBoxInput
+          allowsCustomValue={allowsCustomValue}
           aria-describedby={supportingIds}
           autoComplete={autoComplete}
           autoFocus={autoFocus}
@@ -801,9 +997,13 @@ function ComboBoxBase<T>({ props }: Readonly<{ props: ComboBoxProps<T> }>) {
             variants.base.input,
             loading && variants.state.loadingInput,
           )}
+          disabled={interactionDisabled}
           form={form}
+          getItem={getItem}
+          items={items}
+          loading={loading}
           placeholder={placeholder}
-          readOnly={readOnly || undefined}
+          readOnly={readOnly}
         />
         <AriaButton
           aria-describedby={supportingIds}

@@ -439,6 +439,7 @@ export function Select<T>({
           // eslint-disable-next-line react/jsx-props-no-spreading
           {...mergeProps(buttonProps, focusProps, hoverProps)}
           aria-controls={buttonProps['aria-controls']}
+          aria-busy={loading || undefined}
           aria-expanded={buttonProps['aria-expanded']}
           aria-labelledby={triggerLabelledBy}
           aria-readonly={readOnly || undefined}
