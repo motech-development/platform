@@ -17,6 +17,15 @@ import {
 const triggerBoundaryError =
   'Breeze overlay triggers and portal containers must belong to the current document and light DOM.';
 
+function isNode(value: EventTarget | null): value is Node {
+  return (
+    value !== null &&
+    typeof value === 'object' &&
+    'nodeType' in value &&
+    typeof (value as Node).contains === 'function'
+  );
+}
+
 interface CollectionPopoverProps {
   children: ReactNode;
   className: string;
@@ -42,16 +51,19 @@ export default function CollectionPopover({
   const [portalReady, setPortalReady] = useState(parent === null);
   const [surfaceMounted, setSurfaceMounted] = useState(false);
   const parentCloseReportedRef = useRef(false);
+  const surfaceRef = useRef<Element | null>(null);
+  const pointerDownTargetRef = useRef<Node | null>(null);
+  const pointerDismissTargetRef = useRef<Node | null>(null);
   const open = requestedOpen && parentOpen;
   const layer = useOverlayLayer(
     'popover',
     open && portalReady && host !== null,
     open || surfaceMounted,
   );
-  const handleSurfaceRef = useCallback(
-    (element: Element | null) => setSurfaceMounted(element !== null),
-    [],
-  );
+  const handleSurfaceRef = useCallback((element: Element | null) => {
+    surfaceRef.current = element;
+    setSurfaceMounted(element !== null);
+  }, []);
 
   useLayoutEffect(() => {
     if (
@@ -67,6 +79,69 @@ export default function CollectionPopover({
   });
 
   useEffect(() => setPortalReady(true), []);
+  useEffect(() => {
+    if (!open || !layer.topmost || !host) return undefined;
+
+    const isOutside = (target: Node | null) =>
+      isNode(target) &&
+      !surfaceRef.current?.contains(target) &&
+      !triggerRef.current?.contains(target);
+    const sameTarget = (left: Node | null, right: Node | null) =>
+      !!left &&
+      !!right &&
+      (left === right || left.contains(right) || right.contains(left));
+    const isPrimaryPointer = (event: PointerEvent) => event.button === 0;
+    const onPointerDown = (event: PointerEvent) => {
+      if (!isPrimaryPointer(event)) return;
+      pointerDownTargetRef.current = isNode(event.target) ? event.target : null;
+      pointerDismissTargetRef.current = null;
+    };
+    const onPointerUp = (event: PointerEvent) => {
+      if (!isPrimaryPointer(event)) return;
+      const pointerDownTarget = pointerDownTargetRef.current;
+      const pointerUpTarget = isNode(event.target) ? event.target : null;
+      if (!isOutside(pointerDownTarget) || !isOutside(pointerUpTarget)) return;
+      pointerDismissTargetRef.current = pointerUpTarget;
+      onOpenChange(false);
+    };
+    const onPointerCancel = () => {
+      pointerDownTargetRef.current = null;
+      pointerDismissTargetRef.current = null;
+    };
+    const onClick = (event: MouseEvent) => {
+      const target = isNode(event.target) ? event.target : null;
+      if (
+        isOutside(target) &&
+        !sameTarget(pointerDismissTargetRef.current, target)
+      ) {
+        onOpenChange(false);
+      }
+      pointerDownTargetRef.current = null;
+      pointerDismissTargetRef.current = null;
+    };
+
+    host.ownerDocument.addEventListener('pointerdown', onPointerDown, true);
+    host.ownerDocument.addEventListener('pointerup', onPointerUp, true);
+    host.ownerDocument.addEventListener('pointercancel', onPointerCancel, true);
+    host.ownerDocument.addEventListener('click', onClick, true);
+    return () => {
+      host.ownerDocument.removeEventListener(
+        'pointerdown',
+        onPointerDown,
+        true,
+      );
+      host.ownerDocument.removeEventListener('pointerup', onPointerUp, true);
+      host.ownerDocument.removeEventListener(
+        'pointercancel',
+        onPointerCancel,
+        true,
+      );
+      host.ownerDocument.removeEventListener('click', onClick, true);
+      pointerDownTargetRef.current = null;
+      pointerDismissTargetRef.current = null;
+    };
+  }, [host, layer.topmost, onOpenChange, open, triggerRef]);
+
   useEffect(() => {
     if (parentOpen) {
       parentCloseReportedRef.current = false;
@@ -88,8 +163,12 @@ export default function CollectionPopover({
       isOpen={open}
       onOpenChange={onOpenChange}
       placement="bottom start"
+      // Defer pointer dismissal to Breeze's provider-document policy, while
+      // retaining React Aria's keyboard/focus dismissal behavior.
       shouldCloseOnInteractOutside={(element) =>
-        layer.topmost && !triggerRef.current?.contains(element)
+        pointerDownTargetRef.current === null &&
+        layer.topmost &&
+        !triggerRef.current?.contains(element)
       }
       style={{ zIndex: layer.zIndex }}
       triggerRef={triggerRef}

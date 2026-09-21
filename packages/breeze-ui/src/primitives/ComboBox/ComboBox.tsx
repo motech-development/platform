@@ -1,5 +1,13 @@
 import type { RefObject } from 'react';
-import { useContext, useEffect, useId, useMemo, useRef, useState } from 'react';
+import {
+  useContext,
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { Button as AriaButton } from 'react-aria-components/Button';
 import {
   ComboBox as AriaComboBox,
@@ -414,20 +422,32 @@ function useComboBoxModel<T>(
     controlledSelectionRef.current,
     allowsCustomValue,
   );
-  controlledSelectionRef.current = controlledSelectionUpdate.selection;
   const controlledSelection = controlledSelectionUpdate.selection;
   const isControlledCustomEcho =
     controlledSelectionUpdate.resetLabel !== undefined &&
     allowsCustomValue &&
     matchesControlledCustomValue(value, pendingCustomValueRef.current);
-  if (controlledSelectionUpdate.resetLabel !== undefined) {
+
+  useLayoutEffect(() => {
+    controlledSelectionRef.current = controlledSelection;
+  }, [controlledSelection]);
+
+  useLayoutEffect(() => {
+    if (controlledSelectionUpdate.resetLabel === undefined) return;
+
     if (isControlledCustomEcho) {
       pendingCustomValueRef.current = undefined;
     } else {
       selectionResetLabelRef.current = controlledSelectionUpdate.resetLabel;
       pendingCustomValueRef.current = undefined;
     }
-  }
+  }, [
+    controlledSelection?.id,
+    controlledSelection?.label,
+    controlledSelectionUpdate.resetLabel,
+    isControlledCustomEcho,
+  ]);
+
   const controlledSelectionChanged =
     controlledSelectionUpdate.resetLabel !== undefined &&
     !isControlledCustomEcho;
@@ -439,9 +459,11 @@ function useComboBoxModel<T>(
       controlledSelection,
     );
 
-  if (controlledInputDraft !== undefined && !hasControlledInputDraft) {
-    controlledDraftSelectionRef.current = null;
-  }
+  useLayoutEffect(() => {
+    if (controlledInputDraft !== undefined && !hasControlledInputDraft) {
+      controlledDraftSelectionRef.current = null;
+    }
+  }, [controlledInputDraft, hasControlledInputDraft]);
 
   const { contains } = useFilter({ sensitivity: 'base' });
   const visibleItems = getVisibleItems(
@@ -544,10 +566,17 @@ function useComboBoxModel<T>(
     const nextItem = decoratedItems.find(
       (item) => itemKey(item) === String(key),
     );
+    const nextValue =
+      nextItem?.item ??
+      (value !== undefined &&
+      key === selectedKey &&
+      !(typeof value === 'string' && allowsCustomValue)
+        ? (value as T)
+        : null);
     selectionResetLabelRef.current = nextItem?.descriptor.label ?? '';
     lastCustomChangeRef.current = undefined;
     resetInputDraft();
-    onChange?.(nextItem?.item ?? null);
+    onChange?.(nextValue);
   };
 
   return {

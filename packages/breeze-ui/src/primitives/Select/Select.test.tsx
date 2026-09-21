@@ -242,6 +242,81 @@ describe('Select', () => {
     });
   });
 
+  it('reconciles a removed uncontrolled selection with its form value', async () => {
+    const onChange = vi.fn<(value: (typeof choices)[number] | null) => void>();
+    const { rerender } = renderBreeze(
+      <form aria-label="Payment form">
+        <Select
+          defaultValue={choices[0]}
+          getItem={getItem}
+          items={choices}
+          label="Payment method"
+          name="payment"
+          onChange={onChange}
+          placeholder="Choose a method"
+        />
+      </form>,
+    );
+
+    const form = document.forms[0];
+    expect(new FormData(form).get('payment')).toBe('bank');
+
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <form aria-label="Payment form">
+          <Select
+            defaultValue={choices[0]}
+            getItem={getItem}
+            items={[choices[1]]}
+            label="Payment method"
+            name="payment"
+            onChange={onChange}
+            placeholder="Choose a method"
+          />
+        </form>
+      </BreezeProvider>,
+    );
+
+    await waitFor(() => {
+      expect(onChange).toHaveBeenCalledWith(null);
+      expect(new FormData(document.forms[0]).get('payment')).toBe('');
+    });
+  });
+
+  it.each(['disabled', 'loading', 'readOnly'] as const)(
+    'closes an open listbox when rerendered %s',
+    async (state) => {
+      const user = userEvent.setup();
+      const { rerender } = renderBreeze(
+        <Select getItem={getItem} items={choices} label="Payment method" />,
+      );
+
+      const trigger = screen.getByRole('combobox', {
+        name: 'Payment method',
+      });
+      await user.click(trigger);
+      expect(screen.getByRole('listbox')).toBeInTheDocument();
+
+      rerender(
+        <BreezeProvider locale="en-GB">
+          <Select
+            disabled={state === 'disabled'}
+            getItem={getItem}
+            items={choices}
+            label="Payment method"
+            loading={state === 'loading'}
+            readOnly={state === 'readOnly'}
+          />
+        </BreezeProvider>,
+      );
+
+      await waitFor(() => {
+        expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+        expect(trigger).toHaveAttribute('aria-expanded', 'false');
+      });
+    },
+  );
+
   it('derives invalid semantics and preserves its shape while loading', () => {
     renderBreeze(
       <Select
