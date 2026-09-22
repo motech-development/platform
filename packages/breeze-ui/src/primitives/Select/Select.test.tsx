@@ -669,8 +669,8 @@ describe('Select', () => {
 
   it('restores the uncontrolled default selection and submitted value on form reset', async () => {
     const user = userEvent.setup();
-    const onChange = vi.fn<(value: (typeof choices)[number] | null) => void>();
-    const resetChoices = choices.map((choice) => ({
+    const onChange = vi.fn<(value: ItemDescriptor | null) => void>();
+    const resetChoices: ItemDescriptor[] = choices.map((choice) => ({
       ...choice,
       disabled: false,
     }));
