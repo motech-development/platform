@@ -280,6 +280,17 @@ function ComboBoxReadOnlyReset({
     const committedOnBlur =
       state !== null && wasFocused.current && !state.isFocused;
 
+    if (
+      !allowsCustomValue &&
+      state &&
+      !isControlled &&
+      state.value !== null &&
+      state.inputValue === '' &&
+      state.inputValue !== currentTextValue
+    ) {
+      state.setInputValue(currentTextValue);
+    }
+
     if (allowsCustomValue && state && !isReadOnly && state.value === null) {
       const committedOnClose = wasOpen.current && !state.isOpen;
 
@@ -301,7 +312,7 @@ function ComboBoxReadOnlyReset({
 
     wasFocused.current = state?.isFocused ?? false;
     wasOpen.current = state?.isOpen ?? false;
-  }, [allowsCustomValue, currentTextValue, isReadOnly, state]);
+  }, [allowsCustomValue, currentTextValue, isControlled, isReadOnly, state]);
 
   useLayoutEffect(() => {
     if (isReadOnly && !wasReadOnly.current) {
@@ -547,7 +558,6 @@ interface ComboBoxModel<T> {
   handleValueChange: (key: ComboBoxChangeKey) => void;
   matchesFilter: (textValue: string) => boolean;
   selectedKey: string | null;
-  visibleItems: T[];
 }
 
 function useComboBoxModel<T>(
@@ -585,6 +595,7 @@ function useComboBoxModel<T>(
   const pendingCustomValueRef = useRef<string | null | undefined>(undefined);
   const selectionResetLabelRef = useRef<string | null>(null);
   const lastCustomChangeRef = useRef<ComboBoxValue<T> | undefined>(undefined);
+  const autoClosedNoResultsRef = useRef(false);
   const wasReadOnly = useRef(readOnly);
 
   useLayoutEffect(() => {
@@ -726,12 +737,6 @@ function useComboBoxModel<T>(
 
   const { contains } = useFilter({ sensitivity: 'base' });
   const effectiveFilterText = controlledSelectionChanged ? '' : filterText;
-  const visibleItems = getVisibleItems(
-    items,
-    decoratedItems,
-    effectiveFilterText,
-    contains,
-  );
   const collectionItems = items;
   const collectionDecoratedItems = decoratedItems;
   const controlledTextValue = hasControlledInputDraft
@@ -755,10 +760,21 @@ function useComboBoxModel<T>(
     setControlledInputDraft(undefined);
     controlledDraftSelectionRef.current = null;
     pendingCustomValueRef.current = undefined;
+    autoClosedNoResultsRef.current = false;
   };
 
   const handleOpenChange = (isOpen: boolean) => {
     if (!isOpen) {
+      if (
+        value !== undefined &&
+        !allowsCustomValue &&
+        autoClosedNoResultsRef.current &&
+        controlledInputDraft !== undefined
+      ) {
+        autoClosedNoResultsRef.current = false;
+        return;
+      }
+
       resetInputDraft();
     }
   };
@@ -791,6 +807,11 @@ function useComboBoxModel<T>(
       setControlledInputDraft(inputValue);
       controlledDraftSelectionRef.current = controlledSelection;
     }
+
+    autoClosedNoResultsRef.current =
+      value !== undefined &&
+      !allowsCustomValue &&
+      getVisibleItems(items, decoratedItems, inputValue, contains).length === 0;
 
     if (props.allowsCustomValue !== true) {
       if (inputValue === '' && value !== undefined) {
@@ -839,12 +860,17 @@ function useComboBoxModel<T>(
       uncontrolledSelectedKeyRef.current = String(key);
     }
 
+    let fallbackItem: ComboBoxItem<T> | undefined;
+    if (initialControlledItem?.descriptor.id === String(key)) {
+      fallbackItem = initialControlledItem;
+    } else if (defaultSelectedItem?.descriptor.id === String(key)) {
+      fallbackItem = defaultSelectedItem;
+    }
+
     const nextItem =
       collectionDecoratedItems.find((item) => itemKey(item) === String(key)) ??
       decoratedItems.find((item) => itemKey(item) === String(key)) ??
-      (initialControlledItem?.descriptor.id === String(key)
-        ? initialControlledItem
-        : undefined);
+      fallbackItem;
 
     if (value === undefined) {
       uncontrolledSelectedItemRef.current = nextItem;
@@ -874,7 +900,6 @@ function useComboBoxModel<T>(
     matchesFilter: (textValue) =>
       contains(textValue, effectiveFilterText.trim()),
     selectedKey,
-    visibleItems,
   };
 }
 
@@ -1000,7 +1025,7 @@ function ComboBoxBase<T>({ props }: Readonly<{ props: ComboBoxProps<T> }>) {
       <ComboBoxPopover
         allowsCustomValue={allowsCustomValue}
         getItem={getItem}
-        hasSuggestions={model.visibleItems.length > 0}
+        hasSuggestions={model.collectionItems.length > 0}
         isDisabled={interactionDisabled}
         isReadOnly={readOnly}
         items={model.collectionItems}
