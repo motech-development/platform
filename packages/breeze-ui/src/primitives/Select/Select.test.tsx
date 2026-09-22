@@ -669,6 +669,7 @@ describe('Select', () => {
 
   it('restores the uncontrolled default selection and submitted value on form reset', async () => {
     const user = userEvent.setup();
+    const onChange = vi.fn<(value: (typeof choices)[number] | null) => void>();
     const resetChoices = choices.map((choice) => ({
       ...choice,
       disabled: false,
@@ -688,6 +689,7 @@ describe('Select', () => {
             items={resetChoices}
             label="Payment method"
             name="payment"
+            onChange={onChange}
           />
         </form>
       );
@@ -704,6 +706,7 @@ describe('Select', () => {
     await user.click(trigger);
     await user.click(screen.getByRole('option', { name: /Cash/ }));
     expect(new FormData(form).get('payment')).toBe('cash');
+    onChange.mockClear();
 
     fireEvent.reset(form);
 
@@ -711,6 +714,7 @@ describe('Select', () => {
       expect(trigger).toHaveTextContent('Bank account');
       expect(new FormData(form).get('payment')).toBe('bank');
     });
+    expect(onChange).not.toHaveBeenCalled();
   });
 
   it('does not restore the uncontrolled default selection when form reset is canceled', async () => {

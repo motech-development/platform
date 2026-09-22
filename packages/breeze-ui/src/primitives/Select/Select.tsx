@@ -461,7 +461,12 @@ export function Select<T>({
       queueMicrotask(() => {
         if (event.defaultPrevented) return;
 
-        setStateValueRef.current(initialDefaultValueRef.current);
+        suppressOnChangeRef.current = true;
+        try {
+          setStateValueRef.current(initialDefaultValueRef.current);
+        } finally {
+          suppressOnChangeRef.current = false;
+        }
       });
     };
     associatedForm.addEventListener('reset', reset);
