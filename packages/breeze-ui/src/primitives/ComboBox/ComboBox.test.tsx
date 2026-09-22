@@ -1,4 +1,10 @@
-import { act, fireEvent, screen, within } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { startTransition, Suspense, useState } from 'react';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
@@ -754,6 +760,70 @@ describe('ComboBox', () => {
     expect(new FormData(document.forms[0]).get('supplier')).toBe('brass');
   });
 
+  it('preserves a live uncontrolled selection after its item is removed', async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn<(value: Supplier | null) => void>();
+    const { rerender } = renderBreeze(
+      <form aria-label="Supplier form">
+        <ComboBox
+          getItem={getItem}
+          items={suppliers}
+          label="Supplier"
+          name="supplier"
+          onChange={onChange}
+        />
+      </form>,
+    );
+
+    const input = screen.getByRole('combobox', { name: 'Supplier' });
+    await user.click(screen.getByRole('button', { name: /Show suggestions/ }));
+    await user.click(screen.getByRole('option', { name: /Brass & Co/ }));
+    expect(new FormData(document.forms[0]).get('supplier')).toBe('brass');
+
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <form aria-label="Supplier form">
+          <ComboBox
+            getItem={getItem}
+            items={[suppliers[0], suppliers[2]]}
+            label="Supplier"
+            name="supplier"
+            onChange={onChange}
+          />
+        </form>
+      </BreezeProvider>,
+    );
+
+    await user.click(input);
+    await user.tab();
+
+    expect(input).toHaveValue('Brass & Co');
+    expect(new FormData(document.forms[0]).get('supplier')).toBe('brass');
+    expect(onChange).toHaveBeenCalledTimes(1);
+  });
+
+  it('announces the number of filtered suggestions', async () => {
+    const user = userEvent.setup();
+
+    renderBreeze(
+      <ComboBox getItem={getItem} items={suppliers} label="Supplier" />,
+    );
+
+    await user.type(
+      screen.getByRole('combobox', { name: 'Supplier' }),
+      ' Brass ',
+    );
+
+    await waitFor(() => {
+      const liveLog = document.querySelector(
+        '[data-live-announcer="true"] [aria-live="assertive"]',
+      );
+      const latestAnnouncement = liveLog?.lastElementChild;
+
+      expect(latestAnnouncement).toHaveTextContent('1 option available.');
+    });
+  });
+
   it('keeps free text distinct from string items', async () => {
     const user = userEvent.setup();
     const onChange = vi.fn<(value: string | null) => void>();
@@ -1000,6 +1070,27 @@ describe('ComboBox', () => {
     expect(screen.getByRole('progressbar', { name: 'Loading' })).toBeVisible();
 
     await user.type(input, 'changed');
+  });
+
+  it('uses the shared touch target and read-only surface styles', () => {
+    renderBreeze(
+      <ComboBox
+        defaultValue={suppliers[0]}
+        getItem={getItem}
+        items={suppliers}
+        label="Supplier"
+        readOnly
+      />,
+    );
+
+    const group = screen
+      .getByRole('combobox', { name: 'Supplier' })
+      .closest('[role="group"]');
+
+    expect(group).toHaveClass(
+      'breeze:any-pointer-coarse:min-block-breeze-tap',
+      'breeze:bg-breeze-sunken',
+    );
   });
 
   it.each([
@@ -1594,6 +1685,49 @@ describe('ComboBox', () => {
     expect(onChange).toHaveBeenCalledTimes(1);
     expect(onChange).toHaveBeenLastCalledWith(missingSupplier);
     expect(onChange).not.toHaveBeenCalledWith(null);
+  });
+
+  it('restores the initial controlled off-list value on form reset', async () => {
+    const user = userEvent.setup();
+    const initialSupplier = { id: 'remote', label: 'Remote supplier' };
+    const currentSupplier = { id: 'current', label: 'Current supplier' };
+
+    function ControlledResetComboBox() {
+      const [value, setValue] = useState(initialSupplier);
+
+      return (
+        <form aria-label="Supplier form">
+          <ComboBox
+            getItem={(item) => item}
+            items={[currentSupplier]}
+            label="Supplier"
+            name="supplier"
+            onChange={(nextValue) => {
+              if (nextValue !== null) setValue(nextValue);
+            }}
+            value={value}
+          />
+          <button type="button" onClick={() => setValue(currentSupplier)}>
+            Use current supplier
+          </button>
+        </form>
+      );
+    }
+
+    renderBreeze(<ControlledResetComboBox />);
+
+    const input = screen.getByRole('combobox', { name: 'Supplier' });
+    await user.click(
+      screen.getByRole('button', { name: 'Use current supplier' }),
+    );
+    expect(input).toHaveValue('Current supplier');
+
+    fireEvent.reset(document.forms[0]);
+
+    await waitFor(() => {
+      expect(input).toHaveValue('Remote supplier');
+      expect(new FormData(document.forms[0]).get('supplier')).toBe('remote');
+    });
   });
 
   it.each([
