@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { useEffect, useId, useLayoutEffect, useMemo, useRef } from 'react';
+import { useId, useLayoutEffect, useMemo, useRef } from 'react';
 import { mergeProps } from 'react-aria/mergeProps';
 import { useButton } from 'react-aria/useButton';
 import { useFocusRing } from 'react-aria/useFocusRing';
@@ -313,12 +313,12 @@ export function Select<T>({
   const initialDefaultValueRef = useRef(
     defaultValueKey ?? pendingDefaultValueRef.current,
   );
-  const resetValueRef = useRef<string | null>(null);
-  resetValueRef.current = decoratedItems.some(
+  const hasInitialDefault = decoratedItems.some(
     ({ descriptor }) => descriptor.id === initialDefaultValueRef.current,
-  )
-    ? initialDefaultValueRef.current
-    : null;
+  );
+  const resetValue =
+    loading || hasInitialDefault ? initialDefaultValueRef.current : null;
+  const resetValueRef = useRef(resetValue);
   const suppressOnChangeRef = useRef(false);
   const collectionChildren = useMemo(
     () =>
@@ -362,7 +362,6 @@ export function Select<T>({
   const setStateValueRef = useRef((nextValue: string | null) =>
     state.setValue(nextValue),
   );
-  setStateValueRef.current = (nextValue) => state.setValue(nextValue);
   const { menuProps, triggerProps, valueProps } = useSelect(
     {
       'aria-describedby': supportingIds,
@@ -422,6 +421,11 @@ export function Select<T>({
       ).join(' ') || undefined;
 
   useLayoutEffect(() => {
+    resetValueRef.current = resetValue;
+    setStateValueRef.current = (nextValue) => state.setValue(nextValue);
+  }, [resetValue, state]);
+
+  useLayoutEffect(() => {
     if ((decoratedItems.length === 0 || stateDisabled) && state.isOpen) {
       state.setOpen(false);
     }
@@ -461,18 +465,25 @@ export function Select<T>({
     }
   }, [decoratedItems, isControlled, loading, state]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (isControlled) return undefined;
 
-    const associatedForm = form
-      ? document.getElementById(form)
-      : triggerRef.current?.form;
-
-    if (!(associatedForm instanceof HTMLFormElement)) return undefined;
+    let active = true;
 
     const reset = (event: Event) => {
+      const associatedForm = form
+        ? document.getElementById(form)
+        : triggerRef.current?.form;
+
+      if (
+        !(associatedForm instanceof HTMLFormElement) ||
+        event.target !== associatedForm
+      ) {
+        return;
+      }
+
       queueMicrotask(() => {
-        if (event.defaultPrevented) return;
+        if (!active || event.defaultPrevented) return;
 
         suppressOnChangeRef.current = true;
         try {
@@ -482,9 +493,12 @@ export function Select<T>({
         }
       });
     };
-    associatedForm.addEventListener('reset', reset);
+    document.addEventListener('reset', reset, true);
 
-    return () => associatedForm.removeEventListener('reset', reset);
+    return () => {
+      active = false;
+      document.removeEventListener('reset', reset, true);
+    };
   }, [form, isControlled]);
 
   return (
