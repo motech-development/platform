@@ -233,6 +233,22 @@ describe('ComboBox', () => {
     expect(input).toHaveValue('Acme Supplies');
   });
 
+  it('applies the public id to the native input', () => {
+    renderBreeze(
+      <ComboBox
+        getItem={getItem}
+        id="supplier-input"
+        items={suppliers}
+        label="Supplier"
+      />,
+    );
+
+    expect(screen.getByRole('combobox', { name: 'Supplier' })).toHaveAttribute(
+      'id',
+      'supplier-input',
+    );
+  });
+
   it('commits an exact non-custom item from browser autofill only', async () => {
     const user = userEvent.setup();
     const onChange = vi.fn<(value: Supplier | null) => void>();
@@ -482,6 +498,28 @@ describe('ComboBox', () => {
     expect(screen.getByRole('listbox')).toBeInTheDocument();
   });
 
+  it('reopens the original collection after a query has no matches', async () => {
+    const user = userEvent.setup();
+
+    renderBreeze(
+      <ComboBox getItem={getItem} items={suppliers} label="Supplier" />,
+    );
+
+    const input = screen.getByRole('combobox', { name: 'Supplier' });
+    await user.type(input, 'No matching supplier');
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: /Show suggestions/ }));
+
+    const listbox = screen.getByRole('listbox');
+    expect(
+      within(listbox).getByRole('option', { name: /Acme Supplies/ }),
+    ).toBeVisible();
+    expect(
+      within(listbox).getByRole('option', { name: /Brass & Co/ }),
+    ).toBeVisible();
+  });
+
   it('treats restricted string values as descriptor-backed items', () => {
     const drinks = ['Tea', 'Coffee'];
     const getDrinkItem = (item: string) => ({
@@ -677,6 +715,41 @@ describe('ComboBox', () => {
     await user.tab();
 
     expect(input).toHaveValue('Remote drink');
+  });
+
+  it('reports an off-list uncontrolled default on form reset', async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn<(value: string | null) => void>();
+    const drinks = ['Tea', 'Coffee'];
+    const getDrinkItem = (item: string) => ({
+      id: item.toLowerCase(),
+      label: item === 'Remote' ? 'Remote drink' : `${item} drink`,
+    });
+
+    renderBreeze(
+      <form aria-label="Drink form">
+        <ComboBox
+          defaultValue="Remote"
+          getItem={getDrinkItem}
+          items={drinks}
+          label="Drink"
+          name="drink"
+          onChange={onChange}
+        />
+        <button type="button">Next</button>
+      </form>,
+    );
+
+    const input = screen.getByRole('combobox', { name: 'Drink' });
+    await user.clear(input);
+    onChange.mockClear();
+
+    fireEvent.reset(document.forms[0]);
+
+    await waitFor(() => {
+      expect(input).toHaveValue('Remote drink');
+      expect(onChange).toHaveBeenLastCalledWith('Remote');
+    });
   });
 
   it('preserves an in-list uncontrolled selection through filtering and blur', async () => {
@@ -1252,6 +1325,39 @@ describe('ComboBox', () => {
     ).not.toBeInTheDocument();
     expect(onChange).toHaveBeenCalledTimes(1);
     expect(onChange).toHaveBeenLastCalledWith(null);
+  });
+
+  it('retains a controlled non-custom query after an automatic no-match close', async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn<(value: Supplier | null) => void>();
+
+    renderBreeze(
+      <>
+        <ComboBox
+          getItem={getItem}
+          items={suppliers}
+          label="Supplier"
+          onChange={onChange}
+          value={suppliers[0]}
+        />
+        <button type="button">Next</button>
+      </>,
+    );
+
+    const input = screen.getByRole('combobox', { name: 'Supplier' });
+    await user.click(input);
+    await user.clear(input);
+    await user.type(input, 'No matching supplier');
+
+    expect(input).toHaveValue('No matching supplier');
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: /Show suggestions/ }));
+    expect(screen.getByRole('listbox')).toBeInTheDocument();
+
+    await user.keyboard('{Escape}');
+
+    expect(input).toHaveValue('Acme Supplies');
   });
 
   it('keeps filtering while controlled custom text echoes through onChange', async () => {

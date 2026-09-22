@@ -152,6 +152,14 @@ function findItem<T>(
   );
 }
 
+function findUniqueAutofillItem<T>(items: SelectItem<T>[], value: string) {
+  const matches = items.filter(
+    ({ descriptor }) => descriptor.id === value || descriptor.label === value,
+  );
+
+  return matches.length === 1 ? matches[0] : undefined;
+}
+
 function SelectOption<T>({
   node,
   state,
@@ -305,6 +313,12 @@ export function Select<T>({
   const initialDefaultValueRef = useRef(
     defaultValueKey ?? pendingDefaultValueRef.current,
   );
+  const resetValueRef = useRef<string | null>(null);
+  resetValueRef.current = decoratedItems.some(
+    ({ descriptor }) => descriptor.id === initialDefaultValueRef.current,
+  )
+    ? initialDefaultValueRef.current
+    : null;
   const suppressOnChangeRef = useRef(false);
   const collectionChildren = useMemo(
     () =>
@@ -381,9 +395,7 @@ export function Select<T>({
       return;
     }
 
-    const nextItem = decoratedItems.find(
-      ({ descriptor }) => descriptor.id === nextValue,
-    );
+    const nextItem = findUniqueAutofillItem(decoratedItems, nextValue);
 
     if (!nextItem || nextItem.descriptor.disabled) {
       if (autofillRef.current) {
@@ -441,12 +453,13 @@ export function Select<T>({
   useLayoutEffect(() => {
     if (
       !isControlled &&
+      !loading &&
       state.value !== null &&
       !decoratedItems.some(({ descriptor }) => descriptor.id === state.value)
     ) {
       state.setValue(null);
     }
-  }, [decoratedItems, isControlled, state]);
+  }, [decoratedItems, isControlled, loading, state]);
 
   useEffect(() => {
     if (isControlled) return undefined;
@@ -463,7 +476,7 @@ export function Select<T>({
 
         suppressOnChangeRef.current = true;
         try {
-          setStateValueRef.current(initialDefaultValueRef.current);
+          setStateValueRef.current(resetValueRef.current);
         } finally {
           suppressOnChangeRef.current = false;
         }

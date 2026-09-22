@@ -245,6 +245,73 @@ describe('Select', () => {
     expect(screen.getByRole('combobox')).toHaveTextContent('Bank account');
   });
 
+  it('maps a unique descriptor label from browser autofill', () => {
+    const onChange = vi.fn<(value: (typeof choices)[number] | null) => void>();
+
+    renderBreeze(
+      <form aria-label="Payment form">
+        <Select
+          autoComplete="organization"
+          getItem={getItem}
+          items={choices}
+          label="Payment method"
+          name="payment"
+          onChange={onChange}
+        />
+      </form>,
+    );
+
+    const surrogate = document.querySelector<HTMLInputElement>(
+      'input[name="payment"]',
+    );
+
+    fireEvent.input(surrogate as HTMLInputElement, {
+      target: { value: choices[0].label },
+    });
+
+    expect(onChange).toHaveBeenCalledWith(choices[0]);
+    expect(surrogate).toHaveValue(choices[0].id);
+    expect(screen.getByRole('combobox')).toHaveTextContent(choices[0].label);
+  });
+
+  it('rejects ambiguous descriptor labels from browser autofill', () => {
+    const ambiguousChoices = choices.map((choice) => ({
+      ...choice,
+      disabled: false,
+      label: 'Shared payment method',
+    }));
+    const onChange =
+      vi.fn<(value: (typeof ambiguousChoices)[number] | null) => void>();
+
+    renderBreeze(
+      <form aria-label="Payment form">
+        <Select
+          autoComplete="organization"
+          defaultValue={ambiguousChoices[0]}
+          getItem={(item) => item}
+          items={ambiguousChoices}
+          label="Payment method"
+          name="payment"
+          onChange={onChange}
+        />
+      </form>,
+    );
+
+    const surrogate = document.querySelector<HTMLInputElement>(
+      'input[name="payment"]',
+    );
+
+    fireEvent.input(surrogate as HTMLInputElement, {
+      target: { value: 'Shared payment method' },
+    });
+
+    expect(onChange).not.toHaveBeenCalled();
+    expect(surrogate).toHaveValue(ambiguousChoices[0].id);
+    expect(screen.getByRole('combobox')).toHaveTextContent(
+      'Shared payment method',
+    );
+  });
+
   it('restores its semantic value for unmatched browser autofill values', () => {
     const onChange = vi.fn<(value: (typeof choices)[number] | null) => void>();
 
@@ -583,6 +650,145 @@ describe('Select', () => {
     expect(onChange).not.toHaveBeenCalled();
   });
 
+  it('retains an uncontrolled selection while a loading collection is empty', async () => {
+    const user = userEvent.setup();
+    const selectionChoices = choices.map((choice) => ({
+      ...choice,
+      disabled: false,
+    }));
+    const onChange =
+      vi.fn<(value: (typeof selectionChoices)[number] | null) => void>();
+    const { rerender } = renderBreeze(
+      <form aria-label="Payment form">
+        <Select
+          defaultValue={selectionChoices[0]}
+          getItem={(item) => item}
+          items={selectionChoices}
+          label="Payment method"
+          loading={false}
+          name="payment"
+          onChange={onChange}
+        />
+      </form>,
+    );
+
+    const trigger = screen.getByRole('combobox', {
+      name: 'Bank account Payment method',
+    });
+    await user.click(trigger);
+    await user.click(screen.getByRole('option', { name: /Cash/ }));
+    onChange.mockClear();
+
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <form aria-label="Payment form">
+          <Select
+            defaultValue={selectionChoices[0]}
+            getItem={(item) => item}
+            items={[]}
+            label="Payment method"
+            loading
+            name="payment"
+            onChange={onChange}
+          />
+        </form>
+      </BreezeProvider>,
+    );
+
+    expect(onChange).not.toHaveBeenCalled();
+
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <form aria-label="Payment form">
+          <Select
+            defaultValue={selectionChoices[0]}
+            getItem={(item) => item}
+            items={selectionChoices}
+            label="Payment method"
+            loading={false}
+            name="payment"
+            onChange={onChange}
+          />
+        </form>
+      </BreezeProvider>,
+    );
+
+    await waitFor(() => {
+      expect(trigger).toHaveTextContent('Cash');
+      expect(new FormData(document.forms[0]).get('payment')).toBe('cash');
+    });
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it('reconciles an unavailable uncontrolled selection when loading completes', async () => {
+    const user = userEvent.setup();
+    const selectionChoices = choices.map((choice) => ({
+      ...choice,
+      disabled: false,
+    }));
+    const onChange =
+      vi.fn<(value: (typeof selectionChoices)[number] | null) => void>();
+    const { rerender } = renderBreeze(
+      <form aria-label="Payment form">
+        <Select
+          defaultValue={selectionChoices[0]}
+          getItem={(item) => item}
+          items={selectionChoices}
+          label="Payment method"
+          loading={false}
+          name="payment"
+          onChange={onChange}
+        />
+      </form>,
+    );
+
+    const trigger = screen.getByRole('combobox', {
+      name: 'Bank account Payment method',
+    });
+    await user.click(trigger);
+    await user.click(screen.getByRole('option', { name: /Cash/ }));
+    onChange.mockClear();
+
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <form aria-label="Payment form">
+          <Select
+            defaultValue={selectionChoices[0]}
+            getItem={(item) => item}
+            items={[]}
+            label="Payment method"
+            loading
+            name="payment"
+            onChange={onChange}
+          />
+        </form>
+      </BreezeProvider>,
+    );
+    expect(onChange).not.toHaveBeenCalled();
+
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <form aria-label="Payment form">
+          <Select
+            defaultValue={selectionChoices[0]}
+            getItem={(item) => item}
+            items={[selectionChoices[0]]}
+            label="Payment method"
+            loading={false}
+            name="payment"
+            onChange={onChange}
+            placeholder="Choose a method"
+          />
+        </form>
+      </BreezeProvider>,
+    );
+
+    await waitFor(() => {
+      expect(onChange).toHaveBeenCalledWith(null);
+      expect(new FormData(document.forms[0]).get('payment')).toBe('');
+    });
+  });
+
   it.each(['disabled', 'loading'] as const)(
     'excludes named %s controls from form data',
     (state) => {
@@ -756,6 +962,60 @@ describe('Select', () => {
 
     expect(trigger).toHaveTextContent('Cash');
     expect(new FormData(form).get('payment')).toBe('cash');
+  });
+
+  it('does not emit when reset clears a removed uncontrolled default', async () => {
+    const user = userEvent.setup();
+    const resetChoices = choices.map((choice) => ({
+      ...choice,
+      disabled: false,
+    }));
+    const onChange = vi.fn<(value: ItemDescriptor | null) => void>();
+
+    const { rerender } = renderBreeze(
+      <form aria-label="Payment form">
+        <Select
+          defaultValue={resetChoices[0]}
+          getItem={(item) => item}
+          items={resetChoices}
+          label="Payment method"
+          name="payment"
+          onChange={onChange}
+          placeholder="Choose a method"
+        />
+      </form>,
+    );
+
+    const trigger = screen.getByRole('combobox', {
+      name: 'Bank account Payment method',
+    });
+    await user.click(trigger);
+    await user.click(screen.getByRole('option', { name: /Cash/ }));
+    onChange.mockClear();
+
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <form aria-label="Payment form">
+          <Select
+            defaultValue={resetChoices[0]}
+            getItem={(item) => item}
+            items={[resetChoices[1]]}
+            label="Payment method"
+            name="payment"
+            onChange={onChange}
+            placeholder="Choose a method"
+          />
+        </form>
+      </BreezeProvider>,
+    );
+
+    fireEvent.reset(document.forms[0]);
+
+    await waitFor(() => {
+      expect(trigger).toHaveTextContent('Choose a method');
+      expect(new FormData(document.forms[0]).get('payment')).toBe('');
+    });
+    expect(onChange).not.toHaveBeenCalled();
   });
 
   it('keeps read-only controls focusable and prevents opening or changing', async () => {
