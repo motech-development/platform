@@ -1,5 +1,6 @@
-import { fireEvent, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { useState } from 'react';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import renderBreeze from '../../../test/render';
 import { BreezeProvider } from '../../provider/BreezeProvider';
@@ -544,6 +545,44 @@ describe('Select', () => {
     expect(screen.getByRole('progressbar', { name: 'Loading' })).toBeVisible();
   });
 
+  it('selects an uncontrolled default when choices arrive after loading', async () => {
+    const defaultChoice = {
+      ...choices[0],
+      disabled: false,
+    };
+    const onChange = vi.fn();
+    const { rerender } = renderBreeze(
+      <Select
+        defaultValue={defaultChoice}
+        getItem={(item) => item}
+        items={[]}
+        label="Payment method"
+        loading
+        onChange={onChange}
+      />,
+    );
+
+    const trigger = screen.getByRole('combobox', { name: 'Payment method' });
+    expect(trigger).not.toHaveTextContent('Bank account');
+
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <Select
+          defaultValue={defaultChoice}
+          getItem={(item) => item}
+          items={[defaultChoice]}
+          label="Payment method"
+          onChange={onChange}
+        />
+      </BreezeProvider>,
+    );
+
+    await waitFor(() => {
+      expect(trigger).toHaveTextContent('Bank account');
+    });
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
   it.each(['disabled', 'loading'] as const)(
     'excludes named %s controls from form data',
     (state) => {
@@ -635,17 +674,26 @@ describe('Select', () => {
       disabled: false,
     }));
 
-    renderBreeze(
-      <form aria-label="Payment form">
-        <Select
-          defaultValue={resetChoices[0]}
-          getItem={(item) => item}
-          items={resetChoices}
-          label="Payment method"
-          name="payment"
-        />
-      </form>,
-    );
+    function ResettableSelect() {
+      const [, forceRender] = useState(0);
+
+      return (
+        <form
+          aria-label="Payment form"
+          onReset={() => forceRender((renderCount) => renderCount + 1)}
+        >
+          <Select
+            defaultValue={resetChoices[0]}
+            getItem={(item) => item}
+            items={resetChoices}
+            label="Payment method"
+            name="payment"
+          />
+        </form>
+      );
+    }
+
+    renderBreeze(<ResettableSelect />);
 
     const form = document.forms[0];
     const trigger = screen.getByRole('combobox', {
@@ -663,6 +711,47 @@ describe('Select', () => {
       expect(trigger).toHaveTextContent('Bank account');
       expect(new FormData(form).get('payment')).toBe('bank');
     });
+  });
+
+  it('does not restore the uncontrolled default selection when form reset is canceled', async () => {
+    const user = userEvent.setup();
+    const resetChoices = choices.map((choice) => ({
+      ...choice,
+      disabled: false,
+    }));
+
+    renderBreeze(
+      <form
+        aria-label="Payment form"
+        onReset={(event) => event.preventDefault()}
+      >
+        <Select
+          defaultValue={resetChoices[0]}
+          getItem={(item) => item}
+          items={resetChoices}
+          label="Payment method"
+          name="payment"
+        />
+      </form>,
+    );
+
+    const form = document.forms[0];
+    const trigger = screen.getByRole('combobox', {
+      name: 'Bank account Payment method',
+    });
+
+    await user.click(trigger);
+    await user.click(screen.getByRole('option', { name: /Cash/ }));
+    expect(new FormData(form).get('payment')).toBe('cash');
+
+    fireEvent.reset(form);
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(trigger).toHaveTextContent('Cash');
+    expect(new FormData(form).get('payment')).toBe('cash');
   });
 
   it('keeps read-only controls focusable and prevents opening or changing', async () => {

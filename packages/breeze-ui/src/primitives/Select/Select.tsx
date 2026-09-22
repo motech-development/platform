@@ -290,11 +290,22 @@ export function Select<T>({
     defaultValue ?? null,
     getItem,
   );
+  const pendingDefaultValueRef = useRef(
+    loading &&
+      defaultValue !== undefined &&
+      defaultValue !== null &&
+      defaultSelectedItem === undefined
+      ? getItem(defaultValue).id
+      : null,
+  );
   const controlledValueKey = isControlled
     ? selectedValueItem?.descriptor.id ?? null
     : undefined;
   const defaultValueKey = defaultSelectedItem?.descriptor.id ?? null;
-  const initialDefaultValueRef = useRef(defaultValueKey);
+  const initialDefaultValueRef = useRef(
+    defaultValueKey ?? pendingDefaultValueRef.current,
+  );
+  const suppressOnChangeRef = useRef(false);
   const collectionChildren = useMemo(
     () =>
       decoratedItems.map(({ descriptor, item }) => (
@@ -318,6 +329,8 @@ export function Select<T>({
     isRequired: required,
     items: decoratedItems,
     onChange: (key) => {
+      if (suppressOnChangeRef.current) return;
+
       if (key === null) {
         onChange?.(null);
         return;
@@ -332,6 +345,10 @@ export function Select<T>({
     validationBehavior: 'aria',
     value: controlledValueKey,
   });
+  const setStateValueRef = useRef((nextValue: string | null) =>
+    state.setValue(nextValue),
+  );
+  setStateValueRef.current = (nextValue) => state.setValue(nextValue);
   const { menuProps, triggerProps, valueProps } = useSelect(
     {
       'aria-describedby': supportingIds,
@@ -399,6 +416,29 @@ export function Select<T>({
   }, [decoratedItems.length, state, stateDisabled]);
 
   useLayoutEffect(() => {
+    const pendingDefaultValue = pendingDefaultValueRef.current;
+
+    if (
+      isControlled ||
+      state.value !== null ||
+      pendingDefaultValue === null ||
+      !decoratedItems.some(
+        ({ descriptor }) => descriptor.id === pendingDefaultValue,
+      )
+    ) {
+      return;
+    }
+
+    pendingDefaultValueRef.current = null;
+    suppressOnChangeRef.current = true;
+    try {
+      state.setValue(pendingDefaultValue);
+    } finally {
+      suppressOnChangeRef.current = false;
+    }
+  }, [decoratedItems, isControlled, state]);
+
+  useLayoutEffect(() => {
     if (
       !isControlled &&
       state.value !== null &&
@@ -417,11 +457,17 @@ export function Select<T>({
 
     if (!(associatedForm instanceof HTMLFormElement)) return undefined;
 
-    const reset = () => state.setValue(initialDefaultValueRef.current);
+    const reset = (event: Event) => {
+      queueMicrotask(() => {
+        if (event.defaultPrevented) return;
+
+        setStateValueRef.current(initialDefaultValueRef.current);
+      });
+    };
     associatedForm.addEventListener('reset', reset);
 
     return () => associatedForm.removeEventListener('reset', reset);
-  }, [form, isControlled, state]);
+  }, [form, isControlled]);
 
   return (
     <div className={fieldVariants.base.root}>
