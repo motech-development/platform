@@ -56,8 +56,12 @@ export const Error: Story = {
   },
 };
 
-/** Disabled descriptors remain visible but cannot be selected. */
-export const Disabled: Story = {};
+/** Disabled fields cannot be opened or changed. */
+export const Disabled: Story = {
+  args: {
+    disabled: true,
+  },
+};
 
 /** Loading keeps the control footprint while preventing interaction. */
 export const Loading: Story = {

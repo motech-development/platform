@@ -1,4 +1,4 @@
-import type { FormEvent, RefObject } from 'react';
+import type { RefObject, SyntheticEvent } from 'react';
 import {
   useContext,
   useEffect,
@@ -305,7 +305,7 @@ function ComboBoxReadOnlyReset({
 
   useLayoutEffect(() => {
     if (isReadOnly && !wasReadOnly.current) {
-      if (allowsCustomValue && state && state.value === null) {
+      if (allowsCustomValue && state?.value === null) {
         let resetValue = committedCustomValue.current;
         if (isControlled) {
           resetValue = currentTextValue;
@@ -363,7 +363,7 @@ function ComboBoxInput<T>({
   const state = useContext(AriaComboBoxStateContext);
   const handledAutofillEvent = useRef<Event | null>(null);
 
-  const handleBlockedInput = (event: FormEvent<HTMLInputElement>) => {
+  const handleBlockedInput = (event: SyntheticEvent<HTMLInputElement>) => {
     if (!disabled && !readOnly) return;
 
     if (state) {
@@ -375,7 +375,7 @@ function ComboBoxInput<T>({
     event.stopPropagation();
   };
 
-  const handleAutofill = (event: FormEvent<HTMLInputElement>) => {
+  const handleAutofill = (event: SyntheticEvent<HTMLInputElement>) => {
     if (allowsCustomValue || disabled || readOnly || !state) return;
 
     const { nativeEvent } = event;
