@@ -79,7 +79,7 @@ export default function CollectionPopover({
   });
 
   useEffect(() => setPortalReady(true), []);
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!open || !layer.topmost || !host) return undefined;
 
     const isOutside = (target: Node | null) =>
