@@ -165,6 +165,9 @@ describe('Select', () => {
     const bankOption = screen.getByRole('option', { name: /Bank account/ });
     const cashOption = screen.getByRole('option', { name: /Cash/ });
     expect(cashOption).toHaveAttribute('aria-disabled', 'true');
+    expect(bankOption).toHaveClass(
+      'breeze:any-pointer-coarse:min-block-breeze-tap',
+    );
     expect(bankOption).toHaveAttribute('data-focused', 'true');
     expect(bankOption).toHaveAttribute('data-focus-visible', 'true');
 
@@ -372,6 +375,51 @@ describe('Select', () => {
     expect(surrogate).toHaveValue('bank');
     expect(screen.getByRole('combobox')).toHaveTextContent('Bank account');
     expect(new FormData(document.forms[0]).get('payment')).toBe('bank');
+  });
+
+  it('ignores disabled autofill matches when an enabled match is unique', () => {
+    const autofillChoices = [
+      choices[0],
+      {
+        id: 'active-account',
+        label: 'shared-payment-method',
+      },
+      {
+        disabled: true,
+        id: 'shared-payment-method',
+        label: 'Disabled payment method',
+      },
+    ] satisfies ItemDescriptor[];
+    const onChange =
+      vi.fn<(value: (typeof autofillChoices)[number] | null) => void>();
+
+    renderBreeze(
+      <form aria-label="Payment form">
+        <Select
+          autoComplete="organization"
+          defaultValue={autofillChoices[0]}
+          getItem={(item) => item}
+          items={autofillChoices}
+          label="Payment method"
+          name="payment"
+          onChange={onChange}
+        />
+      </form>,
+    );
+
+    const surrogate = document.querySelector<HTMLInputElement>(
+      'input[name="payment"]',
+    );
+
+    fireEvent.input(surrogate as HTMLInputElement, {
+      target: { value: 'shared-payment-method' },
+    });
+
+    expect(onChange).toHaveBeenCalledWith(autofillChoices[1]);
+    expect(surrogate).toHaveValue(autofillChoices[1].id);
+    expect(screen.getByRole('combobox')).toHaveTextContent(
+      autofillChoices[1].label,
+    );
   });
 
   it('synchronizes the autofill surrogate when controlled value changes', () => {

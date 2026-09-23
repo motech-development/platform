@@ -155,7 +155,9 @@ function findItem<T>(
 
 function findUniqueAutofillItem<T>(items: SelectItem<T>[], value: string) {
   const matches = items.filter(
-    ({ descriptor }) => descriptor.id === value || descriptor.label === value,
+    ({ descriptor }) =>
+      !descriptor.disabled &&
+      (descriptor.id === value || descriptor.label === value),
   );
 
   return matches.length === 1 ? matches[0] : undefined;
@@ -401,7 +403,7 @@ export function Select<T>({
 
     const nextItem = findUniqueAutofillItem(decoratedItems, nextValue);
 
-    if (!nextItem || nextItem.descriptor.disabled) {
+    if (!nextItem) {
       if (autofillRef.current) {
         autofillRef.current.value = String(state.value ?? '');
       }
