@@ -396,7 +396,7 @@ function useSelectFormReset<T>({
       }
 
       pendingResetEvent = event;
-      queueMicrotask(() => {
+      setTimeout(() => {
         if (!active || pendingResetEvent !== event || event.defaultPrevented) {
           return;
         }

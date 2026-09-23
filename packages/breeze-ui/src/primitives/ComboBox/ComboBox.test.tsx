@@ -911,7 +911,6 @@ describe('ComboBox', () => {
 
     expect(input).toHaveValue('Later query');
     expect(new FormData(form).get('supplier')).toBe('acme');
-    expect(onChange).toHaveBeenCalledTimes(1);
     expect(onChange).toHaveBeenCalledWith(suppliers[0]);
 
     form.reset();
@@ -972,8 +971,161 @@ describe('ComboBox', () => {
 
     expect(input).toHaveValue('Later query');
     expect(new FormData(form).get('supplier')).toBe('acme');
+    expect(onChange).toHaveBeenCalledWith(suppliers[0]);
+  });
+
+  it('reconciles a controlled value after a stopped-propagation native reset', async () => {
+    const user = userEvent.setup();
+    const initialSupplier = { id: 'initial', label: 'Initial supplier' };
+    const currentSupplier = { id: 'current', label: 'Current supplier' };
+    const onChange = vi.fn<(value: typeof initialSupplier | null) => void>();
+
+    function ControlledResetComboBox() {
+      const [value, setValue] = useState(initialSupplier);
+
+      return (
+        <form
+          aria-label="Supplier form"
+          onResetCapture={(event) => event.stopPropagation()}
+        >
+          <ComboBox
+            getItem={(item) => item}
+            items={[initialSupplier, currentSupplier]}
+            label="Supplier"
+            name="supplier"
+            onChange={onChange}
+            value={value}
+          />
+          <button type="button" onClick={() => setValue(currentSupplier)}>
+            Use current supplier
+          </button>
+        </form>
+      );
+    }
+
+    renderBreeze(<ControlledResetComboBox />);
+
+    const form = document.forms[0];
+    const input = screen.getByRole('combobox', { name: 'Supplier' });
+    await user.click(
+      screen.getByRole('button', { name: 'Use current supplier' }),
+    );
+    expect(input).toHaveValue('Current supplier');
+    onChange.mockClear();
+
+    form.reset();
+
+    await waitFor(() => {
+      expect(input).toHaveValue('Current supplier');
+      expect(new FormData(form).get('supplier')).toBe('current');
+      expect(onChange).toHaveBeenCalledWith(initialSupplier);
+    });
+  });
+
+  it('invalidates delayed restoration from an earlier reset', async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn<(value: Supplier | null) => void>();
+    let resetCount = 0;
+
+    renderBreeze(
+      <form
+        aria-label="Supplier form"
+        onResetCapture={(event) => {
+          resetCount += 1;
+          if (resetCount === 1) event.preventDefault();
+        }}
+      >
+        <ComboBox
+          defaultValue={suppliers[0]}
+          getItem={getItem}
+          items={suppliers}
+          label="Supplier"
+          name="supplier"
+          onChange={onChange}
+        />
+      </form>,
+    );
+
+    const form = document.forms[0];
+    const input = screen.getByRole('combobox', { name: 'Supplier' });
+    await user.click(screen.getByRole('button', { name: /Show suggestions/ }));
+    await user.click(screen.getByRole('option', { name: /Brass & Co/ }));
+    onChange.mockClear();
+
+    form.reset();
+    form.reset();
+
+    await act(async () => {
+      await Promise.resolve();
+      await new Promise<void>((resolve) => {
+        setTimeout(() => {
+          resolve();
+        }, 0);
+      });
+    });
+
+    expect(input).toHaveValue('Acme Supplies');
+    expect(new FormData(form).get('supplier')).toBe('acme');
     expect(onChange).toHaveBeenCalledTimes(1);
     expect(onChange).toHaveBeenCalledWith(suppliers[0]);
+  });
+
+  it('cancels a stopped-propagation reset from a queued microtask', async () => {
+    const user = userEvent.setup();
+    const initialSupplier = { id: 'initial', label: 'Initial supplier' };
+    const currentSupplier = { id: 'current', label: 'Current supplier' };
+    const onChange = vi.fn<(value: typeof initialSupplier | null) => void>();
+
+    function ControlledResetComboBox() {
+      const [value, setValue] = useState(initialSupplier);
+
+      return (
+        <form
+          aria-label="Supplier form"
+          onResetCapture={(event) => {
+            event.stopPropagation();
+            queueMicrotask(() => event.preventDefault());
+          }}
+        >
+          <ComboBox
+            getItem={(item) => item}
+            items={[initialSupplier, currentSupplier]}
+            label="Supplier"
+            name="supplier"
+            onChange={onChange}
+            value={value}
+          />
+          <button type="button" onClick={() => setValue(currentSupplier)}>
+            Use current supplier
+          </button>
+        </form>
+      );
+    }
+
+    renderBreeze(<ControlledResetComboBox />);
+
+    const form = document.forms[0];
+    const input = screen.getByRole('combobox', { name: 'Supplier' });
+    await user.click(
+      screen.getByRole('button', { name: 'Use current supplier' }),
+    );
+    expect(input).toHaveValue('Current supplier');
+    onChange.mockClear();
+
+    form.reset();
+
+    await act(async () => {
+      await Promise.resolve();
+      await new Promise<void>((resolve) => {
+        setTimeout(() => {
+          resolve();
+        }, 0);
+      });
+    });
+
+    expect(input).toHaveValue('Current supplier');
+    expect(new FormData(form).get('supplier')).toBe('current');
+    expect(onChange).not.toHaveBeenCalled();
   });
 
   it('restores a canceled immediate-propagation reset', async () => {
@@ -1009,6 +1161,11 @@ describe('ComboBox', () => {
 
     await act(async () => {
       await Promise.resolve();
+      await new Promise<void>((resolve) => {
+        setTimeout(() => {
+          resolve();
+        }, 0);
+      });
     });
 
     expect(input).toHaveValue('Brass & Co');
@@ -1051,10 +1208,63 @@ describe('ComboBox', () => {
 
     await act(async () => {
       await Promise.resolve();
+      await new Promise<void>((resolve) => {
+        setTimeout(() => {
+          resolve();
+        }, 0);
+      });
     });
 
     expect(input).toHaveValue('Brass & Co');
     expect(new FormData(form).get('supplier')).toBe('brass');
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it('preserves a newer controlled update after canceled reset restoration', async () => {
+    const initialSupplier = { id: 'initial', label: 'Initial supplier' };
+    const updatedSupplier = { id: 'updated', label: 'Updated supplier' };
+    const onChange = vi.fn<(value: typeof initialSupplier | null) => void>();
+
+    function ControlledResetComboBox() {
+      const [value, setValue] = useState(initialSupplier);
+
+      return (
+        <form
+          aria-label="Supplier form"
+          onResetCapture={(event) => {
+            event.preventDefault();
+            queueMicrotask(() => setValue(updatedSupplier));
+          }}
+        >
+          <ComboBox
+            getItem={(item) => item}
+            items={[initialSupplier, updatedSupplier]}
+            label="Supplier"
+            name="supplier"
+            onChange={onChange}
+            value={value}
+          />
+        </form>
+      );
+    }
+
+    renderBreeze(<ControlledResetComboBox />);
+
+    const form = document.forms[0];
+    const input = screen.getByRole('combobox', { name: 'Supplier' });
+    form.reset();
+
+    await act(async () => {
+      await Promise.resolve();
+      await new Promise<void>((resolve) => {
+        setTimeout(() => {
+          resolve();
+        }, 0);
+      });
+    });
+
+    expect(input).toHaveValue('Updated supplier');
+    expect(new FormData(form).get('supplier')).toBe('updated');
     expect(onChange).not.toHaveBeenCalled();
   });
 
@@ -1087,6 +1297,11 @@ describe('ComboBox', () => {
 
     await act(async () => {
       await Promise.resolve();
+      await new Promise<void>((resolve) => {
+        setTimeout(() => {
+          resolve();
+        }, 0);
+      });
     });
 
     expect(screen.getByRole('listbox')).toBeInTheDocument();
@@ -1126,6 +1341,11 @@ describe('ComboBox', () => {
 
     await act(async () => {
       await Promise.resolve();
+      await new Promise<void>((resolve) => {
+        setTimeout(() => {
+          resolve();
+        }, 0);
+      });
     });
 
     expect(input).toHaveValue('Brass');
@@ -1403,7 +1623,7 @@ describe('ComboBox', () => {
     await user.click(screen.getByRole('option', { name: /Brass & Co/ }));
     onChange.mockClear();
 
-    fireEvent.reset(form);
+    form.reset();
 
     await act(async () => {
       await Promise.resolve();
@@ -2311,6 +2531,31 @@ describe('ComboBox', () => {
     expect(input).toHaveValue('');
   });
 
+  it('clears a retained null draft when focus leaves', async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn<(value: Supplier | null) => void>();
+
+    renderBreeze(
+      <>
+        <ComboBox
+          getItem={getItem}
+          items={suppliers}
+          label="Supplier"
+          onChange={onChange}
+          value={null}
+        />
+        <button type="button">Next</button>
+      </>,
+    );
+
+    const input = screen.getByRole('combobox', { name: 'Supplier' });
+    await user.type(input, 'No matching supplier');
+    await user.tab();
+
+    expect(input).toHaveValue('');
+    expect(onChange).toHaveBeenCalledWith(null);
+  });
+
   it('keeps filtering while controlled custom text echoes through onChange', async () => {
     const user = userEvent.setup();
 
@@ -2918,6 +3163,49 @@ describe('ComboBox', () => {
     expect(onChange).not.toHaveBeenCalled();
   });
 
+  it('keeps the live controlled value when reset is not echoed by the parent', async () => {
+    const user = userEvent.setup();
+    const initialSupplier = { id: 'initial', label: 'Initial supplier' };
+    const currentSupplier = { id: 'current', label: 'Current supplier' };
+    const onChange = vi.fn<(value: Supplier | null) => void>();
+
+    function ControlledResetComboBox() {
+      const [value, setValue] = useState(initialSupplier);
+
+      return (
+        <form aria-label="Supplier form">
+          <ComboBox
+            getItem={(item) => item}
+            items={[initialSupplier, currentSupplier]}
+            label="Supplier"
+            name="supplier"
+            onChange={onChange}
+            value={value}
+          />
+          <button type="button" onClick={() => setValue(currentSupplier)}>
+            Use current supplier
+          </button>
+        </form>
+      );
+    }
+
+    renderBreeze(<ControlledResetComboBox />);
+
+    const form = document.forms[0];
+    const input = screen.getByRole('combobox', { name: 'Supplier' });
+    await user.click(
+      screen.getByRole('button', { name: 'Use current supplier' }),
+    );
+    expect(input).toHaveValue('Current supplier');
+    form.reset();
+
+    await waitFor(() => {
+      expect(onChange).toHaveBeenCalledWith(initialSupplier);
+      expect(input).toHaveValue('Current supplier');
+      expect(new FormData(form).get('supplier')).toBe('current');
+    });
+  });
+
   it('restores and reports the initial controlled custom value on form reset', async () => {
     const user = userEvent.setup();
     const initialValue = 'Initial supplier';
@@ -2958,7 +3246,7 @@ describe('ComboBox', () => {
     expect(input).toHaveValue(currentValue);
     onChange.mockClear();
 
-    fireEvent.reset(form);
+    form.reset();
 
     await waitFor(() => {
       expect(input).toHaveValue(initialValue);

@@ -1651,6 +1651,62 @@ describe('Select', () => {
     expect(trigger).toHaveTextContent('Cash');
   });
 
+  it('waits for delegated reset prevention before applying the fallback', async () => {
+    const user = userEvent.setup();
+    const resetChoices = choices.map((choice) => ({
+      ...choice,
+      disabled: false,
+    }));
+    const onChange = vi.fn<(value: ItemDescriptor | null) => void>();
+
+    function ControlledResetSelect() {
+      const [value, setValue] = useState(resetChoices[0]);
+
+      return (
+        <form
+          aria-label="Payment form"
+          onReset={(event) => {
+            event.stopPropagation();
+            queueMicrotask(() => event.preventDefault());
+          }}
+        >
+          <Select
+            getItem={(item) => item}
+            items={resetChoices}
+            label="Payment method"
+            name="payment"
+            onChange={onChange}
+            value={value}
+          />
+          <button type="button" onClick={() => setValue(resetChoices[1])}>
+            Use current value
+          </button>
+        </form>
+      );
+    }
+
+    renderBreeze(<ControlledResetSelect />);
+
+    const form = document.forms[0];
+    const trigger = screen.getByRole('combobox', {
+      name: 'Bank account Payment method',
+    });
+    await user.click(screen.getByRole('button', { name: 'Use current value' }));
+    onChange.mockClear();
+
+    fireEvent.reset(form);
+
+    await act(async () => {
+      await Promise.resolve();
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
+    });
+
+    expect(onChange).not.toHaveBeenCalled();
+    expect(trigger).toHaveTextContent('Cash');
+  });
+
   it('does not restore the uncontrolled default selection when form reset is canceled', async () => {
     const user = userEvent.setup();
     const resetChoices = choices.map((choice) => ({
