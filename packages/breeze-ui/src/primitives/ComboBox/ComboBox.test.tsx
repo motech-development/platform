@@ -870,7 +870,7 @@ describe('ComboBox', () => {
     expect(new FormData(form).get('supplier')).toBe('acme');
   });
 
-  it('applies an accepted stopped-propagation reset before form.reset returns', async () => {
+  it('applies an accepted stopped-propagation reset before the next task', async () => {
     const user = userEvent.setup();
     const onChange = vi.fn<(value: Supplier | null) => void>();
 
@@ -899,6 +899,13 @@ describe('ComboBox', () => {
     form.reset();
 
     expect(input).toHaveValue('Acme Supplies');
+    expect(new FormData(form).get('supplier')).toBe('brass');
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(input).toHaveValue('Acme Supplies');
     expect(new FormData(form).get('supplier')).toBe('acme');
 
     fireEvent.input(input, { target: { value: 'Later query' } });
@@ -914,6 +921,12 @@ describe('ComboBox', () => {
     expect(onChange).toHaveBeenCalledWith(suppliers[0]);
 
     form.reset();
+
+    expect(input).toHaveValue('Acme Supplies');
+
+    await act(async () => {
+      await Promise.resolve();
+    });
 
     expect(input).toHaveValue('Acme Supplies');
 
@@ -1019,6 +1032,62 @@ describe('ComboBox', () => {
       expect(input).toHaveValue('Current supplier');
       expect(new FormData(form).get('supplier')).toBe('current');
       expect(onChange).toHaveBeenCalledWith(initialSupplier);
+    });
+  });
+
+  it('reconciles the current controlled hidden value after a stopped reset', async () => {
+    const user = userEvent.setup();
+    const initialSupplier = { id: 'initial', label: 'Initial supplier' };
+    const currentSupplier = { id: 'current', label: 'Current supplier' };
+    const onChange = vi.fn<(value: Supplier | null) => void>();
+
+    function ControlledResetComboBox() {
+      const [value, setValue] = useState(initialSupplier);
+
+      return (
+        <form
+          aria-label="Supplier form"
+          onResetCapture={(event) => {
+            event.nativeEvent.stopPropagation();
+          }}
+        >
+          <ComboBox
+            getItem={(item) => item}
+            items={[initialSupplier, currentSupplier]}
+            label="Supplier"
+            name="supplier"
+            onChange={onChange}
+            value={value}
+          />
+          <button type="button" onClick={() => setValue(currentSupplier)}>
+            Use current supplier
+          </button>
+        </form>
+      );
+    }
+
+    renderBreeze(<ControlledResetComboBox />);
+
+    const form = document.forms[0];
+    const input = screen.getByRole('combobox', { name: 'Supplier' });
+    await user.click(
+      screen.getByRole('button', { name: 'Use current supplier' }),
+    );
+    expect(input).toHaveValue('Current supplier');
+    const hiddenInput = form.elements.namedItem('supplier');
+    expect(hiddenInput).toBeInstanceOf(HTMLInputElement);
+    (hiddenInput as HTMLInputElement).defaultValue = 'stale';
+    (hiddenInput as HTMLInputElement).value = 'stale';
+
+    form.reset();
+    // jsdom does not apply native reset semantics to React Aria's hidden
+    // input, so model the browser resetting it before reconciliation runs.
+    (hiddenInput as HTMLInputElement).value = 'initial';
+
+    await waitFor(() => {
+      expect(input).toHaveValue('Current supplier');
+      expect(new FormData(form).get('supplier')).toBe('current');
+      expect((hiddenInput as HTMLInputElement).value).toBe('current');
     });
   });
 
@@ -1204,7 +1273,7 @@ describe('ComboBox', () => {
 
     form.reset();
 
-    expect(input).toHaveValue('Acme Supplies');
+    expect(input).toHaveValue('Brass & Co');
 
     await act(async () => {
       await Promise.resolve();
@@ -1389,6 +1458,51 @@ describe('ComboBox', () => {
     expect(formValueDuringReset).toBe('brass');
     await act(async () => {
       await Promise.resolve();
+    });
+    expect(input).toHaveValue('Brass & Co');
+    expect(new FormData(form).get('supplier')).toBe('brass');
+  });
+
+  it('keeps pre-reset form data available when a stopped reset is canceled', async () => {
+    const user = userEvent.setup();
+    let formValueAfterStopPropagation: FormDataEntryValue | null = null;
+
+    renderBreeze(
+      <form
+        aria-label="Supplier form"
+        onResetCapture={(event) => {
+          event.stopPropagation();
+          formValueAfterStopPropagation = new FormData(event.currentTarget).get(
+            'supplier',
+          );
+          event.preventDefault();
+        }}
+      >
+        <ComboBox
+          defaultValue={suppliers[0]}
+          getItem={getItem}
+          items={suppliers}
+          label="Supplier"
+          name="supplier"
+        />
+      </form>,
+    );
+
+    const form = document.forms[0];
+    const input = screen.getByRole('combobox', { name: 'Supplier' });
+    await user.click(screen.getByRole('button', { name: /Show suggestions/ }));
+    await user.click(screen.getByRole('option', { name: /Brass & Co/ }));
+
+    form.reset();
+
+    expect(formValueAfterStopPropagation).toBe('brass');
+    expect(input).toHaveValue('Brass & Co');
+    expect(new FormData(form).get('supplier')).toBe('brass');
+    await act(async () => {
+      await Promise.resolve();
+      await new Promise<void>((resolve) => {
+        setTimeout(resolve, 0);
+      });
     });
     expect(input).toHaveValue('Brass & Co');
     expect(new FormData(form).get('supplier')).toBe('brass');
@@ -1709,14 +1823,25 @@ describe('ComboBox', () => {
 
     const form = document.forms[0];
     const input = screen.getByRole('combobox', { name: 'Supplier' });
+    const hiddenInput = form.elements.namedItem('supplier');
+    expect(hiddenInput).toBeInstanceOf(HTMLInputElement);
     await user.clear(input);
     await user.type(input, 'Changed supplier');
     onChange.mockClear();
 
     fireEvent.reset(form);
+    // jsdom does not apply native reset semantics to React Aria's hidden
+    // input, so model the browser using the reset target prepared by capture.
+    expect((hiddenInput as HTMLInputElement).defaultValue).toBe(
+      'Initial supplier',
+    );
+    (hiddenInput as HTMLInputElement).value = (
+      hiddenInput as HTMLInputElement
+    ).defaultValue;
 
     await waitFor(() => {
       expect(input).toHaveValue('Initial supplier');
+      expect(new FormData(form).get('supplier')).toBe('Initial supplier');
       expect(onChange).toHaveBeenCalledTimes(1);
       expect(onChange).toHaveBeenCalledWith('Initial supplier');
     });
@@ -3206,6 +3331,74 @@ describe('ComboBox', () => {
     });
   });
 
+  it('keeps the hidden controlled form value after a rerendered reset', async () => {
+    const initialSupplier = { id: 'initial', label: 'Initial supplier' };
+    const currentSupplier = { id: 'current', label: 'Current supplier' };
+    const onChange = vi.fn<(value: Supplier | null) => void>();
+    const { rerender } = renderBreeze(
+      <form aria-label="Supplier form">
+        <ComboBox
+          getItem={(item) => item}
+          items={[initialSupplier, currentSupplier]}
+          label="Supplier"
+          name="supplier"
+          onChange={onChange}
+          value={initialSupplier}
+        />
+      </form>,
+    );
+
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <form aria-label="Supplier form">
+          <ComboBox
+            getItem={(item) => item}
+            items={[initialSupplier, currentSupplier]}
+            label="Supplier"
+            name="supplier"
+            onChange={onChange}
+            value={currentSupplier}
+          />
+        </form>
+      </BreezeProvider>,
+    );
+
+    const form = document.forms[0];
+    const input = screen.getByRole('combobox', { name: 'Supplier' });
+    const hiddenInput = form.elements.namedItem('supplier');
+    expect(hiddenInput).toBeInstanceOf(HTMLInputElement);
+    const preparedDefaultValues: string[] = [];
+    const defaultValueDescriptor = Object.getOwnPropertyDescriptor(
+      HTMLInputElement.prototype,
+      'defaultValue',
+    );
+    Object.defineProperty(hiddenInput, 'defaultValue', {
+      configurable: true,
+      get: () => {
+        const value: unknown = defaultValueDescriptor?.get?.call(hiddenInput);
+        return typeof value === 'string' ? value : '';
+      },
+      set: (value: string) => {
+        preparedDefaultValues.push(value);
+        defaultValueDescriptor?.set?.call(hiddenInput, value);
+      },
+    });
+    (hiddenInput as HTMLInputElement).defaultValue = 'stale';
+    (hiddenInput as HTMLInputElement).value = 'stale';
+    form.reset();
+    expect(preparedDefaultValues).toContain('initial');
+    // jsdom does not apply native reset semantics to React Aria's hidden
+    // input, so model the browser resetting it before reconciliation runs.
+    (hiddenInput as HTMLInputElement).value = 'initial';
+    expect(new FormData(form).get('supplier')).toBe('initial');
+
+    await waitFor(() => {
+      expect(input).toHaveValue('Current supplier');
+      expect(new FormData(form).get('supplier')).toBe('current');
+      expect(onChange).toHaveBeenCalledWith(initialSupplier);
+    });
+  });
+
   it('restores and reports the initial controlled custom value on form reset', async () => {
     const user = userEvent.setup();
     const initialValue = 'Initial supplier';
@@ -3250,9 +3443,72 @@ describe('ComboBox', () => {
 
     await waitFor(() => {
       expect(input).toHaveValue(initialValue);
+      expect(new FormData(form).get('supplier')).toBe(initialValue);
       expect(onChange).toHaveBeenCalledTimes(1);
       expect(onChange).toHaveBeenCalledWith(initialValue);
     });
+  });
+
+  it('keeps a named controlled custom value when the parent ignores reset', async () => {
+    const user = userEvent.setup();
+    const initialValue = 'Initial supplier';
+    const currentValue = 'Current supplier';
+    const onChange = vi.fn<(value: SupplierValue) => void>();
+
+    function ControlledResetComboBox() {
+      const [value, setValue] = useState<SupplierValue>(initialValue);
+
+      return (
+        <form aria-label="Supplier form">
+          <ComboBox
+            allowsCustomValue
+            getItem={getItem}
+            items={suppliers}
+            label="Supplier"
+            name="supplier"
+            onChange={(nextValue) => {
+              onChange(nextValue);
+              if (nextValue !== initialValue) setValue(nextValue);
+            }}
+            value={value}
+          />
+          <button type="button" onClick={() => setValue(currentValue)}>
+            Use current supplier
+          </button>
+        </form>
+      );
+    }
+
+    renderBreeze(<ControlledResetComboBox />);
+
+    const form = document.forms[0];
+    const input = screen.getByRole('combobox', { name: 'Supplier' });
+    await user.click(
+      screen.getByRole('button', { name: 'Use current supplier' }),
+    );
+    expect(input).toHaveValue(currentValue);
+    input.removeAttribute('name');
+    const hiddenInput = document.createElement('input');
+    hiddenInput.name = 'supplier';
+    hiddenInput.type = 'hidden';
+    hiddenInput.value = currentValue;
+    form.append(hiddenInput);
+    onChange.mockClear();
+
+    fireEvent.reset(form);
+    // jsdom does not apply native reset semantics to React Aria's hidden
+    // input, so model the browser resetting it before reconciliation runs.
+    input.removeAttribute('name');
+    hiddenInput.value = initialValue;
+    await act(async () => {
+      await new Promise<void>((resolve) => {
+        setTimeout(resolve, 0);
+      });
+    });
+
+    expect(input).toHaveValue(currentValue);
+    expect(new FormData(form).get('supplier')).toBe(currentValue);
+    expect(onChange).toHaveBeenCalledWith(initialValue);
   });
 
   it('reports a refreshed initial controlled item on form reset', async () => {

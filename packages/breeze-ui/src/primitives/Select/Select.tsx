@@ -331,35 +331,71 @@ function useSelectCollectionEffects<T>({
 }
 
 interface SelectFormResetOptions<T> {
+  autofillRef: RefObject<HTMLInputElement | null>;
   controlledResetItemRef: RefObject<SelectItem<T> | null | undefined>;
   controlledResetValueKeyRef: RefObject<string | null | undefined>;
   form: string | undefined;
+  formResetVersionRef: RefObject<number>;
   initialControlledItem: SelectItem<T> | null | undefined;
   isControlled: boolean;
   onChangeRef: RefObject<((value: T | null) => void) | undefined>;
   resetValueRef: RefObject<string | null>;
   setStateValueRef: RefObject<(nextValue: string | null) => void>;
+  stateValueRef: RefObject<string | number | null>;
   suppressOnChangeRef: RefObject<boolean>;
   triggerRef: RefObject<HTMLButtonElement | null>;
 }
 
+interface SelectResetInputSnapshot {
+  defaultValue: string;
+  input: HTMLInputElement;
+  resetValue: string;
+  stateValue: string | number | null;
+  value: string;
+}
+
 function useSelectFormReset<T>({
+  autofillRef,
   controlledResetItemRef,
   controlledResetValueKeyRef,
   form,
+  formResetVersionRef,
   initialControlledItem,
   isControlled,
   onChangeRef,
   resetValueRef,
   setStateValueRef,
+  stateValueRef,
   suppressOnChangeRef,
   triggerRef,
 }: Readonly<SelectFormResetOptions<T>>) {
+  const resetVersionRef = formResetVersionRef;
   const suppressRef = suppressOnChangeRef;
 
   useLayoutEffect(() => {
     let active = true;
     let pendingResetEvent: Event | null = null;
+    let pendingResetInput: SelectResetInputSnapshot | null = null;
+
+    const restorePendingResetInput = () => {
+      const resetInput = pendingResetInput;
+      if (!resetInput) return;
+
+      pendingResetInput = null;
+      if (stateValueRef.current !== resetInput.stateValue) return;
+
+      if (resetInput.input.defaultValue === resetInput.resetValue) {
+        resetInput.input.defaultValue = resetInput.defaultValue;
+      }
+      if (resetInput.input.value === resetInput.resetValue) {
+        resetInput.input.value = resetInput.value;
+      }
+    };
+
+    const clearPendingReset = () => {
+      pendingResetEvent = null;
+      pendingResetInput = null;
+    };
 
     const applyReset = () => {
       if (isControlled) {
@@ -383,6 +419,35 @@ function useSelectFormReset<T>({
       }
     };
 
+    const syncAutofillValue = () => {
+      const input = autofillRef.current;
+      if (!input) return;
+
+      input.value = String(stateValueRef.current ?? '');
+    };
+
+    const reconcileAutofillValue = (
+      resetVersion: number,
+      resetInput: SelectResetInputSnapshot | null,
+    ) => {
+      if (!resetInput) return;
+
+      setTimeout(() => {
+        if (
+          !active ||
+          resetVersionRef.current !== resetVersion ||
+          stateValueRef.current !== resetInput.stateValue
+        ) {
+          return;
+        }
+
+        const input = autofillRef.current;
+        if (input?.value === resetInput.resetValue) {
+          input.value = String(stateValueRef.current ?? '');
+        }
+      }, 0);
+    };
+
     const captureReset = (event: Event) => {
       const associatedForm = form
         ? document.getElementById(form)
@@ -395,14 +460,52 @@ function useSelectFormReset<T>({
         return;
       }
 
+      const resetValue = isControlled
+        ? controlledResetItemRef.current?.descriptor.id ?? ''
+        : resetValueRef.current ?? '';
+      const input = autofillRef.current;
+      pendingResetInput = input
+        ? {
+            defaultValue: input.defaultValue,
+            input,
+            resetValue,
+            stateValue: stateValueRef.current,
+            value: input.value,
+          }
+        : null;
+      // Let the browser's native reset update FormData before the deferred
+      // state reset runs, including when propagation is stopped.
+      if (input) {
+        input.defaultValue = resetValue;
+        input.value = pendingResetInput?.value ?? '';
+      }
+
+      const resetVersion = formResetVersionRef.current + 1;
+      resetVersionRef.current = resetVersion;
       pendingResetEvent = event;
       setTimeout(() => {
-        if (!active || pendingResetEvent !== event || event.defaultPrevented) {
+        if (!active || pendingResetEvent !== event) {
+          return;
+        }
+
+        if (
+          resetVersionRef.current !== resetVersion ||
+          (pendingResetInput !== null &&
+            stateValueRef.current !== pendingResetInput.stateValue)
+        ) {
+          clearPendingReset();
           return;
         }
 
         pendingResetEvent = null;
+        if (event.defaultPrevented) {
+          restorePendingResetInput();
+          return;
+        }
+
+        pendingResetInput = null;
         flushSync(applyReset);
+        syncAutofillValue();
       });
     };
 
@@ -411,9 +514,17 @@ function useSelectFormReset<T>({
 
       flushSync(() => undefined);
       pendingResetEvent = null;
-      if (!active || event.defaultPrevented) return;
+      if (!active || event.defaultPrevented) {
+        if (event.defaultPrevented) restorePendingResetInput();
+        return;
+      }
 
+      const resetVersion = resetVersionRef.current;
+      const resetInput = pendingResetInput;
+      pendingResetInput = null;
       flushSync(applyReset);
+      syncAutofillValue();
+      reconcileAutofillValue(resetVersion, resetInput);
     };
 
     document.addEventListener('reset', captureReset, true);
@@ -421,19 +532,23 @@ function useSelectFormReset<T>({
 
     return () => {
       active = false;
-      pendingResetEvent = null;
+      clearPendingReset();
       document.removeEventListener('reset', captureReset, true);
       document.removeEventListener('reset', finalizeReset);
     };
   }, [
+    autofillRef,
     controlledResetItemRef,
     controlledResetValueKeyRef,
     form,
+    formResetVersionRef,
     initialControlledItem,
     isControlled,
     onChangeRef,
     resetValueRef,
+    resetVersionRef,
     setStateValueRef,
+    stateValueRef,
     suppressRef,
     triggerRef,
   ]);
@@ -562,6 +677,8 @@ export function Select<T>({
       .join(' ') || undefined;
   const triggerRef = useRef<HTMLButtonElement>(null);
   const autofillRef = useRef<HTMLInputElement>(null);
+  const formResetVersionRef = useRef(0);
+  const stateValueRef = useRef<string | number | null>(null);
   const decoratedItems = useMemo<SelectItem<T>[]>(
     () =>
       items.map((item) => ({
@@ -636,6 +753,8 @@ export function Select<T>({
     onChange: (key) => {
       if (suppressOnChangeRef.current) return;
 
+      formResetVersionRef.current += 1;
+
       // A real user selection supersedes a default that was waiting for a
       // loading collection to arrive.
       pendingDefaultValueRef.current = null;
@@ -698,6 +817,7 @@ export function Select<T>({
   useLayoutEffect(() => {
     resetValueRef.current = resetValue;
     setStateValueRef.current = (nextValue) => state.setValue(nextValue);
+    stateValueRef.current = state.value;
     controlledResetValueKeyRef.current = controlledResetValueKey;
     controlledResetItemRef.current = controlledResetItem;
     onChangeRef.current = onChange;
@@ -726,14 +846,17 @@ export function Select<T>({
   });
 
   useSelectFormReset({
+    autofillRef,
     controlledResetItemRef,
     controlledResetValueKeyRef,
     form,
+    formResetVersionRef,
     initialControlledItem,
     isControlled,
     onChangeRef,
     resetValueRef,
     setStateValueRef,
+    stateValueRef,
     suppressOnChangeRef,
     triggerRef,
   });

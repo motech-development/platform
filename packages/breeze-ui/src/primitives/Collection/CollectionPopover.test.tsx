@@ -298,6 +298,49 @@ describe('CollectionPopover', () => {
     expect(onOpenChange).toHaveBeenCalledWith(false);
   });
 
+  it('dismisses after an outside drag ends inside without a click', async () => {
+    const user = userEvent.setup();
+    const onOpenChange = vi.fn();
+
+    function Example() {
+      const triggerRef = useRef<HTMLButtonElement | null>(null);
+      const [open, setOpen] = useState(true);
+
+      return (
+        <>
+          <button type="button">Outside</button>
+          <button ref={triggerRef} tabIndex={-1} type="button">
+            Trigger
+          </button>
+          <CollectionPopover
+            className="popover"
+            isOpen={open}
+            onOpenChange={(nextOpen) => {
+              onOpenChange(nextOpen);
+              setOpen(nextOpen);
+            }}
+            triggerRef={triggerRef}
+          >
+            <button type="button">Inside</button>
+          </CollectionPopover>
+        </>
+      );
+    }
+
+    renderBreeze(<Example />);
+
+    const outside = screen.getByRole('button', { name: 'Outside' });
+    const inside = screen.getByRole('button', { name: 'Inside' });
+    inside.focus();
+    fireEvent.pointerDown(outside, { button: 0 });
+    fireEvent.pointerUp(inside, { button: 0 });
+    await user.tab({ shift: true });
+
+    expect(outside).toHaveFocus();
+    expect(onOpenChange).toHaveBeenCalledTimes(1);
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
+
   it('dismisses once when keyboard focus tabs from the surface outside', async () => {
     const user = userEvent.setup();
     const onOpenChange = vi.fn();
