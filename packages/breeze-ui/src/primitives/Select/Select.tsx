@@ -96,6 +96,8 @@ interface SelectItem<T> {
   item: T;
 }
 
+type SelectStateValue = string | number | null;
+
 interface SelectCollectionNode<T> {
   key: string | number;
   value: SelectItem<T> | null;
@@ -224,7 +226,7 @@ function handleSelectAutofill<T>(
   nextValue: string,
   readOnly: boolean,
   items: SelectItem<T>[],
-  currentValue: string | number | null,
+  currentValue: SelectStateValue,
   setValue: (value: string) => void,
   autofillRef: RefObject<HTMLInputElement | null>,
 ) {
@@ -341,7 +343,7 @@ interface SelectFormResetOptions<T> {
   onChangeRef: RefObject<((value: T | null) => void) | undefined>;
   resetValueRef: RefObject<string | null>;
   setStateValueRef: RefObject<(nextValue: string | null) => void>;
-  stateValueRef: RefObject<string | number | null>;
+  stateValueRef: RefObject<SelectStateValue>;
   suppressOnChangeRef: RefObject<boolean>;
   triggerRef: RefObject<HTMLButtonElement | null>;
 }
@@ -350,7 +352,7 @@ interface SelectResetInputSnapshot {
   defaultValue: string;
   input: HTMLInputElement;
   resetValue: string;
-  stateValue: string | number | null;
+  stateValue: SelectStateValue;
   value: string;
 }
 
@@ -678,7 +680,7 @@ export function Select<T>({
   const triggerRef = useRef<HTMLButtonElement>(null);
   const autofillRef = useRef<HTMLInputElement>(null);
   const formResetVersionRef = useRef(0);
-  const stateValueRef = useRef<string | number | null>(null);
+  const stateValueRef = useRef<SelectStateValue>(null);
   const decoratedItems = useMemo<SelectItem<T>[]>(
     () =>
       items.map((item) => ({

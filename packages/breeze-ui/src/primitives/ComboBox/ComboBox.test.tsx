@@ -2185,6 +2185,83 @@ describe('ComboBox', () => {
     expect(new FormData(document.forms[0]).get('country')).toBe('GB');
   });
 
+  it('retains a controlled string option when the parent echoes its value', async () => {
+    const user = userEvent.setup();
+    const items = ['GB', 'US'];
+    const getStringItem = (item: string) => ({
+      id: item,
+      label: item === 'GB' ? 'United Kingdom' : 'United States',
+    });
+    const onChange = vi.fn<(value: string | null) => void>();
+
+    function EchoingStringComboBox() {
+      const [value, setValue] = useState<string | null>(null);
+
+      return (
+        <form aria-label="Country form">
+          <ComboBox
+            allowsCustomValue
+            getItem={getStringItem}
+            items={items}
+            label="Country"
+            name="country"
+            onChange={(nextValue) => {
+              onChange(nextValue);
+              setValue(nextValue);
+            }}
+            value={value}
+          />
+        </form>
+      );
+    }
+
+    renderBreeze(<EchoingStringComboBox />);
+
+    const form = document.forms[0];
+    const input = screen.getByRole('combobox', { name: 'Country' });
+    await user.click(screen.getByRole('button', { name: /Show suggestions/ }));
+    await user.click(screen.getByRole('option', { name: 'United Kingdom' }));
+
+    expect(onChange).toHaveBeenCalledWith('GB');
+    expect(input).toHaveValue('United Kingdom');
+    expect(new FormData(form).get('country')).toBe('United Kingdom');
+
+    await user.click(screen.getByRole('button', { name: /Show suggestions/ }));
+    expect(
+      screen.getByRole('option', { name: 'United Kingdom' }),
+    ).toHaveAttribute('aria-selected', 'true');
+  });
+
+  it('keeps an initial controlled custom string without calling object getItem', () => {
+    const getObjectItem = (item: Supplier) => ({
+      id: item.id,
+      label: item.label.trim(),
+    });
+
+    expect(() =>
+      renderBreeze(
+        <form aria-label="Supplier form">
+          <ComboBox<Supplier>
+            allowsCustomValue
+            getItem={getObjectItem}
+            items={suppliers}
+            label="Supplier"
+            name="supplier"
+            value="Unlisted supplier"
+            onChange={() => undefined}
+          />
+        </form>,
+      ),
+    ).not.toThrow();
+
+    expect(screen.getByRole('combobox', { name: 'Supplier' })).toHaveValue(
+      'Unlisted supplier',
+    );
+    expect(new FormData(document.forms[0]).get('supplier')).toBe(
+      'Unlisted supplier',
+    );
+  });
+
   it('supports free text while keeping suggestions available', async () => {
     const user = userEvent.setup();
     const onChange =
