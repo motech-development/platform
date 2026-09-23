@@ -480,6 +480,42 @@ interface ComboBoxResetTransaction {
   userChangeEmitted: boolean;
 }
 
+interface PendingResetInputHandling {
+  clearPending: boolean;
+  ignore: boolean;
+}
+
+function isResetEventDispatching(
+  pendingReset: ComboBoxResetTransaction | null,
+) {
+  // Event.NONE marks the post-dispatch window where user input must not be
+  // mistaken for React Aria's reset notification.
+  return (pendingReset?.event.eventPhase ?? Event.NONE) !== Event.NONE;
+}
+
+function getPendingResetInputHandling(
+  inputValue: string,
+  pendingReset: ComboBoxResetTransaction | null,
+  inputPending: boolean,
+): PendingResetInputHandling {
+  if (!inputPending) {
+    return { clearPending: false, ignore: false };
+  }
+
+  if (inputValue === '' && isResetEventDispatching(pendingReset)) {
+    return { clearPending: true, ignore: true };
+  }
+
+  if (
+    inputValue === pendingReset?.state.defaultInputValue &&
+    (inputValue !== '' || isResetEventDispatching(pendingReset))
+  ) {
+    return { clearPending: false, ignore: true };
+  }
+
+  return { clearPending: true, ignore: false };
+}
+
 function ComboBoxInput<T>({
   allowsCustomValue,
   autoComplete,
@@ -780,6 +816,48 @@ function isSelectionResetInput<T>(
   );
 }
 
+interface ComboBoxSelection<T> {
+  baseControlledTextValue: string | undefined;
+  selectedItem: ComboBoxItem<T> | undefined;
+  selectedKey: string | null;
+}
+
+function getComboBoxSelection<T>(
+  value: ComboBoxValue<T> | undefined,
+  pendingCustomText: boolean,
+  retainedUncontrolledSelectedItem: ComboBoxItem<T> | undefined,
+  uncontrolledSelectedKey: string | null,
+  decoratedItems: ComboBoxItem<T>[],
+  getItem: (item: T) => ItemDescriptor,
+  allowsCustomValue: boolean,
+): ComboBoxSelection<T> {
+  let selectedItem: ComboBoxItem<T> | undefined;
+  if (value === undefined) {
+    selectedItem = retainedUncontrolledSelectedItem;
+  } else if (pendingCustomText) {
+    selectedItem = undefined;
+  } else {
+    selectedItem = findItem(decoratedItems, value, getItem, allowsCustomValue);
+  }
+
+  return {
+    baseControlledTextValue:
+      value === undefined
+        ? undefined
+        : getControlledTextValue(
+            value,
+            selectedItem,
+            getItem,
+            allowsCustomValue,
+          ),
+    selectedItem,
+    selectedKey:
+      value === undefined
+        ? uncontrolledSelectedKey
+        : getSelectedKey(value, selectedItem, getItem, allowsCustomValue),
+  };
+}
+
 interface ComboBoxModel<T> {
   collectionItems: T[];
   controlledTextValue: string | undefined;
@@ -940,22 +1018,16 @@ function useComboBoxModel<T>(
     allowsCustomValue &&
     typeof value === 'string' &&
     matchesControlledCustomValue(value, pendingCustomValueRef.current);
-  let selectedItem: ComboBoxItem<T> | undefined;
-  if (value === undefined) {
-    selectedItem = retainedUncontrolledSelectedItem;
-  } else if (pendingCustomText) {
-    selectedItem = undefined;
-  } else {
-    selectedItem = findItem(decoratedItems, value, getItem, allowsCustomValue);
-  }
-  const selectedKey =
-    value !== undefined
-      ? getSelectedKey(value, selectedItem, getItem, allowsCustomValue)
-      : uncontrolledSelectedKeyRef.current;
-  const baseControlledTextValue =
-    value === undefined
-      ? undefined
-      : getControlledTextValue(value, selectedItem, getItem, allowsCustomValue);
+  const { baseControlledTextValue, selectedItem, selectedKey } =
+    getComboBoxSelection(
+      value,
+      pendingCustomText,
+      retainedUncontrolledSelectedItem,
+      uncontrolledSelectedKeyRef.current,
+      decoratedItems,
+      getItem,
+      allowsCustomValue,
+    );
   const defaultTextValue = getDefaultTextValue(
     initialDefaultValue,
     defaultSelectedItem,
@@ -1068,29 +1140,54 @@ function useComboBoxModel<T>(
     }
   };
 
+  const emitInputChange = (inputValue: string) => {
+    if (props.allowsCustomValue !== true) {
+      if (inputValue === '' && value !== undefined) {
+        markFormResetChange();
+        onChange?.(null);
+      }
+
+      return;
+    }
+
+    const nextValue = inputValue || null;
+    if (value !== undefined) {
+      pendingCustomValueRef.current = nextValue;
+    }
+    lastCustomChangeRef.current = nextValue;
+    markFormResetChange();
+    props.onChange?.(nextValue);
+  };
+
+  const handleNullValueChange = (shouldEmitChange: boolean) => {
+    if (value === undefined) {
+      uncontrolledSelectedKeyRef.current = null;
+      uncontrolledSelectedItemRef.current = undefined;
+    }
+
+    if (allowsCustomValue && lastCustomChangeRef.current !== undefined) {
+      return;
+    }
+
+    if (shouldEmitChange) {
+      markFormResetChange();
+      onChange?.(null);
+    }
+  };
+
   const handleInputChange = (inputValue: string) => {
     if (suppressFormResetRef.current) return;
 
     const pendingReset = formResetRef.current;
-    if (formResetInputPendingRef.current) {
-      // React Aria may report the reset before the document bubble listener.
-      // A stopped reset has no bubble phase, so its next empty input is user
-      // interaction rather than another reset notification.
-      if (inputValue === '' && pendingReset?.event.cancelBubble !== true) {
-        formResetInputPendingRef.current = false;
-        return;
-      }
-
-      if (pendingReset && inputValue === pendingReset.state.defaultInputValue) {
-        return;
-      }
-
+    const pendingResetInput = getPendingResetInputHandling(
+      inputValue,
+      pendingReset,
+      formResetInputPendingRef.current,
+    );
+    if (pendingResetInput.clearPending) {
       formResetInputPendingRef.current = false;
     }
-
-    if (pendingReset && inputValue === pendingReset.state.defaultInputValue) {
-      return;
-    }
+    if (pendingResetInput.ignore) return;
     supersedeFormReset();
 
     if (readOnly) {
@@ -1124,22 +1221,7 @@ function useComboBoxModel<T>(
       !allowsCustomValue &&
       getVisibleItems(items, decoratedItems, inputValue, contains).length === 0;
 
-    if (props.allowsCustomValue !== true) {
-      if (inputValue === '' && value !== undefined) {
-        markFormResetChange();
-        onChange?.(null);
-      }
-
-      return;
-    }
-
-    const nextValue = inputValue || null;
-    if (value !== undefined) {
-      pendingCustomValueRef.current = nextValue;
-    }
-    lastCustomChangeRef.current = nextValue;
-    markFormResetChange();
-    props.onChange?.(nextValue);
+    emitInputChange(inputValue);
   };
 
   const handleValueChange = (
@@ -1168,19 +1250,7 @@ function useComboBoxModel<T>(
     }
 
     if (key === null) {
-      if (value === undefined) {
-        uncontrolledSelectedKeyRef.current = null;
-        uncontrolledSelectedItemRef.current = undefined;
-      }
-
-      if (allowsCustomValue && lastCustomChangeRef.current !== undefined) {
-        return;
-      }
-
-      if (shouldEmitChange) {
-        markFormResetChange();
-        onChange?.(null);
-      }
+      handleNullValueChange(shouldEmitChange);
       return;
     }
 
