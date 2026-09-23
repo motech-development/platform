@@ -7,6 +7,7 @@ import { useHover } from 'react-aria/useHover';
 import { useListBox, useOption } from 'react-aria/useListBox';
 import { useSelect } from 'react-aria/useSelect';
 import { useVisuallyHidden } from 'react-aria/VisuallyHidden';
+import { flushSync } from 'react-dom';
 // The low-level Select state is required to avoid RAC's native HiddenSelect.
 import { useSelectState } from 'react-stately/useSelectState';
 import { useBreezeContext } from '../../provider/BreezeContext';
@@ -345,6 +346,10 @@ export function Select<T>({
     onChange: (key) => {
       if (suppressOnChangeRef.current) return;
 
+      // A real user selection supersedes a default that was waiting for a
+      // loading collection to arrive.
+      pendingDefaultValueRef.current = null;
+
       if (key === null) {
         onChange?.(null);
         return;
@@ -469,8 +474,18 @@ export function Select<T>({
     if (isControlled) return undefined;
 
     let active = true;
+    let pendingResetEvent: Event | null = null;
 
-    const reset = (event: Event) => {
+    const applyReset = () => {
+      suppressOnChangeRef.current = true;
+      try {
+        setStateValueRef.current(resetValueRef.current);
+      } finally {
+        suppressOnChangeRef.current = false;
+      }
+    };
+
+    const captureReset = (event: Event) => {
       const associatedForm = form
         ? document.getElementById(form)
         : triggerRef.current?.form;
@@ -482,22 +497,34 @@ export function Select<T>({
         return;
       }
 
+      pendingResetEvent = event;
       queueMicrotask(() => {
-        if (!active || event.defaultPrevented) return;
-
-        suppressOnChangeRef.current = true;
-        try {
-          setStateValueRef.current(resetValueRef.current);
-        } finally {
-          suppressOnChangeRef.current = false;
+        if (!active || pendingResetEvent !== event || event.defaultPrevented) {
+          return;
         }
+
+        pendingResetEvent = null;
+        flushSync(applyReset);
       });
     };
-    document.addEventListener('reset', reset, true);
+    const finalizeReset = (event: Event) => {
+      if (pendingResetEvent !== event) return;
+
+      flushSync(() => undefined);
+      pendingResetEvent = null;
+      if (!active || event.defaultPrevented) return;
+
+      flushSync(applyReset);
+    };
+
+    document.addEventListener('reset', captureReset, true);
+    document.addEventListener('reset', finalizeReset);
 
     return () => {
       active = false;
-      document.removeEventListener('reset', reset, true);
+      pendingResetEvent = null;
+      document.removeEventListener('reset', captureReset, true);
+      document.removeEventListener('reset', finalizeReset);
     };
   }, [form, isControlled]);
 

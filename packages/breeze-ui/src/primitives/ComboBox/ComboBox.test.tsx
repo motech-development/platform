@@ -286,6 +286,62 @@ describe('ComboBox', () => {
     expect(new FormData(document.forms[0]).get('supplier')).toBe('acme');
   });
 
+  it('commits a unique non-custom item from its browser autofill id', () => {
+    const onChange = vi.fn<(value: Supplier | null) => void>();
+
+    renderBreeze(
+      <form aria-label="Supplier form">
+        <ComboBox
+          autoComplete="organization"
+          getItem={getItem}
+          items={suppliers}
+          label="Supplier"
+          name="supplier"
+          onChange={onChange}
+        />
+      </form>,
+    );
+
+    const input = screen.getByRole('combobox', { name: 'Supplier' });
+    fireEvent.input(input, {
+      inputType: 'insertReplacementText',
+      target: { value: suppliers[0].id },
+    });
+
+    expect(onChange).toHaveBeenCalledTimes(1);
+    expect(onChange).toHaveBeenCalledWith(suppliers[0]);
+    expect(input).toHaveValue(suppliers[0].label);
+    expect(new FormData(document.forms[0]).get('supplier')).toBe(
+      suppliers[0].id,
+    );
+  });
+
+  it('normalizes an autofilled id when the item is already selected', () => {
+    renderBreeze(
+      <form aria-label="Supplier form">
+        <ComboBox
+          autoComplete="organization"
+          defaultValue={suppliers[0]}
+          getItem={getItem}
+          items={suppliers}
+          label="Supplier"
+          name="supplier"
+        />
+      </form>,
+    );
+
+    const input = screen.getByRole('combobox', { name: 'Supplier' });
+    fireEvent.input(input, {
+      inputType: 'insertReplacementText',
+      target: { value: suppliers[0].id },
+    });
+
+    expect(input).toHaveValue(suppliers[0].label);
+    expect(new FormData(document.forms[0]).get('supplier')).toBe(
+      suppliers[0].id,
+    );
+  });
+
   it('deduplicates input and change handling for one autofill event', () => {
     const onChange = vi.fn<(value: Supplier | null) => void>();
 
@@ -779,6 +835,76 @@ describe('ComboBox', () => {
     expect(onChange).not.toHaveBeenCalled();
   });
 
+  it('applies a form reset before returning and preserves later input', async () => {
+    const user = userEvent.setup();
+
+    renderBreeze(
+      <form aria-label="Supplier form">
+        <ComboBox
+          defaultValue={suppliers[0]}
+          getItem={getItem}
+          items={suppliers}
+          label="Supplier"
+          name="supplier"
+        />
+      </form>,
+    );
+
+    const form = document.forms[0];
+    const input = screen.getByRole('combobox', { name: 'Supplier' });
+
+    await user.click(screen.getByRole('button', { name: /Show suggestions/ }));
+    await user.click(screen.getByRole('option', { name: /Brass & Co/ }));
+    form.reset();
+
+    expect(input).toHaveValue('Acme Supplies');
+    expect(new FormData(form).get('supplier')).toBe('acme');
+
+    fireEvent.input(input, { target: { value: 'Later query' } });
+
+    expect(input).toHaveValue('Later query');
+    await act(async () => {
+      await Promise.resolve();
+    });
+    expect(input).toHaveValue('Later query');
+    expect(new FormData(form).get('supplier')).toBe('acme');
+  });
+
+  it('does not swallow an empty edit after a successful form reset', async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn<(value: Supplier | string | null) => void>();
+
+    renderBreeze(
+      <form aria-label="Supplier form">
+        <ComboBox
+          allowsCustomValue
+          defaultValue="Initial supplier"
+          getItem={getItem}
+          items={suppliers}
+          label="Supplier"
+          name="supplier"
+          onChange={onChange}
+        />
+      </form>,
+    );
+
+    const form = document.forms[0];
+    const input = screen.getByRole('combobox', { name: 'Supplier' });
+    await user.clear(input);
+    await user.type(input, 'Changed supplier');
+    onChange.mockClear();
+
+    form.reset();
+    expect(input).toHaveValue('Initial supplier');
+
+    onChange.mockClear();
+    await user.clear(input);
+
+    expect(input).toHaveValue('');
+    expect(onChange).toHaveBeenCalledTimes(1);
+    expect(onChange).toHaveBeenCalledWith(null);
+  });
+
   it('keeps an empty uncontrolled reset target as null', async () => {
     const onChange = vi.fn<(value: Supplier | null) => void>();
     const undefinedSupplier = {
@@ -946,64 +1072,6 @@ describe('ComboBox', () => {
     expect(onChange).not.toHaveBeenCalled();
   });
 
-  it('aborts a queued reset when reset defers switching the combobox to controlled', async () => {
-    const user = userEvent.setup();
-    const onChange = vi.fn<(value: Supplier | null) => void>();
-
-    function ResettableComboBox() {
-      const [controlledValue, setControlledValue] = useState<Supplier>();
-
-      return (
-        <form
-          aria-label="Supplier form"
-          onResetCapture={(event) => {
-            event.stopPropagation();
-            setTimeout(() => {
-              startTransition(() => setControlledValue(suppliers[0]));
-            }, 0);
-          }}
-        >
-          {/* @ts-expect-error The test intentionally transitions this component between modes. */}
-          <ComboBox
-            defaultValue={suppliers[0]}
-            getItem={getItem}
-            items={suppliers}
-            label="Supplier"
-            name="supplier"
-            onChange={onChange}
-            value={controlledValue}
-          />
-          <button type="button" onClick={() => setControlledValue(undefined)}>
-            Use uncontrolled value
-          </button>
-        </form>
-      );
-    }
-
-    renderBreeze(<ResettableComboBox />);
-
-    const form = document.forms[0];
-    const input = screen.getByRole('combobox', { name: 'Supplier' });
-    await user.click(screen.getByRole('button', { name: /Show suggestions/ }));
-    await user.click(screen.getByRole('option', { name: /Brass & Co/ }));
-    await user.keyboard('{Escape}');
-    onChange.mockClear();
-
-    fireEvent.reset(form);
-
-    await waitFor(() =>
-      expect(screen.getByRole('combobox', { name: 'Supplier' })).toHaveValue(
-        'Acme Supplies',
-      ),
-    );
-    expect(onChange).not.toHaveBeenCalled();
-
-    fireEvent.click(screen.getByText('Use uncontrolled value'));
-
-    await waitFor(() => expect(input).toHaveValue('Brass & Co'));
-    expect(onChange).not.toHaveBeenCalled();
-  });
-
   it('uses the latest committed reset handler after a same-mode rerender', async () => {
     const user = userEvent.setup();
     const staleOnChange = vi.fn<(value: Supplier | null) => void>();
@@ -1045,42 +1113,6 @@ describe('ComboBox', () => {
     expect(staleOnChange).not.toHaveBeenCalled();
     expect(latestOnChange).toHaveBeenCalledTimes(1);
     expect(latestOnChange).toHaveBeenCalledWith(suppliers[0]);
-  });
-
-  it('clears deferred reset timers when the combobox unmounts', async () => {
-    vi.useFakeTimers();
-
-    try {
-      const onChange = vi.fn<(value: Supplier | null) => void>();
-      const { unmount } = renderBreeze(
-        <form aria-label="Supplier form">
-          <ComboBox
-            defaultValue={suppliers[0]}
-            getItem={getItem}
-            items={suppliers}
-            label="Supplier"
-            name="supplier"
-            onChange={onChange}
-          />
-        </form>,
-      );
-
-      fireEvent.reset(document.forms[0]);
-
-      await act(async () => {
-        await Promise.resolve();
-      });
-
-      expect(vi.getTimerCount()).toBe(1);
-
-      unmount();
-
-      expect(vi.getTimerCount()).toBe(0);
-      vi.runAllTimers();
-      expect(onChange).not.toHaveBeenCalled();
-    } finally {
-      vi.useRealTimers();
-    }
   });
 
   it('restores and reports a changed uncontrolled custom default on form reset', async () => {
@@ -1418,6 +1450,41 @@ describe('ComboBox', () => {
 
     expect(onChange).toHaveBeenLastCalledWith('Juice');
     expect(input).toHaveValue('Juice');
+  });
+
+  it('keeps an echoed custom string distinct from a matching item', async () => {
+    const user = userEvent.setup();
+    const items = ['GB', 'US'];
+    const getStringItem = (item: string) => ({
+      id: item,
+      label: item === 'GB' ? 'United Kingdom' : 'United States',
+    });
+
+    function EchoingStringComboBox() {
+      const [value, setValue] = useState<string | null>(null);
+
+      return (
+        <form aria-label="Country form">
+          <ComboBox
+            allowsCustomValue
+            getItem={getStringItem}
+            items={items}
+            label="Country"
+            name="country"
+            onChange={setValue}
+            value={value}
+          />
+        </form>
+      );
+    }
+
+    renderBreeze(<EchoingStringComboBox />);
+
+    const input = screen.getByRole('combobox', { name: 'Country' });
+    await user.type(input, 'GB');
+
+    expect(input).toHaveValue('GB');
+    expect(new FormData(document.forms[0]).get('country')).toBe('GB');
   });
 
   it('supports free text while keeping suggestions available', async () => {

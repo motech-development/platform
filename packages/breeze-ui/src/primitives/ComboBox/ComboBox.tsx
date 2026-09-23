@@ -17,6 +17,7 @@ import {
 import { Group as AriaGroup } from 'react-aria-components/Group';
 import { Input as AriaInput } from 'react-aria-components/Input';
 import { ListBox as AriaListBox } from 'react-aria-components/ListBox';
+import { flushSync } from 'react-dom';
 import { useBreezeContext } from '../../provider/BreezeContext';
 import CollectionPopover from '../Collection/CollectionPopover';
 import DescriptorOption from '../Collection/DescriptorOption';
@@ -162,6 +163,29 @@ function sameComboBoxKey(left: ComboBoxChangeKey, right: ComboBoxChangeKey) {
 
 function itemKey<T>(item: ComboBoxItem<T>) {
   return item.descriptor.id;
+}
+
+function resolveComboBoxItem<T>(
+  key: ComboBoxChangeKey,
+  decoratedItems: ComboBoxItem<T>[],
+  initialControlledItem: ComboBoxItem<T> | undefined,
+  defaultSelectedItem: ComboBoxItem<T> | undefined,
+) {
+  const stringKey = String(key);
+  const decoratedItem = decoratedItems.find(
+    (item) => itemKey(item) === stringKey,
+  );
+
+  if (decoratedItem) return decoratedItem;
+  if (initialControlledItem?.descriptor.id === stringKey) {
+    return initialControlledItem;
+  }
+
+  if (defaultSelectedItem?.descriptor.id === stringKey) {
+    return defaultSelectedItem;
+  }
+
+  return undefined;
 }
 
 function getSelectedKey<T>(
@@ -375,13 +399,19 @@ interface ComboBoxInputProps<T> {
   form?: string;
   getItem: (item: T) => ItemDescriptor;
   clearFormReset: () => void;
-  handleFormReset: (event: Event, state: ComboBoxResetState) => void;
+  handleFormReset: (
+    event: Event,
+    state: ComboBoxResetState | null,
+    phase: ComboBoxResetPhase,
+  ) => void;
   isControlled: boolean;
   items: T[];
   loading: boolean;
   placeholder?: string;
   readOnly: boolean;
 }
+
+type ComboBoxResetPhase = 'capture' | 'bubble';
 
 interface ComboBoxResetState {
   defaultInputValue: string;
@@ -427,38 +457,77 @@ function ComboBoxInput<T>({
     if (isControlled) return undefined;
 
     let active = true;
+    let pendingResetEvent: Event | null = null;
+    let pendingResetInputValue: string | null = null;
 
-    const handleReset = (event: Event) => {
+    const captureReset = (event: Event) => {
       const associatedForm = form
         ? document.getElementById(form)
         : inputRef.current?.form;
       const currentState = stateRef.current;
+      const input = inputRef.current;
 
       if (
         !(associatedForm instanceof HTMLFormElement) ||
         event.target !== associatedForm ||
-        !currentState
+        !currentState ||
+        !input
       ) {
         return;
       }
 
-      formResetHandlerRef.current(event, {
-        defaultInputValue: currentState.defaultInputValue,
-        defaultValue: getComboBoxKey(currentState.defaultValue),
-        inputValue: currentState.inputValue,
-        isActive: () => active,
-        setInputValue: (value) => currentState.setInputValue(value),
-        setValue: (value) => currentState.setValue(value),
-        value: getComboBoxKey(currentState.value),
+      // Native form reset runs after the event listeners. Keep the browser's
+      // own reset target aligned with React Aria's committed default so it
+      // cannot overwrite the synchronous state update.
+      input.defaultValue = currentState.defaultInputValue;
+      pendingResetEvent = event;
+      pendingResetInputValue = currentState.defaultInputValue;
+      formResetHandlerRef.current(
+        event,
+        {
+          defaultInputValue: currentState.defaultInputValue,
+          defaultValue: getComboBoxKey(currentState.defaultValue),
+          inputValue: currentState.inputValue,
+          isActive: () => active,
+          setInputValue: (value) => currentState.setInputValue(value),
+          setValue: (value) => currentState.setValue(value),
+          value: getComboBoxKey(currentState.value),
+        },
+        'capture',
+      );
+    };
+    const finalizeReset = (event: Event) => {
+      if (pendingResetEvent !== event) return;
+
+      flushSync(() => undefined);
+      if (!active || pendingResetEvent !== event) return;
+
+      pendingResetEvent = null;
+      const resetInputValue = pendingResetInputValue;
+      pendingResetInputValue = null;
+      flushSync(() => {
+        formResetHandlerRef.current(event, null, 'bubble');
       });
+      if (
+        !event.defaultPrevented &&
+        resetInputValue !== null &&
+        inputRef.current
+      ) {
+        inputRef.current.value = resetInputValue;
+        inputRef.current.defaultValue = resetInputValue;
+      }
     };
 
-    document.addEventListener('reset', handleReset, true);
+    document.addEventListener('reset', captureReset, true);
+    document.addEventListener('reset', finalizeReset);
 
     return () => {
       active = false;
+      pendingResetEvent = null;
+      pendingResetInputValue = null;
       clearFormResetRef.current();
-      document.removeEventListener('reset', handleReset, true);
+      document.removeEventListener('reset', captureReset, true);
+      document.removeEventListener('reset', finalizeReset);
     };
   }, [form, isControlled]);
 
@@ -484,19 +553,24 @@ function ComboBoxInput<T>({
     if (inputType && inputType !== 'insertReplacementText') return;
 
     handledAutofillEvent.current = nativeEvent;
+    const input = event.currentTarget;
 
     const matchingItems = items
       .map((item) => ({ descriptor: getItem(item), item }))
       .filter(
         ({ descriptor }) =>
-          descriptor.label === event.currentTarget.value &&
+          (descriptor.id === input.value || descriptor.label === input.value) &&
           !descriptor.disabled,
       );
 
     if (matchingItems.length !== 1) return;
 
     const [nextItem] = matchingItems;
-    if (state.value === nextItem.descriptor.id) return;
+    if (state.value === nextItem.descriptor.id) {
+      input.value = nextItem.descriptor.label;
+      state.setInputValue(nextItem.descriptor.label);
+      return;
+    }
 
     state.setInputValue(nextItem.descriptor.label);
     state.setValue(nextItem.descriptor.id);
@@ -644,7 +718,11 @@ interface ComboBoxModel<T> {
   defaultSelectedKey: string | undefined;
   defaultTextValue: string | undefined;
   clearFormReset: () => void;
-  handleFormReset: (event: Event, state: ComboBoxResetState) => void;
+  handleFormReset: (
+    event: Event,
+    state: ComboBoxResetState | null,
+    phase: ComboBoxResetPhase,
+  ) => void;
   handleInputChange: (inputValue: string) => void;
   handleOpenChange: (isOpen: boolean) => void;
   handleValueChange: (key: ComboBoxChangeKey) => void;
@@ -691,17 +769,11 @@ function useComboBoxModel<T>(
   const selectionResetLabelRef = useRef<string | null>(null);
   const lastCustomChangeRef = useRef<ComboBoxValue<T> | undefined>(undefined);
   const autoClosedNoResultsRef = useRef(false);
+  const formResetInputPendingRef = useRef(false);
   const formResetRef = useRef<{
     event: Event;
     state: ComboBoxResetState;
   } | null>(null);
-  const formResetTimersRef = useRef<{
-    first: ReturnType<typeof setTimeout> | null;
-    second: ReturnType<typeof setTimeout> | null;
-  }>({
-    first: null,
-    second: null,
-  });
   const applyFormResetRef = useRef<(state: ComboBoxResetState) => void>(
     () => undefined,
   );
@@ -709,19 +781,8 @@ function useComboBoxModel<T>(
   const wasReadOnly = useRef(readOnly);
 
   const clearFormReset = () => {
-    const timers = formResetTimersRef.current;
-
-    if (timers.first !== null) {
-      clearTimeout(timers.first);
-      timers.first = null;
-    }
-
-    if (timers.second !== null) {
-      clearTimeout(timers.second);
-      timers.second = null;
-    }
-
     formResetRef.current = null;
+    formResetInputPendingRef.current = false;
   };
 
   useLayoutEffect(() => {
@@ -788,10 +849,19 @@ function useComboBoxModel<T>(
       uncontrolledSelectedItemRef.current = currentUncontrolledSelectedItem;
     }
   }, [currentUncontrolledSelectedItem, value]);
-  const selectedItem =
-    value !== undefined
-      ? findItem(decoratedItems, value, getItem, allowsCustomValue)
-      : retainedUncontrolledSelectedItem;
+  const pendingCustomText =
+    value !== undefined &&
+    allowsCustomValue &&
+    typeof value === 'string' &&
+    matchesControlledCustomValue(value, pendingCustomValueRef.current);
+  let selectedItem: ComboBoxItem<T> | undefined;
+  if (value === undefined) {
+    selectedItem = retainedUncontrolledSelectedItem;
+  } else if (pendingCustomText) {
+    selectedItem = undefined;
+  } else {
+    selectedItem = findItem(decoratedItems, value, getItem, allowsCustomValue);
+  }
   const selectedKey =
     value !== undefined
       ? getSelectedKey(value, selectedItem, getItem, allowsCustomValue)
@@ -832,11 +902,13 @@ function useComboBoxModel<T>(
     if (controlledSelectionUpdate.resetLabel === undefined) return;
 
     if (isControlledCustomEcho) {
-      pendingCustomValueRef.current = undefined;
-    } else {
-      selectionResetLabelRef.current = controlledSelectionUpdate.resetLabel;
-      pendingCustomValueRef.current = undefined;
+      // Keep the echoed text marked as custom until an explicit option
+      // selection or another controlled value replaces it.
+      return;
     }
+
+    selectionResetLabelRef.current = controlledSelectionUpdate.resetLabel;
+    pendingCustomValueRef.current = undefined;
   }, [
     controlledSelection?.id,
     controlledSelection?.label,
@@ -911,6 +983,15 @@ function useComboBoxModel<T>(
   };
 
   const handleInputChange = (inputValue: string) => {
+    if (formResetInputPendingRef.current) {
+      if (inputValue === '') {
+        formResetInputPendingRef.current = false;
+        return;
+      }
+
+      formResetInputPendingRef.current = false;
+    }
+
     if (formResetRef.current || suppressFormResetRef.current) return;
 
     if (readOnly) {
@@ -968,6 +1049,8 @@ function useComboBoxModel<T>(
   ) => {
     if (formResetRef.current || suppressFormResetRef.current) return;
 
+    formResetInputPendingRef.current = false;
+
     const isDraftCommit =
       key !== null &&
       value !== undefined &&
@@ -990,7 +1073,9 @@ function useComboBoxModel<T>(
         return;
       }
 
-      if (shouldEmitChange) onChange?.(null);
+      if (shouldEmitChange) {
+        onChange?.(null);
+      }
       return;
     }
 
@@ -998,18 +1083,12 @@ function useComboBoxModel<T>(
       uncontrolledSelectedKeyRef.current = String(key);
     }
 
-    let fallbackItem: ComboBoxItem<T> | undefined;
-    if (initialControlledItem?.descriptor.id === String(key)) {
-      fallbackItem = initialControlledItem;
-    } else if (defaultSelectedItem?.descriptor.id === String(key)) {
-      fallbackItem = defaultSelectedItem;
-    }
-
-    const nextItem =
-      collectionDecoratedItems.find((item) => itemKey(item) === String(key)) ??
-      decoratedItems.find((item) => itemKey(item) === String(key)) ??
-      fallbackItem;
-
+    const nextItem = resolveComboBoxItem(
+      key,
+      collectionDecoratedItems,
+      initialControlledItem,
+      defaultSelectedItem,
+    );
     if (value === undefined) {
       uncontrolledSelectedItemRef.current = nextItem;
     }
@@ -1023,7 +1102,9 @@ function useComboBoxModel<T>(
     selectionResetLabelRef.current = nextItem?.descriptor.label ?? '';
     lastCustomChangeRef.current = undefined;
     resetInputDraft();
-    if (shouldEmitChange) onChange?.(nextValue);
+    if (shouldEmitChange) {
+      onChange?.(nextValue);
+    }
   };
 
   useLayoutEffect(() => {
@@ -1036,10 +1117,20 @@ function useComboBoxModel<T>(
         allowsCustomValue &&
         resetState.inputValue !== resetState.defaultInputValue;
       const resetChanged = selectionChanged || customTextChanged;
-
+      const preservesOffListCustomDefault =
+        allowsCustomValue &&
+        resetState.defaultValue !== null &&
+        defaultSelectedItem !== undefined &&
+        !collectionDecoratedItems.some(
+          ({ descriptor }) => descriptor.id === resetState.defaultValue,
+        ) &&
+        resetState.value === null;
       suppressFormResetRef.current = true;
+      formResetInputPendingRef.current = true;
       try {
-        resetState.setValue(resetState.defaultValue);
+        if (!preservesOffListCustomDefault) {
+          resetState.setValue(resetState.defaultValue);
+        }
         resetState.setInputValue(resetState.defaultInputValue);
       } finally {
         suppressFormResetRef.current = false;
@@ -1050,62 +1141,68 @@ function useComboBoxModel<T>(
 
       if (props.allowsCustomValue === true) {
         handleValueChange(resetState.defaultValue, false);
-        if (resetChanged) props.onChange?.(initialDefaultValue ?? null);
+        if (resetChanged) {
+          props.onChange?.(initialDefaultValue ?? null);
+        }
       } else {
         handleValueChange(resetState.defaultValue, resetChanged);
       }
     };
   });
 
-  const handleFormReset = (event: Event, state: ComboBoxResetState) => {
+  const handleFormReset = (
+    event: Event,
+    state: ComboBoxResetState | null,
+    phase: ComboBoxResetPhase,
+  ) => {
     if (value !== undefined) return;
 
-    clearFormReset();
-    formResetRef.current = { event, state };
-
-    queueMicrotask(() => {
-      const pendingReset = formResetRef.current;
-
-      if (!pendingReset || pendingReset.event !== event) return;
-
-      if (!pendingReset.state.isActive()) {
-        formResetRef.current = null;
-        return;
+    const restoreCanceledReset = (resetState: ComboBoxResetState) => {
+      suppressFormResetRef.current = true;
+      try {
+        resetState.setValue(resetState.value);
+        resetState.setInputValue(resetState.inputValue);
+      } finally {
+        suppressFormResetRef.current = false;
       }
+    };
 
-      if (event.defaultPrevented) {
+    if (phase === 'capture') {
+      if (!state) return;
+
+      clearFormReset();
+      formResetRef.current = { event, state };
+
+      queueMicrotask(() => {
+        const pendingReset = formResetRef.current;
+
+        if (pendingReset?.event !== event) return;
+
         formResetRef.current = null;
-        suppressFormResetRef.current = true;
-        try {
-          pendingReset.state.setValue(pendingReset.state.value);
-          pendingReset.state.setInputValue(pendingReset.state.inputValue);
-        } finally {
-          suppressFormResetRef.current = false;
+        if (!pendingReset.state.isActive()) return;
+
+        if (event.defaultPrevented) {
+          restoreCanceledReset(pendingReset.state);
+          return;
         }
 
-        return;
-      }
+        flushSync(() => applyFormResetRef.current(pendingReset.state));
+      });
+      return;
+    }
 
-      // Keep two task turns so reset handlers can start and commit concurrent
-      // control-mode changes before this uncontrolled reset is applied.
-      formResetTimersRef.current.first = setTimeout(() => {
-        formResetTimersRef.current.first = null;
-        formResetTimersRef.current.second = setTimeout(() => {
-          formResetTimersRef.current.second = null;
-          const committedReset = formResetRef.current;
+    const pendingReset = formResetRef.current;
+    if (pendingReset?.event !== event) return;
 
-          if (!committedReset || committedReset.event !== event) return;
+    formResetRef.current = null;
+    if (!pendingReset.state.isActive()) return;
 
-          if (!committedReset.state.isActive()) {
-            formResetRef.current = null;
-            return;
-          }
+    if (event.defaultPrevented) {
+      restoreCanceledReset(pendingReset.state);
+      return;
+    }
 
-          formResetRef.current = null;
-          applyFormResetRef.current(committedReset.state);
-        }, 0);
-      }, 0);
-    });
+    applyFormResetRef.current(pendingReset.state);
   };
 
   return {

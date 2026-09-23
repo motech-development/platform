@@ -91,8 +91,23 @@ export default function CollectionPopover({
       !!right &&
       (left === right || left.contains(right) || right.contains(left));
     const isPrimaryPointer = (event: PointerEvent) => event.button === 0;
+    let pointerDismissExpiry: ReturnType<typeof setTimeout> | null = null;
+    const clearPointerDismissExpiry = () => {
+      if (pointerDismissExpiry !== null) {
+        clearTimeout(pointerDismissExpiry);
+        pointerDismissExpiry = null;
+      }
+    };
+    const schedulePointerDismissExpiry = () => {
+      clearPointerDismissExpiry();
+      pointerDismissExpiry = setTimeout(() => {
+        pointerDismissExpiry = null;
+        pointerDismissTargetRef.current = null;
+      }, 0);
+    };
     const onPointerDown = (event: PointerEvent) => {
       if (!isPrimaryPointer(event)) return;
+      clearPointerDismissExpiry();
       pointerDownTargetRef.current = isNode(event.target) ? event.target : null;
       pointerDismissTargetRef.current = null;
     };
@@ -100,11 +115,22 @@ export default function CollectionPopover({
       if (!isPrimaryPointer(event)) return;
       const pointerDownTarget = pointerDownTargetRef.current;
       const pointerUpTarget = isNode(event.target) ? event.target : null;
-      if (!isOutside(pointerDownTarget) || !isOutside(pointerUpTarget)) return;
+      if (!isOutside(pointerUpTarget)) return;
+
+      if (!isOutside(pointerDownTarget)) {
+        // A drag that starts in the surface and ends outside must not be
+        // reinterpreted as an outside click by the subsequent click event.
+        pointerDismissTargetRef.current = pointerUpTarget;
+        pointerDownTargetRef.current = null;
+        schedulePointerDismissExpiry();
+        return;
+      }
+
       pointerDismissTargetRef.current = pointerUpTarget;
       onOpenChange(false);
     };
     const onPointerCancel = () => {
+      clearPointerDismissExpiry();
       pointerDownTargetRef.current = null;
       pointerDismissTargetRef.current = null;
     };
@@ -116,6 +142,7 @@ export default function CollectionPopover({
       ) {
         onOpenChange(false);
       }
+      clearPointerDismissExpiry();
       pointerDownTargetRef.current = null;
       pointerDismissTargetRef.current = null;
     };
@@ -137,6 +164,7 @@ export default function CollectionPopover({
         true,
       );
       host.ownerDocument.removeEventListener('click', onClick, true);
+      clearPointerDismissExpiry();
       pointerDownTargetRef.current = null;
       pointerDismissTargetRef.current = null;
     };
