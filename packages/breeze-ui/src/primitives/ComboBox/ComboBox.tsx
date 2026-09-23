@@ -561,8 +561,6 @@ function ComboBoxInput<T>({
   }, [clearFormReset, handleFormReset, state]);
 
   useLayoutEffect(() => {
-    if (isControlled) return undefined;
-
     let active = true;
     let pendingResetEvent: Event | null = null;
     let pendingResetInput: PendingResetInput | null = null;
@@ -938,6 +936,10 @@ function useComboBoxModel<T>(
   const [initialControlledItem] = useState<ComboBoxItem<T> | undefined>(() =>
     getInitialControlledItem(value, getItem, allowsCustomValue),
   );
+  const [initialControlledValue] = useState<ComboBoxValue<T> | undefined>(
+    () => value,
+  );
+  const [initiallyControlled] = useState(() => value !== undefined);
   const [initialDefaultValue] = useState<ComboBoxValue<T> | undefined>(
     () => defaultValue,
   );
@@ -1143,6 +1145,19 @@ function useComboBoxModel<T>(
   const effectiveFilterText = controlledSelectionChanged ? '' : filterText;
   const collectionItems = items;
   const collectionDecoratedItems = decoratedItems;
+  let initialResetValue = initialDefaultValue;
+  if (initiallyControlled) {
+    initialResetValue = initialControlledValue;
+    if (initialControlledItem) {
+      const refreshedInitialControlledItem = collectionDecoratedItems.find(
+        ({ descriptor }) =>
+          descriptor.id === initialControlledItem.descriptor.id,
+      );
+      if (refreshedInitialControlledItem) {
+        initialResetValue = refreshedInitialControlledItem.item;
+      }
+    }
+  }
   const controlledTextValue = hasControlledInputDraft
     ? controlledInputDraft
     : baseControlledTextValue;
@@ -1375,7 +1390,7 @@ function useComboBoxModel<T>(
       if (props.allowsCustomValue === true) {
         handleValueChange(resetState.defaultValue, false);
         if (resetChanged) {
-          props.onChange?.(initialDefaultValue ?? null);
+          props.onChange?.(initialResetValue ?? null);
         }
       } else {
         handleValueChange(resetState.defaultValue, resetChanged);
@@ -1393,7 +1408,7 @@ function useComboBoxModel<T>(
 
       const nextValue =
         props.allowsCustomValue === true
-          ? initialDefaultValue ?? null
+          ? initialResetValue ?? null
           : getComboBoxValueForKey(
               resetState.defaultValue,
               undefined,
@@ -1412,8 +1427,6 @@ function useComboBoxModel<T>(
     state: ComboBoxResetState | null,
     phase: ComboBoxResetPhase,
   ) => {
-    if (value !== undefined) return;
-
     if (phase === 'capture') {
       if (!state) return;
 

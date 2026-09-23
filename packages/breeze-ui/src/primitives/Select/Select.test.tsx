@@ -1426,6 +1426,231 @@ describe('Select', () => {
     expect(onChange).not.toHaveBeenCalled();
   });
 
+  it('reports the initial controlled value when an accepted reset changes it', async () => {
+    const user = userEvent.setup();
+    const resetChoices = choices.map((choice) => ({
+      ...choice,
+      disabled: false,
+    }));
+    const onChange = vi.fn<(value: ItemDescriptor | null) => void>();
+
+    function ControlledResetSelect() {
+      const [value, setValue] = useState(resetChoices[0]);
+
+      return (
+        <form aria-label="Payment form">
+          <Select
+            getItem={(item) => item}
+            items={resetChoices}
+            label="Payment method"
+            name="payment"
+            onChange={onChange}
+            value={value}
+          />
+          <button type="button" onClick={() => setValue(resetChoices[1])}>
+            Use current value
+          </button>
+        </form>
+      );
+    }
+
+    renderBreeze(<ControlledResetSelect />);
+
+    const form = document.forms[0];
+    const trigger = screen.getByRole('combobox', {
+      name: 'Bank account Payment method',
+    });
+    await user.click(screen.getByRole('button', { name: 'Use current value' }));
+    expect(trigger).toHaveTextContent('Cash');
+    onChange.mockClear();
+
+    fireEvent.reset(form);
+
+    await waitFor(() => {
+      expect(onChange).toHaveBeenCalledWith(resetChoices[0]);
+    });
+    expect(onChange).toHaveBeenCalledTimes(1);
+    expect(trigger).toHaveTextContent('Cash');
+  });
+
+  it('resolves the controlled reset value from the current items', async () => {
+    const initialChoice = { ...choices[0], disabled: false };
+    const currentChoice = { ...choices[1], disabled: false };
+    const refreshedInitialChoice = {
+      ...initialChoice,
+      label: 'Updated bank account',
+    };
+    const onChange = vi.fn<(value: ItemDescriptor | null) => void>();
+    const { rerender } = renderBreeze(
+      <form aria-label="Payment form">
+        <Select
+          getItem={(item) => item}
+          items={[initialChoice, currentChoice]}
+          label="Payment method"
+          name="payment"
+          onChange={onChange}
+          value={initialChoice}
+        />
+      </form>,
+    );
+
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <form aria-label="Payment form">
+          <Select
+            getItem={(item) => item}
+            items={[refreshedInitialChoice, currentChoice]}
+            label="Payment method"
+            name="payment"
+            onChange={onChange}
+            value={currentChoice}
+          />
+        </form>
+      </BreezeProvider>,
+    );
+    onChange.mockClear();
+
+    fireEvent.reset(document.forms[0]);
+
+    await waitFor(() => {
+      expect(onChange).toHaveBeenCalledWith(refreshedInitialChoice);
+    });
+    expect(onChange).toHaveBeenCalledTimes(1);
+  });
+
+  it('reports null when the controlled reset value is unavailable after loading', async () => {
+    const initialChoice = { ...choices[0], disabled: false };
+    const currentChoice = { ...choices[1], disabled: false };
+    const onChange = vi.fn<(value: ItemDescriptor | null) => void>();
+    const { rerender } = renderBreeze(
+      <form aria-label="Payment form">
+        <Select
+          getItem={(item) => item}
+          items={[initialChoice, currentChoice]}
+          label="Payment method"
+          name="payment"
+          onChange={onChange}
+          value={initialChoice}
+        />
+      </form>,
+    );
+
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <form aria-label="Payment form">
+          <Select
+            getItem={(item) => item}
+            items={[currentChoice]}
+            label="Payment method"
+            name="payment"
+            onChange={onChange}
+            value={currentChoice}
+          />
+        </form>
+      </BreezeProvider>,
+    );
+    onChange.mockClear();
+
+    fireEvent.reset(document.forms[0]);
+
+    await waitFor(() => {
+      expect(onChange).toHaveBeenCalledWith(null);
+    });
+    expect(onChange).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps the controlled reset value while its collection is loading', async () => {
+    const initialChoice = { ...choices[0], disabled: false };
+    const currentChoice = { ...choices[1], disabled: false };
+    const onChange = vi.fn<(value: ItemDescriptor | null) => void>();
+    const { rerender } = renderBreeze(
+      <form aria-label="Payment form">
+        <Select
+          getItem={(item) => item}
+          items={[initialChoice, currentChoice]}
+          label="Payment method"
+          name="payment"
+          onChange={onChange}
+          value={initialChoice}
+        />
+      </form>,
+    );
+
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <form aria-label="Payment form">
+          <Select
+            getItem={(item) => item}
+            items={[currentChoice]}
+            label="Payment method"
+            loading
+            name="payment"
+            onChange={onChange}
+            value={currentChoice}
+          />
+        </form>
+      </BreezeProvider>,
+    );
+    onChange.mockClear();
+
+    fireEvent.reset(document.forms[0]);
+
+    await waitFor(() => {
+      expect(onChange).toHaveBeenCalledWith(initialChoice);
+    });
+    expect(onChange).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not report a controlled reset when the form reset is canceled', async () => {
+    const user = userEvent.setup();
+    const resetChoices = choices.map((choice) => ({
+      ...choice,
+      disabled: false,
+    }));
+    const onChange = vi.fn<(value: ItemDescriptor | null) => void>();
+
+    function ControlledResetSelect() {
+      const [value, setValue] = useState(resetChoices[0]);
+
+      return (
+        <form
+          aria-label="Payment form"
+          onReset={(event) => event.preventDefault()}
+        >
+          <Select
+            getItem={(item) => item}
+            items={resetChoices}
+            label="Payment method"
+            name="payment"
+            onChange={onChange}
+            value={value}
+          />
+          <button type="button" onClick={() => setValue(resetChoices[1])}>
+            Use current value
+          </button>
+        </form>
+      );
+    }
+
+    renderBreeze(<ControlledResetSelect />);
+
+    const form = document.forms[0];
+    const trigger = screen.getByRole('combobox', {
+      name: 'Bank account Payment method',
+    });
+    await user.click(screen.getByRole('button', { name: 'Use current value' }));
+    onChange.mockClear();
+
+    fireEvent.reset(form);
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(onChange).not.toHaveBeenCalled();
+    expect(trigger).toHaveTextContent('Cash');
+  });
+
   it('does not restore the uncontrolled default selection when form reset is canceled', async () => {
     const user = userEvent.setup();
     const resetChoices = choices.map((choice) => ({

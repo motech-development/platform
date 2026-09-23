@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { useId, useLayoutEffect, useMemo, useRef } from 'react';
+import { useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { mergeProps } from 'react-aria/mergeProps';
 import { useButton } from 'react-aria/useButton';
 import { useFocusRing } from 'react-aria/useFocusRing';
@@ -163,6 +163,22 @@ function findUniqueAutofillItem<T>(items: SelectItem<T>[], value: string) {
   return matches.length === 1 ? matches[0] : undefined;
 }
 
+function resolveControlledResetItem<T>(
+  initialControlledItem: SelectItem<T> | null | undefined,
+  items: SelectItem<T>[],
+  loading: boolean,
+) {
+  if (initialControlledItem === undefined || initialControlledItem === null) {
+    return initialControlledItem;
+  }
+
+  return (
+    items.find(
+      ({ descriptor }) => descriptor.id === initialControlledItem.descriptor.id,
+    ) ?? (loading ? initialControlledItem : null)
+  );
+}
+
 function SelectOption<T>({
   node,
   state,
@@ -295,6 +311,17 @@ export function Select<T>({
     [getItem, items],
   );
   const isControlled = value !== undefined;
+  const [initialControlledItem] = useState<SelectItem<T> | null | undefined>(
+    () => {
+      if (value === undefined) return undefined;
+      if (value === null) return null;
+
+      return {
+        descriptor: getItem(value),
+        item: value,
+      };
+    },
+  );
   const selectedValueItem = findItem(decoratedItems, value ?? null, getItem);
   const defaultSelectedItem = findItem(
     decoratedItems,
@@ -322,6 +349,22 @@ export function Select<T>({
   const resetValue =
     loading || hasInitialDefault ? initialDefaultValueRef.current : null;
   const resetValueRef = useRef(resetValue);
+  let controlledResetValueKey: string | null | undefined;
+  if (value === undefined) {
+    controlledResetValueKey = undefined;
+  } else if (value === null) {
+    controlledResetValueKey = null;
+  } else {
+    controlledResetValueKey = getItem(value).id;
+  }
+  const controlledResetItem = resolveControlledResetItem(
+    initialControlledItem,
+    decoratedItems,
+    loading,
+  );
+  const controlledResetValueKeyRef = useRef(controlledResetValueKey);
+  const controlledResetItemRef = useRef(controlledResetItem);
+  const onChangeRef = useRef(onChange);
   const suppressOnChangeRef = useRef(false);
   const collectionChildren = useMemo(
     () =>
@@ -430,7 +473,16 @@ export function Select<T>({
   useLayoutEffect(() => {
     resetValueRef.current = resetValue;
     setStateValueRef.current = (nextValue) => state.setValue(nextValue);
-  }, [resetValue, state]);
+    controlledResetValueKeyRef.current = controlledResetValueKey;
+    controlledResetItemRef.current = controlledResetItem;
+    onChangeRef.current = onChange;
+  }, [
+    controlledResetItem,
+    controlledResetValueKey,
+    onChange,
+    resetValue,
+    state,
+  ]);
 
   useLayoutEffect(() => {
     if ((decoratedItems.length === 0 || stateDisabled) && state.isOpen) {
@@ -482,12 +534,23 @@ export function Select<T>({
   }, [decoratedItems, isControlled, loading, state]);
 
   useLayoutEffect(() => {
-    if (isControlled) return undefined;
-
     let active = true;
     let pendingResetEvent: Event | null = null;
 
     const applyReset = () => {
+      if (isControlled) {
+        const resetItem = controlledResetItemRef.current;
+        if (
+          resetItem !== undefined &&
+          controlledResetValueKeyRef.current !==
+            (resetItem === null ? null : resetItem.descriptor.id)
+        ) {
+          onChangeRef.current?.(resetItem?.item ?? null);
+        }
+
+        return;
+      }
+
       suppressOnChangeRef.current = true;
       try {
         setStateValueRef.current(resetValueRef.current);
@@ -537,7 +600,7 @@ export function Select<T>({
       document.removeEventListener('reset', captureReset, true);
       document.removeEventListener('reset', finalizeReset);
     };
-  }, [form, isControlled]);
+  }, [form, initialControlledItem, isControlled]);
 
   return (
     <div className={fieldVariants.base.root}>
