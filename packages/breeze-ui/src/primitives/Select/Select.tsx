@@ -440,14 +440,23 @@ export function Select<T>({
 
   useLayoutEffect(() => {
     const pendingDefaultValue = pendingDefaultValueRef.current;
+    const hasPendingDefault = decoratedItems.some(
+      ({ descriptor }) => descriptor.id === pendingDefaultValue,
+    );
+
+    if (!loading && pendingDefaultValue !== null && !hasPendingDefault) {
+      pendingDefaultValueRef.current = null;
+      if (initialDefaultValueRef.current === pendingDefaultValue) {
+        initialDefaultValueRef.current = null;
+      }
+      return;
+    }
 
     if (
       isControlled ||
       state.value !== null ||
       pendingDefaultValue === null ||
-      !decoratedItems.some(
-        ({ descriptor }) => descriptor.id === pendingDefaultValue,
-      )
+      !hasPendingDefault
     ) {
       return;
     }
@@ -459,7 +468,7 @@ export function Select<T>({
     } finally {
       suppressOnChangeRef.current = false;
     }
-  }, [decoratedItems, isControlled, state]);
+  }, [decoratedItems, isControlled, loading, state]);
 
   useLayoutEffect(() => {
     if (
