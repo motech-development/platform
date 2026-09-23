@@ -571,7 +571,10 @@ export function Select<T>({
             // React Aria supplies the selected-value semantics.
             // eslint-disable-next-line react/jsx-props-no-spreading
             {...valueProps}
-            className={collectionVariants.base.content}
+            className={joinClassNames(
+              collectionVariants.base.content,
+              'breeze:text-start',
+            )}
           >
             {state.selectedItems[0]?.textValue ?? placeholder}
           </span>
