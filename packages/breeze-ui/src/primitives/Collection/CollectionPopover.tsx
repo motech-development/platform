@@ -115,7 +115,10 @@ export default function CollectionPopover({
       if (!isPrimaryPointer(event)) return;
       const pointerDownTarget = pointerDownTargetRef.current;
       const pointerUpTarget = isNode(event.target) ? event.target : null;
-      if (!isOutside(pointerUpTarget)) return;
+      if (!isOutside(pointerUpTarget)) {
+        pointerDownTargetRef.current = null;
+        return;
+      }
 
       if (!isOutside(pointerDownTarget)) {
         // A drag that starts in the surface and ends outside must not be
