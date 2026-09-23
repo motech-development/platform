@@ -199,6 +199,14 @@ function getComboBoxValueForKey<T>(
 ) {
   if (key === null) return null;
 
+  if (
+    value !== undefined &&
+    sameComboBoxKey(key, selectedKey) &&
+    !(typeof value === 'string' && allowsCustomValue)
+  ) {
+    return value as T;
+  }
+
   const nextItem = resolveComboBoxItem(
     key,
     decoratedItems,
@@ -207,14 +215,6 @@ function getComboBoxValueForKey<T>(
   );
 
   if (nextItem) return nextItem.item;
-
-  if (
-    value !== undefined &&
-    key === selectedKey &&
-    !(typeof value === 'string' && allowsCustomValue)
-  ) {
-    return value as T;
-  }
 
   return null;
 }
@@ -459,6 +459,16 @@ interface ComboBoxInputProps<T> {
   loading: boolean;
   placeholder?: string;
   readOnly: boolean;
+  resetName?: string;
+}
+
+interface PendingResetInput {
+  hiddenDefaultValue?: string;
+  hiddenInput?: HTMLInputElement;
+  hiddenValue?: string;
+  inputDefaultValue: string;
+  inputValue: string;
+  resetInputValue: string;
 }
 
 type ComboBoxResetPhase = 'capture' | 'bubble';
@@ -467,14 +477,17 @@ interface ComboBoxResetState {
   defaultInputValue: string;
   defaultValue: ComboBoxChangeKey;
   isActive: () => boolean;
+  isOpen: boolean;
   inputValue: string;
   setInputValue: (value: string) => void;
+  setOpen: (isOpen: boolean) => void;
   setValue: (value: ComboBoxChangeKey) => void;
   value: ComboBoxChangeKey;
 }
 
 interface ComboBoxResetTransaction {
   event: Event;
+  filterText: string;
   state: ComboBoxResetState;
   userInteracted: boolean;
   userChangeEmitted: boolean;
@@ -532,6 +545,7 @@ function ComboBoxInput<T>({
   loading,
   placeholder,
   readOnly,
+  resetName,
 }: Readonly<ComboBoxInputProps<T>>) {
   const state = useContext(AriaComboBoxStateContext);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -551,7 +565,7 @@ function ComboBoxInput<T>({
 
     let active = true;
     let pendingResetEvent: Event | null = null;
-    let pendingResetInputValue: string | null = null;
+    let pendingResetInput: PendingResetInput | null = null;
 
     const captureReset = (event: Event) => {
       const associatedForm = form
@@ -570,11 +584,27 @@ function ComboBoxInput<T>({
       }
 
       // Native form reset runs after the event listeners. Keep the browser's
-      // own reset target aligned with React Aria's committed default so it
-      // cannot overwrite the synchronous state update.
+      // own reset targets aligned with React Aria's committed defaults without
+      // exposing them before a consumer can cancel the reset.
+      const hiddenInput = resetName
+        ? associatedForm.elements.namedItem(resetName)
+        : null;
+      const pendingHiddenInput =
+        hiddenInput instanceof HTMLInputElement && hiddenInput.type === 'hidden'
+          ? hiddenInput
+          : undefined;
+      const inputDefaultValue = input.defaultValue;
+      const inputValue = input.value;
       input.defaultValue = currentState.defaultInputValue;
       pendingResetEvent = event;
-      pendingResetInputValue = currentState.defaultInputValue;
+      pendingResetInput = {
+        hiddenDefaultValue: pendingHiddenInput?.defaultValue,
+        hiddenInput: pendingHiddenInput,
+        hiddenValue: pendingHiddenInput?.value,
+        inputDefaultValue,
+        inputValue,
+        resetInputValue: currentState.defaultInputValue,
+      };
       formResetHandlerRef.current(
         event,
         {
@@ -582,7 +612,9 @@ function ComboBoxInput<T>({
           defaultValue: getComboBoxKey(currentState.defaultValue),
           inputValue: currentState.inputValue,
           isActive: () => active,
+          isOpen: currentState.isOpen,
           setInputValue: (value) => currentState.setInputValue(value),
+          setOpen: (isOpen) => currentState.setOpen(isOpen),
           setValue: (value) => currentState.setValue(value),
           value: getComboBoxKey(currentState.value),
         },
@@ -596,33 +628,43 @@ function ComboBoxInput<T>({
       if (!active || pendingResetEvent !== event) return;
 
       pendingResetEvent = null;
-      const resetInputValue = pendingResetInputValue;
-      pendingResetInputValue = null;
+      const resetInput = pendingResetInput;
+      pendingResetInput = null;
       flushSync(() => {
         formResetHandlerRef.current(event, null, 'bubble');
       });
-      if (
-        !event.defaultPrevented &&
-        resetInputValue !== null &&
-        inputRef.current
-      ) {
-        inputRef.current.value = resetInputValue;
-        inputRef.current.defaultValue = resetInputValue;
+      if (event.defaultPrevented) {
+        queueMicrotask(() => {
+          if (!active) return;
+
+          if (resetInput && inputRef.current) {
+            inputRef.current.value = resetInput.inputValue;
+            inputRef.current.defaultValue = resetInput.inputDefaultValue;
+          }
+          if (resetInput?.hiddenInput) {
+            resetInput.hiddenInput.value = resetInput.hiddenValue ?? '';
+            resetInput.hiddenInput.defaultValue =
+              resetInput.hiddenDefaultValue ?? '';
+          }
+        });
+      } else if (resetInput && inputRef.current) {
+        inputRef.current.value = resetInput.resetInputValue;
+        inputRef.current.defaultValue = resetInput.resetInputValue;
       }
     };
 
     document.addEventListener('reset', captureReset, true);
-    document.addEventListener('reset', finalizeReset);
+    window.addEventListener('reset', finalizeReset);
 
     return () => {
       active = false;
       clearFormResetRef.current();
       pendingResetEvent = null;
-      pendingResetInputValue = null;
+      pendingResetInput = null;
       document.removeEventListener('reset', captureReset, true);
-      document.removeEventListener('reset', finalizeReset);
+      window.removeEventListener('reset', finalizeReset);
     };
-  }, [form, isControlled]);
+  }, [form, isControlled, resetName]);
 
   const handleBlockedInput = (event: SyntheticEvent<HTMLInputElement>) => {
     if (!disabled && !readOnly) return;
@@ -916,13 +958,19 @@ function useComboBoxModel<T>(
   const suppressFormResetRef = useRef(false);
   const wasReadOnly = useRef(readOnly);
 
-  const restoreFormReset = (resetState: ComboBoxResetState) => {
+  const restoreFormReset = (
+    resetState: ComboBoxResetState,
+    restoreOpen = false,
+    restoreFilterText?: string,
+  ) => {
     if (!resetState.isActive()) return;
 
     suppressFormResetRef.current = true;
     try {
       resetState.setValue(resetState.value);
       resetState.setInputValue(resetState.inputValue);
+      if (restoreFilterText !== undefined) setFilterText(restoreFilterText);
+      if (restoreOpen) resetState.setOpen(resetState.isOpen);
     } finally {
       suppressFormResetRef.current = false;
     }
@@ -1111,11 +1159,13 @@ function useComboBoxModel<T>(
     controlledSelection?.label,
   ]);
 
-  const resetInputDraft = () => {
+  const resetInputDraft = (preserveCustomValue = false) => {
     setFilterText('');
     setControlledInputDraft(undefined);
     controlledDraftSelectionRef.current = null;
-    pendingCustomValueRef.current = undefined;
+    if (!preserveCustomValue) {
+      pendingCustomValueRef.current = undefined;
+    }
     autoClosedNoResultsRef.current = false;
   };
 
@@ -1136,7 +1186,7 @@ function useComboBoxModel<T>(
         return;
       }
 
-      resetInputDraft();
+      resetInputDraft(true);
     }
   };
 
@@ -1367,19 +1417,59 @@ function useComboBoxModel<T>(
     if (phase === 'capture') {
       if (!state) return;
 
+      const resetFilterText = filterText;
+      let captureResetApplied = false;
+      const applyCaptureReset = () => {
+        if (captureResetApplied) return;
+
+        captureResetApplied = true;
+        flushSync(() => {
+          setFormResetState(state);
+          state.setOpen(false);
+        });
+        queueMicrotask(() => {
+          if (captureResetApplied && !event.defaultPrevented) {
+            state.setOpen(false);
+          }
+        });
+      };
+      const restoreCaptureReset = () => {
+        if (!captureResetApplied) return;
+
+        captureResetApplied = false;
+        restoreFormReset(state, true, resetFilterText);
+      };
+      const nativeStopPropagation = event.stopPropagation.bind(event);
+      Object.defineProperty(event, 'stopPropagation', {
+        configurable: true,
+        value: () => {
+          nativeStopPropagation();
+          applyCaptureReset();
+        },
+      });
+      const nativePreventDefault = event.preventDefault.bind(event);
+      Object.defineProperty(event, 'preventDefault', {
+        configurable: true,
+        value: () => {
+          nativePreventDefault();
+          restoreCaptureReset();
+        },
+      });
+
       clearFormReset();
       formResetRef.current = {
         event,
+        filterText: resetFilterText,
         state,
         userChangeEmitted: false,
         userInteracted: false,
       };
       const resetTransaction = formResetRef.current;
       formResetRef.current = null;
-      flushSync(() => setFormResetState(state));
       if (resetTransaction.state.isActive()) {
         formResetRef.current = resetTransaction;
       }
+      formResetInputPendingRef.current = true;
 
       queueMicrotask(() => {
         const pendingReset = formResetRef.current;
@@ -1391,7 +1481,7 @@ function useComboBoxModel<T>(
 
         if (event.defaultPrevented) {
           if (!pendingReset.userInteracted) {
-            restoreFormReset(pendingReset.state);
+            restoreFormReset(pendingReset.state, true, pendingReset.filterText);
           }
           return;
         }
@@ -1419,7 +1509,7 @@ function useComboBoxModel<T>(
 
     if (event.defaultPrevented) {
       if (!pendingReset.userInteracted) {
-        restoreFormReset(pendingReset.state);
+        restoreFormReset(pendingReset.state, true, pendingReset.filterText);
       }
       return;
     }
@@ -1553,6 +1643,7 @@ function ComboBoxBase<T>({ props }: Readonly<{ props: ComboBoxProps<T> }>) {
           loading={loading}
           placeholder={placeholder}
           readOnly={readOnly}
+          resetName={submittedName}
         />
         <AriaButton
           aria-describedby={supportingIds}

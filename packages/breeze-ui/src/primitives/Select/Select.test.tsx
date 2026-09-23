@@ -761,6 +761,75 @@ describe('Select', () => {
     expect(trigger).not.toHaveTextContent('Default');
   });
 
+  it('discards a pending loading default when it is absent after loading', async () => {
+    const defaultChoice = { id: 'default', label: 'Default' };
+    const availableChoice = { id: 'available', label: 'Available' };
+    const onChange = vi.fn();
+    const { rerender } = renderBreeze(
+      <form aria-label="Payment form">
+        <Select
+          defaultValue={defaultChoice}
+          getItem={(item) => item}
+          items={[]}
+          label="Payment method"
+          loading
+          name="payment"
+          onChange={onChange}
+        />
+      </form>,
+    );
+
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <form aria-label="Payment form">
+          <Select
+            defaultValue={defaultChoice}
+            getItem={(item) => item}
+            items={[availableChoice]}
+            label="Payment method"
+            name="payment"
+            onChange={onChange}
+            placeholder="Choose a method"
+          />
+        </form>
+      </BreezeProvider>,
+    );
+
+    const trigger = screen.getByRole('combobox', {
+      name: 'Choose a method Payment method',
+    });
+    expect(trigger).toHaveTextContent('Choose a method');
+
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <form aria-label="Payment form">
+          <Select
+            defaultValue={defaultChoice}
+            getItem={(item) => item}
+            items={[defaultChoice]}
+            label="Payment method"
+            name="payment"
+            onChange={onChange}
+            placeholder="Choose a method"
+          />
+        </form>
+      </BreezeProvider>,
+    );
+
+    await waitFor(() => {
+      expect(trigger).toHaveTextContent('Choose a method');
+    });
+    expect(onChange).not.toHaveBeenCalled();
+
+    fireEvent.reset(document.forms[0]);
+
+    await waitFor(() => {
+      expect(trigger).toHaveTextContent('Choose a method');
+      expect(new FormData(document.forms[0]).get('payment')).toBe('');
+    });
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
   it('retains an uncontrolled selection while a loading collection is empty', async () => {
     const user = userEvent.setup();
     const selectionChoices = choices.map((choice) => ({

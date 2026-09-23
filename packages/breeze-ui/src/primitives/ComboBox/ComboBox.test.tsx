@@ -973,6 +973,122 @@ describe('ComboBox', () => {
     expect(onChange).not.toHaveBeenCalled();
   });
 
+  it('preserves an open menu when a stopped-propagation reset is canceled', async () => {
+    const user = userEvent.setup();
+
+    renderBreeze(
+      <form
+        aria-label="Supplier form"
+        onResetCapture={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+        }}
+      >
+        <ComboBox
+          defaultValue={suppliers[0]}
+          getItem={getItem}
+          items={suppliers}
+          label="Supplier"
+          name="supplier"
+        />
+      </form>,
+    );
+
+    const form = document.forms[0];
+    await user.click(screen.getByRole('button', { name: /Show suggestions/ }));
+    expect(screen.getByRole('listbox')).toBeInTheDocument();
+
+    form.reset();
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(screen.getByRole('listbox')).toBeInTheDocument();
+  });
+
+  it('preserves the filtered query when an open reset is canceled', async () => {
+    const user = userEvent.setup();
+
+    renderBreeze(
+      <form
+        aria-label="Supplier form"
+        onResetCapture={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+        }}
+      >
+        <ComboBox
+          getItem={getItem}
+          items={suppliers}
+          label="Supplier"
+          name="supplier"
+        />
+      </form>,
+    );
+
+    const form = document.forms[0];
+    const input = screen.getByRole('combobox', { name: 'Supplier' });
+    await user.click(input);
+    await user.type(input, 'Brass');
+    expect(input).toHaveValue('Brass');
+    expect(screen.getByRole('option', { name: /Brass & Co/ })).toBeVisible();
+    expect(
+      screen.queryByRole('option', { name: /Acme Supplies/ }),
+    ).not.toBeInTheDocument();
+
+    form.reset();
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(input).toHaveValue('Brass');
+    expect(screen.getByRole('option', { name: /Brass & Co/ })).toBeVisible();
+    expect(
+      screen.queryByRole('option', { name: /Acme Supplies/ }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('does not expose reset defaults before cancellation is known', async () => {
+    const user = userEvent.setup();
+    let formValueDuringReset: FormDataEntryValue | null = null;
+
+    renderBreeze(
+      <form
+        aria-label="Supplier form"
+        onReset={(event) => {
+          formValueDuringReset = new FormData(event.currentTarget).get(
+            'supplier',
+          );
+          event.preventDefault();
+        }}
+      >
+        <ComboBox
+          defaultValue={suppliers[0]}
+          getItem={getItem}
+          items={suppliers}
+          label="Supplier"
+          name="supplier"
+        />
+      </form>,
+    );
+
+    const form = document.forms[0];
+    const input = screen.getByRole('combobox', { name: 'Supplier' });
+    await user.click(screen.getByRole('button', { name: /Show suggestions/ }));
+    await user.click(screen.getByRole('option', { name: /Brass & Co/ }));
+
+    form.reset();
+
+    expect(formValueDuringReset).toBe('brass');
+    await act(async () => {
+      await Promise.resolve();
+    });
+    expect(input).toHaveValue('Brass & Co');
+    expect(new FormData(form).get('supplier')).toBe('brass');
+  });
+
   it('keeps newer custom text after a stopped-propagation reset', async () => {
     const user = userEvent.setup();
     let latestValue: SupplierValue = 'Initial supplier';
@@ -2132,6 +2248,42 @@ describe('ComboBox', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('preserves controlled custom text that matches an item id after blur', async () => {
+    const user = userEvent.setup();
+    const items = ['acme', 'brass'];
+    const getCustomItem = (item: string) => ({
+      id: item,
+      label: item === 'acme' ? 'Acme supplier' : 'Brass supplier',
+    });
+    function ControlledCustomComboBox() {
+      const [value, setValue] = useState<string | null>(null);
+
+      return (
+        <>
+          <ComboBox
+            allowsCustomValue
+            getItem={getCustomItem}
+            items={items}
+            label="Supplier"
+            onChange={setValue}
+            value={value}
+          />
+          <button type="button">Next</button>
+        </>
+      );
+    }
+
+    renderBreeze(<ControlledCustomComboBox />);
+
+    const input = screen.getByRole('combobox', { name: 'Supplier' });
+    await user.type(input, 'acme');
+    expect(input).toHaveValue('acme');
+
+    await user.tab();
+
+    expect(input).toHaveValue('acme');
+  });
+
   it('replaces a controlled input draft when the selected item changes', async () => {
     const user = userEvent.setup();
     const onChange =
@@ -2541,6 +2693,48 @@ describe('ComboBox', () => {
     expect(onChange).toHaveBeenCalledTimes(1);
     expect(onChange).toHaveBeenLastCalledWith(missingSupplier);
     expect(onChange).not.toHaveBeenCalledWith(null);
+  });
+
+  it('preserves the live controlled off-list value when focus leaves', async () => {
+    const user = userEvent.setup();
+    const initialSupplier = {
+      ...suppliers[0],
+      id: 'remote',
+      label: 'Remote supplier',
+    };
+    const replacementSupplier = {
+      ...initialSupplier,
+      label: 'Updated remote supplier',
+    };
+    const onChange = vi.fn<(value: Supplier | null) => void>();
+    const { rerender } = renderBreeze(
+      <ComboBox
+        getItem={getItem}
+        items={suppliers}
+        label="Supplier"
+        onChange={onChange}
+        value={initialSupplier}
+      />,
+    );
+
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <ComboBox
+          getItem={getItem}
+          items={suppliers}
+          label="Supplier"
+          onChange={onChange}
+          value={replacementSupplier}
+        />
+      </BreezeProvider>,
+    );
+
+    const input = screen.getByRole('combobox', { name: 'Supplier' });
+    await user.click(input);
+    await user.tab();
+
+    expect(onChange).toHaveBeenCalledTimes(1);
+    expect(onChange).toHaveBeenLastCalledWith(replacementSupplier);
   });
 
   it('restores the initial controlled off-list value on form reset', async () => {
