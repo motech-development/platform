@@ -291,6 +291,23 @@ function getInitialControlledItem<T>(
   };
 }
 
+function getInitialResetValue<T>(
+  initiallyControlled: boolean,
+  initialControlledValue: ComboBoxValue<T> | undefined,
+  initialControlledItem: ComboBoxItem<T> | undefined,
+  decoratedItems: ComboBoxItem<T>[],
+  initialDefaultValue: ComboBoxValue<T> | undefined,
+) {
+  if (!initiallyControlled) return initialDefaultValue;
+  if (!initialControlledItem) return initialControlledValue;
+
+  const refreshedInitialControlledItem = decoratedItems.find(
+    ({ descriptor }) => descriptor.id === initialControlledItem.descriptor.id,
+  );
+
+  return refreshedInitialControlledItem?.item ?? initialControlledValue;
+}
+
 interface ComboBoxPopoverProps<T> {
   allowsCustomValue: boolean;
   getItem: (item: T) => ItemDescriptor;
@@ -1145,19 +1162,13 @@ function useComboBoxModel<T>(
   const effectiveFilterText = controlledSelectionChanged ? '' : filterText;
   const collectionItems = items;
   const collectionDecoratedItems = decoratedItems;
-  let initialResetValue = initialDefaultValue;
-  if (initiallyControlled) {
-    initialResetValue = initialControlledValue;
-    if (initialControlledItem) {
-      const refreshedInitialControlledItem = collectionDecoratedItems.find(
-        ({ descriptor }) =>
-          descriptor.id === initialControlledItem.descriptor.id,
-      );
-      if (refreshedInitialControlledItem) {
-        initialResetValue = refreshedInitialControlledItem.item;
-      }
-    }
-  }
+  const initialResetValue = getInitialResetValue(
+    initiallyControlled,
+    initialControlledValue,
+    initialControlledItem,
+    collectionDecoratedItems,
+    initialDefaultValue,
+  );
   const controlledTextValue = hasControlledInputDraft
     ? controlledInputDraft
     : baseControlledTextValue;
@@ -1190,19 +1201,17 @@ function useComboBoxModel<T>(
       return;
     }
 
-    if (!isOpen) {
-      if (
-        value !== undefined &&
-        !allowsCustomValue &&
-        autoClosedNoResultsRef.current &&
-        controlledInputDraft !== undefined
-      ) {
-        autoClosedNoResultsRef.current = false;
-        return;
-      }
-
-      resetInputDraft(true);
+    if (
+      value !== undefined &&
+      !allowsCustomValue &&
+      autoClosedNoResultsRef.current &&
+      controlledInputDraft !== undefined
+    ) {
+      autoClosedNoResultsRef.current = false;
+      return;
     }
+
+    resetInputDraft(true);
   };
 
   const emitInputChange = (inputValue: string) => {
@@ -1452,12 +1461,24 @@ function useComboBoxModel<T>(
         captureResetApplied = false;
         restoreFormReset(state, true, resetFilterText);
       };
+      const applyAcceptedCaptureReset = () => {
+        if (!event.defaultPrevented) applyCaptureReset();
+      };
       const nativeStopPropagation = event.stopPropagation.bind(event);
       Object.defineProperty(event, 'stopPropagation', {
         configurable: true,
         value: () => {
           nativeStopPropagation();
           applyCaptureReset();
+        },
+      });
+      const nativeStopImmediatePropagation =
+        event.stopImmediatePropagation.bind(event);
+      Object.defineProperty(event, 'stopImmediatePropagation', {
+        configurable: true,
+        value: () => {
+          nativeStopImmediatePropagation();
+          applyAcceptedCaptureReset();
         },
       });
       const nativePreventDefault = event.preventDefault.bind(event);
