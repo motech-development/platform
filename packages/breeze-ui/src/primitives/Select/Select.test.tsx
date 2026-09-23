@@ -97,6 +97,9 @@ describe('Select', () => {
     expect(trigger).toHaveAttribute('role', 'combobox');
     expect(trigger).toHaveAttribute('aria-haspopup', 'listbox');
     expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.getByText('Choose a method')).toHaveClass(
+      'breeze:text-start',
+    );
 
     await user.tab();
     expect(trigger).toHaveFocus();

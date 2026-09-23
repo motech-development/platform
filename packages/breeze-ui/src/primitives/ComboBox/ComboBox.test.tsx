@@ -1878,11 +1878,14 @@ describe('ComboBox', () => {
     const group = screen
       .getByRole('combobox', { name: 'Supplier' })
       .closest('[role="group"]');
+    const trigger = screen.getByRole('button', { name: /Show suggestions/ });
 
     expect(group).toHaveClass(
       'breeze:any-pointer-coarse:min-block-breeze-tap',
       'breeze:bg-breeze-sunken',
     );
+    expect(trigger).toHaveClass('breeze:place-items-center');
+    expect(trigger).not.toHaveClass('breeze:block-size-full');
   });
 
   it.each([

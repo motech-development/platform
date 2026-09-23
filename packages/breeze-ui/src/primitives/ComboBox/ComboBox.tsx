@@ -41,7 +41,7 @@ const variants = {
     skeleton:
       'breeze:pointer-events-none breeze:absolute breeze:[inset-block:0] breeze:[inset-inline:0]',
     trigger:
-      'breeze:inline-grid breeze:block-size-full breeze:shrink-0 breeze:place-items-center breeze:border-0 breeze:bg-transparent breeze:pe-breeze-2 breeze:ps-breeze-2 breeze:text-breeze-ink-2 breeze:outline-none breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:disabled:cursor-not-allowed breeze:disabled:opacity-60 breeze:any-pointer-coarse:min-inline-breeze-tap',
+      'breeze:inline-grid breeze:shrink-0 breeze:place-items-center breeze:border-0 breeze:bg-transparent breeze:pe-breeze-2 breeze:ps-breeze-2 breeze:text-breeze-ink-2 breeze:outline-none breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:disabled:cursor-not-allowed breeze:disabled:opacity-60 breeze:any-pointer-coarse:min-inline-breeze-tap',
   },
   compound: {},
   size: {},
