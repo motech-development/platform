@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useRef, useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
@@ -165,6 +165,137 @@ describe('CollectionPopover', () => {
     await user.click(screen.getByText('Options'));
 
     expect(onOpenChange).not.toHaveBeenCalledWith(false);
+  });
+
+  it('does not dismiss when a pointer starts on the surface and ends outside', () => {
+    const onOpenChange = vi.fn();
+
+    function Example() {
+      const triggerRef = useRef<HTMLButtonElement | null>(null);
+      const [open, setOpen] = useState(true);
+
+      return (
+        <>
+          <button ref={triggerRef} type="button">
+            Trigger
+          </button>
+          <div data-testid="background">Background content</div>
+          <CollectionPopover
+            className="popover"
+            isOpen={open}
+            onOpenChange={(nextOpen) => {
+              onOpenChange(nextOpen);
+              setOpen(nextOpen);
+            }}
+            triggerRef={triggerRef}
+          >
+            <button type="button">Option</button>
+          </CollectionPopover>
+        </>
+      );
+    }
+
+    renderBreeze(<Example />);
+
+    const option = screen.getByRole('button', { name: 'Option' });
+    const background = screen.getByTestId('background');
+    fireEvent.pointerDown(option, { button: 0 });
+    fireEvent.pointerUp(background, { button: 0 });
+    fireEvent.click(background);
+
+    expect(screen.getByRole('button', { name: 'Option' })).toBeInTheDocument();
+    expect(onOpenChange).not.toHaveBeenCalledWith(false);
+  });
+
+  it('expires pointer drag suppression before a later outside click', () => {
+    vi.useFakeTimers();
+
+    try {
+      const onOpenChange = vi.fn();
+
+      function Example() {
+        const triggerRef = useRef<HTMLButtonElement | null>(null);
+        const [open, setOpen] = useState(true);
+
+        return (
+          <>
+            <button ref={triggerRef} type="button">
+              Trigger
+            </button>
+            <div data-testid="background">Background content</div>
+            <CollectionPopover
+              className="popover"
+              isOpen={open}
+              onOpenChange={(nextOpen) => {
+                onOpenChange(nextOpen);
+                setOpen(nextOpen);
+              }}
+              triggerRef={triggerRef}
+            >
+              <button type="button">Option</button>
+            </CollectionPopover>
+          </>
+        );
+      }
+
+      renderBreeze(<Example />);
+
+      const option = screen.getByRole('button', { name: 'Option' });
+      const background = screen.getByTestId('background');
+      fireEvent.pointerDown(option, { button: 0 });
+      fireEvent.pointerUp(background, { button: 0 });
+      vi.runAllTimers();
+      fireEvent.click(background);
+
+      expect(onOpenChange).toHaveBeenCalledWith(false);
+      expect(
+        screen.queryByRole('button', { name: 'Option' }),
+      ).not.toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('dismisses on a later focus move after a drag-out without a click', async () => {
+    const user = userEvent.setup();
+    const onOpenChange = vi.fn();
+
+    function Example() {
+      const triggerRef = useRef<HTMLButtonElement | null>(null);
+      const [open, setOpen] = useState(true);
+
+      return (
+        <>
+          <button type="button">Outside</button>
+          <button ref={triggerRef} tabIndex={-1} type="button">
+            Trigger
+          </button>
+          <CollectionPopover
+            className="popover"
+            isOpen={open}
+            onOpenChange={(nextOpen) => {
+              onOpenChange(nextOpen);
+              setOpen(nextOpen);
+            }}
+            triggerRef={triggerRef}
+          >
+            <button type="button">Inside</button>
+          </CollectionPopover>
+        </>
+      );
+    }
+
+    renderBreeze(<Example />);
+
+    const outside = screen.getByRole('button', { name: 'Outside' });
+    const inside = screen.getByRole('button', { name: 'Inside' });
+    inside.focus();
+    fireEvent.pointerDown(inside, { button: 0 });
+    fireEvent.pointerUp(outside, { button: 0 });
+    await user.tab({ shift: true });
+
+    expect(outside).toHaveFocus();
+    expect(onOpenChange).toHaveBeenCalledWith(false);
   });
 
   it('dismisses once when keyboard focus tabs from the surface outside', async () => {

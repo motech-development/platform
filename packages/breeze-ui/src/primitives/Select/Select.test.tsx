@@ -650,6 +650,66 @@ describe('Select', () => {
     expect(onChange).not.toHaveBeenCalled();
   });
 
+  it('does not restore a pending loading default over a later user selection', async () => {
+    const user = userEvent.setup();
+    const defaultChoice = { id: 'default', label: 'Default' };
+    const selectedChoice = { id: 'selected', label: 'Selected' };
+    const onChange =
+      vi.fn<
+        (value: typeof defaultChoice | typeof selectedChoice | null) => void
+      >();
+    const { rerender } = renderBreeze(
+      <Select
+        defaultValue={defaultChoice}
+        getItem={(item) => item}
+        items={[]}
+        label="Payment method"
+        loading
+        onChange={onChange}
+      />,
+    );
+
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <Select
+          defaultValue={defaultChoice}
+          getItem={(item) => item}
+          items={[selectedChoice]}
+          label="Payment method"
+          onChange={onChange}
+        />
+      </BreezeProvider>,
+    );
+
+    const trigger = screen.getByRole('combobox', {
+      name: 'Payment method',
+    });
+    await user.click(trigger);
+    await user.click(screen.getByRole('option', { name: 'Selected' }));
+    expect(onChange).toHaveBeenLastCalledWith(selectedChoice);
+    onChange.mockClear();
+
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <Select
+          defaultValue={defaultChoice}
+          getItem={(item) => item}
+          items={[defaultChoice]}
+          label="Payment method"
+          onChange={onChange}
+          placeholder="Choose a method"
+        />
+      </BreezeProvider>,
+    );
+
+    await waitFor(() => {
+      expect(trigger).toHaveTextContent('Choose a method');
+    });
+    expect(onChange).toHaveBeenCalledTimes(1);
+    expect(onChange).toHaveBeenCalledWith(null);
+    expect(trigger).not.toHaveTextContent('Default');
+  });
+
   it('retains an uncontrolled selection while a loading collection is empty', async () => {
     const user = userEvent.setup();
     const selectionChoices = choices.map((choice) => ({
@@ -1061,6 +1121,44 @@ describe('Select', () => {
       expect(new FormData(form).get('payment')).toBe('bank');
     });
     expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it('applies a form reset before returning and preserves a later selection', async () => {
+    const user = userEvent.setup();
+    const resetChoices = choices.map((choice) => ({
+      ...choice,
+      disabled: false,
+    }));
+
+    renderBreeze(
+      <form aria-label="Payment form">
+        <Select
+          defaultValue={resetChoices[0]}
+          getItem={(item) => item}
+          items={resetChoices}
+          label="Payment method"
+          name="payment"
+        />
+      </form>,
+    );
+
+    const form = document.forms[0];
+    const trigger = screen.getByRole('combobox', {
+      name: 'Bank account Payment method',
+    });
+
+    await user.click(trigger);
+    await user.click(screen.getByRole('option', { name: /Cash/ }));
+    form.reset();
+
+    expect(trigger).toHaveTextContent('Bank account');
+    expect(new FormData(form).get('payment')).toBe('bank');
+
+    await user.click(trigger);
+    await user.click(screen.getByRole('option', { name: /Cash/ }));
+
+    expect(trigger).toHaveTextContent('Cash');
+    expect(new FormData(form).get('payment')).toBe('cash');
   });
 
   it('aborts a queued reset when the select unmounts during reset', async () => {
