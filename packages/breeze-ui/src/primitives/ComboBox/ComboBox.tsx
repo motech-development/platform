@@ -697,13 +697,10 @@ function ComboBoxInput<T>({
           return;
         }
 
-        if (currentInput && currentInput.value === resetInput.resetInputValue) {
+        if (currentInput?.value === resetInput.resetInputValue) {
           currentInput.value = stateRef.current?.inputValue ?? '';
         }
-        if (
-          resetInput.hiddenInput &&
-          resetInput.hiddenInput.value === resetInput.resetHiddenValue
-        ) {
+        if (resetInput.hiddenInput?.value === resetInput.resetHiddenValue) {
           resetInput.hiddenInput.value = String(
             getComboBoxKey(stateRef.current?.value) ??
               (allowsCustomValue ? stateRef.current?.inputValue ?? '' : ''),
@@ -888,17 +885,29 @@ function getDefaultTextValue<T>(
   return getItem(value as T).label;
 }
 
+function matchesControlledCustomValue<T>(
+  value: ComboBoxValue<T> | undefined,
+  pendingValue: string | null | undefined,
+) {
+  return pendingValue !== undefined && value === pendingValue;
+}
+
 function getControlledSelectionDescriptor<T>(
   value: ComboBoxValue<T>,
   selectedItem: ComboBoxItem<T> | undefined,
   getItem: (item: T) => ItemDescriptor,
   allowsCustomValue: boolean,
+  pendingCustomValue: string | null | undefined,
 ) {
-  if (
-    selectedItem ||
-    value === null ||
-    (typeof value === 'string' && allowsCustomValue)
-  ) {
+  if (typeof value === 'string' && allowsCustomValue) {
+    if (matchesControlledCustomValue(value, pendingCustomValue)) {
+      return undefined;
+    }
+
+    return selectedItem?.descriptor;
+  }
+
+  if (selectedItem || value === null) {
     return selectedItem?.descriptor;
   }
 
@@ -932,13 +941,6 @@ function canDraftControlledValue<T>(
   );
 }
 
-function matchesControlledCustomValue<T>(
-  value: ComboBoxValue<T> | undefined,
-  pendingValue: string | null | undefined,
-) {
-  return pendingValue !== undefined && value === pendingValue;
-}
-
 interface ControlledSelectionUpdate {
   resetLabel?: string;
   selection: ControlledSelection | null;
@@ -950,6 +952,7 @@ function getControlledSelectionUpdate<T>(
   getItem: (item: T) => ItemDescriptor,
   previousSelection: ControlledSelection | null,
   allowsCustomValue: boolean,
+  pendingCustomValue: string | null | undefined,
 ): ControlledSelectionUpdate {
   if (value === undefined) {
     return { selection: null };
@@ -960,6 +963,7 @@ function getControlledSelectionUpdate<T>(
     selectedItem,
     getItem,
     allowsCustomValue,
+    pendingCustomValue,
   );
   const nextSelection = {
     id: descriptor?.id ?? null,
@@ -1247,6 +1251,7 @@ function useComboBoxModel<T>(
     getItem,
     controlledSelectionRef.current,
     allowsCustomValue,
+    pendingCustomValueRef.current,
   );
   const controlledSelection = controlledSelectionUpdate.selection;
   const isControlledCustomEcho =
