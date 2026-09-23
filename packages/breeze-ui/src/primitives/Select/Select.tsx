@@ -600,34 +600,35 @@ export function Select<T>({
           </span>
         )}
       </div>
-      {name && !interactionDisabled && (
-        <div
-          // React Aria's hidden-control pattern keeps autofill and form
-          // submission while preventing an aria-hidden control from focus.
-          // eslint-disable-next-line react/jsx-props-no-spreading
-          {...visuallyHiddenProps}
-          aria-hidden="true"
-          data-a11y-ignore="aria-hidden-focus"
-          data-react-aria-prevent-focus
-        >
-          <label htmlFor={`${controlId}-autofill`}>
-            {label}
-            <input
-              autoComplete={autoComplete}
-              form={form}
-              id={`${controlId}-autofill`}
-              name={name}
-              onChange={(event) => handleAutofill(event.currentTarget.value)}
-              onInput={(event) => handleAutofill(event.currentTarget.value)}
-              readOnly={readOnly || undefined}
-              ref={autofillRef}
-              tabIndex={-1}
-              type="text"
-              value={state.value ?? ''}
-            />
-          </label>
-        </div>
-      )}
+      {(name !== undefined || autoComplete !== undefined) &&
+        !interactionDisabled && (
+          <div
+            // React Aria's hidden-control pattern keeps autofill and form
+            // submission while preventing an aria-hidden control from focus.
+            // eslint-disable-next-line react/jsx-props-no-spreading
+            {...visuallyHiddenProps}
+            aria-hidden="true"
+            data-a11y-ignore="aria-hidden-focus"
+            data-react-aria-prevent-focus
+          >
+            <label htmlFor={`${controlId}-autofill`}>
+              {label}
+              <input
+                autoComplete={autoComplete}
+                form={form}
+                id={`${controlId}-autofill`}
+                name={name}
+                onChange={(event) => handleAutofill(event.currentTarget.value)}
+                onInput={(event) => handleAutofill(event.currentTarget.value)}
+                readOnly={readOnly || undefined}
+                ref={autofillRef}
+                tabIndex={-1}
+                type="text"
+                value={state.value ?? ''}
+              />
+            </label>
+          </div>
+        )}
       <CollectionPopover
         className={collectionVariants.base.popover}
         isOpen={state.isOpen && !stateDisabled}

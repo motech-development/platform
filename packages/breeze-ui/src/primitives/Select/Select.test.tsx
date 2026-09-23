@@ -251,6 +251,34 @@ describe('Select', () => {
     expect(screen.getByRole('combobox')).toHaveTextContent('Bank account');
   });
 
+  it('renders an autofill surrogate without a submitted name', () => {
+    const onChange = vi.fn<(value: (typeof choices)[number] | null) => void>();
+
+    renderBreeze(
+      <Select
+        autoComplete="organization"
+        getItem={getItem}
+        items={choices}
+        label="Payment method"
+        onChange={onChange}
+      />,
+    );
+
+    const surrogate = document.querySelector<HTMLInputElement>(
+      'input[autocomplete="organization"]',
+    );
+
+    expect(surrogate).toBeInTheDocument();
+    expect(surrogate).not.toHaveAttribute('name');
+
+    fireEvent.input(surrogate as HTMLInputElement, {
+      target: { value: 'bank' },
+    });
+
+    expect(onChange).toHaveBeenCalledWith(choices[0]);
+    expect(screen.getByRole('combobox')).toHaveTextContent('Bank account');
+  });
+
   it('maps a unique descriptor label from browser autofill', () => {
     const onChange = vi.fn<(value: (typeof choices)[number] | null) => void>();
 
