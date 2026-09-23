@@ -931,6 +931,91 @@ describe('ComboBox', () => {
     expect(onChange).toHaveBeenLastCalledWith(null);
   });
 
+  it('applies an accepted immediate-propagation reset before form.reset returns', async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn<(value: Supplier | null) => void>();
+
+    renderBreeze(
+      <form
+        aria-label="Supplier form"
+        onResetCapture={(event) => event.nativeEvent.stopImmediatePropagation()}
+      >
+        <ComboBox
+          defaultValue={suppliers[0]}
+          getItem={getItem}
+          items={suppliers}
+          label="Supplier"
+          name="supplier"
+          onChange={onChange}
+        />
+      </form>,
+    );
+
+    const form = document.forms[0];
+    const input = screen.getByRole('combobox', { name: 'Supplier' });
+    await user.click(screen.getByRole('button', { name: /Show suggestions/ }));
+    await user.click(screen.getByRole('option', { name: /Brass & Co/ }));
+    onChange.mockClear();
+
+    form.reset();
+
+    expect(input).toHaveValue('Acme Supplies');
+    expect(new FormData(form).get('supplier')).toBe('acme');
+
+    fireEvent.input(input, { target: { value: 'Later query' } });
+
+    expect(input).toHaveValue('Later query');
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(input).toHaveValue('Later query');
+    expect(new FormData(form).get('supplier')).toBe('acme');
+    expect(onChange).toHaveBeenCalledTimes(1);
+    expect(onChange).toHaveBeenCalledWith(suppliers[0]);
+  });
+
+  it('restores a canceled immediate-propagation reset', async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn<(value: Supplier | null) => void>();
+
+    renderBreeze(
+      <form
+        aria-label="Supplier form"
+        onResetCapture={(event) => {
+          event.preventDefault();
+          event.nativeEvent.stopImmediatePropagation();
+        }}
+      >
+        <ComboBox
+          defaultValue={suppliers[0]}
+          getItem={getItem}
+          items={suppliers}
+          label="Supplier"
+          name="supplier"
+          onChange={onChange}
+        />
+      </form>,
+    );
+
+    const form = document.forms[0];
+    const input = screen.getByRole('combobox', { name: 'Supplier' });
+    await user.click(screen.getByRole('button', { name: /Show suggestions/ }));
+    await user.click(screen.getByRole('option', { name: /Brass & Co/ }));
+    onChange.mockClear();
+
+    form.reset();
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(input).toHaveValue('Brass & Co');
+    expect(new FormData(form).get('supplier')).toBe('brass');
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
   it('restores a canceled stopped-propagation reset', async () => {
     const user = userEvent.setup();
     const onChange = vi.fn<(value: Supplier | null) => void>();

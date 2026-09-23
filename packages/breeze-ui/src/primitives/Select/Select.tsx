@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { ReactNode, RefObject } from 'react';
 import { useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { mergeProps } from 'react-aria/mergeProps';
 import { useButton } from 'react-aria/useButton';
@@ -9,7 +9,7 @@ import { useSelect } from 'react-aria/useSelect';
 import { useVisuallyHidden } from 'react-aria/VisuallyHidden';
 import { flushSync } from 'react-dom';
 // The low-level Select state is required to avoid RAC's native HiddenSelect.
-import { useSelectState } from 'react-stately/useSelectState';
+import { type SelectState, useSelectState } from 'react-stately/useSelectState';
 import { useBreezeContext } from '../../provider/BreezeContext';
 import collectionVariants from '../Collection/collection.styles';
 import CollectionPopover from '../Collection/CollectionPopover';
@@ -179,6 +179,266 @@ function resolveControlledResetItem<T>(
   );
 }
 
+function getInitialControlledItem<T>(
+  value: T | null | undefined,
+  getItem: (item: T) => ItemDescriptor,
+) {
+  if (value === undefined) return undefined;
+  if (value === null) return null;
+
+  return {
+    descriptor: getItem(value),
+    item: value,
+  };
+}
+
+function getControlledResetValueKey<T>(
+  value: T | null | undefined,
+  getItem: (item: T) => ItemDescriptor,
+) {
+  if (value === undefined) return undefined;
+  if (value === null) return null;
+
+  return getItem(value).id;
+}
+
+function getTriggerLabelledBy(
+  loading: boolean,
+  buttonLabelledBy: string | undefined,
+  valueId: string | undefined,
+) {
+  if (loading) return undefined;
+
+  const labelledBy = Array.from(
+    new Set(
+      [buttonLabelledBy, valueId]
+        .filter((value): value is string => Boolean(value))
+        .flatMap((value) => value.split(' ')),
+    ),
+  ).join(' ');
+
+  return labelledBy || undefined;
+}
+
+function handleSelectAutofill<T>(
+  nextValue: string,
+  readOnly: boolean,
+  items: SelectItem<T>[],
+  currentValue: string | number | null,
+  setValue: (value: string) => void,
+  autofillRef: RefObject<HTMLInputElement | null>,
+) {
+  const inputRef = autofillRef;
+
+  if (readOnly) {
+    if (inputRef.current) {
+      inputRef.current.value = String(currentValue ?? '');
+    }
+
+    return;
+  }
+
+  const nextItem = findUniqueAutofillItem(items, nextValue);
+
+  if (!nextItem) {
+    if (inputRef.current) {
+      inputRef.current.value = String(currentValue ?? '');
+    }
+
+    return;
+  }
+
+  const nextKey = nextItem.descriptor.id;
+
+  if (currentValue !== nextKey) {
+    setValue(nextKey);
+  }
+}
+
+interface SelectCollectionEffectsOptions<T> {
+  decoratedItems: SelectItem<T>[];
+  initialDefaultValueRef: RefObject<string | null>;
+  isControlled: boolean;
+  loading: boolean;
+  pendingDefaultValueRef: RefObject<string | null>;
+  state: SelectState<SelectItem<T>>;
+  suppressOnChangeRef: RefObject<boolean>;
+}
+
+function useSelectCollectionEffects<T>({
+  decoratedItems,
+  initialDefaultValueRef,
+  isControlled,
+  loading,
+  pendingDefaultValueRef,
+  state,
+  suppressOnChangeRef,
+}: Readonly<SelectCollectionEffectsOptions<T>>) {
+  const pendingDefaultRef = pendingDefaultValueRef;
+  const initialDefaultRef = initialDefaultValueRef;
+  const suppressRef = suppressOnChangeRef;
+
+  useLayoutEffect(() => {
+    const pendingDefaultValue = pendingDefaultRef.current;
+    const hasPendingDefault = decoratedItems.some(
+      ({ descriptor }) => descriptor.id === pendingDefaultValue,
+    );
+
+    if (!loading && pendingDefaultValue !== null && !hasPendingDefault) {
+      pendingDefaultRef.current = null;
+      if (initialDefaultRef.current === pendingDefaultValue) {
+        initialDefaultRef.current = null;
+      }
+      return;
+    }
+
+    if (
+      isControlled ||
+      state.value !== null ||
+      pendingDefaultValue === null ||
+      !hasPendingDefault
+    ) {
+      return;
+    }
+
+    pendingDefaultRef.current = null;
+    suppressRef.current = true;
+    try {
+      state.setValue(pendingDefaultValue);
+    } finally {
+      suppressRef.current = false;
+    }
+  }, [
+    decoratedItems,
+    initialDefaultRef,
+    isControlled,
+    loading,
+    pendingDefaultRef,
+    state,
+    suppressRef,
+  ]);
+
+  useLayoutEffect(() => {
+    if (
+      !isControlled &&
+      !loading &&
+      state.value !== null &&
+      !decoratedItems.some(({ descriptor }) => descriptor.id === state.value)
+    ) {
+      state.setValue(null);
+    }
+  }, [decoratedItems, isControlled, loading, state]);
+}
+
+interface SelectFormResetOptions<T> {
+  controlledResetItemRef: RefObject<SelectItem<T> | null | undefined>;
+  controlledResetValueKeyRef: RefObject<string | null | undefined>;
+  form: string | undefined;
+  initialControlledItem: SelectItem<T> | null | undefined;
+  isControlled: boolean;
+  onChangeRef: RefObject<((value: T | null) => void) | undefined>;
+  resetValueRef: RefObject<string | null>;
+  setStateValueRef: RefObject<(nextValue: string | null) => void>;
+  suppressOnChangeRef: RefObject<boolean>;
+  triggerRef: RefObject<HTMLButtonElement | null>;
+}
+
+function useSelectFormReset<T>({
+  controlledResetItemRef,
+  controlledResetValueKeyRef,
+  form,
+  initialControlledItem,
+  isControlled,
+  onChangeRef,
+  resetValueRef,
+  setStateValueRef,
+  suppressOnChangeRef,
+  triggerRef,
+}: Readonly<SelectFormResetOptions<T>>) {
+  const suppressRef = suppressOnChangeRef;
+
+  useLayoutEffect(() => {
+    let active = true;
+    let pendingResetEvent: Event | null = null;
+
+    const applyReset = () => {
+      if (isControlled) {
+        const resetItem = controlledResetItemRef.current;
+        if (
+          resetItem !== undefined &&
+          controlledResetValueKeyRef.current !==
+            (resetItem === null ? null : resetItem.descriptor.id)
+        ) {
+          onChangeRef.current?.(resetItem?.item ?? null);
+        }
+
+        return;
+      }
+
+      suppressRef.current = true;
+      try {
+        setStateValueRef.current(resetValueRef.current);
+      } finally {
+        suppressRef.current = false;
+      }
+    };
+
+    const captureReset = (event: Event) => {
+      const associatedForm = form
+        ? document.getElementById(form)
+        : triggerRef.current?.form;
+
+      if (
+        !(associatedForm instanceof HTMLFormElement) ||
+        event.target !== associatedForm
+      ) {
+        return;
+      }
+
+      pendingResetEvent = event;
+      queueMicrotask(() => {
+        if (!active || pendingResetEvent !== event || event.defaultPrevented) {
+          return;
+        }
+
+        pendingResetEvent = null;
+        flushSync(applyReset);
+      });
+    };
+
+    const finalizeReset = (event: Event) => {
+      if (pendingResetEvent !== event) return;
+
+      flushSync(() => undefined);
+      pendingResetEvent = null;
+      if (!active || event.defaultPrevented) return;
+
+      flushSync(applyReset);
+    };
+
+    document.addEventListener('reset', captureReset, true);
+    document.addEventListener('reset', finalizeReset);
+
+    return () => {
+      active = false;
+      pendingResetEvent = null;
+      document.removeEventListener('reset', captureReset, true);
+      document.removeEventListener('reset', finalizeReset);
+    };
+  }, [
+    controlledResetItemRef,
+    controlledResetValueKeyRef,
+    form,
+    initialControlledItem,
+    isControlled,
+    onChangeRef,
+    resetValueRef,
+    setStateValueRef,
+    suppressRef,
+    triggerRef,
+  ]);
+}
+
 function SelectOption<T>({
   node,
   state,
@@ -312,15 +572,7 @@ export function Select<T>({
   );
   const isControlled = value !== undefined;
   const [initialControlledItem] = useState<SelectItem<T> | null | undefined>(
-    () => {
-      if (value === undefined) return undefined;
-      if (value === null) return null;
-
-      return {
-        descriptor: getItem(value),
-        item: value,
-      };
-    },
+    () => getInitialControlledItem(value, getItem),
   );
   const selectedValueItem = findItem(decoratedItems, value ?? null, getItem);
   const defaultSelectedItem = findItem(
@@ -349,14 +601,7 @@ export function Select<T>({
   const resetValue =
     loading || hasInitialDefault ? initialDefaultValueRef.current : null;
   const resetValueRef = useRef(resetValue);
-  let controlledResetValueKey: string | null | undefined;
-  if (value === undefined) {
-    controlledResetValueKey = undefined;
-  } else if (value === null) {
-    controlledResetValueKey = null;
-  } else {
-    controlledResetValueKey = getItem(value).id;
-  }
+  const controlledResetValueKey = getControlledResetValueKey(value, getItem);
   const controlledResetItem = resolveControlledResetItem(
     initialControlledItem,
     decoratedItems,
@@ -435,40 +680,20 @@ export function Select<T>({
     isDisabled: interactionDisabled,
   });
   const isInvalid = !loading && visibleError !== undefined;
-  const handleAutofill = (nextValue: string) => {
-    if (readOnly) {
-      if (autofillRef.current) {
-        autofillRef.current.value = String(state.value ?? '');
-      }
-
-      return;
-    }
-
-    const nextItem = findUniqueAutofillItem(decoratedItems, nextValue);
-
-    if (!nextItem) {
-      if (autofillRef.current) {
-        autofillRef.current.value = String(state.value ?? '');
-      }
-
-      return;
-    }
-
-    const nextKey = nextItem.descriptor.id;
-
-    if (state.value !== nextKey) {
-      state.setValue(nextKey);
-    }
-  };
-  const triggerLabelledBy = loading
-    ? undefined
-    : Array.from(
-        new Set(
-          [buttonProps['aria-labelledby'], valueProps.id]
-            .filter(Boolean)
-            .flatMap((labelledBy) => (labelledBy ? labelledBy.split(' ') : [])),
-        ),
-      ).join(' ') || undefined;
+  const handleAutofill = (nextValue: string) =>
+    handleSelectAutofill(
+      nextValue,
+      readOnly,
+      decoratedItems,
+      state.value,
+      (nextKey) => state.setValue(nextKey),
+      autofillRef,
+    );
+  const triggerLabelledBy = getTriggerLabelledBy(
+    loading,
+    buttonProps['aria-labelledby'],
+    valueProps.id,
+  );
 
   useLayoutEffect(() => {
     resetValueRef.current = resetValue;
@@ -490,117 +715,28 @@ export function Select<T>({
     }
   }, [decoratedItems.length, state, stateDisabled]);
 
-  useLayoutEffect(() => {
-    const pendingDefaultValue = pendingDefaultValueRef.current;
-    const hasPendingDefault = decoratedItems.some(
-      ({ descriptor }) => descriptor.id === pendingDefaultValue,
-    );
+  useSelectCollectionEffects({
+    decoratedItems,
+    initialDefaultValueRef,
+    isControlled,
+    loading,
+    pendingDefaultValueRef,
+    state,
+    suppressOnChangeRef,
+  });
 
-    if (!loading && pendingDefaultValue !== null && !hasPendingDefault) {
-      pendingDefaultValueRef.current = null;
-      if (initialDefaultValueRef.current === pendingDefaultValue) {
-        initialDefaultValueRef.current = null;
-      }
-      return;
-    }
-
-    if (
-      isControlled ||
-      state.value !== null ||
-      pendingDefaultValue === null ||
-      !hasPendingDefault
-    ) {
-      return;
-    }
-
-    pendingDefaultValueRef.current = null;
-    suppressOnChangeRef.current = true;
-    try {
-      state.setValue(pendingDefaultValue);
-    } finally {
-      suppressOnChangeRef.current = false;
-    }
-  }, [decoratedItems, isControlled, loading, state]);
-
-  useLayoutEffect(() => {
-    if (
-      !isControlled &&
-      !loading &&
-      state.value !== null &&
-      !decoratedItems.some(({ descriptor }) => descriptor.id === state.value)
-    ) {
-      state.setValue(null);
-    }
-  }, [decoratedItems, isControlled, loading, state]);
-
-  useLayoutEffect(() => {
-    let active = true;
-    let pendingResetEvent: Event | null = null;
-
-    const applyReset = () => {
-      if (isControlled) {
-        const resetItem = controlledResetItemRef.current;
-        if (
-          resetItem !== undefined &&
-          controlledResetValueKeyRef.current !==
-            (resetItem === null ? null : resetItem.descriptor.id)
-        ) {
-          onChangeRef.current?.(resetItem?.item ?? null);
-        }
-
-        return;
-      }
-
-      suppressOnChangeRef.current = true;
-      try {
-        setStateValueRef.current(resetValueRef.current);
-      } finally {
-        suppressOnChangeRef.current = false;
-      }
-    };
-
-    const captureReset = (event: Event) => {
-      const associatedForm = form
-        ? document.getElementById(form)
-        : triggerRef.current?.form;
-
-      if (
-        !(associatedForm instanceof HTMLFormElement) ||
-        event.target !== associatedForm
-      ) {
-        return;
-      }
-
-      pendingResetEvent = event;
-      queueMicrotask(() => {
-        if (!active || pendingResetEvent !== event || event.defaultPrevented) {
-          return;
-        }
-
-        pendingResetEvent = null;
-        flushSync(applyReset);
-      });
-    };
-    const finalizeReset = (event: Event) => {
-      if (pendingResetEvent !== event) return;
-
-      flushSync(() => undefined);
-      pendingResetEvent = null;
-      if (!active || event.defaultPrevented) return;
-
-      flushSync(applyReset);
-    };
-
-    document.addEventListener('reset', captureReset, true);
-    document.addEventListener('reset', finalizeReset);
-
-    return () => {
-      active = false;
-      pendingResetEvent = null;
-      document.removeEventListener('reset', captureReset, true);
-      document.removeEventListener('reset', finalizeReset);
-    };
-  }, [form, initialControlledItem, isControlled]);
+  useSelectFormReset({
+    controlledResetItemRef,
+    controlledResetValueKeyRef,
+    form,
+    initialControlledItem,
+    isControlled,
+    onChangeRef,
+    resetValueRef,
+    setStateValueRef,
+    suppressOnChangeRef,
+    triggerRef,
+  });
 
   return (
     <div className={fieldVariants.base.root}>
