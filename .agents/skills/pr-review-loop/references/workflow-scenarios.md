@@ -40,9 +40,11 @@ head: A
 contract: controlled and uncontrolled values are supported; custom values are excluded
 authorization: reactions/resolutions=default, CodeRabbit rejection explanations=default,
                other text replies=no, push/commit=no, metadata=no
-budget: initial=1, remediation_republishes=2, used=0
-matrix: loading-defaults=supported, unavailable=excluded, form-reset=supported,
-        autofill=unresolved, disabled=supported, read-only=supported
+budget: initial=1, remediation_republishes=2, used=1
+matrix: controlled/uncontrolled=supported, loading-defaults=supported,
+        unavailable=excluded, custom-values=excluded,
+        form-submit-reset=supported, late-mounted-form=unresolved,
+        autofill-replacement=unresolved, disabled=supported, read-only=supported
 reviews[A]: Codex=COMMENTED, CodeRabbit=CHANGES_REQUESTED (terminal feedback)
 sonar[A]: quality_gate=passed, issues=0, unreviewed_hotspots=0
 checks[A]: Tests=passed (required), Lint=passed (required), Chromatic=pending (optional)
@@ -68,7 +70,8 @@ it is a later completion gate.
 **Steps**
 
 1. Start from the shared fixture and keep the request un-narrowed.
-2. Simulate a verified remote fix on head `B` for `T-fixed`.
+2. Simulate a verified remote fix on head `B` for `T-fixed` and increment
+   `budget.used` from 1 to 2.
 3. Read the head and all paginated bot threads. Apply the Codex reaction to
    `T-fixed`, resolve it, and read the head and thread after each mutation.
 4. Record conclusive rejection evidence for `T-rejected`, post its required
@@ -158,7 +161,8 @@ sandbox.
 3. Before all reviewer results arrive, run a second reset with CodeRabbit pending;
    attempt triage and an edit.
 4. In the first run, triage the complete feedback, simulate a validated fix and
-   remote head `B`, clean eligible handled threads, and only then return
+   remote head `B` (increment `budget.used` from 1 to 2), clean eligible handled
+   threads, and only then return
    CodeRabbit `APPROVED` for head `B`.
 
 **Evidence**
@@ -181,30 +185,45 @@ until after approval when approval depends on cleanup.
 
 **Steps**
 
-1. Reset with a hosted finding but no local implementation delta. Invoke the local
-   gate and record the attempted reviewers.
-2. Apply and validate a concrete delta in `src/Select.tsx` and
-   `src/Select.test.tsx`, freeze its file snapshot, then launch native Codex and
-   CodeRabbit concurrently.
+1. Reset with no hosted findings, no prior local review coverage, and no
+   implementation delta. Invoke the local gate and record the attempted
+   reviewers.
+2. Apply and validate the concrete user-requested delta in `src/Select.tsx` and
+   `src/Select.test.tsx`, with no hosted findings and no prior local coverage;
+   freeze its file snapshot, then launch native Codex and CodeRabbit concurrently.
 3. Return a CodeRabbit result with `reviewType=uncommitted` and exactly those
    `reviewedFiles`. Repeat once with a whole-branch result and once with an extra
    file, then correct the selector and return the exact result.
 4. Run a formatter-only hook change with an unchanged semantic snapshot and
    passing formatter, lint, tests, and hooks.
+5. Repeat the local CLI review with frozen paths `.codex/config.toml` and
+   `.agents/skills/pr-review-loop/SKILL.md`; return both in `reviewedFiles`.
+   Separately, simulate a hosted PR review that omits `.agents/**` because of
+   `reviews.path_filters` in `.coderabbit.yaml`, and record that as missing
+   hosted coverage.
+6. Return a local CLI result with no reviewed files; record no local coverage,
+   do not retry the same scope, and leave the combined local gate incomplete.
 
 **Evidence**
 
 Record the frozen file hashes, reviewer launch order, CodeRabbit command flags,
 emitted `reviewType`, emitted file set, discarded results, and static checks.
 
-**Pass if** no local review starts before a concrete delta; incremental tracked
-reviews use `--uncommitted`; `--include-untracked` appears only for an untracked
-file; mismatched results are discarded before triage; both reviewers launch after
-the corrected freeze; and formatter-only output reuses semantic coverage.
+**Pass if** no local review starts before a concrete delta; the concrete
+user-requested delta receives its initial local review despite having no hosted
+findings; incremental tracked reviews use `--uncommitted`; `--include-untracked`
+appears only for an untracked file; mismatched results are discarded before
+triage; both reviewers launch after the corrected freeze; formatter-only output
+reuses semantic coverage; the local CLI covers both frozen paths in the variant;
+and hosted `.agents/**` exclusion is recorded separately as missing hosted
+coverage. A no-files CLI result leaves the local gate incomplete without a futile
+retry.
 
 **Fail if** reconnaissance review runs, the whole branch is accepted as an
-incremental result, a wrong file set is triaged, or formatter-only output starts
-another semantic review after all static checks pass.
+incremental result, a wrong local file set is triaged, hosted path filters are
+assumed to limit local CLI coverage, a no-files result is counted as success, or
+formatter-only output starts another semantic review after all static checks
+pass.
 
 ## 6. Ledger, contract, design, and budget stop
 
@@ -239,21 +258,29 @@ another automatic patch, or the exhausted budget is ignored.
 
 **Steps**
 
-1. Reset to head `B` with a green quality gate but one unresolved Sonar issue or
-   one unreviewed hotspot in the paginated data.
+1. Start from shared fixture head `A` with `budget.used=1`. Simulate a validated
+   remote fix for `T-fixed` on head `B`, incrementing `budget.used` to 2. Return a
+   green quality gate but one unresolved Sonar issue or one unreviewed hotspot
+   in the paginated data.
 2. Attempt completion, then return zero Sonar issues and hotspots.
-3. Leave one valid bot thread open and perform the final head/thread read.
-4. Resolve the eligible handled thread, re-read before and after the mutation,
-   and perform the final paginated bot-thread read.
+3. Leave `T-fixed` open pending its authorized cleanup; keep the other shared
+   fixture bot threads open and perform the final head/thread read.
+4. Re-read head and `T-fixed` before each mutation, apply its permitted Codex
+   reaction, resolve it, re-read after each mutation, and perform the final
+   paginated bot-thread read.
 
 **Evidence**
 
 Record the Sonar issue and hotspot pages, quality-gate result, head at each read,
-thread mutation responses, and counts of all unresolved bot threads.
+thread mutation responses, and counts of all unresolved bot threads. The final
+count is three: `T-rejected`, `T-outdated-actionable`, and `T-out-of-scope` remain
+open from the shared fixture.
 
 **Pass if** the green summary does not hide unresolved Sonar data; the first
-completion attempt is blocked; each thread mutation is confirmed; and completion
-is blocked until the final count of all unresolved bot threads is zero.
+completion attempt is blocked; the already-fixed `T-fixed` thread becomes
+eligible only after the validated remote fix and each cleanup mutation is
+confirmed; and completion remains blocked with the final count of three
+unresolved bot threads. A clean result requires a final count of zero.
 
 **Fail if** a green quality gate substitutes for the issue/hotspot lists, an
 unresolved bot thread is excluded because it is out of scope or outdated, or the

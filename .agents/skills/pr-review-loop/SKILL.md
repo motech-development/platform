@@ -32,9 +32,10 @@ traceable findings, make the bounded changes, validate them, freeze the resultin
 delta, and run the local Codex and CodeRabbit reviews concurrently, then publish
 only after both local gates are complete and clear. A source-neutral CI retry is
 handled in the hosted phase and does not reopen local semantic review. For an
-initial local change without a remote feedback batch, local review still waits
-for a concrete implementation delta; it is a validation gate, never
-reconnaissance.
+initial local change without a remote feedback batch, review the concrete
+user-requested implementation delta when no prior local coverage exists, even if
+the hosted batch has no findings. Local review is a validation gate, never
+reconnaissance, and must not start before a concrete delta exists.
 
 Do not fix or publish from a partial hosted batch unless the user explicitly
 requests that narrower operation. A pending exact-head reviewer or quality gate
@@ -68,9 +69,13 @@ IDs. It records the issue or user amendment, public contract, supported behavior
 matrix, exclusions, every finding's theme and disposition, evidence, revision,
 validation, and publication. Deduplicate later comments by behavior theme and
 contract impact, including semantically equivalent reports with different wording.
-Accept a finding only when it maps to the recorded requirement, an explicit user
+Accept a finding when it maps to the recorded requirement, an explicit user
 amendment, an existing public contract, or a reproducible regression in supported
-behavior. A plausible edge case alone does not expand the contract.
+behavior. A standards-only finding in changed code may also trace to applicable
+repository guidance; name the guidance and show how the code violates it.
+Demonstrable correctness or security defects introduced by the delta are also
+actionable. These grounds do not authorize speculative enhancements or scope
+expansion; a plausible edge case alone does not expand the contract.
 
 Before architectural work, classify ambiguous requirements such as “no native
 select” as a visual or behavioral requirement using repository evidence or an
@@ -89,8 +94,10 @@ Compare simplify, delete, or revert options before accepting another patch, and
 record the decision in the ledger. Do not preserve unsupported edge-case
 machinery solely because an earlier patch happened to cover it.
 
-Use this minimum behavior matrix for relevant component work and mark each cell
-supported, excluded, or unresolved before triage:
+For component work involving value, state, or form behavior, record only the
+applicable concerns in this behavior matrix and mark each supported, excluded,
+unresolved, or not applicable before triage. Do not require a matrix for unrelated
+presentational components:
 
 | Concern                              | Record the supported contract                                     |
 | ------------------------------------ | ----------------------------------------------------------------- |

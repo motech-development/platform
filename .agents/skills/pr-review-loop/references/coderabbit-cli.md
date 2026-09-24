@@ -75,12 +75,16 @@ not imply an equivalent CodeRabbit setting.
 
 For every incremental review of tracked edits, use `--uncommitted`. Add
 `--include-untracked` only when the frozen delta contains untracked files and the
-CLI supports that selector. Before triage, verify the structured result's
+CLI supports that selector. Before triage, verify that the structured result's
 `reviewType` identifies an uncommitted review and its `reviewedFiles` set matches
-the frozen intended paths and additions exactly. Record the snapshot and emitted
-file list in the batch ledger. A full-branch or mismatched-file result is out of
-scope evidence: discard it, do not act on its findings, correct the selector or
-isolated baseline, and run a fresh review for the intended delta.
+all intended frozen paths and additions unless this CLI run explicitly reports a
+supported exclusion. Do not assume hosted PR exclusions from
+`reviews.path_filters` in `.coderabbit.yaml` apply to the local CLI. For an
+explicit exclusion, compare against the remaining paths, record excluded paths
+as missing local CodeRabbit coverage, and leave the local gate incomplete. A
+full-branch or otherwise mismatched-file result is out-of-scope evidence:
+discard it, do not act on its findings, correct the selector or isolated
+baseline, and run a fresh review for the intended delta.
 
 For later uncommitted passes, or unrelated local edits, use an isolated temporary
 Git checkout with the previous reviewed source snapshot as its baseline and only
@@ -142,13 +146,15 @@ authorized, with a single useful resumption rather than periodic status runs.
 ## Complete and combine results
 
 Require a completed review against the intended nonempty delta, with no terminal
-error or payment block. A `review_skipped` result is not coverage of changed code.
-Do not mistake saved findings from an older run for the current result. Retain
-the run identity, snapshot, and final output; merge duplicates with Codex findings
-and apply the [batch disposition rules](batch-scope.md#decide-before-editing). A credit-consent skip is recorded
+error or payment block. A `review_skipped` result or a result with no reviewed
+files is not coverage of changed code. For an empty result, record no CLI
+coverage, do not retry the same scope, and leave the local combined gate
+incomplete. Do not mistake saved findings from an older run for the current
+result. Retain the run identity, snapshot, and final output; merge duplicates
+with Codex findings and apply the [batch disposition rules](batch-scope.md#decide-before-editing). A credit-consent skip is recorded
 as missing coverage while the rest of the loop continues. Other blocked or failed
-runs leave the combined gate incomplete even if Codex is clean. CLI findings do not themselves
-create GitHub threads or authorize posting messages.
+runs leave the combined gate incomplete even if Codex is clean. CLI findings do
+not themselves create GitHub threads or authorize posting messages.
 
 Command and event details: [CLI reference](https://docs.coderabbit.ai/cli/reference).
 Runtime and paid-consent behavior: [CLI guide](https://docs.coderabbit.ai/cli/index).
