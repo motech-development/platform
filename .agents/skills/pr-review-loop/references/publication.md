@@ -4,9 +4,17 @@ Read before commits, pushes, bot interactions, thread resolution, or PR-body upd
 
 ## Publish and close the batch
 
-Carry forward existing authorization for commits, pushes, reactions, and replies;
-do not ask again for it. This skill does not itself grant permission to send
-messages, push, merge, or deploy.
+Carry forward the authorization recorded in the batch ledger; do not ask again
+for an already-authorized action. An explicit `$pr-review-loop` invocation
+authorizes routine Codex reactions, eligible bot-thread resolution, and the
+limited written explanation for a conclusively rejected CodeRabbit finding after
+the verification in [thread-resolution.md](thread-resolution.md), unless the
+user explicitly narrows the request to code fixes only, inspection, one batch, or
+local review. Other text replies still require separate explicit authorization;
+commits, pushes, merges, deploys, and PR metadata edits remain separate.
+The skill itself grants no permission to send general messages, push, merge, or
+deploy. The full-loop text permission above is limited to the specified CodeRabbit
+rejection explanation.
 
 - **Do not push while the inner local review loop has pending reviews, unreviewed
   fixes, unresolved actionable findings, or an unresolved scope mismatch.** Once
@@ -18,17 +26,26 @@ messages, push, merge, or deploy.
   and validate any substantive hook changes, then send that delta through both
   local reviewers in parallel before publishing. The committed snapshot must
   retain complete coverage from both reviewers.
+  Check the finite remediation-publication budget in the batch ledger before
+  consuming a source-changing publication allowance. Stop for the user's design
+  or budget decision when it is exhausted.
   Check CodeRabbit's no-charge boundary before pushing when a push triggers its
   hosted review; automatic hosted overages are subject to the same spending ban.
 - For authorized Codex feedback, use 👍 for accepted findings and 👎 for verified
   false positives. Use reactions only unless text replies were explicitly
   requested. Do not label an obsolete, previously valid finding a false positive.
-- When CodeRabbit replies are authorized, reply only to findings you reject,
-  explaining the concrete reason and supporting evidence. Do not post replies
-  acknowledging accepted findings or announcing their fixes. For rejected
-  findings embedded in the main review, identify the relevant section and file
-  in the response so the disagreement is unambiguous. Preserve user-resolved
-  threads. Do not request a new hosted review just because a bot suggests doing so.
+- CodeRabbit receives no reactions. The full-loop default authorizes a written,
+  evidence-backed explanation only for each conclusively rejected CodeRabbit
+  finding.
+  Tag `@coderabbitai` in a top-level message and use the integration's supported
+  mechanism for an inline reply. For a rejected finding embedded in the main
+  review, identify the relevant section and file so the disagreement is
+  unambiguous. A rejected CodeRabbit thread cannot be marked handled or resolved
+  until its required explanation is confirmed; if posting fails, leave it open and
+  report the failure. Other text replies require separate explicit authorization.
+  Do not post replies acknowledging accepted findings or announcing their fixes.
+  Preserve user-resolved threads. Do not request a new hosted review just because
+  a bot suggests doing so when an automatic review is already expected.
 - Resolve handled bot review threads as part of completing the batch, using
   [thread-resolution.md](thread-resolution.md). Do not leave routine
   resolution to the user or depend on Codex doing it automatically. Verify the
@@ -37,6 +54,12 @@ messages, push, merge, or deploy.
   already resolved a thread, leave it alone; apply the same verification to any
   eligible bot threads that remain open. Preserve human reviewers' threads unless
   the user explicitly included them in this workflow.
+- Before and after each reaction or resolution, re-read the remote head and the
+  thread. After all eligible mutations, perform a final paginated read and record
+  the count of **all unresolved bot review threads**. Eligible handled threads
+  must be reacted to and resolved; still-valid, actionable, disputed, or
+  out-of-scope bot threads remain open and prevent a clean full-loop completion.
+  An outdated flag alone does not make a finding eligible.
 - When PR-description edits are authorized and behavior, scope, or material
   validation changes, re-read the current body immediately before editing it.
   Apply a targeted update, preserving human-maintained content, the closing issue
@@ -60,11 +83,12 @@ messages, push, merge, or deploy.
   commits or repeatedly request reviews to provoke a different answer.
 - Finish only when Codex has no unresolved actionable findings, CodeRabbit has
   approved the latest PR head or the credit-consent skip is recorded, Sonar's
-  current PR analysis has zero open issues
-  and a passing quality gate, the required pipelines pass, and the final changes
-  still satisfy the recorded task scope. Apart from that explicit CodeRabbit
-  exception, missing, skipped, stale, or pending evidence is not success. Stop
-  on cancellation,
+  current PR analysis has zero open issues and zero unreviewed hotspots, a
+  passing quality gate, the required pipelines pass, all bot review threads are
+  resolved, and the final changes still satisfy the recorded task scope. Apart
+  from that explicit CodeRabbit exception, missing, skipped, stale, or pending
+  evidence is not success. A user-authorized hosted-review waiver remains missing
+  coverage and must be reported as incomplete. Stop on cancellation,
   or a concrete issue that cannot be resolved within the existing authorization.
 
 End with what was fixed or rejected, the validation performed, the published

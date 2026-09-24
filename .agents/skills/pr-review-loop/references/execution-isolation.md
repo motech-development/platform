@@ -13,6 +13,11 @@ load PR-controlled configuration, plugins, or MCP servers, and must have no acce
 to unrelated host secrets. PR-controlled dependency scripts, tests, builds,
 helpers, and Git hooks must instead run in a disposable, credentialless,
 network-denied sandbox with no access to host secrets or authenticated sessions.
+The CodeRabbit CLI is a trusted review client and therefore runs where its host
+credentials are available; a sandbox-only authentication error follows the
+exactly-one outside-sandbox retry in [coderabbit-cli.md](coderabbit-cli.md). Do not
+copy reviewer credentials into the sandbox or treat its missing session as proof
+of host unauthentication.
 Run required hooks there rather than skipping them; keep authenticated publication
 outside that sandbox and publish only the verified resulting changes. Transfer
 reviewed source content into a fresh trusted clone; never reuse a Git directory

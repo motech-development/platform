@@ -11,7 +11,7 @@ the requirements, affected paths, acceptance criteria, exclusions, and the
 smallest useful validation plan before delegating work.
 
 Delegate each bounded implementation and test assignment to an `implementer`
-agent configured as `gpt-5.6-luna` with `max` reasoning effort. Independent
+agent configured as `gpt-6-luna` with `max` reasoning effort. Independent
 assignments may run in parallel when their paths and responsibilities do not
 overlap. Give each agent the relevant specification, repository guidance, paths,
 seams, and targeted checks. Use `/tdd` where possible at pre-agreed seams. An
