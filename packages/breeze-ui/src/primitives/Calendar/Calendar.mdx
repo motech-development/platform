@@ -1,0 +1,36 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Calendar.stories';
+
+<Meta
+  of={Stories}
+  summary="A six-week, Monday-first calendar with ISO date values."
+/>
+
+# Calendar
+
+`Calendar` renders a locale-aware calendar grid. Weeks begin on Monday and each
+month uses six rows. Leading and trailing dates remain visible in muted text.
+Selected dates use a brand fill; today uses a brand outline unless it is selected.
+
+<Canvas of={Stories.Default} />
+
+## States
+
+Use `disabled` to prevent date changes.
+
+<Canvas of={Stories.Disabled} />
+
+## Controlled values
+
+Provide `value` and `onChange` for controlled usage. The callback receives an
+ISO `YYYY-MM-DD` string, never a DOM event. Use `defaultValue` and an optional
+`onChange` for uncontrolled usage; the two forms cannot be mixed.
+
+## Accessibility
+
+The `label` names the calendar. React Aria provides keyboard navigation,
+selection semantics and localized weekday and date names.
+
+## API
+
+<ArgTypes />

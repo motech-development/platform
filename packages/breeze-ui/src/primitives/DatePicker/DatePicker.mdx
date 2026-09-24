@@ -1,0 +1,42 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './DatePicker.stories';
+
+<Meta
+  of={Stories}
+  summary="A required date field with an ISO value and localized trigger."
+/>
+
+# DatePicker
+
+`DatePicker` opens a calendar from a button showing the selected date in the
+provider locale's long form. The calendar glyph stays at the far edge of the
+trigger. The value and callback use ISO `YYYY-MM-DD` strings.
+
+<Canvas of={Stories.Default} />
+
+## States
+
+Use `error` to display validation feedback and `disabled` to prevent interaction.
+The field is required by default and does not provide a clear control.
+
+<Canvas of={Stories.Error} />
+
+<Canvas of={Stories.Disabled} />
+
+## Controlled values
+
+Provide both `value` and `onChange` for controlled usage. Use `defaultValue` and
+an optional `onChange` for uncontrolled usage; the two forms cannot be mixed.
+With a `name`, the selected ISO date is included in form submission.
+
+<Canvas of={Stories.Controlled} />
+
+## Accessibility
+
+The visible label names the trigger, which exposes required and invalid state.
+The calendar supports keyboard navigation and localized date names. Coarse-pointer
+targets have a minimum 44px width and height.
+
+## API
+
+<ArgTypes />

@@ -7,6 +7,8 @@ export type {
   ControlSize,
 } from './primitives/Button/Button';
 export { Button } from './primitives/Button/Button';
+export type { CalendarProps } from './primitives/Calendar/Calendar';
+export { Calendar } from './primitives/Calendar/Calendar';
 export type {
   CardElement,
   CardProps,
@@ -26,6 +28,8 @@ export type {
   ContainerWidth,
 } from './primitives/Container/Container';
 export { Container } from './primitives/Container/Container';
+export type { DatePickerProps } from './primitives/DatePicker/DatePicker';
+export { DatePicker } from './primitives/DatePicker/DatePicker';
 export type { DialogProps } from './primitives/Dialog/Dialog';
 export { Dialog } from './primitives/Dialog/Dialog';
 export type { DrawerProps } from './primitives/Drawer/Drawer';
