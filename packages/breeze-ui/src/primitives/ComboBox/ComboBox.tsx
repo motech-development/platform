@@ -1274,9 +1274,11 @@ function useComboBoxModel<T>(
         : !sameComboBoxKey(resetState.value, resetState.defaultValue) ||
           (allowsCustomValue &&
             resetState.inputValue !== resetState.defaultInputValue);
+    const initialResetChangeValue =
+      allowsCustomValue && initialResetValue === '' ? null : initialResetValue;
     const nextValue =
       value !== undefined || allowsCustomValue
-        ? initialResetValue ?? null
+        ? initialResetChangeValue ?? null
         : getComboBoxValueForKey(
             resetState.defaultValue,
             undefined,
