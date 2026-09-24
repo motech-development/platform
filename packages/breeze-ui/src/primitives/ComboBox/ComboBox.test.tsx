@@ -829,6 +829,38 @@ describe('ComboBox', () => {
     expect(onChange).not.toHaveBeenCalled();
   });
 
+  it('handles a native reset-button click without duplicate changes', async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn<(value: Supplier | null) => void>();
+
+    renderBreeze(
+      <form aria-label="Supplier form">
+        <ComboBox
+          defaultValue={suppliers[0]}
+          getItem={getItem}
+          items={suppliers}
+          label="Supplier"
+          name="supplier"
+          onChange={onChange}
+        />
+        <input type="reset" value="Reset supplier" />
+      </form>,
+    );
+
+    const form = document.forms[0];
+    const input = screen.getByRole('combobox', { name: 'Supplier' });
+    await user.click(screen.getByRole('button', { name: /Show suggestions/ }));
+    await user.click(screen.getByRole('option', { name: /Brass & Co/ }));
+    onChange.mockClear();
+
+    await user.click(screen.getByRole('button', { name: 'Reset supplier' }));
+
+    expect(input).toHaveValue('Acme Supplies');
+    expect(new FormData(form).get('supplier')).toBe('acme');
+    expect(onChange).toHaveBeenCalledTimes(1);
+    expect(onChange).toHaveBeenCalledWith(suppliers[0]);
+  });
+
   it('applies a form reset before returning and preserves later input', async () => {
     const user = userEvent.setup();
 
