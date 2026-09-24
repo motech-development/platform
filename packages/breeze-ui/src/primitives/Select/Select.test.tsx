@@ -128,6 +128,19 @@ describe('Select', () => {
     expect(trigger).toHaveAttribute('data-focus-visible', 'true');
   });
 
+  it('focuses the trigger when the visible label is clicked', async () => {
+    const user = userEvent.setup();
+
+    renderBreeze(
+      <Select getItem={getItem} items={choices} label="Payment method" />,
+    );
+
+    const trigger = screen.getByRole('button', { name: 'Payment method' });
+    await user.click(screen.getByText('Payment method', { selector: 'span' }));
+
+    expect(trigger).toHaveFocus();
+  });
+
   it('supports controlled values', async () => {
     const user = userEvent.setup();
     const onChange = vi.fn<(value: (typeof choices)[number] | null) => void>();
@@ -263,16 +276,53 @@ describe('Select', () => {
     const trigger = screen.getByRole('button', {
       name: 'Bank account Payment method',
     });
-    expect(trigger).toHaveAttribute('aria-readonly', 'true');
+    expect(trigger).toHaveAttribute('aria-disabled', 'true');
+    expect(trigger).not.toHaveAttribute('aria-readonly');
+    expect(trigger).not.toHaveAttribute('aria-required');
     expect(trigger).not.toBeDisabled();
 
     await user.tab();
+    expect(trigger).toHaveFocus();
     await user.keyboard('{ArrowDown}');
     await user.click(trigger);
 
     expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
     expect(onChange).not.toHaveBeenCalled();
     expect(new FormData(screen.getByRole('form')).get('payment')).toBe('bank');
+  });
+
+  it('closes an open menu when read-only changes and stays closed', async () => {
+    const user = userEvent.setup();
+    const { rerender } = renderBreeze(
+      <Select getItem={getItem} items={choices} label="Payment method" />,
+    );
+
+    const trigger = screen.getByRole('button', { name: 'Payment method' });
+    await user.click(trigger);
+    expect(screen.getByRole('listbox')).toBeVisible();
+
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <Select
+          getItem={getItem}
+          items={choices}
+          label="Payment method"
+          readOnly
+        />
+      </BreezeProvider>,
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+    });
+
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <Select getItem={getItem} items={choices} label="Payment method" />
+      </BreezeProvider>,
+    );
+
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
   });
 
   it('disables RAC hidden selection while preserving the live form value', async () => {
