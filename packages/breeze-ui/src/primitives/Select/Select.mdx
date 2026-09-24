@@ -1,16 +1,12 @@
 import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
 import * as Stories from './Select.stories';
 
-<Meta
-  of={Stories}
-  summary="A fixed-choice field backed by a React Aria popover listbox."
-/>
+<Meta of={Stories} summary="A fixed-choice field with a popover listbox." />
 
 # Select
 
-`Select` is a fixed-choice field. Its visible control opens a popover listbox;
-React Aria may also render hidden native form and accessibility infrastructure
-so the control participates in browser forms and autofill consistently.
+`Select` is a fixed-choice field. Its visible control opens a popover listbox
+and participates in browser forms and autofill.
 
 <Canvas of={Stories.Default} />
 
@@ -48,8 +44,7 @@ optional `onChange` for uncontrolled usage; the two forms cannot be mixed.
 ## Accessibility
 
 The visible label names the control, while descriptions and errors are announced
-through React Aria's field relationships. React Aria supplies listbox keyboard
-navigation and focus management.
+with the field. Keyboard navigation and focus management are built in.
 
 ## API
 
