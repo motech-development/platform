@@ -891,9 +891,9 @@ function useComboBoxModel<T>(
 
   const beginFormReset = () => {
     suppressFormResetRef.current = true;
-    queueMicrotask(() => {
+    setTimeout(() => {
       suppressFormResetRef.current = false;
-    });
+    }, 0);
   };
 
   useLayoutEffect(() => {
