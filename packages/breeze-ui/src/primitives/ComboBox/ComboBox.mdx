@@ -8,9 +8,8 @@ import * as Stories from './ComboBox.stories';
 
 # ComboBox
 
-`ComboBox` combines text entry with a React Aria popover listbox. Suggestions
-filter while the user types, and the same closed descriptor contract is used for
-every item.
+`ComboBox` combines text entry with a popover listbox. Suggestions filter while
+the user types, and the same closed descriptor contract is used for every item.
 
 <Canvas of={Stories.Default} />
 
@@ -53,8 +52,7 @@ an optional `onChange` for uncontrolled usage; the two forms cannot be mixed.
 ## Accessibility
 
 The visible label names the input, while descriptions and errors are announced
-through React Aria's field relationships. React Aria supplies listbox keyboard
-navigation and focus management.
+with the field. Keyboard navigation and focus management are built in.
 
 ## API
 
