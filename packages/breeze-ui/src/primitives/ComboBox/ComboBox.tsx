@@ -119,6 +119,7 @@ export type ComboBoxProps<T> =
       ));
 
 interface ComboBoxItem<T> {
+  id: string;
   descriptor: ItemDescriptor;
   item: T;
 }
@@ -136,6 +137,45 @@ function findItem<T>(
 
   const { id } = getItem(value);
   return decoratedItems.find((item) => item.descriptor.id === id);
+}
+
+function resolveCollectionKey<T>(
+  value: T | string | null | undefined,
+  item: ComboBoxItem<T> | undefined,
+  getItem: (item: T) => ItemDescriptor,
+  allowsCustomValue: boolean,
+) {
+  if (value === undefined) return undefined;
+  if (
+    value === null ||
+    (allowsCustomValue && typeof value === 'string' && !item)
+  ) {
+    return null;
+  }
+
+  return item?.id ?? getItem(value as T).id;
+}
+
+function resolveControlledInputValue<T>(
+  value: T | string | null | undefined,
+  selectedItem: ComboBoxItem<T> | undefined,
+  allowsCustomValue: boolean,
+) {
+  if (value === undefined || !allowsCustomValue) return undefined;
+  if (selectedItem) return selectedItem.descriptor.label;
+  return typeof value === 'string' ? value : '';
+}
+
+function resolveDefaultCustomValue<T>(
+  defaultValue: T | string | null | undefined,
+  defaultItem: ComboBoxItem<T> | undefined,
+  allowsCustomValue: boolean,
+) {
+  if (!allowsCustomValue || typeof defaultValue !== 'string' || defaultItem) {
+    return undefined;
+  }
+
+  return defaultValue;
 }
 
 function ComboBoxListBox<T>({ items }: Readonly<{ items: ComboBoxItem<T>[] }>) {
@@ -234,10 +274,14 @@ function ComboBoxBase<T>({ props }: Readonly<{ props: ComboBoxProps<T> }>) {
   const groupRef = useRef<HTMLDivElement>(null);
   const decoratedItems = useMemo<ComboBoxItem<T>[]>(
     () =>
-      items.map((item) => ({
-        descriptor: getItem(item),
-        item,
-      })),
+      items.map((item) => {
+        const descriptor = getItem(item);
+        return {
+          descriptor,
+          id: descriptor.id,
+          item,
+        };
+      }),
     [getItem, items],
   );
 
@@ -245,45 +289,39 @@ function ComboBoxBase<T>({ props }: Readonly<{ props: ComboBoxProps<T> }>) {
     value !== undefined && value !== null
       ? findItem(value as T, decoratedItems, getItem, allowsCustomValue)
       : undefined;
-  let selectedKey: string | null | undefined;
-  if (value === undefined) {
-    selectedKey = undefined;
-  } else if (value === null || (typeof value === 'string' && !selectedItem)) {
-    selectedKey = null;
-  } else {
-    selectedKey = selectedItem?.descriptor.id ?? getItem(value as T).id;
-  }
+  const selectedKey = resolveCollectionKey(
+    value as T | string | null | undefined,
+    selectedItem,
+    getItem,
+    allowsCustomValue,
+  );
   const defaultItem =
     defaultValue !== undefined && defaultValue !== null
       ? findItem(defaultValue as T, decoratedItems, getItem, allowsCustomValue)
       : undefined;
-  let defaultSelectedKey: string | null | undefined;
-  if (defaultValue === undefined) {
-    defaultSelectedKey = undefined;
-  } else if (
-    defaultValue === null ||
-    (typeof defaultValue === 'string' && !defaultItem)
-  ) {
-    defaultSelectedKey = null;
-  } else {
-    defaultSelectedKey =
-      defaultItem?.descriptor.id ?? getItem(defaultValue as T).id;
-  }
-  const controlledInputValue =
-    value !== undefined && allowsCustomValue
-      ? selectedItem?.descriptor.label ??
-        (typeof value === 'string' ? value : '')
-      : undefined;
-  const defaultCustomValue =
-    defaultValue !== undefined &&
-    allowsCustomValue &&
-    typeof defaultValue === 'string' &&
-    !defaultItem
-      ? defaultValue
-      : undefined;
+  const defaultSelectedKey = resolveCollectionKey(
+    defaultValue as T | string | null | undefined,
+    defaultItem,
+    getItem,
+    allowsCustomValue,
+  );
+  const controlledInputValue = resolveControlledInputValue(
+    value as T | string | null | undefined,
+    selectedItem,
+    allowsCustomValue,
+  );
+  const defaultCustomValue = resolveDefaultCustomValue(
+    defaultValue as T | string | null | undefined,
+    defaultItem,
+    allowsCustomValue,
+  );
   const lastSelectedKeyRef = useRef<string | null>(
     selectedKey == null ? null : String(selectedKey),
   );
+  const inputValueRef = useRef(
+    controlledInputValue ?? defaultCustomValue ?? '',
+  );
+  const inputChangeHandledRef = useRef(false);
   const emitChange = onChange as
     | ((nextValue: ComboBoxValue<T>) => void)
     | undefined;
@@ -294,14 +332,30 @@ function ComboBoxBase<T>({ props }: Readonly<{ props: ComboBoxProps<T> }>) {
   }, [selectedKey]);
 
   const handleSelectionChange = (key: string | number | null) => {
-    lastSelectedKeyRef.current = key == null ? null : String(key);
+    if (key === null) {
+      lastSelectedKeyRef.current = null;
+      if (allowsCustomValue) {
+        const inputChangeHandled = inputChangeHandledRef.current;
+        inputChangeHandledRef.current = false;
+        if (inputValueRef.current || inputChangeHandled) return;
+      }
+      emitChange?.(null);
+      return;
+    }
+
+    inputChangeHandledRef.current = false;
+    lastSelectedKeyRef.current = String(key);
     const nextItem = decoratedItems.find(
       (item) => item.descriptor.id === String(key),
     );
+    inputValueRef.current = nextItem?.descriptor.label ?? '';
     emitChange?.(nextItem?.item ?? null);
   };
 
   const handleInputChange = (inputValue: string) => {
+    inputValueRef.current = inputValue;
+    inputChangeHandledRef.current = true;
+
     if (!allowsCustomValue) return;
 
     const selected = decoratedItems.find(
@@ -335,7 +389,7 @@ function ComboBoxBase<T>({ props }: Readonly<{ props: ComboBoxProps<T> }>) {
       menuTrigger="input"
       name={submittedName}
       onInputChange={handleInputChange}
-      onSelectionChange={handleSelectionChange}
+      onChange={handleSelectionChange}
       value={selectedKey}
       validationBehavior="aria"
     >

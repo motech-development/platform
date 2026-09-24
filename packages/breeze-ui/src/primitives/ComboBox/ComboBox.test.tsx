@@ -82,6 +82,37 @@ describe('ComboBox', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('keeps surviving suggestions stable when items are reordered and removed', async () => {
+    const user = userEvent.setup();
+    const { rerender } = renderBreeze(
+      <ComboBox getItem={getItem} items={suppliers} label="Supplier" />,
+    );
+
+    await user.click(screen.getByRole('button', { name: /Show suggestions/ }));
+
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <ComboBox
+          getItem={getItem}
+          items={[suppliers[2], suppliers[0]]}
+          label="Supplier"
+        />
+      </BreezeProvider>,
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('option', { name: /Closed supplier/ }),
+      ).toBeInTheDocument();
+    });
+    expect(
+      screen.getByRole('option', { name: /Acme Supplies/ }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('option', { name: /Brass & Co/ }),
+    ).not.toBeInTheDocument();
+  });
+
   it('renders descriptor content and disabled suggestions', async () => {
     const user = userEvent.setup();
 
@@ -271,6 +302,36 @@ describe('ComboBox', () => {
     await waitFor(() => {
       expect(onChange).toHaveBeenLastCalledWith('New supplier');
     });
+    expect(
+      onChange.mock.calls.filter(([value]) => value === null),
+    ).toHaveLength(1);
+  });
+
+  it('keeps edited custom text after changing a suggestion without clearing it', async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn<(value: SupplierValue) => void>();
+
+    renderBreeze(
+      <ComboBox
+        allowsCustomValue
+        getItem={getItem}
+        items={suppliers}
+        label="Supplier"
+        onChange={onChange}
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: /Show suggestions/ }));
+    await user.click(screen.getByRole('option', { name: /Acme Supplies/ }));
+
+    const input = screen.getByRole('combobox', { name: 'Supplier' });
+    await user.type(input, ' - updated');
+    fireEvent.blur(input);
+
+    await waitFor(() => {
+      expect(onChange).toHaveBeenLastCalledWith('Acme Supplies - updated');
+    });
+    expect(onChange).not.toHaveBeenCalledWith(null);
   });
 
   it('accepts an uncontrolled custom default and custom text', async () => {

@@ -249,7 +249,6 @@ export function Select<T>({
       id={controlId}
       isDisabled={interactionDisabled || readOnly}
       isInvalid={isInvalid}
-      isOpen={readOnly ? false : undefined}
       isRequired={required}
       name={name}
       onChange={(key) => {
@@ -267,7 +266,7 @@ export function Select<T>({
       validationBehavior="aria"
       value={selectedKey}
     >
-      <FieldLabel label={label} loading={loading} />
+      <FieldLabel htmlFor={controlId} label={label} loading={loading} />
       <div className={fieldVariants.base.control}>
         <AriaButton
           className={joinClassNames(
@@ -281,9 +280,8 @@ export function Select<T>({
             createElement('button', {
               ...buttonProps,
               'aria-busy': loading || undefined,
+              'aria-disabled': readOnly || undefined,
               'aria-invalid': isInvalid || undefined,
-              'aria-readonly': readOnly || undefined,
-              'aria-required': required || undefined,
               'data-invalid': isInvalid || undefined,
               type: 'button',
             })
