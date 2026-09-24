@@ -1,0 +1,1 @@
+import{n as e}from"./rolldown-runtime-DaJ6WEGw.js";import{Ft as t,Pt as n}from"./useHover-CeOIuUM8.js";function r(e,t){let{id:r,"aria-label":i,"aria-labelledby":a}=e;return r=n(r),a&&i?a=[...new Set([r,...a.trim().split(/\s+/)])].join(` `):a&&=a.trim().split(/\s+/).join(` `),!i&&!a&&t&&(i=t),{id:r,"aria-label":i,"aria-labelledby":a}}var i=e((()=>{t()}));export{i as n,r as t};

@@ -588,13 +588,13 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">23 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">1/23 info</a><span class="filter-pill ok" aria-disabled="true">80 stories ok</span><a class="filter-pill ok" data-k="docs" href="#filter-docs">25 docs ok</a></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">25 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">2/25 infos</a><span class="filter-pill ok" aria-disabled="true">92 stories ok</span><a class="filter-pill ok" data-k="docs" href="#filter-docs">27 docs ok</a></div>
   </div>
 </header>
 <main>
   <div class="wrap">
     <div class="note ok" style="margin-bottom: 16px;">
-              Using <code>react-docgen-typescript</code>. Generation took <strong>2.0s</strong>.
+              Using <code>react-docgen-typescript</code>. Generation took <strong>1.9s</strong>.
             </div>
     <h2 class="section-title">Components</h2>
     <div class="grid" role="list">
@@ -1922,6 +1922,328 @@ native input through `ref`.
 <article
   class="card 
   no-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="ComboBox">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> ComboBox</h2>
+      <div class="badges">
+        <label for="c-6-forms-combobox-props" class="badge ok as-toggle">19 prop types</label>
+        <label for="c-6-forms-combobox-info" class="badge info as-toggle">1 info</label>
+        <label for="c-6-forms-combobox-stories" class="badge ok as-toggle">6 stories</label>
+        <label for="c-6-forms-combobox-docs" class="badge ok as-toggle">1 doc</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/primitives/ComboBox/ComboBox.stories.tsx">forms-combobox · ./src/primitives/ComboBox/ComboBox.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  <input id="c-6-forms-combobox-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-6-forms-combobox-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-6-forms-combobox-docs" class="tg tg-docs" type="checkbox" hidden />
+  
+  <input id="c-6-forms-combobox-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
+              <span class="badge ok">19 prop types</span>
+            </div>
+            <pre><code>Component: src/primitives/ComboBox/ComboBox.tsx::ComboBox</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>/**
+ * Allows a value that is not one of the suggestions.
+ * Disallows values that are not one of the suggestions.
+ */
+allowsCustomValue?: boolean
+
+/**
+ * Hints at the browser&#39;s autocomplete behaviour for this field.
+ */
+autoComplete?: string
+
+/**
+ * Focuses the input when the component is mounted.
+ */
+autoFocus?: boolean
+
+/**
+ * Controlled and uncontrolled value props are mutually exclusive.
+ * Initial selected item or free-text value.
+ */
+defaultValue?: ComboBoxValue&lt;NoInfer&lt;T&gt;&gt;
+
+/**
+ * Supporting guidance announced with the input.
+ */
+description?: string
+
+/**
+ * Prevents editing and opening the suggestions. Defaults to `false`.
+ */
+disabled?: boolean
+
+/**
+ * Visible validation message; any non-empty value marks the field invalid.
+ */
+error?: string
+
+/**
+ * Associates the input with a form outside its ancestor tree.
+ */
+form?: string
+
+/**
+ * Maps an item to the closed descriptor rendered by Breeze.
+ */
+getItem: (item: T) =&gt; ItemDescriptor
+
+/**
+ * Sets the native input id used by the field label.
+ */
+id?: string
+
+/**
+ * Items displayed as suggestions.
+ */
+items: T[]
+
+/**
+ * Accessible field label, shown as text outside loading state.
+ */
+label: string
+
+/**
+ * Replaces the field with a shape-preserving loading presentation.
+ */
+loading?: boolean
+
+/**
+ * Sets the submitted name of the input.
+ */
+name?: string
+
+/**
+ * Reports the next selected item or free-text value without exposing a DOM event.
+ */
+onChange?: ((value: ComboBoxValue&lt;NoInfer&lt;T&gt;&gt;) =&gt; void) | ((value: NoInfer&lt;T&gt; | null) =&gt; void) | ((value: ComboBoxValue&lt;NoInfer&lt;T&gt;&gt;) =&gt; void) | ((value: NoInfer&lt;T&gt; | null) =&gt; void)
+
+/**
+ * Temporary text shown while the input is empty.
+ */
+placeholder?: string
+
+/**
+ * Prevents editing while retaining focus and form participation.
+ */
+readOnly?: boolean
+
+/**
+ * Marks the input as required. Defaults to `false`.
+ */
+required?: boolean
+
+/**
+ * Current selected item or free-text value.
+ * Controlled and uncontrolled value props are mutually exclusive.
+ */
+value?: ComboBoxValue&lt;NoInfer&lt;T&gt;&gt;</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { ComboBox } from "@motech-development/breeze-ui";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A filterable suggestion field.</div>
+              <pre><code>const Default = () =&gt; &lt;ComboBox
+    getItem={(item: unknown) =&gt; item as ItemDescriptor}
+    items={suppliers}
+    label=&quot;Supplier&quot;
+    placeholder=&quot;Search suppliers&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Description</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Supporting guidance is announced with the input.</div>
+              <pre><code>const Description = () =&gt; &lt;ComboBox
+    getItem={(item: unknown) =&gt; item as ItemDescriptor}
+    items={suppliers}
+    label=&quot;Supplier&quot;
+    placeholder=&quot;Search suppliers&quot;
+    description=&quot;Choose a saved supplier or enter a new name.&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Error</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A visible error marks the field invalid.</div>
+              <pre><code>const Error = () =&gt; &lt;ComboBox
+    getItem={(item: unknown) =&gt; item as ItemDescriptor}
+    items={suppliers}
+    label=&quot;Supplier&quot;
+    placeholder=&quot;Search suppliers&quot;
+    error=&quot;Enter a supplier.&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Free Text</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Free text is accepted while matching suggestions remain available.</div>
+              <pre><code>const FreeText = () =&gt; &lt;ComboBox
+    getItem={(item: unknown) =&gt; item as ItemDescriptor}
+    items={suppliers}
+    label=&quot;Supplier&quot;
+    placeholder=&quot;Search or enter a name&quot;
+    allowsCustomValue /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Loading</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Loading keeps the input footprint while preventing interaction.</div>
+              <pre><code>const Loading = () =&gt; &lt;ComboBox
+    getItem={(item: unknown) =&gt; item as ItemDescriptor}
+    items={suppliers}
+    label=&quot;Supplier&quot;
+    placeholder=&quot;Search suppliers&quot;
+    defaultValue={suppliers[0]}
+    loading /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Controlled</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">The application owns the selected item or free-text value.</div>
+              <pre><code>const Controlled = () =&gt; &lt;ControlledExample /&gt;;</code></pre>
+            </div>
+        </div>
+    
+        <div class="panel panel-docs">
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Docs</span>
+                <span class="badge ok">doc ok</span>
+              </div>
+              <div class="hint">./src/primitives/ComboBox/ComboBox.mdx</div>
+              <div>A filterable suggestion field with optional free text.</div>
+              <div class="mdx-content"><pre><code>import { ArgTypes, Canvas, Meta } from &#39;@storybook/addon-docs/blocks&#39;;
+import * as Stories from &#39;./ComboBox.stories&#39;;
+
+&lt;Meta
+  of={Stories}
+  summary=&quot;A filterable suggestion field with optional free text.&quot;
+/&gt;
+
+# ComboBox
+
+`ComboBox` combines text entry with a React Aria popover listbox. Suggestions
+filter while the user types, and the same closed descriptor contract is used for
+every item.
+
+&lt;Canvas of={Stories.Default} /&gt;
+
+## Descriptor content
+
+Pass `items` and a `getItem` mapping function. The mapping returns only
+`ItemDescriptor` data: `id`, `label`, optional `description`, `icon`, `badge` and
+`disabled`. It cannot return JSX, classes, styles or slot props. A content gap is
+a deliberate Breeze library change, not an application markup escape hatch.
+
+&lt;Canvas of={Stories.Description} /&gt;
+
+## Filtering and free text
+
+Typing filters suggestions by their descriptor labels. Set `allowsCustomValue`
+when the field should also accept text that is not one of the suggestions; the
+semantic callback then receives either an item, the entered string or `null`.
+
+&lt;Canvas of={Stories.FreeText} /&gt;
+
+## States
+
+`required`, `disabled` and `readOnly` map to the field&#39;s accessible semantics. A
+non-empty `error` marks the field invalid; there is no separate `invalid` prop.
+`loading` preserves the input shape and prevents interaction until the value is
+available.
+
+&lt;Canvas of={Stories.Error} /&gt;
+
+&lt;Canvas of={Stories.Loading} /&gt;
+
+## Controlled values
+
+Provide both `value` and `onChange` for controlled usage. The callback receives a
+selected item, custom text or `null`, never a DOM event. Use `defaultValue` and
+an optional `onChange` for uncontrolled usage; the two forms cannot be mixed.
+
+&lt;Canvas of={Stories.Controlled} /&gt;
+
+## Accessibility
+
+The visible label names the input, while descriptions and errors are announced
+through React Aria&#39;s field relationships. React Aria supplies listbox keyboard
+navigation and focus management.
+
+## API
+
+&lt;ArgTypes /&gt;
+</code></pre></div>
+            </div>
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
   no-info 
   no-story-error
   no-doc-error"
@@ -1931,10 +2253,10 @@ native input through `ref`.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Container</h2>
       <div class="badges">
-        <label for="c-6-layout-container-props" class="badge ok as-toggle">5 prop types</label>
+        <label for="c-7-layout-container-props" class="badge ok as-toggle">5 prop types</label>
         
-        <label for="c-6-layout-container-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-6-layout-container-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-7-layout-container-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-7-layout-container-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -1947,10 +2269,10 @@ native input through `ref`.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-6-layout-container-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-6-layout-container-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-7-layout-container-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-7-layout-container-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-6-layout-container-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-7-layout-container-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -2081,10 +2403,10 @@ Loading belongs to the content inside the container. Compose loading-capable chi
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Dialog</h2>
       <div class="badges">
-        <label for="c-7-overlays-dialog-props" class="badge ok as-toggle">7 prop types</label>
+        <label for="c-8-overlays-dialog-props" class="badge ok as-toggle">7 prop types</label>
         
-        <label for="c-7-overlays-dialog-stories" class="badge ok as-toggle">1 story</label>
-        <label for="c-7-overlays-dialog-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-8-overlays-dialog-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-8-overlays-dialog-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -2097,10 +2419,10 @@ Loading belongs to the content inside the container. Compose loading-capable chi
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-7-overlays-dialog-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-7-overlays-dialog-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-8-overlays-dialog-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-8-overlays-dialog-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-7-overlays-dialog-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-8-overlays-dialog-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -2244,10 +2566,10 @@ Enter and exit motion respects reduced-motion preferences. A closing surface imm
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Drawer</h2>
       <div class="badges">
-        <label for="c-8-overlays-drawer-props" class="badge ok as-toggle">7 prop types</label>
+        <label for="c-9-overlays-drawer-props" class="badge ok as-toggle">7 prop types</label>
         
-        <label for="c-8-overlays-drawer-stories" class="badge ok as-toggle">1 story</label>
-        <label for="c-8-overlays-drawer-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-9-overlays-drawer-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-9-overlays-drawer-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -2260,10 +2582,10 @@ Enter and exit motion respects reduced-motion preferences. A closing surface imm
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-8-overlays-drawer-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-8-overlays-drawer-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-9-overlays-drawer-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-9-overlays-drawer-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-8-overlays-drawer-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-9-overlays-drawer-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -2415,10 +2737,10 @@ Enter and exit motion respects reduced-motion preferences. A closing surface imm
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Grid</h2>
       <div class="badges">
-        <label for="c-9-layout-grid-props" class="badge ok as-toggle">6 prop types</label>
+        <label for="c-10-layout-grid-props" class="badge ok as-toggle">6 prop types</label>
         
-        <label for="c-9-layout-grid-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-9-layout-grid-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-10-layout-grid-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-10-layout-grid-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -2431,10 +2753,10 @@ Enter and exit motion respects reduced-motion preferences. A closing surface imm
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-9-layout-grid-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-9-layout-grid-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-10-layout-grid-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-10-layout-grid-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-9-layout-grid-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-10-layout-grid-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -2574,10 +2896,10 @@ Loading belongs to the items inside the grid. Compose loading-capable children o
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Icon</h2>
       <div class="badges">
-        <label for="c-10-content-icon-props" class="badge ok as-toggle">3 prop types</label>
+        <label for="c-11-content-icon-props" class="badge ok as-toggle">3 prop types</label>
         
-        <label for="c-10-content-icon-stories" class="badge ok as-toggle">3 stories</label>
-        <label for="c-10-content-icon-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-11-content-icon-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-11-content-icon-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -2590,10 +2912,10 @@ Loading belongs to the items inside the grid. Compose loading-capable children o
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-10-content-icon-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-10-content-icon-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-11-content-icon-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-11-content-icon-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-10-content-icon-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-11-content-icon-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -2725,10 +3047,10 @@ Icons are decorative by default. Supply `label` only when the icon conveys meani
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> IconTile</h2>
       <div class="badges">
-        <label for="c-11-content-icontile-props" class="badge ok as-toggle">5 prop types</label>
+        <label for="c-12-content-icontile-props" class="badge ok as-toggle">5 prop types</label>
         
-        <label for="c-11-content-icontile-stories" class="badge ok as-toggle">3 stories</label>
-        <label for="c-11-content-icontile-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-12-content-icontile-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-12-content-icontile-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -2741,10 +3063,10 @@ Icons are decorative by default. Supply `label` only when the icon conveys meani
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-11-content-icontile-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-11-content-icontile-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-12-content-icontile-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-12-content-icontile-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-11-content-icontile-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-12-content-icontile-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -2887,10 +3209,10 @@ Artwork is decorative by default. Supply `label` only when no adjacent text name
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Inline</h2>
       <div class="badges">
-        <label for="c-12-layout-inline-props" class="badge ok as-toggle">7 prop types</label>
+        <label for="c-13-layout-inline-props" class="badge ok as-toggle">7 prop types</label>
         
-        <label for="c-12-layout-inline-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-12-layout-inline-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-13-layout-inline-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-13-layout-inline-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -2903,10 +3225,10 @@ Artwork is decorative by default. Supply `label` only when no adjacent text name
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-12-layout-inline-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-12-layout-inline-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-13-layout-inline-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-13-layout-inline-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-12-layout-inline-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-13-layout-inline-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -3054,10 +3376,10 @@ Loading belongs to the items inside the row. Compose loading-capable children or
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> NumberField</h2>
       <div class="badges">
-        <label for="c-13-forms-numberfield-props" class="badge ok as-toggle">21 prop types</label>
+        <label for="c-14-forms-numberfield-props" class="badge ok as-toggle">21 prop types</label>
         
-        <label for="c-13-forms-numberfield-stories" class="badge ok as-toggle">8 stories</label>
-        <label for="c-13-forms-numberfield-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-14-forms-numberfield-stories" class="badge ok as-toggle">8 stories</label>
+        <label for="c-14-forms-numberfield-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -3070,10 +3392,10 @@ Loading belongs to the items inside the row. Compose loading-capable children or
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-13-forms-numberfield-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-13-forms-numberfield-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-14-forms-numberfield-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-14-forms-numberfield-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-13-forms-numberfield-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-14-forms-numberfield-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -3377,9 +3699,9 @@ input through `ref`.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> OverlaySurface</h2>
       <div class="badges">
-        <label for="c-14-foundations-overlay-stack-props" class="badge ok as-toggle">9 prop types</label>
-        <label for="c-14-foundations-overlay-stack-info" class="badge info as-toggle">1 info</label>
-        <label for="c-14-foundations-overlay-stack-stories" class="badge ok as-toggle">4 stories</label>
+        <label for="c-15-foundations-overlay-stack-props" class="badge ok as-toggle">9 prop types</label>
+        <label for="c-15-foundations-overlay-stack-info" class="badge info as-toggle">1 info</label>
+        <label for="c-15-foundations-overlay-stack-stories" class="badge ok as-toggle">4 stories</label>
         
         
       </div>
@@ -3392,11 +3714,11 @@ input through `ref`.
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-14-foundations-overlay-stack-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-14-foundations-overlay-stack-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-15-foundations-overlay-stack-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-15-foundations-overlay-stack-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
-  <input id="c-14-foundations-overlay-stack-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-15-foundations-overlay-stack-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -3539,10 +3861,10 @@ trigger: string</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Popover</h2>
       <div class="badges">
-        <label for="c-15-overlays-popover-props" class="badge ok as-toggle">8 prop types</label>
+        <label for="c-16-overlays-popover-props" class="badge ok as-toggle">8 prop types</label>
         
-        <label for="c-15-overlays-popover-stories" class="badge ok as-toggle">1 story</label>
-        <label for="c-15-overlays-popover-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-16-overlays-popover-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-16-overlays-popover-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -3555,10 +3877,10 @@ trigger: string</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-15-overlays-popover-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-15-overlays-popover-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-16-overlays-popover-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-16-overlays-popover-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-15-overlays-popover-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-16-overlays-popover-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -3708,15 +4030,318 @@ Enter and exit motion respects reduced-motion preferences. A closing surface imm
   no-story-error
   no-doc-error"
   role="listitem"
+  aria-label="Select">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> Select</h2>
+      <div class="badges">
+        <label for="c-17-forms-select-props" class="badge ok as-toggle">18 prop types</label>
+        
+        <label for="c-17-forms-select-stories" class="badge ok as-toggle">6 stories</label>
+        <label for="c-17-forms-select-docs" class="badge ok as-toggle">1 doc</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/primitives/Select/Select.stories.tsx">forms-select · ./src/primitives/Select/Select.stories.tsx</div>
+    
+    <div class="hint">Renders a fixed-choice popover listbox without a native select element.</div>
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-17-forms-select-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-17-forms-select-docs" class="tg tg-docs" type="checkbox" hidden />
+  
+  <input id="c-17-forms-select-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
+              <span class="badge ok">18 prop types</span>
+            </div>
+            <pre><code>Component: src/primitives/Select/Select.tsx::Select</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>/**
+ * Hints at the browser&#39;s autocomplete behaviour for this field.
+ */
+autoComplete?: string
+
+/**
+ * Focuses the control when the component is mounted.
+ */
+autoFocus?: boolean
+
+/**
+ * Controlled and uncontrolled value props are mutually exclusive.
+ * Initial selected item.
+ */
+defaultValue?: T | null
+
+/**
+ * Supporting guidance announced with the control.
+ */
+description?: string
+
+/**
+ * Prevents opening and selecting. Defaults to `false`.
+ */
+disabled?: boolean = false
+
+/**
+ * Visible validation message; any non-empty value marks the field invalid.
+ */
+error?: string
+
+/**
+ * Associates the control with a form outside its ancestor tree.
+ */
+form?: string
+
+/**
+ * Maps an item to the closed descriptor rendered by Breeze.
+ */
+getItem: (item: T) =&gt; ItemDescriptor
+
+/**
+ * Sets the control id used by the field label.
+ */
+id?: string
+
+/**
+ * Fixed choices displayed in the popover listbox.
+ */
+items: T[]
+
+/**
+ * Accessible field label, shown as text outside loading state.
+ */
+label: string
+
+/**
+ * Replaces the control with a shape-preserving loading presentation.
+ */
+loading?: boolean = false
+
+/**
+ * Sets the submitted name of the control.
+ */
+name?: string
+
+/**
+ * Reports the next selected item without exposing a DOM event.
+ */
+onChange?: ((value: T | null) =&gt; void) | ((value: T | null) =&gt; void)
+
+/**
+ * Temporary text shown when no choice is selected.
+ */
+placeholder?: string
+
+/**
+ * Prevents changing the choice while retaining focus and form participation.
+ */
+readOnly?: boolean = false
+
+/**
+ * Marks the control as required. Defaults to `false`.
+ */
+required?: boolean = false
+
+/**
+ * Current selected item.
+ * Controlled and uncontrolled value props are mutually exclusive.
+ */
+value?: T | null</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Select } from "@motech-development/breeze-ui";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A fixed-choice field backed by a popover listbox.</div>
+              <pre><code>const Default = () =&gt; &lt;Select
+    getItem={(item: unknown) =&gt; item as ItemDescriptor}
+    items={choices}
+    label=&quot;Payment method&quot;
+    placeholder=&quot;Select a payment method&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Description</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Descriptions and descriptor content are announced with the field.</div>
+              <pre><code>const Description = () =&gt; &lt;Select
+    getItem={(item: unknown) =&gt; item as ItemDescriptor}
+    items={choices}
+    label=&quot;Payment method&quot;
+    placeholder=&quot;Select a payment method&quot;
+    description=&quot;Choose the account used for this payment.&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Error</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A visible error marks the field invalid.</div>
+              <pre><code>const Error = () =&gt; &lt;Select
+    getItem={(item: unknown) =&gt; item as ItemDescriptor}
+    items={choices}
+    label=&quot;Payment method&quot;
+    placeholder=&quot;Select a payment method&quot;
+    error=&quot;Choose a payment method.&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Disabled</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Disabled fields cannot be opened or changed.</div>
+              <pre><code>const Disabled = () =&gt; &lt;Select
+    getItem={(item: unknown) =&gt; item as ItemDescriptor}
+    items={choices}
+    label=&quot;Payment method&quot;
+    placeholder=&quot;Select a payment method&quot;
+    disabled /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Loading</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Loading keeps the control footprint while preventing interaction.</div>
+              <pre><code>const Loading = () =&gt; &lt;Select
+    getItem={(item: unknown) =&gt; item as ItemDescriptor}
+    items={choices}
+    label=&quot;Payment method&quot;
+    placeholder=&quot;Select a payment method&quot;
+    defaultValue={choices[0]}
+    loading /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Controlled</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">The application owns the selected item and receives semantic changes.</div>
+              <pre><code>const Controlled = () =&gt; &lt;ControlledExample /&gt;;</code></pre>
+            </div>
+        </div>
+    
+        <div class="panel panel-docs">
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Docs</span>
+                <span class="badge ok">doc ok</span>
+              </div>
+              <div class="hint">./src/primitives/Select/Select.mdx</div>
+              <div>A fixed-choice field backed by a React Aria popover listbox.</div>
+              <div class="mdx-content"><pre><code>import { ArgTypes, Canvas, Meta } from &#39;@storybook/addon-docs/blocks&#39;;
+import * as Stories from &#39;./Select.stories&#39;;
+
+&lt;Meta
+  of={Stories}
+  summary=&quot;A fixed-choice field backed by a React Aria popover listbox.&quot;
+/&gt;
+
+# Select
+
+`Select` is a fixed-choice field. It opens a popover listbox and never renders
+a native `&lt;select&gt;`, so the same Breeze control is used across applications.
+
+&lt;Canvas of={Stories.Default} /&gt;
+
+## Descriptor content
+
+Pass `items` and a `getItem` mapping function. The mapping returns the closed
+`ItemDescriptor` data contract: `id`, `label`, optional `description`, `icon`,
+`badge` and `disabled`. It cannot return JSX, classes, styles or slot props.
+If an item needs content outside that contract, extend Breeze deliberately rather
+than reopening a markup escape hatch.
+
+&lt;Canvas of={Stories.Description} /&gt;
+
+## States
+
+`required`, `disabled` and `readOnly` map to the field&#39;s accessible semantics. A
+non-empty `error` marks the field invalid; there is no separate `invalid` prop.
+`loading` preserves the control shape and prevents interaction until the value
+is available.
+
+&lt;Canvas of={Stories.Error} /&gt;
+
+&lt;Canvas of={Stories.Disabled} /&gt;
+
+&lt;Canvas of={Stories.Loading} /&gt;
+
+## Controlled values
+
+Provide both `value` and `onChange` for controlled usage. The callback receives
+the selected item or `null`, never a DOM event. Use `defaultValue` and an
+optional `onChange` for uncontrolled usage; the two forms cannot be mixed.
+
+&lt;Canvas of={Stories.Controlled} /&gt;
+
+## Accessibility
+
+The visible label names the control, while descriptions and errors are announced
+through React Aria&#39;s field relationships. React Aria supplies listbox keyboard
+navigation and focus management.
+
+## API
+
+&lt;ArgTypes /&gt;
+</code></pre></div>
+            </div>
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  no-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
   aria-label="Separator">
   <div class="head">
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Separator</h2>
       <div class="badges">
-        <label for="c-16-content-separator-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-18-content-separator-props" class="badge ok as-toggle">1 prop type</label>
         
-        <label for="c-16-content-separator-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-16-content-separator-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-18-content-separator-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-18-content-separator-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -3729,10 +4354,10 @@ Enter and exit motion respects reduced-motion preferences. A closing surface imm
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-16-content-separator-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-16-content-separator-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-18-content-separator-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-18-content-separator-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-16-content-separator-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-18-content-separator-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -3837,10 +4462,10 @@ The component exposes `role=&quot;separator&quot;` and the selected orientation.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Skeleton</h2>
       <div class="badges">
-        <label for="c-17-content-skeleton-props" class="badge ok as-toggle">4 prop types</label>
+        <label for="c-19-content-skeleton-props" class="badge ok as-toggle">4 prop types</label>
         
-        <label for="c-17-content-skeleton-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-17-content-skeleton-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-19-content-skeleton-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-19-content-skeleton-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -3853,10 +4478,10 @@ The component exposes `role=&quot;separator&quot;` and the selected orientation.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-17-content-skeleton-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-17-content-skeleton-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-19-content-skeleton-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-19-content-skeleton-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-17-content-skeleton-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-19-content-skeleton-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -3981,10 +4606,10 @@ Supply `label` when the skeleton owns the loading announcement. Omit it when a p
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Stack</h2>
       <div class="badges">
-        <label for="c-18-layout-stack-props" class="badge ok as-toggle">5 prop types</label>
+        <label for="c-20-layout-stack-props" class="badge ok as-toggle">5 prop types</label>
         
-        <label for="c-18-layout-stack-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-18-layout-stack-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-20-layout-stack-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-20-layout-stack-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -3997,10 +4622,10 @@ Supply `label` when the skeleton owns the loading announcement. Omit it when a p
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-18-layout-stack-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-18-layout-stack-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-20-layout-stack-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-20-layout-stack-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-18-layout-stack-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-20-layout-stack-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -4138,10 +4763,10 @@ Loading belongs to the items inside the stack. Compose loading-capable children 
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> TextField</h2>
       <div class="badges">
-        <label for="c-19-forms-textfield-props" class="badge ok as-toggle">18 prop types</label>
+        <label for="c-21-forms-textfield-props" class="badge ok as-toggle">18 prop types</label>
         
-        <label for="c-19-forms-textfield-stories" class="badge ok as-toggle">8 stories</label>
-        <label for="c-19-forms-textfield-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-21-forms-textfield-stories" class="badge ok as-toggle">8 stories</label>
+        <label for="c-21-forms-textfield-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -4154,10 +4779,10 @@ Loading belongs to the items inside the stack. Compose loading-capable children 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-19-forms-textfield-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-19-forms-textfield-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-21-forms-textfield-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-21-forms-textfield-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-19-forms-textfield-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-21-forms-textfield-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -4437,10 +5062,10 @@ input through `ref`.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Toast</h2>
       <div class="badges">
-        <label for="c-20-feedback-toast-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-22-feedback-toast-props" class="badge ok as-toggle">1 prop type</label>
         
-        <label for="c-20-feedback-toast-stories" class="badge ok as-toggle">8 stories</label>
-        <label for="c-20-feedback-toast-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-22-feedback-toast-stories" class="badge ok as-toggle">8 stories</label>
+        <label for="c-22-feedback-toast-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -4453,10 +5078,10 @@ input through `ref`.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-20-feedback-toast-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-20-feedback-toast-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-22-feedback-toast-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-22-feedback-toast-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-20-feedback-toast-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-22-feedback-toast-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -4631,10 +5256,10 @@ The card stays 288px wide on desktop and mobile, aligned to the content gutter b
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Typography</h2>
       <div class="badges">
-        <label for="c-21-content-typography-props" class="badge ok as-toggle">15 prop types</label>
+        <label for="c-23-content-typography-props" class="badge ok as-toggle">15 prop types</label>
         
-        <label for="c-21-content-typography-stories" class="badge ok as-toggle">4 stories</label>
-        <label for="c-21-content-typography-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-23-content-typography-stories" class="badge ok as-toggle">4 stories</label>
+        <label for="c-23-content-typography-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -4647,10 +5272,10 @@ The card stays 288px wide on desktop and mobile, aligned to the content gutter b
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-21-content-typography-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-21-content-typography-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-23-content-typography-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-23-content-typography-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-21-content-typography-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-23-content-typography-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -4912,10 +5537,10 @@ Set `loading` to preserve the text&#39;s place while its value is unavailable.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> VisuallyHidden</h2>
       <div class="badges">
-        <label for="c-22-content-visuallyhidden-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-24-content-visuallyhidden-props" class="badge ok as-toggle">1 prop type</label>
         
-        <label for="c-22-content-visuallyhidden-stories" class="badge ok as-toggle">1 story</label>
-        <label for="c-22-content-visuallyhidden-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-24-content-visuallyhidden-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-24-content-visuallyhidden-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -4928,10 +5553,10 @@ Set `loading` to preserve the text&#39;s place while its value is unavailable.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-22-content-visuallyhidden-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-22-content-visuallyhidden-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-24-content-visuallyhidden-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-24-content-visuallyhidden-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-22-content-visuallyhidden-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-24-content-visuallyhidden-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
