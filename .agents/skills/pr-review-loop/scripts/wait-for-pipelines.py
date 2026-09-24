@@ -37,6 +37,17 @@ def gh_json(args, allowed_codes=(0,)):
     except json.JSONDecodeError as error:
       if result.returncode == 0:
         raise RuntimeError('GitHub returned no usable JSON result.') from error
+  if (
+    result.returncode == 1
+    and args[:2] == ['pr', 'checks']
+    and '--required' in args
+    and not result.stdout.strip()
+    and re.fullmatch(
+      r"no required checks reported on the '.*' branch",
+      (result.stderr or '').strip().lower()
+    )
+  ):
+    return []
   # Keep useful failure categories without copying URLs, headers, or credentials.
   diagnostic = (result.stderr or '').lower()
   status = re.search(r'\bhttp\s+([45]\d{2})\b', diagnostic)
@@ -147,7 +158,7 @@ def observe(args, query=gh_json, sleep=time.sleep, now=time.time):
       if pr['state'] != 'OPEN':
         return finish('pr_closed', 5)
       checks = request([
-        'pr', 'checks', str(args.pr), '--repo', args.repo, '--json',
+        'pr', 'checks', str(args.pr), '--repo', args.repo, '--required', '--json',
         'name,bucket,state,workflow,event,startedAt,completedAt,link'
       ], allowed_codes=(0, 1, 8))
       # PR checks cannot be pinned to a SHA; validate their head before using them.

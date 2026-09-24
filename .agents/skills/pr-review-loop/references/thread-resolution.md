@@ -35,7 +35,10 @@ been assessed against the current remote head:
   the supported inline mechanism. If posting fails, leave the thread open and
   report the failure. Without that authorization, record the evidence without
   posting and do not inherit bot-interaction permission from a narrower request.
-  Codex gets the appropriate reaction. Pending questions or disputes stay open.
+  Codex gets the appropriate reaction only when the batch ledger records
+  authorization. Code-fixes-only, inspection, one-batch, and local-review scopes
+  do not authorize a reaction by default; a narrower scope permits one only when
+  the user explicitly authorizes it. Pending questions or disputes stay open.
 - **Obsolete:** the relevant change was removed or superseded and the reported
   problem no longer applies. GitHub's `isOutdated` flag alone is not proof.
 

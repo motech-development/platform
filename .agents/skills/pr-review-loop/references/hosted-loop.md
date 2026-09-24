@@ -32,9 +32,13 @@ change affects workflow selection. Every result must apply to the current head:
 - **Codex:** completed native review coverage through the final source snapshot,
   with no unresolved actionable findings. Also collect and assess the completed
   hosted Codex review when the repository uses it. No comment is not proof that
-  a hosted review ran; use its completion evidence. A local review is not a
-  replacement for a pending hosted review. Preserve reactions-only handling of
-  Codex findings unless text replies were requested.
+  a hosted review ran; verify the review is associated with the exact current
+  head commit. A local review is not a replacement for a pending hosted review.
+  Preserve reactions-only handling of Codex findings unless text replies were
+  requested. Hosted Codex review relies on the repository's automatic trigger;
+  never post a manual `@codex review` comment. If the exact-head review is still
+  missing at the bounded deadline, record the missing coverage and report the
+  hosted gate as incomplete.
 - **CodeRabbit (unless the credit-consent skip is recorded):** completed CLI
   coverage and a GitHub review with state
   `APPROVED` from the verified CodeRabbit account for the current head commit.
@@ -96,10 +100,11 @@ waiting forever or counting a skipped review as approval.
    waiting for the subsequent CodeRabbit approval. The complete feedback batch
    has already been triaged; this approval is a later completion gate that may
    depend on the cleanup just performed. Do not request duplicate reviews for
-   a revision already queued, running, or reviewed. If a needed review did not
-   start, diagnose the trigger and use one supported incremental request only when
-   bot messages are authorized; never trigger paid, forced, or full review merely
-   to escape a wait.
+   a revision already queued, running, or reviewed. Wait within the recorded
+   finite deadline for the repository's automatic hosted Codex review. Never post
+   a manual `@codex review` comment or another message to trigger it. If the
+   expected exact-head review is missing when the deadline expires, record its
+   missing coverage and report the hosted gate as incomplete.
 5. Wait for the newly published head's complete hosted batch using the bounded
    procedure below. If there are no source changes, retain local coverage and wait
    for outstanding approval or analysis; do not rerun unchanged local reviews.
@@ -139,8 +144,13 @@ less-trusted PR copy) and a scratch state file:
 ```sh
 python3 "$skill_dir/scripts/wait-for-pipelines.py" \
   --repo "$review_repo" --pr "$review_pr" --head "$review_head" \
-  --state-file "$wait_state_file"
+  --state-file "$wait_state_file" \
+  --max-wait-seconds "$remaining_hosted_wait_seconds"
 ```
+
+Set `remaining_hosted_wait_seconds` to the positive integer number of seconds
+remaining until the recorded deadline before starting the helper. If less than
+one second remains, inspect current status once instead of starting a new wait.
 
 It uses read-only GitHub CLI calls. It measures up to ten recent successful first-attempt runs
 per relevant workflow and event from a bounded history sample. The estimate is

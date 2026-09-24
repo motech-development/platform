@@ -5,8 +5,16 @@ Read before starting local review or fixing findings. The [main skill](../SKILL.
 ## Fix, verify, review
 
 This is a validation gate after a concrete implementation or remediation delta
-exists. Initial hosted feedback is collected and triaged separately; local
-reviewers are not reconnaissance. For each accepted change, the gate is:
+exists. An explicit `$pr-review-loop` invocation authorizes sending only each
+concrete, in-scope frozen delta to the native Codex and CodeRabbit local review
+services required by the workflow; no separate permission is needed for later
+rounds within that scope. This covers no-charge reviews only, excludes unrelated
+files and other services, and does not override an actual host or review-service
+approval denial; stop and report such a denial. A standalone local-review request
+authorizes only the services and paths it expressly specifies, within the
+no-charge limit; do not infer service disclosure from a request to review.
+Initial hosted feedback is collected and triaged separately; local reviewers are
+not reconnaissance. For each accepted change, the gate is:
 **validate → freeze the delta → review in parallel → wait for both → assess and
 fix → validate → review in parallel again**. Repeat until both local reviewers
 are clear. Handling one round's findings does not complete this gate; every
@@ -48,8 +56,9 @@ resulting fix must go through the next local round.
    Do not run them serially or spawn substitute reviewer agents. If the available
    tools cannot run them concurrently, report the limitation instead of silently
    changing this requirement. Freeze the snapshot throughout the round, including
-   any CodeRabbit cooldown. Provide validation and scope instructions through
-   each tool's supported interface. For an incremental CodeRabbit run, verify its
+   any CodeRabbit cooldown. Submit only the frozen, in-scope changed files, and
+   provide validation and scope instructions through each tool's supported
+   interface. For an incremental CodeRabbit run, verify its
    emitted `reviewType` and `reviewedFiles` against this frozen delta before using
    any finding; discard an incorrectly scoped result and rerun with the corrected
    selector.

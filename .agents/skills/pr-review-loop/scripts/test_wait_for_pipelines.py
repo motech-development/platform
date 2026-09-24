@@ -37,7 +37,10 @@ def run(duration, created=100):
 
 
 class PipelineWaitTests(unittest.TestCase):
-  def observe(self, replies, max_wait=3600, cancel=False, missing_state_parent=False, query_durations=()):
+  def observe(
+    self, replies, max_wait=3600, cancel=False, missing_state_parent=False,
+    query_durations=(), query_override=None
+  ):
     calls, sleeps, clock = [], [], [1100.0]
     remaining = iter(replies)
     durations = iter(query_durations)
@@ -66,7 +69,12 @@ class PipelineWaitTests(unittest.TestCase):
       )
       output = io.StringIO()
       with redirect_stdout(output):
-        code = pipeline_wait.observe(args, query=query, sleep=sleep, now=lambda: clock[0])
+        code = pipeline_wait.observe(
+          args,
+          query=query_override if query_override is not None else query,
+          sleep=sleep,
+          now=lambda: clock[0]
+        )
       state = json.loads(path.read_text()) if path.exists() else json.loads(output.getvalue().splitlines()[-1])
     return code, state, sleeps, calls, output.getvalue().splitlines()
 
@@ -111,6 +119,86 @@ class PipelineWaitTests(unittest.TestCase):
     result = pipeline_wait.subprocess.CompletedProcess(['gh'], 1, json.dumps(checks), '')
     with patch.object(pipeline_wait.subprocess, 'run', return_value=result):
       self.assertEqual(pipeline_wait.gh_json(['pr', 'checks'], allowed_codes=(0, 1, 8)), checks)
+
+  def test_no_required_checks_error_returns_empty_required_check_list(self):
+    result = pipeline_wait.subprocess.CompletedProcess(
+      ['gh'], 1, '', "no required checks reported on the 'topic-branch' branch\n"
+    )
+    args = ['pr', 'checks', '1', '--repo', 'owner/repo', '--required', '--json', 'name,bucket']
+
+    with patch.object(pipeline_wait.subprocess, 'run', return_value=result):
+      self.assertEqual(pipeline_wait.gh_json(args, allowed_codes=(0, 1, 8)), [])
+      args_without_required = ['pr', 'checks', '1', '--repo', 'owner/repo', '--json', 'name,bucket']
+      with self.assertRaises(RuntimeError):
+        pipeline_wait.gh_json(args_without_required, allowed_codes=(0, 1, 8))
+
+  def test_required_checks_no_required_result_does_not_swallow_other_failures(self):
+    args = ['pr', 'checks', '1', '--repo', 'owner/repo', '--required', '--json', 'name,bucket']
+    cases = [
+      ('HTTP 401: Bad credentials', 'authentication'),
+      ('HTTP 403: API rate limit exceeded', 'rate limit'),
+      ('HTTP 403: Resource not accessible by integration', 'permission'),
+      ('HTTP 502: Bad Gateway', 'service'),
+      ("no required checks reported on the 'topic-branch' branch: extra detail", 'unclassified'),
+    ]
+    for stderr, diagnostic in cases:
+      with self.subTest(stderr=stderr):
+        result = pipeline_wait.subprocess.CompletedProcess(['gh'], 1, '', stderr)
+        with patch.object(pipeline_wait.subprocess, 'run', return_value=result):
+          with self.assertRaises(RuntimeError) as error:
+            pipeline_wait.gh_json(args, allowed_codes=(0, 1, 8))
+        self.assertIn(diagnostic, str(error.exception))
+
+  def test_no_required_checks_waits_for_late_registration(self):
+    opened = {'headRefOid': 'head-a', 'state': 'OPEN'}
+    required = [check('pass')]
+    check_reads = [0]
+
+    def github_cli(command, **kwargs):
+      args = command[1:]
+      if args[:2] == ['pr', 'view']:
+        return pipeline_wait.subprocess.CompletedProcess(command, 0, json.dumps(opened), '')
+      if args[:2] == ['pr', 'checks']:
+        check_reads[0] += 1
+        if check_reads[0] == 1:
+          return pipeline_wait.subprocess.CompletedProcess(
+            command, 1, '', "no required checks reported on the 'topic-branch' branch\n"
+          )
+        return pipeline_wait.subprocess.CompletedProcess(command, 0, json.dumps(required), '')
+      if args[:2] == ['run', 'list']:
+        return pipeline_wait.subprocess.CompletedProcess(command, 0, '[]', '')
+      raise AssertionError(f'Unexpected command: {command}')
+
+    with patch.object(pipeline_wait.subprocess, 'run', side_effect=github_cli):
+      code, state, sleeps, _, _ = self.observe([], query_override=pipeline_wait.gh_json)
+
+    self.assertEqual((code, state['reason']), (0, 'observed_checks_settled'))
+    self.assertEqual(state['checks'], required)
+    self.assertEqual(check_reads[0], 2)
+    self.assertEqual(sleeps, [120])
+
+  def test_no_required_checks_waits_until_observation_deadline(self):
+    opened = {'headRefOid': 'head-a', 'state': 'OPEN'}
+
+    def github_cli(command, **kwargs):
+      args = command[1:]
+      if args[:2] == ['pr', 'view']:
+        return pipeline_wait.subprocess.CompletedProcess(command, 0, json.dumps(opened), '')
+      if args[:2] == ['pr', 'checks']:
+        return pipeline_wait.subprocess.CompletedProcess(
+          command, 1, '', "no required checks reported on the 'topic-branch' branch\n"
+        )
+      if args[:2] == ['run', 'list']:
+        return pipeline_wait.subprocess.CompletedProcess(command, 0, '[]', '')
+      raise AssertionError(f'Unexpected command: {command}')
+
+    with patch.object(pipeline_wait.subprocess, 'run', side_effect=github_cli):
+      code, state, sleeps, _, _ = self.observe(
+        [], max_wait=100, query_override=pipeline_wait.gh_json
+      )
+
+    self.assertEqual((code, state['reason']), (3, 'inspection_needed'))
+    self.assertEqual(sleeps, [100])
 
   def test_rerun_estimate_excludes_historical_queue_time(self):
     opened = {'headRefOid': 'head-a', 'state': 'OPEN'}
@@ -203,6 +291,33 @@ class PipelineWaitTests(unittest.TestCase):
     self.assertEqual(len(output), 2)
     self.assertEqual(sum(args[:2] == ['run', 'list'] for args, _ in calls), 1)
     self.assertTrue(all(args[:2] in (['pr', 'view'], ['pr', 'checks'], ['run', 'list'], ['run', 'view']) for args, _ in calls))
+
+  def test_optional_pending_status_does_not_block_required_checks(self):
+    opened = {'headRefOid': 'head-a', 'state': 'OPEN'}
+    required = {**check('pass'), 'name': 'Required tests'}
+    optional = {**check('pending'), 'name': 'Optional preview'}
+    all_checks = [required, optional]
+    calls = []
+
+    def query(command, **kwargs):
+      calls.append(command)
+      if command[:2] == ['pr', 'view']:
+        return opened
+      if command[:2] == ['pr', 'checks']:
+        if '--required' in command:
+          return [required]
+        return all_checks
+      raise AssertionError(f'Unexpected command: {command}')
+
+    code, state, sleeps, _, _ = self.observe([], query_override=query)
+
+    self.assertEqual((code, state['reason']), (0, 'observed_checks_settled'))
+    self.assertEqual(state['checks'], [required])
+    self.assertNotIn(optional, state['checks'])
+    self.assertEqual(sleeps, [])
+    check_command = next(command for command in calls if command[:2] == ['pr', 'checks'])
+    self.assertIn('--required', check_command)
+    self.assertEqual(sum(command[:2] == ['run', 'list'] for command in calls), 0)
 
   def test_new_head_during_wait_stops_before_reading_its_checks(self):
     code, state, sleeps, calls, _ = self.observe([
