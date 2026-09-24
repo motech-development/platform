@@ -1,15 +1,22 @@
-import type { ReactNode, RefObject } from 'react';
-import { useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { mergeProps } from 'react-aria/mergeProps';
-import { useButton } from 'react-aria/useButton';
-import { useFocusRing } from 'react-aria/useFocusRing';
-import { useHover } from 'react-aria/useHover';
-import { useListBox, useOption } from 'react-aria/useListBox';
-import { useSelect } from 'react-aria/useSelect';
-import { useVisuallyHidden } from 'react-aria/VisuallyHidden';
-import { flushSync } from 'react-dom';
-// The low-level Select state is required to avoid RAC's native HiddenSelect.
-import { type SelectState, useSelectState } from 'react-stately/useSelectState';
+import type { RefObject } from 'react';
+import {
+  createElement,
+  useContext,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+} from 'react';
+import { Button as AriaButton } from 'react-aria-components/Button';
+import {
+  ListBox as AriaListBox,
+  ListBoxItem as AriaListBoxItem,
+} from 'react-aria-components/ListBox';
+import {
+  Select as AriaSelect,
+  SelectStateContext as AriaSelectStateContext,
+  SelectValue as AriaSelectValue,
+} from 'react-aria-components/Select';
 import { useBreezeContext } from '../../provider/BreezeContext';
 import collectionVariants from '../Collection/collection.styles';
 import CollectionPopover from '../Collection/CollectionPopover';
@@ -96,410 +103,89 @@ interface SelectItem<T> {
   item: T;
 }
 
-type SelectStateValue = string | number | null;
-
-interface SelectCollectionNode<T> {
-  key: string | number;
-  value: SelectItem<T> | null;
-}
-
-interface SelectCollectionElementProps {
-  children: ReactNode;
-  id: string;
-  item: unknown;
-  isDisabled?: boolean;
-  textValue: string;
-}
-
-interface SelectCollectionElementType {
-  (props: SelectCollectionElementProps): null;
-  getCollectionNode: (props: SelectCollectionElementProps) => Generator<{
-    key: string;
-    props: SelectCollectionElementProps;
-    rendered: ReactNode;
-    textValue: string;
-    type: 'item';
-    value: unknown;
-  }>;
-}
-
-const SelectCollectionElement = (() =>
-  null) as unknown as SelectCollectionElementType;
-
-SelectCollectionElement.getCollectionNode = function* getCollectionNode({
-  id,
-  item,
-  ...props
-}) {
-  yield {
-    key: id,
-    props: { ...props, id, item },
-    rendered: props.children,
-    textValue: props.textValue,
-    type: 'item',
-    value: item,
-  };
-};
-
-function findItem<T>(
-  items: SelectItem<T>[],
-  value: T | null,
-  getItem: (item: T) => ItemDescriptor,
-) {
-  if (value === null) return undefined;
-
-  const valueId = getItem(value).id;
-
-  return items.find(
-    ({ descriptor, item }) => item === value || descriptor.id === valueId,
-  );
-}
-
-function findUniqueAutofillItem<T>(items: SelectItem<T>[], value: string) {
-  const matches = items.filter(
-    ({ descriptor }) =>
-      !descriptor.disabled &&
-      (descriptor.id === value || descriptor.label === value),
-  );
-
-  return matches.length === 1 ? matches[0] : undefined;
-}
-
-function resolveControlledResetItem<T>(
-  initialControlledItem: SelectItem<T> | null | undefined,
-  items: SelectItem<T>[],
-  loading: boolean,
-) {
-  if (initialControlledItem === undefined || initialControlledItem === null) {
-    return initialControlledItem;
-  }
-
+function SelectListBox<T>({ items }: Readonly<{ items: SelectItem<T>[] }>) {
   return (
-    items.find(
-      ({ descriptor }) => descriptor.id === initialControlledItem.descriptor.id,
-    ) ?? (loading ? initialControlledItem : null)
+    <AriaListBox className={collectionVariants.base.listBox} items={items}>
+      {(item: SelectItem<T>) => (
+        <AriaListBoxItem
+          className={collectionVariants.base.item}
+          id={item.descriptor.id}
+          isDisabled={item.descriptor.disabled}
+          textValue={item.descriptor.label}
+          value={item}
+        >
+          {({ isSelected }) => (
+            <DescriptorContent
+              descriptor={item.descriptor}
+              isSelected={isSelected}
+            />
+          )}
+        </AriaListBoxItem>
+      )}
+    </AriaListBox>
   );
 }
 
-function getInitialControlledItem<T>(
-  value: T | null | undefined,
-  getItem: (item: T) => ItemDescriptor,
-) {
-  if (value === undefined) return undefined;
-  if (value === null) return null;
-
-  return {
-    descriptor: getItem(value),
-    item: value,
-  };
-}
-
-function getControlledResetValueKey<T>(
-  value: T | null | undefined,
-  getItem: (item: T) => ItemDescriptor,
-) {
-  if (value === undefined) return undefined;
-  if (value === null) return null;
-
-  return getItem(value).id;
-}
-
-function getTriggerLabelledBy(
-  loading: boolean,
-  buttonLabelledBy: string | undefined,
-  valueId: string | undefined,
-) {
-  if (loading) return undefined;
-
-  const labelledBy = Array.from(
-    new Set(
-      [buttonLabelledBy, valueId]
-        .filter((value): value is string => Boolean(value))
-        .flatMap((value) => value.split(' ')),
-    ),
-  ).join(' ');
-
-  return labelledBy || undefined;
-}
-
-function handleSelectAutofill<T>(
-  nextValue: string,
-  readOnly: boolean,
-  items: SelectItem<T>[],
-  currentValue: SelectStateValue,
-  setValue: (value: string) => void,
-  autofillRef: RefObject<HTMLInputElement | null>,
-) {
-  const inputRef = autofillRef;
-
-  if (readOnly) {
-    if (inputRef.current) {
-      inputRef.current.value = String(currentValue ?? '');
-    }
-
-    return;
-  }
-
-  const nextItem = findUniqueAutofillItem(items, nextValue);
-
-  if (!nextItem) {
-    if (inputRef.current) {
-      inputRef.current.value = String(currentValue ?? '');
-    }
-
-    return;
-  }
-
-  const nextKey = nextItem.descriptor.id;
-
-  if (currentValue !== nextKey) {
-    setValue(nextKey);
-  }
-}
-
-interface SelectCollectionEffectsOptions<T> {
-  decoratedItems: SelectItem<T>[];
-  initialDefaultValueRef: RefObject<string | null>;
-  isControlled: boolean;
-  loading: boolean;
-  pendingDefaultValueRef: RefObject<string | null>;
-  state: SelectState<SelectItem<T>>;
-  suppressOnChangeRef: RefObject<boolean>;
-}
-
-function useSelectCollectionEffects<T>({
-  decoratedItems,
-  initialDefaultValueRef,
-  isControlled,
-  loading,
-  pendingDefaultValueRef,
-  state,
-  suppressOnChangeRef,
-}: Readonly<SelectCollectionEffectsOptions<T>>) {
-  const pendingDefaultRef = pendingDefaultValueRef;
-  const initialDefaultRef = initialDefaultValueRef;
-  const suppressRef = suppressOnChangeRef;
-
-  useLayoutEffect(() => {
-    const pendingDefaultValue = pendingDefaultRef.current;
-    const hasPendingDefault = decoratedItems.some(
-      ({ descriptor }) => descriptor.id === pendingDefaultValue,
-    );
-
-    if (!loading && pendingDefaultValue !== null && !hasPendingDefault) {
-      pendingDefaultRef.current = null;
-      if (initialDefaultRef.current === pendingDefaultValue) {
-        initialDefaultRef.current = null;
-      }
-      return;
-    }
-
-    if (
-      isControlled ||
-      state.value !== null ||
-      pendingDefaultValue === null ||
-      !hasPendingDefault
-    ) {
-      return;
-    }
-
-    pendingDefaultRef.current = null;
-    suppressRef.current = true;
-    try {
-      state.setValue(pendingDefaultValue);
-    } finally {
-      suppressRef.current = false;
-    }
-  }, [
-    decoratedItems,
-    initialDefaultRef,
-    isControlled,
-    loading,
-    pendingDefaultRef,
-    state,
-    suppressRef,
-  ]);
-
-  useLayoutEffect(() => {
-    if (
-      !isControlled &&
-      !loading &&
-      state.value !== null &&
-      !decoratedItems.some(({ descriptor }) => descriptor.id === state.value)
-    ) {
-      state.setValue(null);
-    }
-  }, [decoratedItems, isControlled, loading, state]);
-}
-
-interface SelectFormResetOptions<T> {
-  controlledResetItemRef: RefObject<SelectItem<T> | null | undefined>;
-  controlledResetValueKeyRef: RefObject<string | null | undefined>;
-  form: string | undefined;
-  isControlled: boolean;
-  onChangeRef: RefObject<((value: T | null) => void) | undefined>;
-  resetValueRef: RefObject<string | null>;
-  setStateValueRef: RefObject<(nextValue: string | null) => void>;
-  suppressOnChangeRef: RefObject<boolean>;
-  triggerRef: RefObject<HTMLButtonElement | null>;
-}
-
-function useSelectFormReset<T>({
-  controlledResetItemRef,
-  controlledResetValueKeyRef,
+function SelectReadOnlyFormValue({
   form,
-  isControlled,
-  onChangeRef,
-  resetValueRef,
-  setStateValueRef,
-  suppressOnChangeRef,
-  triggerRef,
-}: Readonly<SelectFormResetOptions<T>>) {
-  const onChangeSuppressionRef = suppressOnChangeRef;
-
-  useLayoutEffect(() => {
-    let active = true;
-
-    const reset = (event: Event) => {
-      const associatedForm = form
-        ? document.getElementById(form)
-        : triggerRef.current?.form;
-
-      if (
-        !(associatedForm instanceof HTMLFormElement) ||
-        event.target !== associatedForm
-      ) {
-        return;
-      }
-
-      flushSync(() => undefined);
-      if (!active || event.defaultPrevented) return;
-
-      flushSync(() => {
-        if (isControlled) {
-          const resetItem = controlledResetItemRef.current;
-          const currentValueKey = controlledResetValueKeyRef.current;
-          let resetValueKey: string | null | undefined;
-          if (resetItem === undefined) {
-            resetValueKey = undefined;
-          } else if (resetItem === null) {
-            resetValueKey = null;
-          } else {
-            resetValueKey = resetItem.descriptor.id;
-          }
-
-          if (currentValueKey !== resetValueKey) {
-            onChangeRef.current?.(resetItem?.item ?? null);
-          }
-
-          return;
-        }
-
-        onChangeSuppressionRef.current = true;
-        try {
-          setStateValueRef.current(resetValueRef.current);
-        } finally {
-          onChangeSuppressionRef.current = false;
-        }
-      });
-    };
-
-    document.addEventListener('reset', reset);
-
-    return () => {
-      active = false;
-      document.removeEventListener('reset', reset);
-    };
-  }, [
-    controlledResetItemRef,
-    controlledResetValueKeyRef,
-    form,
-    isControlled,
-    onChangeRef,
-    resetValueRef,
-    setStateValueRef,
-    onChangeSuppressionRef,
-    triggerRef,
-  ]);
-}
-
-function SelectOption<T>({
-  node,
-  state,
+  interactionDisabled,
+  name,
+  readOnly,
 }: Readonly<{
-  node: SelectCollectionNode<T>;
-  state: Parameters<typeof useListBox>[1];
+  form?: string;
+  interactionDisabled: boolean;
+  name?: string;
+  readOnly: boolean;
 }>) {
-  const optionRef = useRef<HTMLDivElement>(null);
-  const { value } = node;
-  const { optionProps, isDisabled, isFocused, isFocusVisible, isSelected } =
-    useOption(
-      {
-        isDisabled: value?.descriptor.disabled,
-        key: node.key,
-      },
-      state,
-      optionRef,
-    );
-  const { hoverProps, isHovered } = useHover({ isDisabled });
+  const state = useContext(AriaSelectStateContext);
 
-  if (!value) return null;
+  if (!readOnly || interactionDisabled || !name || state === null) return null;
 
   return (
-    <div
-      // React Aria supplies the complete keyboard and accessibility contract.
-      // eslint-disable-next-line react/jsx-props-no-spreading
-      {...mergeProps(optionProps, hoverProps)}
-      ref={optionRef}
-      className={collectionVariants.base.item}
-      data-disabled={isDisabled || undefined}
-      data-focused={isFocused || undefined}
-      data-focus-visible={isFocusVisible || undefined}
-      data-hovered={isHovered || undefined}
-      data-selected={isSelected || undefined}
-    >
-      <DescriptorContent
-        descriptor={value.descriptor}
-        isSelected={isSelected}
-      />
-    </div>
+    <input
+      form={form}
+      name={name}
+      type="hidden"
+      value={state.value === null ? '' : String(state.value)}
+    />
   );
 }
 
-function SelectListBox<T>({
-  menuProps,
-  state,
+function SelectPopover<T>({
+  disabled,
+  items,
+  readOnly,
+  triggerRef,
 }: Readonly<{
-  menuProps: Parameters<typeof useListBox>[0];
-  state: Parameters<typeof useListBox>[1];
+  disabled: boolean;
+  items: SelectItem<T>[];
+  readOnly: boolean;
+  triggerRef: RefObject<HTMLButtonElement | null>;
 }>) {
-  const listBoxRef = useRef<HTMLDivElement>(null);
-  const { listBoxProps } = useListBox(menuProps, state, listBoxRef);
-  const keys = Array.from(state.collection.getKeys());
+  const state = useContext(AriaSelectStateContext);
+  const blocked = disabled || readOnly || items.length === 0;
+  const isOpen = !blocked && (state?.isOpen ?? false);
+
+  useEffect(() => {
+    if (blocked && state?.isOpen) {
+      state.setOpen(false);
+    }
+  }, [blocked, state]);
 
   return (
-    <div
-      // React Aria supplies the complete keyboard and accessibility contract.
-      // eslint-disable-next-line react/jsx-props-no-spreading
-      {...listBoxProps}
-      className={collectionVariants.base.listBox}
-      ref={listBoxRef}
+    <CollectionPopover
+      className={collectionVariants.base.popover}
+      isOpen={isOpen}
+      onOpenChange={(open) => state?.setOpen(open)}
+      triggerRef={triggerRef}
     >
-      {keys.map((key) => {
-        const node = state.collection.getItem(
-          key,
-        ) as SelectCollectionNode<T> | null;
-
-        return node ? (
-          <SelectOption key={String(key)} node={node} state={state} />
-        ) : null;
-      })}
-    </div>
+      <SelectListBox items={items} />
+    </CollectionPopover>
   );
 }
 
 /**
- * Renders a fixed-choice popover listbox without a native select element.
+ * Renders a fixed-choice popover listbox backed by React Aria Components.
  *
  * @summary Flat fixed-choice selection with semantic item changes.
  */
@@ -524,28 +210,13 @@ export function Select<T>({
   value,
 }: Readonly<SelectProps<T>>) {
   const { messages } = useBreezeContext();
-  const { visuallyHiddenProps } = useVisuallyHidden({
-    style: {
-      left: 0,
-      position: 'fixed',
-      top: 0,
-    },
-  });
   const visibleDescription = description?.trim() || undefined;
   const visibleError = error?.trim() || undefined;
   const interactionDisabled = disabled || loading;
-  const stateDisabled = interactionDisabled || readOnly;
+  const isInvalid = !loading && visibleError !== undefined;
   const fieldId = useId();
   const controlId = id ?? `${fieldId}-control`;
-  const labelId = `${fieldId}-label`;
-  const descriptionId = `${fieldId}-description`;
-  const errorId = `${fieldId}-error`;
-  const supportingIds =
-    [visibleDescription && descriptionId, visibleError && errorId]
-      .filter(Boolean)
-      .join(' ') || undefined;
   const triggerRef = useRef<HTMLButtonElement>(null);
-  const autofillRef = useRef<HTMLInputElement>(null);
   const decoratedItems = useMemo<SelectItem<T>[]>(
     () =>
       items.map((item) => ({
@@ -554,223 +225,82 @@ export function Select<T>({
       })),
     [getItem, items],
   );
-  const isControlled = value !== undefined;
-  const [initialControlledItem] = useState<SelectItem<T> | null | undefined>(
-    () => getInitialControlledItem(value, getItem),
-  );
-  const selectedValueItem = findItem(decoratedItems, value ?? null, getItem);
-  const defaultSelectedItem = findItem(
-    decoratedItems,
-    defaultValue ?? null,
-    getItem,
-  );
-  const pendingDefaultValueRef = useRef(
-    loading &&
-      defaultValue !== undefined &&
-      defaultValue !== null &&
-      defaultSelectedItem === undefined
-      ? getItem(defaultValue).id
-      : null,
-  );
-  const controlledValueKey = isControlled
-    ? selectedValueItem?.descriptor.id ?? null
-    : undefined;
-  const defaultValueKey = defaultSelectedItem?.descriptor.id ?? null;
-  const initialDefaultValueRef = useRef(
-    defaultValueKey ?? pendingDefaultValueRef.current,
-  );
-  const hasInitialDefault = decoratedItems.some(
-    ({ descriptor }) => descriptor.id === initialDefaultValueRef.current,
-  );
-  const resetValue =
-    loading || hasInitialDefault ? initialDefaultValueRef.current : null;
-  const resetValueRef = useRef(resetValue);
-  const controlledResetValueKey = getControlledResetValueKey(value, getItem);
-  const controlledResetItem = resolveControlledResetItem(
-    initialControlledItem,
-    decoratedItems,
-    loading,
-  );
-  const controlledResetValueKeyRef = useRef(controlledResetValueKey);
-  const controlledResetItemRef = useRef(controlledResetItem);
-  const onChangeRef = useRef(onChange);
-  const suppressOnChangeRef = useRef(false);
-  const collectionChildren = useMemo(
-    () =>
-      decoratedItems.map(({ descriptor, item }) => (
-        <SelectCollectionElement
-          id={descriptor.id}
-          item={{ descriptor, item }}
-          isDisabled={descriptor.disabled}
-          key={descriptor.id}
-          textValue={descriptor.label}
-        >
-          {descriptor.label}
-        </SelectCollectionElement>
-      )),
-    [decoratedItems],
-  );
-  const state = useSelectState<SelectItem<T>>({
-    children: collectionChildren,
-    defaultValue: defaultValueKey,
-    isDisabled: stateDisabled,
-    isInvalid: !loading && visibleError !== undefined,
-    isRequired: required,
-    items: decoratedItems,
-    onChange: (key) => {
-      if (suppressOnChangeRef.current) return;
-
-      // A real user selection supersedes a default that was waiting for a
-      // loading collection to arrive.
-      pendingDefaultValueRef.current = null;
-
-      if (key === null) {
-        onChange?.(null);
-        return;
-      }
-
-      const nextItem = decoratedItems.find(
-        (item) => item.descriptor.id === key,
-      );
-      onChange?.(nextItem?.item ?? null);
-    },
-    shouldCloseOnSelect: true,
-    validationBehavior: 'aria',
-    value: controlledValueKey,
-  });
-  const setStateValueRef = useRef((nextValue: string | null) =>
-    state.setValue(nextValue),
-  );
-  const { menuProps, triggerProps, valueProps } = useSelect(
-    {
-      'aria-describedby': supportingIds,
-      'aria-label': loading ? label : undefined,
-      'aria-labelledby': labelId,
-      autoComplete,
-      form,
-      isDisabled: stateDisabled,
-      isInvalid: !loading && visibleError !== undefined,
-      isRequired: required,
-      name,
-      validationBehavior: 'aria',
-      value: state.value,
-    },
-    state,
-    triggerRef,
-  );
-  const { buttonProps } = useButton(triggerProps, triggerRef);
-  const { focusProps, isFocusVisible } = useFocusRing();
-  const { hoverProps, isHovered } = useHover({
-    isDisabled: interactionDisabled,
-  });
-  const isInvalid = !loading && visibleError !== undefined;
-  const handleAutofill = (nextValue: string) =>
-    handleSelectAutofill(
-      nextValue,
-      readOnly,
-      decoratedItems,
-      state.value,
-      (nextKey) => state.setValue(nextKey),
-      autofillRef,
-    );
-  const triggerLabelledBy = getTriggerLabelledBy(
-    loading,
-    buttonProps['aria-labelledby'],
-    valueProps.id,
-  );
-
-  useLayoutEffect(() => {
-    resetValueRef.current = resetValue;
-    setStateValueRef.current = (nextValue) => state.setValue(nextValue);
-    controlledResetValueKeyRef.current = controlledResetValueKey;
-    controlledResetItemRef.current = controlledResetItem;
-    onChangeRef.current = onChange;
-  }, [
-    controlledResetItem,
-    controlledResetValueKey,
-    onChange,
-    resetValue,
-    state,
-  ]);
-
-  useLayoutEffect(() => {
-    if ((decoratedItems.length === 0 || stateDisabled) && state.isOpen) {
-      state.setOpen(false);
-    }
-  }, [decoratedItems.length, state, stateDisabled]);
-
-  useSelectCollectionEffects({
-    decoratedItems,
-    initialDefaultValueRef,
-    isControlled,
-    loading,
-    pendingDefaultValueRef,
-    state,
-    suppressOnChangeRef,
-  });
-
-  useSelectFormReset({
-    controlledResetItemRef,
-    controlledResetValueKeyRef,
-    form,
-    isControlled,
-    onChangeRef,
-    resetValueRef,
-    setStateValueRef,
-    suppressOnChangeRef,
-    triggerRef,
-  });
+  let selectedKey: string | null | undefined;
+  if (value === undefined) {
+    selectedKey = undefined;
+  } else if (value === null) {
+    selectedKey = null;
+  } else {
+    selectedKey = getItem(value).id;
+  }
+  const defaultSelectedKey =
+    defaultValue === undefined || defaultValue === null
+      ? null
+      : getItem(defaultValue).id;
 
   return (
-    <div className={fieldVariants.base.root}>
-      <FieldLabel
-        htmlFor={controlId}
-        id={labelId}
-        label={label}
-        loading={loading}
-      />
+    <AriaSelect<SelectItem<T>>
+      aria-label={loading ? label : undefined}
+      autoComplete={autoComplete}
+      autoFocus={autoFocus}
+      className={fieldVariants.base.root}
+      defaultValue={defaultSelectedKey}
+      form={form}
+      id={controlId}
+      isDisabled={interactionDisabled || readOnly}
+      isInvalid={isInvalid}
+      isOpen={readOnly ? false : undefined}
+      isRequired={required}
+      name={name}
+      onChange={(key) => {
+        if (readOnly) return;
+
+        const nextItem =
+          key === null
+            ? undefined
+            : decoratedItems.find(
+                ({ descriptor }) => descriptor.id === String(key),
+              );
+        onChange?.(nextItem?.item ?? null);
+      }}
+      placeholder={placeholder}
+      validationBehavior="aria"
+      value={selectedKey}
+    >
+      <FieldLabel label={label} loading={loading} />
       <div className={fieldVariants.base.control}>
-        {/* React Aria supplies the complete keyboard and accessibility contract. */}
-        <button
-          type="button"
-          // React Aria supplies the complete keyboard and accessibility contract.
-          // eslint-disable-next-line react/jsx-props-no-spreading
-          {...mergeProps(buttonProps, focusProps, hoverProps)}
-          aria-controls={buttonProps['aria-controls']}
-          aria-busy={loading || undefined}
-          aria-expanded={buttonProps['aria-expanded']}
-          aria-labelledby={triggerLabelledBy}
-          aria-readonly={readOnly || undefined}
-          aria-required={required || undefined}
-          // eslint-disable-next-line jsx-a11y/no-autofocus
-          autoFocus={autoFocus}
+        <AriaButton
           className={joinClassNames(
             selectVariants.base.trigger,
             readOnly && selectVariants.state.readOnlyTrigger,
             loading && 'breeze:!opacity-0',
           )}
-          data-focus-visible={isFocusVisible || undefined}
-          data-hovered={isHovered || undefined}
-          data-invalid={isInvalid || undefined}
-          disabled={interactionDisabled}
-          form={form}
-          id={controlId}
-          role="combobox"
+          isDisabled={interactionDisabled}
           ref={triggerRef}
+          render={(buttonProps) =>
+            createElement('button', {
+              ...buttonProps,
+              'aria-busy': loading || undefined,
+              'aria-invalid': isInvalid || undefined,
+              'aria-readonly': readOnly || undefined,
+              'aria-required': required || undefined,
+              'data-invalid': isInvalid || undefined,
+              type: 'button',
+            })
+          }
         >
-          <span
-            // React Aria supplies the selected-value semantics.
-            // eslint-disable-next-line react/jsx-props-no-spreading
-            {...valueProps}
+          <AriaSelectValue
             className={joinClassNames(
               collectionVariants.base.content,
               'breeze:text-start',
             )}
           >
-            {state.selectedItems[0]?.textValue ?? placeholder}
-          </span>
+            {({ isPlaceholder, selectedText }) =>
+              isPlaceholder ? placeholder ?? '' : selectedText
+            }
+          </AriaSelectValue>
           <Icon name="expand" size="sm" />
-        </button>
+        </AriaButton>
         {loading && (
           <span className={fieldVariants.base.skeleton}>
             <Skeleton
@@ -782,55 +312,23 @@ export function Select<T>({
           </span>
         )}
       </div>
-      {(name !== undefined || autoComplete !== undefined) &&
-        !interactionDisabled && (
-          <div
-            // React Aria's hidden-control pattern keeps autofill and form
-            // submission while preventing an aria-hidden control from focus.
-            // eslint-disable-next-line react/jsx-props-no-spreading
-            {...visuallyHiddenProps}
-            aria-hidden="true"
-            data-a11y-ignore="aria-hidden-focus"
-            data-react-aria-prevent-focus
-          >
-            <label htmlFor={`${controlId}-autofill`}>
-              {label}
-              <input
-                autoComplete={autoComplete}
-                form={form}
-                id={`${controlId}-autofill`}
-                name={name}
-                onChange={(event) => handleAutofill(event.currentTarget.value)}
-                onInput={(event) => handleAutofill(event.currentTarget.value)}
-                readOnly={readOnly || undefined}
-                ref={autofillRef}
-                tabIndex={-1}
-                type="text"
-                value={state.value ?? ''}
-              />
-            </label>
-          </div>
-        )}
-      <CollectionPopover
-        className={collectionVariants.base.popover}
-        isOpen={state.isOpen && !stateDisabled}
-        onOpenChange={(isOpen) => state.setOpen(isOpen)}
+      <SelectPopover
+        disabled={interactionDisabled}
+        items={decoratedItems}
+        readOnly={readOnly}
         triggerRef={triggerRef}
-      >
-        <SelectListBox menuProps={menuProps} state={state} />
-      </CollectionPopover>
+      />
+      <SelectReadOnlyFormValue
+        form={form}
+        interactionDisabled={interactionDisabled}
+        name={name}
+        readOnly={readOnly}
+      />
       <FieldSupportingContent
         description={visibleDescription}
-        descriptionId={descriptionId}
-        error={loading ? visibleError : undefined}
-        errorId={errorId}
+        error={visibleError}
         loading={loading}
       />
-      {visibleError && !loading && (
-        <span className={fieldVariants.base.error} id={errorId}>
-          {visibleError}
-        </span>
-      )}
-    </div>
+    </AriaSelect>
   );
 }

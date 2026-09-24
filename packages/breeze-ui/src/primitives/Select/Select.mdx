@@ -8,8 +8,9 @@ import * as Stories from './Select.stories';
 
 # Select
 
-`Select` is a fixed-choice field. It opens a popover listbox and never renders
-a native `<select>`, so the same Breeze control is used across applications.
+`Select` is a fixed-choice field. Its visible control opens a popover listbox;
+React Aria may also render hidden native form and accessibility infrastructure
+so the control participates in browser forms and autofill consistently.
 
 <Canvas of={Stories.Default} />
 
