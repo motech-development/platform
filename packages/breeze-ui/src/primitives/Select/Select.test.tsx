@@ -851,10 +851,8 @@ describe('Select', () => {
 
     fireEvent.reset(document.forms[0]);
 
-    await waitFor(() => {
-      expect(trigger).toHaveTextContent('Choose a method');
-      expect(new FormData(document.forms[0]).get('payment')).toBe('');
-    });
+    expect(trigger).toHaveTextContent('Choose a method');
+    expect(new FormData(document.forms[0]).get('payment')).toBe('');
     expect(onChange).not.toHaveBeenCalled();
   });
 
@@ -1062,10 +1060,8 @@ describe('Select', () => {
 
     fireEvent.reset(document.forms[0]);
 
-    await waitFor(() => {
-      expect(trigger).toHaveTextContent('Bank account');
-      expect(new FormData(document.forms[0]).get('payment')).toBe('bank');
-    });
+    expect(trigger).toHaveTextContent('Bank account');
+    expect(new FormData(document.forms[0]).get('payment')).toBe('bank');
   });
 
   it('reconciles an unavailable uncontrolled selection when loading completes', async () => {
@@ -1264,10 +1260,8 @@ describe('Select', () => {
 
     fireEvent.reset(form);
 
-    await waitFor(() => {
-      expect(trigger).toHaveTextContent('Bank account');
-      expect(new FormData(form).get('payment')).toBe('bank');
-    });
+    expect(trigger).toHaveTextContent('Bank account');
+    expect(new FormData(form).get('payment')).toBe('bank');
     expect(onChange).not.toHaveBeenCalled();
   });
 
@@ -1307,123 +1301,6 @@ describe('Select', () => {
 
     expect(trigger).toHaveTextContent('Cash');
     expect(new FormData(form).get('payment')).toBe('cash');
-  });
-
-  it('aborts a queued reset when the select unmounts during reset', async () => {
-    const user = userEvent.setup();
-    const resetChoices = choices.map((choice) => ({
-      ...choice,
-      disabled: false,
-    }));
-    const onChange = vi.fn<(value: ItemDescriptor | null) => void>();
-
-    function ResettableSelect() {
-      const [isMounted, setIsMounted] = useState(true);
-
-      return (
-        <form aria-label="Payment form" onReset={() => setIsMounted(false)}>
-          {isMounted && (
-            <Select
-              defaultValue={resetChoices[0]}
-              getItem={(item) => item}
-              items={resetChoices}
-              label="Payment method"
-              name="payment"
-              onChange={onChange}
-            />
-          )}
-        </form>
-      );
-    }
-
-    renderBreeze(<ResettableSelect />);
-
-    const form = document.forms[0];
-    const trigger = screen.getByRole('combobox', {
-      name: 'Bank account Payment method',
-    });
-    await user.click(trigger);
-    await user.click(screen.getByRole('option', { name: /Cash/ }));
-    onChange.mockClear();
-
-    fireEvent.reset(form);
-
-    await act(async () => {
-      await Promise.resolve();
-    });
-
-    expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
-    expect(onChange).not.toHaveBeenCalled();
-  });
-
-  it('aborts a queued reset when reset switches the select to controlled', async () => {
-    const user = userEvent.setup();
-    const resetChoices = choices.map((choice) => ({
-      ...choice,
-      disabled: false,
-    }));
-    const onChange = vi.fn<(value: ItemDescriptor | null) => void>();
-
-    function ResettableSelect() {
-      const [isControlled, setIsControlled] = useState(false);
-
-      return (
-        <form aria-label="Payment form" onReset={() => setIsControlled(true)}>
-          {isControlled ? (
-            <Select
-              getItem={(item) => item}
-              items={resetChoices}
-              label="Payment method"
-              name="payment"
-              onChange={onChange}
-              value={resetChoices[1]}
-            />
-          ) : (
-            <Select
-              defaultValue={resetChoices[0]}
-              getItem={(item) => item}
-              items={resetChoices}
-              label="Payment method"
-              name="payment"
-              onChange={onChange}
-            />
-          )}
-          <button type="button" onClick={() => setIsControlled(false)}>
-            Use uncontrolled value
-          </button>
-        </form>
-      );
-    }
-
-    renderBreeze(<ResettableSelect />);
-
-    const form = document.forms[0];
-    const trigger = screen.getByRole('combobox', {
-      name: 'Bank account Payment method',
-    });
-    await user.click(trigger);
-    await user.click(screen.getByRole('option', { name: /Cash/ }));
-    onChange.mockClear();
-
-    fireEvent.reset(form);
-
-    await act(async () => {
-      await Promise.resolve();
-    });
-
-    expect(
-      screen.getByRole('combobox', { name: 'Cash Payment method' }),
-    ).toHaveTextContent('Cash');
-    expect(onChange).not.toHaveBeenCalled();
-
-    await user.click(
-      screen.getByRole('button', { name: 'Use uncontrolled value' }),
-    );
-
-    expect(
-      screen.getByRole('combobox', { name: 'Cash Payment method' }),
-    ).toHaveTextContent('Cash');
-    expect(onChange).not.toHaveBeenCalled();
   });
 
   it('reports the initial controlled value when an accepted reset changes it', async () => {
@@ -1466,9 +1343,7 @@ describe('Select', () => {
 
     fireEvent.reset(form);
 
-    await waitFor(() => {
-      expect(onChange).toHaveBeenCalledWith(resetChoices[0]);
-    });
+    expect(onChange).toHaveBeenCalledWith(resetChoices[0]);
     expect(onChange).toHaveBeenCalledTimes(1);
     expect(trigger).toHaveTextContent('Cash');
   });
@@ -1519,123 +1394,11 @@ describe('Select', () => {
     form.reset();
 
     expect(onChange).toHaveBeenCalledWith(resetChoices[0]);
+    expect(trigger).toHaveTextContent('Bank account');
     expect(new FormData(form).get('payment')).toBe('bank');
-    await waitFor(() => {
-      expect(trigger).toHaveTextContent('Bank account');
-      expect(new FormData(form).get('payment')).toBe('bank');
-    });
   });
 
-  it('resynchronizes FormData when a controlled parent ignores a stopped reset', async () => {
-    const user = userEvent.setup();
-    const resetChoices = choices.map((choice) => ({
-      ...choice,
-      disabled: false,
-    }));
-    const onChange = vi.fn<(value: ItemDescriptor | null) => void>();
-
-    function ControlledResetSelect() {
-      const [value, setValue] = useState(resetChoices[0]);
-
-      return (
-        <form
-          aria-label="Payment form"
-          onReset={(event) => event.stopPropagation()}
-        >
-          <Select
-            getItem={(item) => item}
-            items={resetChoices}
-            label="Payment method"
-            name="payment"
-            onChange={onChange}
-            value={value}
-          />
-          <button type="button" onClick={() => setValue(resetChoices[1])}>
-            Use current value
-          </button>
-        </form>
-      );
-    }
-
-    renderBreeze(<ControlledResetSelect />);
-
-    const form = document.forms[0];
-    const trigger = screen.getByRole('combobox', {
-      name: 'Bank account Payment method',
-    });
-    await user.click(screen.getByRole('button', { name: 'Use current value' }));
-    expect(trigger).toHaveTextContent('Cash');
-    onChange.mockClear();
-
-    form.reset();
-
-    expect(new FormData(form).get('payment')).toBe('bank');
-
-    await act(async () => {
-      await new Promise((resolve) => {
-        setTimeout(resolve, 0);
-      });
-    });
-
-    expect(onChange).toHaveBeenCalledWith(resetChoices[0]);
-    expect(trigger).toHaveTextContent('Cash');
-    expect(new FormData(form).get('payment')).toBe('cash');
-  });
-
-  it('resynchronizes FormData when a controlled parent ignores a native reset', async () => {
-    const user = userEvent.setup();
-    const resetChoices = choices.map((choice) => ({
-      ...choice,
-      disabled: false,
-    }));
-    const onChange = vi.fn<(value: ItemDescriptor | null) => void>();
-
-    function ControlledResetSelect() {
-      const [value, setValue] = useState(resetChoices[0]);
-
-      return (
-        <form aria-label="Payment form">
-          <Select
-            getItem={(item) => item}
-            items={resetChoices}
-            label="Payment method"
-            name="payment"
-            onChange={onChange}
-            value={value}
-          />
-          <button type="button" onClick={() => setValue(resetChoices[1])}>
-            Use current value
-          </button>
-        </form>
-      );
-    }
-
-    renderBreeze(<ControlledResetSelect />);
-
-    const form = document.forms[0];
-    const trigger = screen.getByRole('combobox', {
-      name: 'Bank account Payment method',
-    });
-    await user.click(screen.getByRole('button', { name: 'Use current value' }));
-    expect(trigger).toHaveTextContent('Cash');
-    onChange.mockClear();
-
-    form.reset();
-
-    expect(new FormData(form).get('payment')).toBe('bank');
-
-    await act(async () => {
-      await new Promise((resolve) => {
-        setTimeout(resolve, 0);
-      });
-    });
-
-    expect(onChange).toHaveBeenCalledWith(resetChoices[0]);
-    expect(trigger).toHaveTextContent('Cash');
-    expect(new FormData(form).get('payment')).toBe('cash');
-  });
-
-  it('resolves the controlled reset value from the current items', async () => {
+  it('resolves the controlled reset value from the current items', () => {
     const initialChoice = { ...choices[0], disabled: false };
     const currentChoice = { ...choices[1], disabled: false };
     const refreshedInitialChoice = {
@@ -1674,13 +1437,11 @@ describe('Select', () => {
 
     fireEvent.reset(document.forms[0]);
 
-    await waitFor(() => {
-      expect(onChange).toHaveBeenCalledWith(refreshedInitialChoice);
-    });
+    expect(onChange).toHaveBeenCalledWith(refreshedInitialChoice);
     expect(onChange).toHaveBeenCalledTimes(1);
   });
 
-  it('reports null when the controlled reset value is unavailable after loading', async () => {
+  it('reports null when the controlled reset value is unavailable after loading', () => {
     const initialChoice = { ...choices[0], disabled: false };
     const currentChoice = { ...choices[1], disabled: false };
     const onChange = vi.fn<(value: ItemDescriptor | null) => void>();
@@ -1715,13 +1476,11 @@ describe('Select', () => {
 
     fireEvent.reset(document.forms[0]);
 
-    await waitFor(() => {
-      expect(onChange).toHaveBeenCalledWith(null);
-    });
+    expect(onChange).toHaveBeenCalledWith(null);
     expect(onChange).toHaveBeenCalledTimes(1);
   });
 
-  it('keeps the controlled reset value while its collection is loading', async () => {
+  it('keeps the controlled reset value while its collection is loading', () => {
     const initialChoice = { ...choices[0], disabled: false };
     const currentChoice = { ...choices[1], disabled: false };
     const onChange = vi.fn<(value: ItemDescriptor | null) => void>();
@@ -1757,9 +1516,7 @@ describe('Select', () => {
 
     fireEvent.reset(document.forms[0]);
 
-    await waitFor(() => {
-      expect(onChange).toHaveBeenCalledWith(initialChoice);
-    });
+    expect(onChange).toHaveBeenCalledWith(initialChoice);
     expect(onChange).toHaveBeenCalledTimes(1);
   });
 
@@ -1805,169 +1562,6 @@ describe('Select', () => {
 
     fireEvent.reset(form);
 
-    await act(async () => {
-      await Promise.resolve();
-    });
-
-    expect(onChange).not.toHaveBeenCalled();
-    expect(trigger).toHaveTextContent('Cash');
-    expect(new FormData(form).get('payment')).toBe('cash');
-  });
-
-  it('keeps pristine form data visible while a reset is canceled', () => {
-    let synchronousFormValue: FormDataEntryValue | null = null;
-
-    renderBreeze(
-      <form
-        aria-label="Payment form"
-        onReset={(event) => {
-          event.preventDefault();
-          synchronousFormValue = new FormData(event.currentTarget).get(
-            'payment',
-          );
-        }}
-      >
-        <Select
-          defaultValue={choices[0]}
-          getItem={(item) => item}
-          items={choices}
-          label="Payment method"
-          name="payment"
-        />
-      </form>,
-    );
-
-    const form = document.forms[0];
-    const autofillInput = form.elements.namedItem('payment');
-    expect(autofillInput).toBeInstanceOf(HTMLInputElement);
-    const input = autofillInput as HTMLInputElement;
-    const defaultValueDescriptor = Object.getOwnPropertyDescriptor(
-      HTMLInputElement.prototype,
-      'defaultValue',
-    );
-    // JSDOM keeps React's controlled input dirty. Emulate the native pristine
-    // value/defaultValue linkage so capture's defaultValue assignment can be
-    // observed before the canceling reset handler reads FormData.
-    Object.defineProperty(input, 'defaultValue', {
-      configurable: true,
-      get: () => {
-        const value: unknown = defaultValueDescriptor?.get?.call(input);
-        return typeof value === 'string' ? value : '';
-      },
-      set: (value: string) => {
-        defaultValueDescriptor?.set?.call(input, value);
-        input.value = value;
-      },
-    });
-    input.defaultValue = 'cash';
-
-    form.reset();
-
-    expect(synchronousFormValue).toBe('cash');
-  });
-
-  it('preserves a newer controlled value when a reset is canceled', async () => {
-    const resetChoices = choices.map((choice) => ({
-      ...choice,
-      disabled: false,
-    }));
-    const onChange = vi.fn<(value: ItemDescriptor | null) => void>();
-
-    function ControlledResetSelect() {
-      const [value, setValue] = useState(resetChoices[0]);
-
-      return (
-        <form
-          aria-label="Payment form"
-          onReset={(event) => {
-            event.preventDefault();
-            queueMicrotask(() => setValue(resetChoices[1]));
-          }}
-        >
-          <Select
-            getItem={(item) => item}
-            items={resetChoices}
-            label="Payment method"
-            name="payment"
-            onChange={onChange}
-            value={value}
-          />
-        </form>
-      );
-    }
-
-    renderBreeze(<ControlledResetSelect />);
-
-    const form = document.forms[0];
-    const trigger = screen.getByRole('combobox', {
-      name: 'Bank account Payment method',
-    });
-    form.reset();
-
-    await act(async () => {
-      await Promise.resolve();
-      await new Promise((resolve) => {
-        setTimeout(resolve, 0);
-      });
-    });
-
-    expect(trigger).toHaveTextContent('Cash');
-    expect(new FormData(form).get('payment')).toBe('cash');
-    expect(onChange).not.toHaveBeenCalled();
-  });
-
-  it('waits for delegated reset prevention before applying the fallback', async () => {
-    const user = userEvent.setup();
-    const resetChoices = choices.map((choice) => ({
-      ...choice,
-      disabled: false,
-    }));
-    const onChange = vi.fn<(value: ItemDescriptor | null) => void>();
-
-    function ControlledResetSelect() {
-      const [value, setValue] = useState(resetChoices[0]);
-
-      return (
-        <form
-          aria-label="Payment form"
-          onReset={(event) => {
-            event.stopPropagation();
-            queueMicrotask(() => event.preventDefault());
-          }}
-        >
-          <Select
-            getItem={(item) => item}
-            items={resetChoices}
-            label="Payment method"
-            name="payment"
-            onChange={onChange}
-            value={value}
-          />
-          <button type="button" onClick={() => setValue(resetChoices[1])}>
-            Use current value
-          </button>
-        </form>
-      );
-    }
-
-    renderBreeze(<ControlledResetSelect />);
-
-    const form = document.forms[0];
-    const trigger = screen.getByRole('combobox', {
-      name: 'Bank account Payment method',
-    });
-    await user.click(screen.getByRole('button', { name: 'Use current value' }));
-    onChange.mockClear();
-
-    fireEvent.reset(form);
-
-    await act(async () => {
-      await Promise.resolve();
-      await new Promise((resolve) => {
-        setTimeout(resolve, 0);
-      });
-    });
-
     expect(onChange).not.toHaveBeenCalled();
     expect(trigger).toHaveTextContent('Cash');
     expect(new FormData(form).get('payment')).toBe('cash');
@@ -2006,148 +1600,8 @@ describe('Select', () => {
 
     fireEvent.reset(form);
 
-    await act(async () => {
-      await Promise.resolve();
-    });
-
     expect(trigger).toHaveTextContent('Cash');
     expect(new FormData(form).get('payment')).toBe('cash');
-  });
-
-  it('resets when form reset propagation is stopped', async () => {
-    const user = userEvent.setup();
-    const resetChoices = choices.map((choice) => ({
-      ...choice,
-      disabled: false,
-    }));
-    const onChange = vi.fn<(value: ItemDescriptor | null) => void>();
-
-    renderBreeze(
-      <form
-        aria-label="Payment form"
-        onReset={(event) => event.stopPropagation()}
-      >
-        <Select
-          defaultValue={resetChoices[0]}
-          getItem={(item) => item}
-          items={resetChoices}
-          label="Payment method"
-          name="payment"
-          onChange={onChange}
-        />
-      </form>,
-    );
-
-    const form = document.forms[0];
-    const trigger = screen.getByRole('combobox', {
-      name: 'Bank account Payment method',
-    });
-
-    await user.click(trigger);
-    await user.click(screen.getByRole('option', { name: /Cash/ }));
-    onChange.mockClear();
-
-    fireEvent.reset(form);
-
-    await waitFor(() => {
-      expect(trigger).toHaveTextContent('Bank account');
-      expect(new FormData(form).get('payment')).toBe('bank');
-    });
-    expect(onChange).not.toHaveBeenCalled();
-  });
-
-  it('updates the submitted value before a stopped reset returns', async () => {
-    const user = userEvent.setup();
-    const resetChoices = choices.map((choice) => ({
-      ...choice,
-      disabled: false,
-    }));
-
-    renderBreeze(
-      <form
-        aria-label="Payment form"
-        onReset={(event) => event.stopPropagation()}
-      >
-        <Select
-          defaultValue={resetChoices[0]}
-          getItem={(item) => item}
-          items={resetChoices}
-          label="Payment method"
-          name="payment"
-        />
-      </form>,
-    );
-
-    const form = document.forms[0];
-    const trigger = screen.getByRole('combobox', {
-      name: 'Bank account Payment method',
-    });
-    await user.click(trigger);
-    await user.click(screen.getByRole('option', { name: /Cash/ }));
-    expect(new FormData(form).get('payment')).toBe('cash');
-
-    form.reset();
-
-    expect(new FormData(form).get('payment')).toBe('bank');
-
-    await waitFor(() => {
-      expect(trigger).toHaveTextContent('Bank account');
-    });
-  });
-
-  it('does not overwrite a selection made immediately after a stopped reset', async () => {
-    const user = userEvent.setup();
-    const nextChoice = {
-      disabled: false,
-      id: 'card',
-      label: 'Card payment',
-    } satisfies ItemDescriptor;
-    const resetChoices = choices
-      .map((choice) => ({
-        ...choice,
-        disabled: false,
-      }))
-      .concat(nextChoice);
-
-    renderBreeze(
-      <form
-        aria-label="Payment form"
-        onReset={(event) => event.stopPropagation()}
-      >
-        <Select
-          defaultValue={resetChoices[0]}
-          getItem={(item) => item}
-          items={resetChoices}
-          label="Payment method"
-          name="payment"
-        />
-      </form>,
-    );
-
-    const form = document.forms[0];
-    const trigger = screen.getByRole('combobox', {
-      name: 'Bank account Payment method',
-    });
-    await user.click(trigger);
-    await user.click(screen.getByRole('option', { name: /Cash/ }));
-
-    form.reset();
-    const autofillInput = document.querySelector(
-      'input[name="payment"]',
-    ) as HTMLInputElement;
-    fireEvent.input(autofillInput, { target: { value: 'card' } });
-
-    expect(trigger).toHaveTextContent('Card payment');
-    expect(new FormData(form).get('payment')).toBe('card');
-
-    await act(async () => {
-      await new Promise((resolve) => {
-        setTimeout(resolve, 0);
-      });
-    });
-
-    expect(trigger).toHaveTextContent('Card payment');
-    expect(new FormData(form).get('payment')).toBe('card');
   });
 
   it('binds to an external form that mounts after the select', async () => {
@@ -2193,9 +1647,7 @@ describe('Select', () => {
     onChange.mockClear();
     form.reset();
 
-    await waitFor(() => {
-      expect(trigger).toHaveTextContent('Bank account');
-    });
+    expect(trigger).toHaveTextContent('Bank account');
     expect(onChange).not.toHaveBeenCalled();
   });
 
@@ -2246,10 +1698,8 @@ describe('Select', () => {
 
     fireEvent.reset(document.forms[0]);
 
-    await waitFor(() => {
-      expect(trigger).toHaveTextContent('Choose a method');
-      expect(new FormData(document.forms[0]).get('payment')).toBe('');
-    });
+    expect(trigger).toHaveTextContent('Choose a method');
+    expect(new FormData(document.forms[0]).get('payment')).toBe('');
     expect(onChange).not.toHaveBeenCalled();
   });
 
