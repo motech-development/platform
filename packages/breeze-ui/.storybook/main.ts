@@ -49,9 +49,6 @@ const config: ManifestStorybookConfig = {
       ...viteConfig.optimizeDeps,
       include: [
         ...(viteConfig.optimizeDeps?.include ?? []),
-        'react-aria/useButton',
-        'react-aria/useListBox',
-        'react-aria/useSelect',
         'react-aria-components/Button',
         'react-aria-components/ComboBox',
         'react-aria-components/Dialog',
@@ -64,7 +61,6 @@ const config: ManifestStorybookConfig = {
         'react-aria-components/ProgressBar',
         'react-aria-components/slots',
         'react-dom',
-        'react-stately/useSelectState',
       ],
     },
   }),
