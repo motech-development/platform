@@ -141,6 +141,29 @@ describe('Select', () => {
     expect(trigger).toHaveFocus();
   });
 
+  it('focuses the read-only trigger when the visible label is clicked', async () => {
+    const user = userEvent.setup();
+
+    renderBreeze(
+      <Select
+        defaultValue={choices[0]}
+        getItem={getItem}
+        items={choices}
+        label="Payment method"
+        readOnly
+      />,
+    );
+
+    const trigger = screen.getByRole('button', {
+      name: 'Bank account Payment method',
+    });
+    await user.click(screen.getByText('Payment method', { selector: 'span' }));
+
+    expect(trigger).toHaveFocus();
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+    expect(trigger).toHaveTextContent('Bank account');
+  });
+
   it('supports controlled values', async () => {
     const user = userEvent.setup();
     const onChange = vi.fn<(value: (typeof choices)[number] | null) => void>();

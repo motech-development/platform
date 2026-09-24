@@ -266,7 +266,12 @@ export function Select<T>({
       validationBehavior="aria"
       value={selectedKey}
     >
-      <FieldLabel htmlFor={controlId} label={label} loading={loading} />
+      <FieldLabel
+        htmlFor={controlId}
+        label={label}
+        loading={loading}
+        onClick={() => triggerRef.current?.focus()}
+      />
       <div className={fieldVariants.base.control}>
         <AriaButton
           className={joinClassNames(
