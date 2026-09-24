@@ -991,6 +991,61 @@ describe('ComboBox', () => {
     expect(onChange).not.toHaveBeenCalled();
   });
 
+  it.each(['uncontrolled', 'controlled'] as const)(
+    'reports null when an empty custom $0 value is restored on form reset',
+    async (mode) => {
+      const user = userEvent.setup();
+      const onChange = vi.fn<(value: SupplierValue) => void>();
+
+      function EmptyCustomValueComboBox() {
+        const [value, setValue] = useState<SupplierValue>('');
+
+        return (
+          <form aria-label="Supplier form">
+            {mode === 'controlled' ? (
+              <ComboBox
+                allowsCustomValue
+                getItem={getItem}
+                items={suppliers}
+                label="Supplier"
+                name="supplier"
+                onChange={(nextValue) => {
+                  onChange(nextValue);
+                  setValue(nextValue);
+                }}
+                value={value}
+              />
+            ) : (
+              <ComboBox
+                allowsCustomValue
+                defaultValue=""
+                getItem={getItem}
+                items={suppliers}
+                label="Supplier"
+                name="supplier"
+                onChange={onChange}
+              />
+            )}
+          </form>
+        );
+      }
+
+      renderBreeze(<EmptyCustomValueComboBox />);
+
+      const form = document.forms[0];
+      const input = screen.getByRole('combobox', { name: 'Supplier' });
+      await user.type(input, 'New supplier');
+      onChange.mockClear();
+
+      form.reset();
+
+      expect(input).toHaveValue('');
+      expect(new FormData(form).get('supplier')).toBe('');
+      expect(onChange).toHaveBeenCalledTimes(1);
+      expect(onChange).toHaveBeenCalledWith(null);
+    },
+  );
+
   it('restores and reports the initial custom default after defaultValue changes', async () => {
     const user = userEvent.setup();
     const onChange =
