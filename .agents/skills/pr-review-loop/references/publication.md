@@ -6,12 +6,24 @@ Read before commits, pushes, bot interactions, thread resolution, or PR-body upd
 
 Carry forward the authorization recorded in the batch ledger; do not ask again
 for an already-authorized action. An explicit `$pr-review-loop` invocation
-authorizes routine Codex reactions, eligible bot-thread resolution, and the
-limited written explanation for a conclusively rejected CodeRabbit finding after
-the verification in [thread-resolution.md](thread-resolution.md), unless the
-user explicitly narrows the request to code fixes only, inspection, one batch, or
-local review. Other text replies still require separate explicit authorization;
-commits, pushes, merges, deploys, and PR metadata edits remain separate.
+authorizes submission of only each concrete, in-scope frozen source delta to the
+native Codex and CodeRabbit local review services required by the workflow. Do
+not ask for separate permission on later rounds within the same task scope. This
+covers no-charge reviews only, excludes unrelated files and other services, and
+does not override an actual host or review-service approval denial; stop and
+report such a denial. A standalone local-review request authorizes only the
+services and paths it expressly specifies, within the no-charge limit; do not
+infer service disclosure from a request to review.
+
+An explicit `$pr-review-loop` invocation also authorizes routine Codex reactions,
+eligible bot-thread resolution, and the limited written explanation for a
+conclusively rejected CodeRabbit finding after the verification in
+[thread-resolution.md](thread-resolution.md), unless the user explicitly narrows
+the request to code fixes only, inspection, one batch, or local review. Other
+text replies still require separate explicit authorization; commits, pushes,
+merges, deploys, and PR metadata edits remain separate. Never post a manual
+`@codex review` comment; hosted Codex review relies on the repository's automatic
+trigger.
 The skill itself grants no permission to send general messages, push, merge, or
 deploy. The full-loop text permission above is limited to the specified CodeRabbit
 rejection explanation.
@@ -75,7 +87,11 @@ rejection explanation.
 - Verify the remote head, then wait for that revision's pipelines and hosted
   reviews using [hosted-loop.md](hosted-loop.md). Use measured workflow
   durations and a sleeping process for routine waiting, rather than repeated
-  model turns. Collect the completed hosted feedback batch before changing code.
+  model turns. Verify each hosted review against the exact head commit. Collect
+  the completed hosted feedback batch before changing code. If the expected
+  automatic hosted Codex review is missing at the bounded deadline, do not post
+  a trigger comment; record its missing coverage and report the hosted gate as
+  incomplete.
 - If new valid findings or in-scope pipeline failures remain, return to the fix
   step with those findings and the latest head. Keep prior dispositions and
   review coverage. Complete the entire inner local loop again before the next

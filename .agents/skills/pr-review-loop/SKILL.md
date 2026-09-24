@@ -9,16 +9,28 @@ Resolve valid findings within the agreed task scope and verify completion for th
 latest revision. Preserve scope decisions, authorization, review coverage, and
 finding dispositions across rounds. Do not merge the PR as part of this loop.
 The skill itself grants no permission to send general messages, push, merge, or
-deploy. An explicit `$pr-review-loop` invocation selects full-loop work by default
-and authorizes routine Codex reactions, eligible bot-thread resolutions, and the
+deploy. An explicit `$pr-review-loop` invocation authorizes submission of only
+each concrete, in-scope frozen source delta to the native Codex and CodeRabbit
+local review services required by the workflow. Do not ask for separate
+permission on later review rounds within the same task scope. This covers
+no-charge reviews only, excludes unrelated files and other services, and does
+not override an actual host or review-service approval denial; stop and report
+such a denial. Other requests authorize only what they expressly state; do not
+infer service disclosure from a standalone request to review.
+
+An explicit `$pr-review-loop` invocation selects full-loop work by default and
+authorizes routine Codex reactions, eligible bot-thread resolutions, and the
 limited written rejection explanation required for a conclusively rejected
 CodeRabbit finding. A top-level explanation tags `@coderabbitai`; an inline
 explanation uses the integration's supported mechanism. No other text reply is
-authorized by this default. The authorization is withheld when the user
-explicitly narrows the request to code fixes only, inspection, one batch, or local
-review. A request without an explicit skill invocation keeps its stated scope; ask
-once before cleanup when that scope is ambiguous, and do not call the result clean
-while required cleanup is unauthorised.
+authorized by this default. Never post a manual `@codex review` comment; hosted
+Codex review relies on the repository's automatic trigger. Bot reactions,
+thread cleanup, and rejection explanations are withheld when the user narrows the
+request to code fixes only, inspection, one batch, or local review. A standalone
+local-review request authorizes only the services and paths it expressly
+specifies. A request without an explicit skill invocation keeps its stated scope;
+ask once before cleanup when that scope is ambiguous, and do not call the result
+clean while required cleanup is unauthorised.
 
 ## Full-loop guardrails
 
@@ -46,11 +58,12 @@ the complete hosted batch.
 
 ### Authorization boundaries
 
-| Request or authorization                                  | Reactions                              | Eligible bot-thread resolution         | Text replies                                                                      | Push/commit                              | PR metadata                              |
-| --------------------------------------------------------- | -------------------------------------- | -------------------------------------- | --------------------------------------------------------------------------------- | ---------------------------------------- | ---------------------------------------- |
-| Explicit `$pr-review-loop` invocation (default full loop) | Authorized after verification          | Authorized after verification          | Rejected CodeRabbit explanations only; other text requires explicit authorization | Requires separate existing authorization | Requires separate existing authorization |
-| Inspection or explanation only                            | Not authorized                         | Not authorized                         | Not authorized                                                                    | Not authorized                           | Not authorized                           |
-| Code-fixes-only, local-review, or one-batch request       | Explicit scope only; no inherited auth | Explicit scope only; no inherited auth | Requires explicit authorization                                                   | Preserve the stated scope                | Preserve the stated scope                |
+| Request or authorization                                  | Local review submissions                                            | Reactions                              | Eligible bot-thread resolution         | Text replies                                                                      | Push/commit                              | PR metadata                              |
+| --------------------------------------------------------- | ------------------------------------------------------------------- | -------------------------------------- | -------------------------------------- | --------------------------------------------------------------------------------- | ---------------------------------------- | ---------------------------------------- |
+| Explicit `$pr-review-loop` invocation (default full loop) | Bounded, in-scope frozen delta; no-charge only                      | Authorized after verification          | Authorized after verification          | Rejected CodeRabbit explanations only; other text requires explicit authorization | Requires separate existing authorization | Requires separate existing authorization |
+| Explicit local-review request                             | Only if request names service and paths; no-charge only             | Not authorized                         | Not authorized                         | Not authorized                                                                    | Preserve the stated scope                | Preserve the stated scope                |
+| Inspection or explanation only                            | Not authorized                                                      | Not authorized                         | Not authorized                         | Not authorized                                                                    | Not authorized                           | Not authorized                           |
+| Code-fixes-only or one-batch request                      | Only with explicit service-submission authorization; no-charge only | Explicit scope only; no inherited auth | Explicit scope only; no inherited auth | Requires explicit authorization                                                   | Preserve the stated scope                | Preserve the stated scope                |
 
 This table records the effect of the request; it does not override a narrower
 user instruction. Codex findings use reactions only: 👍 for accepted findings and
@@ -60,7 +73,10 @@ rejected CodeRabbit finding: tag `@coderabbitai` in a top-level CodeRabbit messa
 and use the integration's supported mechanism for inline replies. Other text
 replies require separate explicit authorization. Accepted CodeRabbit findings are
 fixed without an acknowledgement comment. Do not manually ask an automatic
-reviewer to review when the repository already triggers it.
+reviewer to review when the repository already triggers it. Hosted Codex review
+must come from the repository's automatic trigger; if it is missing for the exact
+head, report the missing coverage and leave the hosted gate incomplete without
+posting a manual review request.
 
 ### Scope, contract, and design record
 

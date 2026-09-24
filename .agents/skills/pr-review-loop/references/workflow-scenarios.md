@@ -1,33 +1,35 @@
 # Review-loop regression scenarios
 
 Use this document as a reproducible manual dry-run protocol when changing the
-`pr-review-loop` skill. It exercises workflow decisions through recorded GitHub,
-CodeRabbit, Sonar, and CI responses; it does not send messages, mutate threads,
-push commits, spend review credits, or require a live PR.
+`pr-review-loop` skill. It does not require a live PR, host credentials, a test
+adapter, network calls, messages, thread mutations, pushes, or review credits.
+Use the fixtures below as simulated responses and complete the worksheet by hand
+for each scenario.
 
 ## Dry-run setup
 
-Run each scenario from a fresh temporary directory outside the PR checkout.
-Load the trusted skill copy and this document into that directory, and use a
-recording adapter for GitHub, CodeRabbit, Sonar, and CI calls. The adapter must:
-
-1. return the fixture responses below;
-2. record each read and attempted mutation with its head, thread, actor, and
-   arguments;
-3. reject any call not explicitly allowed by the current scenario; and
-4. keep a ledger snapshot after each phase.
-
-Use no host credentials and deny network writes. Simulate an authorized mutation
-by returning the documented post-mutation state from the adapter. Reset the call
-log and ledger before each scenario. Record this evidence for every run:
+For each scenario, start with a fresh copy of the shared fixture and worksheet.
+Follow its steps in order. Treat each explicitly simulated response as the
+service result, record every read or attempted action, and update the worksheet
+state only when that step specifies the resulting state. Do not make live API or
+CLI calls. The worksheet is:
 
 ```text
-phase, head, event, actor, target, arguments, result, ledger change, mutation count
+scenario:
+request and narrowing:
+head and frozen paths:
+authorization and spend state:
+review/check/thread state before:
+phase, head, event, actor, target/paths, arguments, simulated result,
+  ledger/state change, mutation count
+review/check/thread state after:
+expected status and unmet gates:
 ```
 
-A scenario passes only when its recorded event order, blocked operations, ledger
-state, and final status match the pass condition. A final sentence that merely
-contains the expected words is not a passing result.
+A scenario passes only when the worksheet records the expected event order,
+allowed and blocked actions, ledger and fixture state, and final status stated in
+its pass condition. A final sentence that merely contains the expected words is
+not a passing result.
 
 ## Shared fixture
 
@@ -38,14 +40,17 @@ request: explicit "$pr-review-loop" invocation
 narrowing: none
 head: A
 contract: controlled and uncontrolled values are supported; custom values are excluded
-authorization: reactions/resolutions=default, CodeRabbit rejection explanations=default,
-               other text replies=no, push/commit=no, metadata=no
+authorization: local reviews=bounded frozen delta, no-charge, no repeat prompt;
+               reactions/resolutions=default, CodeRabbit rejection explanations=default,
+               manual hosted Codex comment=no, other text replies=no,
+               push/commit=no, metadata=no
 budget: initial=1, remediation_republishes=2, used=1
 matrix: controlled/uncontrolled=supported, loading-defaults=supported,
         unavailable=excluded, custom-values=excluded,
         form-submit-reset=supported, late-mounted-form=unresolved,
         autofill-replacement=unresolved, disabled=supported, read-only=supported
-reviews[A]: Codex=COMMENTED, CodeRabbit=CHANGES_REQUESTED (terminal feedback)
+reviews[A]: Codex=COMMENTED (hosted_review_commit=A),
+            CodeRabbit=CHANGES_REQUESTED (terminal feedback)
 sonar[A]: quality_gate=passed, issues=0, unreviewed_hotspots=0
 checks[A]: Tests=passed (required), Lint=passed (required), Chromatic=pending (optional)
 ```
@@ -80,8 +85,9 @@ it is a later completion gate.
    read it after the mutation.
 5. Leave `T-outdated-actionable`, `T-out-of-scope`, and `T-human` unchanged.
 6. Perform the final paginated thread read. Repeat the `T-rejected` branch with
-   the explanation post returning a failure, and verify that the thread remains
-   open and the failure is reported.
+   a fresh reset of the shared fixture, event log, and ledger, with the
+   explanation post returning a failure; verify that the thread remains open and
+   the failure is reported.
 
 **Evidence**
 
@@ -128,10 +134,13 @@ only narrowing or any bot mutation is attempted.
 
 **Steps**
 
-1. Reset to a concrete frozen delta and run CodeRabbit in the credentialless
-   sandbox adapter. Return a sanitized authentication or missing-session error.
-2. Record the environment and perform exactly one normal outside-sandbox retry.
-3. For the primary run, return a successful authenticated review from the host.
+1. Reset to a concrete frozen delta. Record a CodeRabbit attempt in the
+   credentialless sandbox and enter a sanitized authentication or missing-session
+   error as its simulated result.
+2. Record the environment and exactly one normal outside-sandbox retry, with its
+   simulated host result.
+3. In a separate reset, record a successful authenticated primary review from
+   the host.
 4. Repeat in separate reset runs with a host authentication failure and with a
    host service failure.
 
@@ -285,3 +294,57 @@ unresolved bot threads. A clean result requires a final count of zero.
 **Fail if** a green quality gate substitutes for the issue/hotspot lists, an
 unresolved bot thread is excluded because it is out of scope or outdated, or the
 workflow claims clean before the final zero count.
+
+## 8. Bounded local review authorization and automatic hosted Codex
+
+**Steps**
+
+1. Reset to the shared fixture. Set the frozen delta to
+   `src/Select.tsx` and `src/Select.test.tsx`. Record native Codex and CodeRabbit
+   local review submissions with exactly those paths and no charge. Record zero
+   separate disclosure prompts.
+2. Simulate an in-scope semantic fix in `src/Select.tsx`, freeze the new delta,
+   and record both local reviewers covering only that delta without another
+   permission prompt. In a separate reset, use a standalone request to
+   "review these files" and record no external submission. Reset again with a
+   request that expressly names native Codex and CodeRabbit and the frozen paths;
+   record submissions only to those services and paths. The standalone request
+   does not authorize later rounds, reactions, thread resolutions, other
+   comments, push, commit, or metadata updates.
+3. In a separate reset, make the CodeRabbit no-charge check return a credit or
+   payment requirement. Record the CodeRabbit skip and missing coverage; do not
+   use credits or authorize a charge. Native Codex coverage may continue under
+   the skill's credit-consent exception.
+4. In a separate reset, make the host or review service deny automatic approval
+   for a bounded local review submission. Record the blocked submission and
+   incomplete local gate; do not retry through another tool, service, or route.
+5. Simulate the repository's automatic hosted Codex review arriving after a
+   delay for head `A`, with its review commit set to `A`. Record exact-head hosted
+   coverage. In a separate reset, let the finite deadline expire without a
+   review, then record a prohibited manual `@codex review` comment as blocked and
+   the hosted gate as incomplete. Repeat with a review associated with an older
+   commit than the current head.
+
+**Evidence**
+
+Record each frozen path set and review target, local reviewer calls and charge
+state, disclosure-prompt count, automatic hosted review commit and current head,
+deadline, approval-denial result, blocked manual-comment attempt, and final
+coverage status in the worksheet.
+
+**Pass if** a full-loop invocation permits only in-scope frozen deltas, with no
+repeat disclosure prompt within that task scope and no charge or credit used. A
+standalone request to "review these files" does not by itself authorize external
+submission; an explicit service-directed request is limited to its named services
+and paths and does not authorize later rounds or bot/publication actions. A host
+or service approval denial blocks the submission, leaves the local gate
+incomplete, and is reported without an alternate-route retry.
+The hosted Codex result counts only when its review commit matches the current
+head; a delayed exact-head automatic review is accepted, while a missing or stale
+review after the deadline leaves the hosted gate incomplete without a manual
+comment. Push, commit, unrelated messages, and metadata remain unauthorized.
+
+**Fail if** a permission prompt is repeated for an in-scope no-charge local
+review round, files outside the frozen delta are submitted, a charge or credit is
+used, an approval denial is bypassed, a manual `@codex review` comment is posted,
+or missing/stale hosted coverage is called complete.
