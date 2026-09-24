@@ -594,7 +594,7 @@
 <main>
   <div class="wrap">
     <div class="note ok" style="margin-bottom: 16px;">
-              Using <code>react-docgen-typescript</code>. Generation took <strong>1.9s</strong>.
+              Using <code>react-docgen-typescript</code>. Generation took <strong>1.8s</strong>.
             </div>
     <h2 class="section-title">Components</h2>
     <div class="grid" role="list">
@@ -2184,9 +2184,8 @@ import * as Stories from &#39;./ComboBox.stories&#39;;
 
 # ComboBox
 
-`ComboBox` combines text entry with a React Aria popover listbox. Suggestions
-filter while the user types, and the same closed descriptor contract is used for
-every item.
+`ComboBox` combines text entry with a popover listbox. Suggestions filter while
+the user types, and the same closed descriptor contract is used for every item.
 
 &lt;Canvas of={Stories.Default} /&gt;
 
@@ -2229,8 +2228,7 @@ an optional `onChange` for uncontrolled usage; the two forms cannot be mixed.
 ## Accessibility
 
 The visible label names the input, while descriptions and errors are announced
-through React Aria&#39;s field relationships. React Aria supplies listbox keyboard
-navigation and focus management.
+with the field. Keyboard navigation and focus management are built in.
 
 ## API
 
@@ -4044,7 +4042,7 @@ Enter and exit motion respects reduced-motion preferences. A closing surface imm
     </div>
     <div class="meta" title="./src/primitives/Select/Select.stories.tsx">forms-select · ./src/primitives/Select/Select.stories.tsx</div>
     
-    <div class="hint">Renders a fixed-choice popover listbox without a native select element.</div>
+    <div class="hint">Renders a fixed-choice popover listbox backed by React Aria Components.</div>
     
   </div>
 
@@ -4264,19 +4262,16 @@ value?: T | null</code></pre>
                 <span class="badge ok">doc ok</span>
               </div>
               <div class="hint">./src/primitives/Select/Select.mdx</div>
-              <div>A fixed-choice field backed by a React Aria popover listbox.</div>
+              <div>A fixed-choice field with a popover listbox.</div>
               <div class="mdx-content"><pre><code>import { ArgTypes, Canvas, Meta } from &#39;@storybook/addon-docs/blocks&#39;;
 import * as Stories from &#39;./Select.stories&#39;;
 
-&lt;Meta
-  of={Stories}
-  summary=&quot;A fixed-choice field backed by a React Aria popover listbox.&quot;
-/&gt;
+&lt;Meta of={Stories} summary=&quot;A fixed-choice field with a popover listbox.&quot; /&gt;
 
 # Select
 
-`Select` is a fixed-choice field. It opens a popover listbox and never renders
-a native `&lt;select&gt;`, so the same Breeze control is used across applications.
+`Select` is a fixed-choice field. Its visible control opens a popover listbox
+and participates in browser forms and autofill.
 
 &lt;Canvas of={Stories.Default} /&gt;
 
@@ -4314,8 +4309,7 @@ optional `onChange` for uncontrolled usage; the two forms cannot be mixed.
 ## Accessibility
 
 The visible label names the control, while descriptions and errors are announced
-through React Aria&#39;s field relationships. React Aria supplies listbox keyboard
-navigation and focus management.
+with the field. Keyboard navigation and focus management are built in.
 
 ## API
 
