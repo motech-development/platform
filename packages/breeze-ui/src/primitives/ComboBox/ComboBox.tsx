@@ -83,6 +83,9 @@ interface ComboBoxCommonProps<T> {
 /** The application value emitted by a ComboBox. */
 type ComboBoxValue<T> = T | string | null;
 
+/** The optional value accepted while deriving ComboBox state. */
+type ComboBoxInputValue<T> = ComboBoxValue<T> | undefined;
+
 interface ControlledComboBoxProps<Value> {
   /** Current selected item or free-text value. */
   value: Value;
@@ -140,7 +143,7 @@ function findItem<T>(
 }
 
 function resolveCollectionKey<T>(
-  value: T | string | null | undefined,
+  value: ComboBoxInputValue<T>,
   item: ComboBoxItem<T> | undefined,
   getItem: (item: T) => ItemDescriptor,
   allowsCustomValue: boolean,
@@ -157,7 +160,7 @@ function resolveCollectionKey<T>(
 }
 
 function resolveControlledInputValue<T>(
-  value: T | string | null | undefined,
+  value: ComboBoxInputValue<T>,
   selectedItem: ComboBoxItem<T> | undefined,
   allowsCustomValue: boolean,
 ) {
@@ -167,7 +170,7 @@ function resolveControlledInputValue<T>(
 }
 
 function resolveDefaultCustomValue<T>(
-  defaultValue: T | string | null | undefined,
+  defaultValue: ComboBoxInputValue<T>,
   defaultItem: ComboBoxItem<T> | undefined,
   allowsCustomValue: boolean,
 ) {
@@ -290,7 +293,7 @@ function ComboBoxBase<T>({ props }: Readonly<{ props: ComboBoxProps<T> }>) {
       ? findItem(value as T, decoratedItems, getItem, allowsCustomValue)
       : undefined;
   const selectedKey = resolveCollectionKey(
-    value as T | string | null | undefined,
+    value as ComboBoxInputValue<T>,
     selectedItem,
     getItem,
     allowsCustomValue,
@@ -300,18 +303,18 @@ function ComboBoxBase<T>({ props }: Readonly<{ props: ComboBoxProps<T> }>) {
       ? findItem(defaultValue as T, decoratedItems, getItem, allowsCustomValue)
       : undefined;
   const defaultSelectedKey = resolveCollectionKey(
-    defaultValue as T | string | null | undefined,
+    defaultValue as ComboBoxInputValue<T>,
     defaultItem,
     getItem,
     allowsCustomValue,
   );
   const controlledInputValue = resolveControlledInputValue(
-    value as T | string | null | undefined,
+    value as ComboBoxInputValue<T>,
     selectedItem,
     allowsCustomValue,
   );
   const defaultCustomValue = resolveDefaultCustomValue(
-    defaultValue as T | string | null | undefined,
+    defaultValue as ComboBoxInputValue<T>,
     defaultItem,
     allowsCustomValue,
   );
