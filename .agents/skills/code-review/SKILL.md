@@ -31,9 +31,9 @@ Use applicable repository guidance, including shared code-style guidance and the
 ## Review and report
 
 For a small change, delegate one `standards_reviewer` agent configured as
-`gpt-5.6-luna` with `high` reasoning effort to cover both Standards and Spec.
+`gpt-6-luna` with `high` reasoning effort to cover both Standards and Spec.
 For a substantial change where independent passes add value, delegate these
-two named agents in parallel, each configured as `gpt-5.6-luna` with `high`
+two named agents in parallel, each configured as `gpt-6-luna` with `high`
 reasoning effort:
 
 - `standards_reviewer`: repository conventions, maintainability, and the

@@ -5,6 +5,18 @@ Use the installed CodeRabbit CLI alongside native Codex. Check `coderabbit
 Do not install, upgrade, switch accounts, or change billing merely to get a review
 through. Local help takes precedence over examples for a different CLI version.
 
+Run the CLI from the trusted review environment where the host credentials are
+available. The credentialless execution sandbox is for PR-controlled tests and
+hooks; it is not authoritative for reviewer authentication. If a review launched
+in that sandbox reports an authentication or missing-session error, record the
+command, environment, and sanitized diagnostic, then make exactly one normal
+outside-sandbox escalation retry. Do not call the account unauthenticated before
+that retry. After the retry, distinguish the outcomes: a host success means the
+sandbox was isolated from credentials; a host authentication failure means the
+account or host session is genuinely unauthenticated; a different host failure is
+an access or service blocker. Do not repeat the escalation or move PR-controlled
+execution into the trusted review environment.
+
 ## Establish the no-charge boundary
 
 Before starting, inspect authentication and read-only usage information with
@@ -60,6 +72,15 @@ and `--type uncommitted` instead. Never use `--show-prompts` as a fresh review.
 Do not automatically enable `--light`: preserve the selected review depth unless
 the user requests a lighter CodeRabbit review. Codex's high reasoning effort does
 not imply an equivalent CodeRabbit setting.
+
+For every incremental review of tracked edits, use `--uncommitted`. Add
+`--include-untracked` only when the frozen delta contains untracked files and the
+CLI supports that selector. Before triage, verify the structured result's
+`reviewType` identifies an uncommitted review and its `reviewedFiles` set matches
+the frozen intended paths and additions exactly. Record the snapshot and emitted
+file list in the batch ledger. A full-branch or mismatched-file result is out of
+scope evidence: discard it, do not act on its findings, correct the selector or
+isolated baseline, and run a fresh review for the intended delta.
 
 For later uncommitted passes, or unrelated local edits, use an isolated temporary
 Git checkout with the previous reviewed source snapshot as its baseline and only

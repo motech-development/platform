@@ -4,15 +4,19 @@ Read before starting local review or fixing findings. The [main skill](../SKILL.
 
 ## Fix, verify, review
 
-This is an inner loop that must finish before any push: **review in parallel →
-wait for both → assess and fix → validate → review in parallel again**. Repeat
-until both local reviewers are clear. Handling one round's findings does not
-complete this gate; every resulting fix must go through the next local round.
+This is a validation gate after a concrete implementation or remediation delta
+exists. Initial hosted feedback is collected and triaged separately; local
+reviewers are not reconnaissance. For each accepted change, the gate is:
+**validate → freeze the delta → review in parallel → wait for both → assess and
+fix → validate → review in parallel again**. Repeat until both local reviewers
+are clear. Handling one round's findings does not complete this gate; every
+resulting fix must go through the next local round.
 
-1. Capture the starting revision and affected paths. When a valid in-scope
-   finding needs a fix, the parent orchestrator records it and delegates the
-   smallest durable edit-and-test assignment to an `implementer` configured as
-   `gpt-5.6-luna` with `max` reasoning effort. Give it the finding, scope
+1. Capture the starting revision and affected paths after the accepted change
+   exists. If there is no concrete delta, do not launch either local reviewer.
+   When a valid in-scope finding needs a fix, the parent orchestrator records it
+   and delegates the smallest durable edit-and-test assignment to an `implementer` configured as
+   `gpt-6-luna` with `max` reasoning effort. Give it the finding, scope
    record, affected paths, and targeted checks. Independent assignments may run
    in parallel when their paths do not overlap. The implementer may edit and
    test the assigned paths, but must not delegate, review, commit, push, or
@@ -20,16 +24,19 @@ complete this gate; every resulting fix must go through the next local round.
    changes, add a regression through the existing test setup and demonstrate
    the failure before the fix when practical. Do not introduce testing
    infrastructure merely to satisfy a review comment.
-   On the first invocation, reuse recorded local review coverage when available.
-   Otherwise review the requested change set once to establish that coverage,
-   even if no feedback fix was needed; subsequent rounds cover only new edits.
+   On each invocation, reuse recorded local review coverage when available and
+   review only the newly frozen delta. Never create a reconnaissance review just
+   because a hosted batch had no findings.
 2. Run the affected tests and proportionate formatting, lint, type, and build
    checks under `AGENTS.md`. Inspect the final diff. Do not repeat passing checks
    unless a new change, failure, or required gate justifies it.
    Tests must establish behavior or a regression; do not add tests that merely
-   restate a style edit. The fixing agent owns validation, so neither reviewer
-   needs to rerun the supplied passing checks.
-3. Run **one native Codex review with `gpt-5.6-luna` at `high` effort and one
+   restate a style edit. If hooks produce formatter-only output and the semantic
+   snapshot is unchanged, rerun the formatter, lint, tests, and hooks and retain
+   the existing semantic review; do not launch another full model pass. The fixing
+   agent owns validation, so neither reviewer needs to rerun the supplied passing
+   checks.
+3. Run **one native Codex review with `gpt-6-luna` at `high` effort and one
    CodeRabbit CLI review of the same new delta**. Follow
    [native-review.md](native-review.md) and
    [coderabbit-cli.md](coderabbit-cli.md). After preparing both inputs
@@ -39,7 +46,10 @@ complete this gate; every resulting fix must go through the next local round.
    tools cannot run them concurrently, report the limitation instead of silently
    changing this requirement. Freeze the snapshot throughout the round, including
    any CodeRabbit cooldown. Provide validation and scope instructions through
-   each tool's supported interface.
+   each tool's supported interface. For an incremental CodeRabbit run, verify its
+   emitted `reviewType` and `reviewedFiles` against this frozen delta before using
+   any finding; discard an incorrectly scoped result and rerun with the corrected
+   selector.
 4. **Wait for both final reports before triaging findings or making any fixes
    from the round.** Operational checks for progress, failure, cooldown, or paid
    continuation are allowed while waiting. Store the faster reviewer's result;
