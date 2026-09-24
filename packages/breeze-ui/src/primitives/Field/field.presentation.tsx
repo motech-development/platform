@@ -1,3 +1,4 @@
+import type { MouseEventHandler } from 'react';
 import { FieldError as AriaFieldError } from 'react-aria-components/FieldError';
 import { Label as AriaLabel } from 'react-aria-components/Label';
 import { Text as AriaText } from 'react-aria-components/Text';
@@ -9,6 +10,7 @@ interface FieldLabelProps {
   id?: string;
   label: string;
   loading: boolean;
+  onClick?: MouseEventHandler<HTMLLabelElement>;
 }
 
 export function FieldLabel({
@@ -16,9 +18,15 @@ export function FieldLabel({
   id,
   label,
   loading,
+  onClick,
 }: Readonly<FieldLabelProps>) {
   return (
-    <AriaLabel className={fieldVariants.base.label} htmlFor={htmlFor} id={id}>
+    <AriaLabel
+      className={fieldVariants.base.label}
+      htmlFor={htmlFor}
+      id={id}
+      onClick={onClick}
+    >
       {loading ? (
         <Skeleton blockSize="1lh" inlineSize="12em" shape="rectangle" />
       ) : (
