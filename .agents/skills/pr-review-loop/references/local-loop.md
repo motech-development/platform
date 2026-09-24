@@ -24,8 +24,11 @@ resulting fix must go through the next local round.
    changes, add a regression through the existing test setup and demonstrate
    the failure before the fix when practical. Do not introduce testing
    infrastructure merely to satisfy a review comment.
-   On each invocation, reuse recorded local review coverage when available and
-   review only the newly frozen delta. Never create a reconnaissance review just
+   If no prior local review coverage exists, review the concrete user-requested
+   PR delta even when the hosted batch has no findings. This is an initial
+   validation review, not reconnaissance: do not start either reviewer before a
+   concrete delta exists. On later invocations, reuse recorded coverage and
+   review only the newly frozen delta. Do not repeat an unchanged review merely
    because a hosted batch had no findings.
 2. Run the affected tests and proportionate formatting, lint, type, and build
    checks under `AGENTS.md`. Inspect the final diff. Do not repeat passing checks

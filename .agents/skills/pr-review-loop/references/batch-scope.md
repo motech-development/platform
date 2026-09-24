@@ -57,22 +57,29 @@ Before accepting a finding, require one of these traces:
 
 - the original issue or acceptance criterion;
 - an explicit user amendment;
-- an existing public contract; or
-- a reproducible regression in supported behavior.
+- an existing public contract;
+- a reproducible regression in supported behavior;
+- for a standards-only finding in changed code, applicable repository guidance,
+  with the specific guidance and violation identified; or
+- a demonstrable correctness or security defect introduced by the delta.
 
-Record the trace and reproduction in the ledger. A plausible edge case without a
-trace is outside the current contract until the user amends it. Deduplicate it
-against an existing behavior theme instead of reopening a rejected finding under
-new wording.
+Record the trace and reproduction in the ledger. These traces do not authorize
+speculative enhancements or unrelated scope expansion. A plausible edge case
+without a trace is outside the current contract until the user amends it.
+Deduplicate it against an existing behavior theme instead of reopening a rejected
+finding under new wording.
 
-For component work, record a supported, excluded, or unresolved matrix before
-triage covering controlled and uncontrolled values, loading defaults, unavailable
-and custom values, form submission and reset cancellation, late-mounted forms,
-autofill replacements, disabled, and read-only behavior. Treat dynamic off-list
-values, custom-value provenance, draft reconciliation, and object identity as the
-same theme when they express the same contract question. Do not infer that a
-visual phrase such as “no native select” prohibits an accessible native control
-internally; classify the requirement using evidence before changing the design.
+For component work involving value, state, or form behavior, record the
+applicable concerns before triage: controlled and uncontrolled values, loading
+defaults, unavailable and custom values, form submission and reset cancellation,
+late-mounted forms, autofill replacements, disabled, and read-only behavior.
+Mark each applicable concern supported, excluded, or unresolved; mark concerns
+that do not apply as not applicable. Do not require this matrix for unrelated
+presentational components. Treat dynamic off-list values, custom-value
+provenance, draft reconciliation, and object identity as the same theme when they
+express the same contract question. Do not infer that a visual phrase such as “no
+native select” prohibits an accessible native control internally; classify the
+requirement using evidence before changing the design.
 
 When the outcome is simplification, record whether each proposed fix adds state
 reconciliation, effects, refs, event coordination, dependencies, or public
