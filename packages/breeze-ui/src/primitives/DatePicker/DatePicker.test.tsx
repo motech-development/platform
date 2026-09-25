@@ -49,6 +49,7 @@ describe('DatePicker', () => {
 
     expect(trigger).toHaveAttribute('aria-haspopup', 'dialog');
     expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    expect(trigger).not.toHaveAttribute('aria-controls');
     expect(trigger).toHaveTextContent('3 September 2026');
     expect(trigger.lastElementChild?.tagName.toLowerCase()).toBe('svg');
     expect(
@@ -178,6 +179,7 @@ describe('DatePicker', () => {
     expect(loadingTrigger).toHaveAttribute('aria-busy', 'true');
     expect(loadingTrigger).toHaveAccessibleName('Date');
     expect(loadingTrigger).not.toHaveAttribute('aria-labelledby');
+    expect(loadingTrigger).not.toHaveAttribute('aria-controls');
     expect(loadingTrigger).not.toHaveAttribute('aria-invalid');
     expect(loadingTrigger).not.toHaveAttribute('aria-errormessage');
     expect(
@@ -639,6 +641,7 @@ describe('DatePicker', () => {
     );
 
     expect(onChange).toHaveBeenLastCalledWith('2026-09-12');
+    expect(trigger).not.toHaveAttribute('aria-controls');
     expect(
       screen.getByRole('button', { name: 'Date 12 September 2026' }),
     ).toBeInTheDocument();

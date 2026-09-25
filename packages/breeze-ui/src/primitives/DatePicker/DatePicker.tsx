@@ -339,7 +339,7 @@ export function DatePicker({
             createElement('button', {
               ...buttonProps,
               'aria-busy': loading || undefined,
-              'aria-controls': dialogId,
+              'aria-controls': visibleOpen ? dialogId : undefined,
               'aria-describedby': describedBy,
               'aria-errormessage': !loading ? errorId : undefined,
               'aria-expanded': visibleOpen,
