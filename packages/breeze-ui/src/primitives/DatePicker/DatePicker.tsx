@@ -12,6 +12,7 @@ import {
 } from '../Field/field.presentation';
 import { fieldVariants, joinClassNames } from '../Field/field.styles';
 import { Icon } from '../Icon/Icon';
+import { Skeleton } from '../Skeleton/Skeleton';
 import type { IsoCalendarDate } from '../Typography/Typography';
 import { Typography } from '../Typography/Typography';
 
@@ -30,7 +31,7 @@ const datePickerVariants = {
 } as const;
 
 interface DatePickerCommonProps {
-  /** Focuses the trigger when the component is mounted. */
+  /** Focuses the trigger when it first becomes enabled. */
   autoFocus?: boolean;
   /** Prevents opening and selecting. Defaults to `false`. */
   disabled?: boolean;
@@ -44,6 +45,8 @@ interface DatePickerCommonProps {
   id?: string;
   /** Accessible field label. */
   label: string;
+  /** Replaces the field with a shape-preserving loading presentation. */
+  loading?: boolean;
   /** Submitted field name. */
   name?: string;
   /** Temporary text shown before a date is selected. */
@@ -214,6 +217,7 @@ export function DatePicker({
   form,
   id,
   label,
+  loading = false,
   name,
   onChange,
   placeholder,
@@ -226,7 +230,8 @@ export function DatePicker({
     placeholder === undefined ? getMessageLocale('selectDate') : undefined;
   const visibleDescription = description?.trim() || undefined;
   const visibleError = error?.trim() || undefined;
-  const isInvalid = visibleError !== undefined;
+  const interactionDisabled = disabled || loading;
+  const isInvalid = !loading && visibleError !== undefined;
   const fieldId = useId();
   const labelId = `${fieldId}-label`;
   const valueId = `${fieldId}-value`;
@@ -238,12 +243,15 @@ export function DatePicker({
   const requiredId = required ? `${fieldId}-required` : undefined;
   const triggerId = id ?? `${fieldId}-trigger`;
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const hasAutoFocused = useRef(false);
   const [uncontrolledValue, setUncontrolledValue] = useState(defaultValue);
   const [isOpen, setIsOpen] = useState(false);
   const [calendarKey, setCalendarKey] = useState(0);
   const selectedValue = value === undefined ? uncontrolledValue : value;
   const describedBy =
-    [descriptionId, errorId, requiredId].filter(Boolean).join(' ') || undefined;
+    [descriptionId, !loading ? errorId : undefined, requiredId]
+      .filter(Boolean)
+      .join(' ') || undefined;
 
   useEffect(() => {
     if (value !== undefined) return undefined;
@@ -266,18 +274,32 @@ export function DatePicker({
   }, [defaultValue, value]);
 
   useEffect(() => {
-    if (disabled && isOpen) {
+    if (interactionDisabled && isOpen) {
       setIsOpen(false);
     }
-  }, [disabled, isOpen]);
+  }, [interactionDisabled, isOpen]);
+
+  useEffect(() => {
+    if (!autoFocus || interactionDisabled || hasAutoFocused.current) return;
+
+    const trigger = triggerRef.current;
+
+    if (!trigger) return;
+
+    trigger.focus();
+    hasAutoFocused.current = true;
+  }, [autoFocus, interactionDisabled]);
 
   const handleOpenChange = (open: boolean) => {
+    if (open && interactionDisabled) return;
+
     if (open && !isOpen) {
       setCalendarKey((currentKey) => currentKey + 1);
     }
 
     setIsOpen(open);
   };
+  const visibleOpen = isOpen && !interactionDisabled;
   const handleDateChange = (date: CalendarDate | null) => {
     if (!date) return;
 
@@ -300,46 +322,60 @@ export function DatePicker({
         htmlFor={triggerId}
         id={labelId}
         label={label}
-        loading={false}
+        loading={loading}
         onClick={() => triggerRef.current?.focus()}
       />
-      <AriaButton
-        autoFocus={autoFocus}
-        className={joinClassNames(
-          datePickerVariants.base.trigger,
-          isInvalid && 'breeze:border-breeze-danger',
+      <span className={fieldVariants.base.control}>
+        <AriaButton
+          className={joinClassNames(
+            datePickerVariants.base.trigger,
+            isInvalid && 'breeze:border-breeze-danger',
+            loading && 'breeze:!opacity-0',
+          )}
+          isDisabled={interactionDisabled}
+          onPress={() => handleOpenChange(!visibleOpen)}
+          ref={triggerRef}
+          render={(buttonProps) =>
+            createElement('button', {
+              ...buttonProps,
+              'aria-busy': loading || undefined,
+              'aria-controls': dialogId,
+              'aria-describedby': describedBy,
+              'aria-errormessage': !loading ? errorId : undefined,
+              'aria-expanded': visibleOpen,
+              'aria-haspopup': 'dialog',
+              'aria-invalid': isInvalid || undefined,
+              'aria-label': loading ? label : undefined,
+              'aria-labelledby': !loading ? `${labelId} ${valueId}` : undefined,
+              'data-invalid': isInvalid || undefined,
+              form,
+              id: triggerId,
+              type: 'button',
+            })
+          }
+        >
+          <DatePickerTriggerValue
+            placeholder={placeholderText}
+            placeholderLocale={placeholderLocale}
+            value={selectedValue}
+            valueId={valueId}
+          />
+          <Icon name="calendar" size="sm" />
+        </AriaButton>
+        {loading && (
+          <span className={fieldVariants.base.skeleton}>
+            <Skeleton
+              blockSize="100%"
+              inlineSize="100%"
+              label={messages.loading}
+              shape="rectangle"
+            />
+          </span>
         )}
-        isDisabled={disabled}
-        onPress={() => handleOpenChange(!isOpen)}
-        ref={triggerRef}
-        render={(buttonProps) =>
-          createElement('button', {
-            ...buttonProps,
-            'aria-controls': dialogId,
-            'aria-describedby': describedBy,
-            'aria-errormessage': errorId,
-            'aria-expanded': isOpen,
-            'aria-haspopup': 'dialog',
-            'aria-invalid': isInvalid || undefined,
-            'aria-labelledby': `${labelId} ${valueId}`,
-            'data-invalid': isInvalid || undefined,
-            form,
-            id: triggerId,
-            type: 'button',
-          })
-        }
-      >
-        <DatePickerTriggerValue
-          placeholder={placeholderText}
-          placeholderLocale={placeholderLocale}
-          value={selectedValue}
-          valueId={valueId}
-        />
-        <Icon name="calendar" size="sm" />
-      </AriaButton>
+      </span>
       {name && (
         <input
-          disabled={disabled}
+          disabled={interactionDisabled}
           form={form}
           name={name}
           type="hidden"
@@ -358,8 +394,8 @@ export function DatePicker({
       <DatePickerPopover
         calendarKey={calendarKey}
         dialogId={dialogId}
-        disabled={disabled}
-        isOpen={isOpen}
+        disabled={interactionDisabled}
+        isOpen={visibleOpen}
         label={label}
         onChange={handleDateChange}
         onOpenChange={handleOpenChange}
@@ -369,11 +405,19 @@ export function DatePicker({
       <FieldSupportingContent
         description={visibleDescription}
         descriptionId={descriptionId}
-        loading={false}
+        loading={loading}
       />
       {visibleError && (
-        <p className={fieldVariants.base.error} id={errorId}>
-          {visibleError}
+        <p
+          aria-hidden={loading || undefined}
+          className={fieldVariants.base.error}
+          id={errorId}
+        >
+          {loading ? (
+            <Skeleton blockSize="1lh" inlineSize="12em" shape="rectangle" />
+          ) : (
+            visibleError
+          )}
         </p>
       )}
     </div>

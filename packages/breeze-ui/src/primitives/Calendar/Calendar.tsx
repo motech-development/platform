@@ -11,8 +11,10 @@ import {
   CalendarHeaderCell as AriaCalendarHeaderCell,
   CalendarHeading as AriaCalendarHeading,
 } from 'react-aria-components/Calendar';
+import { useBreezeContext } from '../../provider/BreezeContext';
 import { joinClassNames } from '../Field/field.styles';
 import { Icon } from '../Icon/Icon';
+import { Skeleton } from '../Skeleton/Skeleton';
 import type { IsoCalendarDate } from '../Typography/Typography';
 
 const calendarVariants = {
@@ -44,6 +46,8 @@ interface CalendarCommonProps {
   autoFocus?: boolean;
   /** Prevents date changes. Defaults to `false`. */
   disabled?: boolean;
+  /** Replaces the calendar with a shape-preserving loading presentation. */
+  loading?: boolean;
   /** Accessible name for the calendar grid. */
   label: string;
 }
@@ -69,6 +73,79 @@ interface UncontrolledCalendarProps {
 /** Props for a controlled or uncontrolled single-date calendar. */
 export type CalendarProps = CalendarCommonProps &
   (ControlledCalendarProps | UncontrolledCalendarProps);
+
+const loadingWeeks = Array.from({ length: 6 }, (_, week) => week);
+const loadingWeekdays = Array.from({ length: 7 }, (_, day) => day);
+
+function CalendarLoading({ label }: Readonly<{ label: string }>) {
+  const { messages } = useBreezeContext();
+
+  return (
+    <div
+      aria-busy="true"
+      aria-label={label}
+      className={calendarVariants.base.root}
+      role="group"
+    >
+      <div className={calendarVariants.base.header}>
+        <span aria-hidden="true" className={calendarVariants.base.navButton}>
+          <Skeleton blockSize="1.25rem" inlineSize="1.25rem" shape="circle" />
+        </span>
+        <span className={calendarVariants.base.heading}>
+          <Skeleton
+            blockSize="1lh"
+            inlineSize="8em"
+            label={messages.loading}
+            shape="rectangle"
+          />
+        </span>
+        <span aria-hidden="true" className={calendarVariants.base.navButton}>
+          <Skeleton blockSize="1.25rem" inlineSize="1.25rem" shape="circle" />
+        </span>
+      </div>
+      <table
+        aria-hidden="true"
+        className={calendarVariants.base.grid}
+        role="presentation"
+      >
+        <thead>
+          <tr>
+            {loadingWeekdays.map((weekday) => (
+              <th
+                className={calendarVariants.base.weekday}
+                key={weekday}
+                scope="col"
+              >
+                <Skeleton
+                  blockSize="1lh"
+                  inlineSize="1.5em"
+                  shape="rectangle"
+                />
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {loadingWeeks.map((week) => (
+            <tr key={week}>
+              {loadingWeekdays.map((weekday) => (
+                <td key={weekday}>
+                  <div className={calendarVariants.base.cell}>
+                    <Skeleton
+                      blockSize="1.5rem"
+                      inlineSize="1.5rem"
+                      shape="circle"
+                    />
+                  </div>
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
 
 export function parseCalendarDate(value: IsoCalendarDate): CalendarDate | null {
   try {
@@ -196,13 +273,22 @@ export function Calendar({
   defaultValue,
   disabled = false,
   label,
+  loading = false,
   onChange,
   value,
 }: Readonly<CalendarProps>) {
+  const [hasCalendarSurface, setHasCalendarSurface] = useState(!loading);
   const selectedValue =
     value === undefined ? undefined : parseCalendarDate(value);
   const initialValue =
     defaultValue === undefined ? undefined : parseCalendarDate(defaultValue);
+  const showLoading = loading || !hasCalendarSurface;
+
+  useEffect(() => {
+    if (!loading) {
+      setHasCalendarSurface(true);
+    }
+  }, [loading]);
 
   const handleChange = (date: CalendarDate | null) => {
     if (date) {
@@ -211,13 +297,25 @@ export function Calendar({
   };
 
   return (
-    <CalendarSurface
-      autoFocus={autoFocus}
-      defaultValue={initialValue}
-      disabled={disabled}
-      label={label}
-      onChange={handleChange}
-      value={selectedValue}
-    />
+    <>
+      {showLoading && <CalendarLoading label={label} />}
+      {hasCalendarSurface && (
+        <div
+          aria-hidden={showLoading || undefined}
+          className={showLoading ? 'breeze:hidden' : 'breeze:contents'}
+          hidden={showLoading || undefined}
+          inert={showLoading || undefined}
+        >
+          <CalendarSurface
+            autoFocus={autoFocus && !showLoading}
+            defaultValue={initialValue}
+            disabled={disabled || showLoading}
+            label={label}
+            onChange={handleChange}
+            value={selectedValue}
+          />
+        </div>
+      )}
+    </>
   );
 }

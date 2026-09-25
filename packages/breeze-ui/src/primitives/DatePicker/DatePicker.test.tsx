@@ -12,6 +12,7 @@ expectTypeOf<DatePickerProps>().not.toHaveProperty('slot');
 expectTypeOf<DatePickerProps['onChange']>().toEqualTypeOf<
   ((value: IsoCalendarDate) => void) | undefined
 >();
+expectTypeOf<DatePickerProps['loading']>().toEqualTypeOf<boolean | undefined>();
 
 const controlledDatePicker = (
   <DatePicker label="Date" onChange={() => undefined} value="2026-09-03" />
@@ -121,6 +122,91 @@ describe('DatePicker', () => {
     expect(trigger).toHaveAttribute('aria-errormessage', error.id);
   });
 
+  it('hides its value and validation while loading, then restores its value', async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn<(value: IsoCalendarDate) => void>();
+    const renderDatePicker = (loading: boolean) => (
+      <form aria-label="Date form">
+        <DatePicker
+          defaultValue="2026-09-03"
+          description="Choose the transaction date."
+          error="Choose a transaction date."
+          label="Date"
+          loading={loading}
+          name="date"
+          onChange={onChange}
+        />
+      </form>
+    );
+    const { rerender } = renderBreeze(renderDatePicker(false));
+    const trigger = screen.getByRole('button', {
+      name: 'Date 3 September 2026',
+    });
+
+    await user.click(trigger);
+    await user.click(
+      within(screen.getByRole('dialog', { name: 'Date' })).getByRole('button', {
+        name: /12 September 2026/,
+      }),
+    );
+    expect(onChange).toHaveBeenLastCalledWith('2026-09-12');
+    expect(trigger).toHaveAccessibleName('Date 12 September 2026');
+    expect(
+      document.querySelector('input[type="hidden"][name="date"]'),
+    ).toHaveValue('2026-09-12');
+    await user.click(trigger);
+
+    rerender(
+      <BreezeProvider locale="en-GB">{renderDatePicker(true)}</BreezeProvider>,
+    );
+
+    const hiddenInput = document.querySelector<HTMLInputElement>(
+      'input[type="hidden"][name="date"]',
+    );
+    const form = document.querySelector<HTMLFormElement>(
+      'form[aria-label="Date form"]',
+    );
+
+    await waitFor(() =>
+      expect(
+        screen.queryByRole('dialog', { name: 'Date' }),
+      ).not.toBeInTheDocument(),
+    );
+    const loadingTrigger = screen.getByRole('button', { name: 'Date' });
+
+    expect(loadingTrigger).toBeDisabled();
+    expect(loadingTrigger).toHaveAttribute('aria-busy', 'true');
+    expect(loadingTrigger).toHaveAccessibleName('Date');
+    expect(loadingTrigger).not.toHaveAttribute('aria-labelledby');
+    expect(loadingTrigger).not.toHaveAttribute('aria-invalid');
+    expect(loadingTrigger).not.toHaveAttribute('aria-errormessage');
+    expect(
+      screen.queryByText('Choose a transaction date.'),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('progressbar', { name: 'Loading' }),
+    ).toBeInTheDocument();
+    expect(hiddenInput).toBeDisabled();
+    expect(hiddenInput).toHaveValue('2026-09-12');
+    expect(form).not.toBeNull();
+    expect(new FormData(form!).get('date')).toBeNull();
+
+    rerender(
+      <BreezeProvider locale="en-GB">{renderDatePicker(false)}</BreezeProvider>,
+    );
+
+    const restoredTrigger = screen.getByRole('button', {
+      name: 'Date 12 September 2026',
+    });
+
+    expect(restoredTrigger).toBeEnabled();
+    expect(restoredTrigger).toHaveAccessibleName('Date 12 September 2026');
+    expect(restoredTrigger).toHaveAttribute('aria-invalid', 'true');
+    expect(hiddenInput).toBeEnabled();
+    expect(hiddenInput).toHaveValue('2026-09-12');
+    expect(new FormData(form!).get('date')).toBe('2026-09-12');
+  });
+
   it('opens from its visible label and focuses the calendar date on keyboard open', async () => {
     const user = userEvent.setup();
 
@@ -142,6 +228,64 @@ describe('DatePicker', () => {
     });
 
     await waitFor(() => expect(selectedDate).toHaveFocus());
+  });
+
+  it('defers trigger autofocus through loading and focuses only once ready', async () => {
+    const renderDatePicker = (loading: boolean) => (
+      <>
+        <DatePicker
+          autoFocus
+          defaultValue="2026-09-03"
+          label="Date"
+          loading={loading}
+        />
+        <button type="button">Other control</button>
+      </>
+    );
+    const { rerender } = renderBreeze(renderDatePicker(true));
+    const otherControl = screen.getByRole('button', { name: 'Other control' });
+
+    expect(screen.getByRole('button', { name: 'Date' })).toBeDisabled();
+    expect(otherControl).not.toHaveFocus();
+
+    rerender(
+      <BreezeProvider locale="en-GB">{renderDatePicker(false)}</BreezeProvider>,
+    );
+
+    const trigger = screen.getByRole('button', {
+      name: 'Date 3 September 2026',
+    });
+
+    await waitFor(() => expect(trigger).toHaveFocus());
+
+    otherControl.focus();
+    rerender(
+      <BreezeProvider locale="en-GB">{renderDatePicker(true)}</BreezeProvider>,
+    );
+    rerender(
+      <BreezeProvider locale="en-GB">{renderDatePicker(false)}</BreezeProvider>,
+    );
+
+    expect(otherControl).toHaveFocus();
+  });
+
+  it('autofocuses an enabled trigger on mount', async () => {
+    renderBreeze(<DatePicker autoFocus label="Date" />);
+
+    await waitFor(() =>
+      expect(
+        screen.getByRole('button', { name: 'Date Select a date' }),
+      ).toHaveFocus(),
+    );
+  });
+
+  it('does not autofocus a disabled trigger', () => {
+    renderBreeze(<DatePicker autoFocus disabled label="Date" />);
+
+    expect(
+      screen.getByRole('button', { name: 'Date Select a date' }),
+    ).toBeDisabled();
+    expect(document.activeElement).toBe(document.body);
   });
 
   it('closes an open calendar when disabled and leaves focus outside the panel', async () => {

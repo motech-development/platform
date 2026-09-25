@@ -1,5 +1,5 @@
 import { getLocalTimeZone, today } from '@internationalized/date';
-import { screen, within } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import renderBreeze from '../../../test/render';
@@ -13,6 +13,7 @@ expectTypeOf<CalendarProps>().not.toHaveProperty('slot');
 expectTypeOf<CalendarProps['onChange']>().toEqualTypeOf<
   ((value: IsoCalendarDate) => void) | undefined
 >();
+expectTypeOf<CalendarProps['loading']>().toEqualTypeOf<boolean | undefined>();
 
 const controlledCalendar = (
   <Calendar label="Choose date" onChange={() => undefined} value="2026-09-03" />
@@ -66,6 +67,130 @@ describe('Calendar', () => {
     expect(
       within(grid).getByRole('button', { name: /Sunday, 7 March 2027/ }),
     ).toHaveAttribute('data-outside-month', 'true');
+  });
+
+  it('preserves its selected date while loading and restores it when ready', async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn<(value: IsoCalendarDate) => void>();
+    const { rerender } = renderBreeze(
+      <Calendar
+        defaultValue="2026-09-03"
+        label="Choose date"
+        onChange={onChange}
+      />,
+    );
+
+    await user.click(
+      screen.getByRole('button', { name: 'Friday, 4 September 2026' }),
+    );
+    expect(onChange).toHaveBeenLastCalledWith('2026-09-04');
+    const septemberCalendar = screen.getByRole('application', {
+      name: /Choose date, September 2026/,
+    });
+    const nextMonthButton = septemberCalendar.querySelector<HTMLButtonElement>(
+      'button[slot="next"]',
+    );
+
+    if (!nextMonthButton) {
+      throw new Error('Expected a next-month calendar button.');
+    }
+
+    await user.click(nextMonthButton);
+    expect(
+      screen.getByRole('application', {
+        name: /Choose date, October 2026/,
+      }),
+    ).toBeInTheDocument();
+
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <Calendar
+          defaultValue="2026-09-03"
+          label="Choose date"
+          loading
+          onChange={onChange}
+        />
+      </BreezeProvider>,
+    );
+
+    const loadingCalendar = screen.getByRole('group', {
+      name: 'Choose date',
+    });
+    const loadingTable = loadingCalendar.querySelector('table');
+
+    expect(loadingCalendar).toHaveAttribute('aria-busy', 'true');
+    expect(
+      screen.getByRole('progressbar', { name: 'Loading' }),
+    ).toBeInTheDocument();
+    expect(loadingTable?.querySelectorAll('tbody tr')).toHaveLength(6);
+    expect(loadingTable?.querySelectorAll('tbody td')).toHaveLength(42);
+    expect(screen.queryByRole('button')).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('application', {
+        name: /Choose date, October 2026/,
+      }),
+    ).not.toBeInTheDocument();
+    expect(onChange).toHaveBeenCalledTimes(1);
+
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <Calendar
+          defaultValue="2026-09-03"
+          label="Choose date"
+          onChange={onChange}
+        />
+      </BreezeProvider>,
+    );
+
+    const octoberCalendar = screen.getByRole('application', {
+      name: /Choose date, October 2026/,
+    });
+    const previousMonthButton =
+      octoberCalendar.querySelector<HTMLButtonElement>(
+        'button[slot="previous"]',
+      );
+
+    expect(octoberCalendar).toBeInTheDocument();
+    if (!previousMonthButton) {
+      throw new Error('Expected a previous-month calendar button.');
+    }
+
+    await user.click(previousMonthButton);
+    expect(
+      within(
+        screen.getByRole('application', {
+          name: /Choose date, September 2026/,
+        }),
+      ).getByRole('button', {
+        name: 'Friday, 4 September 2026 selected',
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it('autofocuses its date after an initially loading state clears', async () => {
+    const { rerender } = renderBreeze(
+      <Calendar
+        autoFocus
+        defaultValue="2026-09-03"
+        label="Choose date"
+        loading
+      />,
+    );
+
+    expect(document.activeElement).toBe(document.body);
+    expect(screen.getByRole('progressbar', { name: 'Loading' })).toBeVisible();
+
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <Calendar autoFocus defaultValue="2026-09-03" label="Choose date" />
+      </BreezeProvider>,
+    );
+
+    const selectedDate = screen.getByRole('button', {
+      name: 'Thursday, 3 September 2026 selected',
+    });
+
+    await waitFor(() => expect(selectedDate).toHaveFocus());
   });
 
   it('follows changed controlled dates but preserves navigation for stable values', async () => {

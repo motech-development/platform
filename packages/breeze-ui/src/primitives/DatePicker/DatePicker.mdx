@@ -14,18 +14,25 @@ trigger. The value and callback use ISO `YYYY-MM-DD` strings.
 
 When the field is empty, `placeholder` overrides the provider's `selectDate`
 message. Without either override, the English fallback is marked `en-GB` for
-assistive technology.
+assistive technology. `loading` replaces the label, trigger and supporting text
+with shape-preserving skeletons, announces the provider loading message, and
+disables interaction and form submission until loading clears. The selected
+value is retained.
 
 <Canvas of={Stories.Default} />
 
 ## States
 
 Use `error` to display validation feedback and `disabled` to prevent interaction.
-The field is required by default and does not provide a clear control.
+Use `loading` while the field's date is unavailable; errors are hidden and an
+open calendar closes while loading. The field is required by default and does
+not provide a clear control.
 
 <Canvas of={Stories.Error} />
 
 <Canvas of={Stories.Disabled} />
+
+<Canvas of={Stories.Loading} />
 
 ## Controlled values
 
