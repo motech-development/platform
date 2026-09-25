@@ -113,17 +113,24 @@ describe('Calendar', () => {
       </BreezeProvider>,
     );
 
-    const loadingCalendar = screen.getByRole('group', {
+    const loadingCalendar = screen.getByRole('region', {
       name: 'Choose date',
     });
-    const loadingTable = loadingCalendar.querySelector('table');
+    const loadingRows = loadingCalendar.lastElementChild?.children;
 
     expect(loadingCalendar).toHaveAttribute('aria-busy', 'true');
     expect(
       screen.getByRole('progressbar', { name: 'Loading' }),
     ).toBeInTheDocument();
-    expect(loadingTable?.querySelectorAll('tbody tr')).toHaveLength(6);
-    expect(loadingTable?.querySelectorAll('tbody td')).toHaveLength(42);
+    expect(loadingRows).toHaveLength(7);
+    expect(
+      Array.from(loadingRows ?? []).every(
+        (row) =>
+          row.children.length === 7 &&
+          row.classList.contains('breeze:grid-cols-7'),
+      ),
+    ).toBe(true);
+    expect(Array.from(loadingRows ?? []).slice(1)).toHaveLength(6);
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
     expect(
       screen.queryByRole('application', {
