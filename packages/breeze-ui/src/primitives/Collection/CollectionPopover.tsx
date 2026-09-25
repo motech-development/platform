@@ -29,6 +29,8 @@ function isNode(value: EventTarget | null): value is Node {
 interface CollectionPopoverProps {
   children: ReactNode;
   className: string;
+  /** Minimum viewport edge margin used while positioning the surface. */
+  containerPadding?: number;
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   triggerRef: RefObject<Element | null>;
@@ -41,6 +43,7 @@ interface CollectionPopoverProps {
 export default function CollectionPopover({
   children,
   className,
+  containerPadding,
   isOpen: requestedOpen,
   onOpenChange,
   triggerRef,
@@ -185,6 +188,7 @@ export default function CollectionPopover({
   return (
     <AriaPopover
       className={`${className} breeze-popover`}
+      containerPadding={containerPadding}
       data-breeze-interactive={layer.interactive}
       data-breeze-overlay="popover"
       data-breeze-topmost={layer.topmost}

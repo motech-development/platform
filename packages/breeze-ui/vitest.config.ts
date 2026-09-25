@@ -48,6 +48,20 @@ export default defineConfig({
           name: 'storybook',
         },
       },
+      {
+        plugins: [react(), tailwindcss()],
+        test: {
+          browser: {
+            enabled: true,
+            headless: true,
+            instances: [{ browser: 'chromium' }],
+            provider: playwright(),
+          },
+          include: ['.storybook/DatePicker.geometry.test.tsx'],
+          name: 'browser-geometry',
+          setupFiles: ['./test/setup.ts'],
+        },
+      },
     ],
   },
 });
