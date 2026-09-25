@@ -29,6 +29,7 @@ import type { IsoCalendarDate } from '../Typography/Typography';
 const calendarVariants = {
   base: {
     cell: 'breeze:grid breeze:min-block-breeze-9 breeze:min-inline-breeze-9 breeze:any-pointer-coarse:min-block-breeze-tap breeze:any-pointer-coarse:min-inline-breeze-tap breeze:place-items-center breeze:rounded-breeze-full breeze:font-breeze-sans breeze:text-breeze-sm breeze:text-breeze-ink breeze:outline-offset-2 breeze:data-[focused]:bg-breeze-sunken breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[hovered]:bg-breeze-sunken breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-50 breeze:data-[outside-month]:text-breeze-ink-3',
+    disabledRoot: 'breeze:pointer-events-none breeze:[&>div:last-child]:hidden',
     grid: 'breeze:w-full breeze:table-fixed breeze:border-separate breeze:border-spacing-1 breeze:any-pointer-coarse:border-spacing-0',
     header:
       'breeze:mb-breeze-2 breeze:flex breeze:min-block-breeze-tap breeze:items-center breeze:justify-between',
@@ -211,6 +212,7 @@ function CalendarContent({ disabled }: Readonly<{ disabled: boolean }>) {
                 createElement('div', {
                   ...props,
                   'aria-disabled': disabled || props['aria-disabled'],
+                  ...(disabled ? { 'data-disabled': true } : {}),
                   tabIndex: disabled ? -1 : props.tabIndex,
                 })
               }
@@ -261,10 +263,10 @@ export function CalendarSurface({
   const calendarOnChange = onChange === undefined ? {} : { onChange };
   const calendarProps = {
     'aria-label': label,
-    autoFocus,
+    autoFocus: autoFocus && !disabled,
     className: joinClassNames(
       calendarVariants.base.root,
-      disabled && 'breeze:pointer-events-none',
+      disabled && calendarVariants.base.disabledRoot,
     ),
     firstDayOfWeek: 'mon' as const,
     isReadOnly: disabled,

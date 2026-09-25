@@ -206,6 +206,7 @@ describe('Calendar', () => {
 
     renderBreeze(
       <Calendar
+        autoFocus
         defaultValue="2026-09-03"
         disabled
         label="Choose date"
@@ -213,32 +214,42 @@ describe('Calendar', () => {
       />,
     );
 
+    expect(document.activeElement).toBe(document.body);
+
     const selectedDate = screen.getByRole('button', {
       name: 'Thursday, 3 September 2026 selected',
     });
     const anotherDate = screen.getByRole('button', {
       name: 'Friday, 4 September 2026',
     });
+    const calendar = screen.getByRole('application');
 
     expect(selectedDate).toHaveAttribute('data-selected', 'true');
+    expect(selectedDate).toHaveAttribute('data-disabled', 'true');
     expect(selectedDate).toHaveClass('breeze:bg-breeze-brand');
-    expect(screen.getByRole('application')).toHaveAttribute(
-      'aria-disabled',
-      'true',
-    );
+    expect(calendar).toHaveAttribute('aria-disabled', 'true');
+    expect(calendar).toHaveClass('breeze:[&>div:last-child]:hidden');
     expect(screen.getByRole('grid')).toHaveAttribute('aria-readonly', 'true');
     expect(selectedDate).toHaveAttribute('aria-disabled', 'true');
     expect(selectedDate).toHaveAttribute('tabindex', '-1');
     expect(anotherDate).toHaveAttribute('aria-disabled', 'true');
-    expect(screen.getByRole('application')).toHaveClass(
-      'breeze:pointer-events-none',
-    );
+    expect(anotherDate).toHaveAttribute('data-disabled', 'true');
+    expect(calendar).toHaveClass('breeze:pointer-events-none');
     expect(
       screen.getByRole('application').querySelector('button[slot="previous"]'),
     ).toBeDisabled();
     expect(
       screen.getByRole('application').querySelector('button[slot="next"]'),
     ).toBeDisabled();
+
+    const hiddenNextButton =
+      calendar.querySelector<HTMLButtonElement>('button:not([slot])');
+
+    if (!hiddenNextButton) {
+      throw new Error('Expected a hidden next-month calendar button.');
+    }
+
+    expect(hiddenNextButton.parentElement).toBe(calendar.lastElementChild);
 
     selectedDate.focus();
     await user.keyboard('{ArrowRight}{Enter}');
