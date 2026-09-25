@@ -200,6 +200,57 @@ describe('Calendar', () => {
     await waitFor(() => expect(selectedDate).toHaveFocus());
   });
 
+  it('keeps the selected date visible and announced while disabled', async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn<(value: IsoCalendarDate) => void>();
+
+    renderBreeze(
+      <Calendar
+        defaultValue="2026-09-03"
+        disabled
+        label="Choose date"
+        onChange={onChange}
+      />,
+    );
+
+    const selectedDate = screen.getByRole('button', {
+      name: 'Thursday, 3 September 2026 selected',
+    });
+    const anotherDate = screen.getByRole('button', {
+      name: 'Friday, 4 September 2026',
+    });
+
+    expect(selectedDate).toHaveAttribute('data-selected', 'true');
+    expect(selectedDate).toHaveClass('breeze:bg-breeze-brand');
+    expect(screen.getByRole('application')).toHaveAttribute(
+      'aria-disabled',
+      'true',
+    );
+    expect(screen.getByRole('grid')).toHaveAttribute('aria-readonly', 'true');
+    expect(selectedDate).toHaveAttribute('aria-disabled', 'true');
+    expect(selectedDate).toHaveAttribute('tabindex', '-1');
+    expect(anotherDate).toHaveAttribute('aria-disabled', 'true');
+    expect(screen.getByRole('application')).toHaveClass(
+      'breeze:pointer-events-none',
+    );
+    expect(
+      screen.getByRole('application').querySelector('button[slot="previous"]'),
+    ).toBeDisabled();
+    expect(
+      screen.getByRole('application').querySelector('button[slot="next"]'),
+    ).toBeDisabled();
+
+    selectedDate.focus();
+    await user.keyboard('{ArrowRight}{Enter}');
+    expect(selectedDate).toHaveFocus();
+    await user.tab();
+    expect(selectedDate).not.toHaveFocus();
+
+    await user.click(anotherDate);
+
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
   it('follows changed controlled dates but preserves navigation for stable values', async () => {
     const user = userEvent.setup();
     const { rerender } = renderBreeze(

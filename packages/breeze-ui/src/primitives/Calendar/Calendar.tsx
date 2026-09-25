@@ -1,6 +1,15 @@
 import type { CalendarDate } from '@internationalized/date';
 import { parseDate } from '@internationalized/date';
-import { createElement, useEffect, useRef, useState } from 'react';
+import {
+  createElement,
+  type FocusEvent as ReactFocusEvent,
+  type JSX as ReactJSX,
+  type KeyboardEvent as ReactKeyboardEvent,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import { Button as AriaButton } from 'react-aria-components/Button';
 import {
   Calendar as AriaCalendar,
@@ -29,8 +38,9 @@ const calendarVariants = {
       'breeze:flex breeze:w-full breeze:flex-col breeze:gap-breeze-1 breeze:any-pointer-coarse:gap-0',
     loadingWeek:
       'breeze:grid breeze:w-full breeze:grid-cols-7 breeze:gap-breeze-1 breeze:any-pointer-coarse:gap-0',
+    loadingWeekday: 'breeze:grid breeze:place-items-center',
     navButton:
-      'breeze:grid breeze:block-size-breeze-8 breeze:inline-size-breeze-8 breeze:place-items-center breeze:rounded-breeze-full breeze:border-0 breeze:bg-transparent breeze:text-breeze-ink-2 breeze:outline-offset-2 breeze:hover:bg-breeze-sunken breeze:focus-visible:outline-2 breeze:focus-visible:outline-solid breeze:focus-visible:outline-breeze-brand breeze:any-pointer-coarse:min-block-breeze-tap breeze:any-pointer-coarse:min-inline-breeze-tap',
+      'breeze:grid breeze:block-size-breeze-8 breeze:inline-size-breeze-8 breeze:place-items-center breeze:rounded-breeze-full breeze:border-0 breeze:bg-transparent breeze:text-breeze-ink-2 breeze:outline-offset-2 breeze:hover:bg-breeze-sunken breeze:focus-visible:outline-2 breeze:focus-visible:outline-solid breeze:focus-visible:outline-breeze-brand breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-50 breeze:any-pointer-coarse:min-block-breeze-tap breeze:any-pointer-coarse:min-inline-breeze-tap',
     root: 'breeze:flex breeze:flex-col breeze:gap-breeze-2 breeze:outline-none',
     selectedCell:
       'breeze:bg-breeze-brand breeze:text-breeze-on-brand breeze:data-[focused]:data-[selected]:bg-breeze-brand breeze:data-[selected]:data-[hovered]:bg-breeze-brand breeze:data-[outside-month]:data-[selected]:text-breeze-on-brand',
@@ -109,7 +119,13 @@ function CalendarLoading({ label }: Readonly<{ label: string }>) {
       <div aria-hidden="true" className={calendarVariants.base.loadingGrid}>
         <div className={calendarVariants.base.loadingWeek}>
           {loadingWeekdays.map((weekday) => (
-            <div className={calendarVariants.base.weekday} key={weekday}>
+            <div
+              className={joinClassNames(
+                calendarVariants.base.weekday,
+                calendarVariants.base.loadingWeekday,
+              )}
+              key={weekday}
+            >
               <Skeleton blockSize="1lh" inlineSize="1.5em" shape="rectangle" />
             </div>
           ))}
@@ -149,15 +165,23 @@ interface CalendarSurfaceProps {
   onChange?: (value: CalendarDate | null) => void;
 }
 
-function CalendarContent() {
+function CalendarContent({ disabled }: Readonly<{ disabled: boolean }>) {
   return (
     <>
       <div className={calendarVariants.base.header}>
-        <AriaButton className={calendarVariants.base.navButton} slot="previous">
+        <AriaButton
+          className={calendarVariants.base.navButton}
+          isDisabled={disabled}
+          slot="previous"
+        >
           <Icon name="back" size="sm" />
         </AriaButton>
         <AriaCalendarHeading className={calendarVariants.base.heading} />
-        <AriaButton className={calendarVariants.base.navButton} slot="next">
+        <AriaButton
+          className={calendarVariants.base.navButton}
+          isDisabled={disabled}
+          slot="next"
+        >
           <Icon name="next" size="sm" />
         </AriaButton>
       </div>
@@ -183,6 +207,13 @@ function CalendarContent() {
                 )
               }
               date={date}
+              render={(props) =>
+                createElement('div', {
+                  ...props,
+                  'aria-disabled': disabled || props['aria-disabled'],
+                  tabIndex: disabled ? -1 : props.tabIndex,
+                })
+              }
             />
           )}
         </AriaCalendarGridBody>
@@ -231,9 +262,25 @@ export function CalendarSurface({
   const calendarProps = {
     'aria-label': label,
     autoFocus,
-    className: calendarVariants.base.root,
+    className: joinClassNames(
+      calendarVariants.base.root,
+      disabled && 'breeze:pointer-events-none',
+    ),
     firstDayOfWeek: 'mon' as const,
-    isDisabled: disabled,
+    isReadOnly: disabled,
+    render: disabled
+      ? (props: ReactJSX.IntrinsicElements['div']) =>
+          createElement('div', {
+            ...props,
+            'aria-disabled': true,
+            onKeyDownCapture: (event: ReactKeyboardEvent<HTMLDivElement>) => {
+              if (event.key === 'Tab') return;
+
+              event.preventDefault();
+              event.stopPropagation();
+            },
+          })
+      : undefined,
     weeksInMonth: 6,
     ...focusProps,
     ...calendarDefaultValue,
@@ -244,7 +291,7 @@ export function CalendarSurface({
   return createElement(
     AriaCalendar<CalendarDate>,
     calendarProps,
-    <CalendarContent />,
+    <CalendarContent disabled={disabled} />,
   );
 }
 
@@ -263,6 +310,9 @@ export function Calendar({
   value,
 }: Readonly<CalendarProps>) {
   const [hasCalendarSurface, setHasCalendarSurface] = useState(!loading);
+  const calendarSurfaceWrapper = useRef<HTMLDivElement>(null);
+  const focusToRestore = useRef<HTMLElement | null>(null);
+  const focusMovedDuringLoading = useRef(false);
   const selectedValue =
     value === undefined ? undefined : parseCalendarDate(value);
   const initialValue =
@@ -274,6 +324,48 @@ export function Calendar({
       setHasCalendarSurface(true);
     }
   }, [loading]);
+
+  useEffect(() => {
+    const handleFocusIn = (event: FocusEvent) => {
+      if (!calendarSurfaceWrapper.current?.contains(event.target as Node)) {
+        focusMovedDuringLoading.current = true;
+      }
+    };
+
+    if (showLoading) document.addEventListener('focusin', handleFocusIn);
+
+    return () => {
+      if (showLoading) document.removeEventListener('focusin', handleFocusIn);
+    };
+  }, [showLoading]);
+
+  useLayoutEffect(() => {
+    if (showLoading) return;
+
+    const target = focusToRestore.current;
+    focusToRestore.current = null;
+
+    if (
+      target &&
+      !disabled &&
+      !focusMovedDuringLoading.current &&
+      target.isConnected &&
+      document.activeElement === document.body
+    ) {
+      target.focus();
+    }
+
+    focusMovedDuringLoading.current = false;
+  }, [disabled, showLoading]);
+
+  const handleBlurCapture = (event: ReactFocusEvent<HTMLDivElement>) => {
+    if (!showLoading || !(event.target instanceof HTMLElement)) return;
+
+    focusToRestore.current = event.target;
+    focusMovedDuringLoading.current =
+      event.relatedTarget instanceof Node &&
+      !calendarSurfaceWrapper.current?.contains(event.relatedTarget);
+  };
 
   const handleChange = (date: CalendarDate | null) => {
     if (date) {
@@ -290,6 +382,8 @@ export function Calendar({
           className={showLoading ? 'breeze:hidden' : 'breeze:contents'}
           hidden={showLoading || undefined}
           inert={showLoading || undefined}
+          onBlurCapture={handleBlurCapture}
+          ref={calendarSurfaceWrapper}
         >
           <CalendarSurface
             autoFocus={autoFocus && !showLoading}

@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { useState } from 'react';
 import { expect, userEvent, waitFor, within } from 'storybook/test';
 import { Calendar } from './Calendar';
 
@@ -93,6 +94,124 @@ export const Loading: Story = {
   args: {
     loading: true,
   },
+};
+
+function CalendarLoadingFocusHarness() {
+  const [loading, setLoading] = useState(false);
+
+  return (
+    <>
+      <button onClick={() => setLoading(true)} type="button">
+        Start loading
+      </button>
+      <button onClick={() => setLoading(false)} type="button">
+        Finish loading
+      </button>
+      <button type="button">Focus elsewhere</button>
+      <Calendar
+        defaultValue="2026-09-03"
+        label="Choose a date"
+        loading={loading}
+      />
+    </>
+  );
+}
+
+function getColumnCenters(container: HTMLElement) {
+  const center = (element: Element) => {
+    const bounds = element.getBoundingClientRect();
+
+    return (bounds.left + bounds.right) / 2;
+  };
+  const grid = container.querySelector('table[role="grid"]');
+
+  if (grid) {
+    const dateRow = grid.querySelector('tbody tr');
+
+    if (!dateRow) throw new Error('Expected a calendar date row.');
+
+    return {
+      dates: Array.from(dateRow.children, center),
+      weekdays: Array.from(grid.querySelectorAll('thead th'), center),
+    };
+  }
+
+  const rows = Array.from(container.lastElementChild?.children ?? []);
+  const weekdayRow = rows[0];
+  const dateRow = rows[1];
+
+  if (!weekdayRow || !dateRow) {
+    throw new Error('Expected weekday and date skeleton rows.');
+  }
+
+  const skeletonCenters = (row: Element) =>
+    Array.from(row.children, (cell) => center(cell.firstElementChild ?? cell));
+
+  return {
+    dates: skeletonCenters(dateRow),
+    weekdays: skeletonCenters(weekdayRow),
+  };
+}
+
+/** Keeps loading columns aligned and focus stable as the Calendar becomes ready. */
+export const LoadingFocusManagement: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const readyColumnCenters = getColumnCenters(
+      canvas.getByRole('application'),
+    );
+    const selectedDate = canvas.getByRole('button', {
+      name: 'Thursday, 3 September 2026 selected',
+    });
+    const startLoadingButton = canvas.getByRole('button', {
+      name: 'Start loading',
+    });
+    const finishLoadingButton = canvas.getByRole('button', {
+      name: 'Finish loading',
+    });
+    const outsideButton = canvas.getByRole('button', {
+      name: 'Focus elsewhere',
+    });
+
+    selectedDate.focus();
+    await expect(selectedDate).toHaveFocus();
+    startLoadingButton.click();
+    const loadingProgress = await canvas.findByRole('progressbar', {
+      name: 'Loading',
+    });
+    await expect(loadingProgress).toBeVisible();
+    const loadingRegion = canvas.getByRole('region', {
+      name: 'Choose a date',
+    });
+    const loadingColumnCenters = getColumnCenters(loadingRegion);
+    const maximumColumnOffset = Math.max(
+      ...readyColumnCenters.weekdays.map((readyCenter, index) =>
+        Math.abs(readyCenter - loadingColumnCenters.weekdays[index]),
+      ),
+      ...readyColumnCenters.dates.map((readyCenter, index) =>
+        Math.abs(readyCenter - loadingColumnCenters.dates[index]),
+      ),
+    );
+
+    await expect(maximumColumnOffset).toBeLessThanOrEqual(4);
+    finishLoadingButton.click();
+    await waitFor(() => expect(selectedDate).toHaveFocus());
+
+    startLoadingButton.click();
+    await canvas.findByRole('progressbar', { name: 'Loading' });
+    outsideButton.focus();
+    outsideButton.blur();
+    finishLoadingButton.click();
+    await waitFor(() =>
+      expect(
+        canvas.queryByRole('progressbar', { name: 'Loading' }),
+      ).not.toBeInTheDocument(),
+    );
+
+    const storyDocument = canvasElement.ownerDocument;
+    await expect(storyDocument.activeElement).toBe(storyDocument.body);
+  },
+  render: () => <CalendarLoadingFocusHarness />,
 };
 
 /** A selected date keeps accessible contrast in the light appearance. */
