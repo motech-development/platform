@@ -57,8 +57,11 @@ export default defineConfig({
             instances: [{ browser: 'chromium' }],
             provider: playwright(),
           },
-          include: ['.storybook/DatePicker.geometry.test.tsx'],
-          name: 'browser-geometry',
+          include: [
+            '.storybook/Calendar.contrast.test.tsx',
+            '.storybook/DatePicker.geometry.test.tsx',
+          ],
+          name: 'browser-regressions',
           setupFiles: ['./test/setup.ts'],
         },
       },

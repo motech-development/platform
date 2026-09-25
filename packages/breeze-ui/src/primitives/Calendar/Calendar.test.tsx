@@ -41,9 +41,8 @@ describe('Calendar', () => {
       name: /Choose date, March 2026/,
     });
     const grid = within(calendar).getByRole('grid');
-    const rows = within(grid).getAllByRole('row');
 
-    expect(rows).toHaveLength(6);
+    expect(grid.querySelectorAll('tbody tr')).toHaveLength(6);
     expect(
       Array.from(grid.querySelectorAll('thead th')).map(
         (cell) => cell.textContent,
@@ -51,6 +50,20 @@ describe('Calendar', () => {
     ).toEqual(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']);
     expect(
       within(calendar).getByRole('button', { name: /23 February 2026/ }),
+    ).toHaveAttribute('data-outside-month', 'true');
+  });
+
+  it('renders six rows for February 2027', () => {
+    renderBreeze(<Calendar defaultValue="2027-02-01" label="Choose date" />);
+
+    const calendar = screen.getByRole('application', {
+      name: /Choose date, February 2027/,
+    });
+    const grid = within(calendar).getByRole('grid');
+
+    expect(grid.querySelectorAll('tbody tr')).toHaveLength(6);
+    expect(
+      within(grid).getByRole('button', { name: /Sunday, 7 March 2027/ }),
     ).toHaveAttribute('data-outside-month', 'true');
   });
 
