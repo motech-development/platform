@@ -25,6 +25,10 @@ const calendarVariants = {
       'breeze:mb-breeze-2 breeze:flex breeze:min-block-breeze-tap breeze:items-center breeze:justify-between',
     heading:
       'breeze:m-0 breeze:font-breeze-sans breeze:text-breeze-sm breeze:font-semibold breeze:text-breeze-ink',
+    loadingGrid:
+      'breeze:flex breeze:w-full breeze:flex-col breeze:gap-breeze-1 breeze:any-pointer-coarse:gap-0',
+    loadingWeek:
+      'breeze:grid breeze:w-full breeze:grid-cols-7 breeze:gap-breeze-1 breeze:any-pointer-coarse:gap-0',
     navButton:
       'breeze:grid breeze:block-size-breeze-8 breeze:inline-size-breeze-8 breeze:place-items-center breeze:rounded-breeze-full breeze:border-0 breeze:bg-transparent breeze:text-breeze-ink-2 breeze:outline-offset-2 breeze:hover:bg-breeze-sunken breeze:focus-visible:outline-2 breeze:focus-visible:outline-solid breeze:focus-visible:outline-breeze-brand breeze:any-pointer-coarse:min-block-breeze-tap breeze:any-pointer-coarse:min-inline-breeze-tap',
     root: 'breeze:flex breeze:flex-col breeze:gap-breeze-2 breeze:outline-none',
@@ -81,11 +85,10 @@ function CalendarLoading({ label }: Readonly<{ label: string }>) {
   const { messages } = useBreezeContext();
 
   return (
-    <div
+    <section
       aria-busy="true"
       aria-label={label}
       className={calendarVariants.base.root}
-      role="group"
     >
       <div className={calendarVariants.base.header}>
         <span aria-hidden="true" className={calendarVariants.base.navButton}>
@@ -103,47 +106,29 @@ function CalendarLoading({ label }: Readonly<{ label: string }>) {
           <Skeleton blockSize="1.25rem" inlineSize="1.25rem" shape="circle" />
         </span>
       </div>
-      <table
-        aria-hidden="true"
-        className={calendarVariants.base.grid}
-        role="presentation"
-      >
-        <thead>
-          <tr>
-            {loadingWeekdays.map((weekday) => (
-              <th
-                className={calendarVariants.base.weekday}
-                key={weekday}
-                scope="col"
-              >
-                <Skeleton
-                  blockSize="1lh"
-                  inlineSize="1.5em"
-                  shape="rectangle"
-                />
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {loadingWeeks.map((week) => (
-            <tr key={week}>
-              {loadingWeekdays.map((weekday) => (
-                <td key={weekday}>
-                  <div className={calendarVariants.base.cell}>
-                    <Skeleton
-                      blockSize="1.5rem"
-                      inlineSize="1.5rem"
-                      shape="circle"
-                    />
-                  </div>
-                </td>
-              ))}
-            </tr>
+      <div aria-hidden="true" className={calendarVariants.base.loadingGrid}>
+        <div className={calendarVariants.base.loadingWeek}>
+          {loadingWeekdays.map((weekday) => (
+            <div className={calendarVariants.base.weekday} key={weekday}>
+              <Skeleton blockSize="1lh" inlineSize="1.5em" shape="rectangle" />
+            </div>
           ))}
-        </tbody>
-      </table>
-    </div>
+        </div>
+        {loadingWeeks.map((week) => (
+          <div className={calendarVariants.base.loadingWeek} key={week}>
+            {loadingWeekdays.map((weekday) => (
+              <div className={calendarVariants.base.cell} key={weekday}>
+                <Skeleton
+                  blockSize="1.5rem"
+                  inlineSize="1.5rem"
+                  shape="circle"
+                />
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
 
