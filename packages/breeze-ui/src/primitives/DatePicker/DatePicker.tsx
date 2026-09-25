@@ -246,11 +246,13 @@ export function DatePicker({
     [descriptionId, errorId, requiredId].filter(Boolean).join(' ') || undefined;
 
   useEffect(() => {
-    const formElement = triggerRef.current?.form;
-
-    if (!formElement || value !== undefined) return undefined;
+    if (value !== undefined) return undefined;
 
     const handleReset = (event: Event) => {
+      const formElement = triggerRef.current?.form;
+
+      if (!formElement || event.target !== formElement) return;
+
       queueMicrotask(() => {
         if (!event.defaultPrevented) {
           setUncontrolledValue(defaultValue);
@@ -258,10 +260,10 @@ export function DatePicker({
       });
     };
 
-    formElement.addEventListener('reset', handleReset);
+    document.addEventListener('reset', handleReset, true);
 
-    return () => formElement.removeEventListener('reset', handleReset);
-  }, [defaultValue, form, name, value]);
+    return () => document.removeEventListener('reset', handleReset, true);
+  }, [defaultValue, value]);
 
   useEffect(() => {
     if (disabled && isOpen) {

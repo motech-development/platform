@@ -1,4 +1,5 @@
 import { screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { expect, it } from 'vitest';
 import { Calendar } from '../src/primitives/Calendar/Calendar';
 import renderBreeze from '../test/render';
@@ -40,6 +41,8 @@ function contrastRatio(element: HTMLElement) {
 it.each(['light', 'dark'] as const)(
   'keeps selected dates at 4.5:1 contrast in %s appearance',
   async (appearance) => {
+    const user = userEvent.setup();
+
     renderBreeze(
       <Calendar
         label="Choose date"
@@ -61,6 +64,12 @@ it.each(['light', 'dark'] as const)(
     selectedDate.focus();
     await waitFor(() => {
       expect(selectedDate).toHaveAttribute('data-focused', 'true');
+    });
+    expect(contrastRatio(selectedDate)).toBeGreaterThanOrEqual(4.5);
+
+    await user.hover(selectedDate);
+    await waitFor(() => {
+      expect(selectedDate).toHaveAttribute('data-hovered', 'true');
     });
     expect(contrastRatio(selectedDate)).toBeGreaterThanOrEqual(4.5);
 

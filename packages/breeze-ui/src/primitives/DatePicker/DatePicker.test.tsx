@@ -344,6 +344,54 @@ describe('DatePicker', () => {
     );
   });
 
+  it('resets through an external form replaced while the picker is mounted', async () => {
+    const user = userEvent.setup();
+
+    renderBreeze(
+      <>
+        <form aria-label="Replaceable external form" id="live-date-form" />
+        <DatePicker
+          defaultValue="2026-09-03"
+          form="live-date-form"
+          label="External date"
+          name="date"
+        />
+      </>,
+    );
+
+    const trigger = screen.getByRole<HTMLButtonElement>('button', {
+      name: 'External date 3 September 2026',
+    });
+    const originalForm =
+      document.querySelector<HTMLFormElement>('#live-date-form');
+    expect(originalForm).not.toBeNull();
+
+    await user.click(trigger);
+    await user.click(
+      within(screen.getByRole('dialog', { name: 'External date' })).getByRole(
+        'button',
+        { name: /10 September 2026/ },
+      ),
+    );
+    expect(new FormData(originalForm!).get('date')).toBe('2026-09-10');
+
+    const replacementForm = document.createElement('form');
+    replacementForm.id = 'live-date-form';
+    originalForm!.replaceWith(replacementForm);
+    expect(trigger.form).toBe(replacementForm);
+    expect(new FormData(replacementForm).get('date')).toBe('2026-09-10');
+
+    await act(async () => {
+      replacementForm.reset();
+      await Promise.resolve();
+    });
+
+    await waitFor(() =>
+      expect(trigger).toHaveAccessibleName('External date 3 September 2026'),
+    );
+    expect(new FormData(replacementForm).get('date')).toBe('2026-09-03');
+  });
+
   it('keeps an uncontrolled value when its form reset is canceled', async () => {
     const user = userEvent.setup();
 
