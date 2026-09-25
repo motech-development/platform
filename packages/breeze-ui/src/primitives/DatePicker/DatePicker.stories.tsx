@@ -34,6 +34,15 @@ export const Disabled: Story = {
   },
 };
 
+/** A shape-preserving loading field keeps its value out of form submission. */
+export const Loading: Story = {
+  args: {
+    description: 'Choose the transaction date.',
+    error: 'Choose a transaction date.',
+    loading: true,
+  },
+};
+
 function ControlledExample() {
   const [value, setValue] = useState<IsoCalendarDate>('2026-09-03');
 

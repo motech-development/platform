@@ -88,6 +88,13 @@ async function assertSelectedDateContrast(
 /** A six-week Monday-first calendar with a selected date. */
 export const Default: Story = {};
 
+/** A shape-preserving loading calendar does not expose selectable dates. */
+export const Loading: Story = {
+  args: {
+    loading: true,
+  },
+};
+
 /** A selected date keeps accessible contrast in the light appearance. */
 export const SelectedContrastLight: Story = {
   globals: {

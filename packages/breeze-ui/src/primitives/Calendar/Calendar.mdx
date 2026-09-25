@@ -11,12 +11,18 @@ import * as Stories from './Calendar.stories';
 `Calendar` renders a locale-aware calendar grid. Weeks begin on Monday and each
 month uses six rows. Leading and trailing dates remain visible in muted text.
 Selected dates use a brand fill; today uses a brand outline unless it is selected.
+While `loading` is true, the calendar keeps its six-week shape and announces the
+provider loading message without exposing selectable dates. Its selected value
+is restored when loading clears.
 
 <Canvas of={Stories.Default} />
 
 ## States
 
-Use `disabled` to prevent date changes.
+Use `disabled` to prevent date changes. Use `loading` while the calendar data is
+unavailable; it preserves the calendar shape and hides date interaction.
+
+<Canvas of={Stories.Loading} />
 
 <Canvas of={Stories.Disabled} />
 
