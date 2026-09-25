@@ -3,6 +3,7 @@ import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import renderBreeze from '../../../test/render';
+import { BreezeProvider } from '../../provider/BreezeProvider';
 import type { IsoCalendarDate } from '../Typography/Typography';
 import { Calendar, type CalendarProps } from './Calendar';
 
@@ -65,6 +66,61 @@ describe('Calendar', () => {
     expect(
       within(grid).getByRole('button', { name: /Sunday, 7 March 2027/ }),
     ).toHaveAttribute('data-outside-month', 'true');
+  });
+
+  it('follows changed controlled dates but preserves navigation for stable values', async () => {
+    const user = userEvent.setup();
+    const { rerender } = renderBreeze(
+      <Calendar
+        label="Choose date"
+        onChange={() => undefined}
+        value="2026-09-03"
+      />,
+    );
+
+    const calendar = screen.getByRole('application', {
+      name: /Choose date, September 2026/,
+    });
+    const nextButton = calendar.querySelector<HTMLButtonElement>(
+      'button[slot="next"]',
+    );
+    if (!nextButton) throw new Error('Expected a next-month calendar button.');
+
+    await user.click(nextButton);
+    expect(
+      screen.getByRole('application', { name: /Choose date, October 2026/ }),
+    ).toBeInTheDocument();
+
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <Calendar
+          label="Choose date"
+          onChange={() => undefined}
+          value="2026-09-03"
+        />
+      </BreezeProvider>,
+    );
+    expect(
+      screen.getByRole('application', { name: /Choose date, October 2026/ }),
+    ).toBeInTheDocument();
+
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <Calendar
+          label="Choose date"
+          onChange={() => undefined}
+          value="2026-12-03"
+        />
+      </BreezeProvider>,
+    );
+    expect(
+      screen.getByRole('application', { name: /Choose date, December 2026/ }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', {
+        name: /Thursday, 3 December 2026 selected/,
+      }),
+    ).toBeInTheDocument();
   });
 
   it('lets selection take precedence over today and reports ISO dates', async () => {

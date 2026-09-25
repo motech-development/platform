@@ -79,6 +79,32 @@ describe('DatePicker', () => {
     expect(screen.getByText('Obligatoire')).toHaveAttribute('lang', 'fr-FR');
   });
 
+  it('marks its default English placeholder with the fallback language', () => {
+    renderBreeze(<DatePicker label="Date" />, 'fr-FR');
+
+    expect(screen.getByText('Select a date')).toHaveAttribute('lang', 'en-GB');
+  });
+
+  it('uses a localized default placeholder without replacing a custom one', () => {
+    renderBreeze(
+      <BreezeProvider
+        locale="fr-FR"
+        messages={{ selectDate: 'Sélectionner une date' }}
+      >
+        <>
+          <DatePicker label="Localized date" />
+          <DatePicker label="Custom date" placeholder="Choose a day" />
+        </>
+      </BreezeProvider>,
+    );
+
+    expect(screen.getByText('Sélectionner une date')).toHaveAttribute(
+      'lang',
+      'fr-FR',
+    );
+    expect(screen.getByText('Choose a day')).not.toHaveAttribute('lang');
+  });
+
   it('renders and associates its visible validation error', () => {
     renderBreeze(
       <DatePicker error="Choose a transaction date." label="Date" />,

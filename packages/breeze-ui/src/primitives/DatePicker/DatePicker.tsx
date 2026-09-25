@@ -76,10 +76,12 @@ export type DatePickerProps = DatePickerCommonProps &
 
 function DatePickerTriggerValue({
   placeholder,
+  placeholderLocale,
   value,
   valueId,
 }: Readonly<{
   placeholder: string;
+  placeholderLocale?: string;
   value?: IsoCalendarDate | null;
   valueId: string;
 }>) {
@@ -88,7 +90,7 @@ function DatePickerTriggerValue({
       {value ? (
         <Typography element="span" format="date" value={value} />
       ) : (
-        placeholder
+        <span lang={placeholderLocale}>{placeholder}</span>
       )}
     </span>
   );
@@ -214,11 +216,14 @@ export function DatePicker({
   label,
   name,
   onChange,
-  placeholder = 'Select a date',
+  placeholder,
   required = true,
   value,
 }: Readonly<DatePickerProps>) {
   const { getMessageLocale, messages } = useBreezeContext();
+  const placeholderText = placeholder ?? messages.selectDate;
+  const placeholderLocale =
+    placeholder === undefined ? getMessageLocale('selectDate') : undefined;
   const visibleDescription = description?.trim() || undefined;
   const visibleError = error?.trim() || undefined;
   const isInvalid = visibleError !== undefined;
@@ -323,7 +328,8 @@ export function DatePicker({
         }
       >
         <DatePickerTriggerValue
-          placeholder={placeholder}
+          placeholder={placeholderText}
+          placeholderLocale={placeholderLocale}
           value={selectedValue}
           valueId={valueId}
         />
