@@ -27,7 +27,7 @@ const calendarVariants = {
       'breeze:grid breeze:block-size-breeze-8 breeze:inline-size-breeze-8 breeze:place-items-center breeze:rounded-breeze-full breeze:border-0 breeze:bg-transparent breeze:text-breeze-ink-2 breeze:outline-offset-2 breeze:hover:bg-breeze-sunken breeze:focus-visible:outline-2 breeze:focus-visible:outline-solid breeze:focus-visible:outline-breeze-brand breeze:any-pointer-coarse:min-block-breeze-tap breeze:any-pointer-coarse:min-inline-breeze-tap',
     root: 'breeze:flex breeze:flex-col breeze:gap-breeze-2 breeze:outline-none',
     selectedCell:
-      'breeze:bg-breeze-brand breeze:text-breeze-surface breeze:data-[hovered]:bg-breeze-brand',
+      'breeze:bg-breeze-brand breeze:text-breeze-on-brand breeze:data-[outside-month]:data-[selected]:text-breeze-on-brand breeze:data-[hovered]:bg-breeze-brand',
     todayCell:
       'breeze:outline-2 breeze:outline-solid breeze:outline-breeze-brand',
     weekday:
