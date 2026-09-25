@@ -5,6 +5,7 @@ const enGB = {
   appearanceLight: 'Light',
   close: 'Close',
   loading: 'Loading',
+  required: 'Required',
 };
 
 export default enGB;

@@ -25,9 +25,13 @@ The field is required by default and does not provide a clear control.
 
 ## Controlled values
 
-Provide both `value` and `onChange` for controlled usage. Use `defaultValue` and
-an optional `onChange` for uncontrolled usage; the two forms cannot be mixed.
-With a `name`, the selected ISO date is included in form submission.
+Provide both `value` and `onChange` for controlled usage. Set `value` to `null`
+for an empty controlled selection. Use `defaultValue` and an optional `onChange`
+for uncontrolled usage; the two forms cannot be mixed. An uncontrolled date
+returns to `defaultValue` when its owning form resets. With a `name`, the
+selected ISO date is included in form submission; an empty value submits an
+empty string. Override the provider's `required` message to localize the
+required announcement.
 
 <Canvas of={Stories.Controlled} />
 

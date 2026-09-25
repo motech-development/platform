@@ -66,6 +66,7 @@ describe('Calendar', () => {
       new Intl.DateTimeFormat('en-GB', {
         day: 'numeric',
         month: 'long',
+        timeZone: 'UTC',
         weekday: 'long',
         year: 'numeric',
       }).format(date.toDate('UTC'));
@@ -106,5 +107,29 @@ describe('Calendar', () => {
       'breeze:any-pointer-coarse:min-block-breeze-tap',
       'breeze:any-pointer-coarse:min-inline-breeze-tap',
     );
+  });
+
+  it('does not throw when an ISO-typed date cannot be parsed', () => {
+    const value = '2026-9-3' as IsoCalendarDate;
+
+    expect(() =>
+      renderBreeze(
+        <Calendar
+          label="Choose date"
+          onChange={() => undefined}
+          value={value}
+        />,
+      ),
+    ).not.toThrow();
+  });
+
+  it('does not throw when an ISO-typed default date cannot be parsed', () => {
+    const defaultValue = '2026-9-3' as IsoCalendarDate;
+
+    expect(() =>
+      renderBreeze(
+        <Calendar defaultValue={defaultValue} label="Choose date" />,
+      ),
+    ).not.toThrow();
   });
 });

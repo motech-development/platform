@@ -18,7 +18,7 @@ import type { IsoCalendarDate } from '../Typography/Typography';
 const calendarVariants = {
   base: {
     cell: 'breeze:grid breeze:min-block-breeze-9 breeze:min-inline-breeze-9 breeze:any-pointer-coarse:min-block-breeze-tap breeze:any-pointer-coarse:min-inline-breeze-tap breeze:place-items-center breeze:rounded-breeze-full breeze:font-breeze-sans breeze:text-breeze-sm breeze:text-breeze-ink breeze:outline-offset-2 breeze:data-[focused]:bg-breeze-sunken breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[hovered]:bg-breeze-sunken breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-50 breeze:data-[outside-month]:text-breeze-ink-3',
-    grid: 'breeze:w-full breeze:table-fixed breeze:border-separate breeze:border-spacing-1',
+    grid: 'breeze:w-full breeze:table-fixed breeze:border-separate breeze:border-spacing-1 breeze:any-pointer-coarse:border-spacing-0',
     header:
       'breeze:mb-breeze-2 breeze:flex breeze:min-block-breeze-tap breeze:items-center breeze:justify-between',
     heading:
@@ -69,6 +69,14 @@ interface UncontrolledCalendarProps {
 /** Props for a controlled or uncontrolled single-date calendar. */
 export type CalendarProps = CalendarCommonProps &
   (ControlledCalendarProps | UncontrolledCalendarProps);
+
+export function parseCalendarDate(value: IsoCalendarDate): CalendarDate | null {
+  try {
+    return parseDate(value);
+  } catch {
+    return null;
+  }
+}
 
 interface CalendarSurfaceProps {
   autoFocus?: boolean;
@@ -165,9 +173,10 @@ export function Calendar({
   onChange,
   value,
 }: Readonly<CalendarProps>) {
-  const selectedValue = value === undefined ? undefined : parseDate(value);
+  const selectedValue =
+    value === undefined ? undefined : parseCalendarDate(value);
   const initialValue =
-    defaultValue === undefined ? undefined : parseDate(defaultValue);
+    defaultValue === undefined ? undefined : parseCalendarDate(defaultValue);
 
   const handleChange = (date: CalendarDate | null) => {
     if (date) {

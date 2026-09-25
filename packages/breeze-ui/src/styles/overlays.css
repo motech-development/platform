@@ -52,6 +52,11 @@
     max-inline-size: calc(100vw - 24px);
     outline: none;
   }
+  @media (any-pointer: coarse) {
+    :where([data-breeze-root]) .breeze-popover.breeze-date-picker-popover {
+      max-inline-size: calc(100vw - 8px);
+    }
+  }
   :where([data-breeze-root]) .breeze-fullscreen {
     /* The kit owns lifecycle and portal focus scopes; this unanchored surface
        replaces its trigger-relative positioning with viewport geometry. */

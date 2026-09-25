@@ -1,11 +1,10 @@
 import type { CalendarDate } from '@internationalized/date';
-import { parseDate } from '@internationalized/date';
 import type { RefObject } from 'react';
 import { createElement, useEffect, useId, useRef, useState } from 'react';
 import { Button as AriaButton } from 'react-aria-components/Button';
 import { Dialog as AriaDialog } from 'react-aria-components/Dialog';
 import { useBreezeContext } from '../../provider/BreezeContext';
-import { CalendarSurface } from '../Calendar/Calendar';
+import { CalendarSurface, parseCalendarDate } from '../Calendar/Calendar';
 import CollectionPopover from '../Collection/CollectionPopover';
 import {
   FieldLabel,
@@ -19,7 +18,7 @@ import { Typography } from '../Typography/Typography';
 const datePickerVariants = {
   base: {
     popover:
-      'breeze:!inline-size-[360px] breeze:max-inline-size-[calc(100vw-24px)] breeze:p-breeze-3',
+      'breeze:!inline-size-[360px] breeze:max-inline-size-[calc(100vw_-_24px)] breeze:p-breeze-3 breeze:any-pointer-coarse:!p-0 breeze-date-picker-popover',
     trigger:
       'breeze:flex breeze:min-block-breeze-md breeze:any-pointer-coarse:min-block-breeze-tap breeze:min-inline-size-0 breeze:inline-size-full breeze:items-center breeze:justify-between breeze:gap-breeze-3 breeze:rounded-breeze-ctl breeze:border breeze:border-solid breeze:border-breeze-line-strong breeze:bg-breeze-surface breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:py-breeze-2 breeze:font-breeze-sans breeze:text-breeze-sm breeze:text-breeze-ink breeze:outline-offset-2 breeze:data-[hovered]:border-breeze-brand breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[invalid]:border-breeze-danger breeze:disabled:cursor-not-allowed breeze:disabled:bg-breeze-sunken breeze:disabled:opacity-60',
     value: 'breeze:min-inline-size-0 breeze:flex-1 breeze:text-start',
@@ -54,8 +53,8 @@ interface DatePickerCommonProps {
 }
 
 interface ControlledDatePickerProps {
-  /** Current selected ISO calendar date. */
-  value: IsoCalendarDate;
+  /** Current selected ISO calendar date, or `null` when empty. */
+  value: IsoCalendarDate | null;
   /** Reports the selected ISO calendar date without exposing a DOM event. */
   onChange: (value: IsoCalendarDate) => void;
   /** Controlled and uncontrolled value props are mutually exclusive. */
@@ -81,7 +80,7 @@ function DatePickerTriggerValue({
   valueId,
 }: Readonly<{
   placeholder: string;
-  value?: IsoCalendarDate;
+  value?: IsoCalendarDate | null;
   valueId: string;
 }>) {
   return (
@@ -172,13 +171,14 @@ function DatePickerPopover({
   onChange: (date: CalendarDate | null) => void;
   onOpenChange: (open: boolean) => void;
   triggerRef: RefObject<HTMLButtonElement | null>;
-  value: IsoCalendarDate | undefined;
+  value: IsoCalendarDate | null | undefined;
 }>) {
   const panelRef = useRef<HTMLDivElement>(null);
 
   return (
     <CollectionPopover
       className={datePickerVariants.base.popover}
+      containerPadding={4}
       isOpen={isOpen}
       onOpenChange={onOpenChange}
       triggerRef={triggerRef}
@@ -186,11 +186,12 @@ function DatePickerPopover({
       <AriaDialog aria-label={label} id={dialogId} ref={panelRef}>
         <DatePickerPanelScrollEffect isOpen={isOpen} panelRef={panelRef} />
         <CalendarSurface
+          autoFocus={isOpen}
           key={calendarKey}
           disabled={disabled}
           label={label}
           onChange={onChange}
-          value={value === undefined ? null : parseDate(value)}
+          value={value == null ? null : parseCalendarDate(value)}
         />
       </AriaDialog>
     </CollectionPopover>
@@ -217,7 +218,7 @@ export function DatePicker({
   required = true,
   value,
 }: Readonly<DatePickerProps>) {
-  useBreezeContext();
+  const { getMessageLocale, messages } = useBreezeContext();
   const visibleDescription = description?.trim() || undefined;
   const visibleError = error?.trim() || undefined;
   const isInvalid = visibleError !== undefined;
@@ -235,9 +236,33 @@ export function DatePicker({
   const [uncontrolledValue, setUncontrolledValue] = useState(defaultValue);
   const [isOpen, setIsOpen] = useState(false);
   const [calendarKey, setCalendarKey] = useState(0);
-  const selectedValue = value ?? uncontrolledValue;
+  const selectedValue = value === undefined ? uncontrolledValue : value;
   const describedBy =
     [descriptionId, errorId, requiredId].filter(Boolean).join(' ') || undefined;
+
+  useEffect(() => {
+    const formElement = triggerRef.current?.form;
+
+    if (!formElement || value !== undefined) return undefined;
+
+    const handleReset = (event: Event) => {
+      queueMicrotask(() => {
+        if (!event.defaultPrevented) {
+          setUncontrolledValue(defaultValue);
+        }
+      });
+    };
+
+    formElement.addEventListener('reset', handleReset);
+
+    return () => formElement.removeEventListener('reset', handleReset);
+  }, [defaultValue, form, name, value]);
+
+  useEffect(() => {
+    if (disabled && isOpen) {
+      setIsOpen(false);
+    }
+  }, [disabled, isOpen]);
 
   const handleOpenChange = (open: boolean) => {
     if (open && !isOpen) {
@@ -261,12 +286,16 @@ export function DatePicker({
 
   return (
     <div
-      aria-labelledby={labelId}
       className={fieldVariants.base.root}
       data-required={required || undefined}
-      role="group"
     >
-      <FieldLabel id={labelId} label={label} loading={false} />
+      <FieldLabel
+        htmlFor={triggerId}
+        id={labelId}
+        label={label}
+        loading={false}
+        onClick={() => triggerRef.current?.focus()}
+      />
       <AriaButton
         autoFocus={autoFocus}
         className={joinClassNames(
@@ -281,11 +310,13 @@ export function DatePicker({
             ...buttonProps,
             'aria-controls': dialogId,
             'aria-describedby': describedBy,
+            'aria-errormessage': errorId,
             'aria-expanded': isOpen,
             'aria-haspopup': 'dialog',
             'aria-invalid': isInvalid || undefined,
             'aria-labelledby': `${labelId} ${valueId}`,
             'data-invalid': isInvalid || undefined,
+            form,
             id: triggerId,
             type: 'button',
           })
@@ -308,8 +339,12 @@ export function DatePicker({
         />
       )}
       {required && (
-        <span className="breeze:sr-only" id={requiredId}>
-          Required
+        <span
+          className="breeze:sr-only"
+          id={requiredId}
+          lang={getMessageLocale('required')}
+        >
+          {messages.required}
         </span>
       )}
       <DatePickerPopover
@@ -326,10 +361,13 @@ export function DatePicker({
       <FieldSupportingContent
         description={visibleDescription}
         descriptionId={descriptionId}
-        error={visibleError}
-        errorId={errorId}
         loading={false}
       />
+      {visibleError && (
+        <p className={fieldVariants.base.error} id={errorId}>
+          {visibleError}
+        </p>
+      )}
     </div>
   );
 }
