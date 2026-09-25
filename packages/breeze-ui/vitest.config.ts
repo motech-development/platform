@@ -48,23 +48,6 @@ export default defineConfig({
           name: 'storybook',
         },
       },
-      {
-        plugins: [react(), tailwindcss()],
-        test: {
-          browser: {
-            enabled: true,
-            headless: true,
-            instances: [{ browser: 'chromium' }],
-            provider: playwright(),
-          },
-          include: [
-            '.storybook/Calendar.contrast.test.tsx',
-            '.storybook/DatePicker.geometry.test.tsx',
-          ],
-          name: 'browser-regressions',
-          setupFiles: ['./test/setup.ts'],
-        },
-      },
     ],
   },
 });

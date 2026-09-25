@@ -30,6 +30,7 @@ Repository-specific guidance for agents working in this monorepo.
 
 - Test observable behavior rather than implementation details.
 - Add or update regression tests at the appropriate level when behavior changes. Follow coverage thresholds configured by the affected package.
+- Reuse an existing test suite, project, or category when it can cover the behavior. If you believe a new suite, project, or category is necessary, stop and ask the user for explicit approval before creating it.
 - Prefer targeted, non-watch tests. Do not run root `yarn test` or a workspace's `test-ci` locally unless explicitly requested; they run CI coverage suites. Invoke the affected Jest or Vitest tests directly instead.
 - Run the relevant formatting, lint, type-check, test, build, and end-to-end checks in proportion to the change and available tooling.
 - For documentation-only edits, verify formatting and content rather than adding runtime tests.
