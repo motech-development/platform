@@ -6,6 +6,7 @@ const enGB = {
   close: 'Close',
   loading: 'Loading',
   required: 'Required',
+  selectDate: 'Select a date',
 };
 
 export default enGB;

@@ -12,6 +12,10 @@ import * as Stories from './DatePicker.stories';
 provider locale's long form. The calendar glyph stays at the far edge of the
 trigger. The value and callback use ISO `YYYY-MM-DD` strings.
 
+When the field is empty, `placeholder` overrides the provider's `selectDate`
+message. Without either override, the English fallback is marked `en-GB` for
+assistive technology.
+
 <Canvas of={Stories.Default} />
 
 ## States

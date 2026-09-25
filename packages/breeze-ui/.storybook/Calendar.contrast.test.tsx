@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { expect, it } from 'vitest';
 import { Calendar } from '../src/primitives/Calendar/Calendar';
 import renderBreeze from '../test/render';
@@ -39,7 +39,7 @@ function contrastRatio(element: HTMLElement) {
 
 it.each(['light', 'dark'] as const)(
   'keeps selected dates at 4.5:1 contrast in %s appearance',
-  (appearance) => {
+  async (appearance) => {
     renderBreeze(
       <Calendar
         label="Choose date"
@@ -56,6 +56,12 @@ it.each(['light', 'dark'] as const)(
       name: /Thursday, 3 September 2026 selected/,
     });
 
+    expect(contrastRatio(selectedDate)).toBeGreaterThanOrEqual(4.5);
+
+    selectedDate.focus();
+    await waitFor(() => {
+      expect(selectedDate).toHaveAttribute('data-focused', 'true');
+    });
     expect(contrastRatio(selectedDate)).toBeGreaterThanOrEqual(4.5);
 
     // Exercise both styles together even though React Aria keeps a
