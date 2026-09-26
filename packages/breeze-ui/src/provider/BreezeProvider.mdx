@@ -22,11 +22,15 @@ import * as Stories from './BreezeProvider.stories';
 
 `locale` takes a BCP 47 language tag. It sets the `lang` attribute and the text direction of the provider's root element.
 
-Only English (`en-GB`) messages are bundled. Supply partial `messages` to translate Breeze's loading announcement, appearance control and overlay close button into the provider locale. Without an override, Breeze's own text uses English and is marked `lang="en-GB"`, independently of the surrounding content's language.
+Only English (`en-GB`) messages are bundled. Supply partial `messages` to translate Breeze's loading and required announcements, the DatePicker placeholder, appearance control and overlay close button into the provider locale. Without an override, Breeze's own text uses English and is marked `lang="en-GB"`, independently of the surrounding content's language.
 
 ```tsx
-<BreezeProvider locale="fr-FR" messages={{ loading: 'Chargement' }}>
+<BreezeProvider
+  locale="fr-FR"
+  messages={{ loading: 'Chargement', selectDate: 'Sélectionner une date' }}
+>
   <Button loading>Enregistrer</Button>
+  <DatePicker label="Date" />
 </BreezeProvider>
 ```
 

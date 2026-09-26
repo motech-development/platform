@@ -163,6 +163,8 @@ export function BreezeProvider({
         appearanceLight: messages?.appearanceLight ?? enGB.appearanceLight,
         close: messages?.close ?? enGB.close,
         loading: messages?.loading ?? enGB.loading,
+        required: messages?.required ?? enGB.required,
+        selectDate: messages?.selectDate ?? enGB.selectDate,
       },
       resolvedAppearance,
       setAppearance,

@@ -5,6 +5,8 @@ const enGB = {
   appearanceLight: 'Light',
   close: 'Close',
   loading: 'Loading',
+  required: 'Required',
+  selectDate: 'Select a date',
 };
 
 export default enGB;
