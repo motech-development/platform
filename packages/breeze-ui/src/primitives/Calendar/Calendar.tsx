@@ -28,7 +28,7 @@ import type { IsoCalendarDate } from '../Typography/Typography';
 
 const calendarVariants = {
   base: {
-    cell: 'breeze:grid breeze:min-block-breeze-9 breeze:min-inline-breeze-9 breeze:any-pointer-coarse:min-block-breeze-tap breeze:any-pointer-coarse:min-inline-breeze-tap breeze:place-items-center breeze:rounded-breeze-full breeze:font-breeze-sans breeze:text-breeze-sm breeze:text-breeze-ink breeze:outline-offset-2 breeze:data-[focused]:bg-breeze-sunken breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[hovered]:bg-breeze-sunken breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-50 breeze:data-[outside-month]:text-breeze-ink-3',
+    cell: 'breeze:grid breeze:min-block-breeze-8 breeze:min-inline-breeze-8 breeze:any-pointer-coarse:min-block-breeze-tap breeze:any-pointer-coarse:min-inline-breeze-tap breeze:place-items-center breeze:rounded-breeze-full breeze:font-breeze-sans breeze:text-breeze-sm breeze:text-breeze-ink breeze:outline-offset-2 breeze:data-[focused]:bg-breeze-sunken breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[hovered]:bg-breeze-sunken breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-50 breeze:data-[outside-month]:text-breeze-ink-3',
     disabledRoot: 'breeze:pointer-events-none breeze:[&>div:last-child]:hidden',
     grid: 'breeze:w-full breeze:table-fixed breeze:border-separate breeze:border-spacing-1 breeze:any-pointer-coarse:border-spacing-0',
     header:
@@ -44,7 +44,7 @@ const calendarVariants = {
       'breeze:grid breeze:block-size-breeze-8 breeze:inline-size-breeze-8 breeze:place-items-center breeze:rounded-breeze-full breeze:border-0 breeze:bg-transparent breeze:text-breeze-ink-2 breeze:outline-offset-2 breeze:hover:bg-breeze-sunken breeze:focus-visible:outline-2 breeze:focus-visible:outline-solid breeze:focus-visible:outline-breeze-brand breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-50 breeze:any-pointer-coarse:min-block-breeze-tap breeze:any-pointer-coarse:min-inline-breeze-tap',
     root: 'breeze:flex breeze:flex-col breeze:gap-breeze-2 breeze:outline-none',
     selectedCell:
-      'breeze:bg-breeze-brand breeze:text-breeze-on-brand breeze:data-[focused]:data-[selected]:bg-breeze-brand breeze:data-[selected]:data-[hovered]:bg-breeze-brand breeze:data-[outside-month]:data-[selected]:text-breeze-on-brand',
+      'breeze:bg-breeze-brand breeze:text-breeze-on-brand breeze:data-[focused]:data-[selected]:bg-breeze-brand breeze:data-[selected]:data-[hovered]:bg-breeze-brand breeze:data-[outside-month]:data-[selected]:text-breeze-on-brand breeze:forced-colors:data-[selected]:outline-2 breeze:forced-colors:data-[selected]:outline-offset-2',
     todayCell:
       'breeze:outline-2 breeze:outline-solid breeze:outline-breeze-brand',
     weekday:
@@ -329,7 +329,10 @@ export function Calendar({
 
   useEffect(() => {
     const handleFocusIn = (event: FocusEvent) => {
-      if (!calendarSurfaceWrapper.current?.contains(event.target as Node)) {
+      if (
+        event.target !== document.body &&
+        !calendarSurfaceWrapper.current?.contains(event.target as Node)
+      ) {
         focusMovedDuringLoading.current = true;
       }
     };
@@ -346,15 +349,22 @@ export function Calendar({
 
     const target = focusToRestore.current;
     focusToRestore.current = null;
+    const liveDate = calendarSurfaceWrapper.current?.querySelector<HTMLElement>(
+      '[role="button"][tabindex="0"]',
+    );
 
     if (
       target &&
       !disabled &&
       !focusMovedDuringLoading.current &&
-      target.isConnected &&
       document.activeElement === document.body
     ) {
-      target.focus();
+      const focusTarget =
+        target.getAttribute('role') === 'button' || !target.isConnected
+          ? liveDate
+          : target;
+
+      focusTarget?.focus();
     }
 
     focusMovedDuringLoading.current = false;
@@ -366,6 +376,7 @@ export function Calendar({
     focusToRestore.current = event.target;
     focusMovedDuringLoading.current =
       event.relatedTarget instanceof Node &&
+      event.relatedTarget !== document.body &&
       !calendarSurfaceWrapper.current?.contains(event.relatedTarget);
   };
 

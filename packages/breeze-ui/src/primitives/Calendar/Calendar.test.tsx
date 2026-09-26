@@ -131,6 +131,10 @@ describe('Calendar', () => {
       ),
     ).toBe(true);
     expect(Array.from(loadingRows ?? []).slice(1)).toHaveLength(6);
+    expect(loadingRows?.[1]?.firstElementChild).toHaveClass(
+      'breeze:min-block-breeze-8',
+      'breeze:min-inline-breeze-8',
+    );
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
     expect(
       screen.queryByRole('application', {
@@ -198,6 +202,104 @@ describe('Calendar', () => {
     });
 
     await waitFor(() => expect(selectedDate).toHaveFocus());
+  });
+
+  it('restores focus to the live date after loading changes the controlled month', async () => {
+    const { rerender } = renderBreeze(
+      <Calendar
+        label="Choose date"
+        onChange={() => undefined}
+        value="2026-09-30"
+      />,
+    );
+
+    const focusedDate = screen.getByRole('button', {
+      name: 'Wednesday, 30 September 2026 selected',
+    });
+    focusedDate.focus();
+
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <Calendar
+          label="Choose date"
+          loading
+          onChange={() => undefined}
+          value="2026-10-14"
+        />
+      </BreezeProvider>,
+    );
+    expect(focusedDate).toBeInTheDocument();
+
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <Calendar
+          label="Choose date"
+          onChange={() => undefined}
+          value="2026-10-14"
+        />
+      </BreezeProvider>,
+    );
+
+    await waitFor(() =>
+      expect(
+        screen.getByRole('button', {
+          name: 'Wednesday, 14 October 2026 selected',
+        }),
+      ).toHaveFocus(),
+    );
+  });
+
+  it('does not restore calendar focus after focus moves elsewhere during loading', () => {
+    const { rerender } = renderBreeze(
+      <>
+        <button type="button">Outside calendar</button>
+        <Calendar
+          label="Choose date"
+          onChange={() => undefined}
+          value="2026-09-03"
+        />
+      </>,
+    );
+
+    screen
+      .getByRole('button', {
+        name: 'Thursday, 3 September 2026 selected',
+      })
+      .focus();
+
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <>
+          <button type="button">Outside calendar</button>
+          <Calendar
+            label="Choose date"
+            loading
+            onChange={() => undefined}
+            value="2026-09-03"
+          />
+        </>
+      </BreezeProvider>,
+    );
+
+    const outsideButton = screen.getByRole('button', {
+      name: 'Outside calendar',
+    });
+    outsideButton.focus();
+
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <>
+          <button type="button">Outside calendar</button>
+          <Calendar
+            label="Choose date"
+            onChange={() => undefined}
+            value="2026-09-03"
+          />
+        </>
+      </BreezeProvider>,
+    );
+
+    expect(outsideButton).toHaveFocus();
   });
 
   it('keeps the selected date visible and announced while disabled', async () => {
@@ -346,6 +448,10 @@ describe('Calendar', () => {
     expect(todayCell).toHaveAttribute('data-selected', 'true');
     expect(todayCell).toHaveAttribute('data-today', 'true');
     expect(todayCell).toHaveClass('breeze:bg-breeze-brand');
+    expect(todayCell).toHaveClass(
+      'breeze:forced-colors:data-[selected]:outline-2',
+      'breeze:forced-colors:data-[selected]:outline-offset-2',
+    );
     expect(todayCell).not.toHaveClass('breeze:outline-breeze-brand');
 
     await user.click(
@@ -367,6 +473,8 @@ describe('Calendar', () => {
         name: /^Thursday, 3 September 2026 selected$/,
       }),
     ).toHaveClass(
+      'breeze:min-block-breeze-8',
+      'breeze:min-inline-breeze-8',
       'breeze:any-pointer-coarse:min-block-breeze-tap',
       'breeze:any-pointer-coarse:min-inline-breeze-tap',
     );
