@@ -19,14 +19,16 @@ such a denial. Other requests authorize only what they expressly state; do not
 infer service disclosure from a standalone request to review.
 
 An explicit `$pr-review-loop` invocation selects full-loop work by default and
-authorizes routine Codex reactions, eligible bot-thread resolutions, and the
-limited written rejection explanation required for a conclusively rejected
-CodeRabbit finding. A top-level explanation tags `@coderabbitai`; an inline
-explanation uses the integration's supported mechanism. No other text reply is
-authorized by this default. Never post a manual `@codex review` comment; hosted
-Codex review relies on the repository's automatic trigger. Bot reactions,
-thread cleanup, and rejection explanations are withheld when the user narrows the
-request to code fixes only, inspection, one batch, or local review. A standalone
+authorizes routine Codex reactions, eligible bot-thread resolutions, one
+evidence-backed written rebuttal for each conclusively rejected Codex finding,
+and the limited written rejection explanation required for a conclusively
+rejected CodeRabbit finding. Use the integration's supported inline mechanism,
+or a targeted top-level explanation when a finding appears only in the review
+body; tag `@coderabbitai` for CodeRabbit. No other text reply is authorized by
+this default. Never post a manual `@codex review` comment; hosted Codex review
+relies on the repository's automatic trigger. Bot reactions, thread cleanup,
+and rejection explanations are withheld when the user narrows the request to
+code fixes only, inspection, one batch, or local review. A standalone
 local-review request authorizes only the services and paths it expressly
 specifies. A request without an explicit skill invocation keeps its stated scope;
 ask once before cleanup when that scope is ambiguous, and do not call the result
@@ -58,25 +60,37 @@ the complete hosted batch.
 
 ### Authorization boundaries
 
-| Request or authorization                                  | Local review submissions                                            | Reactions                              | Eligible bot-thread resolution         | Text replies                                                                      | Push/commit                              | PR metadata                              |
-| --------------------------------------------------------- | ------------------------------------------------------------------- | -------------------------------------- | -------------------------------------- | --------------------------------------------------------------------------------- | ---------------------------------------- | ---------------------------------------- |
-| Explicit `$pr-review-loop` invocation (default full loop) | Bounded, in-scope frozen delta; no-charge only                      | Authorized after verification          | Authorized after verification          | Rejected CodeRabbit explanations only; other text requires explicit authorization | Requires separate existing authorization | Requires separate existing authorization |
-| Explicit local-review request                             | Only if request names service and paths; no-charge only             | Not authorized                         | Not authorized                         | Not authorized                                                                    | Preserve the stated scope                | Preserve the stated scope                |
-| Inspection or explanation only                            | Not authorized                                                      | Not authorized                         | Not authorized                         | Not authorized                                                                    | Not authorized                           | Not authorized                           |
-| Code-fixes-only or one-batch request                      | Only with explicit service-submission authorization; no-charge only | Explicit scope only; no inherited auth | Explicit scope only; no inherited auth | Requires explicit authorization                                                   | Preserve the stated scope                | Preserve the stated scope                |
+| Request or authorization                                  | Local review submissions                                            | Reactions                              | Eligible bot-thread resolution         | Text replies                                                                                                                                               | Push/commit                              | PR metadata                              |
+| --------------------------------------------------------- | ------------------------------------------------------------------- | -------------------------------------- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- | ---------------------------------------- |
+| Explicit `$pr-review-loop` invocation (default full loop) | Bounded, in-scope frozen delta; no-charge only                      | Authorized after verification          | Authorized after verification          | One evidence-backed rebuttal for each conclusively rejected Codex finding and rejected CodeRabbit explanations; other text requires explicit authorization | Requires separate existing authorization | Requires separate existing authorization |
+| Explicit local-review request                             | Only if request names service and paths; no-charge only             | Not authorized                         | Not authorized                         | Not authorized                                                                                                                                             | Preserve the stated scope                | Preserve the stated scope                |
+| Inspection or explanation only                            | Not authorized                                                      | Not authorized                         | Not authorized                         | Not authorized                                                                                                                                             | Not authorized                           | Not authorized                           |
+| Code-fixes-only or one-batch request                      | Only with explicit service-submission authorization; no-charge only | Explicit scope only; no inherited auth | Explicit scope only; no inherited auth | Requires explicit authorization                                                                                                                            | Preserve the stated scope                | Preserve the stated scope                |
 
 This table records the effect of the request; it does not override a narrower
-user instruction. Codex findings use reactions only: 👍 for accepted findings and
-👎 for conclusive false positives. CodeRabbit receives no reactions. The full-loop
-default permits a written, evidence-backed explanation only for a conclusively
-rejected CodeRabbit finding: tag `@coderabbitai` in a top-level CodeRabbit message
-and use the integration's supported mechanism for inline replies. Other text
-replies require separate explicit authorization. Accepted CodeRabbit findings are
-fixed without an acknowledgement comment. Do not manually ask an automatic
-reviewer to review when the repository already triggers it. Hosted Codex review
-must come from the repository's automatic trigger; if it is missing for the exact
-head, report the missing coverage and leave the hosted gate incomplete without
-posting a manual review request.
+user instruction. Treat every reviewer comment as a claim to verify against the
+scope record, current implementation, callers, tests, and public contract. Under
+the full-loop default, Codex findings receive 👍 when accepted and 👎 when
+conclusively rejected. Each conclusively rejected Codex finding may also receive
+one concise, evidence-backed rebuttal using the integration's supported inline
+mechanism. If the finding exists only in a review body, post a targeted
+top-level explanation that identifies the finding and its evidence. Confirm the
+rebuttal was posted before resolving an eligible rejected thread. Do not repeat
+a rebuttal for the same behavior theme without new evidence; a later duplicate
+can cite the recorded explanation. Accepted findings receive only their
+permitted reaction, with no acknowledgement. CodeRabbit receives no reactions.
+The full-loop default also permits a written, evidence-backed explanation for a
+conclusively rejected CodeRabbit finding: tag `@coderabbitai` in a top-level
+CodeRabbit message and use the integration's supported mechanism for inline
+replies. A demonstrated defect that conflicts with an explicit exclusion is
+valid but blocked on a real scope decision: leave it open and do not describe it
+as a false positive. A preference or speculative enhancement with no trace to
+the recorded contract is not actionable; explain the missing trace and keep the
+existing behavior. Other text replies require separate explicit authorization.
+Do not manually ask an automatic reviewer to review when the repository already
+triggers it. Hosted Codex review must come from the repository's automatic
+trigger; if it is missing for the exact head, report the missing coverage and
+leave the hosted gate incomplete without posting a manual review request.
 
 ### Scope, contract, and design record
 
@@ -101,14 +115,16 @@ been considered. User-facing documentation describes observable behavior and
 usage; it does not expose internal libraries unless they are part of the public
 contract.
 
-When the task is simplification, reassess before another edit if a fix adds
-state reconciliation, effects, refs, event coordination, or dependency surface.
-Also stop for a design reassessment when the same stateful responsibility is
-changed in repeated rounds, findings recur around form behavior, object identity,
-or event ordering, or the cumulative delta grows beyond the original outcome.
-Compare simplify, delete, or revert options before accepting another patch, and
-record the decision in the ledger. Do not preserve unsupported edge-case
-machinery solely because an earlier patch happened to cover it.
+For simplification work, and whenever a proposed fix adds state reconciliation,
+effects, refs, event coordination, or dependency surface, compare simplify,
+delete, and revert options before editing. Reassess when repeated rounds change
+the same stateful responsibility, findings recur around form behavior, object
+identity, or event ordering, or the cumulative delta grows beyond the original
+outcome. Choose and record the option that best preserves the agreed contract,
+then continue the authorized loop. Do not preserve unsupported edge-case
+machinery solely because an earlier patch happened to cover it. Ask the user
+only when the evidence leaves a material contract or scope choice unresolved;
+recurring complexity alone is a reason to reassess, not to pause.
 
 For component work involving value, state, or form behavior, record only the
 applicable concerns in this behavior matrix and mark each supported, excluded,
@@ -123,19 +139,26 @@ presentational components:
 | Form submission, reset, and autofill | Serialization, cancellation, late mount, and replacement behavior |
 | Disabled and read-only               | Interaction and submission behavior                               |
 
-### Remediation budget
+### Progress through remediation
 
-Use a finite remediation-publication budget for a full loop. Unless the user sets a
-different finite budget, allow the initial source publication and at most two
-automatic remediation republishes (three source publications total). Count only
-source-changing publications; a source-neutral failed-job rerun does not consume
-the budget. Record the count and remaining allowance in the batch ledger.
+There is no default cap on source-changing publications. Continue through
+complete hosted batches while each produces a new, actionable finding that
+traces to the recorded contract and has an in-scope fix. Do not ask whether to
+continue merely because a round count has been reached. Record published heads
+and source-changing rounds for continuity, not as an implicit allowance; a
+source-neutral job rerun is not a remediation publication.
 
-After the allowance is exhausted, stop automatic patching and present the repeated
-themes, remaining findings, and the concrete choices: simplify or redesign the
-contract, record a documented limitation, or continue patching with an explicitly
-approved new budget. Do not continue because the next change appears small, and
-do not describe an exhausted loop as complete.
+Honor a publication limit only when the user explicitly sets one, and stop when
+that limit is reached. Otherwise stop source remediation only for cancellation,
+a concrete authorization/access/service or paid-review barrier, a genuine
+contract or scope decision, or non-progress such as the same rejected finding
+reappearing without new evidence after an evidence-backed rebuttal, or
+successive fixes oscillating around the same behavior. Record the evidence and
+exact blocked gate. Reassess design autonomously when recurring complexity
+warrants it; simplify, delete, or revert within the agreed scope when the
+contract supports that choice. Ask only for a decision that the evidence cannot
+resolve, and do not treat the review loop as complete while a required gate
+remains blocked.
 
 ## Review and completion contract
 
@@ -173,7 +196,8 @@ do not describe an exhausted loop as complete.
   explicit CodeRabbit exception. An explicit hosted-review waiver is recorded as
   missing coverage and ends with an incomplete report; it is not approval.
 - Retain narrower inspection, one-batch, or local-review requests. Continue an
-  active full loop through the fixed batch order and within the finite budget.
+  active full loop through the fixed batch order until the outcome is verified
+  or a concrete stop condition is reached; there is no default publication cap.
   On cancellation or a concrete authorization/access/scope blocker, report what
   remains without calling it clean. Continue unaffected authorized work and ask
   only for the missing decision. Link and quote any skill requirement that causes

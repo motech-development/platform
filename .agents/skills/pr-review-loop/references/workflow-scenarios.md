@@ -41,10 +41,12 @@ narrowing: none
 head: A
 contract: controlled and uncontrolled values are supported; custom values are excluded
 authorization: local reviews=bounded frozen delta, no-charge, no repeat prompt;
-               reactions/resolutions=default, CodeRabbit rejection explanations=default,
+               reactions/resolutions=default,
+               Codex rebuttals=one per conclusively rejected finding,
+               CodeRabbit rejection explanations=default,
                manual hosted Codex comment=no, other text replies=no,
                push/commit=no, metadata=no
-budget: initial=1, remediation_republishes=2, used=1
+publication: user_limit=none, source_publications=1
 matrix: controlled/uncontrolled=supported, loading-defaults=supported,
         unavailable=excluded, custom-values=excluded,
         form-submit-reset=supported, late-mounted-form=unresolved,
@@ -76,7 +78,7 @@ it is a later completion gate.
 
 1. Start from the shared fixture and keep the request un-narrowed.
 2. Simulate a verified remote fix on head `B` for `T-fixed` and increment
-   `budget.used` from 1 to 2.
+   `publication.source_publications` from 1 to 2.
 3. Read the head and all paginated bot threads. Apply the Codex reaction to
    `T-fixed`, resolve it, and read the head and thread after each mutation.
 4. Record conclusive rejection evidence for `T-rejected`, post its required
@@ -170,7 +172,7 @@ sandbox.
 3. Before all reviewer results arrive, run a second reset with CodeRabbit pending;
    attempt triage and an edit.
 4. In the first run, triage the complete feedback, simulate a validated fix and
-   remote head `B` (increment `budget.used` from 1 to 2), clean eligible handled
+   remote head `B` (increment `publication.source_publications` from 1 to 2), clean eligible handled
    threads, and only then return
    CodeRabbit `APPROVED` for head `B`.
 
@@ -234,7 +236,7 @@ assumed to limit local CLI coverage, a no-files result is counted as success, or
 formatter-only output starts another semantic review after all static checks
 pass.
 
-## 6. Ledger, contract, design, and budget stop
+## 6. Productive rounds, evidence-based pushback, and explicit limits
 
 **Steps**
 
@@ -242,33 +244,67 @@ pass.
    of an already rejected custom-value provenance finding.
 2. Return a visual requirement phrased as “no native select”, with no evidence
    that an accessible native control is prohibited internally.
-3. Simulate three consecutive rounds changing the same state reconciliation or
-   form/event-order responsibility, including added bespoke state or dependency
-   surface. Set `budget.used=3`.
-4. Present the remaining finding and record the simplify/delete/revert decision
-   point without applying a fourth source change.
+3. Start from shared fixture head `A` with
+   `publication.source_publications=1` and `user_limit=none`. Record separate
+   explicit push/commit authorization for this scenario. Simulate four
+   successive complete hosted batches, each with a new, distinct, valid
+   in-scope finding. For each, record its contract trace, reproduce or verify
+   the defect, complete validation and both local reviews, then publish the
+   fix to heads `B`, `C`, `D`, and `E`. A source-neutral rerun does not
+   increment the source-publication count.
+4. During the second round, return a Codex claim that an optional implementation
+   preference is required. Inspect the code, callers, and tests; record that
+   behavior meets the contract and the suggestion has no contract trace. React
+   👎, post one concise rebuttal with that evidence through the supported
+   mechanism, confirm the post, and resolve the eligible thread.
+5. During the third round, let findings recur around state reconciliation and
+   dependency surface. Compare simplify/delete/revert against the recorded
+   contract, select and record the simplest supported option, and continue
+   without asking the user solely because complexity recurred.
+6. On head `E`, repeat the rejected preference finding with no new evidence.
+   Deduplicate it by behavior theme, point to the confirmed prior rebuttal, and
+   make no source change for it. Record the repeat as non-progress; do not
+   publish or post an identical rebuttal. Leave any new thread open if it
+   remains disputed, report the blocked Codex gate, and do not ask a generic
+   question about whether to continue or post a manual review trigger.
+7. In a separate reset, set `user_limit=2`, publish one validated remediation
+   after the initial publication, then return another valid finding. Stop at
+   the explicit limit, leave that finding and dependent gates reported as
+   incomplete, and do not raise the limit automatically. Keep the hosted wait
+   deadline as a separate ledger field.
 
 **Evidence**
 
 Record the behavior theme, contract trace, matrix cells, ambiguity classification,
-complexity added per round, publication count, and design decision options.
+complexity and autonomous design choice, every publication count, push
+authorization, rebuttal evidence and confirmation, and the remaining hosted
+wait and explicit publication limits.
 
 **Pass if** the semantic variant is deduplicated; the visual requirement is not
 turned into an unsupported implementation prohibition; all matrix cells are
-recorded; a design reassessment occurs before another edit; and no fourth source
-publication occurs. A source-neutral required-job rerun leaves the budget
-unchanged.
+recorded; four productive remediations publish after the initial head without
+pausing at three total publications; recurring complexity triggers an
+autonomous simplify/delete/revert choice and the loop continues; the repeated
+preference receives evidence-based pushback and no source fix; an explicit limit
+stops publication exactly at its value; and the hosted deadline stays separate.
+A source-neutral required-job rerun leaves the publication count unchanged.
 
 **Fail if** a bot suggestion expands the contract without a trace, internal
-library details become user-facing API requirements, repeated complexity triggers
-another automatic patch, or the exhausted budget is ignored.
+library details become user-facing API requirements, a real defect conflicting
+with an exclusion is dismissed as a false positive, complexity triggers a
+generic permission pause instead of an evidence-based reassessment, the default
+three-publication cap is applied, a rebuttal is posted without evidence, a
+thread is resolved before the rebuttal post is confirmed, a repeated false
+positive causes a code change, an explicit user limit is exceeded, or the hosted
+wait is extended by treating publication count as its budget.
 
 ## 7. Sonar and final all-bot-thread evidence
 
 **Steps**
 
-1. Start from shared fixture head `A` with `budget.used=1`. Simulate a validated
-   remote fix for `T-fixed` on head `B`, incrementing `budget.used` to 2. Return a
+1. Start from shared fixture head `A` with
+   `publication.source_publications=1`. Simulate a validated remote fix for
+   `T-fixed` on head `B`, incrementing the count to 2. Return a
    green quality gate but one unresolved Sonar issue or one unreviewed hotspot
    in the paginated data.
 2. Attempt completion, then return zero Sonar issues and hotspots.

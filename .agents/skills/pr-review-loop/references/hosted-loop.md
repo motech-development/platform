@@ -34,8 +34,11 @@ change affects workflow selection. Every result must apply to the current head:
   hosted Codex review when the repository uses it. No comment is not proof that
   a hosted review ran; verify the review is associated with the exact current
   head commit. A local review is not a replacement for a pending hosted review.
-  Preserve reactions-only handling of Codex findings unless text replies were
-  requested. Hosted Codex review relies on the repository's automatic trigger;
+  For accepted Codex findings, use 👍 without an acknowledgement. For each
+  conclusively rejected finding, use 👎 and the authorized single
+  evidence-backed rebuttal; confirm it is posted before resolving an eligible
+  thread. Keep a demonstrated defect open when its fix conflicts with an
+  explicit exclusion. Hosted Codex review relies on the repository's automatic trigger;
   never post a manual `@codex review` comment. If the exact-head review is still
   missing at the bounded deadline, record the missing coverage and report the
   hosted gate as incomplete.
@@ -91,9 +94,10 @@ waiting forever or counting a skipped review as approval.
 3. Triage the complete batch against the recorded contract and scope. For a valid
    in-scope finding, record its trace and delegate the bounded fix. Validate the
    combined changes, then freeze the new delta and run the entire local loop in
-   [local-loop.md](local-loop.md). Check the cumulative scope and remaining
-   publication budget before any push. Check CodeRabbit's billing mode before a
-   CLI review or a push that triggers automatic review.
+   [local-loop.md](local-loop.md). Check the cumulative scope before any push.
+   There is no default publication cap; honor a limit only when the user
+   explicitly sets one. Check CodeRabbit's billing mode before a CLI review or a
+   push that triggers automatic review.
 4. After both local reviewers are complete and clear, publish only when separate
    push/commit authorization exists. Re-read the remote head and handled bot
    threads, then perform eligible authorized reactions and resolutions before
@@ -111,13 +115,18 @@ waiting forever or counting a skipped review as approval.
    For one unrelated failed required job, inspect its logs and permit one
    evidence-backed rerun without changing source. A source-neutral rerun does not
    restart local semantic review; if it fails again, report the required check.
-6. If the complete batch has new valid in-scope findings, return to step 3 and
-   consume one remediation publication allowance after the local gate. If the
-   finite allowance is exhausted, stop and request the user's explicit choice of
-   simplify/redesign, document a limitation, or approve a new budget. Re-read the
-   head, review state, checks, Sonar data, and relevant threads before declaring
-   completion. A concurrent push invalidates affected evidence; reconcile it
-   without overwriting another contributor's work.
+6. If the complete batch has new valid in-scope findings, return to step 3 after
+   the local gate and continue. Do not stop or ask whether to continue because a
+   round count was reached. If the user explicitly set a publication limit,
+   stop at that limit and report the remaining findings and incomplete gates;
+   do not raise the limit automatically. Reassess recurring complexity
+   autonomously, then simplify, delete, or revert within the agreed scope where
+   the contract supports that choice. Stop for actual non-progress, such as the
+   same rejected finding recurring without new evidence after its rebuttal or
+   fixes oscillating around one behavior. Re-read the head, review state, checks,
+   Sonar data, and relevant threads before declaring completion. A concurrent
+   push invalidates affected evidence; reconcile it without overwriting another
+   contributor's work.
 
 ## Bounded hosted-review wait
 
@@ -212,11 +221,12 @@ or waiver and record any waiver as missing coverage. Skip CodeRabbit on credit
 consent and continue the remaining loop under the main skill's exception. Stop
 and report a concrete blocker for missing authorization/access, a required scope
 decision, an unavailable review integration, or repeated non-actionable feedback
-with no new evidence. Do not create a cycle of identical pushes, review requests,
-or rejected suggestions. Do not resolve a valid thread simply to obtain approval.
-Respect cancellation, the remediation-publication budget, and all explicit
-budgets. Summarize the final head and evidence for each completion condition, or
-the exact condition that remains blocked.
+with no new evidence after a written rebuttal. Do not create a cycle of
+identical pushes, review requests, or rebuttals. Do not resolve a valid thread
+simply to obtain approval. Respect cancellation and any explicit user-set
+publication, time, or usage budget; there is no default publication cap.
+Summarize the final head and evidence for each completion condition, or the exact
+condition that remains blocked.
 
 GitHub command contracts: [PR checks](https://cli.github.com/manual/gh_pr_checks)
 and [workflow history](https://cli.github.com/manual/gh_run_list).
