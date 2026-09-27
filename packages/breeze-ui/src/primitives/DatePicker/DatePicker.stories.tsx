@@ -258,6 +258,65 @@ export const ScrollingContainer: Story = {
         name: 'Transaction date 3 September 2026',
       });
 
+      const originalTransform = container.style.transform;
+      const originalContainerScrollTop = container.scrollTop;
+      const originalInnerScrollTop = innerContainer.scrollTop;
+
+      try {
+        container.scrollTop = 0;
+        innerContainer.scrollTop = 0;
+        container.style.transform = 'translateY(-136px)';
+
+        const initialTriggerRect = trigger.getBoundingClientRect();
+
+        await expect(initialTriggerRect.top).toBeGreaterThanOrEqual(0);
+        await expect(initialTriggerRect.bottom).toBeLessThanOrEqual(
+          view.innerHeight,
+        );
+
+        trigger.focus();
+        await userEvent.keyboard('{Enter}');
+
+        const viewportDialog = await page.findByRole('dialog', {
+          name: 'Transaction date',
+        });
+
+        await waitFor(async () => {
+          const triggerRect = trigger.getBoundingClientRect();
+          const containerRect = container.getBoundingClientRect();
+          const dialogRect = viewportDialog.getBoundingClientRect();
+          const visibleTop = Math.max(containerRect.top, 0);
+          const visibleBottom = Math.min(
+            containerRect.bottom,
+            view.innerHeight,
+          );
+
+          await expect(triggerRect.top).toBeGreaterThanOrEqual(0);
+          await expect(triggerRect.bottom).toBeLessThanOrEqual(
+            view.innerHeight,
+          );
+          await expect(dialogRect.top).toBeGreaterThanOrEqual(visibleTop);
+          await expect(dialogRect.bottom).toBeLessThanOrEqual(visibleBottom);
+          await expect(viewportDialog).toBeVisible();
+          await expect(trigger).toHaveAttribute('aria-expanded', 'true');
+        });
+      } finally {
+        try {
+          if (trigger.getAttribute('aria-expanded') === 'true') {
+            await userEvent.keyboard('{Escape}');
+            await waitFor(() =>
+              expect(
+                page.queryByRole('dialog', { name: 'Transaction date' }),
+              ).not.toBeInTheDocument(),
+            );
+          }
+        } finally {
+          container.style.transform = originalTransform;
+          container.scrollTop = originalContainerScrollTop;
+          innerContainer.scrollTop = originalInnerScrollTop;
+        }
+      }
+
       trigger.focus();
       await userEvent.keyboard('{Enter}');
 
