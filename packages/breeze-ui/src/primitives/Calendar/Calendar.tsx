@@ -2,11 +2,9 @@ import type { CalendarDate } from '@internationalized/date';
 import { parseDate } from '@internationalized/date';
 import {
   createElement,
-  type FocusEvent as ReactFocusEvent,
   type JSX as ReactJSX,
   type KeyboardEvent as ReactKeyboardEvent,
   useEffect,
-  useLayoutEffect,
   useRef,
   useState,
 } from 'react';
@@ -20,10 +18,8 @@ import {
   CalendarHeaderCell as AriaCalendarHeaderCell,
   CalendarHeading as AriaCalendarHeading,
 } from 'react-aria-components/Calendar';
-import { useBreezeContext } from '../../provider/BreezeContext';
 import { joinClassNames } from '../Field/field.styles';
 import { Icon } from '../Icon/Icon';
-import { Skeleton } from '../Skeleton/Skeleton';
 import type { IsoCalendarDate } from '../Typography/Typography';
 
 const calendarVariants = {
@@ -35,11 +31,6 @@ const calendarVariants = {
       'breeze:mb-breeze-2 breeze:flex breeze:min-block-breeze-tap breeze:items-center breeze:justify-between',
     heading:
       'breeze:m-0 breeze:font-breeze-sans breeze:text-breeze-sm breeze:font-semibold breeze:text-breeze-ink',
-    loadingGrid:
-      'breeze:flex breeze:w-full breeze:flex-col breeze:gap-breeze-1 breeze:any-pointer-coarse:gap-0',
-    loadingWeek:
-      'breeze:grid breeze:w-full breeze:grid-cols-7 breeze:gap-breeze-1 breeze:any-pointer-coarse:gap-0',
-    loadingWeekday: 'breeze:grid breeze:place-items-center',
     navButton:
       'breeze:grid breeze:block-size-breeze-8 breeze:inline-size-breeze-8 breeze:place-items-center breeze:rounded-breeze-full breeze:border-0 breeze:bg-transparent breeze:text-breeze-ink-2 breeze:outline-offset-2 breeze:hover:bg-breeze-sunken breeze:focus-visible:outline-2 breeze:focus-visible:outline-solid breeze:focus-visible:outline-breeze-brand breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-50 breeze:any-pointer-coarse:min-block-breeze-tap breeze:any-pointer-coarse:min-inline-breeze-tap',
     root: 'breeze:flex breeze:flex-col breeze:gap-breeze-2 breeze:outline-none',
@@ -61,8 +52,6 @@ interface CalendarCommonProps {
   autoFocus?: boolean;
   /** Prevents date changes. Defaults to `false`. */
   disabled?: boolean;
-  /** Replaces the calendar with a shape-preserving loading presentation. */
-  loading?: boolean;
   /** Accessible name for the calendar grid. */
   label: string;
 }
@@ -88,66 +77,6 @@ interface UncontrolledCalendarProps {
 /** Props for a controlled or uncontrolled single-date calendar. */
 export type CalendarProps = CalendarCommonProps &
   (ControlledCalendarProps | UncontrolledCalendarProps);
-
-const loadingWeeks = Array.from({ length: 6 }, (_, week) => week);
-const loadingWeekdays = Array.from({ length: 7 }, (_, day) => day);
-
-function CalendarLoading({ label }: Readonly<{ label: string }>) {
-  const { messages } = useBreezeContext();
-
-  return (
-    <section
-      aria-busy="true"
-      aria-label={label}
-      className={calendarVariants.base.root}
-    >
-      <div className={calendarVariants.base.header}>
-        <span aria-hidden="true" className={calendarVariants.base.navButton}>
-          <Skeleton blockSize="1.25rem" inlineSize="1.25rem" shape="circle" />
-        </span>
-        <span className={calendarVariants.base.heading}>
-          <Skeleton
-            blockSize="1lh"
-            inlineSize="8em"
-            label={messages.loading}
-            shape="rectangle"
-          />
-        </span>
-        <span aria-hidden="true" className={calendarVariants.base.navButton}>
-          <Skeleton blockSize="1.25rem" inlineSize="1.25rem" shape="circle" />
-        </span>
-      </div>
-      <div aria-hidden="true" className={calendarVariants.base.loadingGrid}>
-        <div className={calendarVariants.base.loadingWeek}>
-          {loadingWeekdays.map((weekday) => (
-            <div
-              className={joinClassNames(
-                calendarVariants.base.weekday,
-                calendarVariants.base.loadingWeekday,
-              )}
-              key={weekday}
-            >
-              <Skeleton blockSize="1lh" inlineSize="1.5em" shape="rectangle" />
-            </div>
-          ))}
-        </div>
-        {loadingWeeks.map((week) => (
-          <div className={calendarVariants.base.loadingWeek} key={week}>
-            {loadingWeekdays.map((weekday) => (
-              <div className={calendarVariants.base.cell} key={weekday}>
-                <Skeleton
-                  blockSize="1.5rem"
-                  inlineSize="1.5rem"
-                  shape="circle"
-                />
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
 
 export function parseCalendarDate(value: IsoCalendarDate): CalendarDate | null {
   try {
@@ -307,78 +236,13 @@ export function Calendar({
   defaultValue,
   disabled = false,
   label,
-  loading = false,
   onChange,
   value,
 }: Readonly<CalendarProps>) {
-  const [hasCalendarSurface, setHasCalendarSurface] = useState(!loading);
-  const calendarSurfaceWrapper = useRef<HTMLDivElement>(null);
-  const focusToRestore = useRef<HTMLElement | null>(null);
-  const focusMovedDuringLoading = useRef(false);
   const selectedValue =
     value === undefined ? undefined : parseCalendarDate(value);
   const initialValue =
     defaultValue === undefined ? undefined : parseCalendarDate(defaultValue);
-  const showLoading = loading || !hasCalendarSurface;
-
-  useEffect(() => {
-    if (!loading) {
-      setHasCalendarSurface(true);
-    }
-  }, [loading]);
-
-  useEffect(() => {
-    const handleFocusIn = (event: FocusEvent) => {
-      if (
-        event.target !== document.body &&
-        !calendarSurfaceWrapper.current?.contains(event.target as Node)
-      ) {
-        focusMovedDuringLoading.current = true;
-      }
-    };
-
-    if (showLoading) document.addEventListener('focusin', handleFocusIn);
-
-    return () => {
-      if (showLoading) document.removeEventListener('focusin', handleFocusIn);
-    };
-  }, [showLoading]);
-
-  useLayoutEffect(() => {
-    if (showLoading) return;
-
-    const target = focusToRestore.current;
-    focusToRestore.current = null;
-    const liveDate = calendarSurfaceWrapper.current?.querySelector<HTMLElement>(
-      '[role="button"][tabindex="0"]',
-    );
-
-    if (
-      target &&
-      !disabled &&
-      !focusMovedDuringLoading.current &&
-      document.activeElement === document.body
-    ) {
-      const focusTarget =
-        target.getAttribute('role') === 'button' || !target.isConnected
-          ? liveDate
-          : target;
-
-      focusTarget?.focus();
-    }
-
-    focusMovedDuringLoading.current = false;
-  }, [disabled, showLoading]);
-
-  const handleBlurCapture = (event: ReactFocusEvent<HTMLDivElement>) => {
-    if (!showLoading || !(event.target instanceof HTMLElement)) return;
-
-    focusToRestore.current = event.target;
-    focusMovedDuringLoading.current =
-      event.relatedTarget instanceof Node &&
-      event.relatedTarget !== document.body &&
-      !calendarSurfaceWrapper.current?.contains(event.relatedTarget);
-  };
 
   const handleChange = (date: CalendarDate | null) => {
     if (date) {
@@ -387,27 +251,13 @@ export function Calendar({
   };
 
   return (
-    <>
-      {showLoading && <CalendarLoading label={label} />}
-      {hasCalendarSurface && (
-        <div
-          aria-hidden={showLoading || undefined}
-          className={showLoading ? 'breeze:hidden' : 'breeze:contents'}
-          hidden={showLoading || undefined}
-          inert={showLoading || undefined}
-          onBlurCapture={handleBlurCapture}
-          ref={calendarSurfaceWrapper}
-        >
-          <CalendarSurface
-            autoFocus={autoFocus && !showLoading}
-            defaultValue={initialValue}
-            disabled={disabled || showLoading}
-            label={label}
-            onChange={handleChange}
-            value={selectedValue}
-          />
-        </div>
-      )}
-    </>
+    <CalendarSurface
+      autoFocus={autoFocus}
+      defaultValue={initialValue}
+      disabled={disabled}
+      label={label}
+      onChange={handleChange}
+      value={selectedValue}
+    />
   );
 }

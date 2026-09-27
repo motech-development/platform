@@ -10,10 +10,10 @@ import { Calendar, type CalendarProps } from './Calendar';
 expectTypeOf<CalendarProps>().not.toHaveProperty('className');
 expectTypeOf<CalendarProps>().not.toHaveProperty('style');
 expectTypeOf<CalendarProps>().not.toHaveProperty('slot');
+expectTypeOf<CalendarProps>().not.toHaveProperty('loading');
 expectTypeOf<CalendarProps['onChange']>().toEqualTypeOf<
   ((value: IsoCalendarDate) => void) | undefined
 >();
-expectTypeOf<CalendarProps['loading']>().toEqualTypeOf<boolean | undefined>();
 
 const controlledCalendar = (
   <Calendar label="Choose date" onChange={() => undefined} value="2026-09-03" />
@@ -69,10 +69,10 @@ describe('Calendar', () => {
     ).toHaveAttribute('data-outside-month', 'true');
   });
 
-  it('preserves its selected date while loading and restores it when ready', async () => {
+  it('preserves its selected date while navigating between months', async () => {
     const user = userEvent.setup();
     const onChange = vi.fn<(value: IsoCalendarDate) => void>();
-    const { rerender } = renderBreeze(
+    renderBreeze(
       <Calendar
         defaultValue="2026-09-03"
         label="Choose date"
@@ -102,57 +102,6 @@ describe('Calendar', () => {
       }),
     ).toBeInTheDocument();
 
-    rerender(
-      <BreezeProvider locale="en-GB">
-        <Calendar
-          defaultValue="2026-09-03"
-          label="Choose date"
-          loading
-          onChange={onChange}
-        />
-      </BreezeProvider>,
-    );
-
-    const loadingCalendar = screen.getByRole('region', {
-      name: 'Choose date',
-    });
-    const loadingRows = loadingCalendar.lastElementChild?.children;
-
-    expect(loadingCalendar).toHaveAttribute('aria-busy', 'true');
-    expect(
-      screen.getByRole('progressbar', { name: 'Loading' }),
-    ).toBeInTheDocument();
-    expect(loadingRows).toHaveLength(7);
-    expect(
-      Array.from(loadingRows ?? []).every(
-        (row) =>
-          row.children.length === 7 &&
-          row.classList.contains('breeze:grid-cols-7'),
-      ),
-    ).toBe(true);
-    expect(Array.from(loadingRows ?? []).slice(1)).toHaveLength(6);
-    expect(loadingRows?.[1]?.firstElementChild).toHaveClass(
-      'breeze:min-block-breeze-8',
-      'breeze:min-inline-breeze-8',
-    );
-    expect(screen.queryByRole('button')).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole('application', {
-        name: /Choose date, October 2026/,
-      }),
-    ).not.toBeInTheDocument();
-    expect(onChange).toHaveBeenCalledTimes(1);
-
-    rerender(
-      <BreezeProvider locale="en-GB">
-        <Calendar
-          defaultValue="2026-09-03"
-          label="Choose date"
-          onChange={onChange}
-        />
-      </BreezeProvider>,
-    );
-
     const octoberCalendar = screen.getByRole('application', {
       name: /Choose date, October 2026/,
     });
@@ -178,23 +127,9 @@ describe('Calendar', () => {
     ).toBeInTheDocument();
   });
 
-  it('autofocuses its date after an initially loading state clears', async () => {
-    const { rerender } = renderBreeze(
-      <Calendar
-        autoFocus
-        defaultValue="2026-09-03"
-        label="Choose date"
-        loading
-      />,
-    );
-
-    expect(document.activeElement).toBe(document.body);
-    expect(screen.getByRole('progressbar', { name: 'Loading' })).toBeVisible();
-
-    rerender(
-      <BreezeProvider locale="en-GB">
-        <Calendar autoFocus defaultValue="2026-09-03" label="Choose date" />
-      </BreezeProvider>,
+  it('autofocuses its date when requested', async () => {
+    renderBreeze(
+      <Calendar autoFocus defaultValue="2026-09-03" label="Choose date" />,
     );
 
     const selectedDate = screen.getByRole('button', {
@@ -202,104 +137,6 @@ describe('Calendar', () => {
     });
 
     await waitFor(() => expect(selectedDate).toHaveFocus());
-  });
-
-  it('restores focus to the live date after loading changes the controlled month', async () => {
-    const { rerender } = renderBreeze(
-      <Calendar
-        label="Choose date"
-        onChange={() => undefined}
-        value="2026-09-30"
-      />,
-    );
-
-    const focusedDate = screen.getByRole('button', {
-      name: 'Wednesday, 30 September 2026 selected',
-    });
-    focusedDate.focus();
-
-    rerender(
-      <BreezeProvider locale="en-GB">
-        <Calendar
-          label="Choose date"
-          loading
-          onChange={() => undefined}
-          value="2026-10-14"
-        />
-      </BreezeProvider>,
-    );
-    expect(focusedDate).toBeInTheDocument();
-
-    rerender(
-      <BreezeProvider locale="en-GB">
-        <Calendar
-          label="Choose date"
-          onChange={() => undefined}
-          value="2026-10-14"
-        />
-      </BreezeProvider>,
-    );
-
-    await waitFor(() =>
-      expect(
-        screen.getByRole('button', {
-          name: 'Wednesday, 14 October 2026 selected',
-        }),
-      ).toHaveFocus(),
-    );
-  });
-
-  it('does not restore calendar focus after focus moves elsewhere during loading', () => {
-    const { rerender } = renderBreeze(
-      <>
-        <button type="button">Outside calendar</button>
-        <Calendar
-          label="Choose date"
-          onChange={() => undefined}
-          value="2026-09-03"
-        />
-      </>,
-    );
-
-    screen
-      .getByRole('button', {
-        name: 'Thursday, 3 September 2026 selected',
-      })
-      .focus();
-
-    rerender(
-      <BreezeProvider locale="en-GB">
-        <>
-          <button type="button">Outside calendar</button>
-          <Calendar
-            label="Choose date"
-            loading
-            onChange={() => undefined}
-            value="2026-09-03"
-          />
-        </>
-      </BreezeProvider>,
-    );
-
-    const outsideButton = screen.getByRole('button', {
-      name: 'Outside calendar',
-    });
-    outsideButton.focus();
-
-    rerender(
-      <BreezeProvider locale="en-GB">
-        <>
-          <button type="button">Outside calendar</button>
-          <Calendar
-            label="Choose date"
-            onChange={() => undefined}
-            value="2026-09-03"
-          />
-        </>
-      </BreezeProvider>,
-    );
-
-    expect(outsideButton).toHaveFocus();
   });
 
   it('keeps the selected date visible and announced while disabled', async () => {
