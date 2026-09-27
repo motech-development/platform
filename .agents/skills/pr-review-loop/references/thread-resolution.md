@@ -3,22 +3,28 @@
 Use GitHub's `resolveReviewThread` GraphQL mutation, through an available GitHub
 tool or `gh api graphql`. Reactions and replies do not change resolution state.
 Use the review-thread node ID, not an inline comment's numeric ID or a review ID.
-An explicit `$pr-review-loop` invocation authorizes routine Codex reactions, eligible
-bot-thread resolution, and the limited written explanation for a conclusively
-rejected CodeRabbit finding after the checks below, unless the user explicitly
-narrows the request to code fixes only, inspection, one batch, or local review.
-Record that authorization or narrowing in the batch ledger and carry it across
-batches; do not ask again for each routine resolution. The explanation tags
-`@coderabbitai` in a top-level message or uses the integration's supported inline
-mechanism. Other text replies require explicit authorization even during a full
-loop. Push, commit, and PR metadata permissions remain separate as well.
+An explicit `$pr-review-loop` invocation authorizes routine Codex reactions,
+eligible bot-thread resolution, one evidence-backed written rebuttal for each
+conclusively rejected Codex finding, and the limited written explanation for a
+conclusively rejected CodeRabbit finding after the checks below, unless the user
+explicitly narrows the request to code fixes only, inspection, one batch, or
+local review. Record that authorization or narrowing in the batch ledger and
+carry it across batches; do not ask again for each routine resolution. Use the
+integration's supported inline mechanism, or a targeted top-level explanation
+when a finding appears only in a review body. For CodeRabbit, tag
+`@coderabbitai` in a top-level message. Other text replies require explicit
+authorization even during a full loop. Push, commit, and PR metadata permissions
+remain separate as well.
 
-Codex findings receive reactions only: 👍 for accepted findings and 👎 for
-conclusive false positives. CodeRabbit receives no reactions. Under the full-loop
-default, explain a conclusively rejected CodeRabbit finding with evidence and tag
-`@coderabbitai` in a top-level message, or use the supported inline mechanism;
-accepted findings receive no acknowledgement. Other text replies need separate
-explicit authorization.
+Codex findings receive 👍 when accepted and 👎 when conclusively rejected. Under
+the full-loop default, each conclusively rejected Codex finding may receive one
+evidence-backed rebuttal; confirm it was posted before resolving an eligible
+thread, and record its location. Do not repeat a rebuttal for the same behavior
+theme without new evidence. Accepted findings receive no written
+acknowledgement. CodeRabbit receives no reactions; explain a conclusively
+rejected finding with evidence and tag `@coderabbitai` in a top-level message,
+or use the supported inline mechanism. Do not manually post `@codex review` to
+trigger an automatic review.
 
 ## Eligibility
 
@@ -28,17 +34,24 @@ been assessed against the current remote head:
 - **Fixed or already addressed:** the relevant fix is present on the PR branch
   and the checks needed to establish that fix have passed. A local-only fix is
   insufficient. If a particular CI result is needed to prove the fix, wait for it.
-- **Rejected:** the finding is conclusively incorrect, with evidence recorded in
-  the batch record and user-facing outcome. Under the full-loop authorization,
-  CodeRabbit gets the required written rejection explanation before its thread is
-  marked handled or resolved; tag `@coderabbitai` in a top-level message or use
-  the supported inline mechanism. If posting fails, leave the thread open and
+- **Rejected:** the claim is conclusively incorrect, with evidence recorded in
+  the batch record and user-facing outcome. A preference or speculative
+  enhancement with no trace to the contract may be rejected as non-actionable
+  with the missing trace explained. A demonstrated defect whose fix conflicts
+  with an explicit exclusion remains valid and blocked on scope: keep it open
+  without a false-positive reaction or rebuttal. Under full-loop authorization,
+  Codex receives 👎 and one evidence-backed written rebuttal before its eligible
+  thread is resolved. CodeRabbit gets the required written rejection explanation
+  before its thread is marked handled or resolved; tag `@coderabbitai` in a
+  top-level message or use the supported inline mechanism. Confirm the post
+  before resolving. If posting fails, leave the thread open and
   report the failure. Without that authorization, record the evidence without
   posting and do not inherit bot-interaction permission from a narrower request.
-  Codex gets the appropriate reaction only when the batch ledger records
-  authorization. Code-fixes-only, inspection, one-batch, and local-review scopes
-  do not authorize a reaction by default; a narrower scope permits one only when
-  the user explicitly authorizes it. Pending questions or disputes stay open.
+  Do not repeat a Codex rebuttal for the same behavior theme without new
+  evidence; retain its location in the ledger. Code-fixes-only, inspection,
+  one-batch, and local-review scopes do not authorize these actions by default;
+  a narrower scope permits them only when the user explicitly authorizes them.
+  Pending questions or disputes stay open.
 - **Obsolete:** the relevant change was removed or superseded and the reported
   problem no longer applies. GitHub's `isOutdated` flag alone is not proof.
 

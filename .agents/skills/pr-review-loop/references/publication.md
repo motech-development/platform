@@ -16,7 +16,8 @@ services and paths it expressly specifies, within the no-charge limit; do not
 infer service disclosure from a request to review.
 
 An explicit `$pr-review-loop` invocation also authorizes routine Codex reactions,
-eligible bot-thread resolution, and the limited written explanation for a
+eligible bot-thread resolution, one evidence-backed written rebuttal for each
+conclusively rejected Codex finding, and the limited written explanation for a
 conclusively rejected CodeRabbit finding after the verification in
 [thread-resolution.md](thread-resolution.md), unless the user explicitly narrows
 the request to code fixes only, inspection, one batch, or local review. Other
@@ -25,8 +26,8 @@ merges, deploys, and PR metadata edits remain separate. Never post a manual
 `@codex review` comment; hosted Codex review relies on the repository's automatic
 trigger.
 The skill itself grants no permission to send general messages, push, merge, or
-deploy. The full-loop text permission above is limited to the specified CodeRabbit
-rejection explanation.
+deploy. The full-loop text permission above is limited to the specified Codex
+rebuttal and CodeRabbit rejection explanation.
 
 - **Do not push while the inner local review loop has pending reviews, unreviewed
   fixes, unresolved actionable findings, or an unresolved scope mismatch.** Once
@@ -38,14 +39,24 @@ rejection explanation.
   and validate any substantive hook changes, then send that delta through both
   local reviewers in parallel before publishing. The committed snapshot must
   retain complete coverage from both reviewers.
-  Check the finite remediation-publication budget in the batch ledger before
-  consuming a source-changing publication allowance. Stop for the user's design
-  or budget decision when it is exhausted.
+  Continue productive full-loop remediation without a default source-publication
+  cap. Honor a publication limit only when the user explicitly sets one. If it
+  is reached, stop and report the remaining findings and required gates; do not
+  raise the limit automatically. Reassess recurring complexity autonomously and
+  simplify, delete, or revert within scope where the contract supports it.
   Check CodeRabbit's no-charge boundary before pushing when a push triggers its
   hosted review; automatic hosted overages are subject to the same spending ban.
-- For authorized Codex feedback, use 👍 for accepted findings and 👎 for verified
-  false positives. Use reactions only unless text replies were explicitly
-  requested. Do not label an obsolete, previously valid finding a false positive.
+- For authorized Codex feedback, use 👍 for accepted findings and 👎 for
+  conclusively rejected findings. Each conclusively rejected finding may receive
+  one concise, evidence-backed rebuttal through the integration's supported
+  inline mechanism. If the finding appears only in the review body, use a
+  targeted top-level explanation that identifies the claim and evidence.
+  Confirm the rebuttal was posted before resolving an eligible rejected thread.
+  Record its location and do not repeat it for the same behavior theme without
+  new evidence. Do not label an obsolete, previously valid finding a false
+  positive. If evidence shows a real defect but the fix conflicts with an
+  explicit exclusion, leave it open as a scope decision; do not rebut it as
+  false.
 - CodeRabbit receives no reactions. The full-loop default authorizes a written,
   evidence-backed explanation only for each conclusively rejected CodeRabbit
   finding.
