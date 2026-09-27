@@ -99,10 +99,16 @@ describe('Toggle', () => {
         </Toggle>
       </BreezeProvider>
     );
-    const { rerender } = render(renderToggle(false));
+    const { container, rerender } = render(renderToggle(false));
     const toggle = screen.getByRole('button', {
       name: 'Remember this device',
     });
+    const liveStatus = screen.getByRole('status');
+
+    expect(liveStatus.tagName).toBe('OUTPUT');
+    expect(liveStatus).toHaveAttribute('aria-live', 'polite');
+    expect(liveStatus).toHaveAttribute('lang', 'fr-FR');
+    expect(liveStatus).toBeEmptyDOMElement();
 
     toggle.focus();
     rerender(renderToggle(true));
@@ -112,9 +118,12 @@ describe('Toggle', () => {
     expect(toggle).toHaveAttribute('aria-busy', 'true');
     expect(toggle).toHaveAttribute('aria-disabled', 'true');
     expect(toggle).toHaveAccessibleName('Remember this device');
+    expect(liveStatus).toHaveTextContent('Chargement');
+    expect(toggle).not.toContainElement(liveStatus);
     expect(
       screen.getByRole('progressbar', { name: 'Chargement' }),
     ).toHaveAttribute('lang', 'fr-FR');
+    expect(container.querySelector('output')).toBe(liveStatus);
     expect(toggle.querySelector('[data-breeze-skeleton]')).toHaveAttribute(
       'aria-hidden',
       'true',
@@ -127,6 +136,7 @@ describe('Toggle', () => {
     expect(toggle).toHaveAttribute('aria-pressed', 'true');
 
     rerender(renderToggle(false));
+    expect(liveStatus).toBeEmptyDOMElement();
     await user.click(toggle);
 
     expect(onChange).toHaveBeenCalledExactlyOnceWith(false);

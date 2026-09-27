@@ -99,7 +99,7 @@ export function ToggleGroup<T>({
   selected,
   size = 'md',
 }: Readonly<ToggleGroupProps<T>>) {
-  const { messages } = useBreezeContext();
+  const { getMessageLocale, messages } = useBreezeContext();
 
   const [uncontrolledSelectedKey, setUncontrolledSelectedKey] = useState<
     string | null
@@ -118,85 +118,98 @@ export function ToggleGroup<T>({
   }
 
   return (
-    <fieldset
-      aria-describedby={ariaDescribedBy}
-      aria-busy={loading || undefined}
-      className={`${variants.base.group} breeze:border-0 breeze:m-0 breeze:min-inline-size-0`}
-      disabled={disabled}
-      id={id}
-    >
-      <legend className="breeze:sr-only">{ariaLabel}</legend>
+    <>
+      <fieldset
+        aria-describedby={ariaDescribedBy}
+        aria-busy={loading || undefined}
+        className={`${variants.base.group} breeze:border-0 breeze:m-0 breeze:min-inline-size-0`}
+        disabled={disabled}
+        id={id}
+      >
+        <legend className="breeze:sr-only">{ariaLabel}</legend>
+        {decoratedItems.map(({ descriptor, item }) => (
+          <AriaToggleButton
+            className={[
+              variants.base.item,
+              variants.size[size],
+              variants.state.selected,
+              loading && variants.state.loading,
+            ].join(' ')}
+            isDisabled={disabled || descriptor.disabled}
+            isSelected={selectedKey === descriptor.id}
+            key={descriptor.id}
+            onChange={(pressed) => {
+              if (loading) return;
+
+              if (selected === undefined) {
+                setUncontrolledSelectedKey(pressed ? descriptor.id : null);
+              }
+
+              onChange?.(pressed ? item : null);
+            }}
+            render={(buttonProps) =>
+              createElement('button', {
+                ...buttonProps,
+                'aria-disabled':
+                  loading || disabled || descriptor.disabled || undefined,
+                type: 'button',
+              })
+            }
+          >
+            <span
+              className={[
+                variants.base.optionDetails,
+                loading && 'breeze:opacity-0',
+              ]
+                .filter(Boolean)
+                .join(' ')}
+            >
+              {descriptor.icon && <Icon name={descriptor.icon} size="sm" />}
+              <span className={variants.base.optionContent}>
+                <span className={variants.base.label}>{descriptor.label}</span>
+                {descriptor.description && (
+                  <span className={variants.base.description}>
+                    {descriptor.description}
+                  </span>
+                )}
+              </span>
+              {descriptor.badge && (
+                <Badge
+                  aria-label={descriptor.badge['aria-label']}
+                  variant={descriptor.badge.variant}
+                >
+                  {descriptor.badge.children}
+                </Badge>
+              )}
+            </span>
+            {loading && (
+              <span
+                aria-hidden="true"
+                className={variants.base.optionSkeleton}
+                data-breeze-skeleton=""
+              >
+                <Skeleton
+                  blockSize="100%"
+                  inlineSize="100%"
+                  shape="rectangle"
+                />
+              </span>
+            )}
+          </AriaToggleButton>
+        ))}
+      </fieldset>
       {loading && (
         <span className="breeze:sr-only">
           <Skeleton label={messages.loading} />
         </span>
       )}
-      {decoratedItems.map(({ descriptor, item }) => (
-        <AriaToggleButton
-          className={[
-            variants.base.item,
-            variants.size[size],
-            variants.state.selected,
-            loading && variants.state.loading,
-          ].join(' ')}
-          isDisabled={disabled || descriptor.disabled}
-          isSelected={selectedKey === descriptor.id}
-          key={descriptor.id}
-          onChange={(pressed) => {
-            if (loading) return;
-
-            if (selected === undefined) {
-              setUncontrolledSelectedKey(pressed ? descriptor.id : null);
-            }
-
-            onChange?.(pressed ? item : null);
-          }}
-          render={(buttonProps) =>
-            createElement('button', {
-              ...buttonProps,
-              'aria-disabled':
-                loading || disabled || descriptor.disabled || undefined,
-              type: 'button',
-            })
-          }
-        >
-          <span
-            className={[
-              variants.base.optionDetails,
-              loading && 'breeze:opacity-0',
-            ]
-              .filter(Boolean)
-              .join(' ')}
-          >
-            {descriptor.icon && <Icon name={descriptor.icon} size="sm" />}
-            <span className={variants.base.optionContent}>
-              <span className={variants.base.label}>{descriptor.label}</span>
-              {descriptor.description && (
-                <span className={variants.base.description}>
-                  {descriptor.description}
-                </span>
-              )}
-            </span>
-            {descriptor.badge && (
-              <Badge
-                aria-label={descriptor.badge['aria-label']}
-                variant={descriptor.badge.variant}
-              >
-                {descriptor.badge.children}
-              </Badge>
-            )}
-          </span>
-          {loading && (
-            <span
-              aria-hidden="true"
-              className={variants.base.optionSkeleton}
-              data-breeze-skeleton=""
-            >
-              <Skeleton blockSize="100%" inlineSize="100%" shape="rectangle" />
-            </span>
-          )}
-        </AriaToggleButton>
-      ))}
-    </fieldset>
+      <output
+        aria-live="polite"
+        className="breeze:sr-only"
+        lang={getMessageLocale('loading')}
+      >
+        {loading ? messages.loading : ''}
+      </output>
+    </>
   );
 }
