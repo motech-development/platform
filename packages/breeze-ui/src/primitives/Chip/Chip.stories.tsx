@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useState } from 'react';
+import { expect, within } from 'storybook/test';
 import { Inline } from '../Inline/Inline';
 import { Chip } from './Chip';
 
@@ -57,7 +58,15 @@ function FilterExample() {
 }
 
 /** An unselected pill-shaped filter. */
-export const Default: Story = {};
+export const Default: Story = {
+  play: async ({ canvasElement }) => {
+    const chip = within(canvasElement).getByRole('button', {
+      name: 'Needs receipt',
+    });
+
+    await expect(getComputedStyle(chip).minBlockSize).toBe('34px');
+  },
+};
 
 /** A selected chip uses the selected-filter colours. */
 export const Pressed: Story = {

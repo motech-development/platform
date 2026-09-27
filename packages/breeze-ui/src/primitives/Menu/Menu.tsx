@@ -31,7 +31,7 @@ const variants = {
     label: 'breeze:font-medium',
     menu: 'breeze:min-inline-size-0 breeze:outline-none',
     popover:
-      'breeze:min-inline-size-[var(--trigger-width)] breeze:max-inline-size-[calc(100vw-24px)] breeze:overflow-auto breeze:rounded-breeze-panel breeze:border breeze:border-solid breeze:border-breeze-line breeze:bg-breeze-surface breeze:p-breeze-1 breeze:shadow-breeze-overlay',
+      'breeze:[min-inline-size:var(--trigger-width)] breeze:max-inline-size-[calc(100vw-24px)] breeze:overflow-auto breeze:rounded-breeze-panel breeze:border breeze:border-solid breeze:border-breeze-line breeze:bg-breeze-surface breeze:p-breeze-1 breeze:shadow-breeze-overlay',
     trigger:
       'breeze:inline-flex breeze:min-block-breeze-md breeze:any-pointer-coarse:min-block-breeze-tap breeze:items-center breeze:gap-breeze-2 breeze:rounded-breeze-ctl breeze:border breeze:border-solid breeze:border-breeze-line-strong breeze:bg-breeze-surface breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:py-breeze-2 breeze:font-breeze-sans breeze:text-breeze-sm breeze:leading-breeze-snug breeze:text-breeze-ink breeze:outline-offset-2 breeze:data-[hovered]:bg-breeze-sunken breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand',
   },
@@ -112,6 +112,15 @@ function MenuItemContent({
   );
 }
 
+function getMenuItemAccessibleName(descriptor: ItemDescriptor) {
+  if (!descriptor.badge) return descriptor.label;
+
+  const badgeLabel =
+    descriptor.badge['aria-label']?.trim() || descriptor.badge.children;
+
+  return `${descriptor.label}, ${badgeLabel}`;
+}
+
 /**
  * Opens a descriptor-backed list of actions in Breeze's overlay portal.
  *
@@ -148,7 +157,18 @@ export function Menu<T>({
   useLayoutEffect(() => {
     if (!open && restoreFocusRef.current) {
       restoreFocusRef.current = false;
-      triggerRef.current?.focus();
+
+      requestAnimationFrame(() => {
+        const triggerElement = triggerRef.current;
+
+        if (
+          triggerElement &&
+          triggerElement.ownerDocument.activeElement ===
+            triggerElement.ownerDocument.body
+        ) {
+          triggerElement.focus();
+        }
+      });
     }
   }, [open]);
 
@@ -193,11 +213,7 @@ export function Menu<T>({
                   aria-describedby={
                     descriptor.description ? descriptionId : undefined
                   }
-                  aria-label={
-                    descriptor.badge
-                      ? `${descriptor.label}, ${descriptor.badge['aria-label'] ?? descriptor.badge.children}`
-                      : descriptor.label
-                  }
+                  aria-label={getMenuItemAccessibleName(descriptor)}
                   className={variants.base.item}
                   id={descriptor.id}
                   isDisabled={descriptor.disabled}
