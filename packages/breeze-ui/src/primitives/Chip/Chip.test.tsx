@@ -95,8 +95,14 @@ describe('Chip', () => {
         </Chip>
       </BreezeProvider>
     );
-    const { rerender } = render(renderChip(false));
+    const { container, rerender } = render(renderChip(false));
     const chip = screen.getByRole('button', { name: 'Needs receipt' });
+    const liveStatus = screen.getByRole('status');
+
+    expect(liveStatus.tagName).toBe('OUTPUT');
+    expect(liveStatus).toHaveAttribute('aria-live', 'polite');
+    expect(liveStatus).toHaveAttribute('lang', 'fr-FR');
+    expect(liveStatus).toBeEmptyDOMElement();
 
     chip.focus();
     rerender(renderChip(true));
@@ -106,9 +112,12 @@ describe('Chip', () => {
     expect(chip).toHaveAttribute('aria-busy', 'true');
     expect(chip).toHaveAttribute('aria-disabled', 'true');
     expect(chip).toHaveAccessibleName('Needs receipt');
+    expect(liveStatus).toHaveTextContent('Chargement');
+    expect(chip).not.toContainElement(liveStatus);
     expect(
       screen.getByRole('progressbar', { name: 'Chargement' }),
     ).toHaveAttribute('lang', 'fr-FR');
+    expect(container.querySelector('output')).toBe(liveStatus);
     expect(chip.querySelector('[data-breeze-skeleton]')).toHaveAttribute(
       'aria-hidden',
       'true',
@@ -121,6 +130,7 @@ describe('Chip', () => {
     expect(chip).toHaveAttribute('aria-pressed', 'true');
 
     rerender(renderChip(false));
+    expect(liveStatus).toBeEmptyDOMElement();
     await user.click(chip);
 
     expect(onChange).toHaveBeenCalledExactlyOnceWith(false);

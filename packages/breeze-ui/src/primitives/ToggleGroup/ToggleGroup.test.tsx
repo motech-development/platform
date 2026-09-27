@@ -176,10 +176,16 @@ describe('ToggleGroup', () => {
         />
       </BreezeProvider>
     );
-    const { rerender } = render(renderGroup(false));
+    const { container, rerender } = render(renderGroup(false));
     const group = screen.getByRole('group', { name: 'Transaction status' });
     const confirmed = within(group).getByRole('button', { name: 'Confirmed' });
     const pending = within(group).getByRole('button', { name: 'Pending' });
+    const liveStatus = screen.getByRole('status');
+
+    expect(liveStatus.tagName).toBe('OUTPUT');
+    expect(liveStatus).toHaveAttribute('aria-live', 'polite');
+    expect(liveStatus).toHaveAttribute('lang', 'fr-FR');
+    expect(liveStatus).toBeEmptyDOMElement();
 
     confirmed.focus();
     rerender(renderGroup(true));
@@ -190,9 +196,12 @@ describe('ToggleGroup', () => {
     expect(confirmed).toHaveAttribute('aria-disabled', 'true');
     expect(confirmed).toHaveAccessibleName('Confirmed');
     expect(pending).toHaveAttribute('aria-disabled', 'true');
+    expect(liveStatus).toHaveTextContent('Chargement');
+    expect(group).not.toContainElement(liveStatus);
     expect(
       screen.getByRole('progressbar', { name: 'Chargement' }),
     ).toHaveAttribute('lang', 'fr-FR');
+    expect(container.querySelector('output')).toBe(liveStatus);
     expect(group.querySelectorAll('[data-breeze-skeleton]')).toHaveLength(2);
 
     await user.click(confirmed);
@@ -202,6 +211,7 @@ describe('ToggleGroup', () => {
     expect(confirmed).toHaveAttribute('aria-pressed', 'true');
 
     rerender(renderGroup(false));
+    expect(liveStatus).toBeEmptyDOMElement();
     await user.click(confirmed);
 
     expect(onChange).toHaveBeenCalledExactlyOnceWith(null);

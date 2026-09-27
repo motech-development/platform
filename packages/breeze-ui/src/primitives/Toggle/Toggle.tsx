@@ -1,15 +1,9 @@
 import type { ButtonHTMLAttributes, Ref } from 'react';
-import { createElement, useState } from 'react';
-import { ToggleButton as AriaToggleButton } from 'react-aria-components/ToggleButton';
-import { useBreezeContext } from '../../provider/BreezeContext';
 import type { ControlSize } from '../Button/Button';
-import { Skeleton } from '../Skeleton/Skeleton';
+import SelectionControl from '../SelectionControl/SelectionControl';
 
 const variants = {
   base: {
-    label: 'breeze:[grid-area:1/1]',
-    skeleton:
-      'breeze:[grid-area:1/1] breeze:inline-size-full breeze:block-size-breeze-3',
     toggle:
       'breeze:inline-grid breeze:items-center breeze:justify-center breeze:rounded-breeze-ctl breeze:border breeze:border-solid breeze:border-breeze-line-strong breeze:bg-breeze-surface breeze:font-breeze-sans breeze:font-semibold breeze:text-breeze-ink breeze:cursor-pointer breeze:select-none breeze:outline-offset-2 breeze:data-[hovered]:bg-breeze-sunken breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-60 breeze:any-pointer-coarse:min-block-breeze-tap breeze:any-pointer-coarse:min-inline-breeze-tap',
   },
@@ -20,8 +14,6 @@ const variants = {
     sm: 'breeze:min-block-breeze-sm breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:py-breeze-1 breeze:text-breeze-xs',
   },
   state: {
-    loading: 'breeze:cursor-wait',
-    loadingLabel: 'breeze:opacity-0',
     pressed:
       'breeze:data-[selected]:border-breeze-brand breeze:data-[selected]:bg-breeze-brand-soft breeze:data-[selected]:text-breeze-brand-text breeze:forced-colors:data-[selected]:outline-2 breeze:forced-colors:data-[selected]:outline-offset-2',
   },
@@ -90,74 +82,25 @@ export function Toggle({
   ref,
   size = 'md',
 }: Readonly<ToggleProps>) {
-  const { messages } = useBreezeContext();
-  const [uncontrolledPressed, setUncontrolledPressed] = useState(
-    defaultPressed ?? false,
-  );
-  const isControlled = pressed !== undefined;
-  const isPressed = isControlled ? pressed : uncontrolledPressed;
-
   return (
-    <>
-      <AriaToggleButton
-        aria-describedby={ariaDescribedBy}
-        aria-label={ariaLabel}
-        aria-labelledby={ariaLabelledBy}
-        className={[
-          variants.base.toggle,
-          variants.size[size],
-          variants.state.pressed,
-          loading && variants.state.loading,
-        ]
-          .filter(Boolean)
-          .join(' ')}
-        id={id}
-        isDisabled={disabled}
-        isSelected={isPressed}
-        onChange={(nextPressed) => {
-          if (loading) return;
-
-          if (!isControlled) {
-            setUncontrolledPressed(nextPressed);
-          }
-
-          onChange?.(nextPressed);
-        }}
-        ref={ref}
-        render={(buttonProps) =>
-          createElement('button', {
-            ...buttonProps,
-            'aria-busy': loading || undefined,
-            'aria-disabled': disabled || loading || undefined,
-            type: 'button',
-          })
-        }
-      >
-        <span
-          className={[
-            variants.base.label,
-            loading && variants.state.loadingLabel,
-          ]
-            .filter(Boolean)
-            .join(' ')}
-        >
-          {children}
-        </span>
-        {loading && (
-          <span
-            aria-hidden="true"
-            className={variants.base.skeleton}
-            data-breeze-skeleton=""
-          >
-            <Skeleton inlineSize="100%" />
-          </span>
-        )}
-      </AriaToggleButton>
-      {loading && (
-        <span className="breeze:sr-only">
-          <Skeleton label={messages.loading} />
-        </span>
-      )}
-    </>
+    <SelectionControl
+      aria-describedby={ariaDescribedBy}
+      aria-label={ariaLabel}
+      aria-labelledby={ariaLabelledBy}
+      className={[
+        variants.base.toggle,
+        variants.size[size],
+        variants.state.pressed,
+      ].join(' ')}
+      defaultPressed={defaultPressed}
+      disabled={disabled}
+      id={id}
+      loading={loading}
+      onChange={onChange}
+      pressed={pressed}
+      ref={ref}
+    >
+      {children}
+    </SelectionControl>
   );
 }
