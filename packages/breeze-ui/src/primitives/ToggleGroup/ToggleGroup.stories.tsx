@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useState } from 'react';
+import { expect, userEvent, within } from 'storybook/test';
 import type { ControlSize } from '../Button/Button';
+import { Button } from '../Button/Button';
 import type { ItemDescriptor } from '../Collection/item.types';
 import { ToggleGroup } from './ToggleGroup';
 
@@ -26,18 +28,67 @@ const meta = {
   args: {
     'aria-label': 'Transaction status',
     defaultSelected: options[0],
-    getItem: (item: unknown) => item as ItemDescriptor,
+    getItem: (item) => item,
     items: options,
   },
   component: ToggleGroup,
   title: 'Actions/ToggleGroup',
-} satisfies Meta<typeof ToggleGroup>;
+} satisfies Meta<typeof ToggleGroup<ItemDescriptor>>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-/** A single-choice set of connected segmented options. */
+/** A set of connected options with one current selection. */
 export const Default: Story = {};
+
+function LoadingExample() {
+  const [loading, setLoading] = useState(true);
+
+  return (
+    <div className="breeze-story-action">
+      <ToggleGroup
+        aria-label="Transaction status"
+        defaultSelected={options[0]}
+        getItem={(item) => item}
+        items={options}
+        loading={loading}
+      />
+      <Button onAction={() => setLoading((current) => !current)}>
+        {loading ? 'Finish saving selection' : 'Save selection again'}
+      </Button>
+    </div>
+  );
+}
+
+/** The selected appearance and option sizes stay in place while saving. */
+export const Loading: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const group = canvas.getByRole('group', { name: 'Transaction status' });
+    const optionButtons = within(group).getAllByRole('button');
+    const loadingBounds = optionButtons.map((button) =>
+      button.getBoundingClientRect(),
+    );
+
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Finish saving selection' }),
+    );
+    await expect(group).not.toHaveAttribute('aria-busy');
+
+    const readyBounds = optionButtons.map((button) =>
+      button.getBoundingClientRect(),
+    );
+    await expect(
+      readyBounds.map(({ height, width }) => [width, height]),
+    ).toEqual(loadingBounds.map(({ height, width }) => [width, height]));
+
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Save selection again' }),
+    );
+    await expect(group).toHaveAttribute('aria-busy', 'true');
+  },
+  render: () => <LoadingExample />,
+};
 
 /** All shared sizes use the same segmented treatment. */
 export const Sizes: Story = {
@@ -57,7 +108,7 @@ export const Sizes: Story = {
   ),
 };
 
-/** Descriptor-disabled options cannot be selected. */
+/** Disabled options cannot be selected. */
 export const DisabledOption: Story = {};
 
 function ControlledExample() {
@@ -79,7 +130,7 @@ function ControlledExample() {
   );
 }
 
-/** Controlled use reports the selected item or `null` when cleared. */
+/** The current selection appears below the group. */
 export const Controlled: Story = {
   render: () => <ControlledExample />,
 };

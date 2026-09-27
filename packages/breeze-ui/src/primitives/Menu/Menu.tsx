@@ -42,37 +42,37 @@ const variants = {
 } as const;
 
 interface MenuCommonProps<T> {
-  /** Maps each item to the closed descriptor rendered by Breeze. */
+  /** Returns the display details for an application item. */
   getItem: (item: T) => ItemDescriptor;
-  /** Items displayed as menu actions. */
+  /** Application items displayed as actions. */
   items: T[];
-  /** Reports the selected descriptor, without exposing an item or DOM event. */
+  /** Called with the selected action's ItemDescriptor. */
   onAction?: (descriptor: ItemDescriptor) => void;
-  /** Optional icon shown before the visible trigger label. */
+  /** Icon shown beside the trigger label. */
   triggerIcon?: IconName;
-  /** Visible label for the library-owned menu trigger. */
+  /** Visible label for the button that opens the menu. */
   trigger: string;
 }
 
 interface ControlledMenuProps {
-  /** Initial visibility is available only for uncontrolled menus. */
+  /** Only set when visibility is uncontrolled. */
   defaultOpen?: never;
-  /** Reports the next visibility state. */
+  /** Called when the menu should open or close. */
   onOpenChange: (open: boolean) => void;
-  /** Current visibility. */
+  /** Whether the menu is open. */
   open: boolean;
 }
 
 interface UncontrolledMenuProps {
   /** Initial visibility. Defaults to `false`. */
   defaultOpen?: boolean;
-  /** Reports visibility changes when provided. */
+  /** Called when the menu opens or closes. */
   onOpenChange?: (open: boolean) => void;
-  /** Controlled and uncontrolled visibility props are mutually exclusive. */
+  /** Only set when visibility is controlled. */
   open?: never;
 }
 
-/** Props for a data-driven action menu with controlled or uncontrolled visibility. */
+/** Props for a menu with caller-controlled or internal visibility. */
 export type MenuProps<T> = MenuCommonProps<T> &
   (ControlledMenuProps | UncontrolledMenuProps);
 
@@ -122,9 +122,9 @@ function getMenuItemAccessibleName(descriptor: ItemDescriptor) {
 }
 
 /**
- * Opens a descriptor-backed list of actions in Breeze's overlay portal.
+ * Displays related actions from a labelled trigger button.
  *
- * @summary A keyboard-accessible action menu with semantic descriptor callbacks.
+ * @summary A compact menu for secondary actions.
  */
 export function Menu<T>({
   defaultOpen,

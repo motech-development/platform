@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useState } from 'react';
-import { expect, within } from 'storybook/test';
+import { expect, userEvent, within } from 'storybook/test';
+import { Button } from '../Button/Button';
 import { Inline } from '../Inline/Inline';
 import { Chip } from './Chip';
 
@@ -73,6 +74,45 @@ export const Pressed: Story = {
   args: {
     defaultPressed: true,
   },
+};
+
+function LoadingExample() {
+  const [loading, setLoading] = useState(true);
+
+  return (
+    <div className="breeze-story-action">
+      <Chip defaultPressed loading={loading}>
+        Needs receipt
+      </Chip>
+      <Button onAction={() => setLoading((current) => !current)}>
+        {loading ? 'Finish saving filters' : 'Save filters again'}
+      </Button>
+    </div>
+  );
+}
+
+/** A filter keeps its size and selected appearance while saving. */
+export const Loading: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const chip = canvas.getByRole('button', { name: 'Needs receipt' });
+    const loadingBounds = chip.getBoundingClientRect();
+
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Finish saving filters' }),
+    );
+    await expect(chip).not.toHaveAttribute('aria-busy');
+
+    const readyBounds = chip.getBoundingClientRect();
+    await expect(readyBounds.width).toBe(loadingBounds.width);
+    await expect(readyBounds.height).toBe(loadingBounds.height);
+
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Save filters again' }),
+    );
+    await expect(chip).toHaveAttribute('aria-busy', 'true');
+  },
+  render: () => <LoadingExample />,
 };
 
 /** Independent chips can be combined to refine a filter. */

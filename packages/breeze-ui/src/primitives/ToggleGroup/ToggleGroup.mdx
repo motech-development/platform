@@ -16,10 +16,9 @@ clear the selection.
 
 ## Options
 
-Pass `items` and a `getItem` mapping function. The mapping returns Breeze's
-closed `ItemDescriptor` contract: `id`, `label`, and optional `description`,
-`icon`, `badge` and `disabled`. It cannot return JSX, classes, styles or slot
-props. Disabled descriptors cannot be activated.
+Provide `items` and a `getItem` function that describes each option. Return a
+unique `id` and visible `label`. You can also provide a `description`, `icon`,
+`badge` or `disabled` flag. Disabled options cannot be selected.
 
 <Canvas of={Stories.DisabledOption} />
 
@@ -27,16 +26,23 @@ props. Disabled descriptors cannot be activated.
 
 Use `defaultSelected` with an optional `onChange` for uncontrolled use. Provide
 `selected` and `onChange` when the application owns state. The callback receives
-the selected item or `null` when no option is selected, never a DOM event. The
-controlled and uncontrolled props cannot be mixed.
+the selected item, or `null` when the choice is cleared. Choose one of these
+state approaches for each group.
 
 <Canvas of={Stories.Controlled} />
+
+## Loading
+
+Set `loading` while saving a selection. Each option shows a skeleton while the
+selected appearance stays in place. Changes resume when loading clears.
+
+<Canvas of={Stories.Loading} />
 
 ## Sizes and accessibility
 
 `size` accepts `sm`, `md` (default) or `lg`, with minimum heights of 34, 38 and
-52px. Coarse pointers receive a 44px minimum target. Give each group an
-`aria-label`; buttons expose the pressed state and React Aria supplies keyboard
+52px. Touch targets are at least 44px. Give each group an
+`aria-label`; each option exposes whether it is pressed and supports keyboard
 interaction.
 
 <Canvas of={Stories.Sizes} />

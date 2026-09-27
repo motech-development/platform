@@ -1,4 +1,4 @@
-import { screen, within } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import renderBreeze from '../../../test/render';
@@ -159,5 +159,84 @@ describe('ToggleGroup', () => {
 
     expect(primaryConfirmed).toHaveAttribute('aria-pressed', 'true');
     expect(secondaryConfirmed).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  it('preserves selection and focus while loading, then restores activation', async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn<(selected: Option | null) => void>();
+    const renderGroup = (loading: boolean) => (
+      <BreezeProvider locale="fr-FR" messages={{ loading: 'Chargement' }}>
+        <ToggleGroup
+          aria-label="Transaction status"
+          defaultSelected={options[0]}
+          getItem={getItem}
+          items={options}
+          loading={loading}
+          onChange={onChange}
+        />
+      </BreezeProvider>
+    );
+    const { rerender } = render(renderGroup(false));
+    const group = screen.getByRole('group', { name: 'Transaction status' });
+    const confirmed = within(group).getByRole('button', { name: 'Confirmed' });
+    const pending = within(group).getByRole('button', { name: 'Pending' });
+
+    confirmed.focus();
+    rerender(renderGroup(true));
+
+    expect(group).toHaveAttribute('aria-busy', 'true');
+    expect(confirmed).toHaveFocus();
+    expect(confirmed).toHaveAttribute('aria-pressed', 'true');
+    expect(confirmed).toHaveAttribute('aria-disabled', 'true');
+    expect(confirmed).toHaveAccessibleName('Confirmed');
+    expect(pending).toHaveAttribute('aria-disabled', 'true');
+    expect(
+      screen.getByRole('progressbar', { name: 'Chargement' }),
+    ).toHaveAttribute('lang', 'fr-FR');
+    expect(group.querySelectorAll('[data-breeze-skeleton]')).toHaveLength(2);
+
+    await user.click(confirmed);
+    await user.keyboard(' ');
+
+    expect(onChange).not.toHaveBeenCalled();
+    expect(confirmed).toHaveAttribute('aria-pressed', 'true');
+
+    rerender(renderGroup(false));
+    await user.click(confirmed);
+
+    expect(onChange).toHaveBeenCalledExactlyOnceWith(null);
+    expect(confirmed).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  it('keeps controlled selection with its owner while loading', async () => {
+    const onChange = vi.fn<(selected: Option | null) => void>();
+    const renderGroup = (loading: boolean, selected: Option | null) => (
+      <BreezeProvider locale="en-GB">
+        <ToggleGroup
+          aria-label="Transaction status"
+          getItem={getItem}
+          items={options}
+          loading={loading}
+          onChange={onChange}
+          selected={selected}
+        />
+      </BreezeProvider>
+    );
+    const { rerender } = render(renderGroup(false, options[0]));
+    const group = screen.getByRole('group', { name: 'Transaction status' });
+    const confirmed = within(group).getByRole('button', { name: 'Confirmed' });
+
+    rerender(renderGroup(true, options[0]));
+    await userEvent.click(confirmed);
+
+    expect(onChange).not.toHaveBeenCalled();
+    expect(confirmed).toHaveAttribute('aria-pressed', 'true');
+
+    rerender(renderGroup(false, options[1]));
+
+    expect(confirmed).toHaveAttribute('aria-pressed', 'false');
+    expect(
+      within(group).getByRole('button', { name: 'Pending' }),
+    ).toHaveAttribute('aria-pressed', 'true');
   });
 });

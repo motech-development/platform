@@ -42,7 +42,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-/** A descriptor-backed action menu with aligned optional icons. */
+/** A compact set of account actions. */
 export const Default: Story = {
   play: async ({ canvasElement }) => {
     const trigger = within(canvasElement).getByRole('button', {
@@ -85,7 +85,7 @@ function ControlledExample() {
   );
 }
 
-/** The application owns visibility and receives descriptor actions. */
+/** Control visibility and receive the selected item's details. */
 export const Controlled: Story = {
   render: () => <ControlledExample />,
 };
