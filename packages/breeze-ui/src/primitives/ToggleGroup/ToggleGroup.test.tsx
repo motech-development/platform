@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import renderBreeze from '../../../test/render';
@@ -63,6 +63,10 @@ describe('ToggleGroup', () => {
     const confirmed = screen.getByRole('button', { name: 'Confirmed' });
     const pending = screen.getByRole('button', { name: 'Pending' });
 
+    expect(group.tagName).toBe('FIELDSET');
+    expect(group.querySelector('legend')).toHaveTextContent(
+      'Transaction status',
+    );
     expect(group).toHaveClass('breeze:bg-breeze-sunken');
     expect(confirmed).toHaveAttribute('aria-pressed', 'false');
     expect(pending).toHaveAttribute('aria-pressed', 'false');
@@ -113,5 +117,47 @@ describe('ToggleGroup', () => {
 
     expect(confirmed).toHaveAttribute('aria-pressed', 'false');
     expect(pending).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  it('keeps descriptor ids as data keys rather than page-global button ids', async () => {
+    const user = userEvent.setup();
+
+    renderBreeze(
+      <>
+        <ToggleGroup
+          aria-label="Primary status"
+          defaultSelected={options[0]}
+          getItem={getItem}
+          items={options}
+        />
+        <ToggleGroup
+          aria-label="Secondary status"
+          getItem={getItem}
+          items={options}
+        />
+      </>,
+    );
+
+    const primaryGroup = screen.getByRole('group', { name: 'Primary status' });
+    const secondaryGroup = screen.getByRole('group', {
+      name: 'Secondary status',
+    });
+    const primaryConfirmed = within(primaryGroup).getByRole('button', {
+      name: 'Confirmed',
+    });
+    const secondaryConfirmed = within(secondaryGroup).getByRole('button', {
+      name: 'Confirmed',
+    });
+
+    expect(primaryConfirmed).toHaveAttribute('aria-pressed', 'true');
+    expect(secondaryConfirmed).toHaveAttribute('aria-pressed', 'false');
+    expect(primaryConfirmed).not.toHaveAttribute('id');
+    expect(secondaryConfirmed).not.toHaveAttribute('id');
+    expect(document.querySelectorAll('#confirmed')).toHaveLength(0);
+
+    await user.click(secondaryConfirmed);
+
+    expect(primaryConfirmed).toHaveAttribute('aria-pressed', 'true');
+    expect(secondaryConfirmed).toHaveAttribute('aria-pressed', 'true');
   });
 });

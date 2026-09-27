@@ -1,5 +1,6 @@
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { useRef } from 'react';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import renderBreeze from '../../../test/render';
 import { BreezeProvider } from '../../provider/BreezeProvider';
@@ -39,6 +40,34 @@ const actions: Action[] = [
     id: 'sign-out-action',
   },
 ];
+
+const badgeFallbackAction: ItemDescriptor = {
+  badge: {
+    'aria-label': '  ',
+    children: 'New',
+    variant: 'brand',
+  },
+  id: 'reports',
+  label: 'Reports',
+};
+
+function MenuWithFocusDestination() {
+  const destinationRef = useRef<HTMLButtonElement>(null);
+
+  return (
+    <>
+      <Menu
+        getItem={(item) => item.descriptor}
+        items={actions}
+        onAction={() => destinationRef.current?.focus()}
+        trigger="Account actions"
+      />
+      <button ref={destinationRef} type="button">
+        Continue
+      </button>
+    </>
+  );
+}
 
 expectTypeOf<MenuProps<Action>>().not.toHaveProperty('className');
 expectTypeOf<MenuProps<Action>>().not.toHaveProperty('style');
@@ -116,6 +145,21 @@ describe('Menu', () => {
     );
   });
 
+  it('falls back to visible badge text when its accessible label is blank', () => {
+    renderBreeze(
+      <Menu
+        defaultOpen
+        getItem={(item) => item}
+        items={[badgeFallbackAction]}
+        trigger="Reports"
+      />,
+    );
+
+    expect(
+      screen.getByRole('menuitem', { name: 'Reports, New' }),
+    ).toHaveAccessibleName('Reports, New');
+  });
+
   it('uses keyboard navigation and reports the selected descriptor', async () => {
     const user = userEvent.setup();
     const onAction = vi.fn();
@@ -156,7 +200,7 @@ describe('Menu', () => {
     await waitFor(() =>
       expect(screen.queryByRole('menu')).not.toBeInTheDocument(),
     );
-    expect(trigger).toHaveFocus();
+    await waitFor(() => expect(trigger).toHaveFocus());
   });
 
   it('closes on Escape and restores focus to the trigger', async () => {
@@ -180,7 +224,7 @@ describe('Menu', () => {
       expect(screen.queryByRole('menu')).not.toBeInTheDocument(),
     );
     expect(onOpenChange).toHaveBeenLastCalledWith(false);
-    expect(trigger).toHaveFocus();
+    await waitFor(() => expect(trigger).toHaveFocus());
   });
 
   it('leaves controlled visibility to the caller', async () => {
@@ -246,7 +290,7 @@ describe('Menu', () => {
       expect(screen.queryByRole('menu')).not.toBeInTheDocument(),
     );
     expect(screen.getByRole('dialog', { name: 'Details' })).toBeInTheDocument();
-    expect(menuTrigger).toHaveFocus();
+    await waitFor(() => expect(menuTrigger).toHaveFocus());
 
     await user.keyboard('{Escape}');
     await waitFor(() =>
@@ -277,5 +321,27 @@ describe('Menu', () => {
     await waitFor(() =>
       expect(screen.queryByRole('menu')).not.toBeInTheDocument(),
     );
+  });
+
+  it('preserves focus moved by an action to another target', async () => {
+    const user = userEvent.setup();
+
+    renderBreeze(<MenuWithFocusDestination />);
+
+    const trigger = screen.getByRole('button', { name: 'Account actions' });
+    const destination = screen.getByRole('button', { name: 'Continue' });
+
+    trigger.focus();
+    await user.keyboard('{ArrowDown}');
+    await user.keyboard('{Enter}');
+
+    await waitFor(() =>
+      expect(screen.queryByRole('menu')).not.toBeInTheDocument(),
+    );
+    await new Promise<void>((resolve) => {
+      requestAnimationFrame(() => resolve());
+    });
+    expect(destination).toHaveFocus();
+    expect(trigger).not.toHaveFocus();
   });
 });

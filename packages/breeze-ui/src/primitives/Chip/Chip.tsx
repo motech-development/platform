@@ -4,7 +4,7 @@ import { useBreezeContext } from '../../provider/BreezeContext';
 
 const variants = {
   base: {
-    chip: 'breeze:inline-flex breeze:items-center breeze:justify-center breeze:whitespace-nowrap breeze:rounded-breeze-full breeze:border breeze:border-solid breeze:border-breeze-line-strong breeze:bg-breeze-surface breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:font-breeze-sans breeze:text-breeze-xs breeze:font-semibold breeze:text-breeze-ink breeze:cursor-pointer breeze:select-none breeze:outline-offset-2 breeze:data-[hovered]:bg-breeze-sunken breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-60 breeze:any-pointer-coarse:min-block-breeze-tap breeze:any-pointer-coarse:min-inline-breeze-tap breeze:min-block-breeze-chip',
+    chip: 'breeze:inline-flex breeze:items-center breeze:justify-center breeze:whitespace-nowrap breeze:rounded-breeze-full breeze:border breeze:border-solid breeze:border-breeze-line-strong breeze:bg-breeze-surface breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:font-breeze-sans breeze:text-breeze-xs breeze:font-semibold breeze:text-breeze-ink breeze:cursor-pointer breeze:select-none breeze:outline-offset-2 breeze:data-[hovered]:bg-breeze-sunken breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-60 breeze:any-pointer-coarse:min-block-breeze-tap breeze:any-pointer-coarse:min-inline-breeze-tap breeze:min-block-breeze-sm',
   },
   compound: {},
   size: {},

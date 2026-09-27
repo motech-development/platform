@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useState } from 'react';
+import { expect, within } from 'storybook/test';
 import type { ItemDescriptor } from '../Collection/item.types';
 import { Menu } from './Menu';
 
@@ -42,7 +43,25 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /** A descriptor-backed action menu with aligned optional icons. */
-export const Default: Story = {};
+export const Default: Story = {
+  play: async ({ canvasElement }) => {
+    const trigger = within(canvasElement).getByRole('button', {
+      name: 'Account actions',
+    });
+    const menu = await within(document.body).findByRole('menu', {
+      name: 'Account actions',
+    });
+    const popover = menu.closest('.breeze-popover');
+
+    if (!popover) throw new Error('The menu popover was not rendered.');
+
+    const widthDelta =
+      Number.parseFloat(getComputedStyle(popover).minInlineSize) -
+      trigger.getBoundingClientRect().width;
+
+    await expect(Math.abs(widthDelta)).toBeLessThan(1);
+  },
+};
 
 function ControlledExample() {
   const [open, setOpen] = useState(false);

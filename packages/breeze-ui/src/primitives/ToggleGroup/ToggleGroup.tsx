@@ -32,15 +32,15 @@ const variants = {
 
 interface ToggleGroupCommonProps<T> {
   /** Names the group when it has no visible heading. */
-  'aria-label': HTMLAttributes<HTMLDivElement>['aria-label'];
+  'aria-label': HTMLAttributes<HTMLFieldSetElement>['aria-label'];
   /** Identifies elements that provide additional information about the group. */
-  'aria-describedby'?: HTMLAttributes<HTMLDivElement>['aria-describedby'];
+  'aria-describedby'?: HTMLAttributes<HTMLFieldSetElement>['aria-describedby'];
   /** Prevents every option in the group from being activated. */
   disabled?: boolean;
   /** Maps each item to the closed Breeze descriptor used by the group. */
   getItem: (item: T) => ItemDescriptor;
   /** Sets the rendered group's HTML `id`. */
-  id?: HTMLAttributes<HTMLDivElement>['id'];
+  id?: HTMLAttributes<HTMLFieldSetElement>['id'];
   /** The available options. */
   items: T[];
   /** Selects the group's dimensions. Defaults to `md`. */
@@ -110,13 +110,13 @@ export function ToggleGroup<T>({
   }
 
   return (
-    <div
+    <fieldset
       aria-describedby={ariaDescribedBy}
-      aria-label={ariaLabel}
-      className={variants.base.group}
+      className={`${variants.base.group} breeze:border-0 breeze:m-0 breeze:min-inline-size-0`}
+      disabled={disabled}
       id={id}
-      role="group"
     >
+      <legend className="breeze:sr-only">{ariaLabel}</legend>
       {decoratedItems.map(({ descriptor, item }) => (
         <AriaToggleButton
           className={[
@@ -124,7 +124,6 @@ export function ToggleGroup<T>({
             variants.size[size],
             variants.state.selected,
           ].join(' ')}
-          id={descriptor.id}
           isDisabled={disabled || descriptor.disabled}
           isSelected={selectedKey === descriptor.id}
           key={descriptor.id}
@@ -155,6 +154,6 @@ export function ToggleGroup<T>({
           )}
         </AriaToggleButton>
       ))}
-    </div>
+    </fieldset>
   );
 }
