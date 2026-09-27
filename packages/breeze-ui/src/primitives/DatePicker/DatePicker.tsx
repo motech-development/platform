@@ -106,6 +106,49 @@ function DatePickerTriggerValue({
   );
 }
 
+function scrollTriggerIntoView(trigger: HTMLElement): boolean {
+  const requiredSpace = 400;
+  let didScroll = false;
+
+  for (
+    let ancestor = trigger.parentElement;
+    ancestor !== null;
+    ancestor = ancestor.parentElement
+  ) {
+    const { overflowY } = getComputedStyle(ancestor);
+
+    if (
+      ['auto', 'scroll'].includes(overflowY) &&
+      ancestor.scrollHeight > ancestor.clientHeight
+    ) {
+      const triggerTop = trigger.getBoundingClientRect().top;
+      const { top: ancestorTop } = ancestor.getBoundingClientRect();
+      const visibleTop = ancestorTop + ancestor.clientTop;
+      const visibleBottom = visibleTop + ancestor.clientHeight;
+      const targetTop = Math.max(visibleTop + 8, visibleBottom - requiredSpace);
+      let scrollDelta = 0;
+
+      if (triggerTop < visibleTop + 8) {
+        scrollDelta = triggerTop - (visibleTop + 8);
+      } else if (triggerTop > targetTop) {
+        scrollDelta = triggerTop - targetTop;
+      }
+
+      const maxScrollTop = ancestor.scrollHeight - ancestor.clientHeight;
+      const nextScrollTop = Math.round(
+        Math.max(0, Math.min(maxScrollTop, ancestor.scrollTop + scrollDelta)),
+      );
+
+      if (nextScrollTop !== ancestor.scrollTop) {
+        ancestor.scrollTop = nextScrollTop;
+        didScroll = true;
+      }
+    }
+  }
+
+  return didScroll;
+}
+
 function DatePickerPopover({
   calendarKey,
   dialogId,
@@ -142,7 +185,7 @@ function DatePickerPopover({
     const focusRovingDate = () => {
       if (
         popover.hasAttribute('inert') ||
-        popover.getAttribute('data-breeze-interactive') !== 'true'
+        popover.dataset.breezeInteractive !== 'true'
       ) {
         return false;
       }
@@ -344,49 +387,7 @@ export function DatePicker({
       return;
     }
 
-    const requiredSpace = 400;
-    let didScroll = false;
-
-    for (
-      let ancestor = trigger.parentElement;
-      ancestor !== null;
-      ancestor = ancestor.parentElement
-    ) {
-      const { overflowY } = getComputedStyle(ancestor);
-
-      if (
-        ['auto', 'scroll'].includes(overflowY) &&
-        ancestor.scrollHeight > ancestor.clientHeight
-      ) {
-        const triggerTop = trigger.getBoundingClientRect().top;
-        const { top: ancestorTop } = ancestor.getBoundingClientRect();
-        const visibleTop = ancestorTop + ancestor.clientTop;
-        const visibleBottom = visibleTop + ancestor.clientHeight;
-        const targetTop = Math.max(
-          visibleTop + 8,
-          visibleBottom - requiredSpace,
-        );
-        let scrollDelta = 0;
-
-        if (triggerTop < visibleTop + 8) {
-          scrollDelta = triggerTop - (visibleTop + 8);
-        } else if (triggerTop > targetTop) {
-          scrollDelta = triggerTop - targetTop;
-        }
-
-        const maxScrollTop = ancestor.scrollHeight - ancestor.clientHeight;
-        const nextScrollTop = Math.round(
-          Math.max(0, Math.min(maxScrollTop, ancestor.scrollTop + scrollDelta)),
-        );
-
-        if (nextScrollTop !== ancestor.scrollTop) {
-          ancestor.scrollTop = nextScrollTop;
-          didScroll = true;
-        }
-      }
-    }
-
-    if (didScroll) {
+    if (scrollTriggerIntoView(trigger)) {
       if (typeof requestAnimationFrame === 'undefined') {
         setTimeout(() => handleOpenChange(true), 0);
       } else {
