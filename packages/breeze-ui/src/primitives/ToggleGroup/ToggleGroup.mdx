@@ -1,0 +1,46 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './ToggleGroup.stories';
+
+<Meta
+  of={Stories}
+  summary="A single-choice segmented control with accessible pressed options."
+/>
+
+# ToggleGroup
+
+`ToggleGroup` presents a single choice as connected segments. Each option is a
+button with an accessible pressed state. Press the selected option again to
+clear the selection.
+
+<Canvas of={Stories.Default} />
+
+## Options
+
+Pass `items` and a `getItem` mapping function. The mapping returns Breeze's
+closed `ItemDescriptor` contract: `id`, `label`, and optional `description`,
+`icon`, `badge` and `disabled`. It cannot return JSX, classes, styles or slot
+props. Disabled descriptors cannot be activated.
+
+<Canvas of={Stories.DisabledOption} />
+
+## Controlled selection
+
+Use `defaultSelected` with an optional `onChange` for uncontrolled use. Provide
+`selected` and `onChange` when the application owns state. The callback receives
+the selected item or `null` when no option is selected, never a DOM event. The
+controlled and uncontrolled props cannot be mixed.
+
+<Canvas of={Stories.Controlled} />
+
+## Sizes and accessibility
+
+`size` accepts `sm`, `md` (default) or `lg`, with minimum heights of 34, 38 and
+52px. Coarse pointers receive a 44px minimum target. Give each group an
+`aria-label`; buttons expose the pressed state and React Aria supplies keyboard
+interaction.
+
+<Canvas of={Stories.Sizes} />
+
+## API
+
+<ArgTypes />
