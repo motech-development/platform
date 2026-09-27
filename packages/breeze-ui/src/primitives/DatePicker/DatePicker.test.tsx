@@ -290,6 +290,26 @@ describe('DatePicker', () => {
     expect(document.activeElement).toBe(document.body);
   });
 
+  it('autofocuses after an ancestor fieldset is enabled', async () => {
+    const { container } = renderBreeze(
+      <fieldset disabled>
+        <DatePicker autoFocus label="Date" />
+      </fieldset>,
+    );
+    const trigger = screen.getByRole('button', { name: 'Date Select a date' });
+    const fieldset = container.querySelector('fieldset');
+
+    expect(fieldset).not.toBeNull();
+    expect(trigger).toBeDisabled();
+    expect(trigger).not.toHaveFocus();
+
+    act(() => {
+      fieldset!.disabled = false;
+    });
+
+    await waitFor(() => expect(trigger).toHaveFocus());
+  });
+
   it('closes an open calendar when disabled and leaves focus outside the panel', async () => {
     const user = userEvent.setup();
     const { rerender } = renderBreeze(

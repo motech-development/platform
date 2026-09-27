@@ -106,8 +106,43 @@ function DatePickerTriggerValue({
   );
 }
 
+function getNextTriggerScrollTop(
+  trigger: HTMLElement,
+  ancestor: HTMLElement,
+  requiredSpace: number,
+  viewportBottom: number,
+): number | undefined {
+  const triggerTop = trigger.getBoundingClientRect().top;
+  const { top: ancestorTop } = ancestor.getBoundingClientRect();
+  const contentTop = ancestorTop + ancestor.clientTop;
+  const visibleTop = Math.max(contentTop, 0);
+  const visibleBottom = Math.min(
+    contentTop + ancestor.clientHeight,
+    viewportBottom,
+  );
+
+  if (visibleBottom <= visibleTop) return undefined;
+
+  const targetTop = Math.max(visibleTop + 8, visibleBottom - requiredSpace);
+  let scrollDelta = 0;
+
+  if (triggerTop < visibleTop + 8) {
+    scrollDelta = triggerTop - (visibleTop + 8);
+  } else if (triggerTop > targetTop) {
+    scrollDelta = triggerTop - targetTop;
+  }
+
+  const maxScrollTop = ancestor.scrollHeight - ancestor.clientHeight;
+  const nextScrollTop = Math.round(
+    Math.max(0, Math.min(maxScrollTop, ancestor.scrollTop + scrollDelta)),
+  );
+
+  return nextScrollTop === ancestor.scrollTop ? undefined : nextScrollTop;
+}
+
 function scrollTriggerIntoView(trigger: HTMLElement): boolean {
   const requiredSpace = 400;
+  const viewportBottom = trigger.ownerDocument.documentElement.clientHeight;
   let didScroll = false;
 
   for (
@@ -121,25 +156,14 @@ function scrollTriggerIntoView(trigger: HTMLElement): boolean {
       ['auto', 'scroll'].includes(overflowY) &&
       ancestor.scrollHeight > ancestor.clientHeight
     ) {
-      const triggerTop = trigger.getBoundingClientRect().top;
-      const { top: ancestorTop } = ancestor.getBoundingClientRect();
-      const visibleTop = ancestorTop + ancestor.clientTop;
-      const visibleBottom = visibleTop + ancestor.clientHeight;
-      const targetTop = Math.max(visibleTop + 8, visibleBottom - requiredSpace);
-      let scrollDelta = 0;
-
-      if (triggerTop < visibleTop + 8) {
-        scrollDelta = triggerTop - (visibleTop + 8);
-      } else if (triggerTop > targetTop) {
-        scrollDelta = triggerTop - targetTop;
-      }
-
-      const maxScrollTop = ancestor.scrollHeight - ancestor.clientHeight;
-      const nextScrollTop = Math.round(
-        Math.max(0, Math.min(maxScrollTop, ancestor.scrollTop + scrollDelta)),
+      const nextScrollTop = getNextTriggerScrollTop(
+        trigger,
+        ancestor,
+        requiredSpace,
+        viewportBottom,
       );
 
-      if (nextScrollTop !== ancestor.scrollTop) {
+      if (nextScrollTop !== undefined) {
         ancestor.scrollTop = nextScrollTop;
         didScroll = true;
       }
@@ -353,10 +377,10 @@ export function DatePicker({
 
     const trigger = triggerRef.current;
 
-    if (!trigger) return;
+    if (!trigger || trigger.matches(':disabled')) return;
 
     trigger.focus();
-    hasAutoFocused.current = true;
+    hasAutoFocused.current = trigger.ownerDocument.activeElement === trigger;
   }, [autoFocus, effectiveDisabled]);
 
   const visibleOpen = isOpen && !effectiveDisabled;
