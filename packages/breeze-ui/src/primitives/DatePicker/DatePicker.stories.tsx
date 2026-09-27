@@ -18,7 +18,27 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /** A required date field with a localized long-form trigger. */
-export const Default: Story = {};
+export const Default: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const page = within(canvasElement.ownerDocument.body);
+    const trigger = canvas.getByRole('button', {
+      name: 'Transaction date 3 September 2026',
+    });
+
+    trigger.focus();
+    await userEvent.keyboard('{Enter}');
+
+    const dialog = await page.findByRole('dialog', {
+      name: 'Transaction date',
+    });
+    const selectedDate = within(dialog).getByRole('button', {
+      name: /Thursday, 3 September 2026 selected/,
+    });
+
+    await expect(selectedDate).toHaveFocus();
+  },
+};
 
 /** A visible error marks the trigger invalid. */
 export const Error: Story = {
@@ -71,13 +91,21 @@ function ScrollingContainerExample() {
       role="region"
       style={{ blockSize: '500px', overflowY: 'auto' }}
     >
-      {portalContainer && (
-        <BreezeProvider locale="en-GB" portalContainer={portalContainer}>
-          <div aria-hidden="true" style={{ blockSize: '240px' }} />
-          <DatePicker defaultValue="2026-09-03" label="Transaction date" />
-          <div aria-hidden="true" style={{ blockSize: '240px' }} />
-        </BreezeProvider>
-      )}
+      <div aria-hidden="true" style={{ blockSize: '150px' }} />
+      <div
+        aria-label="Nested date picker scroll area"
+        role="region"
+        style={{ blockSize: '600px', overflowY: 'auto' }}
+      >
+        {portalContainer && (
+          <BreezeProvider locale="en-GB" portalContainer={portalContainer}>
+            <div aria-hidden="true" style={{ blockSize: '175px' }} />
+            <DatePicker defaultValue="2026-09-03" label="Transaction date" />
+            {/* Keep the trigger in the inner scroller while the outer one needs to move. */}
+            <div aria-hidden="true" style={{ blockSize: '400px' }} />
+          </BreezeProvider>
+        )}
+      </div>
     </div>
   );
 }
@@ -194,29 +222,76 @@ export const CoarsePointerGeometry: Story = {
 /** Opening the calendar keeps its panel visible in a scrolling container. */
 export const ScrollingContainer: Story = {
   play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const page = within(canvasElement.ownerDocument.body);
-    const container = canvas.getByRole('region', {
-      name: 'Scrollable date picker example',
-    });
-    const trigger = within(container).getByRole('button', {
-      name: 'Transaction date 3 September 2026',
-    });
+    const view = canvasElement.ownerDocument.defaultView;
 
-    await userEvent.click(trigger);
+    if (!view) {
+      throw new globalThis.Error('Missing date picker story window.');
+    }
 
-    const dialog = await page.findByRole('dialog', {
-      name: 'Transaction date',
-    });
+    const isVitestBrowser = '__vitest_browser__' in globalThis;
+    const browserContext = isVitestBrowser
+      ? await import('vitest/browser')
+      : undefined;
+    const originalViewport = {
+      height: view.innerHeight,
+      width: view.innerWidth,
+    };
+    let viewportChanged = false;
 
-    await waitFor(async () => {
-      const containerRect = container.getBoundingClientRect();
-      const dialogRect = dialog.getBoundingClientRect();
+    try {
+      if (browserContext) {
+        viewportChanged = true;
+        await browserContext.page.viewport(2336, 1000);
+        await expect(view.innerWidth).toBe(2336);
+        await expect(view.innerHeight).toBe(1000);
+      }
 
-      await expect(container.scrollTop).toBeGreaterThan(0);
-      await expect(dialogRect.top).toBeGreaterThanOrEqual(containerRect.top);
-      await expect(dialogRect.bottom).toBeLessThanOrEqual(containerRect.bottom);
-    });
+      const canvas = within(canvasElement);
+      const page = within(canvasElement.ownerDocument.body);
+      const container = canvas.getByRole('region', {
+        name: 'Scrollable date picker example',
+      });
+      const innerContainer = canvas.getByRole('region', {
+        name: 'Nested date picker scroll area',
+      });
+      const trigger = within(container).getByRole('button', {
+        name: 'Transaction date 3 September 2026',
+      });
+
+      trigger.focus();
+      await userEvent.keyboard('{Enter}');
+
+      await waitFor(async () => {
+        const dialog = page.getByRole('dialog', {
+          name: 'Transaction date',
+        });
+        const containerRect = container.getBoundingClientRect();
+        const dialogRect = dialog.getBoundingClientRect();
+
+        await expect(container.scrollTop).toBeGreaterThan(0);
+        await expect(innerContainer.scrollTop).toBe(0);
+        await expect(dialogRect.top).toBeGreaterThanOrEqual(containerRect.top);
+        await expect(dialogRect.bottom).toBeLessThanOrEqual(
+          containerRect.bottom,
+        );
+      });
+
+      const dialog = page.getByRole('dialog', { name: 'Transaction date' });
+      const selectedDate = within(dialog).getByRole('button', {
+        name: /Thursday, 3 September 2026 selected/,
+      });
+
+      await waitFor(async () => expect(dialog).toBeVisible());
+      await expect(trigger).toHaveAttribute('aria-expanded', 'true');
+      await waitFor(async () => expect(selectedDate).toHaveFocus());
+    } finally {
+      if (browserContext && viewportChanged) {
+        await browserContext.page.viewport(
+          originalViewport.width,
+          originalViewport.height,
+        );
+      }
+    }
   },
   render: () => <ScrollingContainerExample />,
 };

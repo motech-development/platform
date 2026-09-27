@@ -201,6 +201,36 @@ describe('Calendar', () => {
     expect(onChange).not.toHaveBeenCalled();
   });
 
+  it('allows Escape to bubble when disabled while a date has focus', async () => {
+    const user = userEvent.setup();
+    const onParentKeyDown = vi.fn<(event: KeyboardEvent) => void>();
+    const { container, rerender } = renderBreeze(
+      <Calendar autoFocus defaultValue="2026-09-03" label="Choose date" />,
+    );
+    container.addEventListener('keydown', onParentKeyDown);
+
+    const selectedDate = screen.getByRole('button', {
+      name: 'Thursday, 3 September 2026 selected',
+    });
+
+    await waitFor(() => expect(selectedDate).toHaveFocus());
+
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <Calendar defaultValue="2026-09-03" disabled label="Choose date" />
+      </BreezeProvider>,
+    );
+
+    expect(selectedDate).toHaveFocus();
+
+    await user.keyboard('{ArrowRight}');
+    expect(onParentKeyDown).not.toHaveBeenCalled();
+
+    await user.keyboard('{Escape}');
+    expect(onParentKeyDown).toHaveBeenCalledOnce();
+    expect(onParentKeyDown.mock.calls[0]?.[0].key).toBe('Escape');
+  });
+
   it('follows changed controlled dates but preserves navigation for stable values', async () => {
     const user = userEvent.setup();
     const { rerender } = renderBreeze(
@@ -287,6 +317,7 @@ describe('Calendar', () => {
     expect(todayCell).toHaveClass('breeze:bg-breeze-brand');
     expect(todayCell).toHaveClass(
       'breeze:forced-colors:data-[selected]:outline-2',
+      'breeze:forced-colors:data-[selected]:outline-solid',
       'breeze:forced-colors:data-[selected]:outline-offset-2',
     );
     expect(todayCell).not.toHaveClass('breeze:outline-breeze-brand');
