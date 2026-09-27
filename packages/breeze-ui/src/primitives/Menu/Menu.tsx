@@ -1,0 +1,219 @@
+import {
+  useCallback,
+  useId,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { Button as AriaButton } from 'react-aria-components/Button';
+import {
+  Menu as AriaMenu,
+  MenuItem as AriaMenuItem,
+  MenuTrigger as AriaMenuTrigger,
+} from 'react-aria-components/Menu';
+import { useBreezeContext } from '../../provider/BreezeContext';
+import { Badge } from '../Badge/Badge';
+import CollectionPopover from '../Collection/CollectionPopover';
+import type { ItemDescriptor } from '../Collection/item.types';
+import type { IconName } from '../Icon/Icon';
+import { Icon } from '../Icon/Icon';
+
+const variants = {
+  base: {
+    badge: 'breeze:ms-auto',
+    content:
+      'breeze:flex breeze:min-inline-size-0 breeze:flex-1 breeze:flex-col breeze:gap-breeze-1',
+    description:
+      'breeze:text-breeze-xs breeze:font-normal breeze:leading-breeze-snug breeze:text-breeze-ink-3',
+    icon: 'breeze:block-size-breeze-4 breeze:inline-size-breeze-4 breeze:shrink-0',
+    item: 'breeze:flex breeze:min-inline-size-0 breeze:min-block-breeze-md breeze:any-pointer-coarse:min-block-breeze-tap breeze:items-center breeze:gap-breeze-2 breeze:rounded-breeze-sm breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:py-breeze-2 breeze:font-breeze-sans breeze:text-breeze-sm breeze:leading-breeze-snug breeze:text-breeze-ink breeze:text-start breeze:outline-offset-[-2px] breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-50 breeze:data-[focused]:bg-breeze-sunken breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[hovered]:bg-breeze-sunken',
+    label: 'breeze:font-medium',
+    menu: 'breeze:min-inline-size-0 breeze:outline-none',
+    popover:
+      'breeze:min-inline-size-[var(--trigger-width)] breeze:max-inline-size-[calc(100vw-24px)] breeze:overflow-auto breeze:rounded-breeze-panel breeze:border breeze:border-solid breeze:border-breeze-line breeze:bg-breeze-surface breeze:p-breeze-1 breeze:shadow-breeze-overlay',
+    trigger:
+      'breeze:inline-flex breeze:min-block-breeze-md breeze:any-pointer-coarse:min-block-breeze-tap breeze:items-center breeze:gap-breeze-2 breeze:rounded-breeze-ctl breeze:border breeze:border-solid breeze:border-breeze-line-strong breeze:bg-breeze-surface breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:py-breeze-2 breeze:font-breeze-sans breeze:text-breeze-sm breeze:leading-breeze-snug breeze:text-breeze-ink breeze:outline-offset-2 breeze:data-[hovered]:bg-breeze-sunken breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand',
+  },
+  compound: {},
+  size: {},
+  state: {},
+  variant: {},
+} as const;
+
+interface MenuCommonProps<T> {
+  /** Maps each item to the closed descriptor rendered by Breeze. */
+  getItem: (item: T) => ItemDescriptor;
+  /** Items displayed as menu actions. */
+  items: T[];
+  /** Reports the selected descriptor, without exposing an item or DOM event. */
+  onAction?: (descriptor: ItemDescriptor) => void;
+  /** Optional icon shown before the visible trigger label. */
+  triggerIcon?: IconName;
+  /** Visible label for the library-owned menu trigger. */
+  trigger: string;
+}
+
+interface ControlledMenuProps {
+  /** Initial visibility is available only for uncontrolled menus. */
+  defaultOpen?: never;
+  /** Reports the next visibility state. */
+  onOpenChange: (open: boolean) => void;
+  /** Current visibility. */
+  open: boolean;
+}
+
+interface UncontrolledMenuProps {
+  /** Initial visibility. Defaults to `false`. */
+  defaultOpen?: boolean;
+  /** Reports visibility changes when provided. */
+  onOpenChange?: (open: boolean) => void;
+  /** Controlled and uncontrolled visibility props are mutually exclusive. */
+  open?: never;
+}
+
+/** Props for a data-driven action menu with controlled or uncontrolled visibility. */
+export type MenuProps<T> = MenuCommonProps<T> &
+  (ControlledMenuProps | UncontrolledMenuProps);
+
+interface MenuItemContentProps {
+  descriptionId: string;
+  descriptor: ItemDescriptor;
+}
+
+function MenuItemContent({
+  descriptionId,
+  descriptor,
+}: Readonly<MenuItemContentProps>) {
+  return (
+    <>
+      <span aria-hidden="true" className={variants.base.icon}>
+        {descriptor.icon && <Icon name={descriptor.icon} size="sm" />}
+      </span>
+      <span className={variants.base.content}>
+        <span className={variants.base.label}>{descriptor.label}</span>
+        {descriptor.description && (
+          <span className={variants.base.description} id={descriptionId}>
+            {descriptor.description}
+          </span>
+        )}
+      </span>
+      {descriptor.badge && (
+        <span className={variants.base.badge}>
+          <Badge
+            aria-label={descriptor.badge['aria-label']}
+            variant={descriptor.badge.variant}
+          >
+            {descriptor.badge.children}
+          </Badge>
+        </span>
+      )}
+    </>
+  );
+}
+
+/**
+ * Opens a descriptor-backed list of actions in Breeze's overlay portal.
+ *
+ * @summary A keyboard-accessible action menu with semantic descriptor callbacks.
+ */
+export function Menu<T>({
+  defaultOpen,
+  getItem,
+  items,
+  onAction,
+  onOpenChange,
+  open: controlledOpen,
+  trigger,
+  triggerIcon,
+}: Readonly<MenuProps<T>>) {
+  useBreezeContext();
+
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(
+    defaultOpen ?? false,
+  );
+  const open = controlledOpen ?? uncontrolledOpen;
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const restoreFocusRef = useRef(false);
+  const menuId = useId();
+  const descriptors = useMemo(() => items.map(getItem), [getItem, items]);
+  const handleOpenChange = useCallback(
+    (nextOpen: boolean) => {
+      if (controlledOpen === undefined) setUncontrolledOpen(nextOpen);
+      onOpenChange?.(nextOpen);
+    },
+    [controlledOpen, onOpenChange],
+  );
+
+  useLayoutEffect(() => {
+    if (!open && restoreFocusRef.current) {
+      restoreFocusRef.current = false;
+      triggerRef.current?.focus();
+    }
+  }, [open]);
+
+  return (
+    <AriaMenuTrigger isOpen={open} onOpenChange={handleOpenChange}>
+      <AriaButton
+        aria-haspopup="menu"
+        className={variants.base.trigger}
+        ref={triggerRef}
+      >
+        {triggerIcon && <Icon name={triggerIcon} size="sm" />}
+        <span>{trigger}</span>
+        <Icon name="expand" size="sm" />
+      </AriaButton>
+      <CollectionPopover
+        className={variants.base.popover}
+        isOpen={open}
+        onOpenChange={handleOpenChange}
+        triggerRef={triggerRef}
+      >
+        <div
+          onKeyDownCapture={(event) => {
+            if (event.key === 'Escape') restoreFocusRef.current = true;
+          }}
+        >
+          <AriaMenu
+            className={variants.base.menu}
+            id={menuId}
+            onAction={(key) => {
+              const descriptor = descriptors.find((item) => item.id === key);
+              if (descriptor) {
+                restoreFocusRef.current = true;
+                onAction?.(descriptor);
+              }
+            }}
+          >
+            {descriptors.map((descriptor, index) => {
+              const descriptionId = `${menuId}-description-${index}`;
+
+              return (
+                <AriaMenuItem
+                  aria-describedby={
+                    descriptor.description ? descriptionId : undefined
+                  }
+                  aria-label={
+                    descriptor.badge
+                      ? `${descriptor.label}, ${descriptor.badge['aria-label'] ?? descriptor.badge.children}`
+                      : descriptor.label
+                  }
+                  className={variants.base.item}
+                  id={descriptor.id}
+                  isDisabled={descriptor.disabled}
+                  key={descriptor.id}
+                  textValue={descriptor.label}
+                >
+                  <MenuItemContent
+                    descriptionId={descriptionId}
+                    descriptor={descriptor}
+                  />
+                </AriaMenuItem>
+              );
+            })}
+          </AriaMenu>
+        </div>
+      </CollectionPopover>
+    </AriaMenuTrigger>
+  );
+}

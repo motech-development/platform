@@ -1,0 +1,38 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Chip.stories';
+
+<Meta of={Stories} summary="An independently selectable pill-shaped filter." />
+
+# Chip
+
+`Chip` is a compact pill-shaped filter. It stays independently selectable when
+shown beside other chips, and exposes its state as `aria-pressed`.
+
+<Canvas of={Stories.Default} />
+
+## Pressed state
+
+Use `defaultPressed` for an uncontrolled chip, or `pressed` and `onChange` when
+the application owns the state. The callback receives the next boolean value,
+not a DOM event. These state props are mutually exclusive.
+
+<Canvas of={Stories.Pressed} />
+
+<Canvas of={Stories.FilterRow} />
+
+## Disabled and touch targets
+
+Set `disabled` to prevent activation. Chips have a 34px minimum height and
+expand to a 44px minimum target for coarse pointers.
+
+<Canvas of={Stories.Disabled} />
+
+## Accessibility
+
+The visible label names the button. `aria-label`, `aria-labelledby` and
+`aria-describedby` support alternate and supplemental names. React Aria provides
+the pressed state and keyboard activation.
+
+## API
+
+<ArgTypes />

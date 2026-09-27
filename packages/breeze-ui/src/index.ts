@@ -17,6 +17,8 @@ export type {
 export { Card } from './primitives/Card/Card';
 export type { CheckboxProps } from './primitives/Checkbox/Checkbox';
 export { Checkbox } from './primitives/Checkbox/Checkbox';
+export type { ChipProps } from './primitives/Chip/Chip';
+export { Chip } from './primitives/Chip/Chip';
 export type {
   ItemDescriptor,
   ItemDescriptorBadge,
@@ -56,6 +58,8 @@ export type {
   LayoutElement,
   LayoutGap,
 } from './primitives/layout.types';
+export type { MenuProps } from './primitives/Menu/Menu';
+export { Menu } from './primitives/Menu/Menu';
 export type { NumberFieldProps } from './primitives/NumberField/NumberField';
 export { NumberField } from './primitives/NumberField/NumberField';
 export type { PopoverProps } from './primitives/Popover/Popover';
@@ -78,6 +82,10 @@ export type { TextFieldProps } from './primitives/TextField/TextField';
 export { TextField } from './primitives/TextField/TextField';
 export type { ToastEnqueue, ToastProps } from './primitives/Toast/Toast';
 export { Toast, useToast } from './primitives/Toast/Toast';
+export type { ToggleProps } from './primitives/Toggle/Toggle';
+export { Toggle } from './primitives/Toggle/Toggle';
+export type { ToggleGroupProps } from './primitives/ToggleGroup/ToggleGroup';
+export { ToggleGroup } from './primitives/ToggleGroup/ToggleGroup';
 export type {
   IsoCalendarDate,
   TypographyAlign,

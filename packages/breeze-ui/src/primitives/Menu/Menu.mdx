@@ -1,0 +1,42 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Menu.stories';
+
+<Meta of={Stories} summary="A data-driven action menu in a Breeze popover." />
+
+# Menu
+
+`Menu` presents a list of actions in a popover. Breeze owns the trigger,
+positioning, focus management and overlay lifecycle.
+
+<Canvas of={Stories.Default} />
+
+## Descriptor content
+
+Pass `items` and a `getItem` mapping function. The mapping returns the closed
+`ItemDescriptor` contract: `id`, `label`, optional `description`, `icon`,
+`badge` and `disabled`. Every `id` must be unique within the menu. The callback
+receives the selected descriptor; item content cannot be supplied as JSX,
+classes, styles or slot props.
+
+## Visibility and actions
+
+Use `defaultOpen` for an uncontrolled menu. For controlled visibility, provide
+`open` and `onOpenChange` together. The action callback receives the descriptor
+for the selected item and never a DOM event or the original application item.
+
+<Canvas of={Stories.Controlled} />
+
+## Keyboard and overlays
+
+The trigger exposes menu semantics. Arrow keys open the menu and move through
+enabled actions, type-to-search moves to matching labels, Enter or Space selects
+an action, and Escape closes the menu and restores focus to its trigger. Inside
+a Breeze drawer or dialog, the menu closes before the parent surface.
+
+The open story is checked by Storybook's accessibility addon. The menu and its
+trigger receive accessible names from their visible labels, and item
+descriptions are associated with their action.
+
+## API
+
+<ArgTypes />
