@@ -9,24 +9,31 @@ import * as Stories from './Toggle.stories';
 # Toggle
 
 `Toggle` represents an on/off choice as a button. Its pressed state is exposed
-with `aria-pressed`; use a `Checkbox` when the choice belongs in a form.
+with `aria-pressed`. Use a `Checkbox` when the choice belongs in a form.
 
 <Canvas of={Stories.Default} />
 
 ## Pressed state
 
 Use `defaultPressed` for an uncontrolled toggle, or `pressed` and `onChange` when
-the application owns the state. The callback receives the next boolean value,
-not a DOM event. These state props are mutually exclusive.
+the application owns the state. The callback receives the next pressed value.
+Choose one of these state approaches for each toggle.
 
 <Canvas of={Stories.Pressed} />
 
 <Canvas of={Stories.Controlled} />
 
+## Loading
+
+Set `loading` while saving a choice. A skeleton replaces the visible label while
+the button keeps its name and width. Activation resumes when loading clears.
+
+<Canvas of={Stories.Loading} />
+
 ## Sizes and disabled state
 
 `size` accepts `sm`, `md` (default) or `lg`, with minimum heights of 34, 38 and
-52px. Coarse pointers receive a 44px minimum target. Disabled toggles cannot be
+52px. Touch targets are at least 44px. Disabled toggles cannot be
 activated.
 
 <Canvas of={Stories.Sizes} />
@@ -36,8 +43,8 @@ activated.
 ## Accessibility
 
 The visible label names the button. `aria-label`, `aria-labelledby` and
-`aria-describedby` support alternate and supplemental names. React Aria provides
-the pressed state and keyboard activation.
+`aria-describedby` support alternate and supplemental names. The button exposes
+its pressed state and supports keyboard activation.
 
 ## API
 

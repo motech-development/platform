@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import renderBreeze from '../../../test/render';
@@ -82,6 +82,71 @@ describe('Chip', () => {
     await userEvent.click(chip);
 
     expect(onChange).not.toHaveBeenCalled();
+    expect(chip).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  it('preserves its pressed state and focus while loading, then restores activation', async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn<(pressed: boolean) => void>();
+    const renderChip = (loading: boolean) => (
+      <BreezeProvider locale="fr-FR" messages={{ loading: 'Chargement' }}>
+        <Chip defaultPressed loading={loading} onChange={onChange}>
+          Needs receipt
+        </Chip>
+      </BreezeProvider>
+    );
+    const { rerender } = render(renderChip(false));
+    const chip = screen.getByRole('button', { name: 'Needs receipt' });
+
+    chip.focus();
+    rerender(renderChip(true));
+
+    expect(chip).toHaveFocus();
+    expect(chip).toHaveAttribute('aria-pressed', 'true');
+    expect(chip).toHaveAttribute('aria-busy', 'true');
+    expect(chip).toHaveAttribute('aria-disabled', 'true');
+    expect(chip).toHaveAccessibleName('Needs receipt');
+    expect(
+      screen.getByRole('progressbar', { name: 'Chargement' }),
+    ).toHaveAttribute('lang', 'fr-FR');
+    expect(chip.querySelector('[data-breeze-skeleton]')).toHaveAttribute(
+      'aria-hidden',
+      'true',
+    );
+
+    await user.click(chip);
+    await user.keyboard(' ');
+
+    expect(onChange).not.toHaveBeenCalled();
+    expect(chip).toHaveAttribute('aria-pressed', 'true');
+
+    rerender(renderChip(false));
+    await user.click(chip);
+
+    expect(onChange).toHaveBeenCalledExactlyOnceWith(false);
+    expect(chip).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  it('keeps controlled state with its owner while loading', async () => {
+    const onChange = vi.fn<(pressed: boolean) => void>();
+    const renderChip = (loading: boolean, pressed: boolean) => (
+      <BreezeProvider locale="en-GB">
+        <Chip loading={loading} onChange={onChange} pressed={pressed}>
+          Needs receipt
+        </Chip>
+      </BreezeProvider>
+    );
+    const { rerender } = render(renderChip(false, true));
+    const chip = screen.getByRole('button', { name: 'Needs receipt' });
+
+    rerender(renderChip(true, true));
+    await userEvent.click(chip);
+
+    expect(onChange).not.toHaveBeenCalled();
+    expect(chip).toHaveAttribute('aria-pressed', 'true');
+
+    rerender(renderChip(false, false));
+
     expect(chip).toHaveAttribute('aria-pressed', 'false');
   });
 });
