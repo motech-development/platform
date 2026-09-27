@@ -1,6 +1,13 @@
 import type { CalendarDate } from '@internationalized/date';
 import type { RefObject } from 'react';
-import { createElement, useEffect, useId, useRef, useState } from 'react';
+import {
+  createElement,
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import { Button as AriaButton } from 'react-aria-components/Button';
 import { Dialog as AriaDialog } from 'react-aria-components/Dialog';
 import { useBreezeContext } from '../../provider/BreezeContext';
@@ -99,64 +106,6 @@ function DatePickerTriggerValue({
   );
 }
 
-function DatePickerPanelScrollEffect({
-  isOpen,
-  panelRef,
-}: Readonly<{
-  isOpen: boolean;
-  panelRef: RefObject<HTMLDivElement | null>;
-}>) {
-  useEffect(() => {
-    if (!isOpen) return undefined;
-
-    const scrollPanel = () => {
-      const panel =
-        panelRef.current?.closest<HTMLElement>(
-          '[data-breeze-overlay="popover"]',
-        ) ?? panelRef.current;
-
-      if (!panel) return;
-
-      panel.scrollIntoView?.({ block: 'nearest' });
-
-      for (
-        let ancestor = panel.parentElement;
-        ancestor !== null;
-        ancestor = ancestor.parentElement
-      ) {
-        const { overflowY } = getComputedStyle(ancestor);
-
-        if (
-          ['auto', 'scroll'].includes(overflowY) &&
-          ancestor.scrollHeight > ancestor.clientHeight
-        ) {
-          const { bottom: panelBottom, top: panelTop } =
-            panel.getBoundingClientRect();
-          const { top: ancestorTop } = ancestor.getBoundingClientRect();
-          const visibleTop = ancestorTop + ancestor.clientTop;
-          const visibleBottom = visibleTop + ancestor.clientHeight;
-
-          if (panelTop < visibleTop) {
-            ancestor.scrollTop -= visibleTop - panelTop;
-          } else if (panelBottom > visibleBottom) {
-            ancestor.scrollTop += panelBottom - visibleBottom;
-          }
-        }
-      }
-    };
-
-    if (typeof requestAnimationFrame === 'undefined') {
-      const timeout = setTimeout(scrollPanel, 0);
-      return () => clearTimeout(timeout);
-    }
-
-    const frame = requestAnimationFrame(scrollPanel);
-    return () => cancelAnimationFrame(frame);
-  }, [isOpen, panelRef]);
-
-  return null;
-}
-
 function DatePickerPopover({
   calendarKey,
   dialogId,
@@ -178,7 +127,55 @@ function DatePickerPopover({
   triggerRef: RefObject<HTMLButtonElement | null>;
   value: IsoCalendarDate | null | undefined;
 }>) {
-  const panelRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) return undefined;
+
+    const dialog = dialogRef.current;
+    const popover = dialog?.closest<HTMLElement>(
+      '[data-breeze-overlay="popover"]',
+    );
+
+    if (!dialog || !popover) return undefined;
+
+    const focusRovingDate = () => {
+      if (
+        popover.hasAttribute('inert') ||
+        popover.getAttribute('data-breeze-interactive') !== 'true'
+      ) {
+        return false;
+      }
+
+      const document = dialog.ownerDocument;
+      const { activeElement } = document;
+
+      if (
+        activeElement === triggerRef.current ||
+        activeElement === document.body ||
+        activeElement === document.documentElement
+      ) {
+        dialog
+          .querySelector<HTMLElement>('[role="button"][tabindex="0"]')
+          ?.focus();
+      }
+
+      return true;
+    };
+
+    const observer = new MutationObserver(() => {
+      if (focusRovingDate()) observer.disconnect();
+    });
+
+    observer.observe(popover, {
+      attributeFilter: ['data-breeze-interactive', 'inert'],
+      attributes: true,
+    });
+
+    if (focusRovingDate()) observer.disconnect();
+
+    return () => observer.disconnect();
+  }, [isOpen, triggerRef]);
 
   return (
     <CollectionPopover
@@ -188,8 +185,7 @@ function DatePickerPopover({
       onOpenChange={onOpenChange}
       triggerRef={triggerRef}
     >
-      <AriaDialog aria-label={label} id={dialogId} ref={panelRef}>
-        <DatePickerPanelScrollEffect isOpen={isOpen} panelRef={panelRef} />
+      <AriaDialog aria-label={label} id={dialogId} ref={dialogRef}>
         <CalendarSurface
           autoFocus={isOpen}
           key={calendarKey}
@@ -247,11 +243,41 @@ export function DatePicker({
   const [uncontrolledValue, setUncontrolledValue] = useState(defaultValue);
   const [isOpen, setIsOpen] = useState(false);
   const [calendarKey, setCalendarKey] = useState(0);
+  const [fieldsetDisabled, setFieldsetDisabled] = useState(false);
   const selectedValue = value === undefined ? uncontrolledValue : value;
+  const effectiveDisabled = interactionDisabled || fieldsetDisabled;
   const describedBy =
     [descriptionId, !loading ? errorId : undefined, requiredId]
       .filter(Boolean)
       .join(' ') || undefined;
+
+  useLayoutEffect(() => {
+    const trigger = triggerRef.current;
+    if (!trigger) return undefined;
+
+    const updateFieldsetDisabled = () => {
+      setFieldsetDisabled(!interactionDisabled && trigger.matches(':disabled'));
+    };
+
+    updateFieldsetDisabled();
+
+    const observer = new MutationObserver(updateFieldsetDisabled);
+
+    for (
+      let ancestor = trigger.parentElement;
+      ancestor !== null;
+      ancestor = ancestor.parentElement
+    ) {
+      if (ancestor.tagName === 'FIELDSET') {
+        observer.observe(ancestor, {
+          attributeFilter: ['disabled'],
+          attributes: true,
+        });
+      }
+    }
+
+    return () => observer.disconnect();
+  }, [interactionDisabled]);
 
   useEffect(() => {
     if (value !== undefined) return undefined;
@@ -274,13 +300,13 @@ export function DatePicker({
   }, [defaultValue, value]);
 
   useEffect(() => {
-    if (interactionDisabled && isOpen) {
+    if (effectiveDisabled && isOpen) {
       setIsOpen(false);
     }
-  }, [interactionDisabled, isOpen]);
+  }, [effectiveDisabled, isOpen]);
 
   useEffect(() => {
-    if (!autoFocus || interactionDisabled || hasAutoFocused.current) return;
+    if (!autoFocus || effectiveDisabled || hasAutoFocused.current) return;
 
     const trigger = triggerRef.current;
 
@@ -288,10 +314,16 @@ export function DatePicker({
 
     trigger.focus();
     hasAutoFocused.current = true;
-  }, [autoFocus, interactionDisabled]);
+  }, [autoFocus, effectiveDisabled]);
 
+  const visibleOpen = isOpen && !effectiveDisabled;
   const handleOpenChange = (open: boolean) => {
-    if (open && interactionDisabled) return;
+    if (
+      open &&
+      (effectiveDisabled || triggerRef.current?.matches(':disabled'))
+    ) {
+      return;
+    }
 
     if (open && !isOpen) {
       setCalendarKey((currentKey) => currentKey + 1);
@@ -299,9 +331,81 @@ export function DatePicker({
 
     setIsOpen(open);
   };
-  const visibleOpen = isOpen && !interactionDisabled;
+
+  const handleTriggerPress = () => {
+    if (visibleOpen) {
+      handleOpenChange(false);
+      return;
+    }
+
+    const trigger = triggerRef.current;
+
+    if (!trigger || effectiveDisabled || trigger.matches(':disabled')) {
+      return;
+    }
+
+    const requiredSpace = 400;
+    let didScroll = false;
+
+    for (
+      let ancestor = trigger.parentElement;
+      ancestor !== null;
+      ancestor = ancestor.parentElement
+    ) {
+      const { overflowY } = getComputedStyle(ancestor);
+
+      if (
+        ['auto', 'scroll'].includes(overflowY) &&
+        ancestor.scrollHeight > ancestor.clientHeight
+      ) {
+        const triggerTop = trigger.getBoundingClientRect().top;
+        const { top: ancestorTop } = ancestor.getBoundingClientRect();
+        const visibleTop = ancestorTop + ancestor.clientTop;
+        const visibleBottom = visibleTop + ancestor.clientHeight;
+        const targetTop = Math.max(
+          visibleTop + 8,
+          visibleBottom - requiredSpace,
+        );
+        let scrollDelta = 0;
+
+        if (triggerTop < visibleTop + 8) {
+          scrollDelta = triggerTop - (visibleTop + 8);
+        } else if (triggerTop > targetTop) {
+          scrollDelta = triggerTop - targetTop;
+        }
+
+        const maxScrollTop = ancestor.scrollHeight - ancestor.clientHeight;
+        const nextScrollTop = Math.round(
+          Math.max(0, Math.min(maxScrollTop, ancestor.scrollTop + scrollDelta)),
+        );
+
+        if (nextScrollTop !== ancestor.scrollTop) {
+          ancestor.scrollTop = nextScrollTop;
+          didScroll = true;
+        }
+      }
+    }
+
+    if (didScroll) {
+      if (typeof requestAnimationFrame === 'undefined') {
+        setTimeout(() => handleOpenChange(true), 0);
+      } else {
+        requestAnimationFrame(() => handleOpenChange(true));
+      }
+
+      return;
+    }
+
+    handleOpenChange(true);
+  };
   const handleDateChange = (date: CalendarDate | null) => {
-    if (!date) return;
+    if (
+      !date ||
+      effectiveDisabled ||
+      triggerRef.current?.matches(':disabled')
+    ) {
+      return;
+    }
 
     const nextValue = date.toString() as IsoCalendarDate;
 
@@ -333,7 +437,7 @@ export function DatePicker({
             loading && 'breeze:!opacity-0',
           )}
           isDisabled={interactionDisabled}
-          onPress={() => handleOpenChange(!visibleOpen)}
+          onPress={handleTriggerPress}
           ref={triggerRef}
           render={(buttonProps) =>
             createElement('button', {
@@ -394,7 +498,7 @@ export function DatePicker({
       <DatePickerPopover
         calendarKey={calendarKey}
         dialogId={dialogId}
-        disabled={interactionDisabled}
+        disabled={effectiveDisabled}
         isOpen={visibleOpen}
         label={label}
         onChange={handleDateChange}

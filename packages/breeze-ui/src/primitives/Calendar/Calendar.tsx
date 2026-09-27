@@ -35,7 +35,7 @@ const calendarVariants = {
       'breeze:grid breeze:block-size-breeze-8 breeze:inline-size-breeze-8 breeze:place-items-center breeze:rounded-breeze-full breeze:border-0 breeze:bg-transparent breeze:text-breeze-ink-2 breeze:outline-offset-2 breeze:hover:bg-breeze-sunken breeze:focus-visible:outline-2 breeze:focus-visible:outline-solid breeze:focus-visible:outline-breeze-brand breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-50 breeze:any-pointer-coarse:min-block-breeze-tap breeze:any-pointer-coarse:min-inline-breeze-tap',
     root: 'breeze:flex breeze:flex-col breeze:gap-breeze-2 breeze:outline-none',
     selectedCell:
-      'breeze:bg-breeze-brand breeze:text-breeze-on-brand breeze:data-[focused]:data-[selected]:bg-breeze-brand breeze:data-[selected]:data-[hovered]:bg-breeze-brand breeze:data-[outside-month]:data-[selected]:text-breeze-on-brand breeze:forced-colors:data-[selected]:outline-2 breeze:forced-colors:data-[selected]:outline-offset-2',
+      'breeze:bg-breeze-brand breeze:text-breeze-on-brand breeze:data-[focused]:data-[selected]:bg-breeze-brand breeze:data-[selected]:data-[hovered]:bg-breeze-brand breeze:data-[outside-month]:data-[selected]:text-breeze-on-brand breeze:forced-colors:data-[selected]:outline-2 breeze:forced-colors:data-[selected]:outline-solid breeze:forced-colors:data-[selected]:outline-offset-2',
     todayCell:
       'breeze:outline-2 breeze:outline-solid breeze:outline-breeze-brand',
     weekday:
@@ -205,7 +205,7 @@ export function CalendarSurface({
             ...props,
             'aria-disabled': true,
             onKeyDownCapture: (event: ReactKeyboardEvent<HTMLDivElement>) => {
-              if (event.key === 'Tab') return;
+              if (event.key === 'Tab' || event.key === 'Escape') return;
 
               event.preventDefault();
               event.stopPropagation();

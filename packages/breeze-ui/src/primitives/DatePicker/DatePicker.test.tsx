@@ -313,6 +313,56 @@ describe('DatePicker', () => {
     expect(dialog.contains(document.activeElement)).toBe(false);
   });
 
+  it('closes and prevents selection when an ancestor fieldset becomes disabled', async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn<(value: IsoCalendarDate) => void>();
+    const { container } = renderBreeze(
+      <fieldset aria-label="Booking dates">
+        <DatePicker
+          defaultValue="2026-09-03"
+          label="Date"
+          onChange={onChange}
+        />
+      </fieldset>,
+    );
+    const trigger = screen.getByRole('button', {
+      name: 'Date 3 September 2026',
+    });
+
+    await user.click(trigger);
+
+    const dialog = screen.getByRole('dialog', { name: 'Date' });
+    const dateButton = within(dialog).getByRole('button', {
+      name: /12 September 2026/,
+    });
+    const fieldset = container.querySelector('fieldset');
+
+    expect(fieldset).not.toBeNull();
+
+    act(() => {
+      fieldset!.disabled = true;
+      dateButton.click();
+    });
+
+    await waitFor(() => expect(dialog).not.toBeInTheDocument());
+    expect(trigger).toBeDisabled();
+    expect(onChange).not.toHaveBeenCalled();
+
+    act(() => {
+      fieldset!.disabled = false;
+    });
+
+    await waitFor(() => expect(trigger).toBeEnabled());
+    await user.click(trigger);
+    await user.click(
+      within(screen.getByRole('dialog', { name: 'Date' })).getByRole('button', {
+        name: /12 September 2026/,
+      }),
+    );
+
+    expect(onChange).toHaveBeenCalledWith('2026-09-12');
+  });
+
   it('renders a null controlled value as an empty optional form value', async () => {
     const user = userEvent.setup();
 
@@ -679,7 +729,7 @@ describe('DatePicker', () => {
     ).toHaveTextContent('September 2026');
   });
 
-  it('scrolls its opened panel into view and announces required state', async () => {
+  it('announces required state when opening its calendar', async () => {
     const user = userEvent.setup();
 
     renderBreeze(<DatePicker label="Date" defaultValue="2026-09-03" />);
@@ -687,47 +737,10 @@ describe('DatePicker', () => {
     const trigger = screen.getByRole('button', {
       name: 'Date 3 September 2026',
     });
-    const originalDescriptor = Object.getOwnPropertyDescriptor(
-      HTMLElement.prototype,
-      'scrollIntoView',
-    );
-    const scrollTargets: HTMLElement[] = [];
-    const scrollIntoView = vi.fn(function collectScrollTarget(
-      this: HTMLElement,
-    ) {
-      scrollTargets.push(this);
-    });
+    expect(trigger).toHaveAccessibleDescription('Required');
+    await user.click(trigger);
 
-    Object.defineProperty(HTMLElement.prototype, 'scrollIntoView', {
-      configurable: true,
-      value: scrollIntoView,
-    });
-
-    try {
-      expect(trigger).toHaveAccessibleDescription('Required');
-      await user.click(trigger);
-
-      const dialog = screen.getByRole('dialog', { name: 'Date' });
-      const panel = dialog.closest<HTMLElement>(
-        '[data-breeze-overlay="popover"]',
-      );
-
-      await waitFor(() => {
-        expect(panel).not.toBeNull();
-        expect(scrollIntoView).toHaveBeenCalledWith({ block: 'nearest' });
-        expect(scrollTargets).toContain(panel);
-        expect(scrollTargets).not.toContain(trigger);
-      });
-    } finally {
-      if (originalDescriptor) {
-        Object.defineProperty(
-          HTMLElement.prototype,
-          'scrollIntoView',
-          originalDescriptor,
-        );
-      } else {
-        Reflect.deleteProperty(HTMLElement.prototype, 'scrollIntoView');
-      }
-    }
+    expect(screen.getByRole('dialog', { name: 'Date' })).toBeVisible();
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
   });
 });
