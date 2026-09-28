@@ -1,0 +1,187 @@
+:root::view-transition {
+  pointer-events: none;
+}
+
+@keyframes breeze-transition-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes breeze-transition-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes breeze-transition-rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+@keyframes breeze-transition-blur {
+  30% {
+    filter: blur(3px);
+  }
+}
+
+@supports selector(:root:active-view-transition-type(nav)) {
+  :root:active-view-transition-type(nav)
+    [data-breeze-root]
+    [data-breeze-transition-enabled='true'][data-breeze-transition-types~='nav'],
+  :root:active-view-transition-type(mode)
+    [data-breeze-root]
+    [data-breeze-transition-enabled='true'][data-breeze-transition-types~='mode'],
+  :root:active-view-transition-type(list)
+    [data-breeze-root]
+    [data-breeze-transition-enabled='true'][data-breeze-transition-types~='list'],
+  :root:active-view-transition-type(item)
+    [data-breeze-root]
+    [data-breeze-transition-enabled='true'][data-breeze-transition-types~='item'],
+  :root:active-view-transition-type(expand)
+    [data-breeze-root]
+    [data-breeze-transition-enabled='true'][data-breeze-transition-types~='expand'] {
+    view-transition-name: var(--breeze-transition-name);
+  }
+
+  :root {
+    --breeze-transition-out: 130ms;
+    --breeze-transition-in: 220ms;
+    --breeze-transition-move: 300ms;
+    --breeze-transition-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Keep the pinned chrome still; the navmark's group moves between tabs. */
+  :root:active-view-transition-type(nav)::view-transition-group(breeze-topbar),
+  :root:active-view-transition-type(mode)::view-transition-group(breeze-topbar),
+  :root:active-view-transition-type(nav)::view-transition-group(breeze-topnav),
+  :root:active-view-transition-type(mode)::view-transition-group(breeze-topnav),
+  :root:active-view-transition-type(nav)::view-transition-group(breeze-botnav),
+  :root:active-view-transition-type(mode)::view-transition-group(
+      breeze-botnav
+    ) {
+    z-index: 100;
+    animation: none;
+  }
+
+  :root:active-view-transition-type(nav)::view-transition-group(
+      breeze-navmark
+    ) {
+    z-index: 101;
+    animation-duration: var(--breeze-transition-move);
+    animation-timing-function: var(--breeze-transition-ease);
+  }
+
+  /* List, item and expand transitions leave the live root interactive. */
+  :root:active-view-transition-type(list)::view-transition-group(*),
+  :root:active-view-transition-type(item)::view-transition-group(*),
+  :root:active-view-transition-type(expand)::view-transition-group(*) {
+    animation-duration: var(--breeze-transition-move);
+    animation-timing-function: var(--breeze-transition-ease);
+  }
+
+  :root:active-view-transition-type(item)::view-transition-old(*),
+  :root:active-view-transition-type(expand)::view-transition-old(*) {
+    animation: breeze-transition-fade-out var(--breeze-transition-out)
+      var(--breeze-transition-ease) both;
+  }
+
+  :root:active-view-transition-type(item)::view-transition-new(*),
+  :root:active-view-transition-type(expand)::view-transition-new(*) {
+    animation: breeze-transition-fade-in var(--breeze-transition-in)
+      var(--breeze-transition-ease) both;
+  }
+
+  :root:active-view-transition-type(item)::view-transition-image-pair(*),
+  :root:active-view-transition-type(expand)::view-transition-image-pair(*) {
+    animation: breeze-transition-blur var(--breeze-transition-move)
+      var(--breeze-transition-ease) both;
+  }
+
+  :root:active-view-transition-type(item)::view-transition-image-pair(root),
+  :root:active-view-transition-type(expand)::view-transition-image-pair(root),
+  :root:active-view-transition-type(item)::view-transition-image-pair(
+      breeze-topbar
+    ),
+  :root:active-view-transition-type(expand)::view-transition-image-pair(
+      breeze-topbar
+    ),
+  :root:active-view-transition-type(item)::view-transition-image-pair(
+      breeze-topnav
+    ),
+  :root:active-view-transition-type(expand)::view-transition-image-pair(
+      breeze-topnav
+    ),
+  :root:active-view-transition-type(item)::view-transition-image-pair(
+      breeze-botnav
+    ),
+  :root:active-view-transition-type(expand)::view-transition-image-pair(
+      breeze-botnav
+    ),
+  :root:active-view-transition-type(item)::view-transition-image-pair(
+      breeze-navmark
+    ),
+  :root:active-view-transition-type(expand)::view-transition-image-pair(
+      breeze-navmark
+    ) {
+    animation: none;
+  }
+
+  :root:active-view-transition-type(list)::view-transition-old(root),
+  :root:active-view-transition-type(item)::view-transition-old(root),
+  :root:active-view-transition-type(expand)::view-transition-old(root) {
+    display: none;
+  }
+
+  :root:active-view-transition-type(list)::view-transition-new(root),
+  :root:active-view-transition-type(item)::view-transition-new(root),
+  :root:active-view-transition-type(expand)::view-transition-new(root) {
+    animation: none;
+  }
+
+  /* Navigation and content mode keep their root animation when types are combined. */
+  :root:active-view-transition-type(nav)::view-transition-old(root),
+  :root:active-view-transition-type(mode)::view-transition-old(root) {
+    display: block;
+    animation: breeze-transition-fade-out var(--breeze-transition-out)
+      var(--breeze-transition-ease) both;
+  }
+
+  :root:active-view-transition-type(nav)::view-transition-new(root),
+  :root:active-view-transition-type(mode)::view-transition-new(root) {
+    animation: breeze-transition-rise var(--breeze-transition-in)
+      var(--breeze-transition-ease) both;
+  }
+
+  /* Keep fixed chrome imagery still even when item or expand recipes also match. */
+  :root:active-view-transition-type(nav)::view-transition-old(breeze-topbar),
+  :root:active-view-transition-type(nav)::view-transition-new(breeze-topbar),
+  :root:active-view-transition-type(mode)::view-transition-old(breeze-topbar),
+  :root:active-view-transition-type(mode)::view-transition-new(breeze-topbar),
+  :root:active-view-transition-type(nav)::view-transition-old(breeze-topnav),
+  :root:active-view-transition-type(nav)::view-transition-new(breeze-topnav),
+  :root:active-view-transition-type(mode)::view-transition-old(breeze-topnav),
+  :root:active-view-transition-type(mode)::view-transition-new(breeze-topnav),
+  :root:active-view-transition-type(nav)::view-transition-old(breeze-botnav),
+  :root:active-view-transition-type(nav)::view-transition-new(breeze-botnav),
+  :root:active-view-transition-type(mode)::view-transition-old(breeze-botnav),
+  :root:active-view-transition-type(mode)::view-transition-new(breeze-botnav),
+  :root:active-view-transition-type(nav)::view-transition-old(breeze-navmark),
+  :root:active-view-transition-type(nav)::view-transition-new(breeze-navmark) {
+    animation: none;
+  }
+}
+
+/* Global pseudos sit outside BreezeRoot, so scoped base.css rules cannot reach them. */
+@media (prefers-reduced-motion: reduce) {
+  :root::view-transition-group(*),
+  :root::view-transition-image-pair(*),
+  :root::view-transition-old(*),
+  :root::view-transition-new(*) {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+  }
+}

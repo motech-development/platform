@@ -1,3 +1,12 @@
+export type {
+  ViewTransitionParticipantOptions,
+  ViewTransitionRole,
+  ViewTransitionType,
+} from './motion/view-transitions';
+export {
+  startViewTransition,
+  useViewTransitionParticipant,
+} from './motion/view-transitions';
 export { default as AppearanceControl } from './patterns/AppearanceControl/AppearanceControl';
 export type { BadgeProps, BadgeVariant } from './primitives/Badge/Badge';
 export { Badge } from './primitives/Badge/Badge';
@@ -58,6 +67,8 @@ export type {
   LayoutElement,
   LayoutGap,
 } from './primitives/layout.types';
+export type { LinkProps, LinkVariant } from './primitives/Link/Link';
+export { Link } from './primitives/Link/Link';
 export type { MenuProps } from './primitives/Menu/Menu';
 export { Menu } from './primitives/Menu/Menu';
 export type { NumberFieldProps } from './primitives/NumberField/NumberField';
@@ -107,5 +118,9 @@ export { Typography } from './primitives/Typography/Typography';
 export type { VisuallyHiddenProps } from './primitives/VisuallyHidden/VisuallyHidden';
 export { VisuallyHidden } from './primitives/VisuallyHidden/VisuallyHidden';
 export type { Appearance, ResolvedAppearance } from './provider/BreezeContext';
+export type {
+  BreezeRouter,
+  RouterNavigationOptions,
+} from './provider/BreezeContext';
 export type { BreezeProviderProps } from './provider/BreezeProvider';
 export { BreezeProvider } from './provider/BreezeProvider';

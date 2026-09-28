@@ -1,6 +1,5 @@
 @layer components {
-  :where([data-breeze-root]) [data-breeze-overlay],
-  :where([data-breeze-root]) [data-breeze-overlay] * {
+  :where([data-breeze-root]) [data-breeze-overlay] {
     /* Overlay lifecycle must never acquire shared-element transition names. */
     view-transition-name: none !important;
   }

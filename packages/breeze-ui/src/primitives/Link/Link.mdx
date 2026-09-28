@@ -1,0 +1,45 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './Link.stories';
+
+<Meta
+  of={Stories}
+  summary="Navigates to a resource with native anchor behavior and optional router support."
+/>
+
+# Link
+
+`Link` renders a native anchor with Breeze's link styling. Its `href` remains the destination, so browser navigation, keyboard access and open-in-new-tab behavior continue to work.
+
+Without a configured router, activating the link uses the browser's native navigation. With a router, Breeze intercepts only qualifying same-document navigations.
+
+<Canvas of={Stories.Default} />
+
+## Router navigation
+
+Pass a same-document router to `BreezeProvider` when links should update application state without loading another document. `Link` sends the destination and its optional `transitionTypes` to the router. The router decides whether and when to use a browser view transition; see <a href="./?path=/docs/guides-04-motion--docs" target="_top">Motion</a>.
+
+```tsx
+<BreezeProvider locale="en-GB" router={router}>
+  <Link href="/accounts/transactions" transitionTypes={['nav', 'list']}>
+    Transactions
+  </Link>
+</BreezeProvider>
+```
+
+<Canvas of={Stories.RouterNavigation} />
+
+`transitionTypes` defaults to an empty list. Breeze passes the option to `router.navigate(href, { transitionTypes })`; an existing one-argument `navigate(href)` adapter can ignore the extra argument.
+
+## Native anchor behavior
+
+The router handles only an unmodified primary click on a same-origin HTTP or HTTPS link with no fragment, download, or alternate browsing target. External links, downloads, alternate targets, modified clicks and fragment links keep the browser's native behavior.
+
+Use `variant="subtle"` for a lower-emphasis link. The default variant uses the Breeze brand treatment.
+
+## Accessibility
+
+The link's visible content is its accessible name by default. Use `aria-label` or `aria-labelledby` when that content does not describe the destination, and `aria-current` when the link represents the current page or location.
+
+## API
+
+<ArgTypes />

@@ -1,0 +1,121 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta
+  title="Guides/04 Motion"
+  summary="Opt in to typed browser view transitions around committed application updates."
+/>
+
+# Motion
+
+Breeze provides a small opt-in adapter for the browser's same-document View Transition API. Use it when a transition explains a relationship between two states. A link does not start an animation by itself: the application router owns the route update and may opt into a transition with `startViewTransition`.
+
+These examples use stable React 19 and React DOM APIs. Breeze adds no runtime dependency for view transitions.
+
+## Transition types
+
+Use the type that describes the change. Breeze accepts these five values:
+
+| Type     | Use it for                                                   |
+| -------- | ------------------------------------------------------------ |
+| `nav`    | Moving between sibling routes in the same application.       |
+| `mode`   | Replacing a loading skeleton with its content.               |
+| `list`   | Rearranging or filtering a collection of items.              |
+| `item`   | Changing one item while the surrounding page stays in place. |
+| `expand` | Expanding one item into a larger view of that same item.     |
+
+These types let the stylesheet choose which parts can move. `nav` and `mode` may transition the page root; `list`, `item` and `expand` keep the root live and animate only named participants. Breeze does not prescribe an animation for every use of a type.
+
+Keep appearance changes, segmented-control state, typing and in-place recalculation immediate; transitions add no useful relationship to those updates, and immediate input keeps the caret stable. Keep form steps inside a sheet immediate too: the sheet frame stays in place, a nested transition would separate its contents from the frame, and the step indicator already shows progress.
+
+## Declare a participant
+
+Call `useViewTransitionParticipant` below `BreezeProvider` and attach its ref to the element that represents the same thing before and after the update. Breeze grants its view-transition name only while one of the declared types is active.
+
+```tsx
+import { useViewTransitionParticipant } from '@motech-development/breeze-ui';
+
+function TransactionRow({ transaction }) {
+  const rowRef = useViewTransitionParticipant({
+    name: `transaction-${transaction.id}`,
+    types: ['list'],
+  });
+
+  return <li ref={rowRef}>{transaction.name}</li>;
+}
+```
+
+Each participant name must be a valid CSS custom identifier and unique among visible participants in both snapshots. In development, Breeze reports duplicate eligible names. Names stay disabled for page participants while a visual overlay is on top; if an application-owned participant is inside an overlay, only the topmost visual overlay can enable it.
+
+The application shell can use Breeze's reserved roles for its chrome and current-location marker. The `topbar`, `topnav` and `botnav` roles stay pinned during page transitions:
+
+```tsx
+import { useViewTransitionParticipant } from '@motech-development/breeze-ui';
+
+function TopBar() {
+  const topbarRef = useViewTransitionParticipant({ role: 'topbar' });
+
+  return <header ref={topbarRef}>Account</header>;
+}
+```
+
+The fixed roles are `topbar`, `topnav`, `botnav` and `navmark`. The first three are enabled for `nav` and `mode`; `navmark` marks the current location and moves during `nav` only. These roles reserve Breeze's singleton names, so use each role on at most one visible element in a snapshot.
+
+## Start a router transition
+
+`Link` passes its `transitionTypes` to the configured `router.navigate` callback. The router can wrap its real route update with `startViewTransition`:
+
+```tsx
+import { useState } from 'react';
+import { flushSync } from 'react-dom';
+import {
+  BreezeProvider,
+  Link,
+  startViewTransition,
+  type RouterNavigationOptions,
+} from '@motech-development/breeze-ui';
+
+function AppRouter() {
+  const [path, setPath] = useState('/');
+  const navigate = (
+    href: string,
+    { transitionTypes }: RouterNavigationOptions,
+  ) =>
+    startViewTransition(() => {
+      flushSync(() => setPath(href));
+    }, transitionTypes);
+
+  return (
+    <BreezeProvider locale="en-GB" router={{ navigate }}>
+      <nav>
+        <Link href="/" transitionTypes={['nav']}>
+          Home
+        </Link>
+        <Link href="/transactions" transitionTypes={['nav', 'list']}>
+          Transactions
+        </Link>
+      </nav>
+      <main>{path === '/' ? <HomePage /> : <TransactionsPage />}</main>
+    </BreezeProvider>
+  );
+}
+
+function HomePage() {
+  return <p>Home</p>;
+}
+
+function TransactionsPage() {
+  return <p>Transactions</p>;
+}
+```
+
+The router must make the update callback cover the actual DOM commit. For a synchronous React state update, `flushSync` commits it before the callback returns. For asynchronous routing, await the router's commit-ready signal and resolve only after the intended DOM has committed; data-fetch completion or scheduling a state update is not enough. If the destination suspends, coordinate with the router so the callback does not settle while the UI is still showing a fallback instead of the intended route.
+
+An empty type list, an unsupported typed View Transition API, or a reduced-motion preference skips the animation and still runs the update. The helper returns a promise for update completion and propagates failures from the update. If a transition is already active, Breeze skips it before starting the next one.
+
+## Overlay lifecycle
+
+Dialogs, drawers, menus and popovers keep their React Aria Components lifecycle and existing overlay motion. Toast confirmations keep their own lifecycle and existing motion. Do not use `startViewTransition` for an overlay or confirmation opening or closing.
+
+## Browser reference
+
+Read [Document.startViewTransition()](https://developer.mozilla.org/en-US/docs/Web/API/Document/startViewTransition) and [Using view transition types](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API/Using_types) for the browser API.
