@@ -6,26 +6,10 @@ on:
       - opened
       - reopened
       - synchronize
-  push:
-    branches:
-      - main
-    paths:
-      - '.github/actions/setup-dependencies/**'
-      - '.github/workflows/quality-assurance.yml'
-      - '.nvmrc'
-      - '.yarn/**'
-      - '.yarnrc.yml'
-      - 'package.json'
-      - 'packages/breeze-ui/**'
-      - 'tsconfig.json'
-      - 'yarn.lock'
-  workflow_dispatch:
 
 jobs:
   label:
     name: Label PR
-
-    if: github.event_name == 'pull_request'
 
     runs-on: ubuntu-latest
 
@@ -36,8 +20,6 @@ jobs:
 
   delivery-catalog:
     name: Validate delivery catalog
-
-    if: github.event_name == 'pull_request'
 
     runs-on: ubuntu-latest
 
@@ -65,8 +47,6 @@ jobs:
   formatting:
     name: Formatting
 
-    if: github.event_name == 'pull_request'
-
     runs-on: ubuntu-latest
 
     permissions:
@@ -86,8 +66,6 @@ jobs:
 
   lint:
     name: Lint
-
-    if: github.event_name == 'pull_request'
 
     runs-on: ubuntu-latest
 
@@ -112,8 +90,6 @@ jobs:
   type-check:
     name: Type check
 
-    if: github.event_name == 'pull_request'
-
     runs-on: ubuntu-latest
 
     permissions:
@@ -136,8 +112,6 @@ jobs:
 
   unit-tests:
     name: Unit tests
-
-    if: github.event_name == 'pull_request'
 
     runs-on: ubuntu-latest
 
@@ -179,11 +153,6 @@ jobs:
   chromatic:
     name: Chromatic
 
-    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
-
-    permissions:
-      contents: read
-
     runs-on: ubuntu-latest
 
     steps:
@@ -191,20 +160,13 @@ jobs:
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           fetch-depth: 0
-          persist-credentials: false
 
       - name: Detect Breeze changes
         id: breeze-changes
         env:
-          EVENT_NAME: ${{ github.event_name }}
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
-          if [[ "$EVENT_NAME" != "pull_request" ]]; then
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
           changed_files=$(git diff --name-only "$BASE_SHA...$HEAD_SHA" -- packages/breeze-ui/)
           if [ -n "$changed_files" ]; then
             echo "changed=true" >> "$GITHUB_OUTPUT"
@@ -223,5 +185,4 @@ jobs:
           workingDir: packages/breeze-ui
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
           buildScriptName: deploy
-          autoAcceptChanges: main
           exitOnceUploaded: true

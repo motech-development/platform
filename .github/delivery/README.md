@@ -42,6 +42,8 @@ When publication succeeds without creating a Release, the plan reuses the latest
 
 The resulting plan contains the accepted boundary, ordered Affected Deployment Units, and a complete desired workspace-to-tag map for the target. Develop and production receive that same immutable map, then reconcile independently after acquiring separate non-cancelling environment locks. Reconciliation reads successful GitHub Deployments by environment and stable `deploy:<unit-id>` task, repairs missing expected CloudFormation stacks, expands selected units to delivery dependants, and checks out each unit's exact owning-workspace tag before building.
 
+Production component-library delivery reports Chromatic baselines from the exact released Storybook build and associates them with `main`. This reporting step is non-blocking and runs after the GitHub Pages deployment has been recorded as successful.
+
 Each selected job creates a GitHub Deployment immediately before its real delivery attempt, records `in_progress`, and records the final success or failure without automatically inactivating earlier records. Only a record whose latest status is successful and whose history includes the real attempt advances Environment State. Missing, malformed, pending, or failed history remains selected on the next reconciliation.
 
 For a manual full delivery, dispatch the `Release` workflow with a successfully released main commit SHA. The workflow derives the complete reachable tag map; it does not accept application version inputs. Planning fails if the boundary is not on main, was not successfully released, or any applicable Deployment Unit lacks its own reachable GitHub Release.

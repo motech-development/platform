@@ -143,10 +143,12 @@ jobs:
 
     steps:
       - name: Checkout code
+        id: storybook-source
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           ref: ${{ fromJSON(inputs.release-plan).desiredTags['@motech-development/breeze-ui'] }}
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Start dependency setup measurement
         id: dependency-timing
@@ -272,6 +274,18 @@ jobs:
               "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
               --input -
           echo "recorded=true" >> "$GITHUB_OUTPUT"
+
+      - name: Report Storybook baseline
+        continue-on-error: true
+        uses: chromaui/action@94713c544284a14195de3b50ef24301579f1877e # v18.0.1
+        with:
+          workingDir: packages/breeze-ui
+          storybookBuildDir: storybook-static
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          chromaticSha: ${{ steps.storybook-source.outputs.commit }}
+          branchName: main
+          autoAcceptChanges: main
+          exitOnceUploaded: true
 
       - name: Record failed Deployment
         if: failure() && steps.deployment.outputs.id != '' && steps.deployment-success.outputs.recorded != 'true'
