@@ -79,6 +79,8 @@ function LoadingExample() {
 /** Toggle and ToggleGroup use the same loading bar and preserve their size. */
 export const Loading: Story = {
   play: async ({ canvasElement }) => {
+    await document.fonts.ready;
+
     const canvas = within(canvasElement);
     const toggle = canvas.getByRole('button', {
       name: 'Remember this device',
