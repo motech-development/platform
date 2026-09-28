@@ -117,6 +117,7 @@ describe('RowList', () => {
 
     expect(within(grid).getByRole('row')).toBeInTheDocument();
     expect(within(grid).getByRole('gridcell')).toBeInTheDocument();
+    expect(within(grid).getByText('No items to display.')).toBeInTheDocument();
   });
 
   it('keeps row ids separate from section ids', () => {
@@ -234,7 +235,7 @@ describe('RowList', () => {
         placeholder.hasAttribute('aria-hidden'),
       ),
     ).toBe(true);
-    expect(screen.queryByRole('status')).toBeNull();
+    expect(screen.getByRole('status')).toBeEmptyDOMElement();
   });
 
   it('keeps the named load-more action busy outside the retained grid', () => {

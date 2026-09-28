@@ -49,6 +49,7 @@ const meta = {
       label: 'Load more activity',
       onAction: fn(),
     },
+    loading: false,
     onAction: fn(),
   },
   component: RowList as ComponentType<RowListProps<unknown>>,
@@ -175,10 +176,20 @@ export const Empty: Story = {
   args: {
     items: [],
     loadMore: undefined,
+    loading: false,
   },
 };
 
-/** The load-more action keeps its name and announces its own busy state. */
+/** Initial loading keeps a fixed skeleton shape inside the named grid. */
+export const InitialLoading: Story = {
+  args: {
+    items: [],
+    loadMore: undefined,
+    loading: true,
+  },
+};
+
+/** Per-row placeholders remain separate from the load-more action. */
 export const Loading: Story = {
   args: {
     items: [{ ...entries[0], loading: true }, ...entries.slice(1)],
@@ -199,12 +210,24 @@ export const Loading: Story = {
 
     await expect(button).toHaveAttribute('aria-busy', 'true');
     await expect(button).toHaveAccessibleName(/Load more activity/);
+    await expect(grid).not.toHaveAttribute('aria-busy');
     await expect(status).toHaveTextContent('Loading');
     await expect(grid.closest('[aria-live]')).toBeNull();
+    await expect(status.closest('[aria-busy]')).toBeNull();
+    await expect(grid).not.toContainElement(status);
     await expect(coffeeRow).toBeInTheDocument();
     await expect(
       within(coffeeRow).getAllByRole('progressbar', { hidden: true }),
     ).toHaveLength(2);
+  },
+};
+
+/** Top-level refresh loading retains ordinary rows and their focus. */
+export const RetainedLoading: Story = {
+  args: {
+    items: entries,
+    loadMore: undefined,
+    loading: true,
   },
 };
 

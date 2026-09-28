@@ -5,6 +5,7 @@ const enGB = {
   appearanceLight: 'Light',
   close: 'Close',
   loading: 'Loading',
+  noItemsToDisplay: 'No items to display.',
   required: 'Required',
   selectDate: 'Select a date',
 };
