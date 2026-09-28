@@ -33,26 +33,32 @@ Enter or Space to activate the focused row.
 
 <Canvas of={Stories.Merging} />
 
-## Loading row regions
+## Loading and empty results
 
-Set a row descriptor's `loading` flag to show quiet placeholders in its
-metadata and value regions. Any supplied leading content remains visible, and
-the row keeps its label and action. This state is separate from
-`loadMore.loading`, which marks the pagination button busy and announces its
-status. The Loading example shows both states together.
+Set the top-level `loading` flag while fetching initial data or refreshing. An
+empty grid shows three quiet skeleton rows and one loading announcement. A
+populated grid keeps its rows and focus while loading, with the announcement
+outside the grid.
+
+<Canvas of={Stories.InitialLoading} />
+
+<Canvas of={Stories.RetainedLoading} />
+
+Completed empty results display the provider-localized “No items to display.”
+message inside the structural grid row and cell.
+
+<Canvas of={Stories.Empty} />
+
+`RowListItemDescriptor.loading` only replaces a row's optional metadata and
+value with quiet placeholders; its label, description, icon, badge, and action
+remain. The Loading example shows this state alongside a separately busy named
+pagination button.
 
 <Canvas of={Stories.Loading} />
 
-## Load more
-
-Pass a named `loadMore` action when another page is available. Its button
-remains outside the retained grid, keeps its label while busy, and announces
-the loading status without re-announcing existing rows.
-
-An empty result keeps a named grid with the structural row and cell required by
-grid-list semantics.
-
-<Canvas of={Stories.Empty} />
+Pass a named `loadMore` action when another page is available. Its button keeps
+its label while busy, and its status shares the single live loading message
+without re-announcing existing rows.
 
 ## API
 

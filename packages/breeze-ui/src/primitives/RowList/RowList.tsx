@@ -15,12 +15,14 @@ import { type IsoCalendarDate, Typography } from '../Typography/Typography';
 const variants = {
   base: {
     badge:
-      'breeze:max-inline-size-full breeze:min-inline-size-0 breeze:overflow-hidden breeze:text-ellipsis breeze:whitespace-nowrap',
+      'breeze:block breeze:inline-size-full breeze:max-inline-size-full breeze:min-inline-size-0 breeze:overflow-hidden breeze:text-ellipsis breeze:whitespace-nowrap',
     container: 'breeze:min-inline-size-0 breeze:inline-size-full',
     content:
       'breeze:flex breeze:min-inline-size-0 breeze:flex-1 breeze:flex-col',
     description:
       'breeze:break-words breeze:text-breeze-xs breeze:font-normal breeze:leading-breeze-snug breeze:text-breeze-ink-3',
+    emptyMessage:
+      'breeze:box-border breeze:inline-size-full breeze:min-inline-size-0 breeze:px-breeze-3 breeze:py-breeze-3 breeze:text-breeze-sm breeze:text-breeze-ink-2',
     grid: 'breeze:inline-size-full breeze:min-inline-size-0 breeze:flex breeze:flex-col breeze:gap-0',
     header:
       'breeze:box-border breeze:inline-size-full breeze:min-inline-size-0 breeze:grid breeze:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] breeze:items-center breeze:gap-breeze-4 breeze:border-breeze-line breeze:border-be breeze:px-breeze-3 breeze:py-breeze-2 breeze:text-breeze-xs breeze:font-medium breeze:text-breeze-ink-2 breeze:max-breeze-md:grid-cols-1 breeze:max-breeze-md:gap-breeze-1',
@@ -30,13 +32,20 @@ const variants = {
     item: 'breeze:box-border breeze:inline-size-full breeze:min-inline-size-0 breeze:grid breeze:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] breeze:items-center breeze:gap-breeze-4 breeze:border-breeze-line breeze:border-be breeze:px-breeze-3 breeze:py-breeze-3 breeze:text-start breeze:outline-offset-[-2px] breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-50 breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[hovered]:bg-breeze-sunken breeze:data-[pressed]:bg-breeze-sunken breeze:any-pointer-coarse:min-block-breeze-tap breeze:max-breeze-md:grid-cols-1 breeze:max-breeze-md:gap-breeze-1',
     label: 'breeze:min-inline-size-0 breeze:break-words breeze:font-medium',
     leading:
-      'breeze:col-start-1 breeze:flex breeze:min-inline-size-0 breeze:items-center breeze:gap-breeze-2',
+      'breeze:col-start-1 breeze:flex breeze:min-inline-size-0 breeze:flex-col breeze:items-start breeze:gap-breeze-2',
     loadMore:
       'breeze:flex breeze:min-inline-size-0 breeze:justify-center breeze:py-breeze-3',
-    loadMoreStatus: 'breeze:sr-only',
+    loadingLeading:
+      'breeze:flex breeze:min-inline-size-0 breeze:flex-col breeze:gap-breeze-2',
+    loadingRow:
+      'breeze:box-border breeze:inline-size-full breeze:min-inline-size-0 breeze:grid breeze:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] breeze:items-center breeze:gap-breeze-4 breeze:border-breeze-line breeze:border-be breeze:px-breeze-3 breeze:py-breeze-3 breeze:max-breeze-md:grid-cols-1 breeze:max-breeze-md:gap-breeze-1',
+    loadingStatus: 'breeze:sr-only',
     metadata:
       'breeze:col-start-2 breeze:min-inline-size-0 breeze:break-words breeze:text-end breeze:max-breeze-md:col-start-1 breeze:max-breeze-md:text-start',
+    primary:
+      'breeze:flex breeze:inline-size-full breeze:min-inline-size-0 breeze:items-start breeze:gap-breeze-2',
     section: 'breeze:flex breeze:min-inline-size-0 breeze:flex-col',
+    skeletonRows: 'breeze:flex breeze:min-inline-size-0 breeze:flex-col',
     value:
       'breeze:col-start-3 breeze:min-inline-size-0 breeze:break-words breeze:text-end breeze:max-breeze-md:col-start-1 breeze:max-breeze-md:text-start',
   },
@@ -90,6 +99,8 @@ export interface RowListProps<T> {
   getItem: (item: T) => RowListItemDescriptor;
   /** Application values displayed as rows. */
   items: T[];
+  /** Announces initial or retained-row loading without replacing existing rows. */
+  loading?: boolean;
   /** Optional explicit action for retrieving more rows. */
   loadMore?: RowListLoadMoreProps;
   /** Called with the activated row's descriptor. */
@@ -136,6 +147,25 @@ function groupRows(descriptors: RowListItemDescriptor[]): ListEntry[] {
 
 function LoadingPlaceholder() {
   return <Skeleton blockSize="1lh" inlineSize="min(100%, 8em)" />;
+}
+
+const initialLoadingRows = ['first', 'second', 'third'] as const;
+
+function InitialLoadingState() {
+  return (
+    <div className={variants.base.skeletonRows}>
+      {initialLoadingRows.map((row) => (
+        <div className={variants.base.loadingRow} key={row}>
+          <div className={variants.base.loadingLeading}>
+            <Skeleton blockSize="1lh" inlineSize="min(100%, 9em)" />
+            <Skeleton blockSize="1lh" inlineSize="min(100%, 14em)" />
+          </div>
+          <Skeleton blockSize="1lh" inlineSize="min(100%, 7em)" />
+          <Skeleton blockSize="1lh" inlineSize="min(100%, 5em)" />
+        </div>
+      ))}
+    </div>
+  );
 }
 
 function MetadataContent({
@@ -200,19 +230,21 @@ function RowContent({
   return (
     <>
       <div className={variants.base.leading}>
-        {descriptor.icon && (
-          <span aria-hidden="true" className={variants.base.icon}>
-            <Icon name={descriptor.icon} size="sm" />
-          </span>
-        )}
-        <span className={variants.base.content}>
-          <span className={variants.base.label}>{descriptor.label}</span>
-          {descriptor.description && (
-            <span className={variants.base.description}>
-              {descriptor.description}
+        <div className={variants.base.primary}>
+          {descriptor.icon && (
+            <span aria-hidden="true" className={variants.base.icon}>
+              <Icon name={descriptor.icon} size="sm" />
             </span>
           )}
-        </span>
+          <span className={variants.base.content}>
+            <span className={variants.base.label}>{descriptor.label}</span>
+            {descriptor.description && (
+              <span className={variants.base.description}>
+                {descriptor.description}
+              </span>
+            )}
+          </span>
+        </div>
         {descriptor.badge && (
           <span className={variants.base.badge}>
             <Badge
@@ -265,20 +297,33 @@ export function RowList<T>({
   'aria-label': ariaLabel,
   getItem,
   items,
+  loading = false,
   loadMore,
   onAction,
 }: Readonly<RowListProps<T>>) {
   const { getMessageLocale, messages } = useBreezeContext();
   const descriptors = items.map(getItem);
   const entries = groupRows(descriptors);
-  const loading = loadMore?.loading ?? false;
+  const loadMoreLoading = loadMore?.loading ?? false;
 
   return (
     <div className={variants.base.container}>
       <AriaGridList
+        aria-busy={loading || undefined}
         aria-label={ariaLabel}
         className={variants.base.grid}
-        renderEmptyState={() => null}
+        renderEmptyState={() =>
+          loading ? (
+            <InitialLoadingState />
+          ) : (
+            <div
+              className={variants.base.emptyMessage}
+              lang={getMessageLocale('noItemsToDisplay')}
+            >
+              {messages.noItemsToDisplay}
+            </div>
+          )
+        }
         selectionMode="none"
       >
         {entries.map((entry) => {
@@ -304,22 +349,22 @@ export function RowList<T>({
           );
         })}
       </AriaGridList>
+      <output
+        aria-live="polite"
+        className={variants.base.loadingStatus}
+        lang={getMessageLocale('loading')}
+      >
+        {loading || loadMoreLoading ? messages.loading : ''}
+      </output>
       {loadMore && (
         <div className={variants.base.loadMore}>
           <Button
-            loading={loading}
+            loading={loadMoreLoading}
             onAction={loadMore.onAction}
             variant="quiet"
           >
             {loadMore.label}
           </Button>
-          <output
-            aria-live="polite"
-            className={variants.base.loadMoreStatus}
-            lang={getMessageLocale('loading')}
-          >
-            {loading ? messages.loading : ''}
-          </output>
         </div>
       )}
     </div>
