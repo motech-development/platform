@@ -64,6 +64,15 @@ export type { NumberFieldProps } from './primitives/NumberField/NumberField';
 export { NumberField } from './primitives/NumberField/NumberField';
 export type { PopoverProps } from './primitives/Popover/Popover';
 export { Popover } from './primitives/Popover/Popover';
+export type {
+  RowListItemDescriptor,
+  RowListLoadMoreProps,
+  RowListMetadata,
+  RowListProps,
+  RowListSectionDescriptor,
+  RowListValue,
+} from './primitives/RowList/RowList';
+export { RowList } from './primitives/RowList/RowList';
 export type { SelectProps } from './primitives/Select/Select';
 export { Select } from './primitives/Select/Select';
 export type {
