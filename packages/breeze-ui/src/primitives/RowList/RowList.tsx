@@ -15,7 +15,7 @@ import { type IsoCalendarDate, Typography } from '../Typography/Typography';
 const variants = {
   base: {
     badge:
-      'breeze:block breeze:inline-size-full breeze:max-inline-size-full breeze:min-inline-size-0 breeze:overflow-hidden breeze:text-ellipsis breeze:whitespace-nowrap',
+      'breeze:block breeze:inline-size-full breeze:max-inline-size-full breeze:min-inline-size-0 breeze:overflow-hidden breeze:whitespace-nowrap breeze:[&>span]:max-inline-size-full breeze:[&>span]:min-inline-size-0 breeze:[&>span]:overflow-hidden breeze:[&>span>span:first-child]:min-inline-size-0 breeze:[&>span>span:first-child]:overflow-hidden breeze:[&>span>span:first-child]:text-ellipsis',
     container: 'breeze:min-inline-size-0 breeze:inline-size-full',
     content:
       'breeze:flex breeze:min-inline-size-0 breeze:flex-1 breeze:flex-col',
@@ -75,7 +75,7 @@ export interface RowListSectionDescriptor {
 
 /** The closed content contract for a row and its aligned regions. */
 export interface RowListItemDescriptor extends ItemDescriptor {
-  /** Shows quiet placeholders for unavailable metadata and value regions. */
+  /** Shows quiet placeholders for supplied metadata and value regions. */
   loading?: boolean;
   /** Optional middle region, formatted as text or a locale-aware calendar date. */
   metadata?: RowListMetadata;
@@ -338,6 +338,14 @@ export function RowList<T>({
   const descriptors = items.map(getItem);
   const entries = groupRows(descriptors);
   const loadMoreLoading = loadMore?.loading ?? false;
+  const isLoading = loading || loadMoreLoading;
+  let statusMessage = '';
+
+  if (isLoading) {
+    statusMessage = messages.loading;
+  } else if (items.length === 0) {
+    statusMessage = messages.noItemsToDisplay;
+  }
 
   return (
     <div className={variants.base.container}>
@@ -385,9 +393,9 @@ export function RowList<T>({
       <output
         aria-live="polite"
         className={variants.base.loadingStatus}
-        lang={getMessageLocale('loading')}
+        lang={getMessageLocale(isLoading ? 'loading' : 'noItemsToDisplay')}
       >
-        {loading || loadMoreLoading ? messages.loading : ''}
+        {statusMessage}
       </output>
       {loadMore && (
         <div className={variants.base.loadMore}>
