@@ -10,6 +10,16 @@ const meta = {
     defaultValue: '2026-09-03',
     label: 'Transaction date',
   },
+  beforeEach: () => {
+    const originalNow = Date.now;
+    const fixedNow = new Date(2026, 8, 15, 12).getTime();
+
+    Date.now = () => fixedNow;
+
+    return () => {
+      Date.now = originalNow;
+    };
+  },
   component: DatePicker,
   title: 'Forms/DatePicker',
 } satisfies Meta<typeof DatePicker>;
@@ -32,10 +42,15 @@ export const Default: Story = {
     const dialog = await page.findByRole('dialog', {
       name: 'Transaction date',
     });
+    const today = within(dialog).getByRole('button', {
+      name: /Tuesday, 15 September 2026/,
+    });
     const selectedDate = within(dialog).getByRole('button', {
       name: /Thursday, 3 September 2026 selected/,
     });
 
+    await expect(today).toHaveAttribute('data-today', 'true');
+    await expect(today).not.toHaveAttribute('data-selected', 'true');
     await expect(selectedDate).toHaveFocus();
   },
 };
