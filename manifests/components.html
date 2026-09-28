@@ -588,13 +588,13 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">31 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">2/31 infos</a><span class="filter-pill ok" aria-disabled="true">122 stories ok</span><a class="filter-pill ok" data-k="docs" href="#filter-docs">33 docs ok</a></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">1/32 prop type error</a><a class="filter-pill info" data-k="infos" href="#filter-infos">3/32 infos</a><span class="filter-pill ok" aria-disabled="true">128 stories ok</span><a class="filter-pill ok" data-k="docs" href="#filter-docs">34 docs ok</a></div>
   </div>
 </header>
 <main>
   <div class="wrap">
     <div class="note ok" style="margin-bottom: 16px;">
-              Using <code>react-docgen-typescript</code>. Generation took <strong>2.0s</strong>.
+              Using <code>react-docgen-typescript</code>. Generation took <strong>2.2s</strong>.
             </div>
     <h2 class="section-title">Components</h2>
     <div class="grid" role="list">
@@ -946,7 +946,7 @@ locale: string
 /**
  * Accessible messages translated into the provider locale; defaults to English.
  */
-messages?: Partial&lt;{ appearance: string; appearanceAutomatic: string; appearanceDark: string; appearanceLight: string; close: string; loading: string; required: string; selectDate: string; }&gt;
+messages?: Partial&lt;{ appearance: string; appearanceAutomatic: string; appearanceDark: string; appearanceLight: string; close: string; loading: string; noItemsToDisplay: string; required: string; selectDate: string; }&gt;
 
 /**
  * Reports a semantic appearance choice so the application can persist it.
@@ -4916,6 +4916,555 @@ Enter and exit motion respects reduced-motion preferences. A closing surface imm
 </article>
 <article
   class="card 
+  has-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="RowList as ComponentType&lt;RowListProps&lt;unknown&gt;&gt;">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-err"></span> RowList as ComponentType&lt;RowListProps&lt;unknown&gt;&gt;</h2>
+      <div class="badges">
+        <label for="c-21-collections-rowlist-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-21-collections-rowlist-info" class="badge info as-toggle">1 info</label>
+        <label for="c-21-collections-rowlist-stories" class="badge ok as-toggle">6 stories</label>
+        <label for="c-21-collections-rowlist-docs" class="badge ok as-toggle">1 doc</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/primitives/RowList/RowList.stories.tsx">collections-rowlist · ./src/primitives/RowList/RowList.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  <input id="c-21-collections-rowlist-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-21-collections-rowlist-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-21-collections-rowlist-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-21-collections-rowlist-docs" class="tg tg-docs" type="checkbox" hidden />
+  
+  
+
+  <div class="panels">
+    
+        <div class="panel panel-err">
+          
+    <div class="note err">
+      <div class="note-title">Prop type error</div>
+      <div class="note-body"><pre><code>No component file found for the &quot;RowList as ComponentType&lt;RowListProps&lt;unknown&gt;&gt;&quot; component.
+  41 | }
+  42 |
+&gt; 43 | const meta = {
+     | ^
+  44 |   args: {
+  45 |     &#39;aria-label&#39;: &#39;Activity&#39;,
+  46 |     getItem: getDescriptor,
+
+./src/primitives/RowList/RowList.stories.tsx:
+import type { Meta, StoryObj } from &#39;@storybook/react-vite&#39;;
+import type { ComponentType } from &#39;react&#39;;
+import { useState } from &#39;react&#39;;
+import { expect, fn, userEvent, within } from &#39;storybook/test&#39;;
+import type { RowListItemDescriptor, RowListProps } from &#39;./RowList&#39;;
+import { RowList } from &#39;./RowList&#39;;
+
+const entries = [
+  {
+    badge: {
+      children:
+        &#39;Needs review before the next monthly reconciliation is complete&#39;,
+      variant: &#39;warning&#39;,
+    },
+    description: &#39;Coffee shop near the station.&#39;,
+    icon: &#39;document&#39;,
+    id: &#39;coffee&#39;,
+    label: &#39;Coffee shop&#39;,
+    metadata: { format: &#39;date&#39;, value: &#39;2026-09-14&#39; },
+    section: { id: &#39;september&#39;, label: &#39;September&#39; },
+    value: { currency: &#39;GBP&#39;, format: &#39;currency&#39;, value: 4.75 },
+  },
+  {
+    id: &#39;market&#39;,
+    label: &#39;Market&#39;,
+    metadata: { format: &#39;text&#39;, value: &#39;Card purchase&#39; },
+    section: { id: &#39;september&#39;, label: &#39;September&#39; },
+    value: { format: &#39;text&#39;, value: &#39;Reviewed&#39; },
+  },
+  {
+    id: &#39;travel&#39;,
+    label: &#39;Travel to work&#39;,
+    metadata: { format: &#39;date&#39;, value: &#39;2026-09-12&#39; },
+    section: { id: &#39;august&#39;, label: &#39;August&#39; },
+    value: { currency: &#39;GBP&#39;, format: &#39;currency&#39;, value: 8.5 },
+  },
+] satisfies RowListItemDescriptor[];
+
+function getDescriptor(item: unknown): RowListItemDescriptor {
+  return item as RowListItemDescriptor;
+}
+
+const meta = {
+  args: {
+    &#39;aria-label&#39;: &#39;Activity&#39;,
+    getItem: getDescriptor,
+    items: entries,
+    loadMore: {
+      label: &#39;Load more activity&#39;,
+      onAction: fn(),
+    },
+    loading: false,
+    onAction: fn(),
+  },
+  component: RowList as ComponentType&lt;RowListProps&lt;unknown&gt;&gt;,
+  title: &#39;Collections/RowList&#39;,
+} satisfies Meta&lt;typeof RowList&gt;;
+
+export default meta;
+type Story = StoryObj&lt;typeof meta&gt;;
+
+async function verifyResponsiveGeometry(canvasElement: HTMLElement) {
+  if (!(&#39;__vitest_browser__&#39; in globalThis)) return;
+
+  const browserContext = await import(&#39;vitest/browser&#39;);
+  const document = canvasElement.ownerDocument;
+  const view = document.defaultView;
+
+  if (!view) throw new Error(&#39;Missing RowList story window.&#39;);
+
+  const originalViewport = { height: view.innerHeight, width: view.innerWidth };
+  const canvas = within(canvasElement);
+
+  try {
+    await browserContext.page.viewport(1200, 800);
+    await expect(view.innerWidth).toBe(1200);
+
+    const grid = canvas.getByRole(&#39;grid&#39;, { name: &#39;Activity&#39; });
+    const coffeeRow = within(grid).getByRole(&#39;row&#39;, { name: &#39;Coffee shop&#39; });
+    const marketRow = within(grid).getByRole(&#39;row&#39;, { name: &#39;Market&#39; });
+    const coffeeLabel = within(coffeeRow).getByText(&#39;Coffee shop&#39;);
+    const coffeeDate = within(coffeeRow).getByText(&#39;14 Sept 2026&#39;);
+    const coffeeValue = within(coffeeRow).getByText(&#39;£4.75&#39;);
+    const marketDate = within(marketRow).getByText(&#39;Card purchase&#39;);
+    const marketValue = within(marketRow).getByText(&#39;Reviewed&#39;);
+    const coffeeLabelRect = coffeeLabel.getBoundingClientRect();
+    const coffeeDateRect = coffeeDate.getBoundingClientRect();
+    const coffeeValueRect = coffeeValue.getBoundingClientRect();
+    const marketDateRect = marketDate.getBoundingClientRect();
+    const marketValueRect = marketValue.getBoundingClientRect();
+    const coffeeMetadataRegion = coffeeRow.querySelector&lt;HTMLElement&gt;(
+      &#39;[class~=&quot;breeze:col-start-2&quot;]&#39;,
+    );
+    const marketMetadataRegion = marketRow.querySelector&lt;HTMLElement&gt;(
+      &#39;[class~=&quot;breeze:col-start-2&quot;]&#39;,
+    );
+    const coffeeValueRegion = coffeeRow.querySelector&lt;HTMLElement&gt;(
+      &#39;[class~=&quot;breeze:col-start-3&quot;]&#39;,
+    );
+    const marketValueRegion = marketRow.querySelector&lt;HTMLElement&gt;(
+      &#39;[class~=&quot;breeze:col-start-3&quot;]&#39;,
+    );
+
+    if (
+      !coffeeMetadataRegion ||
+      !marketMetadataRegion ||
+      !coffeeValueRegion ||
+      !marketValueRegion
+    ) {
+      throw new Error(&#39;Missing one of the RowList aligned regions.&#39;);
+    }
+
+    const coffeeMetadataRect = coffeeMetadataRegion.getBoundingClientRect();
+    const marketMetadataRect = marketMetadataRegion.getBoundingClientRect();
+    const coffeeValueRegionRect = coffeeValueRegion.getBoundingClientRect();
+    const marketValueRegionRect = marketValueRegion.getBoundingClientRect();
+
+    await expect(getComputedStyle(coffeeRow).display).toBe(&#39;grid&#39;);
+    await expect(coffeeLabelRect.left).toBeLessThan(coffeeDateRect.left);
+    await expect(coffeeDateRect.left).toBeLessThan(coffeeValueRect.left);
+    await expect(
+      Math.abs(coffeeMetadataRect.left - marketMetadataRect.left),
+    ).toBeLessThan(1);
+    await expect(
+      Math.abs(coffeeValueRegionRect.left - marketValueRegionRect.left),
+    ).toBeLessThan(1);
+    await expect(
+      Math.abs(coffeeDateRect.right - marketDateRect.right),
+    ).toBeLessThan(1);
+    await expect(
+      Math.abs(coffeeValueRect.right - marketValueRect.right),
+    ).toBeLessThan(1);
+
+    await browserContext.page.viewport(375, 812);
+    await expect(view.innerWidth).toBe(375);
+
+    const narrowGrid = canvas.getByRole(&#39;grid&#39;, { name: &#39;Activity&#39; });
+    const narrowCoffeeRow = within(narrowGrid).getByRole(&#39;row&#39;, {
+      name: &#39;Coffee shop&#39;,
+    });
+    const narrowLabel = within(narrowCoffeeRow)
+      .getByText(&#39;Coffee shop&#39;)
+      .getBoundingClientRect();
+    const narrowDate = within(narrowCoffeeRow)
+      .getByText(&#39;14 Sept 2026&#39;)
+      .getBoundingClientRect();
+    const narrowValue = within(narrowCoffeeRow)
+      .getByText(&#39;£4.75&#39;)
+      .getBoundingClientRect();
+
+    await expect(narrowDate.top).toBeGreaterThan(narrowLabel.top);
+    await expect(narrowValue.top).toBeGreaterThan(narrowDate.top);
+    await expect(narrowGrid.scrollWidth).toBeLessThanOrEqual(
+      narrowGrid.clientWidth,
+    );
+    await expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(
+      view.innerWidth,
+    );
+  } finally {
+    await browserContext.page.viewport(
+      originalViewport.width,
+      originalViewport.height,
+    );
+  }
+}
+
+/** Three aligned regions stack below Breeze&#39;s medium breakpoint. */
+export const Default: Story = {
+  play: async ({ canvasElement }) =&gt; {
+    await verifyResponsiveGeometry(canvasElement);
+  },
+};
+
+/** An empty result remains a named grid with a structural row and cell. */
+export const Empty: Story = {
+  args: {
+    items: [],
+    loadMore: undefined,
+    loading: false,
+  },
+};
+
+/** Initial loading keeps a fixed skeleton shape inside the named grid. */
+export const InitialLoading: Story = {
+  args: {
+    items: [],
+    loadMore: undefined,
+    loading: true,
+  },
+};
+
+/** Per-row placeholders remain separate from the load-more action. */
+export const Loading: Story = {
+  args: {
+    items: [{ ...entries[0], loading: true }, ...entries.slice(1)],
+    loadMore: {
+      label: &#39;Load more activity&#39;,
+      loading: true,
+      onAction: fn(),
+    },
+  },
+  play: async ({ canvasElement }) =&gt; {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole(&#39;button&#39;, {
+      name: /Load more activity/,
+    });
+    const grid = canvas.getByRole(&#39;grid&#39;, { name: &#39;Activity&#39; });
+    const status = canvas.getByRole(&#39;status&#39;);
+    const coffeeRow = within(grid).getByRole(&#39;row&#39;, { name: &#39;Coffee shop&#39; });
+
+    await expect(button).toHaveAttribute(&#39;aria-busy&#39;, &#39;true&#39;);
+    await expect(button).toHaveAccessibleName(/Load more activity/);
+    await expect(grid).not.toHaveAttribute(&#39;aria-busy&#39;);
+    await expect(status).toHaveTextContent(&#39;Loading&#39;);
+    await expect(grid.closest(&#39;[aria-live]&#39;)).toBeNull();
+    await expect(status.closest(&#39;[aria-busy]&#39;)).toBeNull();
+    await expect(grid).not.toContainElement(status);
+    await expect(coffeeRow).toBeInTheDocument();
+    await expect(
+      within(coffeeRow).getAllByRole(&#39;progressbar&#39;, { hidden: true }),
+    ).toHaveLength(2);
+  },
+};
+
+/** Top-level refresh loading retains ordinary rows and their focus. */
+export const RetainedLoading: Story = {
+  args: {
+    items: entries,
+    loadMore: undefined,
+    loading: true,
+  },
+};
+
+function mergeEntries(
+  current: RowListItemDescriptor[],
+): RowListItemDescriptor[] {
+  const existingIds = new Set(current.map(({ id }) =&gt; id));
+
+  return [
+    ...(existingIds.has(&#39;october&#39;)
+      ? []
+      : [
+          {
+            id: &#39;october&#39;,
+            label: &#39;October entry&#39;,
+            section: { id: &#39;october&#39;, label: &#39;October&#39; },
+          },
+        ]),
+    ...current,
+    ...(existingIds.has(&#39;september-later&#39;)
+      ? []
+      : [
+          {
+            id: &#39;september-later&#39;,
+            label: &#39;Later September entry&#39;,
+            section: { id: &#39;september&#39;, label: &#39;September&#39; },
+          },
+        ]),
+  ];
+}
+
+function MergingExample() {
+  const [items, setItems] = useState&lt;RowListItemDescriptor[]&gt;(entries);
+  const merge = () =&gt; setItems((current) =&gt; mergeEntries(current));
+
+  return (
+    &lt;RowList
+      aria-label=&quot;Activity&quot;
+      getItem={getDescriptor}
+      items={items}
+      loadMore={{ label: &#39;Load more activity&#39;, onAction: merge }}
+      onAction={merge}
+    /&gt;
+  );
+}
+
+/** Activating a row merges items while retaining its focused DOM row. */
+export const Merging: Story = {
+  play: async ({ canvasElement }) =&gt; {
+    const canvas = within(canvasElement);
+    const grid = canvas.getByRole(&#39;grid&#39;, { name: &#39;Activity&#39; });
+    const coffeeRow = within(grid).getByRole(&#39;row&#39;, { name: &#39;Coffee shop&#39; });
+
+    grid.focus();
+    await expect(coffeeRow).toHaveFocus();
+    await userEvent.keyboard(&#39;{Enter}&#39;);
+
+    await expect(
+      within(grid).getByRole(&#39;row&#39;, { name: &#39;October entry&#39; }),
+    ).toBeInTheDocument();
+    await expect(
+      within(grid).getByRole(&#39;row&#39;, { name: &#39;Later September entry&#39; }),
+    ).toBeInTheDocument();
+    await expect(within(grid).getByRole(&#39;row&#39;, { name: &#39;Coffee shop&#39; })).toBe(
+      coffeeRow,
+    );
+    await expect(coffeeRow).toHaveFocus();
+  },
+  render: () =&gt; &lt;MergingExample /&gt;,
+};
+</code></pre></div>
+    </div>
+        </div>
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { RowList } from "@motech-development/breeze-ui";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Three aligned regions stack below Breeze&#39;s medium breakpoint.</div>
+              <pre><code>const Default = () =&gt; &lt;RowList as ComponentType&lt;RowListProps&lt;unknown&gt;&gt;
+    aria-label=&quot;Activity&quot;
+    getItem={getDescriptor}
+    items={entries}
+    loadMore={{
+      label: &#39;Load more activity&#39;,
+      onAction: fn(),
+    }}
+    loading={false}
+    onAction={fn()} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Empty</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">An empty result remains a named grid with a structural row and cell.</div>
+              <pre><code>const Empty = () =&gt; &lt;RowList as ComponentType&lt;RowListProps&lt;unknown&gt;&gt;
+    aria-label=&quot;Activity&quot;
+    getItem={getDescriptor}
+    items={[]}
+    loadMore={undefined}
+    loading={false}
+    onAction={fn()} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Initial Loading</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Initial loading keeps a fixed skeleton shape inside the named grid.</div>
+              <pre><code>const InitialLoading = () =&gt; &lt;RowList as ComponentType&lt;RowListProps&lt;unknown&gt;&gt;
+    aria-label=&quot;Activity&quot;
+    getItem={getDescriptor}
+    items={[]}
+    loadMore={undefined}
+    loading
+    onAction={fn()} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Loading</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Per-row placeholders remain separate from the load-more action.</div>
+              <pre><code>const Loading = () =&gt; &lt;RowList as ComponentType&lt;RowListProps&lt;unknown&gt;&gt;
+    aria-label=&quot;Activity&quot;
+    getItem={getDescriptor}
+    items={[{ ...entries[0], loading: true }, ...entries.slice(1)]}
+    loadMore={{
+      label: &#39;Load more activity&#39;,
+      loading: true,
+      onAction: fn(),
+    }}
+    loading={false}
+    onAction={fn()} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Retained Loading</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Top-level refresh loading retains ordinary rows and their focus.</div>
+              <pre><code>const RetainedLoading = () =&gt; &lt;RowList as ComponentType&lt;RowListProps&lt;unknown&gt;&gt;
+    aria-label=&quot;Activity&quot;
+    getItem={getDescriptor}
+    items={entries}
+    loadMore={undefined}
+    loading
+    onAction={fn()} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Merging</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Activating a row merges items while retaining its focused DOM row.</div>
+              <pre><code>const Merging = () =&gt; &lt;MergingExample /&gt;;</code></pre>
+            </div>
+        </div>
+    
+        <div class="panel panel-docs">
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Docs</span>
+                <span class="badge ok">doc ok</span>
+              </div>
+              <div class="hint">./src/primitives/RowList/RowList.mdx</div>
+              <div>A keyboard-accessible list of aligned, actionable rows.</div>
+              <div class="mdx-content"><pre><code>import { ArgTypes, Canvas, Meta } from &#39;@storybook/addon-docs/blocks&#39;;
+import * as Stories from &#39;./RowList.stories&#39;;
+
+&lt;Meta
+  of={Stories}
+  summary=&quot;A keyboard-accessible list of aligned, actionable rows.&quot;
+/&gt;
+
+# RowList
+
+`RowList` displays data as actionable rows with aligned leading, metadata and
+trailing regions. It uses grid-list semantics and has no column headers.
+
+&lt;Canvas of={Stories.Default} /&gt;
+
+## Describe each row
+
+Pass application values through `items` and return a closed
+`RowListItemDescriptor` from `getItem`. Each descriptor has a stable `id` and a
+visible `label`. It may also include a `description`, `icon`, `badge`, or
+`disabled` state. `metadata` accepts text or an ISO calendar date. `value`
+accepts text or a currency amount, formatted with the provider locale.
+
+Use the optional `section` object to group rows under structural section
+headers. Keep each section ID stable when rows are appended or merged. Keep row
+IDs unique and stable so the focused row remains mounted as data changes.
+
+## Activate rows
+
+`onAction` receives the activated row&#39;s descriptor. React Aria supplies the
+grid-list keyboard interaction; use the arrow keys to move between rows and
+Enter or Space to activate the focused row.
+
+&lt;Canvas of={Stories.Merging} /&gt;
+
+## Loading and empty results
+
+Set the top-level `loading` flag while fetching initial data or refreshing. An
+empty grid shows three quiet skeleton rows and one loading announcement. A
+populated grid keeps its rows and focus while loading, with the announcement
+outside the grid.
+
+&lt;Canvas of={Stories.InitialLoading} /&gt;
+
+&lt;Canvas of={Stories.RetainedLoading} /&gt;
+
+Completed empty results display the provider-localized “No items to display.”
+message inside the structural grid row and cell. The single persistent polite
+status announces the same message.
+
+&lt;Canvas of={Stories.Empty} /&gt;
+
+`RowListItemDescriptor.loading` only replaces a row&#39;s optional metadata and
+value with quiet placeholders; its label, description, icon, badge, and action
+remain. The Loading example shows this state alongside a separately busy named
+pagination button.
+
+&lt;Canvas of={Stories.Loading} /&gt;
+
+Pass a named `loadMore` action when another page is available. Its button keeps
+its label while busy, and its status shares the single live loading message
+without re-announcing existing rows.
+
+## API
+
+&lt;ArgTypes /&gt;
+</code></pre></div>
+            </div>
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
   no-error 
   no-info 
   no-story-error
@@ -4926,10 +5475,10 @@ Enter and exit motion respects reduced-motion preferences. A closing surface imm
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Select</h2>
       <div class="badges">
-        <label for="c-21-forms-select-props" class="badge ok as-toggle">18 prop types</label>
+        <label for="c-22-forms-select-props" class="badge ok as-toggle">18 prop types</label>
         
-        <label for="c-21-forms-select-stories" class="badge ok as-toggle">6 stories</label>
-        <label for="c-21-forms-select-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-22-forms-select-stories" class="badge ok as-toggle">6 stories</label>
+        <label for="c-22-forms-select-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -4942,10 +5491,10 @@ Enter and exit motion respects reduced-motion preferences. A closing surface imm
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-21-forms-select-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-21-forms-select-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-22-forms-select-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-22-forms-select-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-21-forms-select-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-22-forms-select-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -5225,10 +5774,10 @@ with the field. Keyboard navigation and focus management are built in.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Separator</h2>
       <div class="badges">
-        <label for="c-22-content-separator-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-23-content-separator-props" class="badge ok as-toggle">1 prop type</label>
         
-        <label for="c-22-content-separator-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-22-content-separator-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-23-content-separator-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-23-content-separator-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -5241,10 +5790,10 @@ with the field. Keyboard navigation and focus management are built in.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-22-content-separator-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-22-content-separator-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-23-content-separator-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-23-content-separator-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-22-content-separator-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-23-content-separator-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -5349,10 +5898,10 @@ The component exposes `role=&quot;separator&quot;` and the selected orientation.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Skeleton</h2>
       <div class="badges">
-        <label for="c-23-content-skeleton-props" class="badge ok as-toggle">4 prop types</label>
+        <label for="c-24-content-skeleton-props" class="badge ok as-toggle">4 prop types</label>
         
-        <label for="c-23-content-skeleton-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-23-content-skeleton-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-24-content-skeleton-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-24-content-skeleton-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -5365,10 +5914,10 @@ The component exposes `role=&quot;separator&quot;` and the selected orientation.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-23-content-skeleton-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-23-content-skeleton-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-24-content-skeleton-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-24-content-skeleton-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-23-content-skeleton-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-24-content-skeleton-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -5493,10 +6042,10 @@ Supply `label` when the skeleton owns the loading announcement. Omit it when a p
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Stack</h2>
       <div class="badges">
-        <label for="c-24-layout-stack-props" class="badge ok as-toggle">5 prop types</label>
+        <label for="c-25-layout-stack-props" class="badge ok as-toggle">5 prop types</label>
         
-        <label for="c-24-layout-stack-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-24-layout-stack-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-25-layout-stack-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-25-layout-stack-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -5509,10 +6058,10 @@ Supply `label` when the skeleton owns the loading announcement. Omit it when a p
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-24-layout-stack-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-24-layout-stack-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-25-layout-stack-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-25-layout-stack-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-24-layout-stack-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-25-layout-stack-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -5650,10 +6199,10 @@ Loading belongs to the items inside the stack. Compose loading-capable children 
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> TextField</h2>
       <div class="badges">
-        <label for="c-25-forms-textfield-props" class="badge ok as-toggle">18 prop types</label>
+        <label for="c-26-forms-textfield-props" class="badge ok as-toggle">18 prop types</label>
         
-        <label for="c-25-forms-textfield-stories" class="badge ok as-toggle">8 stories</label>
-        <label for="c-25-forms-textfield-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-26-forms-textfield-stories" class="badge ok as-toggle">8 stories</label>
+        <label for="c-26-forms-textfield-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -5666,10 +6215,10 @@ Loading belongs to the items inside the stack. Compose loading-capable children 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-25-forms-textfield-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-25-forms-textfield-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-26-forms-textfield-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-26-forms-textfield-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-25-forms-textfield-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-26-forms-textfield-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -5949,10 +6498,10 @@ input through `ref`.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Toast</h2>
       <div class="badges">
-        <label for="c-26-feedback-toast-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-27-feedback-toast-props" class="badge ok as-toggle">1 prop type</label>
         
-        <label for="c-26-feedback-toast-stories" class="badge ok as-toggle">8 stories</label>
-        <label for="c-26-feedback-toast-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-27-feedback-toast-stories" class="badge ok as-toggle">8 stories</label>
+        <label for="c-27-feedback-toast-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -5965,10 +6514,10 @@ input through `ref`.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-26-feedback-toast-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-26-feedback-toast-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-27-feedback-toast-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-27-feedback-toast-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-26-feedback-toast-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-27-feedback-toast-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -6143,10 +6692,10 @@ The card stays 288px wide on desktop and mobile, aligned to the content gutter b
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Toggle</h2>
       <div class="badges">
-        <label for="c-27-actions-toggle-props" class="badge ok as-toggle">12 prop types</label>
+        <label for="c-28-actions-toggle-props" class="badge ok as-toggle">12 prop types</label>
         
-        <label for="c-27-actions-toggle-stories" class="badge ok as-toggle">6 stories</label>
-        <label for="c-27-actions-toggle-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-28-actions-toggle-stories" class="badge ok as-toggle">6 stories</label>
+        <label for="c-28-actions-toggle-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -6159,10 +6708,10 @@ The card stays 288px wide on desktop and mobile, aligned to the content gutter b
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-27-actions-toggle-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-27-actions-toggle-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-28-actions-toggle-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-28-actions-toggle-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-27-actions-toggle-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-28-actions-toggle-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -6395,10 +6944,10 @@ its pressed state and supports keyboard activation.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> ToggleGroup</h2>
       <div class="badges">
-        <label for="c-28-actions-togglegroup-props" class="badge ok as-toggle">11 prop types</label>
+        <label for="c-29-actions-togglegroup-props" class="badge ok as-toggle">11 prop types</label>
         
-        <label for="c-28-actions-togglegroup-stories" class="badge ok as-toggle">5 stories</label>
-        <label for="c-28-actions-togglegroup-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-29-actions-togglegroup-stories" class="badge ok as-toggle">5 stories</label>
+        <label for="c-29-actions-togglegroup-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -6411,10 +6960,10 @@ its pressed state and supports keyboard activation.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-28-actions-togglegroup-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-28-actions-togglegroup-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-29-actions-togglegroup-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-29-actions-togglegroup-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-28-actions-togglegroup-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-29-actions-togglegroup-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -6648,10 +7197,10 @@ interaction.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Typography</h2>
       <div class="badges">
-        <label for="c-29-content-typography-props" class="badge ok as-toggle">15 prop types</label>
+        <label for="c-30-content-typography-props" class="badge ok as-toggle">15 prop types</label>
         
-        <label for="c-29-content-typography-stories" class="badge ok as-toggle">4 stories</label>
-        <label for="c-29-content-typography-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-30-content-typography-stories" class="badge ok as-toggle">4 stories</label>
+        <label for="c-30-content-typography-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -6664,10 +7213,10 @@ interaction.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-29-content-typography-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-29-content-typography-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-30-content-typography-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-30-content-typography-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-29-content-typography-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-30-content-typography-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -6929,10 +7478,10 @@ Set `loading` to preserve the text&#39;s place while its value is unavailable.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> VisuallyHidden</h2>
       <div class="badges">
-        <label for="c-30-content-visuallyhidden-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-31-content-visuallyhidden-props" class="badge ok as-toggle">1 prop type</label>
         
-        <label for="c-30-content-visuallyhidden-stories" class="badge ok as-toggle">1 story</label>
-        <label for="c-30-content-visuallyhidden-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-31-content-visuallyhidden-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-31-content-visuallyhidden-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -6945,10 +7494,10 @@ Set `loading` to preserve the text&#39;s place while its value is unavailable.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-30-content-visuallyhidden-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-30-content-visuallyhidden-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-31-content-visuallyhidden-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-31-content-visuallyhidden-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-30-content-visuallyhidden-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-31-content-visuallyhidden-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -7031,7 +7580,566 @@ Do not use it to hide focusable content or information sighted users also need.
   </div>
 </article>
     </div>
+    <div class="error-groups" role="region" aria-label="Prop type error groups">
+        <section class="group">
+          <input id="no-component-import-found-toggle" class="group-tg" type="checkbox" hidden />
+          <label for="no-component-import-found-toggle" class="group-header">
+            <span class="caret">▸</span>
+            <span class="group-title">No component import found</span>
+            <span class="group-count">1</span>
+          </label>
+          <div class="group-cards">
+<article
+  class="card 
+  has-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="RowList as ComponentType&lt;RowListProps&lt;unknown&gt;&gt;">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-err"></span> RowList as ComponentType&lt;RowListProps&lt;unknown&gt;&gt;</h2>
+      <div class="badges">
+        <label for="c-error-0-collections-rowlist-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-0-collections-rowlist-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-0-collections-rowlist-stories" class="badge ok as-toggle">6 stories</label>
+        <label for="c-error-0-collections-rowlist-docs" class="badge ok as-toggle">1 doc</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/primitives/RowList/RowList.stories.tsx">collections-rowlist · ./src/primitives/RowList/RowList.stories.tsx</div>
     
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  <input id="c-error-0-collections-rowlist-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-0-collections-rowlist-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-0-collections-rowlist-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-0-collections-rowlist-docs" class="tg tg-docs" type="checkbox" hidden />
+  
+  
+
+  <div class="panels">
+    
+        <div class="panel panel-err">
+          
+    <div class="note err">
+      <div class="note-title">Prop type error</div>
+      <div class="note-body"><pre><code>No component file found for the &quot;RowList as ComponentType&lt;RowListProps&lt;unknown&gt;&gt;&quot; component.
+  41 | }
+  42 |
+&gt; 43 | const meta = {
+     | ^
+  44 |   args: {
+  45 |     &#39;aria-label&#39;: &#39;Activity&#39;,
+  46 |     getItem: getDescriptor,
+
+./src/primitives/RowList/RowList.stories.tsx:
+import type { Meta, StoryObj } from &#39;@storybook/react-vite&#39;;
+import type { ComponentType } from &#39;react&#39;;
+import { useState } from &#39;react&#39;;
+import { expect, fn, userEvent, within } from &#39;storybook/test&#39;;
+import type { RowListItemDescriptor, RowListProps } from &#39;./RowList&#39;;
+import { RowList } from &#39;./RowList&#39;;
+
+const entries = [
+  {
+    badge: {
+      children:
+        &#39;Needs review before the next monthly reconciliation is complete&#39;,
+      variant: &#39;warning&#39;,
+    },
+    description: &#39;Coffee shop near the station.&#39;,
+    icon: &#39;document&#39;,
+    id: &#39;coffee&#39;,
+    label: &#39;Coffee shop&#39;,
+    metadata: { format: &#39;date&#39;, value: &#39;2026-09-14&#39; },
+    section: { id: &#39;september&#39;, label: &#39;September&#39; },
+    value: { currency: &#39;GBP&#39;, format: &#39;currency&#39;, value: 4.75 },
+  },
+  {
+    id: &#39;market&#39;,
+    label: &#39;Market&#39;,
+    metadata: { format: &#39;text&#39;, value: &#39;Card purchase&#39; },
+    section: { id: &#39;september&#39;, label: &#39;September&#39; },
+    value: { format: &#39;text&#39;, value: &#39;Reviewed&#39; },
+  },
+  {
+    id: &#39;travel&#39;,
+    label: &#39;Travel to work&#39;,
+    metadata: { format: &#39;date&#39;, value: &#39;2026-09-12&#39; },
+    section: { id: &#39;august&#39;, label: &#39;August&#39; },
+    value: { currency: &#39;GBP&#39;, format: &#39;currency&#39;, value: 8.5 },
+  },
+] satisfies RowListItemDescriptor[];
+
+function getDescriptor(item: unknown): RowListItemDescriptor {
+  return item as RowListItemDescriptor;
+}
+
+const meta = {
+  args: {
+    &#39;aria-label&#39;: &#39;Activity&#39;,
+    getItem: getDescriptor,
+    items: entries,
+    loadMore: {
+      label: &#39;Load more activity&#39;,
+      onAction: fn(),
+    },
+    loading: false,
+    onAction: fn(),
+  },
+  component: RowList as ComponentType&lt;RowListProps&lt;unknown&gt;&gt;,
+  title: &#39;Collections/RowList&#39;,
+} satisfies Meta&lt;typeof RowList&gt;;
+
+export default meta;
+type Story = StoryObj&lt;typeof meta&gt;;
+
+async function verifyResponsiveGeometry(canvasElement: HTMLElement) {
+  if (!(&#39;__vitest_browser__&#39; in globalThis)) return;
+
+  const browserContext = await import(&#39;vitest/browser&#39;);
+  const document = canvasElement.ownerDocument;
+  const view = document.defaultView;
+
+  if (!view) throw new Error(&#39;Missing RowList story window.&#39;);
+
+  const originalViewport = { height: view.innerHeight, width: view.innerWidth };
+  const canvas = within(canvasElement);
+
+  try {
+    await browserContext.page.viewport(1200, 800);
+    await expect(view.innerWidth).toBe(1200);
+
+    const grid = canvas.getByRole(&#39;grid&#39;, { name: &#39;Activity&#39; });
+    const coffeeRow = within(grid).getByRole(&#39;row&#39;, { name: &#39;Coffee shop&#39; });
+    const marketRow = within(grid).getByRole(&#39;row&#39;, { name: &#39;Market&#39; });
+    const coffeeLabel = within(coffeeRow).getByText(&#39;Coffee shop&#39;);
+    const coffeeDate = within(coffeeRow).getByText(&#39;14 Sept 2026&#39;);
+    const coffeeValue = within(coffeeRow).getByText(&#39;£4.75&#39;);
+    const marketDate = within(marketRow).getByText(&#39;Card purchase&#39;);
+    const marketValue = within(marketRow).getByText(&#39;Reviewed&#39;);
+    const coffeeLabelRect = coffeeLabel.getBoundingClientRect();
+    const coffeeDateRect = coffeeDate.getBoundingClientRect();
+    const coffeeValueRect = coffeeValue.getBoundingClientRect();
+    const marketDateRect = marketDate.getBoundingClientRect();
+    const marketValueRect = marketValue.getBoundingClientRect();
+    const coffeeMetadataRegion = coffeeRow.querySelector&lt;HTMLElement&gt;(
+      &#39;[class~=&quot;breeze:col-start-2&quot;]&#39;,
+    );
+    const marketMetadataRegion = marketRow.querySelector&lt;HTMLElement&gt;(
+      &#39;[class~=&quot;breeze:col-start-2&quot;]&#39;,
+    );
+    const coffeeValueRegion = coffeeRow.querySelector&lt;HTMLElement&gt;(
+      &#39;[class~=&quot;breeze:col-start-3&quot;]&#39;,
+    );
+    const marketValueRegion = marketRow.querySelector&lt;HTMLElement&gt;(
+      &#39;[class~=&quot;breeze:col-start-3&quot;]&#39;,
+    );
+
+    if (
+      !coffeeMetadataRegion ||
+      !marketMetadataRegion ||
+      !coffeeValueRegion ||
+      !marketValueRegion
+    ) {
+      throw new Error(&#39;Missing one of the RowList aligned regions.&#39;);
+    }
+
+    const coffeeMetadataRect = coffeeMetadataRegion.getBoundingClientRect();
+    const marketMetadataRect = marketMetadataRegion.getBoundingClientRect();
+    const coffeeValueRegionRect = coffeeValueRegion.getBoundingClientRect();
+    const marketValueRegionRect = marketValueRegion.getBoundingClientRect();
+
+    await expect(getComputedStyle(coffeeRow).display).toBe(&#39;grid&#39;);
+    await expect(coffeeLabelRect.left).toBeLessThan(coffeeDateRect.left);
+    await expect(coffeeDateRect.left).toBeLessThan(coffeeValueRect.left);
+    await expect(
+      Math.abs(coffeeMetadataRect.left - marketMetadataRect.left),
+    ).toBeLessThan(1);
+    await expect(
+      Math.abs(coffeeValueRegionRect.left - marketValueRegionRect.left),
+    ).toBeLessThan(1);
+    await expect(
+      Math.abs(coffeeDateRect.right - marketDateRect.right),
+    ).toBeLessThan(1);
+    await expect(
+      Math.abs(coffeeValueRect.right - marketValueRect.right),
+    ).toBeLessThan(1);
+
+    await browserContext.page.viewport(375, 812);
+    await expect(view.innerWidth).toBe(375);
+
+    const narrowGrid = canvas.getByRole(&#39;grid&#39;, { name: &#39;Activity&#39; });
+    const narrowCoffeeRow = within(narrowGrid).getByRole(&#39;row&#39;, {
+      name: &#39;Coffee shop&#39;,
+    });
+    const narrowLabel = within(narrowCoffeeRow)
+      .getByText(&#39;Coffee shop&#39;)
+      .getBoundingClientRect();
+    const narrowDate = within(narrowCoffeeRow)
+      .getByText(&#39;14 Sept 2026&#39;)
+      .getBoundingClientRect();
+    const narrowValue = within(narrowCoffeeRow)
+      .getByText(&#39;£4.75&#39;)
+      .getBoundingClientRect();
+
+    await expect(narrowDate.top).toBeGreaterThan(narrowLabel.top);
+    await expect(narrowValue.top).toBeGreaterThan(narrowDate.top);
+    await expect(narrowGrid.scrollWidth).toBeLessThanOrEqual(
+      narrowGrid.clientWidth,
+    );
+    await expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(
+      view.innerWidth,
+    );
+  } finally {
+    await browserContext.page.viewport(
+      originalViewport.width,
+      originalViewport.height,
+    );
+  }
+}
+
+/** Three aligned regions stack below Breeze&#39;s medium breakpoint. */
+export const Default: Story = {
+  play: async ({ canvasElement }) =&gt; {
+    await verifyResponsiveGeometry(canvasElement);
+  },
+};
+
+/** An empty result remains a named grid with a structural row and cell. */
+export const Empty: Story = {
+  args: {
+    items: [],
+    loadMore: undefined,
+    loading: false,
+  },
+};
+
+/** Initial loading keeps a fixed skeleton shape inside the named grid. */
+export const InitialLoading: Story = {
+  args: {
+    items: [],
+    loadMore: undefined,
+    loading: true,
+  },
+};
+
+/** Per-row placeholders remain separate from the load-more action. */
+export const Loading: Story = {
+  args: {
+    items: [{ ...entries[0], loading: true }, ...entries.slice(1)],
+    loadMore: {
+      label: &#39;Load more activity&#39;,
+      loading: true,
+      onAction: fn(),
+    },
+  },
+  play: async ({ canvasElement }) =&gt; {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole(&#39;button&#39;, {
+      name: /Load more activity/,
+    });
+    const grid = canvas.getByRole(&#39;grid&#39;, { name: &#39;Activity&#39; });
+    const status = canvas.getByRole(&#39;status&#39;);
+    const coffeeRow = within(grid).getByRole(&#39;row&#39;, { name: &#39;Coffee shop&#39; });
+
+    await expect(button).toHaveAttribute(&#39;aria-busy&#39;, &#39;true&#39;);
+    await expect(button).toHaveAccessibleName(/Load more activity/);
+    await expect(grid).not.toHaveAttribute(&#39;aria-busy&#39;);
+    await expect(status).toHaveTextContent(&#39;Loading&#39;);
+    await expect(grid.closest(&#39;[aria-live]&#39;)).toBeNull();
+    await expect(status.closest(&#39;[aria-busy]&#39;)).toBeNull();
+    await expect(grid).not.toContainElement(status);
+    await expect(coffeeRow).toBeInTheDocument();
+    await expect(
+      within(coffeeRow).getAllByRole(&#39;progressbar&#39;, { hidden: true }),
+    ).toHaveLength(2);
+  },
+};
+
+/** Top-level refresh loading retains ordinary rows and their focus. */
+export const RetainedLoading: Story = {
+  args: {
+    items: entries,
+    loadMore: undefined,
+    loading: true,
+  },
+};
+
+function mergeEntries(
+  current: RowListItemDescriptor[],
+): RowListItemDescriptor[] {
+  const existingIds = new Set(current.map(({ id }) =&gt; id));
+
+  return [
+    ...(existingIds.has(&#39;october&#39;)
+      ? []
+      : [
+          {
+            id: &#39;october&#39;,
+            label: &#39;October entry&#39;,
+            section: { id: &#39;october&#39;, label: &#39;October&#39; },
+          },
+        ]),
+    ...current,
+    ...(existingIds.has(&#39;september-later&#39;)
+      ? []
+      : [
+          {
+            id: &#39;september-later&#39;,
+            label: &#39;Later September entry&#39;,
+            section: { id: &#39;september&#39;, label: &#39;September&#39; },
+          },
+        ]),
+  ];
+}
+
+function MergingExample() {
+  const [items, setItems] = useState&lt;RowListItemDescriptor[]&gt;(entries);
+  const merge = () =&gt; setItems((current) =&gt; mergeEntries(current));
+
+  return (
+    &lt;RowList
+      aria-label=&quot;Activity&quot;
+      getItem={getDescriptor}
+      items={items}
+      loadMore={{ label: &#39;Load more activity&#39;, onAction: merge }}
+      onAction={merge}
+    /&gt;
+  );
+}
+
+/** Activating a row merges items while retaining its focused DOM row. */
+export const Merging: Story = {
+  play: async ({ canvasElement }) =&gt; {
+    const canvas = within(canvasElement);
+    const grid = canvas.getByRole(&#39;grid&#39;, { name: &#39;Activity&#39; });
+    const coffeeRow = within(grid).getByRole(&#39;row&#39;, { name: &#39;Coffee shop&#39; });
+
+    grid.focus();
+    await expect(coffeeRow).toHaveFocus();
+    await userEvent.keyboard(&#39;{Enter}&#39;);
+
+    await expect(
+      within(grid).getByRole(&#39;row&#39;, { name: &#39;October entry&#39; }),
+    ).toBeInTheDocument();
+    await expect(
+      within(grid).getByRole(&#39;row&#39;, { name: &#39;Later September entry&#39; }),
+    ).toBeInTheDocument();
+    await expect(within(grid).getByRole(&#39;row&#39;, { name: &#39;Coffee shop&#39; })).toBe(
+      coffeeRow,
+    );
+    await expect(coffeeRow).toHaveFocus();
+  },
+  render: () =&gt; &lt;MergingExample /&gt;,
+};
+</code></pre></div>
+    </div>
+        </div>
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { RowList } from "@motech-development/breeze-ui";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Three aligned regions stack below Breeze&#39;s medium breakpoint.</div>
+              <pre><code>const Default = () =&gt; &lt;RowList as ComponentType&lt;RowListProps&lt;unknown&gt;&gt;
+    aria-label=&quot;Activity&quot;
+    getItem={getDescriptor}
+    items={entries}
+    loadMore={{
+      label: &#39;Load more activity&#39;,
+      onAction: fn(),
+    }}
+    loading={false}
+    onAction={fn()} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Empty</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">An empty result remains a named grid with a structural row and cell.</div>
+              <pre><code>const Empty = () =&gt; &lt;RowList as ComponentType&lt;RowListProps&lt;unknown&gt;&gt;
+    aria-label=&quot;Activity&quot;
+    getItem={getDescriptor}
+    items={[]}
+    loadMore={undefined}
+    loading={false}
+    onAction={fn()} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Initial Loading</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Initial loading keeps a fixed skeleton shape inside the named grid.</div>
+              <pre><code>const InitialLoading = () =&gt; &lt;RowList as ComponentType&lt;RowListProps&lt;unknown&gt;&gt;
+    aria-label=&quot;Activity&quot;
+    getItem={getDescriptor}
+    items={[]}
+    loadMore={undefined}
+    loading
+    onAction={fn()} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Loading</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Per-row placeholders remain separate from the load-more action.</div>
+              <pre><code>const Loading = () =&gt; &lt;RowList as ComponentType&lt;RowListProps&lt;unknown&gt;&gt;
+    aria-label=&quot;Activity&quot;
+    getItem={getDescriptor}
+    items={[{ ...entries[0], loading: true }, ...entries.slice(1)]}
+    loadMore={{
+      label: &#39;Load more activity&#39;,
+      loading: true,
+      onAction: fn(),
+    }}
+    loading={false}
+    onAction={fn()} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Retained Loading</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Top-level refresh loading retains ordinary rows and their focus.</div>
+              <pre><code>const RetainedLoading = () =&gt; &lt;RowList as ComponentType&lt;RowListProps&lt;unknown&gt;&gt;
+    aria-label=&quot;Activity&quot;
+    getItem={getDescriptor}
+    items={entries}
+    loadMore={undefined}
+    loading
+    onAction={fn()} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Merging</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Activating a row merges items while retaining its focused DOM row.</div>
+              <pre><code>const Merging = () =&gt; &lt;MergingExample /&gt;;</code></pre>
+            </div>
+        </div>
+    
+        <div class="panel panel-docs">
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Docs</span>
+                <span class="badge ok">doc ok</span>
+              </div>
+              <div class="hint">./src/primitives/RowList/RowList.mdx</div>
+              <div>A keyboard-accessible list of aligned, actionable rows.</div>
+              <div class="mdx-content"><pre><code>import { ArgTypes, Canvas, Meta } from &#39;@storybook/addon-docs/blocks&#39;;
+import * as Stories from &#39;./RowList.stories&#39;;
+
+&lt;Meta
+  of={Stories}
+  summary=&quot;A keyboard-accessible list of aligned, actionable rows.&quot;
+/&gt;
+
+# RowList
+
+`RowList` displays data as actionable rows with aligned leading, metadata and
+trailing regions. It uses grid-list semantics and has no column headers.
+
+&lt;Canvas of={Stories.Default} /&gt;
+
+## Describe each row
+
+Pass application values through `items` and return a closed
+`RowListItemDescriptor` from `getItem`. Each descriptor has a stable `id` and a
+visible `label`. It may also include a `description`, `icon`, `badge`, or
+`disabled` state. `metadata` accepts text or an ISO calendar date. `value`
+accepts text or a currency amount, formatted with the provider locale.
+
+Use the optional `section` object to group rows under structural section
+headers. Keep each section ID stable when rows are appended or merged. Keep row
+IDs unique and stable so the focused row remains mounted as data changes.
+
+## Activate rows
+
+`onAction` receives the activated row&#39;s descriptor. React Aria supplies the
+grid-list keyboard interaction; use the arrow keys to move between rows and
+Enter or Space to activate the focused row.
+
+&lt;Canvas of={Stories.Merging} /&gt;
+
+## Loading and empty results
+
+Set the top-level `loading` flag while fetching initial data or refreshing. An
+empty grid shows three quiet skeleton rows and one loading announcement. A
+populated grid keeps its rows and focus while loading, with the announcement
+outside the grid.
+
+&lt;Canvas of={Stories.InitialLoading} /&gt;
+
+&lt;Canvas of={Stories.RetainedLoading} /&gt;
+
+Completed empty results display the provider-localized “No items to display.”
+message inside the structural grid row and cell. The single persistent polite
+status announces the same message.
+
+&lt;Canvas of={Stories.Empty} /&gt;
+
+`RowListItemDescriptor.loading` only replaces a row&#39;s optional metadata and
+value with quiet placeholders; its label, description, icon, badge, and action
+remain. The Loading example shows this state alongside a separately busy named
+pagination button.
+
+&lt;Canvas of={Stories.Loading} /&gt;
+
+Pass a named `loadMore` action when another page is available. Its button keeps
+its label while busy, and its status shares the single live loading message
+without re-announcing existing rows.
+
+## API
+
+&lt;ArgTypes /&gt;
+</code></pre></div>
+            </div>
+        </div>
+    
+  </div>
+</article></div>
+        </section>
+      </div>
     <h2 class="section-title">Unattached Docs</h2>
     <div class="grid" role="list">
       
