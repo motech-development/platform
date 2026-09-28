@@ -37,7 +37,8 @@ const variants = {
       'breeze:flex breeze:min-inline-size-0 breeze:justify-center breeze:py-breeze-3',
     loadingLeading:
       'breeze:flex breeze:min-inline-size-0 breeze:flex-col breeze:gap-breeze-2',
-    loadingMoneyPlaceholder: 'breeze:flex breeze:justify-end',
+    loadingMoneyPlaceholder:
+      'breeze:flex breeze:justify-end breeze:font-breeze-sans breeze:text-breeze-4xl breeze:font-semibold breeze:leading-breeze-tight breeze:tracking-breeze-tightest breeze:tabular-nums breeze:[&>progress]:[font:inherit]',
     loadingPlaceholder:
       'breeze:flex breeze:justify-end breeze:max-breeze-md:justify-start',
     loadingRow:
@@ -227,7 +228,11 @@ function ValueContent({
 
     return (
       <div className={placeholderClass}>
-        <LoadingPlaceholder />
+        {value.format === 'currency' ? (
+          <Skeleton blockSize="1lh" inlineSize="min(100%, 4em)" />
+        ) : (
+          <LoadingPlaceholder />
+        )}
       </div>
     );
   }
