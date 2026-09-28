@@ -37,6 +37,9 @@ const variants = {
       'breeze:flex breeze:min-inline-size-0 breeze:justify-center breeze:py-breeze-3',
     loadingLeading:
       'breeze:flex breeze:min-inline-size-0 breeze:flex-col breeze:gap-breeze-2',
+    loadingMoneyPlaceholder: 'breeze:flex breeze:justify-end',
+    loadingPlaceholder:
+      'breeze:flex breeze:justify-end breeze:max-breeze-md:justify-start',
     loadingRow:
       'breeze:box-border breeze:inline-size-full breeze:min-inline-size-0 breeze:grid breeze:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] breeze:items-center breeze:gap-breeze-4 breeze:border-breeze-line breeze:border-be breeze:px-breeze-3 breeze:py-breeze-3 breeze:max-breeze-md:grid-cols-1 breeze:max-breeze-md:gap-breeze-1',
     loadingStatus: 'breeze:sr-only',
@@ -160,8 +163,16 @@ function InitialLoadingState() {
             <Skeleton blockSize="1lh" inlineSize="min(100%, 9em)" />
             <Skeleton blockSize="1lh" inlineSize="min(100%, 14em)" />
           </div>
-          <Skeleton blockSize="1lh" inlineSize="min(100%, 7em)" />
-          <Skeleton blockSize="1lh" inlineSize="min(100%, 5em)" />
+          <div className={variants.base.metadata}>
+            <div className={variants.base.loadingPlaceholder}>
+              <Skeleton blockSize="1lh" inlineSize="min(100%, 7em)" />
+            </div>
+          </div>
+          <div className={variants.base.value}>
+            <div className={variants.base.loadingPlaceholder}>
+              <Skeleton blockSize="1lh" inlineSize="min(100%, 5em)" />
+            </div>
+          </div>
         </div>
       ))}
     </div>
@@ -174,7 +185,13 @@ function MetadataContent({
   const { metadata } = descriptor;
 
   if (!metadata) return null;
-  if (descriptor.loading) return <LoadingPlaceholder />;
+  if (descriptor.loading) {
+    return (
+      <div className={variants.base.loadingPlaceholder}>
+        <LoadingPlaceholder />
+      </div>
+    );
+  }
 
   if (metadata.format === 'date') {
     return (
@@ -202,7 +219,18 @@ function ValueContent({
   const { value } = descriptor;
 
   if (!value) return null;
-  if (descriptor.loading) return <LoadingPlaceholder />;
+  if (descriptor.loading) {
+    const placeholderClass =
+      value.format === 'currency'
+        ? variants.base.loadingMoneyPlaceholder
+        : variants.base.loadingPlaceholder;
+
+    return (
+      <div className={placeholderClass}>
+        <LoadingPlaceholder />
+      </div>
+    );
+  }
 
   if (value.format === 'currency') {
     return (
