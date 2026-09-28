@@ -1,0 +1,59 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './RowList.stories';
+
+<Meta
+  of={Stories}
+  summary="A keyboard-accessible list of aligned, actionable rows."
+/>
+
+# RowList
+
+`RowList` displays data as actionable rows with aligned leading, metadata and
+trailing regions. It uses grid-list semantics and has no column headers.
+
+<Canvas of={Stories.Default} />
+
+## Describe each row
+
+Pass application values through `items` and return a closed
+`RowListItemDescriptor` from `getItem`. Each descriptor has a stable `id` and a
+visible `label`. It may also include a `description`, `icon`, `badge`, or
+`disabled` state. `metadata` accepts text or an ISO calendar date. `value`
+accepts text or a currency amount, formatted with the provider locale.
+
+Use the optional `section` object to group rows under structural section
+headers. Keep each section ID stable when rows are appended or merged. Keep row
+IDs unique and stable so the focused row remains mounted as data changes.
+
+## Activate rows
+
+`onAction` receives the activated row's descriptor. React Aria supplies the
+grid-list keyboard interaction; use the arrow keys to move between rows and
+Enter or Space to activate the focused row.
+
+<Canvas of={Stories.Merging} />
+
+## Loading row regions
+
+Set a row descriptor's `loading` flag to show quiet placeholders in its
+metadata and value regions. Any supplied leading content remains visible, and
+the row keeps its label and action. This state is separate from
+`loadMore.loading`, which marks the pagination button busy and announces its
+status. The Loading example shows both states together.
+
+<Canvas of={Stories.Loading} />
+
+## Load more
+
+Pass a named `loadMore` action when another page is available. Its button
+remains outside the retained grid, keeps its label while busy, and announces
+the loading status without re-announcing existing rows.
+
+An empty result keeps a named grid with the structural row and cell required by
+grid-list semantics.
+
+<Canvas of={Stories.Empty} />
+
+## API
+
+<ArgTypes />
