@@ -113,6 +113,8 @@ function LoadingExample() {
 /** The trigger shows a loading bar while keeping its size and accessible name. */
 export const Loading: Story = {
   play: async ({ canvasElement }) => {
+    await document.fonts.ready;
+
     const canvas = within(canvasElement);
     const trigger = canvas.getByRole('button', { name: 'Account actions' });
     const initialLoadingBounds = trigger.getBoundingClientRect();
