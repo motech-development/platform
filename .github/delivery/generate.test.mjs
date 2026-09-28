@@ -2210,7 +2210,7 @@ test('required status checks match the pull-request quality job names', async ()
   }
 });
 
-test('Chromatic builds Storybook only for pull requests with Breeze changes', async () => {
+test('Chromatic builds Storybook for Breeze pull requests and main runs', async () => {
   const workflow = await readFile(
     new URL('../workflows/quality-assurance.yml', import.meta.url),
     'utf8',
@@ -2224,12 +2224,13 @@ test('Chromatic builds Storybook only for pull requests with Breeze changes', as
     );
   }
   assert.match(job, /fetch-depth: 0/);
+  assert.match(job, /EVENT_NAME: \$\{\{ github\.event_name \}\}/);
   assert.match(job, /BASE_SHA: \$\{\{ github.event.pull_request.base.sha \}\}/);
   assert.match(job, /HEAD_SHA: \$\{\{ github.event.pull_request.head.sha \}\}/);
   const script = job
-    .match(/        run: \|\n((?:          .*\n)+)/)[1]
+    .match(/        run: \|\n([\s\S]*?)(?=      - name:|$)/)[1]
     .split('\n')
-    .map((line) => line.slice(10))
+    .map((line) => (line.startsWith('          ') ? line.slice(10) : line))
     .join('\n');
   const directory = await mkdtemp(join(tmpdir(), 'chromatic-changes-'));
   const git = (...args) => execFileAsync('git', args, { cwd: directory });
@@ -2243,20 +2244,23 @@ test('Chromatic builds Storybook only for pull requests with Breeze changes', as
     await git('commit', '-m', 'test: initial');
     const { stdout: base } = await git('rev-parse', 'HEAD');
     const output = join(directory, 'output');
-    const check = async (expected) => {
+    const check = async (expected, eventName = 'pull_request') => {
       await writeFile(output, '');
       const { stdout: head } = await git('rev-parse', 'HEAD');
       await execFileAsync('bash', ['-eo', 'pipefail', '-c', script], {
         cwd: directory,
         env: {
           ...process.env,
-          BASE_SHA: base.trim(),
-          HEAD_SHA: head.trim(),
+          EVENT_NAME: eventName,
+          BASE_SHA: eventName === 'pull_request' ? base.trim() : '',
+          HEAD_SHA: eventName === 'pull_request' ? head.trim() : '',
           GITHUB_OUTPUT: output,
         },
       });
       assert.equal(await readFile(output, 'utf8'), `changed=${expected}\n`);
     };
+    await check(true, 'push');
+    await check(true, 'workflow_dispatch');
     await writeFile(join(directory, 'unrelated.txt'), 'unrelated');
     await git('add', 'unrelated.txt');
     await git('commit', '-m', 'test: unrelated change');
@@ -2273,34 +2277,55 @@ test('Chromatic builds Storybook only for pull requests with Breeze changes', as
   }
 });
 
-test('main Storybook baseline workflow is separate from pull-request QA', async () => {
+test('main Storybook baselines use QA without running pull-request jobs', async () => {
   const workflow = await readFile(
-    new URL('../workflows/storybook-baselines.yml', import.meta.url),
+    new URL('../workflows/quality-assurance.yml', import.meta.url),
     'utf8',
   );
   const job = workflowJob(workflow, 'chromatic');
 
-  assert.match(workflow, /^  push:\n    branches:\n      - main$/m);
+  assert.match(
+    workflow,
+    /^  push:\n    branches:\n      - main\n    paths:\n(?:      - .+\n)+/m,
+  );
   assert.match(workflow, /^  workflow_dispatch:$/m);
-  assert.doesNotMatch(workflow, /^  pull_request:/m);
-  assert.match(workflow, /^permissions:\n  contents: read$/m);
+  assert.match(workflow, /^  pull_request:\n    types:/m);
 
   for (const path of [
     '.github/actions/setup-dependencies/**',
-    '.github/workflows/storybook-baselines.yml',
+    '.github/workflows/quality-assurance.yml',
     '.nvmrc',
     '.yarn/**',
     '.yarnrc.yml',
     'package.json',
     'packages/breeze-ui/**',
+    'tsconfig.json',
     'yarn.lock',
   ]) {
     assert.ok(workflow.includes(`      - '${path}'\n`), path);
   }
 
-  assert.match(job, /^    if: github\.ref == 'refs\/heads\/main'$/m);
+  assert.match(
+    job,
+    /^    if: github\.event_name == 'pull_request' \|\| github\.ref == 'refs\/heads\/main'$/m,
+  );
+  assert.match(job, /^    permissions:\n      contents: read$/m);
+  for (const jobId of [
+    'label',
+    'delivery-catalog',
+    'formatting',
+    'lint',
+    'type-check',
+    'unit-tests',
+  ]) {
+    assert.match(
+      workflowJob(workflow, jobId),
+      /^    if: github\.event_name == 'pull_request'$/m,
+      jobId,
+    );
+  }
   assert.match(job, /actions\/checkout@[a-f0-9]{40} # v\d+\.\d+\.\d+/);
-  assert.match(job, /fetch-depth: 0/);
+  assert.match(job, /fetch-depth: 0\n          persist-credentials: false/);
   assert.match(job, /uses: \.\/\.github\/actions\/setup-dependencies/);
   assert.match(job, /chromaui\/action@[a-f0-9]{40} # v\d+\.\d+\.\d+/);
   assert.match(job, /workingDir: packages\/breeze-ui/);
@@ -2312,4 +2337,5 @@ test('main Storybook baseline workflow is separate from pull-request QA', async 
   assert.match(job, /autoAcceptChanges: main/);
   assert.match(job, /exitOnceUploaded: true/);
   assert.doesNotMatch(job, /\bskip\b|onlyChanged|continue-on-error/i);
+  assert.doesNotMatch(workflow, /storybook-baselines\.yml/);
 });
