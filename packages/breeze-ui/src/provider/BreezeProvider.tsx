@@ -9,7 +9,11 @@ import {
 import { I18nProvider, useLocale } from 'react-aria-components/I18nProvider';
 import { OverlayProvider } from '../overlays/OverlayProvider';
 import { ToastProviderBoundary } from '../primitives/Toast/Toast';
-import { type Appearance, BreezeContext } from './BreezeContext';
+import {
+  type Appearance,
+  BreezeContext,
+  type BreezeRouter,
+} from './BreezeContext';
 import enGB from './en-GB';
 
 interface BreezeProviderBaseProps {
@@ -26,6 +30,8 @@ interface BreezeProviderBaseProps {
   portalContainer?: HTMLElement;
   /** Maximum number of visible confirmations; additional messages wait in FIFO order. */
   toastLimit?: number;
+  /** Optional same-document router for links that need application navigation. */
+  router?: BreezeRouter;
 }
 
 interface ControlledAppearanceProps {
@@ -83,6 +89,7 @@ export function BreezeProvider({
   messages,
   onAppearanceChange,
   portalContainer,
+  router,
   toastLimit = 3,
 }: Readonly<BreezeProviderProps>) {
   const [preferredColorSchemeQuery] = useState(() =>
@@ -168,6 +175,7 @@ export function BreezeProvider({
         selectDate: messages?.selectDate ?? enGB.selectDate,
       },
       resolvedAppearance,
+      router,
       setAppearance,
     }),
     [
@@ -176,6 +184,7 @@ export function BreezeProvider({
       locale,
       messages,
       resolvedAppearance,
+      router,
       setAppearance,
     ],
   );

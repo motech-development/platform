@@ -25,9 +25,7 @@
   }
 }
 
-/* Scoped motion rules cover ordinary descendants. Future document-global view
-   transition pseudo-elements need their own reduced-motion block: descendants
-   cannot reach those pseudo-elements, so that block will not be redundant. */
+/* Scoped motion rules cover ordinary elements inside the Breeze boundary. */
 @media (prefers-reduced-motion: reduce) {
   :where([data-breeze-root]) *,
   :where([data-breeze-root]) *::before,

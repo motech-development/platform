@@ -298,22 +298,17 @@ The document has **one home**: a 64px row directly under the transaction type, i
 
 Every animation names a relationship. If you cannot say what a transition tells the user, it is decoration and does not belong.
 
-The prototype drives these with `document.startViewTransition` because it is not React. The **CSS is the same either way** — the pseudo-element rules, the names and the timings all carry over. Only the trigger changes: in React each row below is a `<ViewTransition>` boundary, and the `kind` column is `addTransitionType` inside `startTransition`.
+The application opts into the browser's typed View Transition API through Breeze's `startViewTransition` helper. The router owns the route update and its commit readiness; `Link` supplies transition types but does not start an animation. Breeze grants participant names only for matching active types.
 
-| What                                | Boundary                          | Type    | What it tells the user                     |
-| ----------------------------------- | --------------------------------- | ------- | ------------------------------------------ |
-| Attachment row → full-screen viewer | `name="doc"`, `share`             | `doc`   | "The same file, seen larger"               |
-| Current-tab mark                    | `name="navmark"`                  | any     | "You are here now, and it came from there" |
-| Ledger row across a filter          | per-row `key` / `name={'tx-'+id}` | `list`  | "The same rows, rearranged"                |
-| Skeleton → content                  | `enter` on the content            | `mode`  | "The data arrived"                         |
-| Sheet and scrim                     | `enter`/`exit`                    | `sheet` | "This opened over what you were doing"     |
-| Menus, category picker              | `enter`/`exit`                    | `menu`  | "This belongs to the thing you pressed"    |
-| Confirmation card                   | `enter`/`exit`                    | `toast` | "That went through"                        |
-| Tab to tab                          | page-level                        | `nav`   | "A different part of the same app"         |
+| What                                | Type     | What it tells the user                     |
+| ----------------------------------- | -------- | ------------------------------------------ |
+| Attachment row → full-screen viewer | `expand` | "The same file, seen larger"               |
+| Current-tab mark                    | `nav`    | "You are here now, and it came from there" |
+| Ledger row across a filter          | `list`   | "The same rows, rearranged"                |
+| Skeleton → content                  | `mode`   | "The data arrived"                         |
+| Tab to tab                          | `nav`    | "A different part of the same app"         |
 
-**The root stays live.** `::view-transition-new(root)` is a live capture, so disabling the root animation keeps unnamed regions rendering and hoverable instead of freezing behind a stale snapshot; `::view-transition { pointer-events: none }` lets clicks through while named groups are still moving. Only a change of place (`nav`) or content replacing its own skeleton (`mode`) redraws the page itself.
-
-**Chrome is pinned, not animated.** The topbar, the desktop nav, the phone's bottom bar and the prototype's own control bar each get a name with `animation: none` and `z-index: 100`, so they hold still while everything else moves. The confirmation sits at `200` because it must beat all of it.
+The Breeze stylesheet keeps the page root live for `list`, `item` and `expand`, so named regions can move while unnamed page content remains interactive. `nav` and `mode` can animate the page root. Chrome stays pinned with Breeze's `topbar`, `topnav` and `botnav` roles, which are enabled for `nav` and `mode`. The `navmark` role marks the current location and moves during `nav` only.
 
 **Deliberately not animated**, each for a reason:
 
@@ -323,32 +318,9 @@ The prototype drives these with `document.startViewTransition` because it is not
 - **Typing and the VAT recalculation.** These mutate in place without a render, and must stay that way — the caret has to survive.
 - **Form steps inside a sheet.** The sheet frame does not move, so animating only its contents needs a second boundary nested inside the sheet's own — which would then be lifted out of the sheet's snapshot and snap while the frame slid. The step indicator already says where you are.
 
-**A name may only exist during the transition it belongs to.** This is the rule that makes or breaks the whole scheme, and it bites in two directions.
+**Names are temporary and unique.** A participant is named only for the types it declares. Keep one visible instance of each participant name in both snapshots; duplicate eligible names are reported in development. When a visual overlay is above the page, only participants in the topmost visual overlay can be enabled. Sheets, menus and category pickers retain their React Aria Components lifecycle; confirmation cards retain their own lifecycle and motion. None use view transitions for their opening or closing.
 
-A named element is **lifted out of its ancestor's snapshot** and animates as its own group. So an always-named attachment row held still while the sheet slid past it, and always-named ledger rows paired across a route change — the same transaction ids appear on Overview and on Money — and flew across the page.
-
-An element that **survives** a transition has both an old and a new snapshot, so an unconditional animation on it replays on every unrelated transition. The sheet was named permanently with `vt-sheet-out`/`vt-sheet-in` attached, so every time the attachment opened over it, the sheet obediently slid out and back in underneath. Nothing about the document transition asked for that; the sheet was simply still eligible.
-
-Under a live root the second problem has a clean answer: **name nothing permanently.** Anything unnamed just swaps, with no animation and no frozen snapshot, so an element needs a name only for the transition where it must move — and static chrome needs one only on `nav` and `mode`, the two types where the root itself is redrawn.
-
-Grant the name in **CSS, keyed on the transition type**, not from the code that paints:
-
-```css
-:root[data-vt='doc'] .vt-doc {
-  view-transition-name: doc;
-}
-:root[data-vt='list'] .vt-row {
-  view-transition-name: var(--vt);
-}
-```
-
-CSS is evaluated when the snapshot is taken, and the type is set before the transition starts, so this governs the **old** state too. Naming from JS at paint time cannot: by then the old snapshot is already captured from a DOM the previous render produced. In React this is what the type-keyed props express — `share={{ doc: 'morph', default: 'none' }}` rather than a name that is always present.
-
-**Two traps worth knowing.**
-
-A name may be mounted **once**. The attachment row and the viewer share `doc`, and the sheet stays mounted underneath the full-screen overlay — so the row gives the name up while the overlay holds it. Two live elements with one name aborts the whole transition silently.
-
-Starting a transition while one is running **skips the first**, and its rejection must not clear the type the second just set. Guard the cleanup with a sequence number, or a fast second click strips `data-vt` mid-animation and the first transition's CSS vanishes.
+If a new update starts while a browser transition is active, Breeze skips the active transition before running the new update. The update still commits; the transition is an enhancement around that commit.
 
 ### Appearance
 
