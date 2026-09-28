@@ -59,6 +59,8 @@ function LoadingExample() {
 /** A choice keeps its size and selected appearance while saving. */
 export const Loading: Story = {
   play: async ({ canvasElement }) => {
+    await document.fonts.ready;
+
     const canvas = within(canvasElement);
     const toggle = canvas.getByRole('button', {
       name: 'Remember this device',
