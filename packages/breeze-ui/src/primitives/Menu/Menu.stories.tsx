@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useState } from 'react';
-import { expect, within } from 'storybook/test';
+import { expect, userEvent, within } from 'storybook/test';
+import { Button } from '../Button/Button';
 import type { ItemDescriptor } from '../Collection/item.types';
 import { Menu } from './Menu';
 
@@ -88,4 +89,73 @@ function ControlledExample() {
 /** Control visibility and receive the selected item's details. */
 export const Controlled: Story = {
   render: () => <ControlledExample />,
+};
+
+function LoadingExample() {
+  const [loading, setLoading] = useState(true);
+
+  return (
+    <div className="breeze-story-action">
+      <Menu
+        getItem={(item) => item}
+        items={actions}
+        loading={loading}
+        trigger="Account actions"
+        triggerIcon="people"
+      />
+      <Button onAction={() => setLoading((current) => !current)}>
+        {loading ? 'Finish loading menu' : 'Start loading menu'}
+      </Button>
+    </div>
+  );
+}
+
+/** The trigger shows a loading bar while keeping its size and accessible name. */
+export const Loading: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const trigger = canvas.getByRole('button', { name: 'Account actions' });
+    const initialLoadingBounds = trigger.getBoundingClientRect();
+
+    await expect(trigger).toHaveAttribute('aria-busy', 'true');
+    await expect(trigger).toHaveAttribute('aria-disabled', 'true');
+    await expect(trigger).toHaveAccessibleName('Account actions');
+    await expect(canvas.getByRole('status')).toHaveTextContent('Loading');
+    await expect(
+      canvas.getByRole('progressbar', { name: 'Loading' }),
+    ).toBeInTheDocument();
+    await expect(trigger.querySelector('[data-breeze-skeleton]')).toBeTruthy();
+
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Finish loading menu' }),
+    );
+
+    await expect(trigger).not.toHaveAttribute('aria-busy');
+    await expect(canvas.getByRole('status')).toBeEmptyDOMElement();
+    const readyBounds = trigger.getBoundingClientRect();
+    await expect([readyBounds.width, readyBounds.height]).toEqual([
+      initialLoadingBounds.width,
+      initialLoadingBounds.height,
+    ]);
+
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Start loading menu' }),
+    );
+
+    await expect(trigger).toHaveAttribute('aria-busy', 'true');
+    await expect(trigger).toHaveAttribute('aria-disabled', 'true');
+    await expect(canvas.getByRole('status')).toHaveTextContent('Loading');
+    const finalLoadingBounds = trigger.getBoundingClientRect();
+    await expect([finalLoadingBounds.width, finalLoadingBounds.height]).toEqual(
+      [readyBounds.width, readyBounds.height],
+    );
+
+    trigger.focus();
+    await userEvent.click(trigger);
+    await userEvent.keyboard('{Enter}{Space}{ArrowDown}');
+    await expect(
+      within(document.body).queryByRole('menu'),
+    ).not.toBeInTheDocument();
+  },
+  render: () => <LoadingExample />,
 };

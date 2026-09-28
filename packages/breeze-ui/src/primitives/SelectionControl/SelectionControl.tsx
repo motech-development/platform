@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, Ref } from 'react';
+import type { ButtonHTMLAttributes, ReactNode, Ref } from 'react';
 import { createElement, useState } from 'react';
 import { ToggleButton as AriaToggleButton } from 'react-aria-components/ToggleButton';
 import { useBreezeContext } from '../../provider/BreezeContext';
@@ -21,11 +21,13 @@ interface SelectionControlProps {
   'aria-describedby'?: ButtonHTMLAttributes<HTMLButtonElement>['aria-describedby'];
   'aria-label'?: ButtonHTMLAttributes<HTMLButtonElement>['aria-label'];
   'aria-labelledby'?: ButtonHTMLAttributes<HTMLButtonElement>['aria-labelledby'];
-  children: string;
+  children: ReactNode;
   className: string;
   defaultPressed?: boolean;
   disabled: boolean;
   id?: ButtonHTMLAttributes<HTMLButtonElement>['id'];
+  /** Lets a containing group provide one loading announcement for all options. */
+  announceLoading?: boolean;
   loading: boolean;
   onChange?: (pressed: boolean) => void;
   pressed?: boolean;
@@ -42,6 +44,7 @@ export default function SelectionControl({
   defaultPressed,
   disabled,
   id,
+  announceLoading = true,
   loading,
   onChange,
   pressed,
@@ -105,18 +108,20 @@ export default function SelectionControl({
           </span>
         )}
       </AriaToggleButton>
-      {loading && (
+      {loading && announceLoading && (
         <span className={variants.base.status}>
           <Skeleton label={messages.loading} />
         </span>
       )}
-      <output
-        aria-live="polite"
-        className={variants.base.status}
-        lang={getMessageLocale('loading')}
-      >
-        {loading ? messages.loading : ''}
-      </output>
+      {announceLoading && (
+        <output
+          aria-live="polite"
+          className={variants.base.status}
+          lang={getMessageLocale('loading')}
+        >
+          {loading ? messages.loading : ''}
+        </output>
+      )}
     </>
   );
 }

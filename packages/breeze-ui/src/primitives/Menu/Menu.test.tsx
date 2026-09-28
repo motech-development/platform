@@ -344,4 +344,95 @@ describe('Menu', () => {
     expect(destination).toHaveFocus();
     expect(trigger).not.toHaveFocus();
   });
+
+  it('keeps its name and focus while loading and blocks opening until ready', async () => {
+    const user = userEvent.setup();
+    const onOpenChange = vi.fn();
+    const menu = (loading: boolean) => (
+      <BreezeProvider locale="fr-FR" messages={{ loading: 'Chargement' }}>
+        <Menu
+          getItem={(item) => item.descriptor}
+          items={actions}
+          loading={loading}
+          onOpenChange={onOpenChange}
+          trigger="Account actions"
+          triggerIcon="people"
+        />
+      </BreezeProvider>
+    );
+    const { rerender } = render(menu(false));
+    const trigger = screen.getByRole('button', { name: 'Account actions' });
+    trigger.focus();
+
+    rerender(menu(true));
+
+    expect(trigger).toHaveFocus();
+    expect(trigger).toHaveAccessibleName('Account actions');
+    expect(trigger).toHaveAttribute('aria-busy', 'true');
+    expect(trigger).toHaveAttribute('aria-disabled', 'true');
+    expect(
+      screen.getByRole('progressbar', { name: 'Chargement' }),
+    ).toHaveAttribute('lang', 'fr-FR');
+    expect(screen.getByRole('status')).toHaveTextContent('Chargement');
+
+    await user.click(trigger);
+    await user.keyboard('{Enter}{Space}{ArrowDown}');
+
+    expect(onOpenChange).not.toHaveBeenCalled();
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+
+    rerender(menu(false));
+
+    expect(trigger).toHaveFocus();
+    expect(trigger).not.toHaveAttribute('aria-busy');
+    expect(trigger).not.toHaveAttribute('aria-disabled', 'true');
+    expect(screen.getByRole('status')).toBeEmptyDOMElement();
+
+    await user.click(trigger);
+
+    expect(onOpenChange).toHaveBeenCalledExactlyOnceWith(true);
+    expect(screen.getByRole('menu')).toBeVisible();
+  });
+
+  it('keeps a controlled open menu actionable while its trigger is loading', async () => {
+    const user = userEvent.setup();
+    const onAction = vi.fn();
+    const onOpenChange = vi.fn();
+    const menu = (open: boolean) => (
+      <BreezeProvider locale="en-GB">
+        <Menu
+          getItem={(item) => item.descriptor}
+          items={actions}
+          loading
+          onAction={onAction}
+          onOpenChange={onOpenChange}
+          open={open}
+          trigger="Account actions"
+        />
+      </BreezeProvider>
+    );
+    const { rerender } = render(menu(true));
+    const trigger = screen.getByRole('button', { name: 'Account actions' });
+    const menuElement = screen.getByRole('menu', { name: 'Account actions' });
+
+    expect(trigger).toHaveAttribute('aria-busy', 'true');
+    expect(trigger).toHaveAttribute('aria-disabled', 'true');
+    expect(
+      within(menuElement).getByRole('menuitem', { name: 'Sign out' }),
+    ).not.toHaveAttribute('aria-disabled', 'true');
+
+    await user.click(
+      within(menuElement).getByRole('menuitem', { name: 'Sign out' }),
+    );
+
+    expect(onAction).toHaveBeenCalledWith(actions[2].descriptor);
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+    expect(screen.getByRole('menu')).toBeInTheDocument();
+
+    await user.keyboard('{Escape}');
+
+    expect(onOpenChange).toHaveBeenLastCalledWith(false);
+    rerender(menu(false));
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+  });
 });

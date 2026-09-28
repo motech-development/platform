@@ -1,11 +1,11 @@
 import type { HTMLAttributes } from 'react';
-import { createElement, useState } from 'react';
-import { ToggleButton as AriaToggleButton } from 'react-aria-components/ToggleButton';
+import { useState } from 'react';
 import { useBreezeContext } from '../../provider/BreezeContext';
 import { Badge } from '../Badge/Badge';
 import type { ControlSize } from '../Button/Button';
 import type { ItemDescriptor } from '../Collection/item.types';
 import { Icon } from '../Icon/Icon';
+import SelectionControl from '../SelectionControl/SelectionControl';
 import { Skeleton } from '../Skeleton/Skeleton';
 
 const variants = {
@@ -14,12 +14,10 @@ const variants = {
       'breeze:text-breeze-2xs breeze:font-normal breeze:leading-breeze-snug breeze:text-breeze-ink-3',
     group:
       'breeze:inline-flex breeze:items-center breeze:gap-breeze-1 breeze:rounded-breeze-ctl breeze:bg-breeze-sunken breeze:p-breeze-1 breeze:font-breeze-sans',
-    item: 'breeze:relative breeze:inline-flex breeze:items-center breeze:justify-center breeze:gap-breeze-2 breeze:rounded-breeze-sm breeze:border breeze:border-solid breeze:border-transparent breeze:font-semibold breeze:text-breeze-ink-2 breeze:cursor-pointer breeze:select-none breeze:outline-offset-[-2px] breeze:data-[hovered]:bg-breeze-raised breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-60 breeze:any-pointer-coarse:min-block-breeze-tap breeze:any-pointer-coarse:min-inline-breeze-tap',
+    item: 'breeze:inline-grid breeze:items-center breeze:justify-center breeze:gap-breeze-2 breeze:rounded-breeze-sm breeze:border breeze:border-solid breeze:border-transparent breeze:font-semibold breeze:text-breeze-ink-2 breeze:cursor-pointer breeze:select-none breeze:outline-offset-[-2px] breeze:data-[hovered]:bg-breeze-raised breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-60 breeze:any-pointer-coarse:min-block-breeze-tap breeze:any-pointer-coarse:min-inline-breeze-tap',
     label: 'breeze:font-medium',
     optionContent: 'breeze:flex breeze:min-inline-size-0 breeze:flex-col',
     optionDetails: 'breeze:inline-flex breeze:items-center breeze:gap-breeze-2',
-    optionSkeleton:
-      'breeze:pointer-events-none breeze:absolute breeze:[inset-block:0] breeze:[inset-inline:0] breeze:grid breeze:items-center',
   },
   compound: {},
   size: {
@@ -28,7 +26,6 @@ const variants = {
     sm: 'breeze:min-block-breeze-sm breeze:ps-breeze-2 breeze:pe-breeze-2 breeze:py-breeze-1 breeze:text-breeze-xs',
   },
   state: {
-    loading: 'breeze:cursor-wait',
     selected:
       'breeze:data-[selected]:border-breeze-line-strong breeze:data-[selected]:bg-breeze-surface breeze:data-[selected]:text-breeze-ink breeze:forced-colors:data-[selected]:outline-2 breeze:forced-colors:data-[selected]:outline-offset-2',
   },
@@ -128,42 +125,26 @@ export function ToggleGroup<T>({
       >
         <legend className="breeze:sr-only">{ariaLabel}</legend>
         {decoratedItems.map(({ descriptor, item }) => (
-          <AriaToggleButton
+          <SelectionControl
+            key={descriptor.id}
+            announceLoading={false}
             className={[
               variants.base.item,
               variants.size[size],
               variants.state.selected,
-              loading && variants.state.loading,
             ].join(' ')}
-            isDisabled={disabled || descriptor.disabled}
-            isSelected={selectedKey === descriptor.id}
-            key={descriptor.id}
+            disabled={disabled || descriptor.disabled === true}
+            loading={loading}
             onChange={(pressed) => {
-              if (loading) return;
-
               if (selected === undefined) {
                 setUncontrolledSelectedKey(pressed ? descriptor.id : null);
               }
 
               onChange?.(pressed ? item : null);
             }}
-            render={(buttonProps) =>
-              createElement('button', {
-                ...buttonProps,
-                'aria-disabled':
-                  loading || disabled || descriptor.disabled || undefined,
-                type: 'button',
-              })
-            }
+            pressed={selectedKey === descriptor.id}
           >
-            <span
-              className={[
-                variants.base.optionDetails,
-                loading && 'breeze:opacity-0',
-              ]
-                .filter(Boolean)
-                .join(' ')}
-            >
+            <span className={variants.base.optionDetails}>
               {descriptor.icon && <Icon name={descriptor.icon} size="sm" />}
               <span className={variants.base.optionContent}>
                 <span className={variants.base.label}>{descriptor.label}</span>
@@ -182,20 +163,7 @@ export function ToggleGroup<T>({
                 </Badge>
               )}
             </span>
-            {loading && (
-              <span
-                aria-hidden="true"
-                className={variants.base.optionSkeleton}
-                data-breeze-skeleton=""
-              >
-                <Skeleton
-                  blockSize="100%"
-                  inlineSize="100%"
-                  shape="rectangle"
-                />
-              </span>
-            )}
-          </AriaToggleButton>
+          </SelectionControl>
         ))}
       </fieldset>
       {loading && (

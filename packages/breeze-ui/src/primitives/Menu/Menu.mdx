@@ -11,6 +11,14 @@ page until needed.
 
 <Canvas of={Stories.Default} />
 
+## Loading the menu
+
+Use `loading` when the trigger should wait before opening. It shows a loading
+bar while keeping its size and accessible label. Actions in an already-open
+menu remain available.
+
+<Canvas of={Stories.Loading} />
+
 ## Define actions
 
 Pass your application values in `items`. Use `getItem` to provide each value's
@@ -22,8 +30,8 @@ when they help people scan the choices.
 ## Respond to a selection
 
 `onAction` receives the selected item's `ItemDescriptor`. The menu closes when
-an action is selected. Show action progress, confirmation or errors in the page
-or dialog that follows.
+an action is selected. Show that action's progress, confirmation or errors in
+the page or dialog that follows.
 
 Use `defaultOpen` when the menu manages its own visibility. To control
 visibility, provide `open` and `onOpenChange` together.
