@@ -588,13 +588,13 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">27 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">2/27 infos</a><span class="filter-pill ok" aria-disabled="true">103 stories ok</span><a class="filter-pill ok" data-k="docs" href="#filter-docs">29 docs ok</a></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">31 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">2/31 infos</a><span class="filter-pill ok" aria-disabled="true">122 stories ok</span><a class="filter-pill ok" data-k="docs" href="#filter-docs">33 docs ok</a></div>
   </div>
 </header>
 <main>
   <div class="wrap">
     <div class="note ok" style="margin-bottom: 16px;">
-              Using <code>react-docgen-typescript</code>. Generation took <strong>2.0s</strong>.
+              Using <code>react-docgen-typescript</code>. Generation took <strong>1.7s</strong>.
             </div>
     <h2 class="section-title">Components</h2>
     <div class="grid" role="list">
@@ -2107,6 +2107,230 @@ native input through `ref`.
 <article
   class="card 
   no-error 
+  no-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="Chip">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> Chip</h2>
+      <div class="badges">
+        <label for="c-7-actions-chip-props" class="badge ok as-toggle">11 prop types</label>
+        
+        <label for="c-7-actions-chip-stories" class="badge ok as-toggle">5 stories</label>
+        <label for="c-7-actions-chip-docs" class="badge ok as-toggle">1 doc</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/primitives/Chip/Chip.stories.tsx">actions-chip · ./src/primitives/Chip/Chip.stories.tsx</div>
+    
+    <div class="hint">Renders an independently selectable filter chip.</div>
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-7-actions-chip-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-7-actions-chip-docs" class="tg tg-docs" type="checkbox" hidden />
+  
+  <input id="c-7-actions-chip-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
+              <span class="badge ok">11 prop types</span>
+            </div>
+            <pre><code>Component: src/primitives/Chip/Chip.tsx::Chip</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>/**
+ * Identifies elements that provide additional information about the chip.
+ */
+aria-describedby?: string
+
+/**
+ * Provides an accessible name when it differs from the visible label.
+ */
+aria-label?: string
+
+/**
+ * Identifies elements whose text provides the chip&#39;s accessible name.
+ */
+aria-labelledby?: string
+
+/**
+ * Visible filter label and default accessible name.
+ */
+children: string
+
+/**
+ * Controlled and uncontrolled state props are mutually exclusive.
+ * Initial pressed state. Defaults to `false`.
+ */
+defaultPressed?: boolean
+
+/**
+ * Prevents the chip from being activated. Defaults to `false`.
+ */
+disabled?: boolean = false
+
+/**
+ * Sets the rendered button&#39;s HTML `id`.
+ */
+id?: string
+
+/**
+ * Shows a placeholder while a pressed-state change is being saved.
+ */
+loading?: boolean = false
+
+/**
+ * Reports the next pressed state.
+ */
+onChange?: ((pressed: boolean) =&gt; void) | ((pressed: boolean) =&gt; void)
+
+/**
+ * Current pressed state.
+ * Controlled and uncontrolled state props are mutually exclusive.
+ */
+pressed?: boolean
+
+/**
+ * Provides access to the rendered button element.
+ */
+ref?: Ref&lt;HTMLButtonElement&gt;</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Chip } from "@motech-development/breeze-ui";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">An unselected pill-shaped filter.</div>
+              <pre><code>const Default = () =&gt; &lt;Chip&gt;Needs receipt&lt;/Chip&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Pressed</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A selected chip uses the selected-filter colours.</div>
+              <pre><code>const Pressed = () =&gt; &lt;Chip defaultPressed&gt;Needs receipt&lt;/Chip&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Loading</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A filter keeps its size and selected appearance while saving.</div>
+              <pre><code>const Loading = () =&gt; &lt;LoadingExample /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Filter Row</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Independent chips can be combined to refine a filter.</div>
+              <pre><code>const FilterRow = () =&gt; &lt;FilterExample /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Disabled</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A disabled chip cannot be activated.</div>
+              <pre><code>const Disabled = () =&gt; &lt;Chip disabled&gt;Needs receipt&lt;/Chip&gt;;</code></pre>
+            </div>
+        </div>
+    
+        <div class="panel panel-docs">
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Docs</span>
+                <span class="badge ok">doc ok</span>
+              </div>
+              <div class="hint">./src/primitives/Chip/Chip.mdx</div>
+              <div>An independently selectable pill-shaped filter.</div>
+              <div class="mdx-content"><pre><code>import { ArgTypes, Canvas, Meta } from &#39;@storybook/addon-docs/blocks&#39;;
+import * as Stories from &#39;./Chip.stories&#39;;
+
+&lt;Meta of={Stories} summary=&quot;An independently selectable pill-shaped filter.&quot; /&gt;
+
+# Chip
+
+`Chip` is a compact pill-shaped filter. It stays independently selectable when
+shown beside other chips, and exposes its state as `aria-pressed`.
+
+&lt;Canvas of={Stories.Default} /&gt;
+
+## Pressed state
+
+Use `defaultPressed` for an uncontrolled chip, or `pressed` and `onChange` when
+the application owns the state. The callback receives the next pressed value.
+Choose one of these state approaches for each chip.
+
+&lt;Canvas of={Stories.Pressed} /&gt;
+
+&lt;Canvas of={Stories.FilterRow} /&gt;
+
+## Loading
+
+Set `loading` while saving a choice. A skeleton replaces the visible label while
+the chip keeps its name and width. Activation resumes when loading clears.
+
+&lt;Canvas of={Stories.Loading} /&gt;
+
+## Disabled and touch targets
+
+Set `disabled` to prevent activation. Chips have a 34px minimum height and
+expand to a 44px minimum touch target.
+
+&lt;Canvas of={Stories.Disabled} /&gt;
+
+## Accessibility
+
+The visible label names the button. `aria-label`, `aria-labelledby` and
+`aria-describedby` support alternate and supplemental names. The button exposes
+its pressed state and supports keyboard activation.
+
+## API
+
+&lt;ArgTypes /&gt;
+</code></pre></div>
+            </div>
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
   has-info 
   no-story-error
   no-doc-error"
@@ -2116,10 +2340,10 @@ native input through `ref`.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> ComboBox</h2>
       <div class="badges">
-        <label for="c-7-forms-combobox-props" class="badge ok as-toggle">19 prop types</label>
-        <label for="c-7-forms-combobox-info" class="badge info as-toggle">1 info</label>
-        <label for="c-7-forms-combobox-stories" class="badge ok as-toggle">6 stories</label>
-        <label for="c-7-forms-combobox-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-8-forms-combobox-props" class="badge ok as-toggle">19 prop types</label>
+        <label for="c-8-forms-combobox-info" class="badge info as-toggle">1 info</label>
+        <label for="c-8-forms-combobox-stories" class="badge ok as-toggle">6 stories</label>
+        <label for="c-8-forms-combobox-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -2131,11 +2355,11 @@ native input through `ref`.
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-7-forms-combobox-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-7-forms-combobox-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-7-forms-combobox-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-8-forms-combobox-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-8-forms-combobox-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-8-forms-combobox-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-7-forms-combobox-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-8-forms-combobox-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -2436,10 +2660,10 @@ with the field. Keyboard navigation and focus management are built in.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Container</h2>
       <div class="badges">
-        <label for="c-8-layout-container-props" class="badge ok as-toggle">5 prop types</label>
+        <label for="c-9-layout-container-props" class="badge ok as-toggle">5 prop types</label>
         
-        <label for="c-8-layout-container-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-8-layout-container-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-9-layout-container-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-9-layout-container-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -2452,10 +2676,10 @@ with the field. Keyboard navigation and focus management are built in.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-8-layout-container-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-8-layout-container-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-9-layout-container-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-9-layout-container-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-8-layout-container-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-9-layout-container-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -2586,10 +2810,10 @@ Loading belongs to the content inside the container. Compose loading-capable chi
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> DatePicker</h2>
       <div class="badges">
-        <label for="c-9-forms-datepicker-props" class="badge ok as-toggle">14 prop types</label>
+        <label for="c-10-forms-datepicker-props" class="badge ok as-toggle">14 prop types</label>
         
-        <label for="c-9-forms-datepicker-stories" class="badge ok as-toggle">7 stories</label>
-        <label for="c-9-forms-datepicker-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-10-forms-datepicker-stories" class="badge ok as-toggle">7 stories</label>
+        <label for="c-10-forms-datepicker-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -2602,10 +2826,10 @@ Loading belongs to the content inside the container. Compose loading-capable chi
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-9-forms-datepicker-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-9-forms-datepicker-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-10-forms-datepicker-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-10-forms-datepicker-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-9-forms-datepicker-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-10-forms-datepicker-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -2863,10 +3087,10 @@ targets have a minimum 44px width and height.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Dialog</h2>
       <div class="badges">
-        <label for="c-10-overlays-dialog-props" class="badge ok as-toggle">7 prop types</label>
+        <label for="c-11-overlays-dialog-props" class="badge ok as-toggle">7 prop types</label>
         
-        <label for="c-10-overlays-dialog-stories" class="badge ok as-toggle">1 story</label>
-        <label for="c-10-overlays-dialog-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-11-overlays-dialog-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-11-overlays-dialog-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -2879,10 +3103,10 @@ targets have a minimum 44px width and height.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-10-overlays-dialog-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-10-overlays-dialog-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-11-overlays-dialog-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-11-overlays-dialog-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-10-overlays-dialog-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-11-overlays-dialog-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -3026,10 +3250,10 @@ Enter and exit motion respects reduced-motion preferences. A closing surface imm
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Drawer</h2>
       <div class="badges">
-        <label for="c-11-overlays-drawer-props" class="badge ok as-toggle">7 prop types</label>
+        <label for="c-12-overlays-drawer-props" class="badge ok as-toggle">7 prop types</label>
         
-        <label for="c-11-overlays-drawer-stories" class="badge ok as-toggle">1 story</label>
-        <label for="c-11-overlays-drawer-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-12-overlays-drawer-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-12-overlays-drawer-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -3042,10 +3266,10 @@ Enter and exit motion respects reduced-motion preferences. A closing surface imm
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-11-overlays-drawer-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-11-overlays-drawer-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-12-overlays-drawer-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-12-overlays-drawer-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-11-overlays-drawer-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-12-overlays-drawer-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -3197,10 +3421,10 @@ Enter and exit motion respects reduced-motion preferences. A closing surface imm
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Grid</h2>
       <div class="badges">
-        <label for="c-12-layout-grid-props" class="badge ok as-toggle">6 prop types</label>
+        <label for="c-13-layout-grid-props" class="badge ok as-toggle">6 prop types</label>
         
-        <label for="c-12-layout-grid-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-12-layout-grid-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-13-layout-grid-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-13-layout-grid-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -3213,10 +3437,10 @@ Enter and exit motion respects reduced-motion preferences. A closing surface imm
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-12-layout-grid-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-12-layout-grid-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-13-layout-grid-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-13-layout-grid-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-12-layout-grid-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-13-layout-grid-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -3356,10 +3580,10 @@ Loading belongs to the items inside the grid. Compose loading-capable children o
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Icon</h2>
       <div class="badges">
-        <label for="c-13-content-icon-props" class="badge ok as-toggle">3 prop types</label>
+        <label for="c-14-content-icon-props" class="badge ok as-toggle">3 prop types</label>
         
-        <label for="c-13-content-icon-stories" class="badge ok as-toggle">3 stories</label>
-        <label for="c-13-content-icon-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-14-content-icon-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-14-content-icon-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -3372,10 +3596,10 @@ Loading belongs to the items inside the grid. Compose loading-capable children o
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-13-content-icon-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-13-content-icon-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-14-content-icon-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-14-content-icon-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-13-content-icon-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-14-content-icon-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -3507,10 +3731,10 @@ Icons are decorative by default. Supply `label` only when the icon conveys meani
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> IconTile</h2>
       <div class="badges">
-        <label for="c-14-content-icontile-props" class="badge ok as-toggle">5 prop types</label>
+        <label for="c-15-content-icontile-props" class="badge ok as-toggle">5 prop types</label>
         
-        <label for="c-14-content-icontile-stories" class="badge ok as-toggle">3 stories</label>
-        <label for="c-14-content-icontile-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-15-content-icontile-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-15-content-icontile-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -3523,10 +3747,10 @@ Icons are decorative by default. Supply `label` only when the icon conveys meani
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-14-content-icontile-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-14-content-icontile-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-15-content-icontile-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-15-content-icontile-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-14-content-icontile-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-15-content-icontile-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -3669,10 +3893,10 @@ Artwork is decorative by default. Supply `label` only when no adjacent text name
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Inline</h2>
       <div class="badges">
-        <label for="c-15-layout-inline-props" class="badge ok as-toggle">7 prop types</label>
+        <label for="c-16-layout-inline-props" class="badge ok as-toggle">7 prop types</label>
         
-        <label for="c-15-layout-inline-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-15-layout-inline-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-16-layout-inline-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-16-layout-inline-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -3685,10 +3909,10 @@ Artwork is decorative by default. Supply `label` only when no adjacent text name
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-15-layout-inline-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-15-layout-inline-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-16-layout-inline-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-16-layout-inline-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-15-layout-inline-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-16-layout-inline-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -3831,15 +4055,222 @@ Loading belongs to the items inside the row. Compose loading-capable children or
   no-story-error
   no-doc-error"
   role="listitem"
+  aria-label="Menu">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> Menu</h2>
+      <div class="badges">
+        <label for="c-17-overlays-menu-props" class="badge ok as-toggle">9 prop types</label>
+        
+        <label for="c-17-overlays-menu-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-17-overlays-menu-docs" class="badge ok as-toggle">1 doc</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/primitives/Menu/Menu.stories.tsx">overlays-menu · ./src/primitives/Menu/Menu.stories.tsx</div>
+    
+    <div class="hint">Displays related actions from a labelled trigger button. Set `loading` while the trigger should not open the menu. The loading status is announced while the trigger keeps its accessible name and dimensions.</div>
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-17-overlays-menu-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-17-overlays-menu-docs" class="tg tg-docs" type="checkbox" hidden />
+  
+  <input id="c-17-overlays-menu-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
+              <span class="badge ok">9 prop types</span>
+            </div>
+            <pre><code>Component: src/primitives/Menu/Menu.tsx::Menu</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>/**
+ * Only set when visibility is uncontrolled.
+ * Initial visibility. Defaults to `false`.
+ */
+defaultOpen?: boolean
+
+/**
+ * Returns the display details for an application item.
+ */
+getItem: (item: T) =&gt; ItemDescriptor
+
+/**
+ * Application items displayed as actions.
+ */
+items: T[]
+
+/**
+ * Shows a loading bar on the trigger and prevents opening the menu.
+ */
+loading?: boolean = false
+
+/**
+ * Called with the selected action&#39;s ItemDescriptor.
+ */
+onAction?: ((descriptor: ItemDescriptor) =&gt; void)
+
+/**
+ * Called when the menu should open or close.
+ * Called when the menu opens or closes.
+ */
+onOpenChange?: ((open: boolean) =&gt; void) | ((open: boolean) =&gt; void)
+
+/**
+ * Whether the menu is open.
+ * Only set when visibility is controlled.
+ */
+open?: boolean
+
+/**
+ * Visible label for the button that opens the menu.
+ */
+trigger: string
+
+/**
+ * Icon shown beside the trigger label.
+ */
+triggerIcon?: &quot;add&quot; | &quot;back&quot; | &quot;building&quot; | &quot;calendar&quot; | &quot;camera&quot; | &quot;check&quot; | &quot;clock&quot; | &quot;close&quot; | &quot;delete&quot; | &quot;document&quot; | &quot;download&quot; | &quot;expand&quot; | &quot;forward&quot; | &quot;lock&quot; | &quot;money&quot; | &quot;moneyIn&quot; | &quot;moneyOut&quot; | &quot;more&quot; | &quot;next&quot; | &quot;notifications&quot; | &quot;overview&quot; | &quot;people&quot; | &quot;settings&quot; | &quot;signOut&quot; | &quot;upload&quot; | &quot;warning&quot;</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Menu } from "@motech-development/breeze-ui";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A compact set of account actions.</div>
+              <pre><code>const Default = () =&gt; &lt;Menu
+    defaultOpen
+    getItem={(item: unknown) =&gt; item as ItemDescriptor}
+    items={actions}
+    trigger=&quot;Account actions&quot;
+    triggerIcon=&quot;people&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Controlled</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Control visibility and receive the selected item&#39;s details.</div>
+              <pre><code>const Controlled = () =&gt; &lt;ControlledExample /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Loading</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">The trigger shows a loading bar while keeping its size and accessible name.</div>
+              <pre><code>const Loading = () =&gt; &lt;LoadingExample /&gt;;</code></pre>
+            </div>
+        </div>
+    
+        <div class="panel panel-docs">
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Docs</span>
+                <span class="badge ok">doc ok</span>
+              </div>
+              <div class="hint">./src/primitives/Menu/Menu.mdx</div>
+              <div>A compact list of actions opened from a button.</div>
+              <div class="mdx-content"><pre><code>import { ArgTypes, Canvas, Meta } from &#39;@storybook/addon-docs/blocks&#39;;
+import * as Stories from &#39;./Menu.stories&#39;;
+
+&lt;Meta of={Stories} summary=&quot;A compact list of actions opened from a button.&quot; /&gt;
+
+# Menu
+
+`Menu` keeps related actions together under a labelled button. Use it for
+secondary actions, such as account settings, that should stay out of the main
+page until needed.
+
+&lt;Canvas of={Stories.Default} /&gt;
+
+## Loading the menu
+
+Use `loading` when the trigger should wait before opening. It shows a loading
+bar while keeping its size and accessible label. Actions in an already-open
+menu remain available.
+
+&lt;Canvas of={Stories.Loading} /&gt;
+
+## Define actions
+
+Pass your application values in `items`. Use `getItem` to provide each value&#39;s
+`ItemDescriptor`: `id` and `label` are required, while `description`, `icon`,
+`badge` and `disabled` are optional. Give each item a unique `id` within the
+menu. Keep labels concise; use descriptions for a short explanation and icons
+when they help people scan the choices.
+
+## Respond to a selection
+
+`onAction` receives the selected item&#39;s `ItemDescriptor`. The menu closes when
+an action is selected. Show that action&#39;s progress, confirmation or errors in
+the page or dialog that follows.
+
+Use `defaultOpen` when the menu manages its own visibility. To control
+visibility, provide `open` and `onOpenChange` together.
+
+&lt;Canvas of={Stories.Controlled} /&gt;
+
+## Keyboard use
+
+Open the menu with the trigger button, Enter, Space or ArrowDown. Use the arrow
+keys to move through enabled actions; type a label to jump to a matching action.
+Enter or Space selects the focused action. Escape closes the menu and returns
+focus to its trigger.
+
+## API
+
+&lt;ArgTypes /&gt;
+</code></pre></div>
+            </div>
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  no-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
   aria-label="NumberField">
   <div class="head">
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> NumberField</h2>
       <div class="badges">
-        <label for="c-16-forms-numberfield-props" class="badge ok as-toggle">21 prop types</label>
+        <label for="c-18-forms-numberfield-props" class="badge ok as-toggle">21 prop types</label>
         
-        <label for="c-16-forms-numberfield-stories" class="badge ok as-toggle">8 stories</label>
-        <label for="c-16-forms-numberfield-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-18-forms-numberfield-stories" class="badge ok as-toggle">8 stories</label>
+        <label for="c-18-forms-numberfield-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -3852,10 +4283,10 @@ Loading belongs to the items inside the row. Compose loading-capable children or
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-16-forms-numberfield-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-16-forms-numberfield-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-18-forms-numberfield-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-18-forms-numberfield-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-16-forms-numberfield-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-18-forms-numberfield-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -4159,9 +4590,9 @@ input through `ref`.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> OverlaySurface</h2>
       <div class="badges">
-        <label for="c-17-foundations-overlay-stack-props" class="badge ok as-toggle">9 prop types</label>
-        <label for="c-17-foundations-overlay-stack-info" class="badge info as-toggle">1 info</label>
-        <label for="c-17-foundations-overlay-stack-stories" class="badge ok as-toggle">4 stories</label>
+        <label for="c-19-foundations-overlay-stack-props" class="badge ok as-toggle">9 prop types</label>
+        <label for="c-19-foundations-overlay-stack-info" class="badge info as-toggle">1 info</label>
+        <label for="c-19-foundations-overlay-stack-stories" class="badge ok as-toggle">4 stories</label>
         
         
       </div>
@@ -4174,11 +4605,11 @@ input through `ref`.
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-17-foundations-overlay-stack-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-17-foundations-overlay-stack-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-19-foundations-overlay-stack-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-19-foundations-overlay-stack-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
-  <input id="c-17-foundations-overlay-stack-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-19-foundations-overlay-stack-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -4321,10 +4752,10 @@ trigger: string</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Popover</h2>
       <div class="badges">
-        <label for="c-18-overlays-popover-props" class="badge ok as-toggle">8 prop types</label>
+        <label for="c-20-overlays-popover-props" class="badge ok as-toggle">8 prop types</label>
         
-        <label for="c-18-overlays-popover-stories" class="badge ok as-toggle">1 story</label>
-        <label for="c-18-overlays-popover-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-20-overlays-popover-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-20-overlays-popover-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -4337,10 +4768,10 @@ trigger: string</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-18-overlays-popover-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-18-overlays-popover-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-20-overlays-popover-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-20-overlays-popover-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-18-overlays-popover-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-20-overlays-popover-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -4495,10 +4926,10 @@ Enter and exit motion respects reduced-motion preferences. A closing surface imm
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Select</h2>
       <div class="badges">
-        <label for="c-19-forms-select-props" class="badge ok as-toggle">18 prop types</label>
+        <label for="c-21-forms-select-props" class="badge ok as-toggle">18 prop types</label>
         
-        <label for="c-19-forms-select-stories" class="badge ok as-toggle">6 stories</label>
-        <label for="c-19-forms-select-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-21-forms-select-stories" class="badge ok as-toggle">6 stories</label>
+        <label for="c-21-forms-select-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -4511,10 +4942,10 @@ Enter and exit motion respects reduced-motion preferences. A closing surface imm
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-19-forms-select-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-19-forms-select-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-21-forms-select-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-21-forms-select-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-19-forms-select-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-21-forms-select-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -4794,10 +5225,10 @@ with the field. Keyboard navigation and focus management are built in.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Separator</h2>
       <div class="badges">
-        <label for="c-20-content-separator-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-22-content-separator-props" class="badge ok as-toggle">1 prop type</label>
         
-        <label for="c-20-content-separator-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-20-content-separator-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-22-content-separator-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-22-content-separator-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -4810,10 +5241,10 @@ with the field. Keyboard navigation and focus management are built in.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-20-content-separator-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-20-content-separator-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-22-content-separator-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-22-content-separator-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-20-content-separator-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-22-content-separator-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -4918,10 +5349,10 @@ The component exposes `role=&quot;separator&quot;` and the selected orientation.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Skeleton</h2>
       <div class="badges">
-        <label for="c-21-content-skeleton-props" class="badge ok as-toggle">4 prop types</label>
+        <label for="c-23-content-skeleton-props" class="badge ok as-toggle">4 prop types</label>
         
-        <label for="c-21-content-skeleton-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-21-content-skeleton-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-23-content-skeleton-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-23-content-skeleton-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -4934,10 +5365,10 @@ The component exposes `role=&quot;separator&quot;` and the selected orientation.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-21-content-skeleton-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-21-content-skeleton-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-23-content-skeleton-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-23-content-skeleton-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-21-content-skeleton-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-23-content-skeleton-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -5062,10 +5493,10 @@ Supply `label` when the skeleton owns the loading announcement. Omit it when a p
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Stack</h2>
       <div class="badges">
-        <label for="c-22-layout-stack-props" class="badge ok as-toggle">5 prop types</label>
+        <label for="c-24-layout-stack-props" class="badge ok as-toggle">5 prop types</label>
         
-        <label for="c-22-layout-stack-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-22-layout-stack-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-24-layout-stack-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-24-layout-stack-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -5078,10 +5509,10 @@ Supply `label` when the skeleton owns the loading announcement. Omit it when a p
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-22-layout-stack-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-22-layout-stack-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-24-layout-stack-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-24-layout-stack-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-22-layout-stack-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-24-layout-stack-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -5219,10 +5650,10 @@ Loading belongs to the items inside the stack. Compose loading-capable children 
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> TextField</h2>
       <div class="badges">
-        <label for="c-23-forms-textfield-props" class="badge ok as-toggle">18 prop types</label>
+        <label for="c-25-forms-textfield-props" class="badge ok as-toggle">18 prop types</label>
         
-        <label for="c-23-forms-textfield-stories" class="badge ok as-toggle">8 stories</label>
-        <label for="c-23-forms-textfield-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-25-forms-textfield-stories" class="badge ok as-toggle">8 stories</label>
+        <label for="c-25-forms-textfield-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -5235,10 +5666,10 @@ Loading belongs to the items inside the stack. Compose loading-capable children 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-23-forms-textfield-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-23-forms-textfield-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-25-forms-textfield-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-25-forms-textfield-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-23-forms-textfield-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-25-forms-textfield-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -5518,10 +5949,10 @@ input through `ref`.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Toast</h2>
       <div class="badges">
-        <label for="c-24-feedback-toast-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-26-feedback-toast-props" class="badge ok as-toggle">1 prop type</label>
         
-        <label for="c-24-feedback-toast-stories" class="badge ok as-toggle">8 stories</label>
-        <label for="c-24-feedback-toast-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-26-feedback-toast-stories" class="badge ok as-toggle">8 stories</label>
+        <label for="c-26-feedback-toast-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -5534,10 +5965,10 @@ input through `ref`.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-24-feedback-toast-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-24-feedback-toast-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-26-feedback-toast-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-26-feedback-toast-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-24-feedback-toast-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-26-feedback-toast-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -5707,15 +6138,520 @@ The card stays 288px wide on desktop and mobile, aligned to the content gutter b
   no-story-error
   no-doc-error"
   role="listitem"
+  aria-label="Toggle">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> Toggle</h2>
+      <div class="badges">
+        <label for="c-27-actions-toggle-props" class="badge ok as-toggle">12 prop types</label>
+        
+        <label for="c-27-actions-toggle-stories" class="badge ok as-toggle">6 stories</label>
+        <label for="c-27-actions-toggle-docs" class="badge ok as-toggle">1 doc</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/primitives/Toggle/Toggle.stories.tsx">actions-toggle · ./src/primitives/Toggle/Toggle.stories.tsx</div>
+    
+    <div class="hint">Renders a button for a binary choice.</div>
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-27-actions-toggle-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-27-actions-toggle-docs" class="tg tg-docs" type="checkbox" hidden />
+  
+  <input id="c-27-actions-toggle-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
+              <span class="badge ok">12 prop types</span>
+            </div>
+            <pre><code>Component: src/primitives/Toggle/Toggle.tsx::Toggle</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>/**
+ * Identifies elements that provide additional information about the toggle.
+ */
+aria-describedby?: string
+
+/**
+ * Provides an accessible name when it differs from the visible label.
+ */
+aria-label?: string
+
+/**
+ * Identifies elements whose text provides the toggle&#39;s accessible name.
+ */
+aria-labelledby?: string
+
+/**
+ * Visible label and default accessible name.
+ */
+children: string
+
+/**
+ * Controlled and uncontrolled state props are mutually exclusive.
+ * Initial pressed state. Defaults to `false`.
+ */
+defaultPressed?: boolean
+
+/**
+ * Prevents the toggle from being activated. Defaults to `false`.
+ */
+disabled?: boolean = false
+
+/**
+ * Sets the rendered button&#39;s HTML `id`.
+ */
+id?: string
+
+/**
+ * Shows a placeholder while a pressed-state change is being saved.
+ */
+loading?: boolean = false
+
+/**
+ * Reports the next pressed state.
+ */
+onChange?: ((pressed: boolean) =&gt; void) | ((pressed: boolean) =&gt; void)
+
+/**
+ * Current pressed state.
+ * Controlled and uncontrolled state props are mutually exclusive.
+ */
+pressed?: boolean
+
+/**
+ * Provides access to the rendered button element.
+ */
+ref?: Ref&lt;HTMLButtonElement&gt;
+
+/**
+ * Selects the toggle&#39;s dimensions. Defaults to `md`.
+ */
+size?: ControlSize = md</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Toggle } from "@motech-development/breeze-ui";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A binary choice presented as a button with a pressed state.</div>
+              <pre><code>const Default = () =&gt; &lt;Toggle&gt;Remember this device&lt;/Toggle&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Pressed</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Starts with the choice pressed.</div>
+              <pre><code>const Pressed = () =&gt; &lt;Toggle defaultPressed&gt;Remember this device&lt;/Toggle&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Sizes</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">The control is available in three sizes.</div>
+              <pre><code>const Sizes = () =&gt; (
+  &lt;div className=&quot;breeze-story-stack&quot;&gt;
+    {sizes.map((size) =&gt; (
+      &lt;Toggle key={size} size={size}&gt;
+        {`Remember · ${size}`}
+      &lt;/Toggle&gt;
+    ))}
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Loading</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A choice keeps its size and selected appearance while saving.</div>
+              <pre><code>const Loading = () =&gt; &lt;LoadingExample /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Disabled</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A disabled toggle cannot change its pressed state.</div>
+              <pre><code>const Disabled = () =&gt; &lt;Toggle disabled&gt;Remember this device&lt;/Toggle&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Controlled</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">The current pressed state appears below the control.</div>
+              <pre><code>const Controlled = () =&gt; &lt;ControlledExample /&gt;;</code></pre>
+            </div>
+        </div>
+    
+        <div class="panel panel-docs">
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Docs</span>
+                <span class="badge ok">doc ok</span>
+              </div>
+              <div class="hint">./src/primitives/Toggle/Toggle.mdx</div>
+              <div>A binary choice with an accessible pressed state.</div>
+              <div class="mdx-content"><pre><code>import { ArgTypes, Canvas, Meta } from &#39;@storybook/addon-docs/blocks&#39;;
+import * as Stories from &#39;./Toggle.stories&#39;;
+
+&lt;Meta
+  of={Stories}
+  summary=&quot;A binary choice with an accessible pressed state.&quot;
+/&gt;
+
+# Toggle
+
+`Toggle` represents an on/off choice as a button. Its pressed state is exposed
+with `aria-pressed`. Use a `Checkbox` when the choice belongs in a form.
+
+&lt;Canvas of={Stories.Default} /&gt;
+
+## Pressed state
+
+Use `defaultPressed` for an uncontrolled toggle, or `pressed` and `onChange` when
+the application owns the state. The callback receives the next pressed value.
+Choose one of these state approaches for each toggle.
+
+&lt;Canvas of={Stories.Pressed} /&gt;
+
+&lt;Canvas of={Stories.Controlled} /&gt;
+
+## Loading
+
+Set `loading` while saving a choice. A skeleton replaces the visible label while
+the button keeps its name and width. Activation resumes when loading clears.
+
+&lt;Canvas of={Stories.Loading} /&gt;
+
+## Sizes and disabled state
+
+`size` accepts `sm`, `md` (default) or `lg`, with minimum heights of 34, 38 and
+52px. Touch targets are at least 44px. Disabled toggles cannot be
+activated.
+
+&lt;Canvas of={Stories.Sizes} /&gt;
+
+&lt;Canvas of={Stories.Disabled} /&gt;
+
+## Accessibility
+
+The visible label names the button. `aria-label`, `aria-labelledby` and
+`aria-describedby` support alternate and supplemental names. The button exposes
+its pressed state and supports keyboard activation.
+
+## API
+
+&lt;ArgTypes /&gt;
+</code></pre></div>
+            </div>
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  no-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="ToggleGroup">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> ToggleGroup</h2>
+      <div class="badges">
+        <label for="c-28-actions-togglegroup-props" class="badge ok as-toggle">11 prop types</label>
+        
+        <label for="c-28-actions-togglegroup-stories" class="badge ok as-toggle">5 stories</label>
+        <label for="c-28-actions-togglegroup-docs" class="badge ok as-toggle">1 doc</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/primitives/ToggleGroup/ToggleGroup.stories.tsx">actions-togglegroup · ./src/primitives/ToggleGroup/ToggleGroup.stories.tsx</div>
+    
+    <div class="hint">Renders a set of connected options with a single selection.</div>
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-28-actions-togglegroup-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-28-actions-togglegroup-docs" class="tg tg-docs" type="checkbox" hidden />
+  
+  <input id="c-28-actions-togglegroup-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
+              <span class="badge ok">11 prop types</span>
+            </div>
+            <pre><code>Component: src/primitives/ToggleGroup/ToggleGroup.tsx::ToggleGroup</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>/**
+ * Identifies elements that provide additional information about the group.
+ */
+aria-describedby?: string
+
+/**
+ * Names the group when it has no visible heading.
+ */
+aria-label: string | undefined
+
+/**
+ * Controlled and uncontrolled state props are mutually exclusive.
+ * Initial selected option. Defaults to no selection.
+ */
+defaultSelected?: T | null
+
+/**
+ * Prevents every option in the group from being activated.
+ */
+disabled?: boolean = false
+
+/**
+ * Supplies the display details for an option.
+ */
+getItem: (item: T) =&gt; ItemDescriptor
+
+/**
+ * Sets the rendered group&#39;s HTML `id`.
+ */
+id?: string
+
+/**
+ * The available options.
+ */
+items: T[]
+
+/**
+ * Shows placeholders while a selection change is being saved.
+ */
+loading?: boolean = false
+
+/**
+ * Reports the selected option or `null` when cleared.
+ */
+onChange?: ((selected: T | null) =&gt; void) | ((selected: T | null) =&gt; void)
+
+/**
+ * Current selected option, or `null` when none is pressed.
+ * Controlled and uncontrolled state props are mutually exclusive.
+ */
+selected?: T | null
+
+/**
+ * Selects the group&#39;s dimensions. Defaults to `md`.
+ */
+size?: ControlSize = md</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { ToggleGroup } from "@motech-development/breeze-ui";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A set of connected options with one current selection.</div>
+              <pre><code>const Default = () =&gt; &lt;ToggleGroup
+    aria-label=&quot;Transaction status&quot;
+    defaultSelected={options[0]}
+    getItem={(item) =&gt; item}
+    items={options} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Loading</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Toggle and ToggleGroup use the same loading bar and preserve their size.</div>
+              <pre><code>const Loading = () =&gt; &lt;LoadingExample /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Sizes</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">All shared sizes use the same segmented treatment.</div>
+              <pre><code>const Sizes = () =&gt; (
+  &lt;div className=&quot;breeze-story-stack&quot;&gt;
+    {sizes.map((size) =&gt; (
+      &lt;ToggleGroup
+        aria-label={`Transaction status · ${size}`}
+        defaultSelected={options[0]}
+        getItem={(item) =&gt; item}
+        items={options}
+        key={size}
+        size={size}
+      /&gt;
+    ))}
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Disabled Option</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Disabled options cannot be selected.</div>
+              <pre><code>const DisabledOption = () =&gt; &lt;ToggleGroup
+    aria-label=&quot;Transaction status&quot;
+    defaultSelected={options[0]}
+    getItem={(item) =&gt; item}
+    items={options} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Controlled</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">The current selection appears below the group.</div>
+              <pre><code>const Controlled = () =&gt; &lt;ControlledExample /&gt;;</code></pre>
+            </div>
+        </div>
+    
+        <div class="panel panel-docs">
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Docs</span>
+                <span class="badge ok">doc ok</span>
+              </div>
+              <div class="hint">./src/primitives/ToggleGroup/ToggleGroup.mdx</div>
+              <div>A single-choice segmented control with accessible pressed options.</div>
+              <div class="mdx-content"><pre><code>import { ArgTypes, Canvas, Meta } from &#39;@storybook/addon-docs/blocks&#39;;
+import * as Stories from &#39;./ToggleGroup.stories&#39;;
+
+&lt;Meta
+  of={Stories}
+  summary=&quot;A single-choice segmented control with accessible pressed options.&quot;
+/&gt;
+
+# ToggleGroup
+
+`ToggleGroup` presents a single choice as connected segments. Each option is a
+button with an accessible pressed state. Press the selected option again to
+clear the selection.
+
+&lt;Canvas of={Stories.Default} /&gt;
+
+## Options
+
+Provide `items` and a `getItem` function that describes each option. Return a
+unique `id` and visible `label`. You can also provide a `description`, `icon`,
+`badge` or `disabled` flag. Disabled options cannot be selected.
+
+&lt;Canvas of={Stories.DisabledOption} /&gt;
+
+## Controlled selection
+
+Use `defaultSelected` with an optional `onChange` for uncontrolled use. Provide
+`selected` and `onChange` when the application owns state. The callback receives
+the selected item, or `null` when the choice is cleared. Choose one of these
+state approaches for each group.
+
+&lt;Canvas of={Stories.Controlled} /&gt;
+
+## Loading
+
+Set `loading` while saving a selection. A slim loading bar replaces each
+option&#39;s content while its size and selected appearance stay in place. Changes
+resume when loading clears.
+
+&lt;Canvas of={Stories.Loading} /&gt;
+
+## Sizes and accessibility
+
+`size` accepts `sm`, `md` (default) or `lg`, with minimum heights of 34, 38 and
+52px. Touch targets are at least 44px. Give each group an
+`aria-label`; each option exposes whether it is pressed and supports keyboard
+interaction.
+
+&lt;Canvas of={Stories.Sizes} /&gt;
+
+## API
+
+&lt;ArgTypes /&gt;
+</code></pre></div>
+            </div>
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  no-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
   aria-label="Typography">
   <div class="head">
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Typography</h2>
       <div class="badges">
-        <label for="c-25-content-typography-props" class="badge ok as-toggle">15 prop types</label>
+        <label for="c-29-content-typography-props" class="badge ok as-toggle">15 prop types</label>
         
-        <label for="c-25-content-typography-stories" class="badge ok as-toggle">4 stories</label>
-        <label for="c-25-content-typography-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-29-content-typography-stories" class="badge ok as-toggle">4 stories</label>
+        <label for="c-29-content-typography-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -5728,10 +6664,10 @@ The card stays 288px wide on desktop and mobile, aligned to the content gutter b
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-25-content-typography-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-25-content-typography-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-29-content-typography-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-29-content-typography-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-25-content-typography-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-29-content-typography-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -5993,10 +6929,10 @@ Set `loading` to preserve the text&#39;s place while its value is unavailable.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> VisuallyHidden</h2>
       <div class="badges">
-        <label for="c-26-content-visuallyhidden-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-30-content-visuallyhidden-props" class="badge ok as-toggle">1 prop type</label>
         
-        <label for="c-26-content-visuallyhidden-stories" class="badge ok as-toggle">1 story</label>
-        <label for="c-26-content-visuallyhidden-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-30-content-visuallyhidden-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-30-content-visuallyhidden-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -6009,10 +6945,10 @@ Set `loading` to preserve the text&#39;s place while its value is unavailable.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-26-content-visuallyhidden-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-26-content-visuallyhidden-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-30-content-visuallyhidden-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-30-content-visuallyhidden-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-26-content-visuallyhidden-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-30-content-visuallyhidden-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
