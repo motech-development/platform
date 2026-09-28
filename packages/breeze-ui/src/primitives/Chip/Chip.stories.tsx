@@ -94,6 +94,8 @@ function LoadingExample() {
 /** A filter keeps its size and selected appearance while saving. */
 export const Loading: Story = {
   play: async ({ canvasElement }) => {
+    await document.fonts.ready;
+
     const canvas = within(canvasElement);
     const chip = canvas.getByRole('button', { name: 'Needs receipt' });
     const loadingBounds = chip.getBoundingClientRect();
