@@ -354,7 +354,7 @@ export function RowList<T>({
         aria-label={ariaLabel}
         className={variants.base.grid}
         renderEmptyState={() =>
-          loading ? (
+          isLoading ? (
             <InitialLoadingState />
           ) : (
             <div
