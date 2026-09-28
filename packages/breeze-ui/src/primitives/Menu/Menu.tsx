@@ -1,4 +1,5 @@
 import {
+  createElement,
   useCallback,
   useId,
   useLayoutEffect,
@@ -18,6 +19,7 @@ import CollectionPopover from '../Collection/CollectionPopover';
 import type { ItemDescriptor } from '../Collection/item.types';
 import type { IconName } from '../Icon/Icon';
 import { Icon } from '../Icon/Icon';
+import { Skeleton } from '../Skeleton/Skeleton';
 
 const variants = {
   base: {
@@ -34,6 +36,11 @@ const variants = {
       'breeze:[min-inline-size:var(--trigger-width)] breeze:max-inline-size-[calc(100vw-24px)] breeze:overflow-auto breeze:rounded-breeze-panel breeze:border breeze:border-solid breeze:border-breeze-line breeze:bg-breeze-surface breeze:p-breeze-1 breeze:shadow-breeze-overlay',
     trigger:
       'breeze:inline-flex breeze:min-block-breeze-md breeze:any-pointer-coarse:min-block-breeze-tap breeze:items-center breeze:gap-breeze-2 breeze:rounded-breeze-ctl breeze:border breeze:border-solid breeze:border-breeze-line-strong breeze:bg-breeze-surface breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:py-breeze-2 breeze:font-breeze-sans breeze:text-breeze-sm breeze:leading-breeze-snug breeze:text-breeze-ink breeze:outline-offset-2 breeze:data-[hovered]:bg-breeze-sunken breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand',
+    triggerLabel:
+      'breeze:inline-grid breeze:min-inline-size-0 breeze:items-center',
+    triggerLabelContent: 'breeze:[grid-area:1/1]',
+    triggerLabelSkeleton: 'breeze:[grid-area:1/1] breeze:inline-size-full',
+    triggerLoadingStatus: 'breeze:sr-only',
   },
   compound: {},
   size: {},
@@ -48,6 +55,8 @@ interface MenuCommonProps<T> {
   items: T[];
   /** Called with the selected action's ItemDescriptor. */
   onAction?: (descriptor: ItemDescriptor) => void;
+  /** Shows a loading bar on the trigger and prevents opening the menu. */
+  loading?: boolean;
   /** Icon shown beside the trigger label. */
   triggerIcon?: IconName;
   /** Visible label for the button that opens the menu. */
@@ -121,8 +130,32 @@ function getMenuItemAccessibleName(descriptor: ItemDescriptor) {
   return `${descriptor.label}, ${badgeLabel}`;
 }
 
+function MenuLoadingStatus({ loading }: Readonly<{ loading: boolean }>) {
+  const { getMessageLocale, messages } = useBreezeContext();
+
+  return (
+    <>
+      {loading && (
+        <span className={variants.base.triggerLoadingStatus}>
+          <Skeleton label={messages.loading} />
+        </span>
+      )}
+      <output
+        aria-live="polite"
+        className={variants.base.triggerLoadingStatus}
+        lang={getMessageLocale('loading')}
+      >
+        {loading ? messages.loading : ''}
+      </output>
+    </>
+  );
+}
+
 /**
  * Displays related actions from a labelled trigger button.
+ *
+ * Set `loading` while the trigger should not open the menu. The loading status
+ * is announced while the trigger keeps its accessible name and dimensions.
  *
  * @summary A compact menu for secondary actions.
  */
@@ -130,6 +163,7 @@ export function Menu<T>({
   defaultOpen,
   getItem,
   items,
+  loading = false,
   onAction,
   onOpenChange,
   open: controlledOpen,
@@ -148,10 +182,12 @@ export function Menu<T>({
   const descriptors = useMemo(() => items.map(getItem), [getItem, items]);
   const handleOpenChange = useCallback(
     (nextOpen: boolean) => {
+      if (loading && nextOpen) return;
+
       if (controlledOpen === undefined) setUncontrolledOpen(nextOpen);
       onOpenChange?.(nextOpen);
     },
-    [controlledOpen, onOpenChange],
+    [controlledOpen, loading, onOpenChange],
   );
 
   useLayoutEffect(() => {
@@ -173,63 +209,94 @@ export function Menu<T>({
   }, [open]);
 
   return (
-    <AriaMenuTrigger isOpen={open} onOpenChange={handleOpenChange}>
-      <AriaButton
-        aria-haspopup="menu"
-        className={variants.base.trigger}
-        ref={triggerRef}
-      >
-        {triggerIcon && <Icon name={triggerIcon} size="sm" />}
-        <span>{trigger}</span>
-        <Icon name="expand" size="sm" />
-      </AriaButton>
-      <CollectionPopover
-        className={variants.base.popover}
-        isOpen={open}
-        onOpenChange={handleOpenChange}
-        triggerRef={triggerRef}
-      >
-        <div
-          onKeyDownCapture={(event) => {
-            if (event.key === 'Escape') restoreFocusRef.current = true;
-          }}
+    <>
+      <AriaMenuTrigger isOpen={open} onOpenChange={handleOpenChange}>
+        <AriaButton
+          aria-haspopup="menu"
+          className={variants.base.trigger}
+          isPending={loading}
+          ref={triggerRef}
+          render={(buttonProps) =>
+            createElement('button', {
+              ...buttonProps,
+              'aria-busy': loading || undefined,
+              type: 'button',
+            })
+          }
         >
-          <AriaMenu
-            className={variants.base.menu}
-            id={menuId}
-            onAction={(key) => {
-              const descriptor = descriptors.find((item) => item.id === key);
-              if (descriptor) {
-                restoreFocusRef.current = true;
-                onAction?.(descriptor);
-              }
+          {triggerIcon && <Icon name={triggerIcon} size="sm" />}
+          <span className={variants.base.triggerLabel}>
+            <span
+              className={[
+                variants.base.triggerLabelContent,
+                loading && 'breeze:opacity-0',
+              ]
+                .filter(Boolean)
+                .join(' ')}
+            >
+              {trigger}
+            </span>
+            {loading && (
+              <span
+                aria-hidden="true"
+                className={variants.base.triggerLabelSkeleton}
+                data-breeze-skeleton=""
+              >
+                <Skeleton />
+              </span>
+            )}
+          </span>
+          <Icon name="expand" size="sm" />
+        </AriaButton>
+        <CollectionPopover
+          className={variants.base.popover}
+          isOpen={open}
+          onOpenChange={handleOpenChange}
+          triggerRef={triggerRef}
+        >
+          <div
+            onKeyDownCapture={(event) => {
+              if (event.key === 'Escape') restoreFocusRef.current = true;
             }}
           >
-            {descriptors.map((descriptor, index) => {
-              const descriptionId = `${menuId}-description-${index}`;
+            <AriaMenu
+              className={variants.base.menu}
+              id={menuId}
+              onAction={(key) => {
+                const descriptor = descriptors.find((item) => item.id === key);
+                if (descriptor) {
+                  restoreFocusRef.current = true;
+                  onAction?.(descriptor);
+                }
+              }}
+            >
+              {descriptors.map((descriptor, index) => {
+                const descriptionId = `${menuId}-description-${index}`;
 
-              return (
-                <AriaMenuItem
-                  aria-describedby={
-                    descriptor.description ? descriptionId : undefined
-                  }
-                  aria-label={getMenuItemAccessibleName(descriptor)}
-                  className={variants.base.item}
-                  id={descriptor.id}
-                  isDisabled={descriptor.disabled}
-                  key={descriptor.id}
-                  textValue={descriptor.label}
-                >
-                  <MenuItemContent
-                    descriptionId={descriptionId}
-                    descriptor={descriptor}
-                  />
-                </AriaMenuItem>
-              );
-            })}
-          </AriaMenu>
-        </div>
-      </CollectionPopover>
-    </AriaMenuTrigger>
+                return (
+                  <AriaMenuItem
+                    aria-describedby={
+                      descriptor.description ? descriptionId : undefined
+                    }
+                    aria-label={getMenuItemAccessibleName(descriptor)}
+                    className={variants.base.item}
+                    id={descriptor.id}
+                    isDisabled={descriptor.disabled}
+                    key={descriptor.id}
+                    textValue={descriptor.label}
+                  >
+                    <MenuItemContent
+                      descriptionId={descriptionId}
+                      descriptor={descriptor}
+                    />
+                  </AriaMenuItem>
+                );
+              })}
+            </AriaMenu>
+          </div>
+        </CollectionPopover>
+      </AriaMenuTrigger>
+      <MenuLoadingStatus loading={loading} />
+    </>
   );
 }
