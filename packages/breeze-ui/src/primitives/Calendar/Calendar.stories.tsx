@@ -7,6 +7,16 @@ const meta = {
     defaultValue: '2026-09-03',
     label: 'Choose a date',
   },
+  beforeEach: () => {
+    const originalNow = Date.now;
+    const fixedNow = new Date(2026, 8, 15, 12).getTime();
+
+    Date.now = () => fixedNow;
+
+    return () => {
+      Date.now = originalNow;
+    };
+  },
   component: Calendar,
   title: 'Forms/Calendar',
 } satisfies Meta<typeof Calendar>;
@@ -86,7 +96,17 @@ async function assertSelectedDateContrast(
 }
 
 /** A six-week Monday-first calendar with a selected date. */
-export const Default: Story = {};
+export const Default: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const today = canvas.getByRole('button', {
+      name: /Tuesday, 15 September 2026/,
+    });
+
+    await expect(today).toHaveAttribute('data-today', 'true');
+    await expect(today).not.toHaveAttribute('data-selected', 'true');
+  },
+};
 
 /** A selected date keeps accessible contrast in the light appearance. */
 export const SelectedContrastLight: Story = {

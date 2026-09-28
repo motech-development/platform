@@ -2272,3 +2272,44 @@ test('Chromatic builds Storybook only for pull requests with Breeze changes', as
     await rm(directory, { recursive: true, force: true });
   }
 });
+
+test('main Storybook baseline workflow is separate from pull-request QA', async () => {
+  const workflow = await readFile(
+    new URL('../workflows/storybook-baselines.yml', import.meta.url),
+    'utf8',
+  );
+  const job = workflowJob(workflow, 'chromatic');
+
+  assert.match(workflow, /^  push:\n    branches:\n      - main$/m);
+  assert.match(workflow, /^  workflow_dispatch:$/m);
+  assert.doesNotMatch(workflow, /^  pull_request:/m);
+  assert.match(workflow, /^permissions:\n  contents: read$/m);
+
+  for (const path of [
+    '.github/actions/setup-dependencies/**',
+    '.github/workflows/storybook-baselines.yml',
+    '.nvmrc',
+    '.yarn/**',
+    '.yarnrc.yml',
+    'package.json',
+    'packages/breeze-ui/**',
+    'yarn.lock',
+  ]) {
+    assert.ok(workflow.includes(`      - '${path}'\n`), path);
+  }
+
+  assert.match(job, /^    if: github\.ref == 'refs\/heads\/main'$/m);
+  assert.match(job, /actions\/checkout@[a-f0-9]{40} # v\d+\.\d+\.\d+/);
+  assert.match(job, /fetch-depth: 0/);
+  assert.match(job, /uses: \.\/\.github\/actions\/setup-dependencies/);
+  assert.match(job, /chromaui\/action@[a-f0-9]{40} # v\d+\.\d+\.\d+/);
+  assert.match(job, /workingDir: packages\/breeze-ui/);
+  assert.match(
+    job,
+    /projectToken: \$\{\{ secrets\.CHROMATIC_PROJECT_TOKEN \}\}/,
+  );
+  assert.match(job, /buildScriptName: deploy/);
+  assert.match(job, /autoAcceptChanges: main/);
+  assert.match(job, /exitOnceUploaded: true/);
+  assert.doesNotMatch(job, /\bskip\b|onlyChanged|continue-on-error/i);
+});
