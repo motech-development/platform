@@ -168,7 +168,44 @@ export function BreezeProvider({
           messages?.appearanceAutomatic ?? enGB.appearanceAutomatic,
         appearanceDark: messages?.appearanceDark ?? enGB.appearanceDark,
         appearanceLight: messages?.appearanceLight ?? enGB.appearanceLight,
+        attachmentDocument:
+          messages?.attachmentDocument ?? enGB.attachmentDocument,
+        attachmentMoreActions:
+          messages?.attachmentMoreActions ?? enGB.attachmentMoreActions,
+        attachmentOpen: messages?.attachmentOpen ?? enGB.attachmentOpen,
+        attachmentPhoto: messages?.attachmentPhoto ?? enGB.attachmentPhoto,
         close: messages?.close ?? enGB.close,
+        fileDropZoneAcceptedTypes:
+          messages?.fileDropZoneAcceptedTypes ?? enGB.fileDropZoneAcceptedTypes,
+        fileDropZoneAddedMany:
+          messages?.fileDropZoneAddedMany ?? enGB.fileDropZoneAddedMany,
+        fileDropZoneAddedOne:
+          messages?.fileDropZoneAddedOne ?? enGB.fileDropZoneAddedOne,
+        fileDropZoneAttachedCount:
+          messages?.fileDropZoneAttachedCount ?? enGB.fileDropZoneAttachedCount,
+        fileDropZoneChooseFiles:
+          messages?.fileDropZoneChooseFiles ?? enGB.fileDropZoneChooseFiles,
+        fileDropZoneCountRejectedMany:
+          messages?.fileDropZoneCountRejectedMany ??
+          enGB.fileDropZoneCountRejectedMany,
+        fileDropZoneCountRejectedOne:
+          messages?.fileDropZoneCountRejectedOne ??
+          enGB.fileDropZoneCountRejectedOne,
+        fileDropZoneDropInstructions:
+          messages?.fileDropZoneDropInstructions ??
+          enGB.fileDropZoneDropInstructions,
+        fileDropZoneMaximumFileSize:
+          messages?.fileDropZoneMaximumFileSize ??
+          enGB.fileDropZoneMaximumFileSize,
+        fileDropZoneNoFilesAdded:
+          messages?.fileDropZoneNoFilesAdded ?? enGB.fileDropZoneNoFilesAdded,
+        fileDropZoneReleaseInstructions:
+          messages?.fileDropZoneReleaseInstructions ??
+          enGB.fileDropZoneReleaseInstructions,
+        fileDropZoneSizeRejected:
+          messages?.fileDropZoneSizeRejected ?? enGB.fileDropZoneSizeRejected,
+        fileDropZoneTypeRejected:
+          messages?.fileDropZoneTypeRejected ?? enGB.fileDropZoneTypeRejected,
         loading: messages?.loading ?? enGB.loading,
         noItemsToDisplay: messages?.noItemsToDisplay ?? enGB.noItemsToDisplay,
         primaryNavigation:
