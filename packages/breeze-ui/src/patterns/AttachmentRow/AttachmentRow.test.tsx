@@ -12,6 +12,20 @@ import {
 expectTypeOf<AttachmentRowProps>().not.toHaveProperty('children');
 expectTypeOf<AttachmentRowProps>().not.toHaveProperty('className');
 expectTypeOf<AttachmentRowProps>().not.toHaveProperty('style');
+expectTypeOf<{
+  actions: AttachmentRowAction[];
+  fileType: 'document';
+  filename: string;
+  sizeBytes: number;
+  status: string;
+}>().not.toExtend<AttachmentRowProps>();
+expectTypeOf<{
+  fileType: 'document';
+  filename: string;
+  sizeBytes: number;
+  status: string;
+  thumbnailUrl: string;
+}>().not.toExtend<AttachmentRowProps>();
 
 describe('AttachmentRow', () => {
   it('shows a document thumbnail, file details, text status, and a direct open action', async () => {
@@ -32,7 +46,9 @@ describe('AttachmentRow', () => {
     expect(screen.getByText('fen-lane-garage-invoice.pdf')).toBeInTheDocument();
     expect(screen.getByText('84 kB')).toBeInTheDocument();
     expect(screen.getByText('Uploaded')).toBeInTheDocument();
-    await user.click(screen.getByRole('button', { name: 'Open' }));
+    await user.click(
+      screen.getByRole('button', { name: 'Open: fen-lane-garage-invoice.pdf' }),
+    );
 
     expect(onOpen).toHaveBeenCalledExactlyOnceWith();
   });
@@ -67,25 +83,89 @@ describe('AttachmentRow', () => {
       '/attachments/IMG_4471.jpg',
     );
 
-    await user.click(screen.getByRole('button', { name: 'More actions' }));
+    await user.click(
+      screen.getByRole('button', { name: 'More actions: IMG_4471.jpg' }),
+    );
     await user.click(await screen.findByRole('menuitem', { name: 'Download' }));
 
     expect(onAction).toHaveBeenCalledExactlyOnceWith(downloadAction);
   });
 
-  it('replaces unavailable attachment details with a busy loading row', () => {
+  it('replaces unavailable attachment details with a labelled loading progress bar', () => {
     renderBreeze(<AttachmentRow loading />);
 
-    const status = screen.getByRole('status');
-    const loadingLabel = screen.getByText('Loading');
-
-    expect(status).toHaveAttribute('aria-busy', 'true');
-    expect(status).toContainElement(loadingLabel);
-    expect(loadingLabel).toHaveClass('breeze:sr-only');
+    expect(screen.getByRole('progressbar', { name: 'Loading' })).toBeVisible();
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
     expect(screen.getAllByRole('progressbar', { hidden: true })).toHaveLength(
       3,
     );
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
+  });
+
+  it('announces status updates politely while keeping the status visible', () => {
+    const attachment = (status: string) => (
+      <BreezeProvider locale="en-GB">
+        <AttachmentRow
+          fileType="document"
+          filename="invoice.pdf"
+          sizeBytes={84_000}
+          status={status}
+        />
+      </BreezeProvider>
+    );
+    const { rerender } = render(attachment('Uploading'));
+    const status = screen.getByRole('status');
+
+    expect(status.tagName).toBe('OUTPUT');
+    expect(status).toHaveAttribute('aria-live', 'polite');
+    expect(status).toHaveTextContent('Uploading');
+
+    rerender(attachment('Uploaded'));
+
+    expect(status).toHaveTextContent('Uploaded');
+    expect(status).toBeVisible();
+  });
+
+  it('gives each attachment action button a file-specific accessible name', () => {
+    const actions = [{ id: 'download', label: 'Download' }];
+
+    renderBreeze(
+      <>
+        <AttachmentRow
+          actions={actions}
+          fileType="document"
+          filename="invoice.pdf"
+          onAction={() => {}}
+          onOpen={() => {}}
+          sizeBytes={84_000}
+          status="Uploaded"
+        />
+        <AttachmentRow
+          actions={actions}
+          fileType="photo"
+          filename="receipt.jpg"
+          onAction={() => {}}
+          onOpen={() => {}}
+          sizeBytes={84_000}
+          status="Uploaded"
+        />
+      </>,
+    );
+
+    expect(
+      screen.getByRole('button', { name: 'Open: invoice.pdf' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'More actions: invoice.pdf' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Open: receipt.jpg' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'More actions: receipt.jpg' }),
+    ).toBeInTheDocument();
+    expect(screen.getAllByText('Open')).toHaveLength(2);
+    expect(screen.getAllByText('More actions')).toHaveLength(2);
   });
 
   it('formats the size using the provider locale', () => {
@@ -102,6 +182,32 @@ describe('AttachmentRow', () => {
     expect(screen.getByText('Photo')).toBeInTheDocument();
     expect(screen.getByText('1,2 MB')).toBeInTheDocument();
     expect(container.querySelector('img')).not.toBeInTheDocument();
+  });
+
+  it('rounds a file size into the next unit when needed', () => {
+    renderBreeze(
+      <AttachmentRow
+        fileType="document"
+        filename="large-report.pdf"
+        sizeBytes={999_950}
+        status="Uploaded"
+      />,
+    );
+
+    expect(screen.getByText('1 MB')).toBeInTheDocument();
+  });
+
+  it('keeps a fractional byte size in the byte unit', () => {
+    renderBreeze(
+      <AttachmentRow
+        fileType="document"
+        filename="small-report.pdf"
+        sizeBytes={999.5}
+        status="Uploaded"
+      />,
+    );
+
+    expect(screen.getByText('1,000 byte')).toBeInTheDocument();
   });
 
   it('marks unoverridden labels with their default message language', () => {
@@ -121,10 +227,11 @@ describe('AttachmentRow', () => {
 
     expect(screen.getByText('Document')).toHaveAttribute('lang', 'en-GB');
     expect(
-      screen.getByRole('button', { name: 'Open' }).parentElement,
+      screen.getByRole('button', { name: 'Open: invoice.pdf' }).parentElement,
     ).toHaveAttribute('lang', 'en-GB');
     expect(
-      screen.getByRole('button', { name: 'More actions' }).parentElement,
+      screen.getByRole('button', { name: 'More actions: invoice.pdf' })
+        .parentElement,
     ).toHaveAttribute('lang', 'en-GB');
   });
 
@@ -162,10 +269,11 @@ describe('AttachmentRow', () => {
     expect(screen.getByText('Dokument')).toHaveAttribute('lang', 'de-DE');
     expect(screen.getByText('Foto')).toHaveAttribute('lang', 'de-DE');
     expect(
-      screen.getByRole('button', { name: 'Öffnen' }).parentElement,
+      screen.getByRole('button', { name: 'Öffnen: invoice.pdf' }).parentElement,
     ).toHaveAttribute('lang', 'de-DE');
     expect(
-      screen.getByRole('button', { name: 'Weitere Aktionen' }).parentElement,
+      screen.getByRole('button', { name: 'Weitere Aktionen: invoice.pdf' })
+        .parentElement,
     ).toHaveAttribute('lang', 'de-DE');
   });
 

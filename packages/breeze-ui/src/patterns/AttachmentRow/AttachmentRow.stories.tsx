@@ -57,15 +57,71 @@ export const Document: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await userEvent.click(canvas.getByRole('button', { name: 'More actions' }));
+    await userEvent.click(
+      canvas.getByRole('button', {
+        name: 'More actions: fen-lane-garage-invoice.pdf',
+      }),
+    );
     await userEvent.click(
       await within(document.body).findByRole('menuitem', { name: 'Download' }),
     );
     await expect(canvas.getByText('Download started')).toBeVisible();
-    await userEvent.click(canvas.getByRole('button', { name: 'Open' }));
+    await userEvent.click(
+      canvas.getByRole('button', {
+        name: 'Open: fen-lane-garage-invoice.pdf',
+      }),
+    );
     await expect(canvas.getByText('Opened')).toBeVisible();
   },
   render: () => <ActionableDocumentExample />,
+};
+
+/** Shows file actions wrapping below the details in a narrow container. */
+export const NarrowContainer: Story = {
+  args: {
+    actions,
+    fileType: 'document',
+    filename: 'fen-lane-garage-invoice.pdf',
+    onAction: () => {},
+    onOpen: () => {},
+    sizeBytes: 84_000,
+    status: 'Uploaded',
+  },
+  play: async ({ canvasElement }) => {
+    await document.fonts.ready;
+
+    const canvas = within(canvasElement);
+    const filename = canvas.getByText('fen-lane-garage-invoice.pdf');
+    const content = filename.parentElement;
+    const row = content?.parentElement;
+
+    if (!content || !row) {
+      throw new Error('The attachment row content was not rendered.');
+    }
+
+    const rowBounds = row.getBoundingClientRect();
+    const contentBounds = content.getBoundingClientRect();
+    const openBounds = canvas
+      .getByRole('button', {
+        name: 'Open: fen-lane-garage-invoice.pdf',
+      })
+      .getBoundingClientRect();
+    const menuBounds = canvas
+      .getByRole('button', {
+        name: 'More actions: fen-lane-garage-invoice.pdf',
+      })
+      .getBoundingClientRect();
+
+    await expect(openBounds.top).toBeGreaterThanOrEqual(contentBounds.bottom);
+    await expect(menuBounds.top).toBeGreaterThanOrEqual(contentBounds.bottom);
+    await expect(openBounds.right).toBeLessThanOrEqual(rowBounds.right);
+    await expect(menuBounds.right).toBeLessThanOrEqual(rowBounds.right);
+  },
+  render: () => (
+    <div style={{ inlineSize: 320 }}>
+      <ActionableDocumentExample />
+    </div>
+  ),
 };
 
 /** A photograph uses an image thumbnail when a URL is available. */

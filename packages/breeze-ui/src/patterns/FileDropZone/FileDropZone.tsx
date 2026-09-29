@@ -105,6 +105,10 @@ function acceptsFile(file: File, acceptedTypes: readonly string[]) {
   });
 }
 
+function isFileDrag(dataTransfer: DataTransfer) {
+  return Array.from(dataTransfer.types).includes('Files');
+}
+
 function formatFileSize(size: number, locale: string) {
   const units = [
     'byte',
@@ -113,26 +117,43 @@ function formatFileSize(size: number, locale: string) {
     'gigabyte',
     'terabyte',
   ] as const;
-  const unitIndex = Math.min(
+  let unitIndex = Math.min(
     Math.floor(Math.log10(Math.max(size, 1)) / 3),
     units.length - 1,
   );
+  let value = size / 1000 ** unitIndex;
+
+  if (
+    unitIndex > 0 &&
+    unitIndex < units.length - 1 &&
+    Math.round(value * 10) / 10 >= 1000
+  ) {
+    unitIndex += 1;
+    value /= 1000;
+  }
 
   return new Intl.NumberFormat(locale, {
     maximumFractionDigits: 1,
     style: 'unit',
     unit: units[unitIndex],
     unitDisplay: 'long',
-  }).format(size / 1000 ** unitIndex);
+  }).format(value);
 }
 
 function interpolateMessage(
   message: string,
-  values?: Readonly<Record<string, string | number>>,
+  values: Readonly<Record<string, string | number>> | undefined,
+  locale: string,
 ) {
-  return message.replace(/{(\w+)}/g, (placeholder, key: string) =>
-    values?.[key] === undefined ? placeholder : String(values[key]),
-  );
+  return message.replace(/{(\w+)}/g, (placeholder, key: string) => {
+    const value = values?.[key];
+
+    if (value === undefined) return placeholder;
+
+    return typeof value === 'number'
+      ? new Intl.NumberFormat(locale).format(value)
+      : value;
+  });
 }
 
 /** Props for a file chooser that accepts files by drop or picker. */
@@ -317,13 +338,22 @@ export function FileDropZone({
     input.value = '';
   }
 
-  function handleDrop(event: DragEvent<HTMLDivElement>) {
+  function handleDrop(event: DragEvent<HTMLElement>) {
+    if (!isFileDrag(event.dataTransfer)) {
+      setIsDragging(false);
+      return;
+    }
+
     event.preventDefault();
     setIsDragging(false);
     addFiles(event.dataTransfer.files);
   }
 
-  function handleDragLeave(event: DragEvent<HTMLDivElement>) {
+  function handleDragEnter(event: DragEvent<HTMLElement>) {
+    setIsDragging(isFileDrag(event.dataTransfer));
+  }
+
+  function handleDragLeave(event: DragEvent<HTMLElement>) {
     const nextTarget = event.relatedTarget;
 
     if (
@@ -344,14 +374,18 @@ export function FileDropZone({
         variants.base.dropZone,
         variants.variant.dropZone[variant],
       ].join(' ')}
-      onDragEnter={() => setIsDragging(true)}
+      onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
       onDragOver={(event) => {
+        if (!isFileDrag(event.dataTransfer)) {
+          setIsDragging(false);
+          return;
+        }
+
         event.preventDefault();
         setIsDragging(true);
       }}
       onDrop={handleDrop}
-      role="group"
     >
       <Typography element="p" id={labelId} variant="title">
         {label}
@@ -369,6 +403,7 @@ export function FileDropZone({
               {interpolateMessage(
                 messages[message.key],
                 'values' in message ? message.values : undefined,
+                getMessageLocale(message.key),
               )}
             </span>
           </Fragment>
@@ -401,6 +436,7 @@ export function FileDropZone({
               {interpolateMessage(
                 messages[message.key],
                 'values' in message ? message.values : undefined,
+                getMessageLocale(message.key),
               )}
             </span>
           </Fragment>
