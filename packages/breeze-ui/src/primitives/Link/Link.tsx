@@ -1,6 +1,7 @@
-import type { AnchorHTMLAttributes, MouseEvent, ReactNode, Ref } from 'react';
+import type { AnchorHTMLAttributes, ReactNode, Ref } from 'react';
 import type { ViewTransitionType } from '../../motion/view-transitions';
 import { useBreezeContext } from '../../provider/BreezeContext';
+import routeAnchorClick from './link-routing';
 
 const variants = {
   base: {
@@ -56,49 +57,6 @@ export interface LinkProps {
   variant?: LinkVariant;
 }
 
-function shouldRoute(
-  event: MouseEvent<HTMLAnchorElement>,
-  download: LinkProps['download'],
-): boolean {
-  if (
-    event.defaultPrevented ||
-    event.button !== 0 ||
-    event.altKey ||
-    event.ctrlKey ||
-    event.metaKey ||
-    event.shiftKey ||
-    (download !== undefined && download !== false)
-  ) {
-    return false;
-  }
-
-  const anchor = event.currentTarget;
-  const explicitTarget = anchor.getAttribute('target');
-  const documentTarget = document
-    .querySelector('base[target]')
-    ?.getAttribute('target');
-  const effectiveTarget = explicitTarget || documentTarget || '';
-
-  if (
-    effectiveTarget.toLowerCase() !== '' &&
-    effectiveTarget.toLowerCase() !== '_self'
-  ) {
-    return false;
-  }
-
-  const destination = new URL(anchor.href, document.baseURI);
-  if (
-    (destination.protocol !== 'http:' && destination.protocol !== 'https:') ||
-    destination.origin !== window.location.origin ||
-    destination.hash !== '' ||
-    anchor.getAttribute('href')?.includes('#')
-  ) {
-    return false;
-  }
-
-  return true;
-}
-
 /** Navigates to a resource while preserving native anchor behavior. */
 export function Link({
   'aria-current': ariaCurrent,
@@ -133,12 +91,9 @@ export function Link({
       hrefLang={hrefLang}
       id={id}
       lang={lang}
-      onClick={(event) => {
-        if (router === undefined || !shouldRoute(event, download)) return;
-
-        event.preventDefault();
-        router.navigate(href, { transitionTypes });
-      }}
+      onClick={(event) =>
+        routeAnchorClick(event, href, router, transitionTypes, download)
+      }
       ref={ref}
       rel={rel}
       target={target}
