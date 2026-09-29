@@ -25,6 +25,7 @@ const transitionTypeSet = new Set<string>(transitionTypes);
 const participantNamePattern = /^[a-zA-Z_][a-zA-Z0-9_-]*$/;
 const reservedParticipantNames = new Set([
   'auto',
+  'default',
   'inherit',
   'initial',
   'none',
@@ -36,6 +37,7 @@ const reservedParticipantNames = new Set([
   'breeze-navmark',
   'breeze-topbar',
   'breeze-topnav',
+  'match-element',
 ]);
 const singletonParticipants = {
   botnav: { name: 'breeze-botnav', types: ['nav', 'mode'] },
@@ -103,7 +105,7 @@ function isEligibleParticipant(element: HTMLElement, document: Document) {
   if (
     !element.isConnected ||
     element.matches('[data-breeze-overlay]') ||
-    element.closest('[hidden], [inert]') !== null ||
+    element.closest('[hidden]') !== null ||
     element.getClientRects().length === 0
   ) {
     return false;
@@ -278,13 +280,10 @@ export function useViewTransitionParticipant<
     (element) => {
       if (element === null) return undefined;
 
-      const previousName = element.getAttribute('data-breeze-transition-name');
-      const previousTypes = element.getAttribute(
-        'data-breeze-transition-types',
-      );
-      const previousEnabled = element.getAttribute(
-        'data-breeze-transition-enabled',
-      );
+      const { dataset } = element;
+      const previousName = dataset.breezeTransitionName;
+      const previousTypes = dataset.breezeTransitionTypes;
+      const previousEnabled = dataset.breezeTransitionEnabled;
       const previousVariable = element.style.getPropertyValue(
         '--breeze-transition-name',
       );
@@ -292,29 +291,26 @@ export function useViewTransitionParticipant<
         '--breeze-transition-name',
       );
 
-      element.setAttribute('data-breeze-transition-name', name);
-      element.setAttribute('data-breeze-transition-types', typesAttribute);
-      element.setAttribute('data-breeze-transition-enabled', String(enabled));
+      dataset.breezeTransitionName = name;
+      dataset.breezeTransitionTypes = typesAttribute;
+      dataset.breezeTransitionEnabled = String(enabled);
       element.style.setProperty('--breeze-transition-name', name);
 
       return () => {
-        if (previousName === null) {
-          element.removeAttribute('data-breeze-transition-name');
+        if (previousName === undefined) {
+          delete dataset.breezeTransitionName;
         } else {
-          element.setAttribute('data-breeze-transition-name', previousName);
+          dataset.breezeTransitionName = previousName;
         }
-        if (previousTypes === null) {
-          element.removeAttribute('data-breeze-transition-types');
+        if (previousTypes === undefined) {
+          delete dataset.breezeTransitionTypes;
         } else {
-          element.setAttribute('data-breeze-transition-types', previousTypes);
+          dataset.breezeTransitionTypes = previousTypes;
         }
-        if (previousEnabled === null) {
-          element.removeAttribute('data-breeze-transition-enabled');
+        if (previousEnabled === undefined) {
+          delete dataset.breezeTransitionEnabled;
         } else {
-          element.setAttribute(
-            'data-breeze-transition-enabled',
-            previousEnabled,
-          );
+          dataset.breezeTransitionEnabled = previousEnabled;
         }
         if (previousVariable === '') {
           element.style.removeProperty('--breeze-transition-name');
