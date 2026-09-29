@@ -6,6 +6,7 @@ import { Stack } from '../../primitives/Stack/Stack';
 import { TextField } from '../../primitives/TextField/TextField';
 import { FormActions, type FormActionsProps } from './FormActions';
 
+/** Demonstrates form actions with visible cancel and submit outcomes. */
 function FormActionsExample({
   align = 'end',
 }: Readonly<Pick<FormActionsProps, 'align'>>) {

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { expect, userEvent, within } from 'storybook/test';
 import { StatePanel } from './StatePanel';
 
+/** Demonstrates an empty state with an action that creates a category. */
 function EmptyActionExample() {
   const [created, setCreated] = useState(false);
 
@@ -23,6 +24,7 @@ function EmptyActionExample() {
   );
 }
 
+/** Demonstrates error recovery and its resulting available state. */
 function ErrorRecoveryExample() {
   const [recovered, setRecovered] = useState(false);
 

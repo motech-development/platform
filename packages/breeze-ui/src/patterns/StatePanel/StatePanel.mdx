@@ -3,13 +3,16 @@ import * as Stories from './StatePanel.stories';
 
 <Meta
   of={Stories}
-  summary="Presents an empty or error state with one optional working action."
+  summary="Presents an empty or error state as a labelled section with one optional action."
 />
 
 # StatePanel
 
 `StatePanel` presents application-owned copy for an empty or failed content
-state. Empty states announce a polite status; errors announce an alert.
+state as a labelled section.
+
+The section is not a live region. Applications own any dynamic announcements
+needed when content changes.
 
 When `StatePanel` owns the page's primary action, omit that action from the page
 header so the page does not show duplicate calls to action.
