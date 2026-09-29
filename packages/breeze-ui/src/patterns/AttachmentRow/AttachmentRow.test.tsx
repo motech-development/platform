@@ -76,8 +76,15 @@ describe('AttachmentRow', () => {
   it('replaces unavailable attachment details with a busy loading row', () => {
     renderBreeze(<AttachmentRow loading />);
 
-    expect(screen.getByText('Loading')).toBeInTheDocument();
-    expect(screen.getByRole('status')).toHaveAttribute('aria-busy', 'true');
+    const status = screen.getByRole('status');
+    const loadingLabel = screen.getByText('Loading');
+
+    expect(status).toHaveAttribute('aria-busy', 'true');
+    expect(status).toContainElement(loadingLabel);
+    expect(loadingLabel).toHaveClass('breeze:sr-only');
+    expect(screen.getAllByRole('progressbar', { hidden: true })).toHaveLength(
+      3,
+    );
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
   });
 
