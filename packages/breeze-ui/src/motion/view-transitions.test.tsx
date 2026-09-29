@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import type { RefCallback } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import renderBreeze from '../../test/render';
 import { Drawer } from '../primitives/Drawer/Drawer';
@@ -215,16 +216,18 @@ describe('view transition API', () => {
 
 function ParticipantProbe({
   hidden = false,
+  inert = false,
   name,
   types,
 }: Readonly<{
   hidden?: boolean;
+  inert?: boolean;
   name: string;
   types: readonly ('nav' | 'mode' | 'list' | 'item' | 'expand')[];
 }>) {
   const ref = useViewTransitionParticipant({ name, types });
 
-  return <main data-testid={name} hidden={hidden} ref={ref} />;
+  return <main data-testid={name} hidden={hidden} inert={inert} ref={ref} />;
 }
 
 describe('useViewTransitionParticipant', () => {
@@ -358,6 +361,78 @@ describe('useViewTransitionParticipant', () => {
     expect(() =>
       renderBreeze(<ParticipantProbe name="root" types={['nav']} />),
     ).toThrow(/reserved by the browser or Breeze/);
+  });
+
+  it.each(['default', 'DEFAULT', 'match-element', 'MATCH-ELEMENT'])(
+    'rejects reserved participant name %s case-insensitively',
+    (name) => {
+      expect(() =>
+        renderBreeze(<ParticipantProbe name={name} types={['nav']} />),
+      ).toThrow(/reserved by the browser or Breeze/);
+    },
+  );
+
+  it('reports duplicate names when one visible participant is inert', async () => {
+    const error = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined);
+    const start = vi.fn((options: StartViewTransitionOptions) =>
+      transition(() => runOptionsUpdate(options)),
+    );
+    renderBreeze(
+      <>
+        <ParticipantProbe name="inert-duplicate" types={['list']} />
+        <ParticipantProbe inert name="inert-duplicate" types={['list']} />
+      </>,
+    );
+    const participants = screen.getAllByTestId('inert-duplicate');
+    expect(participants[1]).toHaveAttribute('inert');
+    participants.forEach((element) => {
+      Object.defineProperty(element, 'getClientRects', {
+        configurable: true,
+        value: () => [{ height: 1, width: 1 }],
+      });
+    });
+    installViewTransitionSupport(start);
+
+    await startViewTransition(() => undefined, ['list']);
+
+    expect(error).toHaveBeenCalledTimes(2);
+    expect(error).toHaveBeenNthCalledWith(
+      1,
+      expect.stringContaining('in the old snapshot'),
+    );
+    expect(error).toHaveBeenNthCalledWith(
+      2,
+      expect.stringContaining('in the new snapshot'),
+    );
+  });
+
+  it('restores absent, empty and existing participant dataset values', () => {
+    let participantRef: RefCallback<HTMLElement> | undefined;
+    function CaptureParticipantRef() {
+      participantRef = useViewTransitionParticipant({
+        name: 'replacement-name',
+        types: ['nav'],
+      });
+      return null;
+    }
+
+    renderBreeze(<CaptureParticipantRef />);
+    const element = document.createElement('span');
+    element.dataset.breezeTransitionName = '';
+    element.dataset.breezeTransitionTypes = 'list';
+
+    const cleanup = participantRef?.(element);
+
+    expect(element.dataset.breezeTransitionName).toBe('replacement-name');
+    expect(element.dataset.breezeTransitionTypes).toBe('nav');
+    expect(element.dataset.breezeTransitionEnabled).toBe('true');
+    if (typeof cleanup === 'function') cleanup();
+
+    expect(element.dataset.breezeTransitionName).toBe('');
+    expect(element.dataset.breezeTransitionTypes).toBe('list');
+    expect(element.dataset.breezeTransitionEnabled).toBeUndefined();
   });
 
   it('ignores hidden responsive copies when checking eligible names', async () => {
