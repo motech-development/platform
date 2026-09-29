@@ -3,6 +3,7 @@ import type { IconName } from '../../primitives/Icon/Icon';
 import { Icon } from '../../primitives/Icon/Icon';
 import { Menu } from '../../primitives/Menu/Menu';
 import { Skeleton } from '../../primitives/Skeleton/Skeleton';
+import { VisuallyHidden } from '../../primitives/VisuallyHidden/VisuallyHidden';
 import { useBreezeContext } from '../../provider/BreezeContext';
 
 const variants = {
@@ -19,9 +20,6 @@ const variants = {
       'breeze:block breeze:min-inline-size-0 breeze:overflow-hidden breeze:text-ellipsis breeze:whitespace-nowrap breeze:text-breeze-sm breeze:font-medium breeze:leading-breeze-snug breeze:text-breeze-ink',
     loadingContent:
       'breeze:flex breeze:min-inline-size-0 breeze:flex-1 breeze:flex-col breeze:gap-breeze-2',
-    loadingDetails: 'breeze:flex breeze:items-center breeze:gap-breeze-2',
-    loadingStatus:
-      'breeze:text-breeze-xs breeze:leading-breeze-snug breeze:text-breeze-ink-3',
     photoPlaceholder: 'breeze:text-breeze-ink-3',
     row: 'breeze:box-border breeze:flex breeze:min-block-breeze-row breeze:min-inline-size-0 breeze:items-center breeze:gap-breeze-3 breeze:rounded-breeze-panel breeze:border breeze:border-solid breeze:border-breeze-line breeze:bg-breeze-raised breeze:ps-breeze-3 breeze:pe-breeze-3',
     thumbnail:
@@ -196,12 +194,10 @@ function AttachmentRowSkeleton({
       </span>
       <div className={variants.base.loadingContent}>
         <Skeleton blockSize="1lh" inlineSize="min(100%, 14em)" />
-        <div className={variants.base.loadingDetails}>
-          <Skeleton blockSize="1lh" inlineSize="min(100%, 10em)" />
-          <span className={variants.base.loadingStatus} lang={loadingLanguage}>
-            {loadingLabel}
-          </span>
-        </div>
+        <Skeleton blockSize="1lh" inlineSize="min(100%, 10em)" />
+        <span lang={loadingLanguage}>
+          <VisuallyHidden>{loadingLabel}</VisuallyHidden>
+        </span>
       </div>
     </div>
   );
