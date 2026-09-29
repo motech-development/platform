@@ -588,13 +588,13 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">1/32 prop type error</a><a class="filter-pill info" data-k="infos" href="#filter-infos">3/32 infos</a><span class="filter-pill ok" aria-disabled="true">128 stories ok</span><a class="filter-pill ok" data-k="docs" href="#filter-docs">34 docs ok</a></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">2/34 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">4/34 infos</a><span class="filter-pill ok" aria-disabled="true">133 stories ok</span><a class="filter-pill ok" data-k="docs" href="#filter-docs">36 docs ok</a></div>
   </div>
 </header>
 <main>
   <div class="wrap">
     <div class="note ok" style="margin-bottom: 16px;">
-              Using <code>react-docgen-typescript</code>. Generation took <strong>2.2s</strong>.
+              Using <code>react-docgen-typescript</code>. Generation took <strong>2.3s</strong>.
             </div>
     <h2 class="section-title">Components</h2>
     <div class="grid" role="list">
@@ -888,7 +888,7 @@ Set `loading` to preserve the badge shape while its status text is unavailable.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> BreezeProvider</h2>
       <div class="badges">
-        <label for="c-2-foundation-breezeprovider-props" class="badge ok as-toggle">8 prop types</label>
+        <label for="c-2-foundation-breezeprovider-props" class="badge ok as-toggle">9 prop types</label>
         
         <label for="c-2-foundation-breezeprovider-stories" class="badge ok as-toggle">2 stories</label>
         <label for="c-2-foundation-breezeprovider-docs" class="badge ok as-toggle">1 doc</label>
@@ -917,7 +917,7 @@ Set `loading` to preserve the badge shape while its status text is unavailable.
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
-              <span class="badge ok">8 prop types</span>
+              <span class="badge ok">9 prop types</span>
             </div>
             <pre><code>Component: src/provider/BreezeProvider.tsx::BreezeProvider</code></pre>
             <pre><code>Props:</code></pre>
@@ -959,6 +959,11 @@ onAppearanceChange?: ((appearance: Appearance) =&gt; void) | ((appearance: Appea
  * The container must belong to the same document as the overlay triggers.
  */
 portalContainer?: HTMLElement
+
+/**
+ * Optional same-document router for links that need application navigation.
+ */
+router?: BreezeRouter
 
 /**
  * Maximum number of visible confirmations; additional messages wait in FIFO order.
@@ -1090,6 +1095,18 @@ The provider never reads or writes durable browser storage. The application deci
 The provider creates and removes its own host inside that container. The host carries the Breeze root marker, locale and text direction so overlays retain scoped styling and language outside the provider&#39;s normal content tree.
 
 `portalContainer` and every overlay trigger must belong to the current runtime `Document` and its light DOM. Cross-document and shadow-root portals are unsupported because React Aria positions and manages overlays against the runtime document.
+
+## Client-side navigation
+
+Set `router` when the application has a same-document router. `Link` sends qualifying same-origin link activations to `router.navigate`, together with the link&#39;s `transitionTypes`. The router owns the route update and can opt into browser view transitions; see &lt;a href=&quot;./?path=/docs/guides-04-motion--docs&quot; target=&quot;_top&quot;&gt;Motion&lt;/a&gt;.
+
+```tsx
+&lt;BreezeProvider locale=&quot;en-GB&quot; router={router}&gt;
+  &lt;App /&gt;
+&lt;/BreezeProvider&gt;
+```
+
+The `transitionTypes` option defaults to an empty list. A `navigate` function that accepts only `href` can ignore the second argument. External destinations, downloads, alternate targets, modified clicks and fragment links retain native anchor behavior.
 
 ## Confirmations
 
@@ -4055,15 +4072,266 @@ Loading belongs to the items inside the row. Compose loading-capable children or
   no-story-error
   no-doc-error"
   role="listitem"
+  aria-label="Link">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> Link</h2>
+      <div class="badges">
+        <label for="c-17-navigation-link-props" class="badge ok as-toggle">17 prop types</label>
+        
+        <label for="c-17-navigation-link-stories" class="badge ok as-toggle">4 stories</label>
+        <label for="c-17-navigation-link-docs" class="badge ok as-toggle">1 doc</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/primitives/Link/Link.stories.tsx">navigation-link · ./src/primitives/Link/Link.stories.tsx</div>
+    
+    <div class="hint">Navigates to a resource while preserving native anchor behavior.</div>
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-17-navigation-link-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-17-navigation-link-docs" class="tg tg-docs" type="checkbox" hidden />
+  
+  <input id="c-17-navigation-link-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
+              <span class="badge ok">17 prop types</span>
+            </div>
+            <pre><code>Component: src/primitives/Link/Link.tsx::Link</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>/**
+ * Identifies the current page or location when this link represents it.
+ */
+aria-current?: &quot;date&quot; | &quot;false&quot; | &quot;location&quot; | &quot;page&quot; | &quot;step&quot; | &quot;time&quot; | &quot;true&quot; | boolean
+
+/**
+ * Identifies additional elements that describe the link.
+ */
+aria-describedby?: string
+
+/**
+ * Provides an accessible name when it differs from the visible content.
+ */
+aria-label?: string
+
+/**
+ * Identifies elements that provide the link&#39;s accessible name.
+ */
+aria-labelledby?: string
+
+/**
+ * Visible link content.
+ */
+children: ReactNode
+
+/**
+ * Downloads the destination instead of navigating when the browser allows it.
+ */
+download?: string | boolean
+
+/**
+ * The link destination.
+ */
+href: string
+
+/**
+ * Language of the linked resource.
+ */
+hrefLang?: string
+
+/**
+ * Sets the rendered link&#39;s HTML `id`.
+ */
+id?: string
+
+/**
+ * Language for the link content.
+ */
+lang?: string
+
+/**
+ * Provides access to the rendered anchor element.
+ */
+ref?: Ref&lt;HTMLAnchorElement&gt;
+
+/**
+ * Relation between the current page and the destination.
+ */
+rel?: string
+
+/**
+ * Names the browsing context for the destination.
+ */
+target?: HTMLAttributeAnchorTarget
+
+/**
+ * Supplies advisory information about the destination.
+ */
+title?: string
+
+/**
+ * Transition types offered to the configured router for this navigation.
+ */
+transitionTypes?: readonly ViewTransitionType[] = []
+
+/**
+ * MIME type of the linked resource.
+ */
+type?: string
+
+/**
+ * Selects the link&#39;s visual treatment. Defaults to `default`.
+ */
+variant?: &quot;default&quot; | &quot;subtle&quot; = default</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Link } from "@motech-development/breeze-ui";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A same-document link with the default brand treatment.</div>
+              <pre><code>const Default = () =&gt; &lt;Link href=&quot;/accounts/activity&quot;&gt;View account activity&lt;/Link&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Subtle</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A lower-emphasis link for supporting destinations.</div>
+              <pre><code>const Subtle = () =&gt; &lt;Link href=&quot;/accounts/activity&quot; variant=&quot;subtle&quot;&gt;View details&lt;/Link&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Treatments</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Both closed visual treatments.</div>
+              <pre><code>const Treatments = () =&gt; (
+  &lt;Inline gap={4}&gt;
+    {variants.map((variant) =&gt; (
+      &lt;Link href=&quot;/accounts/activity&quot; key={variant} variant={variant}&gt;
+        {`${variant} link`}
+      &lt;/Link&gt;
+    ))}
+  &lt;/Inline&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Router Navigation</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A router receives only the caller&#39;s opt-in transition types.</div>
+              <pre><code>const RouterNavigation = () =&gt; &lt;RouterExample /&gt;;</code></pre>
+            </div>
+        </div>
+    
+        <div class="panel panel-docs">
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Docs</span>
+                <span class="badge ok">doc ok</span>
+              </div>
+              <div class="hint">./src/primitives/Link/Link.mdx</div>
+              <div>Navigates to a resource with native anchor behavior and optional router support.</div>
+              <div class="mdx-content"><pre><code>import { ArgTypes, Canvas, Meta } from &#39;@storybook/addon-docs/blocks&#39;;
+import * as Stories from &#39;./Link.stories&#39;;
+
+&lt;Meta
+  of={Stories}
+  summary=&quot;Navigates to a resource with native anchor behavior and optional router support.&quot;
+/&gt;
+
+# Link
+
+`Link` renders a native anchor with Breeze&#39;s link styling. Its `href` remains the destination, so browser navigation, keyboard access and open-in-new-tab behavior continue to work.
+
+Without a configured router, activating the link uses the browser&#39;s native navigation. With a router, Breeze intercepts only qualifying same-document navigations.
+
+&lt;Canvas of={Stories.Default} /&gt;
+
+## Router navigation
+
+Pass a same-document router to `BreezeProvider` when links should update application state without loading another document. `Link` sends the destination and its optional `transitionTypes` to the router. The router decides whether and when to use a browser view transition; see &lt;a href=&quot;./?path=/docs/guides-04-motion--docs&quot; target=&quot;_top&quot;&gt;Motion&lt;/a&gt;.
+
+```tsx
+&lt;BreezeProvider locale=&quot;en-GB&quot; router={router}&gt;
+  &lt;Link href=&quot;/accounts/transactions&quot; transitionTypes={[&#39;nav&#39;, &#39;list&#39;]}&gt;
+    Transactions
+  &lt;/Link&gt;
+&lt;/BreezeProvider&gt;
+```
+
+&lt;Canvas of={Stories.RouterNavigation} /&gt;
+
+`transitionTypes` defaults to an empty list. Breeze passes the option to `router.navigate(href, { transitionTypes })`; an existing one-argument `navigate(href)` adapter can ignore the extra argument.
+
+## Native anchor behavior
+
+The router handles only an unmodified primary click on a same-origin HTTP or HTTPS link with no fragment, download, or alternate browsing target. External links, downloads, alternate targets, modified clicks and fragment links keep the browser&#39;s native behavior.
+
+Use `variant=&quot;subtle&quot;` for a lower-emphasis link. The default variant uses the Breeze brand treatment.
+
+## Accessibility
+
+The link&#39;s visible content is its accessible name by default. Use `aria-label` or `aria-labelledby` when that content does not describe the destination, and `aria-current` when the link represents the current page or location.
+
+## API
+
+&lt;ArgTypes /&gt;
+</code></pre></div>
+            </div>
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  no-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
   aria-label="Menu">
   <div class="head">
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Menu</h2>
       <div class="badges">
-        <label for="c-17-overlays-menu-props" class="badge ok as-toggle">9 prop types</label>
+        <label for="c-18-overlays-menu-props" class="badge ok as-toggle">9 prop types</label>
         
-        <label for="c-17-overlays-menu-stories" class="badge ok as-toggle">3 stories</label>
-        <label for="c-17-overlays-menu-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-18-overlays-menu-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-18-overlays-menu-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -4076,10 +4344,10 @@ Loading belongs to the items inside the row. Compose loading-capable children or
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-17-overlays-menu-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-17-overlays-menu-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-18-overlays-menu-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-18-overlays-menu-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-17-overlays-menu-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-18-overlays-menu-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -4267,10 +4535,10 @@ focus to its trigger.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> NumberField</h2>
       <div class="badges">
-        <label for="c-18-forms-numberfield-props" class="badge ok as-toggle">21 prop types</label>
+        <label for="c-19-forms-numberfield-props" class="badge ok as-toggle">21 prop types</label>
         
-        <label for="c-18-forms-numberfield-stories" class="badge ok as-toggle">8 stories</label>
-        <label for="c-18-forms-numberfield-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-19-forms-numberfield-stories" class="badge ok as-toggle">8 stories</label>
+        <label for="c-19-forms-numberfield-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -4283,10 +4551,10 @@ focus to its trigger.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-18-forms-numberfield-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-18-forms-numberfield-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-19-forms-numberfield-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-19-forms-numberfield-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-18-forms-numberfield-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-19-forms-numberfield-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -4590,9 +4858,9 @@ input through `ref`.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> OverlaySurface</h2>
       <div class="badges">
-        <label for="c-19-foundations-overlay-stack-props" class="badge ok as-toggle">9 prop types</label>
-        <label for="c-19-foundations-overlay-stack-info" class="badge info as-toggle">1 info</label>
-        <label for="c-19-foundations-overlay-stack-stories" class="badge ok as-toggle">4 stories</label>
+        <label for="c-20-foundations-overlay-stack-props" class="badge ok as-toggle">9 prop types</label>
+        <label for="c-20-foundations-overlay-stack-info" class="badge info as-toggle">1 info</label>
+        <label for="c-20-foundations-overlay-stack-stories" class="badge ok as-toggle">4 stories</label>
         
         
       </div>
@@ -4605,11 +4873,11 @@ input through `ref`.
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-19-foundations-overlay-stack-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-19-foundations-overlay-stack-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-20-foundations-overlay-stack-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-20-foundations-overlay-stack-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
-  <input id="c-19-foundations-overlay-stack-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-20-foundations-overlay-stack-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -4752,10 +5020,10 @@ trigger: string</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Popover</h2>
       <div class="badges">
-        <label for="c-20-overlays-popover-props" class="badge ok as-toggle">8 prop types</label>
+        <label for="c-21-overlays-popover-props" class="badge ok as-toggle">8 prop types</label>
         
-        <label for="c-20-overlays-popover-stories" class="badge ok as-toggle">1 story</label>
-        <label for="c-20-overlays-popover-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-21-overlays-popover-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-21-overlays-popover-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -4768,10 +5036,10 @@ trigger: string</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-20-overlays-popover-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-20-overlays-popover-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-21-overlays-popover-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-21-overlays-popover-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-20-overlays-popover-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-21-overlays-popover-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -4926,10 +5194,10 @@ Enter and exit motion respects reduced-motion preferences. A closing surface imm
     <div class="title">
       <h2><span class="status-dot dot-err"></span> RowList as ComponentType&lt;RowListProps&lt;unknown&gt;&gt;</h2>
       <div class="badges">
-        <label for="c-21-collections-rowlist-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-21-collections-rowlist-info" class="badge info as-toggle">1 info</label>
-        <label for="c-21-collections-rowlist-stories" class="badge ok as-toggle">6 stories</label>
-        <label for="c-21-collections-rowlist-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-22-collections-rowlist-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-22-collections-rowlist-info" class="badge info as-toggle">1 info</label>
+        <label for="c-22-collections-rowlist-stories" class="badge ok as-toggle">6 stories</label>
+        <label for="c-22-collections-rowlist-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -4940,10 +5208,10 @@ Enter and exit motion respects reduced-motion preferences. A closing surface imm
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-21-collections-rowlist-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-21-collections-rowlist-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-21-collections-rowlist-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-21-collections-rowlist-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-22-collections-rowlist-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-22-collections-rowlist-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-22-collections-rowlist-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-22-collections-rowlist-docs" class="tg tg-docs" type="checkbox" hidden />
   
   
 
@@ -5475,10 +5743,10 @@ without re-announcing existing rows.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Select</h2>
       <div class="badges">
-        <label for="c-22-forms-select-props" class="badge ok as-toggle">18 prop types</label>
+        <label for="c-23-forms-select-props" class="badge ok as-toggle">18 prop types</label>
         
-        <label for="c-22-forms-select-stories" class="badge ok as-toggle">6 stories</label>
-        <label for="c-22-forms-select-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-23-forms-select-stories" class="badge ok as-toggle">6 stories</label>
+        <label for="c-23-forms-select-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -5491,10 +5759,10 @@ without re-announcing existing rows.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-22-forms-select-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-22-forms-select-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-23-forms-select-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-23-forms-select-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-22-forms-select-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-23-forms-select-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -5774,10 +6042,10 @@ with the field. Keyboard navigation and focus management are built in.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Separator</h2>
       <div class="badges">
-        <label for="c-23-content-separator-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-24-content-separator-props" class="badge ok as-toggle">1 prop type</label>
         
-        <label for="c-23-content-separator-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-23-content-separator-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-24-content-separator-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-24-content-separator-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -5790,10 +6058,10 @@ with the field. Keyboard navigation and focus management are built in.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-23-content-separator-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-23-content-separator-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-24-content-separator-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-24-content-separator-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-23-content-separator-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-24-content-separator-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -5898,10 +6166,10 @@ The component exposes `role=&quot;separator&quot;` and the selected orientation.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Skeleton</h2>
       <div class="badges">
-        <label for="c-24-content-skeleton-props" class="badge ok as-toggle">4 prop types</label>
+        <label for="c-25-content-skeleton-props" class="badge ok as-toggle">4 prop types</label>
         
-        <label for="c-24-content-skeleton-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-24-content-skeleton-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-25-content-skeleton-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-25-content-skeleton-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -5914,10 +6182,10 @@ The component exposes `role=&quot;separator&quot;` and the selected orientation.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-24-content-skeleton-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-24-content-skeleton-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-25-content-skeleton-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-25-content-skeleton-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-24-content-skeleton-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-25-content-skeleton-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -6042,10 +6310,10 @@ Supply `label` when the skeleton owns the loading announcement. Omit it when a p
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Stack</h2>
       <div class="badges">
-        <label for="c-25-layout-stack-props" class="badge ok as-toggle">5 prop types</label>
+        <label for="c-26-layout-stack-props" class="badge ok as-toggle">5 prop types</label>
         
-        <label for="c-25-layout-stack-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-25-layout-stack-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-26-layout-stack-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-26-layout-stack-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -6058,10 +6326,10 @@ Supply `label` when the skeleton owns the loading announcement. Omit it when a p
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-25-layout-stack-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-25-layout-stack-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-26-layout-stack-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-26-layout-stack-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-25-layout-stack-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-26-layout-stack-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -6199,10 +6467,10 @@ Loading belongs to the items inside the stack. Compose loading-capable children 
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> TextField</h2>
       <div class="badges">
-        <label for="c-26-forms-textfield-props" class="badge ok as-toggle">18 prop types</label>
+        <label for="c-27-forms-textfield-props" class="badge ok as-toggle">18 prop types</label>
         
-        <label for="c-26-forms-textfield-stories" class="badge ok as-toggle">8 stories</label>
-        <label for="c-26-forms-textfield-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-27-forms-textfield-stories" class="badge ok as-toggle">8 stories</label>
+        <label for="c-27-forms-textfield-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -6215,10 +6483,10 @@ Loading belongs to the items inside the stack. Compose loading-capable children 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-26-forms-textfield-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-26-forms-textfield-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-27-forms-textfield-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-27-forms-textfield-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-26-forms-textfield-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-27-forms-textfield-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -6498,10 +6766,10 @@ input through `ref`.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Toast</h2>
       <div class="badges">
-        <label for="c-27-feedback-toast-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-28-feedback-toast-props" class="badge ok as-toggle">1 prop type</label>
         
-        <label for="c-27-feedback-toast-stories" class="badge ok as-toggle">8 stories</label>
-        <label for="c-27-feedback-toast-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-28-feedback-toast-stories" class="badge ok as-toggle">8 stories</label>
+        <label for="c-28-feedback-toast-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -6514,10 +6782,10 @@ input through `ref`.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-27-feedback-toast-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-27-feedback-toast-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-28-feedback-toast-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-28-feedback-toast-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-27-feedback-toast-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-28-feedback-toast-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -6692,10 +6960,10 @@ The card stays 288px wide on desktop and mobile, aligned to the content gutter b
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Toggle</h2>
       <div class="badges">
-        <label for="c-28-actions-toggle-props" class="badge ok as-toggle">12 prop types</label>
+        <label for="c-29-actions-toggle-props" class="badge ok as-toggle">12 prop types</label>
         
-        <label for="c-28-actions-toggle-stories" class="badge ok as-toggle">6 stories</label>
-        <label for="c-28-actions-toggle-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-29-actions-toggle-stories" class="badge ok as-toggle">6 stories</label>
+        <label for="c-29-actions-toggle-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -6708,10 +6976,10 @@ The card stays 288px wide on desktop and mobile, aligned to the content gutter b
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-28-actions-toggle-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-28-actions-toggle-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-29-actions-toggle-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-29-actions-toggle-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-28-actions-toggle-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-29-actions-toggle-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -6944,10 +7212,10 @@ its pressed state and supports keyboard activation.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> ToggleGroup</h2>
       <div class="badges">
-        <label for="c-29-actions-togglegroup-props" class="badge ok as-toggle">11 prop types</label>
+        <label for="c-30-actions-togglegroup-props" class="badge ok as-toggle">11 prop types</label>
         
-        <label for="c-29-actions-togglegroup-stories" class="badge ok as-toggle">5 stories</label>
-        <label for="c-29-actions-togglegroup-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-30-actions-togglegroup-stories" class="badge ok as-toggle">5 stories</label>
+        <label for="c-30-actions-togglegroup-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -6960,10 +7228,10 @@ its pressed state and supports keyboard activation.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-29-actions-togglegroup-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-29-actions-togglegroup-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-30-actions-togglegroup-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-30-actions-togglegroup-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-29-actions-togglegroup-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-30-actions-togglegroup-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -7187,6 +7455,411 @@ interaction.
 </article>
 <article
   class="card 
+  has-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="TransitionExample">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-err"></span> TransitionExample</h2>
+      <div class="badges">
+        <label for="c-31-foundation-view-transitions-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-31-foundation-view-transitions-info" class="badge info as-toggle">1 info</label>
+        <label for="c-31-foundation-view-transitions-stories" class="badge ok as-toggle">1 story</label>
+        
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/motion/ViewTransitions.stories.tsx">foundation-view-transitions · ./src/motion/ViewTransitions.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  <input id="c-31-foundation-view-transitions-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-31-foundation-view-transitions-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-31-foundation-view-transitions-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+  
+
+  <div class="panels">
+    
+        <div class="panel panel-err">
+          
+    <div class="note err">
+      <div class="note-title">Prop type error</div>
+      <div class="note-body"><pre><code>No component file found for the &quot;TransitionExample&quot; component.
+  107 | }
+  108 |
+&gt; 109 | const meta = {
+      | ^
+  110 |   component: TransitionExample,
+  111 |   title: &#39;Foundation/View transitions&#39;,
+  112 | } satisfies Meta&lt;typeof TransitionExample&gt;;
+
+./src/motion/ViewTransitions.stories.tsx:
+import type { Meta, StoryObj } from &#39;@storybook/react-vite&#39;;
+import { type ReactNode, useMemo, useState } from &#39;react&#39;;
+import { flushSync } from &#39;react-dom&#39;;
+import { expect, userEvent, waitFor, within } from &#39;storybook/test&#39;;
+import { Button } from &#39;../primitives/Button/Button&#39;;
+import { Drawer } from &#39;../primitives/Drawer/Drawer&#39;;
+import { Link } from &#39;../primitives/Link/Link&#39;;
+import type { RouterNavigationOptions } from &#39;../provider/BreezeContext&#39;;
+import { BreezeProvider } from &#39;../provider/BreezeProvider&#39;;
+import {
+  startViewTransition,
+  useViewTransitionParticipant,
+  type ViewTransitionType,
+} from &#39;./view-transitions&#39;;
+
+function MotionParticipant({
+  children,
+  hidden = false,
+  name,
+  participantRole,
+  types,
+}: Readonly&lt;{
+  children?: ReactNode;
+  hidden?: boolean;
+  name?: string;
+  participantRole?: &#39;botnav&#39; | &#39;navmark&#39; | &#39;topbar&#39; | &#39;topnav&#39;;
+  types?: readonly (&#39;nav&#39; | &#39;mode&#39; | &#39;list&#39; | &#39;item&#39; | &#39;expand&#39;)[];
+}&gt;) {
+  const ref = useViewTransitionParticipant(
+    participantRole
+      ? { role: participantRole }
+      : { name: name ?? &#39;accounts-page&#39;, types: types ?? [&#39;nav&#39;] },
+  );
+
+  return (
+    &lt;div hidden={hidden} ref={ref}&gt;
+      {children}
+    &lt;/div&gt;
+  );
+}
+
+function TransitionExample() {
+  const [location, setLocation] = useState(&#39;/accounts&#39;);
+  const [commitReady, setCommitReady] = useState(false);
+  const router = useMemo(
+    () =&gt; ({
+      navigate: (href: string, options: RouterNavigationOptions) =&gt;
+        startViewTransition(
+          () =&gt; {
+            // React 19.2.7 state commits must finish before the browser captures
+            // the new view; a router adapter owns this boundary.
+            flushSync(() =&gt; setLocation(href));
+          },
+          options.transitionTypes satisfies readonly ViewTransitionType[],
+        ).then(() =&gt; setCommitReady(true)),
+    }),
+    [],
+  );
+  const pageTitle = location.endsWith(&#39;/activity&#39;) ? &#39;Activity&#39; : &#39;Overview&#39;;
+
+  return (
+    &lt;BreezeProvider locale=&quot;en-GB&quot; router={router}&gt;
+      &lt;div className=&quot;breeze-story-stack&quot;&gt;
+        &lt;MotionParticipant participantRole=&quot;topbar&quot;&gt;Accounts&lt;/MotionParticipant&gt;
+        &lt;MotionParticipant participantRole=&quot;topnav&quot;&gt;
+          &lt;nav aria-label=&quot;Account pages&quot;&gt;
+            &lt;Link href=&quot;/accounts&quot; target=&quot;_self&quot; transitionTypes={[&#39;nav&#39;]}&gt;
+              Overview
+            &lt;/Link&gt;
+            {&#39; · &#39;}
+            &lt;Link
+              href=&quot;/accounts/activity&quot;
+              target=&quot;_self&quot;
+              transitionTypes={[&#39;nav&#39;, &#39;expand&#39;]}
+            &gt;
+              Activity
+            &lt;/Link&gt;
+            &lt;MotionParticipant participantRole=&quot;navmark&quot;&gt;
+              Current tab
+            &lt;/MotionParticipant&gt;
+          &lt;/nav&gt;
+        &lt;/MotionParticipant&gt;
+        &lt;MotionParticipant name=&quot;accounts-page&quot; types={[&#39;nav&#39;, &#39;mode&#39;]}&gt;
+          &lt;main data-testid=&quot;page&quot;&gt;
+            &lt;h1 data-testid=&quot;page-title&quot;&gt;{pageTitle}&lt;/h1&gt;
+            {commitReady &amp;&amp; &lt;output&gt;DOM commit ready&lt;/output&gt;}
+            &lt;MotionParticipant name=&quot;activity-shared&quot; types={[&#39;expand&#39;]}&gt;
+              Current account range
+            &lt;/MotionParticipant&gt;
+          &lt;/main&gt;
+        &lt;/MotionParticipant&gt;
+        &lt;MotionParticipant hidden name=&quot;accounts-page&quot; types={[&#39;nav&#39;, &#39;mode&#39;]}&gt;
+          Responsive copy hidden at this viewport
+        &lt;/MotionParticipant&gt;
+        &lt;MotionParticipant participantRole=&quot;botnav&quot;&gt;
+          Bottom navigation
+        &lt;/MotionParticipant&gt;
+        &lt;Drawer title=&quot;Details&quot; trigger=&quot;Open details&quot;&gt;
+          &lt;MotionParticipant name=&quot;overlay-item&quot; types={[&#39;item&#39;]}&gt;
+            Details content
+          &lt;/MotionParticipant&gt;
+          &lt;Button&gt;Keep open&lt;/Button&gt;
+        &lt;/Drawer&gt;
+      &lt;/div&gt;
+    &lt;/BreezeProvider&gt;
+  );
+}
+
+const meta = {
+  component: TransitionExample,
+  title: &#39;Foundation/View transitions&#39;,
+} satisfies Meta&lt;typeof TransitionExample&gt;;
+
+export default meta;
+type Story = StoryObj&lt;typeof meta&gt;;
+
+/** Typed names exist only during their declared transition. */
+export const TypedParticipants: Story = {
+  play: async ({ canvasElement }) =&gt; {
+    const document = canvasElement.ownerDocument;
+    const view = document.defaultView;
+    if (!view) throw new Error(&#39;Missing browser window&#39;);
+    const page = within(canvasElement);
+    const body = within(document.body);
+    const pageParticipant = page.getByTestId(&#39;page&#39;).parentElement;
+    if (!pageParticipant)
+      throw new Error(&#39;Missing page transition participant&#39;);
+
+    await expect(typeof document.startViewTransition).toBe(&#39;function&#39;);
+    await expect(typeof view.ViewTransition).toBe(&#39;function&#39;);
+    await expect(&#39;types&#39; in view.ViewTransition.prototype).toBe(true);
+    await expect(
+      view.CSS.supports(&#39;selector(:active-view-transition-type(nav))&#39;),
+    ).toBe(true);
+    await expect(pageParticipant.style.viewTransitionName).toBe(&#39;&#39;);
+    await expect(document.documentElement.hasAttribute(&#39;data-vt&#39;)).toBe(false);
+
+    await userEvent.click(page.getByRole(&#39;button&#39;, { name: &#39;Open details&#39; }));
+    const dialog = await body.findByRole(&#39;dialog&#39;, { name: &#39;Details&#39; });
+    const overlayLayer = dialog.closest(&#39;[data-breeze-overlay]&#39;);
+    await expect(pageParticipant).toHaveAttribute(
+      &#39;data-breeze-transition-enabled&#39;,
+      &#39;false&#39;,
+    );
+    await expect(body.getByText(&#39;Details content&#39;)).toHaveAttribute(
+      &#39;data-breeze-transition-enabled&#39;,
+      &#39;true&#39;,
+    );
+    await expect(view.getComputedStyle(overlayLayer!).viewTransitionName).toBe(
+      &#39;none&#39;,
+    );
+    await userEvent.click(
+      within(dialog).getByRole(&#39;button&#39;, { name: &#39;Close&#39; }),
+    );
+    await waitFor(async () =&gt; {
+      await expect(body.queryByRole(&#39;dialog&#39;, { name: &#39;Details&#39; })).toBeNull();
+      await expect(pageParticipant).toHaveAttribute(
+        &#39;data-breeze-transition-enabled&#39;,
+        &#39;true&#39;,
+      );
+    });
+
+    const originalStartDescriptor = Object.getOwnPropertyDescriptor(
+      document,
+      &#39;startViewTransition&#39;,
+    );
+    const originalStart = document.startViewTransition.bind(document);
+    const calls: Array&lt;{
+      committed: boolean;
+      name: string;
+      transition: ViewTransition;
+      types: readonly string[];
+    }&gt; = [];
+
+    Object.defineProperty(document, &#39;startViewTransition&#39;, {
+      configurable: true,
+      value: (options: StartViewTransitionOptions) =&gt; {
+        const call = {
+          committed: false,
+          name: &#39;&#39;,
+          transition: undefined as unknown as ViewTransition,
+          types: options.types ?? [],
+        };
+        const transition = originalStart({
+          ...options,
+          update: async () =&gt; {
+            await options.update?.();
+            call.committed =
+              page.getByTestId(&#39;page-title&#39;).textContent === &#39;Activity&#39;;
+            call.name =
+              view.getComputedStyle(pageParticipant).viewTransitionName;
+          },
+        });
+        call.transition = transition;
+        calls.push(call);
+        return transition;
+      },
+    });
+
+    try {
+      await userEvent.click(page.getByRole(&#39;link&#39;, { name: &#39;Activity&#39; }));
+      await expect(calls).toHaveLength(1);
+      await waitFor(async () =&gt; {
+        await expect(page.getByTestId(&#39;page-title&#39;)).toHaveTextContent(
+          &#39;Activity&#39;,
+        );
+        await expect(page.getByRole(&#39;status&#39;)).toHaveTextContent(
+          &#39;DOM commit ready&#39;,
+        );
+        await expect(calls).toHaveLength(1);
+        await expect(calls[0]?.committed).toBe(true);
+      });
+      await expect(calls[0]?.types).toEqual([&#39;nav&#39;, &#39;expand&#39;]);
+      await expect(calls[0]?.name).toBe(&#39;accounts-page&#39;);
+      await expect(calls[0]?.transition.ready).resolves.toBeUndefined();
+      const oldRoot = view.getComputedStyle(
+        document.documentElement,
+        &#39;::view-transition-old(root)&#39;,
+      );
+      const newRoot = view.getComputedStyle(
+        document.documentElement,
+        &#39;::view-transition-new(root)&#39;,
+      );
+      const rootImagePair = view.getComputedStyle(
+        document.documentElement,
+        &#39;::view-transition-image-pair(root)&#39;,
+      );
+      const navmarkGroup = view.getComputedStyle(
+        document.documentElement,
+        &#39;::view-transition-group(breeze-navmark)&#39;,
+      );
+      const navmarkOld = view.getComputedStyle(
+        document.documentElement,
+        &#39;::view-transition-old(breeze-navmark)&#39;,
+      );
+      const topbarOld = view.getComputedStyle(
+        document.documentElement,
+        &#39;::view-transition-old(breeze-topbar)&#39;,
+      );
+      const topbarImagePair = view.getComputedStyle(
+        document.documentElement,
+        &#39;::view-transition-image-pair(breeze-topbar)&#39;,
+      );
+      const navmarkImagePair = view.getComputedStyle(
+        document.documentElement,
+        &#39;::view-transition-image-pair(breeze-navmark)&#39;,
+      );
+      const sharedOld = view.getComputedStyle(
+        document.documentElement,
+        &#39;::view-transition-old(activity-shared)&#39;,
+      );
+      const sharedImagePair = view.getComputedStyle(
+        document.documentElement,
+        &#39;::view-transition-image-pair(activity-shared)&#39;,
+      );
+      await expect(oldRoot.animationName).toBe(&#39;breeze-transition-fade-out&#39;);
+      await expect(newRoot.animationName).toBe(&#39;breeze-transition-rise&#39;);
+      await expect(rootImagePair.animationName).toBe(&#39;none&#39;);
+      await expect(navmarkGroup.animationDuration).toBe(&#39;0.3s&#39;);
+      await expect(navmarkOld.animationName).toBe(&#39;none&#39;);
+      await expect(topbarOld.animationName).toBe(&#39;none&#39;);
+      await expect(topbarImagePair.animationName).toBe(&#39;none&#39;);
+      await expect(navmarkImagePair.animationName).toBe(&#39;none&#39;);
+      await expect(sharedOld.animationName).toBe(&#39;breeze-transition-fade-out&#39;);
+      await expect(sharedImagePair.animationName).toBe(
+        &#39;breeze-transition-blur&#39;,
+      );
+
+      const originalMatchMediaDescriptor = Object.getOwnPropertyDescriptor(
+        view,
+        &#39;matchMedia&#39;,
+      );
+      const originalMatchMedia = view.matchMedia;
+      Object.defineProperty(view, &#39;matchMedia&#39;, {
+        configurable: true,
+        value: (query: string) =&gt;
+          query === &#39;(prefers-reduced-motion: reduce)&#39;
+            ? {
+                addEventListener: () =&gt; undefined,
+                matches: true,
+                media: query,
+                removeEventListener: () =&gt; undefined,
+              }
+            : originalMatchMedia.call(view, query),
+      });
+
+      try {
+        await userEvent.click(page.getByRole(&#39;link&#39;, { name: &#39;Overview&#39; }));
+        await expect(page.getByTestId(&#39;page-title&#39;)).toHaveTextContent(
+          &#39;Overview&#39;,
+        );
+        await expect(calls).toHaveLength(1);
+      } finally {
+        if (originalMatchMediaDescriptor) {
+          Object.defineProperty(
+            view,
+            &#39;matchMedia&#39;,
+            originalMatchMediaDescriptor,
+          );
+        } else {
+          Reflect.deleteProperty(view, &#39;matchMedia&#39;);
+        }
+      }
+    } finally {
+      if (originalStartDescriptor) {
+        Object.defineProperty(
+          document,
+          &#39;startViewTransition&#39;,
+          originalStartDescriptor,
+        );
+      } else {
+        Reflect.deleteProperty(document, &#39;startViewTransition&#39;);
+      }
+    }
+  },
+  render: () =&gt; &lt;TransitionExample /&gt;,
+};
+</code></pre></div>
+    </div>
+        </div>
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { ViewTransitions } from "@motech-development/breeze-ui";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Typed Participants</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Typed names exist only during their declared transition.</div>
+              <pre><code>const TypedParticipants = () =&gt; &lt;TransitionExample /&gt;;</code></pre>
+            </div>
+        </div>
+    
+    
+  </div>
+</article>
+<article
+  class="card 
   no-error 
   no-info 
   no-story-error
@@ -7197,10 +7870,10 @@ interaction.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Typography</h2>
       <div class="badges">
-        <label for="c-30-content-typography-props" class="badge ok as-toggle">15 prop types</label>
+        <label for="c-32-content-typography-props" class="badge ok as-toggle">15 prop types</label>
         
-        <label for="c-30-content-typography-stories" class="badge ok as-toggle">4 stories</label>
-        <label for="c-30-content-typography-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-32-content-typography-stories" class="badge ok as-toggle">4 stories</label>
+        <label for="c-32-content-typography-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -7213,10 +7886,10 @@ interaction.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-30-content-typography-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-30-content-typography-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-32-content-typography-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-32-content-typography-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-30-content-typography-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-32-content-typography-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -7478,10 +8151,10 @@ Set `loading` to preserve the text&#39;s place while its value is unavailable.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> VisuallyHidden</h2>
       <div class="badges">
-        <label for="c-31-content-visuallyhidden-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-33-content-visuallyhidden-props" class="badge ok as-toggle">1 prop type</label>
         
-        <label for="c-31-content-visuallyhidden-stories" class="badge ok as-toggle">1 story</label>
-        <label for="c-31-content-visuallyhidden-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-33-content-visuallyhidden-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-33-content-visuallyhidden-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -7494,10 +8167,10 @@ Set `loading` to preserve the text&#39;s place while its value is unavailable.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-31-content-visuallyhidden-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-31-content-visuallyhidden-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-33-content-visuallyhidden-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-33-content-visuallyhidden-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-31-content-visuallyhidden-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-33-content-visuallyhidden-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -7586,7 +8259,7 @@ Do not use it to hide focusable content or information sighted users also need.
           <label for="no-component-import-found-toggle" class="group-header">
             <span class="caret">▸</span>
             <span class="group-title">No component import found</span>
-            <span class="group-count">1</span>
+            <span class="group-count">2</span>
           </label>
           <div class="group-cards">
 <article
@@ -8137,6 +8810,411 @@ without re-announcing existing rows.
         </div>
     
   </div>
+</article>
+<article
+  class="card 
+  has-error 
+  has-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="TransitionExample">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-err"></span> TransitionExample</h2>
+      <div class="badges">
+        <label for="c-error-1-foundation-view-transitions-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-1-foundation-view-transitions-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-1-foundation-view-transitions-stories" class="badge ok as-toggle">1 story</label>
+        
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/motion/ViewTransitions.stories.tsx">foundation-view-transitions · ./src/motion/ViewTransitions.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  <input id="c-error-1-foundation-view-transitions-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-1-foundation-view-transitions-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-1-foundation-view-transitions-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+  
+
+  <div class="panels">
+    
+        <div class="panel panel-err">
+          
+    <div class="note err">
+      <div class="note-title">Prop type error</div>
+      <div class="note-body"><pre><code>No component file found for the &quot;TransitionExample&quot; component.
+  107 | }
+  108 |
+&gt; 109 | const meta = {
+      | ^
+  110 |   component: TransitionExample,
+  111 |   title: &#39;Foundation/View transitions&#39;,
+  112 | } satisfies Meta&lt;typeof TransitionExample&gt;;
+
+./src/motion/ViewTransitions.stories.tsx:
+import type { Meta, StoryObj } from &#39;@storybook/react-vite&#39;;
+import { type ReactNode, useMemo, useState } from &#39;react&#39;;
+import { flushSync } from &#39;react-dom&#39;;
+import { expect, userEvent, waitFor, within } from &#39;storybook/test&#39;;
+import { Button } from &#39;../primitives/Button/Button&#39;;
+import { Drawer } from &#39;../primitives/Drawer/Drawer&#39;;
+import { Link } from &#39;../primitives/Link/Link&#39;;
+import type { RouterNavigationOptions } from &#39;../provider/BreezeContext&#39;;
+import { BreezeProvider } from &#39;../provider/BreezeProvider&#39;;
+import {
+  startViewTransition,
+  useViewTransitionParticipant,
+  type ViewTransitionType,
+} from &#39;./view-transitions&#39;;
+
+function MotionParticipant({
+  children,
+  hidden = false,
+  name,
+  participantRole,
+  types,
+}: Readonly&lt;{
+  children?: ReactNode;
+  hidden?: boolean;
+  name?: string;
+  participantRole?: &#39;botnav&#39; | &#39;navmark&#39; | &#39;topbar&#39; | &#39;topnav&#39;;
+  types?: readonly (&#39;nav&#39; | &#39;mode&#39; | &#39;list&#39; | &#39;item&#39; | &#39;expand&#39;)[];
+}&gt;) {
+  const ref = useViewTransitionParticipant(
+    participantRole
+      ? { role: participantRole }
+      : { name: name ?? &#39;accounts-page&#39;, types: types ?? [&#39;nav&#39;] },
+  );
+
+  return (
+    &lt;div hidden={hidden} ref={ref}&gt;
+      {children}
+    &lt;/div&gt;
+  );
+}
+
+function TransitionExample() {
+  const [location, setLocation] = useState(&#39;/accounts&#39;);
+  const [commitReady, setCommitReady] = useState(false);
+  const router = useMemo(
+    () =&gt; ({
+      navigate: (href: string, options: RouterNavigationOptions) =&gt;
+        startViewTransition(
+          () =&gt; {
+            // React 19.2.7 state commits must finish before the browser captures
+            // the new view; a router adapter owns this boundary.
+            flushSync(() =&gt; setLocation(href));
+          },
+          options.transitionTypes satisfies readonly ViewTransitionType[],
+        ).then(() =&gt; setCommitReady(true)),
+    }),
+    [],
+  );
+  const pageTitle = location.endsWith(&#39;/activity&#39;) ? &#39;Activity&#39; : &#39;Overview&#39;;
+
+  return (
+    &lt;BreezeProvider locale=&quot;en-GB&quot; router={router}&gt;
+      &lt;div className=&quot;breeze-story-stack&quot;&gt;
+        &lt;MotionParticipant participantRole=&quot;topbar&quot;&gt;Accounts&lt;/MotionParticipant&gt;
+        &lt;MotionParticipant participantRole=&quot;topnav&quot;&gt;
+          &lt;nav aria-label=&quot;Account pages&quot;&gt;
+            &lt;Link href=&quot;/accounts&quot; target=&quot;_self&quot; transitionTypes={[&#39;nav&#39;]}&gt;
+              Overview
+            &lt;/Link&gt;
+            {&#39; · &#39;}
+            &lt;Link
+              href=&quot;/accounts/activity&quot;
+              target=&quot;_self&quot;
+              transitionTypes={[&#39;nav&#39;, &#39;expand&#39;]}
+            &gt;
+              Activity
+            &lt;/Link&gt;
+            &lt;MotionParticipant participantRole=&quot;navmark&quot;&gt;
+              Current tab
+            &lt;/MotionParticipant&gt;
+          &lt;/nav&gt;
+        &lt;/MotionParticipant&gt;
+        &lt;MotionParticipant name=&quot;accounts-page&quot; types={[&#39;nav&#39;, &#39;mode&#39;]}&gt;
+          &lt;main data-testid=&quot;page&quot;&gt;
+            &lt;h1 data-testid=&quot;page-title&quot;&gt;{pageTitle}&lt;/h1&gt;
+            {commitReady &amp;&amp; &lt;output&gt;DOM commit ready&lt;/output&gt;}
+            &lt;MotionParticipant name=&quot;activity-shared&quot; types={[&#39;expand&#39;]}&gt;
+              Current account range
+            &lt;/MotionParticipant&gt;
+          &lt;/main&gt;
+        &lt;/MotionParticipant&gt;
+        &lt;MotionParticipant hidden name=&quot;accounts-page&quot; types={[&#39;nav&#39;, &#39;mode&#39;]}&gt;
+          Responsive copy hidden at this viewport
+        &lt;/MotionParticipant&gt;
+        &lt;MotionParticipant participantRole=&quot;botnav&quot;&gt;
+          Bottom navigation
+        &lt;/MotionParticipant&gt;
+        &lt;Drawer title=&quot;Details&quot; trigger=&quot;Open details&quot;&gt;
+          &lt;MotionParticipant name=&quot;overlay-item&quot; types={[&#39;item&#39;]}&gt;
+            Details content
+          &lt;/MotionParticipant&gt;
+          &lt;Button&gt;Keep open&lt;/Button&gt;
+        &lt;/Drawer&gt;
+      &lt;/div&gt;
+    &lt;/BreezeProvider&gt;
+  );
+}
+
+const meta = {
+  component: TransitionExample,
+  title: &#39;Foundation/View transitions&#39;,
+} satisfies Meta&lt;typeof TransitionExample&gt;;
+
+export default meta;
+type Story = StoryObj&lt;typeof meta&gt;;
+
+/** Typed names exist only during their declared transition. */
+export const TypedParticipants: Story = {
+  play: async ({ canvasElement }) =&gt; {
+    const document = canvasElement.ownerDocument;
+    const view = document.defaultView;
+    if (!view) throw new Error(&#39;Missing browser window&#39;);
+    const page = within(canvasElement);
+    const body = within(document.body);
+    const pageParticipant = page.getByTestId(&#39;page&#39;).parentElement;
+    if (!pageParticipant)
+      throw new Error(&#39;Missing page transition participant&#39;);
+
+    await expect(typeof document.startViewTransition).toBe(&#39;function&#39;);
+    await expect(typeof view.ViewTransition).toBe(&#39;function&#39;);
+    await expect(&#39;types&#39; in view.ViewTransition.prototype).toBe(true);
+    await expect(
+      view.CSS.supports(&#39;selector(:active-view-transition-type(nav))&#39;),
+    ).toBe(true);
+    await expect(pageParticipant.style.viewTransitionName).toBe(&#39;&#39;);
+    await expect(document.documentElement.hasAttribute(&#39;data-vt&#39;)).toBe(false);
+
+    await userEvent.click(page.getByRole(&#39;button&#39;, { name: &#39;Open details&#39; }));
+    const dialog = await body.findByRole(&#39;dialog&#39;, { name: &#39;Details&#39; });
+    const overlayLayer = dialog.closest(&#39;[data-breeze-overlay]&#39;);
+    await expect(pageParticipant).toHaveAttribute(
+      &#39;data-breeze-transition-enabled&#39;,
+      &#39;false&#39;,
+    );
+    await expect(body.getByText(&#39;Details content&#39;)).toHaveAttribute(
+      &#39;data-breeze-transition-enabled&#39;,
+      &#39;true&#39;,
+    );
+    await expect(view.getComputedStyle(overlayLayer!).viewTransitionName).toBe(
+      &#39;none&#39;,
+    );
+    await userEvent.click(
+      within(dialog).getByRole(&#39;button&#39;, { name: &#39;Close&#39; }),
+    );
+    await waitFor(async () =&gt; {
+      await expect(body.queryByRole(&#39;dialog&#39;, { name: &#39;Details&#39; })).toBeNull();
+      await expect(pageParticipant).toHaveAttribute(
+        &#39;data-breeze-transition-enabled&#39;,
+        &#39;true&#39;,
+      );
+    });
+
+    const originalStartDescriptor = Object.getOwnPropertyDescriptor(
+      document,
+      &#39;startViewTransition&#39;,
+    );
+    const originalStart = document.startViewTransition.bind(document);
+    const calls: Array&lt;{
+      committed: boolean;
+      name: string;
+      transition: ViewTransition;
+      types: readonly string[];
+    }&gt; = [];
+
+    Object.defineProperty(document, &#39;startViewTransition&#39;, {
+      configurable: true,
+      value: (options: StartViewTransitionOptions) =&gt; {
+        const call = {
+          committed: false,
+          name: &#39;&#39;,
+          transition: undefined as unknown as ViewTransition,
+          types: options.types ?? [],
+        };
+        const transition = originalStart({
+          ...options,
+          update: async () =&gt; {
+            await options.update?.();
+            call.committed =
+              page.getByTestId(&#39;page-title&#39;).textContent === &#39;Activity&#39;;
+            call.name =
+              view.getComputedStyle(pageParticipant).viewTransitionName;
+          },
+        });
+        call.transition = transition;
+        calls.push(call);
+        return transition;
+      },
+    });
+
+    try {
+      await userEvent.click(page.getByRole(&#39;link&#39;, { name: &#39;Activity&#39; }));
+      await expect(calls).toHaveLength(1);
+      await waitFor(async () =&gt; {
+        await expect(page.getByTestId(&#39;page-title&#39;)).toHaveTextContent(
+          &#39;Activity&#39;,
+        );
+        await expect(page.getByRole(&#39;status&#39;)).toHaveTextContent(
+          &#39;DOM commit ready&#39;,
+        );
+        await expect(calls).toHaveLength(1);
+        await expect(calls[0]?.committed).toBe(true);
+      });
+      await expect(calls[0]?.types).toEqual([&#39;nav&#39;, &#39;expand&#39;]);
+      await expect(calls[0]?.name).toBe(&#39;accounts-page&#39;);
+      await expect(calls[0]?.transition.ready).resolves.toBeUndefined();
+      const oldRoot = view.getComputedStyle(
+        document.documentElement,
+        &#39;::view-transition-old(root)&#39;,
+      );
+      const newRoot = view.getComputedStyle(
+        document.documentElement,
+        &#39;::view-transition-new(root)&#39;,
+      );
+      const rootImagePair = view.getComputedStyle(
+        document.documentElement,
+        &#39;::view-transition-image-pair(root)&#39;,
+      );
+      const navmarkGroup = view.getComputedStyle(
+        document.documentElement,
+        &#39;::view-transition-group(breeze-navmark)&#39;,
+      );
+      const navmarkOld = view.getComputedStyle(
+        document.documentElement,
+        &#39;::view-transition-old(breeze-navmark)&#39;,
+      );
+      const topbarOld = view.getComputedStyle(
+        document.documentElement,
+        &#39;::view-transition-old(breeze-topbar)&#39;,
+      );
+      const topbarImagePair = view.getComputedStyle(
+        document.documentElement,
+        &#39;::view-transition-image-pair(breeze-topbar)&#39;,
+      );
+      const navmarkImagePair = view.getComputedStyle(
+        document.documentElement,
+        &#39;::view-transition-image-pair(breeze-navmark)&#39;,
+      );
+      const sharedOld = view.getComputedStyle(
+        document.documentElement,
+        &#39;::view-transition-old(activity-shared)&#39;,
+      );
+      const sharedImagePair = view.getComputedStyle(
+        document.documentElement,
+        &#39;::view-transition-image-pair(activity-shared)&#39;,
+      );
+      await expect(oldRoot.animationName).toBe(&#39;breeze-transition-fade-out&#39;);
+      await expect(newRoot.animationName).toBe(&#39;breeze-transition-rise&#39;);
+      await expect(rootImagePair.animationName).toBe(&#39;none&#39;);
+      await expect(navmarkGroup.animationDuration).toBe(&#39;0.3s&#39;);
+      await expect(navmarkOld.animationName).toBe(&#39;none&#39;);
+      await expect(topbarOld.animationName).toBe(&#39;none&#39;);
+      await expect(topbarImagePair.animationName).toBe(&#39;none&#39;);
+      await expect(navmarkImagePair.animationName).toBe(&#39;none&#39;);
+      await expect(sharedOld.animationName).toBe(&#39;breeze-transition-fade-out&#39;);
+      await expect(sharedImagePair.animationName).toBe(
+        &#39;breeze-transition-blur&#39;,
+      );
+
+      const originalMatchMediaDescriptor = Object.getOwnPropertyDescriptor(
+        view,
+        &#39;matchMedia&#39;,
+      );
+      const originalMatchMedia = view.matchMedia;
+      Object.defineProperty(view, &#39;matchMedia&#39;, {
+        configurable: true,
+        value: (query: string) =&gt;
+          query === &#39;(prefers-reduced-motion: reduce)&#39;
+            ? {
+                addEventListener: () =&gt; undefined,
+                matches: true,
+                media: query,
+                removeEventListener: () =&gt; undefined,
+              }
+            : originalMatchMedia.call(view, query),
+      });
+
+      try {
+        await userEvent.click(page.getByRole(&#39;link&#39;, { name: &#39;Overview&#39; }));
+        await expect(page.getByTestId(&#39;page-title&#39;)).toHaveTextContent(
+          &#39;Overview&#39;,
+        );
+        await expect(calls).toHaveLength(1);
+      } finally {
+        if (originalMatchMediaDescriptor) {
+          Object.defineProperty(
+            view,
+            &#39;matchMedia&#39;,
+            originalMatchMediaDescriptor,
+          );
+        } else {
+          Reflect.deleteProperty(view, &#39;matchMedia&#39;);
+        }
+      }
+    } finally {
+      if (originalStartDescriptor) {
+        Object.defineProperty(
+          document,
+          &#39;startViewTransition&#39;,
+          originalStartDescriptor,
+        );
+      } else {
+        Reflect.deleteProperty(document, &#39;startViewTransition&#39;);
+      }
+    }
+  },
+  render: () =&gt; &lt;TransitionExample /&gt;,
+};
+</code></pre></div>
+    </div>
+        </div>
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { ViewTransitions } from "@motech-development/breeze-ui";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Typed Participants</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Typed names exist only during their declared transition.</div>
+              <pre><code>const TypedParticipants = () =&gt; &lt;TransitionExample /&gt;;</code></pre>
+            </div>
+        </div>
+    
+    
+  </div>
 </article></div>
         </section>
       </div>
@@ -8358,6 +9436,157 @@ The application owns persistence. Breeze reports changes and accepts an initial 
 ## Customisation
 
 Component appearance is set through the props documented on each component page. `className`, `style` and theme overrides are not supported.
+</code></pre>
+          </div>
+        </div>
+  </div>
+</article>
+<article
+  class="card is-doc no-doc-error"
+  role="listitem"
+  aria-label="Docs">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> Guides/04 Motion</h2>
+      <div class="badges">
+        
+        <label for="doc-3-guides-04-motion-docs-content" class="badge ok as-toggle">view content</label>
+      </div>
+    </div>
+    <div class="meta" title="./src/docs/04-Motion.mdx">guides-04-motion--docs · ./src/docs/04-Motion.mdx</div>
+    <div>Opt in to typed browser view transitions around committed application updates.</div>
+  </div>
+
+  <!-- Hidden toggles must be siblings BEFORE .panels -->
+  
+  <input id="doc-3-guides-04-motion-docs-content" class="tg tg-content" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+        <div class="panel panel-content">
+          <div class="mdx-content">
+            <pre><code>import { Meta } from &#39;@storybook/addon-docs/blocks&#39;;
+
+&lt;Meta
+  title=&quot;Guides/04 Motion&quot;
+  summary=&quot;Opt in to typed browser view transitions around committed application updates.&quot;
+/&gt;
+
+# Motion
+
+Breeze provides a small opt-in adapter for the browser&#39;s same-document View Transition API. Use it when a transition explains a relationship between two states. A link does not start an animation by itself: the application router owns the route update and may opt into a transition with `startViewTransition`.
+
+These examples use stable React 19 and React DOM APIs. Breeze adds no runtime dependency for view transitions.
+
+## Transition types
+
+Use the type that describes the change. Breeze accepts these five values:
+
+| Type     | Use it for                                                   |
+| -------- | ------------------------------------------------------------ |
+| `nav`    | Moving between sibling routes in the same application.       |
+| `mode`   | Replacing a loading skeleton with its content.               |
+| `list`   | Rearranging or filtering a collection of items.              |
+| `item`   | Changing one item while the surrounding page stays in place. |
+| `expand` | Expanding one item into a larger view of that same item.     |
+
+These types let the stylesheet choose which parts can move. `nav` and `mode` may transition the page root; `list`, `item` and `expand` keep the root live and animate only named participants. Breeze does not prescribe an animation for every use of a type.
+
+Keep appearance changes, segmented-control state, typing and in-place recalculation immediate; transitions add no useful relationship to those updates, and immediate input keeps the caret stable. Keep form steps inside a sheet immediate too: the sheet frame stays in place, a nested transition would separate its contents from the frame, and the step indicator already shows progress.
+
+## Declare a participant
+
+Call `useViewTransitionParticipant` below `BreezeProvider` and attach its ref to the element that represents the same thing before and after the update. Breeze grants its view-transition name only while one of the declared types is active.
+
+```tsx
+import { useViewTransitionParticipant } from &#39;@motech-development/breeze-ui&#39;;
+
+function TransactionRow({ transaction }) {
+  const rowRef = useViewTransitionParticipant({
+    name: `transaction-${transaction.id}`,
+    types: [&#39;list&#39;],
+  });
+
+  return &lt;li ref={rowRef}&gt;{transaction.name}&lt;/li&gt;;
+}
+```
+
+Each participant name must be a valid CSS custom identifier and unique among visible participants in both snapshots. In development, Breeze reports duplicate eligible names. Names stay disabled for page participants while a visual overlay is on top; if an application-owned participant is inside an overlay, only the topmost visual overlay can enable it.
+
+The application shell can use Breeze&#39;s reserved roles for its chrome and current-location marker. The `topbar`, `topnav` and `botnav` roles stay pinned during page transitions:
+
+```tsx
+import { useViewTransitionParticipant } from &#39;@motech-development/breeze-ui&#39;;
+
+function TopBar() {
+  const topbarRef = useViewTransitionParticipant({ role: &#39;topbar&#39; });
+
+  return &lt;header ref={topbarRef}&gt;Account&lt;/header&gt;;
+}
+```
+
+The fixed roles are `topbar`, `topnav`, `botnav` and `navmark`. The first three are enabled for `nav` and `mode`; `navmark` marks the current location and moves during `nav` only. These roles reserve Breeze&#39;s singleton names, so use each role on at most one visible element in a snapshot.
+
+## Start a router transition
+
+`Link` passes its `transitionTypes` to the configured `router.navigate` callback. The router can wrap its real route update with `startViewTransition`:
+
+```tsx
+import { useState } from &#39;react&#39;;
+import { flushSync } from &#39;react-dom&#39;;
+import {
+  BreezeProvider,
+  Link,
+  startViewTransition,
+  type RouterNavigationOptions,
+} from &#39;@motech-development/breeze-ui&#39;;
+
+function AppRouter() {
+  const [path, setPath] = useState(&#39;/&#39;);
+  const navigate = (
+    href: string,
+    { transitionTypes }: RouterNavigationOptions,
+  ) =&gt;
+    startViewTransition(() =&gt; {
+      flushSync(() =&gt; setPath(href));
+    }, transitionTypes);
+
+  return (
+    &lt;BreezeProvider locale=&quot;en-GB&quot; router={{ navigate }}&gt;
+      &lt;nav&gt;
+        &lt;Link href=&quot;/&quot; transitionTypes={[&#39;nav&#39;]}&gt;
+          Home
+        &lt;/Link&gt;
+        &lt;Link href=&quot;/transactions&quot; transitionTypes={[&#39;nav&#39;, &#39;list&#39;]}&gt;
+          Transactions
+        &lt;/Link&gt;
+      &lt;/nav&gt;
+      &lt;main&gt;{path === &#39;/&#39; ? &lt;HomePage /&gt; : &lt;TransactionsPage /&gt;}&lt;/main&gt;
+    &lt;/BreezeProvider&gt;
+  );
+}
+
+function HomePage() {
+  return &lt;p&gt;Home&lt;/p&gt;;
+}
+
+function TransactionsPage() {
+  return &lt;p&gt;Transactions&lt;/p&gt;;
+}
+```
+
+The router must make the update callback cover the actual DOM commit. For a synchronous React state update, `flushSync` commits it before the callback returns. For asynchronous routing, await the router&#39;s commit-ready signal and resolve only after the intended DOM has committed; data-fetch completion or scheduling a state update is not enough. If the destination suspends, coordinate with the router so the callback does not settle while the UI is still showing a fallback instead of the intended route.
+
+An empty type list, an unsupported typed View Transition API, or a reduced-motion preference skips the animation and still runs the update. The helper returns a promise for update completion and propagates failures from the update. If a transition is already active, Breeze skips it before starting the next one.
+
+## Overlay lifecycle
+
+Dialogs, drawers, menus and popovers keep their React Aria Components lifecycle and existing overlay motion. Toast confirmations keep their own lifecycle and existing motion. Do not use `startViewTransition` for an overlay or confirmation opening or closing.
+
+## Browser reference
+
+Read [Document.startViewTransition()](https://developer.mozilla.org/en-US/docs/Web/API/Document/startViewTransition) and [Using view transition types](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API/Using_types) for the browser API.
 </code></pre>
           </div>
         </div>
