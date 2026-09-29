@@ -17,7 +17,8 @@ the required Breeze provider locale.
 
 Documents use a page preview and photographs use the supplied image thumbnail
 or a camera placeholder. The file type is also written as visible text, so the
-thumbnail is not the only way to tell them apart.
+thumbnail is not the only way to tell them apart. Only a photograph accepts a
+`thumbnailUrl`.
 
 <Canvas of={Stories.Document} />
 
@@ -26,16 +27,24 @@ thumbnail is not the only way to tell them apart.
 ## Open and menu actions
 
 Pass `onOpen` to show a direct Open button. Pass action descriptors and an
-`onAction` callback to show the overflow menu. Each action has a visible label;
-icons only decorate those labels.
+`onAction` callback together to show the overflow menu. Each action has a
+visible label; icons only decorate those labels. Open and overflow buttons keep
+their short visible labels and include the file name in their accessible names.
 
 <Canvas of={Stories.Document} />
 
+## Narrow containers
+
+When there is not enough horizontal room, the row wraps its actions below the
+file details so the file information remains readable.
+
+<Canvas of={Stories.NarrowContainer} />
+
 ## Visible state and loading
 
-The `status` text stays visible regardless of the file type or thumbnail. While
-the file details are unavailable, set `loading` to show the row-shaped loading
-placeholder.
+The `status` text stays visible and updates are announced politely regardless
+of the file type or thumbnail. While the file details are unavailable, set
+`loading` to show the row-shaped loading placeholder and labelled progress bar.
 
 <Canvas of={Stories.UploadFailed} />
 

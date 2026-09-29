@@ -3,13 +3,12 @@ import type { IconName } from '../../primitives/Icon/Icon';
 import { Icon } from '../../primitives/Icon/Icon';
 import { Menu } from '../../primitives/Menu/Menu';
 import { Skeleton } from '../../primitives/Skeleton/Skeleton';
-import { VisuallyHidden } from '../../primitives/VisuallyHidden/VisuallyHidden';
 import { useBreezeContext } from '../../provider/BreezeContext';
 
 const variants = {
   base: {
     content:
-      'breeze:flex breeze:min-inline-size-0 breeze:flex-1 breeze:flex-col breeze:gap-breeze-px',
+      'breeze:flex breeze:min-inline-size-0 breeze:grow breeze:basis-[12rem] breeze:flex-col breeze:gap-breeze-px',
     documentLine:
       'breeze:block-size-breeze-px breeze:inline-size-full breeze:rounded-breeze-xs breeze:bg-breeze-line',
     documentLineStrong:
@@ -21,7 +20,7 @@ const variants = {
     loadingContent:
       'breeze:flex breeze:min-inline-size-0 breeze:flex-1 breeze:flex-col breeze:gap-breeze-2',
     photoPlaceholder: 'breeze:text-breeze-ink-3',
-    row: 'breeze:box-border breeze:flex breeze:min-block-breeze-row breeze:min-inline-size-0 breeze:items-center breeze:gap-breeze-3 breeze:rounded-breeze-panel breeze:border breeze:border-solid breeze:border-breeze-line breeze:bg-breeze-raised breeze:ps-breeze-3 breeze:pe-breeze-3',
+    row: 'breeze:box-border breeze:flex breeze:flex-wrap breeze:min-block-breeze-row breeze:min-inline-size-0 breeze:items-center breeze:gap-breeze-3 breeze:rounded-breeze-panel breeze:border breeze:border-solid breeze:border-breeze-line breeze:bg-breeze-raised breeze:ps-breeze-3 breeze:pe-breeze-3',
     thumbnail:
       'breeze:flex breeze:block-size-breeze-tap breeze:inline-size-breeze-md breeze:shrink-0 breeze:overflow-hidden breeze:rounded-breeze-sm breeze:border breeze:border-solid breeze:border-breeze-line-strong',
     thumbnailImage:
@@ -65,26 +64,50 @@ export interface AttachmentRowAction {
   label: string;
 }
 
-interface AttachmentRowContentProps {
-  /** App-owned actions shown in the overflow menu. */
-  actions?: AttachmentRowAction[];
-  /** Distinguishes a photograph from other file documents. */
-  fileType: AttachmentRowFileType;
+interface AttachmentRowContentBaseProps {
   /** Visible name of the attached file. */
   filename: string;
   /** Called when the direct Open action is activated. */
   onOpen?: () => void;
-  /** Called with the selected app-owned menu action. */
-  onAction?: (action: AttachmentRowAction) => void;
   /** File size in bytes, formatted for the Breeze provider locale. */
   sizeBytes: number;
   /** Visible attachment state, such as “Uploaded” or “Upload failed”. */
   status: string;
-  /** Optional image rendered as the file thumbnail. */
-  thumbnailUrl?: string;
   /** Attachment content is available and displayed. */
   loading?: false;
 }
+
+type AttachmentRowThumbnailProps =
+  | {
+      /** Distinguishes a document from a photograph. */
+      fileType: 'document';
+      /** Only photographs can provide an image thumbnail. */
+      thumbnailUrl?: never;
+    }
+  | {
+      /** Distinguishes a document from a photograph. */
+      fileType: 'photo';
+      /** Optional image rendered as the photograph thumbnail. */
+      thumbnailUrl?: string;
+    };
+
+type AttachmentRowActionsProps =
+  | {
+      /** App-owned actions require an activation callback. */
+      actions: AttachmentRowAction[];
+      /** Called with the selected app-owned menu action. */
+      onAction: (action: AttachmentRowAction) => void;
+    }
+  | {
+      /** App-owned actions require an activation callback. */
+      actions?: never;
+      /** A callback is only used when actions are provided. */
+      onAction?: never;
+    };
+
+type AttachmentRowContentProps = AttachmentRowContentBaseProps &
+  AttachmentRowThumbnailProps &
+  AttachmentRowActionsProps;
 
 interface AttachmentRowLoadingProps {
   /** Omits file content while its shape is unavailable. */
@@ -121,6 +144,19 @@ function formatFileSize(bytes: number, locale: string) {
   let unitIndex = 0;
 
   while (value >= 1000 && unitIndex < fileSizeUnits.length - 1) {
+    value /= 1000;
+    unitIndex += 1;
+  }
+
+  const maximumFractionDigits = unitIndex === 0 ? 0 : 1;
+
+  if (
+    unitIndex > 0 &&
+    unitIndex < fileSizeUnits.length - 1 &&
+    Math.round(value * 10 ** maximumFractionDigits) /
+      10 ** maximumFractionDigits >=
+      1000
+  ) {
     value /= 1000;
     unitIndex += 1;
   }
@@ -185,19 +221,19 @@ function PhotoThumbnail({ thumbnailUrl }: Readonly<{ thumbnailUrl?: string }>) {
 
 function AttachmentRowSkeleton({
   loadingLabel,
-  loadingLanguage,
-}: Readonly<{ loadingLabel: string; loadingLanguage: string }>) {
+}: Readonly<{ loadingLabel: string }>) {
   return (
-    <div aria-busy="true" className={variants.base.row} role="status">
+    <div className={variants.base.row}>
       <span aria-hidden="true" className={variants.base.thumbnail}>
         <Skeleton blockSize={44} inlineSize={38} shape="rectangle" />
       </span>
       <div className={variants.base.loadingContent}>
-        <Skeleton blockSize="1lh" inlineSize="min(100%, 14em)" />
+        <Skeleton
+          blockSize="1lh"
+          inlineSize="min(100%, 14em)"
+          label={loadingLabel}
+        />
         <Skeleton blockSize="1lh" inlineSize="min(100%, 10em)" />
-        <span lang={loadingLanguage}>
-          <VisuallyHidden>{loadingLabel}</VisuallyHidden>
-        </span>
       </div>
     </div>
   );
@@ -209,12 +245,7 @@ export function AttachmentRow(props: Readonly<AttachmentRowProps>) {
   const { loading } = props;
 
   if (loading) {
-    return (
-      <AttachmentRowSkeleton
-        loadingLabel={context.messages.loading}
-        loadingLanguage={context.getMessageLocale('loading')}
-      />
-    );
+    return <AttachmentRowSkeleton loadingLabel={context.messages.loading} />;
   }
 
   const {
@@ -254,18 +285,29 @@ export function AttachmentRow(props: Readonly<AttachmentRowProps>) {
           <span aria-hidden="true">·</span>
           <span>{formattedSize}</span>
           <span aria-hidden="true">·</span>
-          <span>{status}</span>
+          <output aria-live="polite">{status}</output>
         </div>
       </div>
       {onOpen ? (
-        <span lang={context.getMessageLocale('attachmentOpen')}>
-          <Button onAction={onOpen} size="sm" variant="secondary">
+        <span
+          className="breeze:shrink-0"
+          lang={context.getMessageLocale('attachmentOpen')}
+        >
+          <Button
+            aria-label={`${context.messages.attachmentOpen}: ${filename}`}
+            onAction={onOpen}
+            size="sm"
+            variant="secondary"
+          >
             {context.messages.attachmentOpen}
           </Button>
         </span>
       ) : null}
       {actions.length > 0 ? (
-        <span lang={context.getMessageLocale('attachmentMoreActions')}>
+        <span
+          className="breeze:shrink-0"
+          lang={context.getMessageLocale('attachmentMoreActions')}
+        >
           <Menu
             getItem={(action) => action}
             items={actions}
@@ -275,6 +317,7 @@ export function AttachmentRow(props: Readonly<AttachmentRowProps>) {
               if (action) onAction?.(action);
             }}
             trigger={context.messages.attachmentMoreActions}
+            triggerAriaLabel={`${context.messages.attachmentMoreActions}: ${filename}`}
             triggerIcon="more"
           />
         </span>

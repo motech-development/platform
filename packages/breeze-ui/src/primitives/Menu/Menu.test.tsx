@@ -108,6 +108,23 @@ describe('Menu', () => {
     ).toThrow('Breeze components must be rendered within BreezeProvider.');
   });
 
+  it('allows an accessible trigger name that differs from its visible label', () => {
+    renderBreeze(
+      <Menu
+        getItem={(item) => item.descriptor}
+        items={actions}
+        trigger="More actions"
+        triggerAriaLabel="More actions: invoice.pdf"
+      />,
+    );
+
+    const trigger = screen.getByRole('button', {
+      name: 'More actions: invoice.pdf',
+    });
+
+    expect(trigger).toHaveTextContent('More actions');
+  });
+
   it('renders the descriptor content in the provider portal', () => {
     renderBreeze(
       <Menu

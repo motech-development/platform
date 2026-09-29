@@ -59,6 +59,8 @@ interface MenuCommonProps<T> {
   loading?: boolean;
   /** Icon shown beside the trigger label. */
   triggerIcon?: IconName;
+  /** Accessible name when it should differ from the visible trigger label. */
+  triggerAriaLabel?: string;
   /** Visible label for the button that opens the menu. */
   trigger: string;
 }
@@ -168,6 +170,7 @@ export function Menu<T>({
   onOpenChange,
   open: controlledOpen,
   trigger,
+  triggerAriaLabel,
   triggerIcon,
 }: Readonly<MenuProps<T>>) {
   useBreezeContext();
@@ -212,6 +215,7 @@ export function Menu<T>({
     <>
       <AriaMenuTrigger isOpen={open} onOpenChange={handleOpenChange}>
         <AriaButton
+          aria-label={triggerAriaLabel}
           aria-haspopup="menu"
           className={variants.base.trigger}
           isPending={loading}

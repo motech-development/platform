@@ -9,6 +9,10 @@ import * as Stories from './Menu.stories';
 secondary actions, such as account settings, that should stay out of the main
 page until needed.
 
+When the visible trigger label is shared by several controls, set
+`triggerAriaLabel` to give each button a distinct accessible name while keeping
+the visible label concise.
+
 <Canvas of={Stories.Default} />
 
 ## Loading the menu
