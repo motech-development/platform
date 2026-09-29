@@ -18,6 +18,37 @@ expectTypeOf<StatePanelProps['action']>().toEqualTypeOf<
 >();
 
 describe('StatePanel', () => {
+  it.each([
+    [
+      'empty',
+      'No categories yet',
+      'Create a category to organize your records.',
+    ],
+    ['error', 'Records are unavailable', 'Your records could not be loaded.'],
+  ] as const)(
+    'renders the %s state as a labelled, non-live section',
+    (variant, title, description) => {
+      render(
+        <BreezeProvider locale="en-GB">
+          <StatePanel
+            description={description}
+            title={title}
+            variant={variant}
+          />
+        </BreezeProvider>,
+      );
+
+      const panel = screen.getByRole('region', { name: title });
+
+      expect(panel.tagName).toBe('SECTION');
+      expect(panel).toHaveAccessibleDescription(description);
+      expect(panel).not.toHaveAttribute('role');
+      expect(panel).not.toHaveAttribute('aria-live');
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+      expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    },
+  );
+
   it('renders an empty state with app-owned copy and no action', () => {
     render(
       <BreezeProvider locale="en-GB">
@@ -30,7 +61,7 @@ describe('StatePanel', () => {
     );
 
     expect(
-      screen.getByRole('status', { name: 'No categories yet' }),
+      screen.getByRole('region', { name: 'No categories yet' }),
     ).toHaveAccessibleDescription(
       'Create a category to organize your records.',
     );
@@ -57,7 +88,7 @@ describe('StatePanel', () => {
     );
 
     expect(
-      screen.getByRole('alert', { name: 'Records are unavailable' }),
+      screen.getByRole('region', { name: 'Records are unavailable' }),
     ).toHaveAccessibleDescription('Your records could not be loaded.');
     expect(screen.getAllByRole('button')).toHaveLength(1);
 

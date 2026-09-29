@@ -21,10 +21,6 @@ const variants = {
       empty: 'document',
       error: 'warning',
     },
-    role: {
-      empty: 'status',
-      error: 'alert',
-    },
     tone: {
       empty: 'brand',
       error: 'danger',
@@ -37,7 +33,6 @@ const variants = {
   state: Record<string, never>;
   variant: {
     icon: Record<StatePanelVariant, IconName>;
-    role: Record<StatePanelVariant, 'alert' | 'status'>;
     tone: Record<StatePanelVariant, 'brand' | 'danger'>;
   };
 };
@@ -62,7 +57,7 @@ export interface StatePanelProps {
   icon?: IconName;
   /** Application-owned heading for the current state. */
   title: string;
-  /** Selects the empty or error announcement and visual treatment. */
+  /** Selects the empty or error visual treatment. */
   variant: StatePanelVariant;
 }
 
@@ -92,11 +87,10 @@ export function StatePanel({
   }
 
   return (
-    <div
+    <section
       aria-describedby={descriptionId}
       aria-labelledby={titleId}
       className={variants.base.panel}
-      role={variants.variant.role[variant]}
     >
       <IconTile
         name={icon ?? variants.variant.icon[variant]}
@@ -123,6 +117,6 @@ export function StatePanel({
           </div>
         ) : null}
       </div>
-    </div>
+    </section>
   );
 }
