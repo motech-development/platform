@@ -1,0 +1,30 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './FormSection.stories';
+
+<Meta
+  of={Stories}
+  summary="Groups related form fields in a native fieldset with an accessible title."
+/>
+
+# FormSection
+
+`FormSection` groups related fields under a native fieldset legend. It requires
+the Breeze provider and accepts only app-owned copy and child content.
+
+## Title and description
+
+The required `title` becomes the fieldset legend. An optional `description` is
+associated with the group for assistive technology.
+
+<Canvas of={Stories.Default} />
+
+## Multiple groups
+
+Use separate sections to label independent groups of fields. Each description
+receives a unique id so its association stays local to its fieldset.
+
+<Canvas of={Stories.MultipleSections} />
+
+## API
+
+<ArgTypes of={Stories.Default} />
