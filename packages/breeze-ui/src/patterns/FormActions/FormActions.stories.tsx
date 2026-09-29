@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useState } from 'react';
 import { expect, userEvent, within } from 'storybook/test';
 import { Button } from '../../primitives/Button/Button';
+import { Stack } from '../../primitives/Stack/Stack';
 import { TextField } from '../../primitives/TextField/TextField';
 import { FormActions, type FormActionsProps } from './FormActions';
 
@@ -18,16 +19,18 @@ function FormActionsExample({
           setStatus('Changes saved.');
         }}
       >
-        <TextField defaultValue="Alex Morgan" label="Display name" />
-        <FormActions align={align}>
-          <Button
-            onAction={() => setStatus('Changes discarded.')}
-            variant="secondary"
-          >
-            Cancel
-          </Button>
-          <Button type="submit">Save changes</Button>
-        </FormActions>
+        <Stack gap={4}>
+          <TextField defaultValue="Alex Morgan" label="Display name" />
+          <FormActions align={align}>
+            <Button
+              onAction={() => setStatus('Changes discarded.')}
+              variant="secondary"
+            >
+              Cancel
+            </Button>
+            <Button type="submit">Save changes</Button>
+          </FormActions>
+        </Stack>
       </form>
       <p role="status">{status}</p>
     </div>
