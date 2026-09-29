@@ -22,7 +22,7 @@ import * as Stories from './BreezeProvider.stories';
 
 `locale` takes a BCP 47 language tag. It sets the `lang` attribute and the text direction of the provider's root element.
 
-Only English (`en-GB`) messages are bundled. Supply partial `messages` to translate Breeze's loading and required announcements, the DatePicker placeholder, appearance control and overlay close button into the provider locale. Without an override, Breeze's own text uses English and is marked `lang="en-GB"`, independently of the surrounding content's language.
+Only English (`en-GB`) messages are bundled. Supply partial `messages` to translate Breeze's loading and required announcements, the DatePicker placeholder, appearance control, overlay close button, FileDropZone instructions and feedback, and attachment labels and actions into the provider locale. Without an override, Breeze's own text uses English and is marked `lang="en-GB"`, independently of the surrounding content's language.
 
 ```tsx
 <BreezeProvider
@@ -35,6 +35,30 @@ Only English (`en-GB`) messages are bundled. Supply partial `messages` to transl
 ```
 
 <Canvas of={Stories.Locale} />
+
+FileDropZone message strings use flat keys. Keep their placeholders when
+providing translations: `{types}` for accepted types, `{size}` for the size
+limit, `{count}` for multiple added files, `{current}` and `{max}` for the
+attachment count, `{fileName}` for a rejected file, and `{fileNames}` for files
+rejected by the total count limit. For example:
+
+```tsx
+<BreezeProvider
+  locale="fr-FR"
+  messages={{
+    fileDropZoneChooseFiles: 'Choisir des fichiers',
+    fileDropZoneAddedMany: '{count} fichiers ajoutés.',
+    fileDropZoneTypeRejected:
+      '{fileName} : Type de fichier non accepté. Formats autorisés : {types}.',
+    attachmentDocument: 'Document',
+    attachmentPhoto: 'Photo',
+    attachmentOpen: 'Ouvrir',
+    attachmentMoreActions: 'Plus d’actions',
+  }}
+>
+  <App />
+</BreezeProvider>
+```
 
 ## Appearance
 

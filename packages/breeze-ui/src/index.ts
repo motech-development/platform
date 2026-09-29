@@ -15,6 +15,14 @@ export type {
 } from './patterns/ApplicationShell/ApplicationShell';
 export { ApplicationShell } from './patterns/ApplicationShell/ApplicationShell';
 export type {
+  AttachmentRowAction,
+  AttachmentRowFileType,
+  AttachmentRowProps,
+} from './patterns/AttachmentRow/AttachmentRow';
+export { AttachmentRow } from './patterns/AttachmentRow/AttachmentRow';
+export type { FileDropZoneProps } from './patterns/FileDropZone/FileDropZone';
+export { FileDropZone } from './patterns/FileDropZone/FileDropZone';
+export type {
   FormActionsAlign,
   FormActionsProps,
 } from './patterns/FormActions/FormActions';

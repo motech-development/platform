@@ -1,0 +1,46 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './AttachmentRow.stories';
+
+<Meta
+  of={Stories}
+  summary="Shows an attached document or photograph with its visible status and actions."
+/>
+
+# AttachmentRow
+
+`AttachmentRow` presents one attached file in a compact row. The caller provides
+the file name, whether it is a document or photograph, its size in bytes, and a
+visible status such as `Uploaded` or `Upload failed`. Size formatting follows
+the required Breeze provider locale.
+
+## Document and photo thumbnails
+
+Documents use a page preview and photographs use the supplied image thumbnail
+or a camera placeholder. The file type is also written as visible text, so the
+thumbnail is not the only way to tell them apart.
+
+<Canvas of={Stories.Document} />
+
+<Canvas of={Stories.Photo} />
+
+## Open and menu actions
+
+Pass `onOpen` to show a direct Open button. Pass action descriptors and an
+`onAction` callback to show the overflow menu. Each action has a visible label;
+icons only decorate those labels.
+
+<Canvas of={Stories.Document} />
+
+## Visible state and loading
+
+The `status` text stays visible regardless of the file type or thumbnail. While
+the file details are unavailable, set `loading` to show the row-shaped loading
+placeholder.
+
+<Canvas of={Stories.UploadFailed} />
+
+<Canvas of={Stories.Loading} />
+
+## API
+
+<ArgTypes of={Stories.Document} />

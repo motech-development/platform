@@ -1,0 +1,40 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './FileDropZone.stories';
+
+<Meta
+  of={Stories}
+  summary="Accepts files by drag and drop or through an accessible picker button, with visible validation feedback."
+/>
+
+# FileDropZone
+
+`FileDropZone` accepts files through drag and drop or the **Choose files**
+button. The button opens a native file picker, so keyboard users can browse for
+files without dragging.
+
+<Canvas of={Stories.Default} />
+
+## File limits
+
+Pass `accept` as a comma-separated list of file extensions and MIME types, such
+as `.pdf,image/*`. Dropped files are checked against the same rules. Set
+`maxSize` in bytes and `maxFiles` for the total attachment limit. When existing
+files are already attached, provide their number as `currentFileCount`.
+
+The component shows each rejection reason in visible text and announces the
+same message through a polite live region. Supported files are passed to
+`onFilesAdded` as a readonly array. The application owns the attachment state,
+upload, and storage work.
+
+Picker text, instructions, and feedback use the BreezeProvider `messages`
+override boundary. Translations retain the placeholders documented in the
+BreezeProvider locale section, and each message announces with its matching
+language.
+
+<Canvas of={Stories.WithExistingFiles} />
+
+<Canvas of={Stories.ChooseAFile} />
+
+## API
+
+<ArgTypes of={Stories.Default} />
