@@ -1,0 +1,28 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './FormActions.stories';
+
+<Meta
+  of={Stories}
+  summary="Places form actions in a responsive row with consistent spacing."
+/>
+
+# FormActions
+
+`FormActions` arranges application-owned action controls with consistent spacing
+and wrapping. It does not handle submission or change child control behavior.
+
+## Action placement
+
+Actions align to the end by default. Set `align` to `start` when the surrounding
+form calls for a leading action row.
+
+<Canvas of={Stories.Default} />
+
+<Canvas of={Stories.StartAligned} />
+
+The example keeps Cancel as a secondary button and Save as the form's native
+submit button. Both actions report visible feedback.
+
+## API
+
+<ArgTypes of={Stories.Default} />

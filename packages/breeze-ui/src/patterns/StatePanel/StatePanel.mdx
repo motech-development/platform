@@ -1,0 +1,45 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './StatePanel.stories';
+
+<Meta
+  of={Stories}
+  summary="Presents an empty or error state with one optional working action."
+/>
+
+# StatePanel
+
+`StatePanel` presents application-owned copy for an empty or failed content
+state. Empty states announce a polite status; errors announce an alert.
+
+When `StatePanel` owns the page's primary action, omit that action from the page
+header so the page does not show duplicate calls to action.
+
+## Empty states
+
+Provide the title and explanation your application owns. An empty state may omit
+an action or offer one primary action.
+
+<Canvas of={Stories.Empty} />
+
+<Canvas of={Stories.EmptyWithAction} />
+
+## Error states
+
+An error recovery action is optional. When supplied, its label and callback are
+required together, and activating it must perform the recovery work.
+
+<Canvas of={Stories.Error} />
+
+<Canvas of={Stories.ErrorWithRecovery} />
+
+## Icon
+
+The panel selects a brand document icon for empty states and a danger warning
+icon for errors. Set `icon` to another curated Breeze icon when that better
+describes the content.
+
+<Canvas of={Stories.CustomIcon} />
+
+## API
+
+<ArgTypes of={Stories.Empty} />

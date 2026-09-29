@@ -14,8 +14,21 @@ export type {
   ApplicationShellProps,
 } from './patterns/ApplicationShell/ApplicationShell';
 export { ApplicationShell } from './patterns/ApplicationShell/ApplicationShell';
+export type {
+  FormActionsAlign,
+  FormActionsProps,
+} from './patterns/FormActions/FormActions';
+export { FormActions } from './patterns/FormActions/FormActions';
+export type { FormSectionProps } from './patterns/FormSection/FormSection';
+export { FormSection } from './patterns/FormSection/FormSection';
 export type { PageHeaderProps } from './patterns/PageHeader/PageHeader';
 export { PageHeader } from './patterns/PageHeader/PageHeader';
+export type {
+  StatePanelAction,
+  StatePanelProps,
+  StatePanelVariant,
+} from './patterns/StatePanel/StatePanel';
+export { StatePanel } from './patterns/StatePanel/StatePanel';
 export type { BadgeProps, BadgeVariant } from './primitives/Badge/Badge';
 export { Badge } from './primitives/Badge/Badge';
 export type {
