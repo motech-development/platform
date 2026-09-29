@@ -1,0 +1,70 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './ApplicationShell.stories';
+
+<Meta
+  of={Stories}
+  summary="Provides responsive application chrome, section navigation and a fixed mobile action."
+/>
+
+# ApplicationShell
+
+`ApplicationShell` provides the shared frame around an application's page content: a top bar, section navigation, a skip link and the main landmark. It accepts application-owned values and slot content without depending on an account or product domain.
+
+<Canvas
+  layout="fullscreen"
+  of={Stories.Default}
+  story={{ height: '844px', inline: false }}
+/>
+
+## Supply navigation values
+
+Pass application values through `items` and map each value to the supported navigation fields with `getItem`. Every item needs a stable `id`, destination `href` and visible `label`; `icon` may use a curated Breeze `IconName`. Set `currentItem` to the ID of the current destination. The matching link receives `aria-current="page"` and the animated navigation marker.
+
+For example, an application can adapt its own route model while keeping the shell generic:
+
+```tsx
+<ApplicationShell
+  account={<AccountMenu />}
+  action={{ label: 'Create item', onAction: createItem }}
+  brand={<Brand />}
+  context={<WorkspaceSwitcher />}
+  currentItem={currentRoute.key}
+  getItem={(route) => ({
+    href: route.href,
+    id: route.key,
+    label: route.title,
+  })}
+  items={routes}
+  notifications={<NotificationButton />}
+>
+  {pageContent}
+</ApplicationShell>
+```
+
+The anchors keep native link behavior. When a same-document router is configured on `BreezeProvider`, section navigation sends `transitionTypes: ['nav']` to that router.
+
+## Provide the application slots
+
+`brand`, `context`, `notifications` and `account` accept `ReactNode`. Their content and semantics belong to the application: label interactive controls, keep keyboard behavior usable and provide accessible names for icon-only controls. `children` is rendered inside the shell's main landmark.
+
+`action` is required. Its `label` names the action, and `onAction` performs the application-owned operation. An optional curated icon is displayed inside the mobile action button; without an icon, the label is shown in a bounded, wrapping fallback.
+
+## Responsive behavior and motion
+
+At Breeze's private `lg` breakpoint (1181px), navigation is horizontal beneath the top bar. Below that breakpoint, the navigation is fixed to the bottom edge and the required action stays in the centre slot. The centre slot keeps its position as the current page changes. The main content includes clearance for the fixed navigation and the device safe area.
+
+The shell renders one skip link before its chrome and gives its main landmark a generated unique ID and `tabIndex={-1}`. Its top bar, top navigation, bottom navigation and current marker participate in view transitions through Breeze's built-in singleton names. Mount one visible shell at a time so those names stay unique in the document.
+
+## Text action fallback
+
+The action remains named and readable without a curated icon.
+
+<Canvas
+  layout="fullscreen"
+  of={Stories.TextActionFallback}
+  story={{ height: '844px', inline: false }}
+/>
+
+## API
+
+<ArgTypes of={Stories.Default} />

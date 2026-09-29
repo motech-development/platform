@@ -1,0 +1,23 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './PageHeader.stories';
+
+<Meta
+  of={Stories}
+  summary="Presents a page-level heading, supporting description and optional actions."
+/>
+
+# PageHeader
+
+`PageHeader` presents the page's level-one heading, optional description and optional action content. Use one page header for the main heading of a page.
+
+<Canvas of={Stories.Default} />
+
+## Page actions
+
+Pass application-owned controls through `actions`. Their labels, focus behavior and accessible names remain the application's responsibility.
+
+<Canvas of={Stories.WithActions} />
+
+## API
+
+<ArgTypes of={Stories.Default} />

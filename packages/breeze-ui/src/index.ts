@@ -8,6 +8,14 @@ export {
   useViewTransitionParticipant,
 } from './motion/view-transitions';
 export { default as AppearanceControl } from './patterns/AppearanceControl/AppearanceControl';
+export type {
+  ApplicationShellAction,
+  ApplicationShellNavigationItem,
+  ApplicationShellProps,
+} from './patterns/ApplicationShell/ApplicationShell';
+export { ApplicationShell } from './patterns/ApplicationShell/ApplicationShell';
+export type { PageHeaderProps } from './patterns/PageHeader/PageHeader';
+export { PageHeader } from './patterns/PageHeader/PageHeader';
 export type { BadgeProps, BadgeVariant } from './primitives/Badge/Badge';
 export { Badge } from './primitives/Badge/Badge';
 export type {
@@ -96,6 +104,8 @@ export type {
   SkeletonShape,
 } from './primitives/Skeleton/Skeleton';
 export { Skeleton } from './primitives/Skeleton/Skeleton';
+export type { SkipLinkProps } from './primitives/SkipLink/SkipLink';
+export { SkipLink } from './primitives/SkipLink/SkipLink';
 export type { StackProps } from './primitives/Stack/Stack';
 export { Stack } from './primitives/Stack/Stack';
 export type { TextFieldProps } from './primitives/TextField/TextField';

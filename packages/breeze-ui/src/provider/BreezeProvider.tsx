@@ -171,8 +171,11 @@ export function BreezeProvider({
         close: messages?.close ?? enGB.close,
         loading: messages?.loading ?? enGB.loading,
         noItemsToDisplay: messages?.noItemsToDisplay ?? enGB.noItemsToDisplay,
+        primaryNavigation:
+          messages?.primaryNavigation ?? enGB.primaryNavigation,
         required: messages?.required ?? enGB.required,
         selectDate: messages?.selectDate ?? enGB.selectDate,
+        skipToMain: messages?.skipToMain ?? enGB.skipToMain,
       },
       resolvedAppearance,
       router,
