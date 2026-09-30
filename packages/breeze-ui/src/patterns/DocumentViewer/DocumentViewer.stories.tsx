@@ -1,9 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useState } from 'react';
 import { expect, userEvent, waitFor, within } from 'storybook/test';
+import { Button } from '../../primitives/Button/Button';
 import { Drawer } from '../../primitives/Drawer/Drawer';
 import { AttachmentRow } from '../AttachmentRow/AttachmentRow';
-import { DocumentViewer } from './DocumentViewer';
+import { DocumentViewer, type DocumentViewerProps } from './DocumentViewer';
 
 function createPdfDataUrl() {
   const firstPage =
@@ -38,9 +39,33 @@ function createPdfDataUrl() {
 }
 
 const pdfDataUrl = createPdfDataUrl();
+const pdfWorkerArgs = {
+  mediaType: 'pdf',
+  src: pdfDataUrl,
+  title: 'Workshop invoice',
+} satisfies Pick<DocumentViewerProps, 'mediaType' | 'src' | 'title'>;
+
+const imageArgs = {
+  mediaType: 'image',
+  src: 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22480%22 height=%22320%22 viewBox=%220 0 480 320%22%3E%3Crect width=%22480%22 height=%22320%22 fill=%22%23dcebe6%22/%3E%3Cpath d=%22M0 260 145 110l115 120 75-90 145 150v30H0z%22 fill=%22%23699586%22/%3E%3C/svg%3E',
+  title: 'Workshop entrance',
+} satisfies Pick<DocumentViewerProps, 'mediaType' | 'src' | 'title'>;
 
 const meta = {
+  argTypes: {
+    defaultOpen: { control: false },
+    open: { control: false },
+  },
   component: DocumentViewer,
+  parameters: {
+    docs: {
+      story: {
+        autoplay: false,
+        height: '600px',
+        inline: false,
+      },
+    },
+  },
   title: 'Files/DocumentViewer',
 } satisfies Meta<typeof DocumentViewer>;
 
@@ -75,6 +100,37 @@ async function expectPaintedPdfPage(dialog: HTMLElement, pageText: string) {
   });
 }
 
+function DocumentViewerStoryExample({
+  mediaType,
+  src,
+  title,
+}: Pick<DocumentViewerProps, 'mediaType' | 'src' | 'title'>) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <Button onAction={() => setOpen(true)}>{`Open ${title}`}</Button>
+      <DocumentViewer
+        mediaType={mediaType}
+        onOpenChange={setOpen}
+        open={open}
+        src={src}
+        title={title}
+      />
+    </>
+  );
+}
+
+function renderDocumentViewerStoryExample({
+  mediaType,
+  src,
+  title,
+}: Pick<DocumentViewerProps, 'mediaType' | 'src' | 'title'>) {
+  return (
+    <DocumentViewerStoryExample mediaType={mediaType} src={src} title={title} />
+  );
+}
+
 function getFlexItemGaps(items: HTMLElement[]) {
   return items.slice(1).map((item, index) => {
     const previous = items[index];
@@ -93,13 +149,13 @@ function getFlexItemGaps(items: HTMLElement[]) {
 
 /** A two-page PDF rendered by the optional, lazy PDF.js engine and worker. */
 export const PdfWorker: Story = {
-  args: {
-    defaultOpen: true,
-    mediaType: 'pdf',
-    src: pdfDataUrl,
-    title: 'Workshop invoice',
-  },
+  args: pdfWorkerArgs,
   play: async () => {
+    await userEvent.click(
+      within(document.body).getByRole('button', {
+        name: 'Open Workshop invoice',
+      }),
+    );
     const dialog = within(document.body).getByRole('dialog', {
       name: 'Workshop invoice',
     });
@@ -165,6 +221,12 @@ export const PdfWorker: Story = {
       await expect(bounds.bottom).toBeLessThanOrEqual(stageBounds.bottom + 1);
     });
   },
+  render: renderDocumentViewerStoryExample,
+};
+
+export const PdfWorkerDocs: Story = {
+  args: pdfWorkerArgs,
+  render: renderDocumentViewerStoryExample,
 };
 
 function AttachmentMorphExample() {
@@ -176,7 +238,7 @@ function AttachmentMorphExample() {
   };
 
   return (
-    <Drawer defaultOpen title="Account record" trigger="Open account record">
+    <Drawer title="Account record" trigger="Open account record">
       <AttachmentRow
         fileType="document"
         filename="workshop-invoice.pdf"
@@ -201,14 +263,13 @@ function AttachmentMorphExample() {
   );
 }
 
+function renderAttachmentMorphExample() {
+  return <AttachmentMorphExample />;
+}
+
 /** Opens from its matching attachment row and morphs into the reader. */
 export const FromAttachmentRow: Story = {
-  args: {
-    defaultOpen: false,
-    mediaType: 'pdf',
-    src: pdfDataUrl,
-    title: 'Workshop invoice',
-  },
+  args: pdfWorkerArgs,
   play: async () => {
     const { page } = await import('vitest/browser');
     await page.viewport(1280, 800);
@@ -280,6 +341,14 @@ export const FromAttachmentRow: Story = {
 
       await userEvent.click(
         within(document.body).getByRole('button', {
+          name: 'Open account record',
+        }),
+      );
+      const recordDialog = await within(document.body).findByRole('dialog', {
+        name: 'Account record',
+      });
+      await userEvent.click(
+        within(recordDialog).getByRole('button', {
           name: 'Open: workshop-invoice.pdf',
         }),
       );
@@ -439,15 +508,36 @@ export const FromAttachmentRow: Story = {
       await page.viewport(1280, 800);
     }
   },
-  render: () => <AttachmentMorphExample />,
+  render: renderAttachmentMorphExample,
+};
+
+export const FromAttachmentRowDocs: Story = {
+  args: pdfWorkerArgs,
+  render: renderAttachmentMorphExample,
 };
 
 /** A photograph uses the same toolbar without loading the PDF engine. */
 export const Image: Story = {
-  args: {
-    defaultOpen: true,
-    mediaType: 'image',
-    src: 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22480%22 height=%22320%22 viewBox=%220 0 480 320%22%3E%3Crect width=%22480%22 height=%22320%22 fill=%22%23dcebe6%22/%3E%3Cpath d=%22M0 260 145 110l115 120 75-90 145 150v30H0z%22 fill=%22%23699586%22/%3E%3C/svg%3E',
-    title: 'Workshop entrance',
+  args: imageArgs,
+  play: async () => {
+    await userEvent.click(
+      within(document.body).getByRole('button', {
+        name: 'Open Workshop entrance',
+      }),
+    );
+    const dialog = await within(document.body).findByRole('dialog', {
+      name: 'Workshop entrance',
+    });
+    await waitFor(async () => {
+      await expect(
+        within(dialog).getByRole('region', { name: 'Workshop entrance' }),
+      ).toHaveAttribute('aria-busy', 'false');
+    });
   },
+  render: renderDocumentViewerStoryExample,
+};
+
+export const ImageDocs: Story = {
+  args: imageArgs,
+  render: renderDocumentViewerStoryExample,
 };
