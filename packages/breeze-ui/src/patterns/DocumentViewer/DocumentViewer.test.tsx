@@ -1,6 +1,7 @@
 import {
   act,
   fireEvent,
+  render,
   screen,
   waitFor,
   within,
@@ -17,6 +18,8 @@ import {
   vi,
 } from 'vitest';
 import renderBreeze from '../../../test/render';
+import { Drawer } from '../../primitives/Drawer/Drawer';
+import { BreezeProvider } from '../../provider/BreezeProvider';
 import { AttachmentRow } from '../AttachmentRow/AttachmentRow';
 import { DocumentViewer, type DocumentViewerProps } from './DocumentViewer';
 import type { PdfSession } from './pdf-renderer';
@@ -186,6 +189,25 @@ describe('DocumentViewer', () => {
     await waitFor(() => expect(onOpenChange).toHaveBeenCalledWith(false));
   });
 
+  it('sets the close message language when the provider overrides it', async () => {
+    render(
+      <BreezeProvider locale="fr-FR" messages={{ close: 'Fermer' }}>
+        <DocumentViewer
+          defaultOpen
+          mediaType="image"
+          src="/attachments/receipt.jpg"
+          title="Receipt"
+        />
+      </BreezeProvider>,
+    );
+
+    const dialog = await screen.findByRole('dialog', { name: 'Receipt' });
+    const closeButton = within(dialog).getByRole('button', {
+      name: 'Fermer',
+    });
+    expect(closeButton.closest('[lang]')).toHaveAttribute('lang', 'fr-FR');
+  });
+
   it('hides app-owned actions when their callbacks are absent', async () => {
     renderBreeze(
       <DocumentViewer
@@ -247,7 +269,7 @@ describe('DocumentViewer', () => {
     );
 
     await waitFor(() => expect(mockLoadPdfDocument).toHaveBeenCalledOnce());
-    expect(screen.queryByTitle('Report')).toBeNull();
+    expect(document.body.querySelector('iframe')).toBeNull();
     expect(
       document.body.querySelector('[aria-label="Loading document"]'),
     ).toBeInTheDocument();
@@ -345,7 +367,13 @@ describe('DocumentViewer', () => {
         title="Scan"
       />,
     );
-    const frame = await screen.findByTitle('Scan');
+    const frame = await waitFor(() => {
+      const current = document.body.querySelector('iframe');
+      if (!current)
+        throw new Error('The browser-owned document frame is absent.');
+      return current;
+    });
+    expect(frame).toHaveAttribute('title', 'Scan');
     fireEvent.load(frame);
     const dialog = await screen.findByRole('dialog', { name: 'Scan' });
 
@@ -536,6 +564,155 @@ describe('DocumentViewer', () => {
       ).not.toBeInTheDocument(),
     );
   });
+
+  it.each([false, true])(
+    'morphs the attachment row into and out of a nested viewer (conditional mount: %s)',
+    async (conditionalMount) => {
+      const user = userEvent.setup();
+      const transitionName = 'nested-record-preview';
+      const snapshots: {
+        next: string[];
+        old: string[];
+        types: string[];
+      }[] = [];
+      class MockViewTransition {}
+      Object.defineProperty(MockViewTransition.prototype, 'types', {
+        configurable: true,
+        value: new Set<string>(),
+      });
+      Object.defineProperty(window, 'ViewTransition', {
+        configurable: true,
+        value: MockViewTransition,
+      });
+      Object.defineProperty(window, 'CSS', {
+        configurable: true,
+        value: { supports: vi.fn(() => true) },
+      });
+      Object.defineProperty(window, 'matchMedia', {
+        configurable: true,
+        value: vi.fn((query: string) => ({
+          addEventListener: vi.fn(),
+          matches: false,
+          media: query,
+          removeEventListener: vi.fn(),
+        })),
+      });
+      const collect = () =>
+        Array.from(
+          document.querySelectorAll<HTMLElement>(
+            '[data-breeze-transition-enabled="true"][data-breeze-transition-name]',
+          ),
+        )
+          .filter(
+            (element) =>
+              element.dataset.breezeTransitionName === transitionName,
+          )
+          .map((element) => {
+            if (element.querySelector('[aria-label="Zoom in"]')) {
+              return element.querySelector('[aria-label="Loading document"]')
+                ? 'viewer-skeleton'
+                : 'viewer';
+            }
+            return 'attachment';
+          });
+      Object.defineProperty(document, 'startViewTransition', {
+        configurable: true,
+        value: (options: StartViewTransitionOptions) => {
+          const update = options.update as
+            | (() => void | Promise<void>)
+            | undefined;
+          const snapshot = {
+            next: [] as string[],
+            old: collect(),
+            types: Array.from(options.types ?? []),
+          };
+          const updateCallbackDone = Promise.resolve().then(async () => {
+            await update?.();
+            snapshot.next = collect();
+          });
+          const finished = updateCallbackDone;
+          snapshots.push(snapshot);
+          return {
+            finished,
+            ready: Promise.resolve(),
+            skipTransition: vi.fn(),
+            types: new Set(snapshot.types),
+            updateCallbackDone,
+          } satisfies ViewTransition;
+        },
+      });
+
+      function AttachmentViewerExample() {
+        const [open, setOpen] = useState(false);
+        const [mounted, setMounted] = useState(!conditionalMount);
+        const showViewer = () => {
+          if (conditionalMount) setMounted(true);
+          setOpen(true);
+        };
+
+        return (
+          <Drawer
+            defaultOpen
+            title="Account record"
+            trigger="Open account record"
+          >
+            <AttachmentRow
+              fileType="document"
+              filename="receipt.pdf"
+              onOpen={showViewer}
+              sizeBytes={12_000}
+              status="Uploaded"
+              transitionName={transitionName}
+            />
+            {mounted ? (
+              <DocumentViewer
+                mediaType="image"
+                onOpenChange={setOpen}
+                open={open}
+                src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%221%22 height=%221%22%3E%3Crect width=%221%22 height=%221%22/%3E%3C/svg%3E"
+                title="Receipt"
+                transitionName={transitionName}
+              />
+            ) : null}
+          </Drawer>
+        );
+      }
+
+      renderBreeze(<AttachmentViewerExample />);
+      const row = await screen.findByRole('button', {
+        name: 'Open: receipt.pdf',
+      });
+      await user.click(row);
+      const dialog = await screen.findByRole('dialog', { name: 'Receipt' });
+      const image = await waitFor(() => {
+        const current = dialog.querySelector('img');
+        if (!current) throw new Error('Expected the image preview.');
+        return current;
+      });
+      fireEvent.load(image);
+      await waitFor(() =>
+        expect(
+          dialog.querySelector('[aria-label="Loading document"]'),
+        ).not.toBeInTheDocument(),
+      );
+
+      const expandSnapshots = () =>
+        snapshots.filter(({ types }) => types.includes('expand'));
+      await waitFor(() => expect(expandSnapshots()).toHaveLength(1));
+      expect(expandSnapshots()[0]).toMatchObject({
+        next: ['viewer-skeleton'],
+        old: ['attachment'],
+      });
+
+      await user.keyboard('{Escape}');
+      await waitFor(() => expect(expandSnapshots()).toHaveLength(2));
+      expect(expandSnapshots()[1]).toMatchObject({
+        next: ['attachment'],
+        old: ['viewer'],
+      });
+      await waitFor(() => expect(row).toHaveFocus());
+    },
+  );
 
   it('resets the page when the opened source changes', async () => {
     const user = userEvent.setup();

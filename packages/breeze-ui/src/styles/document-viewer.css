@@ -5,6 +5,12 @@
     inset-inline-start: 50%;
   }
 
+  :where([data-breeze-root]) .breeze-document-viewer-stage,
+  :where([data-breeze-root]) .breeze-document-viewer-stage-content {
+    align-items: safe center;
+    justify-content: safe center;
+  }
+
   :where([data-breeze-root]) .breeze-pdf-text-layer {
     position: absolute;
     z-index: 0;

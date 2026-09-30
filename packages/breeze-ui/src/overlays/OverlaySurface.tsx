@@ -21,6 +21,7 @@ const variants = {
     content: 'breeze-overlay-content',
     header: 'breeze-overlay-header',
     title: 'breeze-overlay-title',
+    viewerContent: 'breeze-document-viewer-overlay-content',
   },
   compound: {},
   size: {},
@@ -61,6 +62,9 @@ function OverlaySurface({
   onOpenChange,
   open: controlledOpen,
   placement = 'bottom',
+  closingTransition = false,
+  showHeader = true,
+  viewerSurface = false,
   title,
   trigger,
 }: Readonly<
@@ -68,6 +72,9 @@ function OverlaySurface({
     open?: boolean;
     defaultOpen?: boolean;
     fullScreen?: boolean;
+    closingTransition?: boolean;
+    showHeader?: boolean;
+    viewerSurface?: boolean;
     onOpenChange?: (open: boolean) => void;
     kind: OverlayKind;
     placement?: 'top' | 'bottom' | 'start' | 'end';
@@ -119,7 +126,7 @@ function OverlaySurface({
   const layer = useOverlayLayer(
     kind,
     open && portalReady && host !== null,
-    open || surfaceMounted,
+    open || (surfaceMounted && !closingTransition),
   );
   const changeOpen = useCallback(
     (nextOpen: boolean) => {
@@ -336,14 +343,16 @@ function OverlaySurface({
     : variants.variant[kind];
   const body = (
     <>
-      <div className={variants.base.header}>
-        <h2 className={variants.base.title}>{title}</h2>
-        <span lang={getMessageLocale('close')}>
-          <Button onAction={() => changeOpen(false)} variant="quiet">
-            {messages.close}
-          </Button>
-        </span>
-      </div>
+      {showHeader ? (
+        <div className={variants.base.header}>
+          <h2 className={variants.base.title}>{title}</h2>
+          <span lang={getMessageLocale('close')}>
+            <Button onAction={() => changeOpen(false)} variant="quiet">
+              {messages.close}
+            </Button>
+          </span>
+        </div>
+      ) : null}
       {children}
     </>
   );
@@ -380,7 +389,12 @@ function OverlaySurface({
       ) : (
         <AriaDialog
           aria-label={title}
-          className={variants.base.content}
+          className={[
+            variants.base.content,
+            viewerSurface && variants.base.viewerContent,
+          ]
+            .filter(Boolean)
+            .join(' ')}
           id={layer.id}
           ref={surfaceRef}
         >

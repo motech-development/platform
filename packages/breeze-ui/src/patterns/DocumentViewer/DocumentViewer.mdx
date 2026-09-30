@@ -30,12 +30,17 @@ apply to images, rendered PDF pages, and browser-owned frames.
 
 <Canvas of={Stories.PdfWorker} />
 
+The compact toolbar keeps the filename and document actions in one raised strip.
+For multi-page PDFs, page navigation sits in a separate neutral row beneath it.
+
 ## AttachmentRow transition
 
-Give the row and viewer the same stable `transitionName` to morph the row into
-the opened reader. The loaded image or PDF remains covered until that morph
-finishes, then its rendered content is revealed. Unsupported View Transition
-APIs and reduced-motion preferences use the same flow without animation.
+Give the row and viewer the same stable `transitionName` to morph between the
+attachment row and the reader in both directions. Close and Escape return to the
+row while preserving the surrounding overlay. The loaded image or PDF remains
+covered until the opening morph finishes, then its rendered content is revealed.
+Unsupported View Transition APIs and reduced-motion preferences use the same
+flow without animation.
 
 <Canvas of={Stories.FromAttachmentRow} />
 
@@ -64,7 +69,7 @@ With Breeze UI's development pin `pdfjs-dist@6.3.289`, the measurement on
 
 | Payload                                                                       |  Gzip size |
 | ----------------------------------------------------------------------------- | ---------: |
-| Breeze UI library JavaScript (package output; external dependencies excluded) |  34.90 KiB |
+| Breeze UI library JavaScript (package output; external dependencies excluded) |  35.40 KiB |
 | PDF.js engine JavaScript (main + worker, independently compressed)            | 634.60 KiB |
 
 ## Actions

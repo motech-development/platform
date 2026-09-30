@@ -155,6 +155,19 @@
       var(--breeze-transition-ease) both;
   }
 
+  :root:has([data-breeze-viewer-mode-transition]):active-view-transition-type(
+      mode
+    )::view-transition-old(root) {
+    display: block;
+    animation: none;
+  }
+
+  :root:has([data-breeze-viewer-mode-transition]):active-view-transition-type(
+      mode
+    )::view-transition-new(root) {
+    animation: none;
+  }
+
   /* Keep fixed chrome imagery still even when item or expand recipes also match. */
   :root:active-view-transition-type(nav)::view-transition-old(breeze-topbar),
   :root:active-view-transition-type(nav)::view-transition-new(breeze-topbar),

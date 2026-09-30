@@ -1,10 +1,19 @@
-import { useCallback, useEffect, useId, useRef, useState } from 'react';
+import {
+  type ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+} from 'react';
 import { flushSync } from 'react-dom';
 import {
   startViewTransitionAndWait,
   useViewTransitionParticipant,
   waitForCurrentViewTransition,
 } from '../../motion/view-transitions';
+import { ParentOverlayContext } from '../../overlays/OverlayStack';
 import OverlaySurface from '../../overlays/OverlaySurface';
 import { Button } from '../../primitives/Button/Button';
 import { Skeleton } from '../../primitives/Skeleton/Skeleton';
@@ -14,28 +23,30 @@ import { loadPdfDocument, renderPdfPage } from './pdf-renderer';
 
 const variants = {
   base: {
-    actions:
-      'breeze:flex breeze:flex-wrap breeze:items-center breeze:gap-breeze-2',
-    download:
-      'breeze:inline-grid breeze:min-block-breeze-md breeze:place-items-center breeze:rounded-breeze-ctl breeze:border breeze:border-solid breeze:border-transparent breeze:px-breeze-3 breeze:pbe-breeze-3 breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:pbs-breeze-2 breeze:text-breeze-sm breeze:leading-breeze-snug breeze:text-breeze-brand-text breeze:underline breeze:underline-offset-2 breeze:hover:bg-breeze-brand-soft breeze:focus-visible:outline-2 breeze:focus-visible:outline-solid breeze:focus-visible:outline-breeze-brand',
     mediaBox: 'breeze:relative breeze:flex-none',
     mediaContent: 'breeze-document-viewer-media-content',
     pageStatus:
       'breeze:min-inline-size-[6rem] breeze:text-center breeze:text-breeze-sm breeze:tabular-nums breeze:text-breeze-ink-2',
+    pageToolbar:
+      'breeze:flex breeze:items-center breeze:justify-center breeze:gap-breeze-2 breeze:border-breeze-line breeze:border-b breeze:bg-breeze-canvas breeze:px-breeze-3 breeze:py-breeze-2',
     pdfPage:
       'breeze-pdf-page breeze:relative breeze:overflow-hidden breeze:bg-white breeze:shadow-overlay',
-    root: 'breeze:flex breeze:block-size-full breeze:min-block-size-0 breeze:min-inline-size-0 breeze:flex-col breeze:gap-breeze-3',
+    root: 'breeze:flex breeze:block-size-full breeze:inline-size-full breeze:min-block-size-0 breeze:min-inline-size-0 breeze:flex-col breeze:bg-breeze-canvas',
     skeletonLayer:
       'breeze:absolute breeze:inset-0 breeze:flex breeze:items-center breeze:justify-center',
     stage:
-      'breeze:relative breeze:flex breeze:min-block-size-0 breeze:min-inline-size-0 breeze:flex-1 breeze:items-[safe_center] breeze:justify-[safe_center] breeze:overflow-auto breeze:rounded-breeze-sm breeze:bg-breeze-sunken breeze:p-breeze-4',
+      'breeze-document-viewer-stage breeze:relative breeze:flex breeze:min-block-size-0 breeze:min-inline-size-0 breeze:flex-1 breeze:overflow-auto breeze:rounded-breeze-sm breeze:bg-breeze-sunken breeze:p-breeze-4',
     stageContent:
-      'breeze:flex breeze:min-block-size-full breeze:min-inline-size-full breeze:items-[safe_center] breeze:justify-[safe_center]',
+      'breeze-document-viewer-stage-content breeze:flex breeze:min-block-size-full breeze:min-inline-size-full',
     textLayer: 'breeze-pdf-text-layer',
     toolbar:
-      'breeze:flex breeze:flex-wrap breeze:items-center breeze:justify-between breeze:gap-breeze-3 breeze:border-breeze-line breeze:border-b breeze:pbe-breeze-3',
+      'breeze:flex breeze:flex-wrap breeze:items-center breeze:gap-breeze-1.5 breeze:border-breeze-line breeze:border-b breeze:bg-breeze-raised breeze:px-breeze-3 breeze:py-breeze-2',
+    toolbarLink:
+      'breeze:inline-flex breeze:min-block-breeze-sm breeze:items-center breeze:justify-center breeze:rounded-breeze-ctl breeze:border breeze:border-solid breeze:border-breeze-line-strong breeze:bg-breeze-surface breeze:px-breeze-3 breeze:text-breeze-sm breeze:leading-breeze-snug breeze:text-breeze-ink breeze:no-underline breeze:hover:bg-breeze-sunken breeze:focus-visible:outline-2 breeze:focus-visible:outline-solid breeze:focus-visible:outline-breeze-brand breeze:any-pointer-coarse:min-block-breeze-tap breeze:any-pointer-coarse:min-inline-breeze-tap',
     toolbarSection:
-      'breeze:flex breeze:flex-wrap breeze:items-center breeze:gap-breeze-2',
+      'breeze:flex breeze:flex-wrap breeze:items-center breeze:gap-breeze-1.5',
+    toolbarTitle:
+      'breeze:grow breeze:min-inline-size-0 breeze:overflow-hidden breeze:text-ellipsis breeze:whitespace-nowrap breeze:text-breeze-xs breeze:font-semibold breeze:text-breeze-ink-2 breeze:max-breeze-md:basis-full breeze:max-breeze-md:grow-0 breeze:max-breeze-md:shrink-0',
     viewer:
       'breeze:relative breeze:flex breeze:min-block-size-0 breeze:min-inline-size-0 breeze:flex-1 breeze:flex-col breeze:overflow-hidden',
     viewerFrame:
@@ -114,6 +125,89 @@ function getFullscreenTarget(element: HTMLElement) {
   return element.closest<HTMLElement>('.breeze-fullscreen') ?? element;
 }
 
+interface ViewerModeMarker {
+  count: number;
+  previous: string | null;
+}
+
+const viewerModeMarkers = new WeakMap<HTMLElement, ViewerModeMarker>();
+
+function startViewerModeTransition(
+  element: HTMLElement | null,
+  update: () => Promise<void>,
+) {
+  if (element) {
+    const marker = viewerModeMarkers.get(element);
+    if (marker) marker.count += 1;
+    else {
+      viewerModeMarkers.set(element, {
+        count: 1,
+        previous: element.getAttribute('data-breeze-viewer-mode-transition'),
+      });
+    }
+    element.setAttribute('data-breeze-viewer-mode-transition', '');
+  }
+  const restoreMarker = () => {
+    if (!element) return;
+    const marker = viewerModeMarkers.get(element);
+    if (!marker) return;
+    marker.count -= 1;
+    if (marker.count > 0) return;
+    viewerModeMarkers.delete(element);
+    if (marker.previous === null)
+      element.removeAttribute('data-breeze-viewer-mode-transition');
+    else
+      element.setAttribute(
+        'data-breeze-viewer-mode-transition',
+        marker.previous,
+      );
+  };
+
+  try {
+    return startViewTransitionAndWait(update, ['mode']).finally(restoreMarker);
+  } catch (error) {
+    restoreMarker();
+    throw error;
+  }
+}
+
+interface DocumentViewerPanelProps {
+  children: ReactNode;
+  name: string;
+  onRoot: (element: HTMLDivElement | null) => void;
+}
+
+function DocumentViewerPanel({
+  children,
+  name,
+  onRoot,
+}: Readonly<DocumentViewerPanelProps>) {
+  const transitionRef = useViewTransitionParticipant({
+    name,
+    types: ['expand', 'mode'],
+  });
+  const setRootRef = useCallback(
+    (element: HTMLDivElement | null) => {
+      const cleanup = transitionRef(element);
+      onRoot(element);
+
+      if (!element) return cleanup;
+
+      return () => {
+        onRoot(null);
+        cleanup?.();
+      };
+    },
+    [onRoot, transitionRef],
+  );
+
+  return (
+    <div className={variants.base.root} ref={setRootRef}>
+      {children}
+    </div>
+  );
+}
+
 /**
  * Opens an image or document in a full-screen viewer with its own toolbar.
  *
@@ -135,26 +229,15 @@ export function DocumentViewer({
   const reactId = useId().replace(/[^a-zA-Z0-9_-]/g, '');
   const participantName =
     transitionName?.trim() || `breeze-document-${reactId}`;
-  const transitionRef = useViewTransitionParticipant({
-    name: participantName,
-    types: ['expand', 'mode'],
-  });
+  const parentOverlay = useContext(ParentOverlayContext);
   const viewerRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
-  const setStageRef = useCallback(
-    (element: HTMLDivElement | null) => {
-      stageRef.current = element;
-      const cleanup = transitionRef(element);
-
-      if (!element) return cleanup;
-
-      return () => {
-        stageRef.current = null;
-        cleanup?.();
-      };
-    },
-    [transitionRef],
-  );
+  const setStageRef = useCallback((element: HTMLDivElement | null) => {
+    stageRef.current = element;
+    return () => {
+      stageRef.current = null;
+    };
+  }, []);
   const [viewerElement, setViewerElement] = useState<HTMLDivElement | null>(
     null,
   );
@@ -166,6 +249,7 @@ export function DocumentViewer({
   const textLayerRef = useRef<HTMLDivElement>(null);
   const revealStartedRef = useRef<string | null>(null);
   const [uncontrolledOpen, setUncontrolledOpen] = useState(defaultOpen);
+  const [closingTransition, setClosingTransition] = useState(false);
   const open = controlledOpen ?? uncontrolledOpen;
   const sourceKey = open ? JSON.stringify([mediaType, src]) : '';
   const [zoomState, setZoomState] = useState<KeyedValue<number>>({
@@ -222,9 +306,40 @@ export function DocumentViewer({
     typeof HTMLElement !== 'undefined' &&
     typeof HTMLElement.prototype.requestFullscreen === 'function';
 
-  const changeOpen = (nextOpen: boolean) => {
+  const applyOpenChange = (nextOpen: boolean) => {
     if (controlledOpen === undefined) setUncontrolledOpen(nextOpen);
     onOpenChange?.(nextOpen);
+  };
+  const changeOpen = (nextOpen: boolean) => {
+    if (nextOpen) {
+      setClosingTransition(false);
+      applyOpenChange(true);
+      return;
+    }
+
+    if (!open || !transitionName?.trim() || parentOverlay?.open === false) {
+      setClosingTransition(false);
+      applyOpenChange(false);
+      return;
+    }
+
+    let closed = false;
+    const closeInTransition = () => {
+      if (closed) return;
+      closed = true;
+      flushSync(() => {
+        setClosingTransition(true);
+        applyOpenChange(false);
+      });
+    };
+
+    try {
+      startViewTransitionAndWait(closeInTransition, ['expand']).catch(
+        closeInTransition,
+      );
+    } catch {
+      closeInTransition();
+    }
   };
 
   useEffect(() => {
@@ -373,13 +488,15 @@ export function DocumentViewer({
       return;
     }
 
-    startViewTransitionAndWait(revealInTransition, ['mode']).catch(() => {
-      revealStartedRef.current = null;
-      flushSync(() => {
-        setPaintedKey(assetKey);
-        setRevealedSourceKey(sourceKey);
-      });
-    });
+    startViewerModeTransition(viewerRef.current, revealInTransition).catch(
+      () => {
+        revealStartedRef.current = null;
+        flushSync(() => {
+          setPaintedKey(assetKey);
+          setRevealedSourceKey(sourceKey);
+        });
+      },
+    );
   }, [
     assetKey,
     assetReady,
@@ -501,16 +618,23 @@ export function DocumentViewer({
   /* eslint-disable jsx-a11y/no-noninteractive-tabindex -- Keyboard users need to focus this scroll region. */
   return (
     <OverlaySurface
+      closingTransition={closingTransition}
       fullScreen
       kind="dialog"
       onOpenChange={changeOpen}
       open={open}
+      showHeader={false}
       title={title}
+      viewerSurface
     >
-      <div className={variants.base.root} ref={setViewerRef}>
+      <DocumentViewerPanel name={participantName} onRoot={setViewerRef}>
         <div className={variants.base.toolbar}>
+          <span className={variants.base.toolbarTitle} title={filename}>
+            {filename}
+          </span>
           <div className={variants.base.toolbarSection}>
             <Button
+              aria-label={messages.documentViewerZoomOut}
               disabled={zoom <= 0.5}
               onAction={() =>
                 setZoomState({
@@ -521,9 +645,10 @@ export function DocumentViewer({
               size="sm"
               variant="secondary"
             >
-              {messages.documentViewerZoomOut}
+              −
             </Button>
             <Button
+              aria-label={messages.documentViewerZoomIn}
               disabled={zoom >= 3}
               onAction={() =>
                 setZoomState({
@@ -534,9 +659,10 @@ export function DocumentViewer({
               size="sm"
               variant="secondary"
             >
-              {messages.documentViewerZoomIn}
+              +
             </Button>
             <Button
+              aria-label={messages.documentViewerRotate}
               onAction={() =>
                 setRotationState({
                   key: sourceKey,
@@ -546,61 +672,16 @@ export function DocumentViewer({
               size="sm"
               variant="secondary"
             >
-              {messages.documentViewerRotate}
+              {messages.documentViewerRotateLabel}
             </Button>
-            {isPdfCanvas && pageCount > 1 ? (
-              <div className={variants.base.actions}>
-                <Button
-                  disabled={pageNumber <= 1}
-                  onAction={() =>
-                    setPageState({ key: sourceKey, value: pageNumber - 1 })
-                  }
-                  size="sm"
-                  variant="secondary"
-                >
-                  {messages.documentViewerPreviousPage}
-                </Button>
-                <span
-                  aria-live="polite"
-                  className={variants.base.pageStatus}
-                  lang={getMessageLocale('documentViewerPage')}
-                >
-                  {messages.documentViewerPage
-                    .replace('{current}', String(pageNumber))
-                    .replace('{total}', String(pageCount))}
-                </span>
-                <Button
-                  disabled={pageNumber >= pageCount}
-                  onAction={() =>
-                    setPageState({ key: sourceKey, value: pageNumber + 1 })
-                  }
-                  size="sm"
-                  variant="secondary"
-                >
-                  {messages.documentViewerNextPage}
-                </Button>
-              </div>
-            ) : null}
-          </div>
-          <div className={variants.base.toolbarSection}>
             <a
-              className={variants.base.download}
+              className={variants.base.toolbarLink}
               download={filename}
               href={src}
               lang={getMessageLocale('documentViewerDownload')}
             >
               {messages.documentViewerDownload}
             </a>
-            {onReplace ? (
-              <Button onAction={onReplace} size="sm" variant="secondary">
-                {messages.documentViewerReplace}
-              </Button>
-            ) : null}
-            {onRemove ? (
-              <Button onAction={onRemove} size="sm" variant="danger">
-                {messages.documentViewerRemove}
-              </Button>
-            ) : null}
             {fullscreenAvailable ? (
               <Button
                 onAction={() => {
@@ -616,15 +697,67 @@ export function DocumentViewer({
                   }
                 }}
                 size="sm"
-                variant="quiet"
+                variant="secondary"
               >
                 {isFullscreen
                   ? messages.documentViewerExitFullScreen
                   : messages.documentViewerFullScreen}
               </Button>
             ) : null}
+            {onReplace ? (
+              <Button onAction={onReplace} size="sm" variant="secondary">
+                {messages.documentViewerReplace}
+              </Button>
+            ) : null}
+            {onRemove ? (
+              <Button onAction={onRemove} size="sm" variant="secondary">
+                {messages.documentViewerRemove}
+              </Button>
+            ) : null}
+            <span lang={getMessageLocale('close')}>
+              <Button
+                onAction={() => changeOpen(false)}
+                size="sm"
+                variant="secondary"
+              >
+                {messages.close}
+              </Button>
+            </span>
           </div>
         </div>
+        {isPdfCanvas && pageCount > 1 ? (
+          <div className={variants.base.pageToolbar}>
+            <Button
+              disabled={pageNumber <= 1}
+              onAction={() =>
+                setPageState({ key: sourceKey, value: pageNumber - 1 })
+              }
+              size="sm"
+              variant="secondary"
+            >
+              {messages.documentViewerPreviousPage}
+            </Button>
+            <span
+              aria-live="polite"
+              className={variants.base.pageStatus}
+              lang={getMessageLocale('documentViewerPage')}
+            >
+              {messages.documentViewerPage
+                .replace('{current}', String(pageNumber))
+                .replace('{total}', String(pageCount))}
+            </span>
+            <Button
+              disabled={pageNumber >= pageCount}
+              onAction={() =>
+                setPageState({ key: sourceKey, value: pageNumber + 1 })
+              }
+              size="sm"
+              variant="secondary"
+            >
+              {messages.documentViewerNextPage}
+            </Button>
+          </div>
+        ) : null}
         <div className={variants.base.viewer}>
           <div
             aria-busy={!painted}
@@ -675,7 +808,7 @@ export function DocumentViewer({
             {messages.documentViewerFallback}
           </p>
         ) : null}
-      </div>
+      </DocumentViewerPanel>
     </OverlaySurface>
   );
   /* eslint-enable jsx-a11y/no-noninteractive-tabindex */
