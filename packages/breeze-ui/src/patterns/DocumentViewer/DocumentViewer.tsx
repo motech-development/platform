@@ -1,6 +1,8 @@
 import {
+  type Dispatch,
   type MouseEvent,
   type ReactNode,
+  type SetStateAction,
   useCallback,
   useContext,
   useEffect,
@@ -21,7 +23,7 @@ import OverlaySurface from '../../overlays/OverlaySurface';
 import { Button } from '../../primitives/Button/Button';
 import { Skeleton } from '../../primitives/Skeleton/Skeleton';
 import { useBreezeContext } from '../../provider/BreezeContext';
-import type { PdfAssetDirectories, PdfSession } from './pdf-renderer';
+import type { PdfSession } from './pdf-renderer';
 import { loadPdfDocument, renderPdfPage } from './pdf-renderer';
 
 const variants = {
@@ -73,13 +75,18 @@ const variants = {
 export type DocumentViewerMediaType = 'document' | 'image' | 'pdf';
 
 /** PDF.js auxiliary asset directories used by PDFs that reference them. */
-export type DocumentViewerPdfAssets = PdfAssetDirectories;
+export interface DocumentViewerPdfAssets {
+  readonly cMapUrl?: string;
+  readonly standardFontDataUrl?: string;
+}
 
 interface DocumentViewerBaseProps {
   /** Name used for the download and the labelled viewer dialog. */
   downloadName?: string;
-  /** Reports the semantic open state when the viewer changes it. */
-  onOpenChange?: (open: boolean) => void;
+  /** Current open state controlled by the owning application. */
+  open: boolean;
+  /** Reports state changes requested by the viewer's actions. */
+  onOpenChange: (open: boolean) => void;
   /** Called when the app-owned Replace toolbar action is activated. */
   onReplace?: () => void;
   /** Called when the app-owned Remove toolbar action is activated. */
@@ -102,22 +109,9 @@ type DocumentViewerMediaProps =
       pdfAssets?: DocumentViewerPdfAssets;
     };
 
-interface ControlledDocumentViewerProps {
-  defaultOpen?: never;
-  onOpenChange: (open: boolean) => void;
-  open: boolean;
-}
-
-interface UncontrolledDocumentViewerProps {
-  defaultOpen?: boolean;
-  onOpenChange?: (open: boolean) => void;
-  open?: never;
-}
-
 /** Props for an attachment preview dialog with built-in reading controls. */
 export type DocumentViewerProps = DocumentViewerBaseProps &
-  DocumentViewerMediaProps &
-  (ControlledDocumentViewerProps | UncontrolledDocumentViewerProps);
+  DocumentViewerMediaProps;
 
 interface KeyedValue<T> {
   key: string | null;
@@ -152,6 +146,53 @@ function getFullscreenTarget(element: HTMLElement) {
   return element.closest<HTMLElement>('.breeze-fullscreen') ?? element;
 }
 
+function navigateToSource(ownerDocument: Document, source: string) {
+  const link = ownerDocument.createElement('a');
+  link.href = source;
+  link.hidden = true;
+  link.target = '_self';
+  ownerDocument.body.append(link);
+  link.click();
+  link.remove();
+}
+
+async function downloadDocument(
+  event: MouseEvent<HTMLAnchorElement>,
+  sourceUrl: string,
+  filename: string,
+): Promise<void> {
+  const { ownerDocument } = event.currentTarget;
+  const view = ownerDocument.defaultView;
+  const source = new URL(sourceUrl, ownerDocument.baseURI);
+
+  if (
+    !view ||
+    (source.protocol !== 'http:' && source.protocol !== 'https:') ||
+    source.origin === view.location.origin
+  ) {
+    return;
+  }
+
+  event.preventDefault();
+
+  try {
+    const response = await fetch(source.href, { credentials: 'same-origin' });
+    if (!response.ok) throw new Error('The attachment download failed.');
+
+    const objectUrl = view.URL.createObjectURL(await response.blob());
+    const downloadLink = ownerDocument.createElement('a');
+    downloadLink.download = filename;
+    downloadLink.href = objectUrl;
+    downloadLink.hidden = true;
+    ownerDocument.body.append(downloadLink);
+    downloadLink.click();
+    downloadLink.remove();
+    view.setTimeout(() => view.URL.revokeObjectURL(objectUrl), 1000);
+  } catch {
+    navigateToSource(ownerDocument, source.href);
+  }
+}
+
 interface ViewerModeMarker {
   count: number;
   previous: string | null;
@@ -159,43 +200,670 @@ interface ViewerModeMarker {
 
 const viewerModeMarkers = new WeakMap<HTMLElement, ViewerModeMarker>();
 
-function startViewerModeTransition(
+async function startViewerModeTransition(
   element: HTMLElement | null,
   update: () => Promise<void>,
-) {
+): Promise<void> {
+  const dataset = element?.dataset;
   if (element) {
     const marker = viewerModeMarkers.get(element);
     if (marker) marker.count += 1;
     else {
       viewerModeMarkers.set(element, {
         count: 1,
-        previous: element.getAttribute('data-breeze-viewer-mode-transition'),
+        previous: dataset?.breezeViewerModeTransition ?? null,
       });
     }
-    element.setAttribute('data-breeze-viewer-mode-transition', '');
+    if (dataset) dataset.breezeViewerModeTransition = '';
   }
   const restoreMarker = () => {
-    if (!element) return;
+    if (!dataset) return;
     const marker = viewerModeMarkers.get(element);
     if (!marker) return;
     marker.count -= 1;
     if (marker.count > 0) return;
     viewerModeMarkers.delete(element);
-    if (marker.previous === null)
-      element.removeAttribute('data-breeze-viewer-mode-transition');
-    else
-      element.setAttribute(
-        'data-breeze-viewer-mode-transition',
-        marker.previous,
-      );
+    if (marker.previous === null) delete dataset.breezeViewerModeTransition;
+    else dataset.breezeViewerModeTransition = marker.previous;
   };
 
   try {
-    return startViewTransitionAndWait(update, ['mode']).finally(restoreMarker);
-  } catch (error) {
+    await startViewTransitionAndWait(update, ['mode']);
+  } finally {
     restoreMarker();
-    throw error;
   }
+}
+
+function waitForNextMicrotask(): Promise<void> {
+  return new Promise((resolve) => {
+    queueMicrotask(() => resolve());
+  });
+}
+
+function useDocumentSourceKey(
+  effectiveOpen: boolean,
+  reactId: string,
+  sourceSignature: string | null,
+) {
+  const [sourceLifecycle, setSourceLifecycle] = useState({
+    generation: 0,
+    signature: null as string | null,
+  });
+
+  useLayoutEffect(() => {
+    if (sourceLifecycle.signature === sourceSignature) return;
+    setSourceLifecycle((current) => ({
+      generation: current.generation + 1,
+      signature: sourceSignature,
+    }));
+  }, [sourceLifecycle.signature, sourceSignature]);
+
+  if (!effectiveOpen || sourceLifecycle.signature !== sourceSignature) {
+    return null;
+  }
+
+  return `${reactId}:${sourceLifecycle.generation}`;
+}
+
+function areSameViewerState(
+  previous: ExitingViewerState | null,
+  current: ExitingViewerState,
+) {
+  return Boolean(
+    previous &&
+      previous.assetKey === current.assetKey &&
+      previous.downloadName === current.downloadName &&
+      previous.mediaType === current.mediaType &&
+      previous.pageNumber === current.pageNumber &&
+      previous.rotation === current.rotation &&
+      previous.sourceKey === current.sourceKey &&
+      previous.src === current.src &&
+      previous.title === current.title &&
+      previous.zoom === current.zoom,
+  );
+}
+
+interface CurrentViewerProps {
+  assetKey: string | null;
+  downloadName?: string;
+  mediaType: DocumentViewerMediaType;
+  pageNumber: number;
+  rotation: number;
+  sourceKey: string | null;
+  src: string;
+  title: string;
+  zoom: number;
+}
+
+function getDisplayedViewerState(
+  effectiveOpen: boolean,
+  current: ExitingViewerState | null,
+  retained: ExitingViewerState | null,
+  fallback: CurrentViewerProps,
+): ExitingViewerState | CurrentViewerProps {
+  if (effectiveOpen && current) return current;
+  if (!effectiveOpen && retained) return retained;
+
+  return {
+    assetKey: fallback.assetKey,
+    downloadName: fallback.downloadName,
+    mediaType: fallback.mediaType,
+    pageNumber: fallback.pageNumber,
+    rotation: fallback.rotation,
+    sourceKey: fallback.sourceKey,
+    src: fallback.src,
+    title: fallback.title,
+    zoom: fallback.zoom,
+  };
+}
+
+interface UseViewerOpenChangeOptions {
+  currentViewerState: ExitingViewerState | null;
+  onOpenChange: (open: boolean) => void;
+  open: boolean;
+  parentOverlayOpen?: boolean;
+  setClosingTransition: (closing: boolean) => void;
+  setExitState: Dispatch<SetStateAction<ExitingViewerState | null>>;
+  transitionName?: string;
+}
+
+function useViewerOpenChange({
+  currentViewerState,
+  onOpenChange,
+  open,
+  parentOverlayOpen,
+  setClosingTransition,
+  setExitState,
+  transitionName,
+}: UseViewerOpenChangeOptions) {
+  return useCallback(
+    (nextOpen: boolean) => {
+      if (nextOpen) {
+        setClosingTransition(false);
+        setExitState(null);
+        onOpenChange(true);
+        return;
+      }
+
+      if (!open || !transitionName?.trim() || parentOverlayOpen === false) {
+        setClosingTransition(false);
+        if (currentViewerState) setExitState(currentViewerState);
+        onOpenChange(false);
+        return;
+      }
+
+      let closed = false;
+      let callbackFailed = false;
+      const closeInTransition = () => {
+        if (closed) return;
+        closed = true;
+        try {
+          flushSync(() => {
+            setClosingTransition(true);
+            if (currentViewerState) setExitState(currentViewerState);
+            onOpenChange(false);
+          });
+        } catch (error) {
+          callbackFailed = true;
+          throw error;
+        }
+      };
+
+      let transition: Promise<void>;
+      try {
+        transition = startViewTransitionAndWait(closeInTransition, ['expand']);
+      } catch (error) {
+        if (callbackFailed) throw error;
+        closeInTransition();
+        return;
+      }
+
+      transition.catch((error: unknown) => {
+        if (callbackFailed) throw error;
+        closeInTransition();
+      });
+    },
+    [
+      currentViewerState,
+      onOpenChange,
+      open,
+      parentOverlayOpen,
+      setClosingTransition,
+      setExitState,
+      transitionName,
+    ],
+  );
+}
+
+function getMediaGeometry(
+  mediaSize: KeyedSize,
+  rotation: number,
+  zoom: number,
+) {
+  const isRotated = rotation % 180 !== 0;
+  const width = isRotated ? mediaSize.height : mediaSize.width;
+  const height = isRotated ? mediaSize.width : mediaSize.height;
+
+  return {
+    mediaBoxStyle: { height: height * zoom, width: width * zoom },
+    mediaContentStyle: {
+      height: mediaSize.height,
+      transform: `translate(-50%, -50%) rotate(${rotation}deg) scale(${zoom})`,
+      transformOrigin: 'center',
+      width: mediaSize.width,
+    },
+  };
+}
+
+function useRetainedViewerState(
+  effectiveOpen: boolean,
+  currentViewerState: ExitingViewerState | null,
+  setClosingTransition: (closing: boolean) => void,
+) {
+  const [exitState, setExitState] = useState<ExitingViewerState | null>(null);
+  const [lastViewerState, setLastViewerState] =
+    useState<ExitingViewerState | null>(null);
+  const activeViewerStateRef = useRef<ExitingViewerState | null>(null);
+
+  useLayoutEffect(() => {
+    if (effectiveOpen && currentViewerState) {
+      setClosingTransition(false);
+      activeViewerStateRef.current = currentViewerState;
+      setLastViewerState((previous) =>
+        areSameViewerState(previous, currentViewerState)
+          ? previous
+          : currentViewerState,
+      );
+      setExitState(null);
+      return;
+    }
+
+    if (!activeViewerStateRef.current) return;
+    setExitState((previous) => previous ?? activeViewerStateRef.current);
+    activeViewerStateRef.current = null;
+  }, [currentViewerState, effectiveOpen, setClosingTransition]);
+
+  return { exitState, lastViewerState, setExitState };
+}
+
+function getStageContentSize(stage: HTMLElement | null) {
+  if (!stage) return null;
+
+  const bounds = stage.getBoundingClientRect();
+  const style = stage.ownerDocument.defaultView?.getComputedStyle(stage);
+  const padding = (value: string) => Number.parseFloat(value) || 0;
+
+  return {
+    height: Math.max(
+      0,
+      bounds.height -
+        padding(style?.paddingTop ?? '') -
+        padding(style?.paddingBottom ?? ''),
+    ),
+    width: Math.max(
+      0,
+      bounds.width -
+        padding(style?.paddingLeft ?? '') -
+        padding(style?.paddingRight ?? ''),
+    ),
+  };
+}
+
+interface UseStageSizingOptions {
+  assetKey: string | null;
+  contentAssetKey: string | null;
+  contentRotation: number;
+  effectiveOpen: boolean;
+  fitFrame: boolean;
+  imageRef: { current: HTMLImageElement | null };
+  setMediaSizeState: Dispatch<SetStateAction<KeyedSize>>;
+  src: string;
+  stageRef: { current: HTMLElement | null };
+}
+
+function useStageSizing({
+  assetKey,
+  contentAssetKey,
+  contentRotation,
+  effectiveOpen,
+  fitFrame,
+  imageRef,
+  setMediaSizeState,
+  src,
+  stageRef,
+}: UseStageSizingOptions) {
+  const fitImageToStage = useCallback(
+    (image: HTMLImageElement) => {
+      const bounds = getStageContentSize(stageRef.current);
+      const naturalWidth = image.naturalWidth || 1;
+      const naturalHeight = image.naturalHeight || 1;
+      const isImageRotated = contentRotation % 180 !== 0;
+      const maxWidth =
+        (isImageRotated ? bounds?.height : bounds?.width) || naturalWidth;
+      const maxHeight =
+        (isImageRotated ? bounds?.width : bounds?.height) || naturalHeight;
+      const fit = Math.min(
+        1,
+        maxWidth / naturalWidth,
+        maxHeight / naturalHeight,
+      );
+
+      setMediaSizeState({
+        height: naturalHeight * fit,
+        key: contentAssetKey,
+        width: naturalWidth * fit,
+      });
+    },
+    [contentAssetKey, contentRotation, setMediaSizeState, stageRef],
+  );
+
+  const fitFrameToStage = useCallback(() => {
+    const bounds = getStageContentSize(stageRef.current);
+    const isFrameRotated = contentRotation % 180 !== 0;
+    setMediaSizeState({
+      height: (isFrameRotated ? bounds?.width : bounds?.height) || 720,
+      key: contentAssetKey,
+      width: (isFrameRotated ? bounds?.height : bounds?.width) || 1024,
+    });
+  }, [contentAssetKey, contentRotation, setMediaSizeState, stageRef]);
+
+  useEffect(() => {
+    const stage = stageRef.current;
+    const image = imageRef.current;
+    if (
+      !effectiveOpen ||
+      !stage ||
+      (!image && !fitFrame) ||
+      typeof ResizeObserver === 'undefined'
+    ) {
+      return undefined;
+    }
+
+    const resizeObserver = new ResizeObserver(() => {
+      if (image?.complete && image.naturalWidth > 0) fitImageToStage(image);
+      else if (!image && fitFrame) fitFrameToStage();
+    });
+    resizeObserver.observe(stage);
+
+    if (image?.complete && image.naturalWidth > 0) fitImageToStage(image);
+    else if (!image && fitFrame) fitFrameToStage();
+
+    return () => resizeObserver.disconnect();
+  }, [
+    assetKey,
+    contentRotation,
+    effectiveOpen,
+    fitFrame,
+    fitFrameToStage,
+    fitImageToStage,
+    imageRef,
+    src,
+    stageRef,
+  ]);
+
+  return { fitFrameToStage, fitImageToStage };
+}
+
+interface UsePdfPreviewOptions {
+  assetKey: string | null;
+  canvasRef: { current: HTMLCanvasElement | null };
+  contentMediaType: DocumentViewerMediaType;
+  contentSourceKey: string | null;
+  effectiveOpen: boolean;
+  mediaType: DocumentViewerMediaType;
+  pageNumber: number;
+  pdfAssetDirectories?: DocumentViewerPdfAssets;
+  setAssetState: Dispatch<SetStateAction<KeyedAsset>>;
+  setMediaSizeState: Dispatch<SetStateAction<KeyedSize>>;
+  sourceKey: string | null;
+  src: string;
+  textLayerRef: { current: HTMLDivElement | null };
+  zoom: number;
+}
+
+function usePdfPreview({
+  assetKey,
+  canvasRef,
+  contentMediaType,
+  contentSourceKey,
+  effectiveOpen,
+  mediaType,
+  pageNumber,
+  pdfAssetDirectories,
+  setAssetState,
+  setMediaSizeState,
+  sourceKey,
+  src,
+  textLayerRef,
+  zoom,
+}: UsePdfPreviewOptions) {
+  const [sessionState, setSessionState] = useState<{
+    key: string;
+    session: PdfSession;
+  } | null>(null);
+  const [fallbackKey, setFallbackKey] = useState<string | null>(null);
+  const renderQueueRef = useRef<Promise<void>>(Promise.resolve());
+  const session =
+    sessionState?.key === contentSourceKey ? sessionState.session : null;
+  const fallback =
+    contentSourceKey !== null &&
+    fallbackKey === contentSourceKey &&
+    contentMediaType === 'pdf';
+
+  useEffect(() => {
+    if (!effectiveOpen || !sourceKey || mediaType !== 'pdf') return undefined;
+
+    let active = true;
+    let loadedSession: PdfSession | null = null;
+    const controller = new AbortController();
+
+    loadPdfDocument(src, controller.signal, pdfAssetDirectories)
+      .then((nextSession) => {
+        loadedSession = nextSession;
+        if (!active || controller.signal.aborted) {
+          nextSession.dispose();
+          return;
+        }
+
+        setSessionState({ key: sourceKey, session: nextSession });
+      })
+      .catch(() => {
+        if (!active || controller.signal.aborted) return;
+        setFallbackKey(sourceKey);
+      });
+
+    return () => {
+      active = false;
+      controller.abort();
+      loadedSession?.dispose();
+    };
+  }, [effectiveOpen, mediaType, pdfAssetDirectories, sourceKey, src]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const textLayerContainer = textLayerRef.current;
+    if (
+      !effectiveOpen ||
+      !sourceKey ||
+      !assetKey ||
+      mediaType !== 'pdf' ||
+      fallback ||
+      !session ||
+      !canvas ||
+      !textLayerContainer
+    ) {
+      return undefined;
+    }
+
+    const controller = new AbortController();
+    const outputScale =
+      zoom * (canvas.ownerDocument.defaultView?.devicePixelRatio || 1);
+    const previousRender = renderQueueRef.current;
+    const render = previousRender.then(async () => {
+      if (controller.signal.aborted) return;
+
+      await renderPdfPage({
+        TextLayer: session.textLayer,
+        canvas,
+        document: session.document,
+        outputScale,
+        pageNumber,
+        rotation: 0,
+        scale: 1,
+        signal: controller.signal,
+        textLayerContainer,
+      });
+
+      if (controller.signal.aborted) return;
+
+      setMediaSizeState({
+        height: Number.parseFloat(canvas.style.height) || 0,
+        key: assetKey,
+        width: Number.parseFloat(canvas.style.width) || 0,
+      });
+      setAssetState({ failed: false, key: assetKey, ready: true });
+    });
+    renderQueueRef.current = render.then(
+      () => undefined,
+      () => {
+        if (controller.signal.aborted) return;
+        setFallbackKey(sourceKey);
+        setAssetState({ failed: false, key: assetKey, ready: false });
+      },
+    );
+
+    return () => controller.abort();
+  }, [
+    assetKey,
+    canvasRef,
+    effectiveOpen,
+    fallback,
+    mediaType,
+    pageNumber,
+    session,
+    setAssetState,
+    setMediaSizeState,
+    sourceKey,
+    textLayerRef,
+    zoom,
+  ]);
+
+  return {
+    fallback,
+    pageCount: session?.document.numPages ?? 0,
+    session,
+  };
+}
+
+interface UsePaintedAssetOptions {
+  assetKey: string | null;
+  assetReady: boolean;
+  contentAssetKey: string | null;
+  contentSourceKey: string | null;
+  effectiveOpen: boolean;
+  sourceKey: string | null;
+  transitionName?: string;
+  viewerRef: { current: HTMLElement | null };
+}
+
+function usePaintedAsset({
+  assetKey,
+  assetReady,
+  contentAssetKey,
+  contentSourceKey,
+  effectiveOpen,
+  sourceKey,
+  transitionName,
+  viewerRef,
+}: UsePaintedAssetOptions) {
+  const [transitionReadyKey, setTransitionReadyKey] = useState<string | null>(
+    null,
+  );
+  const [paintedKey, setPaintedKey] = useState<string | null>(null);
+  const [revealedSourceKey, setRevealedSourceKey] = useState<string | null>(
+    null,
+  );
+  const revealStartedRef = useRef<string | null>(null);
+  const transitionReady = transitionReadyKey === sourceKey && effectiveOpen;
+  const painted =
+    paintedKey === contentAssetKey && assetReady && contentSourceKey !== null;
+
+  useEffect(() => {
+    if (!effectiveOpen || !sourceKey) return undefined;
+
+    let active = true;
+    waitForCurrentViewTransition()
+      .then(() => {
+        if (active) setTransitionReadyKey(sourceKey);
+      })
+      .catch(() => undefined);
+
+    return () => {
+      active = false;
+    };
+  }, [effectiveOpen, sourceKey]);
+
+  useEffect(() => {
+    if (
+      !effectiveOpen ||
+      !sourceKey ||
+      !assetKey ||
+      !assetReady ||
+      !transitionReady ||
+      painted ||
+      revealStartedRef.current === assetKey
+    ) {
+      return undefined;
+    }
+
+    let active = true;
+    revealStartedRef.current = assetKey;
+    const reveal = () => {
+      if (!active) return;
+      setPaintedKey(assetKey);
+      setRevealedSourceKey(sourceKey);
+    };
+    const revealInTransition = async () => {
+      await waitForNextMicrotask();
+      if (!active) return;
+      flushSync(() => {
+        setPaintedKey(assetKey);
+        setRevealedSourceKey(sourceKey);
+      });
+    };
+    const clearRevealMarker = () => {
+      if (revealStartedRef.current === assetKey) {
+        revealStartedRef.current = null;
+      }
+    };
+
+    if (!transitionName?.trim() || revealedSourceKey === sourceKey) {
+      reveal();
+      return () => {
+        active = false;
+        clearRevealMarker();
+      };
+    }
+
+    startViewerModeTransition(viewerRef.current, revealInTransition).catch(
+      () => {
+        if (!active) return;
+        revealStartedRef.current = null;
+        flushSync(() => {
+          setPaintedKey(assetKey);
+          setRevealedSourceKey(sourceKey);
+        });
+      },
+    );
+
+    return () => {
+      active = false;
+      clearRevealMarker();
+    };
+  }, [
+    assetKey,
+    assetReady,
+    effectiveOpen,
+    painted,
+    revealedSourceKey,
+    sourceKey,
+    transitionName,
+    transitionReady,
+    viewerRef,
+  ]);
+
+  return painted;
+}
+
+function useFullscreenState(
+  effectiveOpen: boolean,
+  viewerElement: HTMLElement | null,
+) {
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const fullscreenAvailable =
+    effectiveOpen &&
+    typeof document !== 'undefined' &&
+    document.fullscreenEnabled &&
+    typeof HTMLElement !== 'undefined' &&
+    typeof HTMLElement.prototype.requestFullscreen === 'function';
+
+  useEffect(() => {
+    const ownerDocument = viewerElement?.ownerDocument;
+    if (!effectiveOpen || !viewerElement || !ownerDocument) {
+      setIsFullscreen(false);
+      return undefined;
+    }
+
+    const target = getFullscreenTarget(viewerElement);
+    const update = () => {
+      setIsFullscreen(ownerDocument.fullscreenElement === target);
+    };
+    update();
+    ownerDocument.addEventListener('fullscreenchange', update);
+    return () => ownerDocument.removeEventListener('fullscreenchange', update);
+  }, [effectiveOpen, viewerElement]);
+
+  return { fullscreenAvailable, isFullscreen };
 }
 
 interface DocumentViewerPanelProps {
@@ -235,19 +903,291 @@ function DocumentViewerPanel({
   );
 }
 
+interface DocumentViewerMediaRendererProps {
+  assetKey: string | null;
+  canvasRef: { current: HTMLCanvasElement | null };
+  fitFrameToStage: () => void;
+  fitImageToStage: (image: HTMLImageElement) => void;
+  imageRef: { current: HTMLImageElement | null };
+  isPdfCanvas: boolean;
+  mediaSize: KeyedSize;
+  mediaType: DocumentViewerMediaType;
+  onAssetStateChange: (state: KeyedAsset) => void;
+  pdfSession: PdfSession | null;
+  src: string;
+  textLayerRef: { current: HTMLDivElement | null };
+  title: string;
+}
+
+function DocumentViewerMedia({
+  assetKey,
+  canvasRef,
+  fitFrameToStage,
+  fitImageToStage,
+  imageRef,
+  isPdfCanvas,
+  mediaSize,
+  mediaType,
+  onAssetStateChange,
+  pdfSession,
+  src,
+  textLayerRef,
+  title,
+}: Readonly<DocumentViewerMediaRendererProps>) {
+  if (!assetKey) return null;
+
+  if (mediaType === 'image') {
+    return (
+      <img
+        alt={title}
+        className={variants.base.viewerImage}
+        key={assetKey}
+        onError={() =>
+          onAssetStateChange({ failed: true, key: assetKey, ready: true })
+        }
+        onLoad={(event) => {
+          fitImageToStage(event.currentTarget);
+          onAssetStateChange({ failed: false, key: assetKey, ready: true });
+        }}
+        ref={imageRef}
+        src={src}
+        style={{ height: mediaSize.height, width: mediaSize.width }}
+      />
+    );
+  }
+
+  if (isPdfCanvas && pdfSession) {
+    return (
+      <div className={variants.base.pdfPage} key={assetKey}>
+        <canvas aria-hidden="true" ref={canvasRef} />
+        <div className={variants.base.textLayer} ref={textLayerRef} />
+      </div>
+    );
+  }
+
+  if (mediaType === 'document' || !isPdfCanvas) {
+    return (
+      <iframe
+        className={variants.base.viewerFrame}
+        key={assetKey}
+        onLoad={() => {
+          fitFrameToStage();
+          onAssetStateChange({ failed: false, key: assetKey, ready: true });
+        }}
+        src={src}
+        title={title}
+      />
+    );
+  }
+
+  return null;
+}
+
+interface DocumentViewerToolbarProps {
+  downloadClick: (event: MouseEvent<HTMLAnchorElement>) => void;
+  downloadName: string;
+  downloadSrc: string;
+  fullscreenAvailable: boolean;
+  isFullscreen: boolean;
+  onClose: () => void;
+  onRemove?: () => void;
+  onReplace?: () => void;
+  onRotationChange: (rotation: number) => void;
+  onZoomChange: (zoom: number) => void;
+  rotateAccessibleLabelId: string;
+  rotation: number;
+  viewerRef: { current: HTMLDivElement | null };
+  zoom: number;
+}
+
+function DocumentViewerToolbar({
+  downloadClick,
+  downloadName,
+  downloadSrc,
+  fullscreenAvailable,
+  isFullscreen,
+  onClose,
+  onRemove,
+  onReplace,
+  onRotationChange,
+  onZoomChange,
+  rotateAccessibleLabelId,
+  rotation,
+  viewerRef,
+  zoom,
+}: Readonly<DocumentViewerToolbarProps>) {
+  const { getMessageLocale, messages } = useBreezeContext();
+
+  return (
+    <div className={variants.base.toolbar}>
+      <span className={variants.base.toolbarTitle} title={downloadName}>
+        {downloadName}
+      </span>
+      <div className={variants.base.toolbarSection}>
+        <span lang={getMessageLocale('documentViewerZoomOut')}>
+          <Button
+            aria-label={messages.documentViewerZoomOut}
+            disabled={zoom <= 0.5}
+            onAction={() => onZoomChange(Math.max(0.5, zoom - 0.25))}
+            size="sm"
+            variant="secondary"
+          >
+            −
+          </Button>
+        </span>
+        <span lang={getMessageLocale('documentViewerZoomIn')}>
+          <Button
+            aria-label={messages.documentViewerZoomIn}
+            disabled={zoom >= 3}
+            onAction={() => onZoomChange(Math.min(3, zoom + 0.25))}
+            size="sm"
+            variant="secondary"
+          >
+            +
+          </Button>
+        </span>
+        <span lang={getMessageLocale('documentViewerRotateLabel')}>
+          <span
+            className="breeze:sr-only"
+            id={rotateAccessibleLabelId}
+            lang={getMessageLocale('documentViewerRotate')}
+          >
+            {messages.documentViewerRotate}
+          </span>
+          <Button
+            aria-labelledby={rotateAccessibleLabelId}
+            onAction={() => onRotationChange((rotation + 90) % 360)}
+            size="sm"
+            variant="secondary"
+          >
+            {messages.documentViewerRotateLabel}
+          </Button>
+        </span>
+        <a
+          className={variants.base.toolbarLink}
+          download={downloadName}
+          href={downloadSrc}
+          lang={getMessageLocale('documentViewerDownload')}
+          onClick={downloadClick}
+        >
+          {messages.documentViewerDownload}
+        </a>
+        {fullscreenAvailable ? (
+          <span
+            lang={getMessageLocale(
+              isFullscreen
+                ? 'documentViewerExitFullScreen'
+                : 'documentViewerFullScreen',
+            )}
+          >
+            <Button
+              onAction={() => {
+                const element = viewerRef.current;
+                const ownerDocument = element?.ownerDocument;
+                if (!element || !ownerDocument) return;
+
+                const target = getFullscreenTarget(element);
+                const request =
+                  ownerDocument.fullscreenElement === target
+                    ? ownerDocument.exitFullscreen?.()
+                    : target.requestFullscreen?.();
+                request?.catch(() => undefined);
+              }}
+              size="sm"
+              variant="secondary"
+            >
+              {isFullscreen
+                ? messages.documentViewerExitFullScreen
+                : messages.documentViewerFullScreen}
+            </Button>
+          </span>
+        ) : null}
+        {onReplace ? (
+          <span lang={getMessageLocale('documentViewerReplace')}>
+            <Button onAction={onReplace} size="sm" variant="secondary">
+              {messages.documentViewerReplace}
+            </Button>
+          </span>
+        ) : null}
+        {onRemove ? (
+          <span lang={getMessageLocale('documentViewerRemove')}>
+            <Button onAction={onRemove} size="sm" variant="secondary">
+              {messages.documentViewerRemove}
+            </Button>
+          </span>
+        ) : null}
+        <span lang={getMessageLocale('close')}>
+          <Button onAction={onClose} size="sm" variant="secondary">
+            {messages.close}
+          </Button>
+        </span>
+      </div>
+    </div>
+  );
+}
+
+interface DocumentViewerPageToolbarProps {
+  currentPage: number;
+  onNextPage: () => void;
+  onPreviousPage: () => void;
+  pageCount: number;
+}
+
+function DocumentViewerPageToolbar({
+  currentPage,
+  onNextPage,
+  onPreviousPage,
+  pageCount,
+}: Readonly<DocumentViewerPageToolbarProps>) {
+  const { getMessageLocale, messages } = useBreezeContext();
+
+  return (
+    <div className={variants.base.pageToolbar}>
+      <span lang={getMessageLocale('documentViewerPreviousPage')}>
+        <Button
+          disabled={currentPage <= 1}
+          onAction={onPreviousPage}
+          size="sm"
+          variant="secondary"
+        >
+          {messages.documentViewerPreviousPage}
+        </Button>
+      </span>
+      <span
+        aria-live="polite"
+        className={variants.base.pageStatus}
+        lang={getMessageLocale('documentViewerPage')}
+      >
+        {messages.documentViewerPage
+          .replace('{current}', String(currentPage))
+          .replace('{total}', String(pageCount))}
+      </span>
+      <span lang={getMessageLocale('documentViewerNextPage')}>
+        <Button
+          disabled={currentPage >= pageCount}
+          onAction={onNextPage}
+          size="sm"
+          variant="secondary"
+        >
+          {messages.documentViewerNextPage}
+        </Button>
+      </span>
+    </div>
+  );
+}
+
 /**
  * Opens an image or document in a full-screen viewer with its own toolbar.
  *
  * @summary A modal attachment preview with lazy PDF rendering.
  */
 export function DocumentViewer({
-  defaultOpen = false,
   downloadName,
   mediaType,
   onOpenChange,
   onRemove,
   onReplace,
-  open: controlledOpen,
+  open,
   pdfAssets,
   src,
   title,
@@ -260,8 +1200,8 @@ export function DocumentViewer({
     transitionName?.trim() || `breeze-document-${reactId}`;
   const parentOverlay = useContext(ParentOverlayContext);
   const viewerRef = useRef<HTMLDivElement>(null);
-  const stageRef = useRef<HTMLDivElement>(null);
-  const setStageRef = useCallback((element: HTMLDivElement | null) => {
+  const stageRef = useRef<HTMLElement>(null);
+  const setStageRef = useCallback((element: HTMLElement | null) => {
     stageRef.current = element;
     return () => {
       stageRef.current = null;
@@ -277,10 +1217,7 @@ export function DocumentViewer({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const textLayerRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
-  const revealStartedRef = useRef<string | null>(null);
-  const [uncontrolledOpen, setUncontrolledOpen] = useState(defaultOpen);
   const [closingTransition, setClosingTransition] = useState(false);
-  const open = controlledOpen ?? uncontrolledOpen;
   const effectiveOpen = open && parentOverlay?.open !== false;
   const pdfAssetDirectories = useMemo(() => {
     if (mediaType !== 'pdf') return undefined;
@@ -300,21 +1237,11 @@ export function DocumentViewer({
   const sourceSignature = effectiveOpen
     ? JSON.stringify([mediaType, src, pdfAssetSignature])
     : null;
-  const [sourceLifecycle, setSourceLifecycle] = useState({
-    generation: 0,
-    signature: null as string | null,
-  });
-  useLayoutEffect(() => {
-    if (sourceLifecycle.signature === sourceSignature) return;
-    setSourceLifecycle((current) => ({
-      generation: current.generation + 1,
-      signature: sourceSignature,
-    }));
-  }, [sourceLifecycle.signature, sourceSignature]);
-  const sourceKey =
-    effectiveOpen && sourceLifecycle.signature === sourceSignature
-      ? `${reactId}:${sourceLifecycle.generation}`
-      : null;
+  const sourceKey = useDocumentSourceKey(
+    effectiveOpen,
+    reactId,
+    sourceSignature,
+  );
   const [zoomState, setZoomState] = useState<KeyedValue<number>>({
     key: null,
     value: 1,
@@ -331,81 +1258,6 @@ export function DocumentViewer({
   const rotation = rotationState.key === sourceKey ? rotationState.value : 0;
   const pageNumber = pageState.key === sourceKey ? pageState.value : 1;
   const assetKey = sourceKey ? JSON.stringify([sourceKey, pageNumber]) : null;
-  const [exitState, setExitState] = useState<ExitingViewerState | null>(null);
-  const [lastViewerState, setLastViewerState] =
-    useState<ExitingViewerState | null>(null);
-  const retainedViewerState = exitState ?? lastViewerState;
-  const contentSourceKey = effectiveOpen
-    ? sourceKey
-    : retainedViewerState?.sourceKey ?? null;
-  const contentAssetKey = effectiveOpen
-    ? assetKey
-    : retainedViewerState?.assetKey ?? null;
-  const contentPageNumber = effectiveOpen
-    ? pageNumber
-    : retainedViewerState?.pageNumber ?? 1;
-  const contentZoom = effectiveOpen ? zoom : retainedViewerState?.zoom ?? 1;
-  const contentRotation = effectiveOpen
-    ? rotation
-    : retainedViewerState?.rotation ?? 0;
-  const contentMediaType = effectiveOpen
-    ? mediaType
-    : retainedViewerState?.mediaType ?? mediaType;
-  const contentSrc = effectiveOpen ? src : retainedViewerState?.src ?? src;
-  const contentTitle = effectiveOpen
-    ? title
-    : retainedViewerState?.title ?? title;
-  const contentDownloadName =
-    effectiveOpen || !retainedViewerState
-      ? downloadName
-      : retainedViewerState.downloadName;
-  const activeViewerStateRef = useRef<ExitingViewerState | null>(null);
-  const [assetState, setAssetState] = useState<KeyedAsset>({
-    failed: false,
-    key: null,
-    ready: false,
-  });
-  const [mediaSizeState, setMediaSizeState] = useState<KeyedSize>({
-    height: 0,
-    key: null,
-    width: 0,
-  });
-  const mediaSize =
-    mediaSizeState.key === contentAssetKey
-      ? mediaSizeState
-      : { height: 0, key: contentAssetKey, width: 0 };
-  const assetReady = assetState.key === contentAssetKey && assetState.ready;
-  const assetFailed = assetState.key === contentAssetKey && assetState.failed;
-  const [transitionReadyKey, setTransitionReadyKey] = useState<string | null>(
-    null,
-  );
-  const transitionReady = transitionReadyKey === sourceKey && effectiveOpen;
-  const [paintedKey, setPaintedKey] = useState<string | null>(null);
-  const painted =
-    paintedKey === contentAssetKey && assetReady && contentSourceKey !== null;
-  const [revealedSourceKey, setRevealedSourceKey] = useState<string | null>(
-    null,
-  );
-  const [pdfSessionState, setPdfSessionState] = useState<{
-    key: string;
-    session: PdfSession;
-  } | null>(null);
-  const pdfRenderQueueRef = useRef<Promise<void>>(Promise.resolve());
-  const pdfSession =
-    pdfSessionState?.key === contentSourceKey ? pdfSessionState.session : null;
-  const [pdfFallbackKey, setPdfFallbackKey] = useState<string | null>(null);
-  const pdfFallback =
-    contentSourceKey !== null &&
-    pdfFallbackKey === contentSourceKey &&
-    contentMediaType === 'pdf';
-  const pageCount = pdfSession?.document.numPages ?? 0;
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const fullscreenAvailable =
-    effectiveOpen &&
-    typeof document !== 'undefined' &&
-    document.fullscreenEnabled &&
-    typeof HTMLElement !== 'undefined' &&
-    typeof HTMLElement.prototype.requestFullscreen === 'function';
   const currentViewerState = useMemo(
     () =>
       sourceKey && assetKey
@@ -433,504 +1285,120 @@ export function DocumentViewer({
       zoom,
     ],
   );
-
-  useLayoutEffect(() => {
-    if (effectiveOpen && sourceKey && currentViewerState) {
-      if (closingTransition) setClosingTransition(false);
-      activeViewerStateRef.current = currentViewerState;
-      setLastViewerState((previous) =>
-        previous?.assetKey === assetKey &&
-        previous.downloadName === downloadName &&
-        previous.mediaType === mediaType &&
-        previous.pageNumber === pageNumber &&
-        previous.rotation === rotation &&
-        previous.sourceKey === sourceKey &&
-        previous.src === src &&
-        previous.title === title &&
-        previous.zoom === zoom
-          ? previous
-          : currentViewerState,
-      );
-      if (exitState) setExitState(null);
-      return;
-    }
-
-    if (activeViewerStateRef.current) {
-      if (!exitState) setExitState(activeViewerStateRef.current);
-      activeViewerStateRef.current = null;
-    }
-  }, [
-    assetKey,
-    closingTransition,
+  const { exitState, lastViewerState, setExitState } = useRetainedViewerState(
+    effectiveOpen,
     currentViewerState,
-    downloadName,
+    setClosingTransition,
+  );
+  const changeOpen = useViewerOpenChange({
+    currentViewerState,
+    onOpenChange,
+    open,
+    parentOverlayOpen: parentOverlay?.open,
+    setClosingTransition,
+    setExitState,
+    transitionName,
+  });
+  const retainedViewerState = exitState ?? lastViewerState;
+  const displayedViewer = getDisplayedViewerState(
     effectiveOpen,
-    exitState,
-    mediaType,
-    pageNumber,
-    rotation,
-    sourceKey,
-    src,
-    title,
-    zoom,
-  ]);
-
-  const applyOpenChange = (nextOpen: boolean) => {
-    if (controlledOpen === undefined) setUncontrolledOpen(nextOpen);
-    onOpenChange?.(nextOpen);
-  };
-  const changeOpen = (nextOpen: boolean) => {
-    if (nextOpen) {
-      setClosingTransition(false);
-      setExitState(null);
-      applyOpenChange(true);
-      return;
-    }
-
-    if (!open || !transitionName?.trim() || parentOverlay?.open === false) {
-      setClosingTransition(false);
-      if (currentViewerState) {
-        setExitState(currentViewerState);
-      }
-      applyOpenChange(false);
-      return;
-    }
-
-    let closed = false;
-    let callbackFailed = false;
-    const closeInTransition = () => {
-      if (closed) return;
-      closed = true;
-      try {
-        flushSync(() => {
-          setClosingTransition(true);
-          if (currentViewerState) {
-            setExitState(currentViewerState);
-          }
-          applyOpenChange(false);
-        });
-      } catch (error) {
-        callbackFailed = true;
-        throw error;
-      }
-    };
-
-    try {
-      startViewTransitionAndWait(closeInTransition, ['expand']).catch(
-        (error: unknown) => {
-          if (callbackFailed) throw error;
-          closeInTransition();
-        },
-      );
-    } catch (error) {
-      if (callbackFailed) throw error;
-      closeInTransition();
-    }
-  };
-
-  useEffect(() => {
-    if (!effectiveOpen || !sourceKey) return undefined;
-
-    let active = true;
-    waitForCurrentViewTransition()
-      .then(() => {
-        if (active) setTransitionReadyKey(sourceKey);
-      })
-      .catch(() => undefined);
-
-    return () => {
-      active = false;
-    };
-  }, [effectiveOpen, sourceKey]);
-
-  useEffect(() => {
-    if (!effectiveOpen || !sourceKey || mediaType !== 'pdf') return undefined;
-
-    let active = true;
-    let loadedSession: PdfSession | null = null;
-    const controller = new AbortController();
-
-    loadPdfDocument(src, controller.signal, pdfAssetDirectories)
-      .then((session) => {
-        loadedSession = session;
-        if (!active || controller.signal.aborted) {
-          session.dispose();
-          return;
-        }
-
-        setPdfSessionState({ key: sourceKey, session });
-      })
-      .catch(() => {
-        if (!active || controller.signal.aborted) return;
-        setPdfFallbackKey(sourceKey);
-      });
-
-    return () => {
-      active = false;
-      controller.abort();
-      loadedSession?.dispose();
-    };
-  }, [effectiveOpen, mediaType, pdfAssetDirectories, sourceKey, src]);
-
-  useEffect(() => {
-    if (
-      !effectiveOpen ||
-      !sourceKey ||
-      !assetKey ||
-      mediaType !== 'pdf' ||
-      pdfFallback ||
-      !pdfSession ||
-      !canvasRef.current ||
-      !textLayerRef.current
-    ) {
-      return undefined;
-    }
-
-    const controller = new AbortController();
-    const canvas = canvasRef.current;
-    const textLayer = textLayerRef.current;
-
-    const outputScale =
-      zoom * (canvas.ownerDocument.defaultView?.devicePixelRatio || 1);
-    const previousRender = pdfRenderQueueRef.current;
-    const render = previousRender.then(async () => {
-      if (controller.signal.aborted) return;
-
-      await renderPdfPage(
-        pdfSession.document,
-        pdfSession.textLayer,
-        pageNumber,
-        canvas,
-        textLayer,
-        1,
-        0,
-        controller.signal,
-        outputScale,
-      );
-
-      if (controller.signal.aborted) return;
-
-      const logicalWidth = Number.parseFloat(canvas.style.width) || 0;
-      const logicalHeight = Number.parseFloat(canvas.style.height) || 0;
-      setMediaSizeState({
-        height: logicalHeight,
-        key: assetKey,
-        width: logicalWidth,
-      });
-      setAssetState({ failed: false, key: assetKey, ready: true });
-    });
-    pdfRenderQueueRef.current = render.then(
-      () => undefined,
-      () => {
-        if (controller.signal.aborted) return;
-        setPdfFallbackKey(sourceKey);
-        setAssetState({ failed: false, key: assetKey, ready: false });
-      },
-    );
-
-    return () => controller.abort();
-  }, [
-    assetKey,
-    effectiveOpen,
-    mediaType,
-    pageNumber,
-    pdfFallback,
-    pdfSession,
-    sourceKey,
-    zoom,
-  ]);
-
-  useEffect(() => {
-    if (
-      !effectiveOpen ||
-      !sourceKey ||
-      !assetKey ||
-      !assetReady ||
-      !transitionReady ||
-      painted ||
-      revealStartedRef.current === assetKey
-    ) {
-      return undefined;
-    }
-
-    let active = true;
-    revealStartedRef.current = assetKey;
-    const reveal = () => {
-      if (!active) return;
-      setPaintedKey(assetKey);
-      setRevealedSourceKey(sourceKey);
-    };
-    const revealInTransition = () =>
-      new Promise<void>((resolve) => {
-        queueMicrotask(() => {
-          if (!active) {
-            resolve();
-            return;
-          }
-          flushSync(() => {
-            setPaintedKey(assetKey);
-            setRevealedSourceKey(sourceKey);
-          });
-          resolve();
-        });
-      });
-
-    if (!transitionName?.trim() || revealedSourceKey === sourceKey) {
-      reveal();
-      return () => {
-        active = false;
-        if (revealStartedRef.current === assetKey) {
-          revealStartedRef.current = null;
-        }
-      };
-    }
-
-    startViewerModeTransition(viewerRef.current, revealInTransition).catch(
-      () => {
-        if (!active) return;
-        revealStartedRef.current = null;
-        flushSync(() => {
-          setPaintedKey(assetKey);
-          setRevealedSourceKey(sourceKey);
-        });
-      },
-    );
-
-    return () => {
-      active = false;
-      if (revealStartedRef.current === assetKey) {
-        revealStartedRef.current = null;
-      }
-    };
-  }, [
+    currentViewerState,
+    retainedViewerState,
+    {
+      assetKey,
+      downloadName,
+      mediaType,
+      pageNumber,
+      rotation,
+      sourceKey,
+      src,
+      title,
+      zoom,
+    },
+  );
+  const {
+    assetKey: contentAssetKey,
+    downloadName: contentDownloadName,
+    mediaType: contentMediaType,
+    pageNumber: contentPageNumber,
+    rotation: contentRotation,
+    sourceKey: contentSourceKey,
+    src: contentSrc,
+    title: contentTitle,
+    zoom: contentZoom,
+  } = displayedViewer;
+  const [assetState, setAssetState] = useState<KeyedAsset>({
+    failed: false,
+    key: null,
+    ready: false,
+  });
+  const [mediaSizeState, setMediaSizeState] = useState<KeyedSize>({
+    height: 0,
+    key: null,
+    width: 0,
+  });
+  const mediaSize =
+    mediaSizeState.key === contentAssetKey
+      ? mediaSizeState
+      : { height: 0, key: contentAssetKey, width: 0 };
+  const assetReady = assetState.key === contentAssetKey && assetState.ready;
+  const assetFailed = assetState.key === contentAssetKey && assetState.failed;
+  const painted = usePaintedAsset({
     assetKey,
     assetReady,
+    contentAssetKey,
+    contentSourceKey,
     effectiveOpen,
-    painted,
-    revealedSourceKey,
     sourceKey,
     transitionName,
-    transitionReady,
-  ]);
-
-  useEffect(() => {
-    const element = viewerElement;
-    const ownerDocument = element?.ownerDocument;
-    if (!effectiveOpen || !element || !ownerDocument) {
-      setIsFullscreen(false);
-      return undefined;
-    }
-
-    const target = getFullscreenTarget(element);
-    const update = () => {
-      setIsFullscreen(ownerDocument.fullscreenElement === target);
-    };
-    update();
-    ownerDocument.addEventListener('fullscreenchange', update);
-    return () => ownerDocument.removeEventListener('fullscreenchange', update);
-  }, [effectiveOpen, viewerElement]);
-
-  const isPdfCanvas = contentMediaType === 'pdf' && !pdfFallback;
-  const isRotated = contentRotation % 180 !== 0;
-  const boxWidth =
-    (isRotated ? mediaSize.height : mediaSize.width) * contentZoom;
-  const boxHeight =
-    (isRotated ? mediaSize.width : mediaSize.height) * contentZoom;
-  const mediaBoxStyle = { height: boxHeight, width: boxWidth };
-  const mediaContentStyle = {
-    height: mediaSize.height,
-    transform: `translate(-50%, -50%) rotate(${contentRotation}deg) scale(${contentZoom})`,
-    transformOrigin: 'center',
-    width: mediaSize.width,
-  };
-  const filename = contentDownloadName?.trim() || contentTitle;
-  const showFrame = contentMediaType === 'document' || pdfFallback;
-  const downloadFile = async (event: MouseEvent<HTMLAnchorElement>) => {
-    const { ownerDocument } = event.currentTarget;
-    const view = ownerDocument.defaultView;
-    const source = new URL(contentSrc, ownerDocument.baseURI);
-
-    if (
-      !view ||
-      source.origin === view.location.origin ||
-      source.protocol === 'blob:' ||
-      source.protocol === 'data:'
-    ) {
-      return;
-    }
-
-    event.preventDefault();
-
-    try {
-      const response = await fetch(source.href, { credentials: 'same-origin' });
-      if (!response.ok) throw new Error('The attachment download failed.');
-
-      const objectUrl = view.URL.createObjectURL(await response.blob());
-      const downloadLink = ownerDocument.createElement('a');
-      downloadLink.download = filename;
-      downloadLink.href = objectUrl;
-      downloadLink.hidden = true;
-      ownerDocument.body.append(downloadLink);
-      downloadLink.click();
-      downloadLink.remove();
-      view.setTimeout(() => view.URL.revokeObjectURL(objectUrl), 1000);
-    } catch {
-      view.open(source.href, '_blank', 'noopener,noreferrer');
-    }
-  };
-  const handleDownloadClick = (event: MouseEvent<HTMLAnchorElement>) => {
-    downloadFile(event).catch(() => undefined);
-  };
-
-  const getStageContentSize = useCallback(() => {
-    const stage = stageRef.current;
-    if (!stage) return null;
-
-    const bounds = stage.getBoundingClientRect();
-    const style = stage.ownerDocument.defaultView?.getComputedStyle(stage);
-    const padding = (value: string) => Number.parseFloat(value) || 0;
-
-    return {
-      height: Math.max(
-        0,
-        bounds.height -
-          padding(style?.paddingTop ?? '') -
-          padding(style?.paddingBottom ?? ''),
-      ),
-      width: Math.max(
-        0,
-        bounds.width -
-          padding(style?.paddingLeft ?? '') -
-          padding(style?.paddingRight ?? ''),
-      ),
-    };
-  }, []);
-
-  const fitImageToStage = useCallback(
-    (image: HTMLImageElement) => {
-      const bounds = getStageContentSize();
-      const naturalWidth = image.naturalWidth || 1;
-      const naturalHeight = image.naturalHeight || 1;
-      const isImageRotated = contentRotation % 180 !== 0;
-      const maxWidth =
-        (isImageRotated ? bounds?.height : bounds?.width) || naturalWidth;
-      const maxHeight =
-        (isImageRotated ? bounds?.width : bounds?.height) || naturalHeight;
-      const fit = Math.min(
-        1,
-        maxWidth / naturalWidth,
-        maxHeight / naturalHeight,
-      );
-
-      setMediaSizeState({
-        height: naturalHeight * fit,
-        key: contentAssetKey,
-        width: naturalWidth * fit,
-      });
-    },
-    [contentAssetKey, contentRotation, getStageContentSize],
-  );
-
-  const fitFrameToStage = useCallback(() => {
-    const bounds = getStageContentSize();
-    const isFrameRotated = contentRotation % 180 !== 0;
-    setMediaSizeState({
-      height: (isFrameRotated ? bounds?.width : bounds?.height) || 720,
-      key: contentAssetKey,
-      width: (isFrameRotated ? bounds?.height : bounds?.width) || 1024,
-    });
-  }, [contentAssetKey, contentRotation, getStageContentSize]);
-
-  useEffect(() => {
-    const stage = stageRef.current;
-    const image = imageRef.current;
-    if (
-      !effectiveOpen ||
-      !stage ||
-      (!image && !showFrame) ||
-      typeof ResizeObserver === 'undefined'
-    ) {
-      return undefined;
-    }
-
-    const resizeObserver = new ResizeObserver(() => {
-      if (image) {
-        if (image.complete && image.naturalWidth > 0) fitImageToStage(image);
-      } else {
-        fitFrameToStage();
-      }
-    });
-    resizeObserver.observe(stage);
-
-    if (image?.complete && image.naturalWidth > 0) fitImageToStage(image);
-    else if (!image && showFrame) fitFrameToStage();
-
-    return () => resizeObserver.disconnect();
-  }, [
+    viewerRef,
+  });
+  const {
+    fallback: pdfFallback,
+    pageCount,
+    session: pdfSession,
+  } = usePdfPreview({
     assetKey,
-    contentRotation,
+    canvasRef,
+    contentMediaType,
+    contentSourceKey,
     effectiveOpen,
     mediaType,
-    pdfFallback,
-    fitFrameToStage,
-    fitImageToStage,
-    showFrame,
+    pageNumber,
+    pdfAssetDirectories,
+    setAssetState,
+    setMediaSizeState,
+    sourceKey,
     src,
-  ]);
+    textLayerRef,
+    zoom,
+  });
+  const { fullscreenAvailable, isFullscreen } = useFullscreenState(
+    effectiveOpen,
+    viewerElement,
+  );
 
-  const renderMediaContent = () => {
-    if (contentMediaType === 'image') {
-      return (
-        <img
-          alt={contentTitle}
-          className={variants.base.viewerImage}
-          key={contentAssetKey ?? undefined}
-          onError={() =>
-            setAssetState({ failed: true, key: contentAssetKey, ready: true })
-          }
-          onLoad={(event) => {
-            fitImageToStage(event.currentTarget);
-            setAssetState({ failed: false, key: contentAssetKey, ready: true });
-          }}
-          ref={imageRef}
-          src={contentSrc}
-          style={{ height: mediaSize.height, width: mediaSize.width }}
-        />
-      );
-    }
-
-    if (isPdfCanvas && pdfSession) {
-      return (
-        <div
-          className={variants.base.pdfPage}
-          key={contentAssetKey ?? undefined}
-        >
-          <canvas aria-hidden="true" ref={canvasRef} />
-          <div
-            aria-hidden="true"
-            className={variants.base.textLayer}
-            ref={textLayerRef}
-          />
-        </div>
-      );
-    }
-
-    if (showFrame) {
-      return (
-        <iframe
-          className={variants.base.viewerFrame}
-          key={contentAssetKey ?? undefined}
-          onLoad={() => {
-            fitFrameToStage();
-            setAssetState({ failed: false, key: contentAssetKey, ready: true });
-          }}
-          src={contentSrc}
-          title={contentTitle}
-        />
-      );
-    }
-
-    return null;
+  const isPdfCanvas = contentMediaType === 'pdf' && !pdfFallback;
+  const { mediaBoxStyle, mediaContentStyle } = getMediaGeometry(
+    mediaSize,
+    contentRotation,
+    contentZoom,
+  );
+  const filename = contentDownloadName?.trim() || contentTitle;
+  const showFrame = contentMediaType === 'document' || pdfFallback;
+  const { fitFrameToStage, fitImageToStage } = useStageSizing({
+    assetKey,
+    contentAssetKey,
+    contentRotation,
+    effectiveOpen,
+    fitFrame: showFrame,
+    imageRef,
+    setMediaSizeState,
+    src,
+    stageRef,
+  });
+  const handleDownloadClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    downloadDocument(event, contentSrc, filename).catch(() => undefined);
   };
 
   /* eslint-disable jsx-a11y/no-noninteractive-tabindex -- Keyboard users need to focus this scroll region. */
@@ -946,188 +1414,73 @@ export function DocumentViewer({
       viewerSurface
     >
       <DocumentViewerPanel name={participantName} onRoot={setViewerRef}>
-        <div className={variants.base.toolbar}>
-          <span className={variants.base.toolbarTitle} title={filename}>
-            {filename}
-          </span>
-          <div className={variants.base.toolbarSection}>
-            <span lang={getMessageLocale('documentViewerZoomOut')}>
-              <Button
-                aria-label={messages.documentViewerZoomOut}
-                disabled={zoom <= 0.5}
-                onAction={() =>
-                  setZoomState({
-                    key: sourceKey,
-                    value: Math.max(0.5, zoom - 0.25),
-                  })
-                }
-                size="sm"
-                variant="secondary"
-              >
-                −
-              </Button>
-            </span>
-            <span lang={getMessageLocale('documentViewerZoomIn')}>
-              <Button
-                aria-label={messages.documentViewerZoomIn}
-                disabled={zoom >= 3}
-                onAction={() =>
-                  setZoomState({
-                    key: sourceKey,
-                    value: Math.min(3, zoom + 0.25),
-                  })
-                }
-                size="sm"
-                variant="secondary"
-              >
-                +
-              </Button>
-            </span>
-            <span lang={getMessageLocale('documentViewerRotateLabel')}>
-              <span
-                className="breeze:sr-only"
-                id={rotateAccessibleLabelId}
-                lang={getMessageLocale('documentViewerRotate')}
-              >
-                {messages.documentViewerRotate}
-              </span>
-              <Button
-                aria-labelledby={rotateAccessibleLabelId}
-                onAction={() =>
-                  setRotationState({
-                    key: sourceKey,
-                    value: (rotation + 90) % 360,
-                  })
-                }
-                size="sm"
-                variant="secondary"
-              >
-                {messages.documentViewerRotateLabel}
-              </Button>
-            </span>
-            <a
-              className={variants.base.toolbarLink}
-              download={filename}
-              href={contentSrc}
-              lang={getMessageLocale('documentViewerDownload')}
-              onClick={handleDownloadClick}
-            >
-              {messages.documentViewerDownload}
-            </a>
-            {fullscreenAvailable ? (
-              <span
-                lang={getMessageLocale(
-                  isFullscreen
-                    ? 'documentViewerExitFullScreen'
-                    : 'documentViewerFullScreen',
-                )}
-              >
-                <Button
-                  onAction={() => {
-                    const element = viewerRef.current;
-                    const ownerDocument = element?.ownerDocument;
-
-                    if (!element || !ownerDocument) return;
-                    const target = getFullscreenTarget(element);
-                    if (ownerDocument.fullscreenElement === target) {
-                      ownerDocument.exitFullscreen?.().catch(() => undefined);
-                    } else {
-                      target.requestFullscreen?.().catch(() => undefined);
-                    }
-                  }}
-                  size="sm"
-                  variant="secondary"
-                >
-                  {isFullscreen
-                    ? messages.documentViewerExitFullScreen
-                    : messages.documentViewerFullScreen}
-                </Button>
-              </span>
-            ) : null}
-            {onReplace ? (
-              <span lang={getMessageLocale('documentViewerReplace')}>
-                <Button onAction={onReplace} size="sm" variant="secondary">
-                  {messages.documentViewerReplace}
-                </Button>
-              </span>
-            ) : null}
-            {onRemove ? (
-              <span lang={getMessageLocale('documentViewerRemove')}>
-                <Button onAction={onRemove} size="sm" variant="secondary">
-                  {messages.documentViewerRemove}
-                </Button>
-              </span>
-            ) : null}
-            <span lang={getMessageLocale('close')}>
-              <Button
-                onAction={() => changeOpen(false)}
-                size="sm"
-                variant="secondary"
-              >
-                {messages.close}
-              </Button>
-            </span>
-          </div>
-        </div>
+        <DocumentViewerToolbar
+          downloadClick={handleDownloadClick}
+          downloadName={filename}
+          downloadSrc={contentSrc}
+          fullscreenAvailable={fullscreenAvailable}
+          isFullscreen={isFullscreen}
+          onClose={() => changeOpen(false)}
+          onRemove={onRemove}
+          onReplace={onReplace}
+          onRotationChange={(nextRotation) =>
+            setRotationState({ key: sourceKey, value: nextRotation })
+          }
+          onZoomChange={(nextZoom) =>
+            setZoomState({ key: sourceKey, value: nextZoom })
+          }
+          rotateAccessibleLabelId={rotateAccessibleLabelId}
+          rotation={rotation}
+          viewerRef={viewerRef}
+          zoom={zoom}
+        />
         {isPdfCanvas && pageCount > 1 ? (
-          <div className={variants.base.pageToolbar}>
-            <span lang={getMessageLocale('documentViewerPreviousPage')}>
-              <Button
-                disabled={contentPageNumber <= 1}
-                onAction={() =>
-                  setPageState({ key: sourceKey, value: pageNumber - 1 })
-                }
-                size="sm"
-                variant="secondary"
-              >
-                {messages.documentViewerPreviousPage}
-              </Button>
-            </span>
-            <span
-              aria-live="polite"
-              className={variants.base.pageStatus}
-              lang={getMessageLocale('documentViewerPage')}
-            >
-              {messages.documentViewerPage
-                .replace('{current}', String(contentPageNumber))
-                .replace('{total}', String(pageCount))}
-            </span>
-            <span lang={getMessageLocale('documentViewerNextPage')}>
-              <Button
-                disabled={contentPageNumber >= pageCount}
-                onAction={() =>
-                  setPageState({ key: sourceKey, value: pageNumber + 1 })
-                }
-                size="sm"
-                variant="secondary"
-              >
-                {messages.documentViewerNextPage}
-              </Button>
-            </span>
-          </div>
+          <DocumentViewerPageToolbar
+            currentPage={contentPageNumber}
+            onNextPage={() =>
+              setPageState({ key: sourceKey, value: pageNumber + 1 })
+            }
+            onPreviousPage={() =>
+              setPageState({ key: sourceKey, value: pageNumber - 1 })
+            }
+            pageCount={pageCount}
+          />
         ) : null}
         <div className={variants.base.viewer}>
-          <div
+          <section
             aria-busy={!painted}
             aria-label={contentTitle}
             className={variants.base.stage}
             ref={setStageRef}
-            role="region"
             tabIndex={0}
           >
             <div
-              aria-hidden={!painted}
               className={[
                 variants.base.stageContent,
                 variants.state.painted[painted ? 'visible' : 'hidden'],
               ].join(' ')}
+              inert={!painted}
             >
               <div className={variants.base.mediaBox} style={mediaBoxStyle}>
                 <div
                   className={variants.base.mediaContent}
                   style={mediaContentStyle}
                 >
-                  {renderMediaContent()}
+                  <DocumentViewerMedia
+                    assetKey={contentAssetKey}
+                    canvasRef={canvasRef}
+                    fitFrameToStage={fitFrameToStage}
+                    fitImageToStage={fitImageToStage}
+                    imageRef={imageRef}
+                    isPdfCanvas={isPdfCanvas}
+                    mediaSize={mediaSize}
+                    mediaType={contentMediaType}
+                    onAssetStateChange={setAssetState}
+                    pdfSession={pdfSession}
+                    src={contentSrc}
+                    textLayerRef={textLayerRef}
+                    title={contentTitle}
+                  />
                 </div>
               </div>
             </div>
@@ -1146,7 +1499,7 @@ export function DocumentViewer({
                 </span>
               </div>
             ) : null}
-          </div>
+          </section>
         </div>
         <p
           className={variants.base.viewerNotice}

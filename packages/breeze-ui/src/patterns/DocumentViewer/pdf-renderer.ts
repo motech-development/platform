@@ -62,11 +62,15 @@ export async function loadPdfDocument(
   const dispose = () => {
     if (destroyPromise) return;
 
+    let destruction: Promise<void>;
     try {
-      destroyPromise = loadingTask.destroy().catch(() => undefined);
+      destruction = loadingTask.destroy();
     } catch {
       destroyPromise = Promise.resolve();
+      return;
     }
+
+    destroyPromise = destruction.catch(() => undefined);
   };
   let removeAbortListener: () => void = () => undefined;
   const aborted = new Promise<never>((_, reject) => {
@@ -101,18 +105,30 @@ export async function loadPdfDocument(
   }
 }
 
+interface PdfPageRenderOptions {
+  readonly TextLayer: PdfSession['textLayer'];
+  readonly canvas: HTMLCanvasElement;
+  readonly document: PDFDocumentProxy;
+  readonly outputScale?: number;
+  readonly pageNumber: number;
+  readonly rotation: number;
+  readonly scale: number;
+  readonly signal: AbortSignal;
+  readonly textLayerContainer: HTMLDivElement;
+}
+
 /** Paints one PDF page into a canvas and its selectable text layer. */
-export async function renderPdfPage(
-  document: PDFDocumentProxy,
-  TextLayer: PdfSession['textLayer'],
-  pageNumber: number,
-  canvas: HTMLCanvasElement,
-  textLayerContainer: HTMLDivElement,
-  scale: number,
-  rotation: number,
-  signal: AbortSignal,
+export async function renderPdfPage({
+  TextLayer,
+  canvas,
+  document,
   outputScale = 1,
-): Promise<void> {
+  pageNumber,
+  rotation,
+  scale,
+  signal,
+  textLayerContainer,
+}: PdfPageRenderOptions): Promise<void> {
   const page = await document.getPage(pageNumber);
   try {
     if (signal.aborted) return;
@@ -142,10 +158,7 @@ export async function renderPdfPage(
     renderTextLayerContainer.replaceChildren();
     renderTextLayerContainer.style.width = `${viewport.width}px`;
     renderTextLayerContainer.style.height = `${viewport.height}px`;
-    renderTextLayerContainer.setAttribute(
-      'data-main-rotation',
-      String(viewport.rotation),
-    );
+    renderTextLayerContainer.dataset.mainRotation = String(viewport.rotation);
     const pageContainer = renderTextLayerContainer.parentElement;
     pageContainer?.style.setProperty('--scale-factor', String(viewport.scale));
     pageContainer?.style.setProperty('--user-unit', String(page.userUnit));

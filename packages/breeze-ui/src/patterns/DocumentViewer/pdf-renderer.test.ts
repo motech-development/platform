@@ -134,6 +134,39 @@ describe('PDF renderer adapter', () => {
     expect(task.destroy).toHaveBeenCalledOnce();
   });
 
+  it('keeps disposal safe when destroying the loading task throws synchronously', async () => {
+    const task = createLoadingTask({ numPages: 1 });
+    task.destroy.mockImplementation(() => {
+      throw new Error('The loading task could not be destroyed.');
+    });
+    pdfjsMocks.getDocument.mockReturnValue(task);
+
+    const session = await loadPdfDocument(
+      '/attachments/report.pdf',
+      new AbortController().signal,
+    );
+
+    expect(() => session.dispose()).not.toThrow();
+    expect(() => session.dispose()).not.toThrow();
+    expect(task.destroy).toHaveBeenCalledOnce();
+  });
+
+  it('keeps disposal safe when destroying the loading task rejects', async () => {
+    const task = createLoadingTask({ numPages: 1 });
+    task.destroy.mockRejectedValue(new Error('The worker did not stop.'));
+    pdfjsMocks.getDocument.mockReturnValue(task);
+
+    const session = await loadPdfDocument(
+      '/attachments/report.pdf',
+      new AbortController().signal,
+    );
+
+    expect(() => session.dispose()).not.toThrow();
+    await vi.waitFor(() => expect(task.destroy).toHaveBeenCalledOnce());
+    session.dispose();
+    expect(task.destroy).toHaveBeenCalledOnce();
+  });
+
   it.each([0, 90, 180, 270])(
     'keeps the text layer aligned with an intrinsic %s degree page rotation',
     async (intrinsicRotation) => {
@@ -158,18 +191,18 @@ describe('PDF renderer adapter', () => {
       const textLayer = document.createElement('div');
       pageContainer.append(textLayer);
 
-      await renderPdfPage(
-        {
+      await renderPdfPage({
+        TextLayer,
+        canvas,
+        document: {
           getPage: vi.fn().mockResolvedValue(page),
         } as never,
-        TextLayer,
-        1,
-        canvas,
-        textLayer,
-        1,
-        0,
-        new AbortController().signal,
-      );
+        pageNumber: 1,
+        rotation: 0,
+        scale: 1,
+        signal: new AbortController().signal,
+        textLayerContainer: textLayer,
+      });
 
       expect(page.getViewport).toHaveBeenCalledWith({
         rotation: intrinsicRotation,
@@ -212,19 +245,19 @@ describe('PDF renderer adapter', () => {
     const textLayer = document.createElement('div');
     pageContainer.append(textLayer);
 
-    await renderPdfPage(
-      {
+    await renderPdfPage({
+      TextLayer,
+      canvas,
+      document: {
         getPage: vi.fn().mockResolvedValue(page),
       } as never,
-      TextLayer,
-      1,
-      canvas,
-      textLayer,
-      1,
-      180,
-      new AbortController().signal,
-      2,
-    );
+      outputScale: 2,
+      pageNumber: 1,
+      rotation: 180,
+      scale: 1,
+      signal: new AbortController().signal,
+      textLayerContainer: textLayer,
+    });
 
     expect(page.getViewport).toHaveBeenCalledWith({ rotation: 90, scale: 1 });
     expect(pageContainer.style.getPropertyValue('--scale-factor')).toBe('1');
@@ -266,19 +299,19 @@ describe('PDF renderer adapter', () => {
       maximumCanvasPixels / (viewport.width * viewport.height),
     );
 
-    await renderPdfPage(
-      {
+    await renderPdfPage({
+      TextLayer,
+      canvas,
+      document: {
         getPage: vi.fn().mockResolvedValue(page),
       } as never,
-      TextLayer,
-      1,
-      canvas,
-      textLayer,
-      1,
-      0,
-      new AbortController().signal,
       outputScale,
-    );
+      pageNumber: 1,
+      rotation: 0,
+      scale: 1,
+      signal: new AbortController().signal,
+      textLayerContainer: textLayer,
+    });
 
     expect(canvas.width * canvas.height).toBeLessThanOrEqual(
       maximumCanvasPixels,
@@ -323,19 +356,19 @@ describe('PDF renderer adapter', () => {
     const textLayer = document.createElement('div');
     pageContainer.append(textLayer);
 
-    await renderPdfPage(
-      {
+    await renderPdfPage({
+      TextLayer,
+      canvas,
+      document: {
         getPage: vi.fn().mockResolvedValue(page),
       } as never,
-      TextLayer,
-      1,
-      canvas,
-      textLayer,
-      1,
-      0,
-      new AbortController().signal,
-      2,
-    );
+      outputScale: 2,
+      pageNumber: 1,
+      rotation: 0,
+      scale: 1,
+      signal: new AbortController().signal,
+      textLayerContainer: textLayer,
+    });
 
     expect(canvas.width * canvas.height).toBeLessThanOrEqual(16_777_216);
     expect(canvas.style.width).toBe('0.1px');
@@ -366,16 +399,16 @@ describe('PDF renderer adapter', () => {
     pageContainer.append(textLayer);
     const controller = new AbortController();
 
-    const renderPage = renderPdfPage(
-      { getPage: vi.fn().mockResolvedValue(page) } as never,
+    const renderPage = renderPdfPage({
       TextLayer,
-      1,
       canvas,
-      textLayer,
-      1,
-      0,
-      controller.signal,
-    );
+      document: { getPage: vi.fn().mockResolvedValue(page) } as never,
+      pageNumber: 1,
+      rotation: 0,
+      scale: 1,
+      signal: controller.signal,
+      textLayerContainer: textLayer,
+    });
     await vi.waitFor(() => expect(page.render).toHaveBeenCalledOnce());
 
     controller.abort();

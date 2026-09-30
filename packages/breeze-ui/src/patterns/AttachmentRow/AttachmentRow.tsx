@@ -337,17 +337,22 @@ export function AttachmentRow(props: Readonly<AttachmentRowProps>) {
                 }
               };
 
+              let transitionFinished: Promise<void>;
               try {
-                startViewTransitionAndWait(openInTransition, ['expand']).catch(
-                  (error) => {
-                    if (callbackFailed) throw error;
-                    if (!opened) openInTransition();
-                  },
+                transitionFinished = startViewTransitionAndWait(
+                  openInTransition,
+                  ['expand'],
                 );
               } catch (error) {
                 if (callbackFailed) throw error;
                 openInTransition();
+                return;
               }
+
+              transitionFinished.catch((error) => {
+                if (callbackFailed) throw error;
+                if (!opened) openInTransition();
+              });
             }}
             size="sm"
             type="button"
