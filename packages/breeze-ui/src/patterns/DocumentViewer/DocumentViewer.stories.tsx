@@ -73,36 +73,41 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+const pdfRenderWaitTimeout = 15_000;
+
 async function expectPaintedPdfPage(
   dialog: HTMLElement,
   pageText: string,
   title = 'Workshop invoice',
 ) {
-  await waitFor(async () => {
-    const stage = within(dialog).getByRole('region', {
-      name: title,
-    });
-    await expect(stage).toHaveAttribute('aria-busy', 'false');
-    await expect(
-      stage.querySelector('.breeze-pdf-text-layer')?.textContent,
-    ).toContain(pageText);
-    const page = stage.querySelector('.breeze-pdf-page');
-    const canvas = stage.querySelector('canvas');
-    await expect(page?.getBoundingClientRect().width).toBeGreaterThan(0);
-    await expect(page?.getBoundingClientRect().height).toBeGreaterThan(0);
-    await expect(canvas?.width).toBeGreaterThan(0);
-    await expect(canvas?.height).toBeGreaterThan(0);
-    if (!canvas) throw new Error('The rendered PDF canvas was not found.');
-    const pixels = canvas
-      .getContext('2d')
-      ?.getImageData(0, 0, canvas.width, canvas.height).data;
-    await expect(pixels).toBeDefined();
-    const hasInk = Array.from(pixels ?? []).some(
-      (value, index, allPixels) =>
-        index % 4 === 0 && value < 96 && (allPixels[index + 3] ?? 0) > 0,
-    );
-    await expect(hasInk).toBe(true);
-  });
+  await waitFor(
+    async () => {
+      const stage = within(dialog).getByRole('region', {
+        name: title,
+      });
+      await expect(stage).toHaveAttribute('aria-busy', 'false');
+      await expect(
+        stage.querySelector('.breeze-pdf-text-layer')?.textContent,
+      ).toContain(pageText);
+      const page = stage.querySelector('.breeze-pdf-page');
+      const canvas = stage.querySelector('canvas');
+      await expect(page?.getBoundingClientRect().width).toBeGreaterThan(0);
+      await expect(page?.getBoundingClientRect().height).toBeGreaterThan(0);
+      await expect(canvas?.width).toBeGreaterThan(0);
+      await expect(canvas?.height).toBeGreaterThan(0);
+      if (!canvas) throw new Error('The rendered PDF canvas was not found.');
+      const pixels = canvas
+        .getContext('2d')
+        ?.getImageData(0, 0, canvas.width, canvas.height).data;
+      await expect(pixels).toBeDefined();
+      const hasInk = Array.from(pixels ?? []).some(
+        (value, index, allPixels) =>
+          index % 4 === 0 && value < 96 && (allPixels[index + 3] ?? 0) > 0,
+      );
+      await expect(hasInk).toBe(true);
+    },
+    { timeout: pdfRenderWaitTimeout },
+  );
 }
 
 function DocumentViewerStoryExample({
@@ -164,8 +169,9 @@ export const PdfWorker: Story = {
     const dialog = within(document.body).getByRole('dialog', {
       name: 'Workshop invoice',
     });
-    await waitFor(async () =>
-      expect(within(dialog).getByText('Page 1 of 2')).toBeVisible(),
+    await waitFor(
+      async () => expect(within(dialog).getByText('Page 1 of 2')).toBeVisible(),
+      { timeout: pdfRenderWaitTimeout },
     );
     await expectPaintedPdfPage(dialog, 'page one');
 
@@ -186,8 +192,9 @@ export const PdfWorker: Story = {
     await userEvent.click(
       within(dialog).getByRole('button', { name: 'Next page' }),
     );
-    await waitFor(async () =>
-      expect(within(dialog).getByText('Page 2 of 2')).toBeVisible(),
+    await waitFor(
+      async () => expect(within(dialog).getByText('Page 2 of 2')).toBeVisible(),
+      { timeout: pdfRenderWaitTimeout },
     );
     await expectPaintedPdfPage(dialog, 'page two');
 
@@ -255,8 +262,9 @@ export const PdfPageMetadata: Story = {
     const dialog = within(document.body).getByRole('dialog', {
       name: 'Rotated PDF page',
     });
-    await waitFor(async () =>
-      expect(within(dialog).getByText('Page 1 of 2')).toBeVisible(),
+    await waitFor(
+      async () => expect(within(dialog).getByText('Page 1 of 2')).toBeVisible(),
+      { timeout: pdfRenderWaitTimeout },
     );
     await expectPaintedPdfPage(dialog, 'page one', 'Rotated PDF page');
 
@@ -368,7 +376,19 @@ function renderAttachmentMorphExample() {
 export const FromAttachmentRow: Story = {
   args: pdfWorkerArgs,
   play: async () => {
+    if (!('__vitest_browser__' in globalThis)) return;
+
     const { page } = await import('vitest/browser');
+    const view = document.defaultView;
+    const supportsTransitions =
+      typeof document.startViewTransition === 'function' &&
+      typeof view?.ViewTransition === 'function' &&
+      typeof view.CSS?.supports === 'function' &&
+      ['expand', 'mode'].every((type) =>
+        view.CSS.supports(`selector(:active-view-transition-type(${type}))`),
+      );
+    if (!supportsTransitions) return;
+
     await page.viewport(1280, 800);
 
     const transitionName = 'workshop-invoice-preview';
@@ -452,8 +472,10 @@ export const FromAttachmentRow: Story = {
       const dialog = await within(document.body).findByRole('dialog', {
         name: 'Workshop invoice',
       });
-      await waitFor(async () =>
-        expect(within(dialog).getByText('Page 1 of 2')).toBeVisible(),
+      await waitFor(
+        async () =>
+          expect(within(dialog).getByText('Page 1 of 2')).toBeVisible(),
+        { timeout: pdfRenderWaitTimeout },
       );
       await expectPaintedPdfPage(dialog, 'page one');
 

@@ -22,6 +22,7 @@ export type {
 export { AttachmentRow } from './patterns/AttachmentRow/AttachmentRow';
 export type {
   DocumentViewerMediaType,
+  DocumentViewerPdfAssets,
   DocumentViewerProps,
 } from './patterns/DocumentViewer/DocumentViewer';
 export { DocumentViewer } from './patterns/DocumentViewer/DocumentViewer';

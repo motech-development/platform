@@ -23,6 +23,28 @@ requested. Install a compatible `pdfjs-dist` version (`^6.2.108`) in the
 application to enable this renderer. If the peer is absent or PDF.js cannot
 render a file, the viewer falls back to the browser's PDF frame.
 
+PDFs that use predefined Adobe character maps or PDF.js standard font files
+also need those matching directories served by the application. Copy the
+`cmaps/` and `standard_fonts/` directories from the installed `pdfjs-dist`
+version to public asset paths, then pass their directory URLs to the PDF
+viewer:
+
+```tsx
+<DocumentViewer
+  mediaType="pdf"
+  pdfAssets={{
+    cMapUrl: '/pdfjs/cmaps',
+    standardFontDataUrl: '/pdfjs/standard_fonts',
+  }}
+  src={source}
+  title="Quarterly report"
+/>
+```
+
+These URLs must serve the matching files from the same `pdfjs-dist` version.
+The viewer adds a trailing slash to each directory URL. The auxiliary assets
+are optional when a document does not reference them.
+
 The reader supports page navigation for multi-page PDFs. Zoom and rotation
 apply to images, rendered PDF pages, and browser-owned frames.
 Each preview starts closed inside its own frame; use its Open button to view the
@@ -71,15 +93,18 @@ With Breeze UI's development pin `pdfjs-dist@6.3.289`, the measurement on
 
 | Payload                                                                       |  Gzip size |
 | ----------------------------------------------------------------------------- | ---------: |
-| Breeze UI library JavaScript (package output; external dependencies excluded) |  36.80 KiB |
+| Breeze UI library JavaScript (package output; external dependencies excluded) |  37.57 KiB |
 | PDF.js engine JavaScript (main + worker, independently compressed)            | 634.60 KiB |
 
 ## Actions
 
-The Download link is always available. Replace and Remove buttons appear only
-when their corresponding callbacks are provided, leaving mutation and
-confirmation flows in the application. Full screen appears only when the
-browser reports support for the native Fullscreen API.
+The Download link is always available. Cross-origin sources are fetched as a
+blob so the requested filename is preserved; the file host must allow CORS from
+the application. If that request is blocked, the viewer opens the original in
+a separate tab. Replace and Remove buttons appear only when their corresponding
+callbacks are provided, leaving mutation and confirmation flows in the
+application. Full screen appears only when the browser reports support for the
+native Fullscreen API.
 
 ## API
 
