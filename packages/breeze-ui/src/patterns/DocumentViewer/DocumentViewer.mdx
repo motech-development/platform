@@ -13,6 +13,8 @@ zoom, rotation, download, and optional app-owned Replace and Remove actions.
 Use it with `AttachmentRow` by passing the same unique `transitionName` to both
 components. The viewer owns its dialog and toolbar; the surrounding record owns
 attachment meaning, storage, replacement, and removal.
+The viewer is controlled: pass both `open` and `onOpenChange`, and let the
+owning screen provide the trigger and state.
 
 ## Images and PDFs
 
@@ -32,6 +34,8 @@ viewer:
 ```tsx
 <DocumentViewer
   mediaType="pdf"
+  onOpenChange={setOpen}
+  open={open}
   pdfAssets={{
     cMapUrl: '/pdfjs/cmaps',
     standardFontDataUrl: '/pdfjs/standard_fonts',
@@ -93,18 +97,18 @@ With Breeze UI's development pin `pdfjs-dist@6.3.289`, the measurement on
 
 | Payload                                                                       |  Gzip size |
 | ----------------------------------------------------------------------------- | ---------: |
-| Breeze UI library JavaScript (package output; external dependencies excluded) |  37.57 KiB |
+| Breeze UI library JavaScript (package output; external dependencies excluded) |  38.40 KiB |
 | PDF.js engine JavaScript (main + worker, independently compressed)            | 634.60 KiB |
 
 ## Actions
 
 The Download link is always available. Cross-origin sources are fetched as a
 blob so the requested filename is preserved; the file host must allow CORS from
-the application. If that request is blocked, the viewer opens the original in
-a separate tab. Replace and Remove buttons appear only when their corresponding
-callbacks are provided, leaving mutation and confirmation flows in the
-application. Full screen appears only when the browser reports support for the
-native Fullscreen API.
+the application. If that request is blocked, the browser navigates to the
+original source in the current tab. Replace and Remove buttons appear only when
+their corresponding callbacks are provided, leaving mutation and confirmation
+flows in the application. Full screen appears only when the browser reports
+support for the native Fullscreen API.
 
 ## API
 

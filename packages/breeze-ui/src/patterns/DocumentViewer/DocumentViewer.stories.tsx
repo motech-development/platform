@@ -54,8 +54,12 @@ const imageArgs = {
 
 const meta = {
   argTypes: {
-    defaultOpen: { control: false },
+    onOpenChange: { control: false },
     open: { control: false },
+  },
+  args: {
+    onOpenChange: () => undefined,
+    open: false,
   },
   component: DocumentViewer,
   parameters: {
