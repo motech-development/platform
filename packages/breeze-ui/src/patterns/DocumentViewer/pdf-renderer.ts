@@ -8,9 +8,10 @@ export interface PdfSession {
   textLayer: typeof TextLayer;
 }
 
-export interface PdfAssetDirectories {
+export interface PdfAssetOptions {
   cMapUrl?: string;
   standardFontDataUrl?: string;
+  workerSrc?: string;
 }
 
 function normalizeDirectoryUrl(url?: string) {
@@ -35,16 +36,18 @@ function throwIfAborted(signal: AbortSignal) {
 export async function loadPdfDocument(
   source: string,
   signal: AbortSignal,
-  assets?: PdfAssetDirectories,
+  assets?: PdfAssetOptions,
 ): Promise<PdfSession> {
   throwIfAborted(signal);
 
   const pdfjs = await import('pdfjs-dist');
   throwIfAborted(signal);
 
-  const { default: workerSrc } = await import(
-    'pdfjs-dist/build/pdf.worker.mjs?url'
-  );
+  let workerSrc = assets?.workerSrc?.trim();
+  if (!workerSrc) {
+    const workerAsset = await import('pdfjs-dist/build/pdf.worker.mjs?url');
+    workerSrc = workerAsset.default;
+  }
   throwIfAborted(signal);
 
   pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;

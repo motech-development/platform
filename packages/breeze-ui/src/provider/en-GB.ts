@@ -24,6 +24,7 @@ const enGB = {
   documentViewerReplace: 'Replace',
   documentViewerRotate: 'Rotate clockwise',
   documentViewerRotateLabel: 'Rotate',
+  documentViewerZoom: 'Zoom {zoom}',
   documentViewerZoomIn: 'Zoom in',
   documentViewerZoomOut: 'Zoom out',
   fileDropZoneAcceptedTypes: 'Accepted file types: {types}.',

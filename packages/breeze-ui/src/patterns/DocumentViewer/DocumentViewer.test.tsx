@@ -250,6 +250,8 @@ describe('DocumentViewer', () => {
     );
 
     const dialog = await screen.findByRole('dialog', { name: 'Receipt' });
+    const zoomStatus = within(dialog).getByRole('status');
+    expect(zoomStatus).toHaveTextContent('Zoom 100%');
     const image = document.body.querySelector('img');
     if (!image) throw new Error('The image preview was not rendered.');
     expect(image).toHaveAttribute('src', '/attachments/receipt.jpg');
@@ -257,6 +259,7 @@ describe('DocumentViewer', () => {
     await waitFor(() => expect(image).toBeVisible());
 
     await user.click(within(dialog).getByRole('button', { name: 'Zoom in' }));
+    expect(zoomStatus).toHaveTextContent('Zoom 125%');
     expect(image.parentElement).toHaveStyle({
       transform: 'translate(-50%, -50%) rotate(0deg) scale(1.25)',
     });
@@ -278,6 +281,82 @@ describe('DocumentViewer', () => {
     expect(onRemove).toHaveBeenCalledOnce();
     await user.click(within(dialog).getByRole('button', { name: 'Close' }));
     await waitFor(() => expect(onOpenChange).toHaveBeenCalledWith(false));
+  });
+
+  it('localizes the visible zoom percentage', () => {
+    render(
+      <BreezeProvider
+        locale="fr-FR"
+        messages={{ documentViewerZoom: 'Échelle {zoom}' }}
+      >
+        <DocumentViewer
+          mediaType="image"
+          onOpenChange={() => undefined}
+          open
+          src="/attachments/receipt.jpg"
+          title="Receipt"
+        />
+      </BreezeProvider>,
+    );
+
+    const zoomStatus = screen.getByRole('status');
+    const percentage = new Intl.NumberFormat('fr-FR', {
+      maximumFractionDigits: 0,
+      style: 'percent',
+    }).format(1);
+
+    expect(zoomStatus).toHaveAttribute('lang', 'fr-FR');
+    expect(zoomStatus.textContent).toBe(`Échelle ${percentage}`);
+  });
+
+  it.each([undefined, '   '])(
+    'does not register an implicit transition participant for %s',
+    async (transitionName) => {
+      renderBreeze(
+        <DocumentViewer
+          mediaType="image"
+          onOpenChange={() => undefined}
+          open
+          src="/attachments/receipt.jpg"
+          title="Receipt"
+          transitionName={transitionName}
+        />,
+      );
+
+      await screen.findByRole('dialog', { name: 'Receipt' });
+      const viewerParticipant = Array.from(
+        document.querySelectorAll<HTMLElement>('[data-breeze-transition-name]'),
+      ).find((element) => element.querySelector('[aria-label="Zoom in"]'));
+
+      expect(viewerParticipant).toBeUndefined();
+    },
+  );
+
+  it('registers the viewer as a transition participant only for an explicit name', async () => {
+    renderBreeze(
+      <DocumentViewer
+        mediaType="image"
+        onOpenChange={() => undefined}
+        open
+        src="/attachments/receipt.jpg"
+        title="Receipt"
+        transitionName="receipt-preview"
+      />,
+    );
+
+    await screen.findByRole('dialog', { name: 'Receipt' });
+    const viewerParticipant = Array.from(
+      document.querySelectorAll<HTMLElement>('[data-breeze-transition-name]'),
+    ).find((element) => element.querySelector('[aria-label="Zoom in"]'));
+
+    expect(viewerParticipant).toHaveAttribute(
+      'data-breeze-transition-name',
+      'receipt-preview',
+    );
+    expect(viewerParticipant).toHaveAttribute(
+      'data-breeze-transition-types',
+      'expand mode',
+    );
   });
 
   it('downloads cross-origin files as blobs so the filename is honored', async () => {
@@ -366,39 +445,58 @@ describe('DocumentViewer', () => {
     expect(fallbackLinks[0]).not.toHaveAttribute('download');
   });
 
-  it('does not synthesize navigation or fetches for non-http download URLs', async () => {
-    const user = userEvent.setup();
-    const unsafeSource = ['java', 'script:alert(1)'].join('');
-    const fetchMock = vi.fn();
-    vi.stubGlobal('fetch', fetchMock);
-    const syntheticClicks: HTMLAnchorElement[] = [];
-    vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(
-      function mockSyntheticClick(this: HTMLAnchorElement) {
-        if (this.hidden) syntheticClicks.push(this);
-      },
-    );
-    const preventNativeNavigation = (event: MouseEvent) =>
-      event.preventDefault();
-    document.addEventListener('click', preventNativeNavigation, true);
-
-    try {
-      renderBreeze(
-        <TestDocumentViewer
-          initialOpen
-          mediaType="image"
-          src={unsafeSource}
-          title="Untrusted source"
-        />,
+  it.each([
+    ['plain', ['java', 'script:alert(1)'].join('')],
+    ['obfuscated', 'java\nscript:alert(1)'],
+  ])(
+    'relies on React to block %s JavaScript URLs and does not synthesize navigation',
+    async (_variant, unsafeSource) => {
+      const user = userEvent.setup();
+      const fetchMock = vi.fn();
+      vi.stubGlobal('fetch', fetchMock);
+      const syntheticClicks: HTMLAnchorElement[] = [];
+      vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(
+        function mockSyntheticClick(this: HTMLAnchorElement) {
+          if (this.hidden) syntheticClicks.push(this);
+        },
       );
+      const preventNativeNavigation = (event: MouseEvent) =>
+        event.preventDefault();
+      document.addEventListener('click', preventNativeNavigation, true);
 
-      await user.click(await screen.findByRole('link', { name: 'Download' }));
+      try {
+        renderBreeze(
+          <TestDocumentViewer
+            initialOpen
+            mediaType="image"
+            src={unsafeSource}
+            title="Untrusted source"
+          />,
+        );
 
-      expect(fetchMock).not.toHaveBeenCalled();
-      expect(syntheticClicks).toHaveLength(0);
-    } finally {
-      document.removeEventListener('click', preventNativeNavigation, true);
-    }
-  });
+        const downloadLink = await screen.findByRole('link', {
+          name: 'Download',
+        });
+        const reactBlockedJavaScriptHref = [
+          'java',
+          'script:throw new Error(',
+          "'React has blocked a java",
+          'script: URL as a security precaution.',
+          "')",
+        ].join('');
+        expect(downloadLink).toHaveAttribute(
+          'href',
+          reactBlockedJavaScriptHref,
+        );
+        await user.click(downloadLink);
+
+        expect(fetchMock).not.toHaveBeenCalled();
+        expect(syntheticClicks).toHaveLength(0);
+      } finally {
+        document.removeEventListener('click', preventNativeNavigation, true);
+      }
+    },
+  );
 
   it('keeps painted content visible while an ordinary close animation exits', async () => {
     const user = userEvent.setup();
@@ -1144,24 +1242,30 @@ describe('DocumentViewer', () => {
     });
   });
 
-  it('reloads and resets a PDF when its auxiliary asset directories change', async () => {
+  it('reloads and resets a PDF when its asset URLs change', async () => {
     const user = userEvent.setup();
     const firstSession = pdfSession(2);
     const replacementSession = pdfSession(1);
     mockLoadPdfDocument
       .mockResolvedValueOnce(firstSession)
       .mockResolvedValueOnce(replacementSession);
-    let changeCMapAssets!: () => void;
+    let changePdfAssets!: () => void;
 
     function ConfigurableViewer() {
       const [cMapUrl, setCMapUrl] = useState('/assets/pdfjs/cmaps');
-      changeCMapAssets = () => setCMapUrl('/assets/updated-pdfjs/cmaps');
+      const [workerSrc, setWorkerSrc] = useState(
+        '/assets/pdfjs/pdf.worker.mjs',
+      );
+      changePdfAssets = () => {
+        setCMapUrl('/assets/updated-pdfjs/cmaps');
+        setWorkerSrc('/assets/updated-pdfjs/pdf.worker.mjs');
+      };
 
       return (
         <TestDocumentViewer
           initialOpen
           mediaType="pdf"
-          pdfAssets={{ cMapUrl }}
+          pdfAssets={{ cMapUrl, workerSrc }}
           src="/attachments/report.pdf"
           title="Report"
         />
@@ -1172,7 +1276,7 @@ describe('DocumentViewer', () => {
     await user.click(await screen.findByRole('button', { name: 'Next page' }));
     expect(await screen.findByText('Page 2 of 2')).toBeInTheDocument();
 
-    act(changeCMapAssets);
+    act(changePdfAssets);
 
     await waitFor(() =>
       expect(mockLoadPdfDocument).toHaveBeenNthCalledWith(
@@ -1182,6 +1286,7 @@ describe('DocumentViewer', () => {
         {
           cMapUrl: '/assets/updated-pdfjs/cmaps',
           standardFontDataUrl: undefined,
+          workerSrc: '/assets/updated-pdfjs/pdf.worker.mjs',
         },
       ),
     );
@@ -1192,6 +1297,54 @@ describe('DocumentViewer', () => {
     expect(mockRenderPdfPage.mock.calls[2]?.[0].pageNumber).toBe(1);
     expect(screen.queryByText('Page 2 of 2')).toBeNull();
     expect(firstSession.dispose).toHaveBeenCalledOnce();
+  });
+
+  it('reloads a PDF when the application-provided worker URL changes', async () => {
+    mockLoadPdfDocument
+      .mockResolvedValueOnce(pdfSession(1))
+      .mockResolvedValueOnce(pdfSession(1));
+
+    const renderViewer = (workerSrc: string) => (
+      <BreezeProvider locale="en-GB">
+        <DocumentViewer
+          mediaType="pdf"
+          onOpenChange={() => undefined}
+          open
+          pdfAssets={{ workerSrc }}
+          src="/attachments/report.pdf"
+          title="Report"
+        />
+      </BreezeProvider>
+    );
+
+    const { rerender } = render(renderViewer('/assets/pdfjs/worker.mjs'));
+
+    await waitFor(() => expect(mockLoadPdfDocument).toHaveBeenCalledOnce());
+    expect(mockLoadPdfDocument).toHaveBeenNthCalledWith(
+      1,
+      '/attachments/report.pdf',
+      expect.any(AbortSignal),
+      {
+        cMapUrl: undefined,
+        standardFontDataUrl: undefined,
+        workerSrc: '/assets/pdfjs/worker.mjs',
+      },
+    );
+
+    rerender(renderViewer('/assets/updated-pdfjs/worker.mjs'));
+
+    await waitFor(() =>
+      expect(mockLoadPdfDocument).toHaveBeenNthCalledWith(
+        2,
+        '/attachments/report.pdf',
+        expect.any(AbortSignal),
+        {
+          cMapUrl: undefined,
+          standardFontDataUrl: undefined,
+          workerSrc: '/assets/updated-pdfjs/worker.mjs',
+        },
+      ),
+    );
   });
 
   it('reveals an image error instead of leaving the loading skeleton', async () => {
