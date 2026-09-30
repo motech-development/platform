@@ -289,7 +289,10 @@ export function AttachmentRow(props: Readonly<AttachmentRowProps>) {
   }
 
   return (
-    <div className={variants.base.row} ref={transitionRef}>
+    <div
+      className={variants.base.row}
+      ref={normalizedTransitionName ? transitionRef : undefined}
+    >
       {fileType === 'document' ? (
         <DocumentThumbnail />
       ) : (
@@ -321,17 +324,28 @@ export function AttachmentRow(props: Readonly<AttachmentRowProps>) {
               }
 
               let opened = false;
+              let callbackFailed = false;
               const openInTransition = () => {
                 if (opened) return;
                 opened = true;
-                flushSync(onOpen);
+
+                try {
+                  flushSync(onOpen);
+                } catch (error) {
+                  callbackFailed = true;
+                  throw error;
+                }
               };
 
               try {
                 startViewTransitionAndWait(openInTransition, ['expand']).catch(
-                  openInTransition,
+                  (error) => {
+                    if (callbackFailed) throw error;
+                    if (!opened) openInTransition();
+                  },
                 );
-              } catch {
+              } catch (error) {
+                if (callbackFailed) throw error;
                 openInTransition();
               }
             }}

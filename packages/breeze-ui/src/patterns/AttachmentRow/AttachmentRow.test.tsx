@@ -112,16 +112,46 @@ describe('AttachmentRow', () => {
     expect(onOpen).toHaveBeenCalledExactlyOnceWith();
   });
 
-  it('trims a supplied transition name before registering the participant', () => {
+  it('registers only explicitly named rows as expand participants', async () => {
+    const user = userEvent.setup();
+    let updateCallbackDone = Promise.resolve();
+    const startViewTransition = vi.fn((options: StartViewTransitionOptions) => {
+      const update = options.update as (() => void | Promise<void>) | undefined;
+      updateCallbackDone = Promise.resolve().then(() => update?.());
+
+      return {
+        finished: updateCallbackDone,
+        ready: Promise.resolve(),
+        skipTransition: vi.fn(),
+        types: new Set<string>(),
+        updateCallbackDone,
+      } satisfies ViewTransition;
+    });
+
+    installTypedViewTransitionSupport();
+    Object.defineProperty(document, 'startViewTransition', {
+      configurable: true,
+      value: startViewTransition,
+    });
+
     const { container } = renderBreeze(
-      <AttachmentRow
-        fileType="document"
-        filename="receipt.pdf"
-        onOpen={() => {}}
-        sizeBytes={84_000}
-        status="Uploaded"
-        transitionName=" receipt-preview "
-      />,
+      <>
+        <AttachmentRow
+          fileType="document"
+          filename="receipt.pdf"
+          onOpen={() => {}}
+          sizeBytes={84_000}
+          status="Uploaded"
+          transitionName=" receipt-preview "
+        />
+        <AttachmentRow
+          fileType="document"
+          filename="other-receipt.pdf"
+          onOpen={() => {}}
+          sizeBytes={84_000}
+          status="Uploaded"
+        />
+      </>,
     );
     const participant = container.querySelector<HTMLElement>(
       '[data-breeze-transition-name]',
@@ -134,6 +164,48 @@ describe('AttachmentRow', () => {
     expect(
       participant?.style.getPropertyValue('--breeze-transition-name'),
     ).toBe('receipt-preview');
+    expect(
+      container.querySelectorAll('[data-breeze-transition-name]'),
+    ).toHaveLength(1);
+
+    await user.click(screen.getByRole('button', { name: 'Open: receipt.pdf' }));
+
+    expect(startViewTransition).toHaveBeenCalledOnce();
+    expect(
+      container.querySelectorAll('[data-breeze-transition-name]'),
+    ).toHaveLength(1);
+  });
+
+  it('opens an unnamed row directly without registering or starting an expand transition', async () => {
+    const user = userEvent.setup();
+    const onOpen = vi.fn();
+    const startViewTransition = vi.fn(() => {
+      throw new Error('An unnamed row must not start a view transition.');
+    });
+
+    installTypedViewTransitionSupport();
+    Object.defineProperty(document, 'startViewTransition', {
+      configurable: true,
+      value: startViewTransition,
+    });
+
+    const { container } = renderBreeze(
+      <AttachmentRow
+        fileType="document"
+        filename="receipt.pdf"
+        onOpen={onOpen}
+        sizeBytes={84_000}
+        status="Uploaded"
+      />,
+    );
+
+    expect(
+      container.querySelector('[data-breeze-transition-name]'),
+    ).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Open: receipt.pdf' }));
+
+    expect(startViewTransition).not.toHaveBeenCalled();
+    expect(onOpen).toHaveBeenCalledExactlyOnceWith();
   });
 
   it('opens the attachment when the native view transition API throws synchronously', async () => {
@@ -166,18 +238,71 @@ describe('AttachmentRow', () => {
     expect(onOpen).toHaveBeenCalledExactlyOnceWith();
   });
 
-  it('does not retry onOpen when the transition update callback throws', async () => {
+  it('preserves an onOpen error when the native transition start throws synchronously', async () => {
+    const user = userEvent.setup();
+    const callbackError = new Error('The attachment could not be opened.');
+    const onOpen = vi.fn(() => {
+      throw callbackError;
+    });
+    const startViewTransition = vi.fn((options: StartViewTransitionOptions) => {
+      const update = options.update as (() => void | Promise<void>) | undefined;
+      const updateResult = update?.();
+      if (updateResult instanceof Promise) {
+        updateResult.catch(() => undefined);
+      }
+
+      throw callbackError;
+    });
+
+    installTypedViewTransitionSupport();
+    Object.defineProperty(document, 'startViewTransition', {
+      configurable: true,
+      value: startViewTransition,
+    });
+
+    renderBreeze(
+      <AttachmentRow
+        fileType="document"
+        filename="receipt.pdf"
+        onOpen={onOpen}
+        sizeBytes={84_000}
+        status="Uploaded"
+        transitionName="receipt-preview"
+      />,
+    );
+
+    const callbackErrors: unknown[] = [];
+    const onWindowError = (event: ErrorEvent) => {
+      callbackErrors.push(event.error);
+      event.preventDefault();
+    };
+    window.addEventListener('error', onWindowError);
+    await user.click(screen.getByRole('button', { name: 'Open: receipt.pdf' }));
+    window.removeEventListener('error', onWindowError);
+
+    expect(startViewTransition).toHaveBeenCalledOnce();
+    expect(onOpen).toHaveBeenCalledExactlyOnceWith();
+    expect(callbackErrors).toContain(callbackError);
+  });
+
+  it('rethrows async transition errors from onOpen without retrying', async () => {
     const user = userEvent.setup();
     const onOpen = vi.fn(() => {
       throw new Error('The attachment could not be opened.');
     });
     let updateCallbackDone = Promise.resolve();
+    let transitionErrorHandler: ((reason: unknown) => void) | undefined;
     const startViewTransition = vi.fn((options: StartViewTransitionOptions) => {
       const update = options.update as (() => void | Promise<void>) | undefined;
       updateCallbackDone = Promise.resolve().then(() => update?.());
+      const finished = updateCallbackDone;
+      vi.spyOn(finished, 'catch').mockImplementation((onRejected) => {
+        transitionErrorHandler = onRejected ?? undefined;
+        return Promise.resolve();
+      });
 
       return {
-        finished: updateCallbackDone,
+        finished,
         ready: Promise.resolve(),
         skipTransition: vi.fn(),
         types: new Set<string>(),
@@ -206,6 +331,12 @@ describe('AttachmentRow', () => {
     await expect(updateCallbackDone).rejects.toThrow(
       'The attachment could not be opened.',
     );
+    expect(transitionErrorHandler).toBeDefined();
+    expect(() =>
+      transitionErrorHandler?.(
+        new Error('The attachment could not be opened.'),
+      ),
+    ).toThrow('The attachment could not be opened.');
 
     expect(startViewTransition).toHaveBeenCalledOnce();
     expect(onOpen).toHaveBeenCalledExactlyOnceWith();

@@ -66,6 +66,14 @@ const originalResizeObserver = Object.getOwnPropertyDescriptor(
   window,
   'ResizeObserver',
 );
+const originalDevicePixelRatio = Object.getOwnPropertyDescriptor(
+  window,
+  'devicePixelRatio',
+);
+const originalCreateObjectURL = Object.getOwnPropertyDescriptor(
+  URL,
+  'createObjectURL',
+);
 const originalGetAnimations = Object.getOwnPropertyDescriptor(
   HTMLElement.prototype,
   'getAnimations',
@@ -107,6 +115,13 @@ expectTypeOf<{
   src: string;
   title: string;
 }>().not.toExtend<DocumentViewerProps>();
+expectTypeOf<{
+  defaultOpen: boolean;
+  mediaType: 'image';
+  pdfAssets: { cMapUrl: string };
+  src: string;
+  title: string;
+}>().not.toExtend<DocumentViewerProps>();
 
 describe('DocumentViewer', () => {
   afterEach(() => {
@@ -123,18 +138,51 @@ describe('DocumentViewer', () => {
       originalRequestFullscreen,
     );
     restoreDescriptor(window, 'ResizeObserver', originalResizeObserver);
+    restoreDescriptor(window, 'devicePixelRatio', originalDevicePixelRatio);
+    restoreDescriptor(URL, 'createObjectURL', originalCreateObjectURL);
     restoreDescriptor(
       HTMLElement.prototype,
       'getAnimations',
       originalGetAnimations,
     );
+    vi.unstubAllGlobals();
   });
 
   beforeEach(() => {
     vi.clearAllMocks();
     mockLoadPdfDocument.mockReset();
     mockRenderPdfPage.mockReset();
-    mockRenderPdfPage.mockResolvedValue();
+    mockRenderPdfPage.mockImplementation(
+      (
+        _document,
+        _textLayerClass,
+        _pageNumber,
+        canvas,
+        textLayer,
+        scale,
+        _rotation,
+        signal,
+        outputScale = 1,
+      ) => {
+        if (signal.aborted) return Promise.resolve();
+
+        const width = 400 * scale;
+        const height = 600 * scale;
+        Object.assign(canvas, {
+          height: Math.ceil(height * outputScale),
+          width: Math.ceil(width * outputScale),
+        });
+        Object.assign(canvas.style, {
+          height: `${height}px`,
+          width: `${width}px`,
+        });
+        Object.assign(textLayer.style, {
+          height: `${height}px`,
+          width: `${width}px`,
+        });
+        return Promise.resolve();
+      },
+    );
   });
 
   it('keeps a closed viewer out of the page until its controlled state opens', () => {
@@ -202,6 +250,52 @@ describe('DocumentViewer', () => {
     expect(onRemove).toHaveBeenCalledOnce();
     await user.click(within(dialog).getByRole('button', { name: 'Close' }));
     await waitFor(() => expect(onOpenChange).toHaveBeenCalledWith(false));
+  });
+
+  it('downloads cross-origin files as blobs so the filename is honored', async () => {
+    const user = userEvent.setup();
+    const remoteSource = 'https://files.example.test/attachments/report.pdf';
+    mockLoadPdfDocument.mockResolvedValue(pdfSession(1));
+    const fetchMock = vi.fn().mockResolvedValue({
+      blob: vi.fn().mockResolvedValue(new Blob(['report'])),
+      ok: true,
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    Object.defineProperty(URL, 'createObjectURL', {
+      configurable: true,
+      value: vi.fn(() => 'blob:http://localhost/report'),
+    });
+    const downloadedAnchors: HTMLAnchorElement[] = [];
+    vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(
+      function mockAnchorClick(this: HTMLAnchorElement) {
+        if (this.hidden) downloadedAnchors.push(this);
+      },
+    );
+
+    renderBreeze(
+      <DocumentViewer
+        defaultOpen
+        downloadName="Quarterly report.pdf"
+        mediaType="pdf"
+        src={remoteSource}
+        title="Quarterly report"
+      />,
+    );
+
+    await user.click(await screen.findByRole('link', { name: 'Download' }));
+
+    await waitFor(() => expect(downloadedAnchors).toHaveLength(1));
+    expect(fetchMock).toHaveBeenCalledWith(remoteSource, {
+      credentials: 'same-origin',
+    });
+    expect(downloadedAnchors[0]).toHaveAttribute(
+      'href',
+      'blob:http://localhost/report',
+    );
+    expect(downloadedAnchors[0]).toHaveAttribute(
+      'download',
+      'Quarterly report.pdf',
+    );
   });
 
   it('keeps painted content visible while an ordinary close animation exits', async () => {
@@ -655,6 +749,7 @@ describe('DocumentViewer', () => {
         1,
         0,
         expect.any(AbortSignal),
+        expect.any(Number),
       ),
     );
 
@@ -691,9 +786,235 @@ describe('DocumentViewer', () => {
         1,
         0,
         expect.any(AbortSignal),
+        expect.any(Number),
       ),
     );
     expect(screen.getByText('Page 2 of 2')).toBeInTheDocument();
+  });
+
+  it('renders PDF zoom at device density while retaining logical page dimensions', async () => {
+    const user = userEvent.setup();
+    mockLoadPdfDocument.mockResolvedValue(pdfSession(1));
+    Object.defineProperty(window, 'devicePixelRatio', {
+      configurable: true,
+      value: 2,
+    });
+
+    renderBreeze(
+      <DocumentViewer
+        defaultOpen
+        mediaType="pdf"
+        src="/attachments/report.pdf"
+        title="Report"
+      />,
+    );
+
+    const stage = await screen.findByRole('region', { name: 'Report' });
+    const canvas = await waitFor(() => {
+      const renderedCanvas = stage.querySelector('canvas');
+      if (!renderedCanvas) throw new Error('The PDF canvas was not rendered.');
+      return renderedCanvas;
+    });
+    await waitFor(() => expect(stage).toHaveAttribute('aria-busy', 'false'));
+    expect(canvas.width).toBe(800);
+    expect(canvas.height).toBe(1200);
+    expect(canvas.style.width).toBe('400px');
+    expect(canvas.style.height).toBe('600px');
+
+    await user.click(screen.getByRole('button', { name: 'Zoom in' }));
+
+    await waitFor(() => expect(mockRenderPdfPage).toHaveBeenCalledTimes(2));
+    expect(mockRenderPdfPage.mock.calls[1]?.[8]).toBe(2.5);
+    expect(canvas.width).toBe(1000);
+    expect(canvas.height).toBe(1500);
+    expect(canvas.style.width).toBe('400px');
+    expect(canvas.style.height).toBe('600px');
+    expect(stage).toHaveAttribute('aria-busy', 'false');
+    expect(
+      document.body.querySelector('[aria-label="Loading document"]'),
+    ).not.toBeInTheDocument();
+    expect(
+      document.body.querySelector('.breeze-document-viewer-media-content'),
+    ).toHaveStyle({
+      transform: 'translate(-50%, -50%) rotate(0deg) scale(1.25)',
+      width: '400px',
+    });
+  });
+
+  it('waits for a cancelled PDF paint before rendering the updated zoom', async () => {
+    const user = userEvent.setup();
+    const firstRender = deferred<void>();
+    let firstSignal: AbortSignal | undefined;
+    mockLoadPdfDocument.mockResolvedValue(pdfSession(1));
+    mockRenderPdfPage.mockImplementationOnce(
+      (
+        _document,
+        _textLayerClass,
+        _pageNumber,
+        _canvas,
+        _textLayer,
+        _scale,
+        _rotation,
+        signal,
+      ) => {
+        firstSignal = signal;
+        return firstRender.promise;
+      },
+    );
+
+    renderBreeze(
+      <DocumentViewer
+        defaultOpen
+        mediaType="pdf"
+        src="/attachments/report.pdf"
+        title="Report"
+      />,
+    );
+
+    const stage = await screen.findByRole('region', { name: 'Report' });
+    await waitFor(() => expect(mockRenderPdfPage).toHaveBeenCalledOnce());
+    await user.click(screen.getByRole('button', { name: 'Zoom in' }));
+
+    expect(firstSignal?.aborted).toBe(true);
+    expect(mockRenderPdfPage).toHaveBeenCalledOnce();
+    expect(stage).toHaveAttribute('aria-busy', 'true');
+
+    firstRender.resolve();
+
+    await waitFor(() => expect(mockRenderPdfPage).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(stage).toHaveAttribute('aria-busy', 'false'));
+    expect(
+      document.body.querySelector('[aria-label="Loading document"]'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('restores ordinary exits after a morph close and controlled reopen', async () => {
+    const user = userEvent.setup();
+    const exitAnimation = deferred<void>();
+    let holdExitAnimation = false;
+    let closeExternally!: () => void;
+    Object.defineProperty(HTMLElement.prototype, 'getAnimations', {
+      configurable: true,
+      value(this: HTMLElement) {
+        return holdExitAnimation && this.closest('[data-exiting]')
+          ? [{ finished: exitAnimation.promise }]
+          : [];
+      },
+    });
+
+    function ControlledViewer() {
+      const [open, setOpen] = useState(true);
+      closeExternally = () => setOpen(false);
+
+      return (
+        <>
+          <button onClick={() => setOpen(true)} type="button">
+            Reopen externally
+          </button>
+          <DocumentViewer
+            mediaType="image"
+            onOpenChange={setOpen}
+            open={open}
+            src="/attachments/receipt.jpg"
+            title="Receipt"
+            transitionName="receipt-preview"
+          />
+        </>
+      );
+    }
+
+    renderBreeze(<ControlledViewer />);
+    const initialDialog = await screen.findByRole('dialog', {
+      name: 'Receipt',
+    });
+    const image = initialDialog.querySelector('img');
+    if (!image) throw new Error('The image preview was not rendered.');
+    fireEvent.load(image);
+
+    await user.click(
+      within(initialDialog).getByRole('button', { name: 'Close' }),
+    );
+    await waitFor(() =>
+      expect(
+        document.body.querySelector('[data-breeze-overlay][data-exiting]'),
+      ).toBeNull(),
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Reopen externally' }));
+    const reopenedDialog = await screen.findByRole('dialog', {
+      name: 'Receipt',
+    });
+    const reopenedImage = reopenedDialog.querySelector('img');
+    if (!reopenedImage)
+      throw new Error('The reopened image preview is missing.');
+    fireEvent.load(reopenedImage);
+
+    holdExitAnimation = true;
+    act(closeExternally);
+    const exitingOverlay = await waitFor(() => {
+      const overlay = document.body.querySelector(
+        '[data-breeze-overlay][data-exiting]',
+      );
+      if (!overlay) throw new Error('The normal overlay exit did not start.');
+      return overlay;
+    });
+    expect(exitingOverlay).toHaveAttribute('data-breeze-scrim', 'true');
+    expect(exitingOverlay).toContainElement(reopenedDialog);
+
+    await act(async () => {
+      exitAnimation.resolve();
+      await exitAnimation.promise;
+    });
+  });
+
+  it('reloads and resets a PDF when its auxiliary asset directories change', async () => {
+    const user = userEvent.setup();
+    const firstSession = pdfSession(2);
+    const replacementSession = pdfSession(1);
+    mockLoadPdfDocument
+      .mockResolvedValueOnce(firstSession)
+      .mockResolvedValueOnce(replacementSession);
+    let changeCMapAssets!: () => void;
+
+    function ConfigurableViewer() {
+      const [cMapUrl, setCMapUrl] = useState('/assets/pdfjs/cmaps');
+      changeCMapAssets = () => setCMapUrl('/assets/updated-pdfjs/cmaps');
+
+      return (
+        <DocumentViewer
+          defaultOpen
+          mediaType="pdf"
+          pdfAssets={{ cMapUrl }}
+          src="/attachments/report.pdf"
+          title="Report"
+        />
+      );
+    }
+
+    renderBreeze(<ConfigurableViewer />);
+    await user.click(await screen.findByRole('button', { name: 'Next page' }));
+    expect(await screen.findByText('Page 2 of 2')).toBeInTheDocument();
+
+    act(changeCMapAssets);
+
+    await waitFor(() =>
+      expect(mockLoadPdfDocument).toHaveBeenNthCalledWith(
+        2,
+        '/attachments/report.pdf',
+        expect.any(AbortSignal),
+        {
+          cMapUrl: '/assets/updated-pdfjs/cmaps',
+          standardFontDataUrl: undefined,
+        },
+      ),
+    );
+    await waitFor(() => expect(mockRenderPdfPage).toHaveBeenCalledTimes(3));
+    expect(mockRenderPdfPage.mock.calls[2]?.[0]).toBe(
+      replacementSession.document,
+    );
+    expect(mockRenderPdfPage.mock.calls[2]?.[2]).toBe(1);
+    expect(screen.queryByText('Page 2 of 2')).toBeNull();
+    expect(firstSession.dispose).toHaveBeenCalledOnce();
   });
 
   it('reveals an image error instead of leaving the loading skeleton', async () => {
@@ -1118,6 +1439,7 @@ describe('DocumentViewer', () => {
       expect(mockLoadPdfDocument).toHaveBeenCalledWith(
         '/attachments/second.pdf',
         expect.any(AbortSignal),
+        undefined,
       ),
     );
     await waitFor(() =>
@@ -1135,6 +1457,7 @@ describe('DocumentViewer', () => {
       1,
       0,
       expect.any(AbortSignal),
+      expect.any(Number),
     );
   });
 
@@ -1367,6 +1690,7 @@ describe('DocumentViewer', () => {
         2,
         '/attachments/second.pdf',
         expect.any(AbortSignal),
+        undefined,
       ),
     );
     act(() => setSource('/attachments/first.pdf'));
@@ -1375,6 +1699,7 @@ describe('DocumentViewer', () => {
         3,
         '/attachments/first.pdf',
         expect.any(AbortSignal),
+        undefined,
       ),
     );
 
@@ -1424,6 +1749,7 @@ describe('DocumentViewer', () => {
         2,
         '/attachments/second.pdf',
         expect.any(AbortSignal),
+        undefined,
       ),
     );
 
@@ -1433,6 +1759,7 @@ describe('DocumentViewer', () => {
         3,
         '/attachments/first.pdf',
         expect.any(AbortSignal),
+        undefined,
       ),
     );
     expect(firstSession.dispose).toHaveBeenCalledOnce();

@@ -1,4 +1,5 @@
 import {
+  type MouseEvent,
   type ReactNode,
   useCallback,
   useContext,
@@ -20,7 +21,7 @@ import OverlaySurface from '../../overlays/OverlaySurface';
 import { Button } from '../../primitives/Button/Button';
 import { Skeleton } from '../../primitives/Skeleton/Skeleton';
 import { useBreezeContext } from '../../provider/BreezeContext';
-import type { PdfSession } from './pdf-renderer';
+import type { PdfAssetDirectories, PdfSession } from './pdf-renderer';
 import { loadPdfDocument, renderPdfPage } from './pdf-renderer';
 
 const variants = {
@@ -71,11 +72,12 @@ const variants = {
 /** The content kind used to select the image, PDF or native frame renderer. */
 export type DocumentViewerMediaType = 'document' | 'image' | 'pdf';
 
+/** PDF.js auxiliary asset directories used by PDFs that reference them. */
+export type DocumentViewerPdfAssets = PdfAssetDirectories;
+
 interface DocumentViewerBaseProps {
   /** Name used for the download and the labelled viewer dialog. */
   downloadName?: string;
-  /** Selects a photograph, a PDF, or a browser-rendered document. */
-  mediaType: DocumentViewerMediaType;
   /** Reports the semantic open state when the viewer changes it. */
   onOpenChange?: (open: boolean) => void;
   /** Called when the app-owned Replace toolbar action is activated. */
@@ -89,6 +91,16 @@ interface DocumentViewerBaseProps {
   /** Name shared with the AttachmentRow that opens this viewer. */
   transitionName?: string;
 }
+
+type DocumentViewerMediaProps =
+  | {
+      mediaType: 'document' | 'image';
+      pdfAssets?: never;
+    }
+  | {
+      mediaType: 'pdf';
+      pdfAssets?: DocumentViewerPdfAssets;
+    };
 
 interface ControlledDocumentViewerProps {
   defaultOpen?: never;
@@ -104,6 +116,7 @@ interface UncontrolledDocumentViewerProps {
 
 /** Props for an attachment preview dialog with built-in reading controls. */
 export type DocumentViewerProps = DocumentViewerBaseProps &
+  DocumentViewerMediaProps &
   (ControlledDocumentViewerProps | UncontrolledDocumentViewerProps);
 
 interface KeyedValue<T> {
@@ -235,6 +248,7 @@ export function DocumentViewer({
   onRemove,
   onReplace,
   open: controlledOpen,
+  pdfAssets,
   src,
   title,
   transitionName,
@@ -268,8 +282,23 @@ export function DocumentViewer({
   const [closingTransition, setClosingTransition] = useState(false);
   const open = controlledOpen ?? uncontrolledOpen;
   const effectiveOpen = open && parentOverlay?.open !== false;
+  const pdfAssetDirectories = useMemo(() => {
+    if (mediaType !== 'pdf') return undefined;
+
+    const cMapUrl = pdfAssets?.cMapUrl?.trim() || undefined;
+    const standardFontDataUrl =
+      pdfAssets?.standardFontDataUrl?.trim() || undefined;
+
+    return cMapUrl || standardFontDataUrl
+      ? { cMapUrl, standardFontDataUrl }
+      : undefined;
+  }, [mediaType, pdfAssets?.cMapUrl, pdfAssets?.standardFontDataUrl]);
+  const pdfAssetSignature = JSON.stringify([
+    pdfAssetDirectories?.cMapUrl ?? null,
+    pdfAssetDirectories?.standardFontDataUrl ?? null,
+  ]);
   const sourceSignature = effectiveOpen
-    ? JSON.stringify([mediaType, src])
+    ? JSON.stringify([mediaType, src, pdfAssetSignature])
     : null;
   const [sourceLifecycle, setSourceLifecycle] = useState({
     generation: 0,
@@ -361,6 +390,7 @@ export function DocumentViewer({
     key: string;
     session: PdfSession;
   } | null>(null);
+  const pdfRenderQueueRef = useRef<Promise<void>>(Promise.resolve());
   const pdfSession =
     pdfSessionState?.key === contentSourceKey ? pdfSessionState.session : null;
   const [pdfFallbackKey, setPdfFallbackKey] = useState<string | null>(null);
@@ -406,6 +436,7 @@ export function DocumentViewer({
 
   useLayoutEffect(() => {
     if (effectiveOpen && sourceKey && currentViewerState) {
+      if (closingTransition) setClosingTransition(false);
       activeViewerStateRef.current = currentViewerState;
       setLastViewerState((previous) =>
         previous?.assetKey === assetKey &&
@@ -430,6 +461,7 @@ export function DocumentViewer({
     }
   }, [
     assetKey,
+    closingTransition,
     currentViewerState,
     downloadName,
     effectiveOpen,
@@ -465,23 +497,33 @@ export function DocumentViewer({
     }
 
     let closed = false;
+    let callbackFailed = false;
     const closeInTransition = () => {
       if (closed) return;
       closed = true;
-      flushSync(() => {
-        setClosingTransition(true);
-        if (currentViewerState) {
-          setExitState(currentViewerState);
-        }
-        applyOpenChange(false);
-      });
+      try {
+        flushSync(() => {
+          setClosingTransition(true);
+          if (currentViewerState) {
+            setExitState(currentViewerState);
+          }
+          applyOpenChange(false);
+        });
+      } catch (error) {
+        callbackFailed = true;
+        throw error;
+      }
     };
 
     try {
       startViewTransitionAndWait(closeInTransition, ['expand']).catch(
-        closeInTransition,
+        (error: unknown) => {
+          if (callbackFailed) throw error;
+          closeInTransition();
+        },
       );
-    } catch {
+    } catch (error) {
+      if (callbackFailed) throw error;
       closeInTransition();
     }
   };
@@ -508,7 +550,7 @@ export function DocumentViewer({
     let loadedSession: PdfSession | null = null;
     const controller = new AbortController();
 
-    loadPdfDocument(src, controller.signal)
+    loadPdfDocument(src, controller.signal, pdfAssetDirectories)
       .then((session) => {
         loadedSession = session;
         if (!active || controller.signal.aborted) {
@@ -528,7 +570,7 @@ export function DocumentViewer({
       controller.abort();
       loadedSession?.dispose();
     };
-  }, [effectiveOpen, mediaType, sourceKey, src]);
+  }, [effectiveOpen, mediaType, pdfAssetDirectories, sourceKey, src]);
 
   useEffect(() => {
     if (
@@ -548,34 +590,43 @@ export function DocumentViewer({
     const canvas = canvasRef.current;
     const textLayer = textLayerRef.current;
 
-    renderPdfPage(
-      pdfSession.document,
-      pdfSession.textLayer,
-      pageNumber,
-      canvas,
-      textLayer,
-      1,
-      0,
-      controller.signal,
-    )
-      .then(() => {
-        if (!controller.signal.aborted) {
-          const renderedCanvas = canvasRef.current;
-          if (renderedCanvas) {
-            setMediaSizeState({
-              height: renderedCanvas.height,
-              key: assetKey,
-              width: renderedCanvas.width,
-            });
-          }
-          setAssetState({ failed: false, key: assetKey, ready: true });
-        }
-      })
-      .catch(() => {
+    const outputScale =
+      zoom * (canvas.ownerDocument.defaultView?.devicePixelRatio || 1);
+    const previousRender = pdfRenderQueueRef.current;
+    const render = previousRender.then(async () => {
+      if (controller.signal.aborted) return;
+
+      await renderPdfPage(
+        pdfSession.document,
+        pdfSession.textLayer,
+        pageNumber,
+        canvas,
+        textLayer,
+        1,
+        0,
+        controller.signal,
+        outputScale,
+      );
+
+      if (controller.signal.aborted) return;
+
+      const logicalWidth = Number.parseFloat(canvas.style.width) || 0;
+      const logicalHeight = Number.parseFloat(canvas.style.height) || 0;
+      setMediaSizeState({
+        height: logicalHeight,
+        key: assetKey,
+        width: logicalWidth,
+      });
+      setAssetState({ failed: false, key: assetKey, ready: true });
+    });
+    pdfRenderQueueRef.current = render.then(
+      () => undefined,
+      () => {
         if (controller.signal.aborted) return;
         setPdfFallbackKey(sourceKey);
         setAssetState({ failed: false, key: assetKey, ready: false });
-      });
+      },
+    );
 
     return () => controller.abort();
   }, [
@@ -586,6 +637,7 @@ export function DocumentViewer({
     pdfFallback,
     pdfSession,
     sourceKey,
+    zoom,
   ]);
 
   useEffect(() => {
@@ -693,6 +745,42 @@ export function DocumentViewer({
   };
   const filename = contentDownloadName?.trim() || contentTitle;
   const showFrame = contentMediaType === 'document' || pdfFallback;
+  const downloadFile = async (event: MouseEvent<HTMLAnchorElement>) => {
+    const { ownerDocument } = event.currentTarget;
+    const view = ownerDocument.defaultView;
+    const source = new URL(contentSrc, ownerDocument.baseURI);
+
+    if (
+      !view ||
+      source.origin === view.location.origin ||
+      source.protocol === 'blob:' ||
+      source.protocol === 'data:'
+    ) {
+      return;
+    }
+
+    event.preventDefault();
+
+    try {
+      const response = await fetch(source.href, { credentials: 'same-origin' });
+      if (!response.ok) throw new Error('The attachment download failed.');
+
+      const objectUrl = view.URL.createObjectURL(await response.blob());
+      const downloadLink = ownerDocument.createElement('a');
+      downloadLink.download = filename;
+      downloadLink.href = objectUrl;
+      downloadLink.hidden = true;
+      ownerDocument.body.append(downloadLink);
+      downloadLink.click();
+      downloadLink.remove();
+      view.setTimeout(() => view.URL.revokeObjectURL(objectUrl), 1000);
+    } catch {
+      view.open(source.href, '_blank', 'noopener,noreferrer');
+    }
+  };
+  const handleDownloadClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    downloadFile(event).catch(() => undefined);
+  };
 
   const getStageContentSize = useCallback(() => {
     const stage = stageRef.current;
@@ -922,6 +1010,7 @@ export function DocumentViewer({
               download={filename}
               href={contentSrc}
               lang={getMessageLocale('documentViewerDownload')}
+              onClick={handleDownloadClick}
             >
               {messages.documentViewerDownload}
             </a>
