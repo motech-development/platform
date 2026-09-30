@@ -1,0 +1,72 @@
+@layer components {
+  :where([data-breeze-root]) .breeze-document-viewer-media-content {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+  }
+
+  :where([data-breeze-root]) .breeze-pdf-text-layer {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    overflow: clip;
+    color-scheme: only light;
+    color: transparent;
+    text-align: initial;
+    line-height: 1;
+    letter-spacing: normal;
+    word-spacing: normal;
+    text-size-adjust: none;
+    forced-color-adjust: none;
+    transform-origin: 0 0;
+    user-select: text;
+    caret-color: CanvasText;
+    --min-font-size: 1;
+    --text-scale-factor: calc(var(--total-scale-factor) * var(--min-font-size));
+    --min-font-size-inv: calc(1 / var(--min-font-size));
+  }
+
+  :where([data-breeze-root]) .breeze-pdf-text-layer :is(span, br) {
+    position: absolute;
+    color: transparent;
+    white-space: pre;
+    cursor: text;
+    transform-origin: 0 0;
+    -webkit-user-select: text;
+    user-select: text;
+  }
+
+  :where([data-breeze-root]) .breeze-pdf-text-layer > :not(.markedContent),
+  :where([data-breeze-root])
+    .breeze-pdf-text-layer
+    .markedContent
+    span:not(.markedContent) {
+    z-index: 1;
+    --font-height: 0;
+    --scale-x: 1;
+    --rotate: 0deg;
+    font-size: calc(var(--text-scale-factor) * var(--font-height));
+    transform: rotate(var(--rotate)) scaleX(var(--scale-x))
+      scale(var(--min-font-size-inv));
+  }
+
+  :where([data-breeze-root]) .breeze-pdf-text-layer .markedContent {
+    display: contents;
+  }
+
+  :where([data-breeze-root]) .breeze-pdf-page {
+    --scale-factor: 1;
+    --user-unit: 1;
+    --total-scale-factor: calc(var(--scale-factor) * var(--user-unit));
+    --scale-round-x: 1px;
+    --scale-round-y: 1px;
+  }
+
+  :where([data-breeze-root]) .breeze-pdf-page canvas {
+    display: block;
+  }
+
+  :where([data-breeze-root]) .breeze-pdf-text-layer ::selection {
+    background: rgb(66 133 244 / 28%);
+  }
+}

@@ -175,6 +175,40 @@ export function BreezeProvider({
         attachmentOpen: messages?.attachmentOpen ?? enGB.attachmentOpen,
         attachmentPhoto: messages?.attachmentPhoto ?? enGB.attachmentPhoto,
         close: messages?.close ?? enGB.close,
+        documentViewerAccessibility:
+          messages?.documentViewerAccessibility ??
+          enGB.documentViewerAccessibility,
+        documentViewerDownload:
+          messages?.documentViewerDownload ?? enGB.documentViewerDownload,
+        documentViewerExitFullScreen:
+          messages?.documentViewerExitFullScreen ??
+          enGB.documentViewerExitFullScreen,
+        documentViewerFallback:
+          messages?.documentViewerFallback ?? enGB.documentViewerFallback,
+        documentViewerFullScreen:
+          messages?.documentViewerFullScreen ?? enGB.documentViewerFullScreen,
+        documentViewerImageUnavailable:
+          messages?.documentViewerImageUnavailable ??
+          enGB.documentViewerImageUnavailable,
+        documentViewerLoading:
+          messages?.documentViewerLoading ?? enGB.documentViewerLoading,
+        documentViewerNextPage:
+          messages?.documentViewerNextPage ?? enGB.documentViewerNextPage,
+        documentViewerPage:
+          messages?.documentViewerPage ?? enGB.documentViewerPage,
+        documentViewerPreviousPage:
+          messages?.documentViewerPreviousPage ??
+          enGB.documentViewerPreviousPage,
+        documentViewerRemove:
+          messages?.documentViewerRemove ?? enGB.documentViewerRemove,
+        documentViewerReplace:
+          messages?.documentViewerReplace ?? enGB.documentViewerReplace,
+        documentViewerRotate:
+          messages?.documentViewerRotate ?? enGB.documentViewerRotate,
+        documentViewerZoomIn:
+          messages?.documentViewerZoomIn ?? enGB.documentViewerZoomIn,
+        documentViewerZoomOut:
+          messages?.documentViewerZoomOut ?? enGB.documentViewerZoomOut,
         fileDropZoneAcceptedTypes:
           messages?.fileDropZoneAcceptedTypes ?? enGB.fileDropZoneAcceptedTypes,
         fileDropZoneAddedMany:
