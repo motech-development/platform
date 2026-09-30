@@ -40,11 +40,11 @@ const variants = {
       'breeze-document-viewer-stage-content breeze:flex breeze:min-block-size-full breeze:min-inline-size-full',
     textLayer: 'breeze-pdf-text-layer',
     toolbar:
-      'breeze:flex breeze:flex-wrap breeze:items-center breeze:gap-breeze-1.5 breeze:border-breeze-line breeze:border-b breeze:bg-breeze-raised breeze:px-breeze-3 breeze:py-breeze-2',
+      'breeze:flex breeze:flex-wrap breeze:items-center breeze:gap-[6px] breeze:border-breeze-line breeze:border-b breeze:bg-breeze-raised breeze:px-breeze-3 breeze:py-breeze-2',
     toolbarLink:
       'breeze:inline-flex breeze:min-block-breeze-sm breeze:items-center breeze:justify-center breeze:rounded-breeze-ctl breeze:border breeze:border-solid breeze:border-breeze-line-strong breeze:bg-breeze-surface breeze:px-breeze-3 breeze:text-breeze-sm breeze:leading-breeze-snug breeze:text-breeze-ink breeze:no-underline breeze:hover:bg-breeze-sunken breeze:focus-visible:outline-2 breeze:focus-visible:outline-solid breeze:focus-visible:outline-breeze-brand breeze:any-pointer-coarse:min-block-breeze-tap breeze:any-pointer-coarse:min-inline-breeze-tap',
     toolbarSection:
-      'breeze:flex breeze:flex-wrap breeze:items-center breeze:gap-breeze-1.5',
+      'breeze:flex breeze:flex-wrap breeze:items-center breeze:gap-[6px]',
     toolbarTitle:
       'breeze:grow breeze:min-inline-size-0 breeze:overflow-hidden breeze:text-ellipsis breeze:whitespace-nowrap breeze:text-breeze-xs breeze:font-semibold breeze:text-breeze-ink-2 breeze:max-breeze-md:basis-full breeze:max-breeze-md:grow-0 breeze:max-breeze-md:shrink-0',
     viewer:
