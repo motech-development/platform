@@ -80,6 +80,14 @@
     outline: none;
   }
 
+  :where([data-breeze-root]) .breeze-document-viewer-overlay-content {
+    display: flex;
+    min-inline-size: 0;
+    min-block-size: 0;
+    block-size: 100%;
+    padding: 0;
+  }
+
   :where([data-breeze-root]) .breeze-toast-region {
     position: fixed;
     z-index: 100;
