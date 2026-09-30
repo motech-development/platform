@@ -6,28 +6,74 @@ export interface PdfSession {
   textLayer: typeof TextLayer;
 }
 
+function getAbortError(signal: AbortSignal) {
+  return signal.reason instanceof Error
+    ? signal.reason
+    : new DOMException('The PDF load was aborted.', 'AbortError');
+}
+
+function throwIfAborted(signal: AbortSignal) {
+  if (!signal.aborted) return;
+  throw getAbortError(signal);
+}
+
 /** Loads PDF.js and its matching worker only after a PDF has been opened. */
-export async function loadPdfDocument(source: string): Promise<PdfSession> {
+export async function loadPdfDocument(
+  source: string,
+  signal: AbortSignal,
+): Promise<PdfSession> {
+  throwIfAborted(signal);
+
   const pdfjs = await import('pdfjs-dist');
+  throwIfAborted(signal);
+
   const { default: workerSrc } = await import(
     'pdfjs-dist/build/pdf.worker.mjs?url'
   );
+  throwIfAborted(signal);
+
   pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
   const loadingTask = pdfjs.getDocument({ url: source });
+  let destroyPromise: Promise<void> | null = null;
+  const dispose = () => {
+    if (destroyPromise) return;
+
+    try {
+      destroyPromise = loadingTask.destroy().catch(() => undefined);
+    } catch {
+      destroyPromise = Promise.resolve();
+    }
+  };
+  let removeAbortListener: () => void = () => undefined;
+  const aborted = new Promise<never>((_, reject) => {
+    const abort = () => {
+      dispose();
+      reject(getAbortError(signal));
+    };
+
+    if (signal.aborted) {
+      abort();
+      return;
+    }
+
+    signal.addEventListener('abort', abort, { once: true });
+    removeAbortListener = () => signal.removeEventListener('abort', abort);
+  });
 
   try {
-    const document = await loadingTask.promise;
+    const document = await Promise.race([loadingTask.promise, aborted]);
+    throwIfAborted(signal);
 
     return {
-      dispose: () => {
-        loadingTask.destroy().catch(() => undefined);
-      },
+      dispose,
       document,
       textLayer: pdfjs.TextLayer,
     };
   } catch (error) {
-    await loadingTask.destroy().catch(() => undefined);
+    dispose();
     throw error;
+  } finally {
+    removeAbortListener();
   }
 }
 
@@ -47,7 +93,8 @@ export async function renderPdfPage(
   const page = await document.getPage(pageNumber);
   if (signal.aborted) return;
 
-  const viewport = page.getViewport({ rotation, scale });
+  const totalRotation = (((page.rotate + rotation) % 360) + 360) % 360;
+  const viewport = page.getViewport({ rotation: totalRotation, scale });
   const context = renderCanvas.getContext('2d');
 
   if (!context) {
@@ -61,6 +108,13 @@ export async function renderPdfPage(
   renderTextLayerContainer.replaceChildren();
   renderTextLayerContainer.style.width = `${viewport.width}px`;
   renderTextLayerContainer.style.height = `${viewport.height}px`;
+  renderTextLayerContainer.setAttribute(
+    'data-main-rotation',
+    String(viewport.rotation),
+  );
+  const pageContainer = renderTextLayerContainer.parentElement;
+  pageContainer?.style.setProperty('--scale-factor', String(viewport.scale));
+  pageContainer?.style.setProperty('--user-unit', String(page.userUnit));
 
   const renderTask = page.render({
     canvas: renderCanvas,

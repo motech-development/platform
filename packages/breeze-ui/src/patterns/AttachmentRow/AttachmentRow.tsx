@@ -254,9 +254,10 @@ export function AttachmentRow(props: Readonly<AttachmentRowProps>) {
   const context = useBreezeContext();
   const reactId = useId().replace(/[^a-zA-Z0-9_-]/g, '');
   const { loading, transitionName: requestedTransitionName } = props;
+  const normalizedTransitionName = requestedTransitionName?.trim();
   const transitionName =
-    !loading && requestedTransitionName?.trim()
-      ? requestedTransitionName
+    !loading && normalizedTransitionName
+      ? normalizedTransitionName
       : `breeze-attachment-${reactId}`;
   const transitionRef = useViewTransitionParticipant({
     name: transitionName,
@@ -314,12 +315,24 @@ export function AttachmentRow(props: Readonly<AttachmentRowProps>) {
           <Button
             aria-label={`${context.messages.attachmentOpen}: ${filename}`}
             onAction={() => {
-              if (requestedTransitionName?.trim()) {
-                startViewTransitionAndWait(() => {
-                  flushSync(onOpen);
-                }, ['expand']).catch(() => undefined);
-              } else {
+              if (!normalizedTransitionName) {
                 onOpen();
+                return;
+              }
+
+              let opened = false;
+              const openInTransition = () => {
+                if (opened) return;
+                opened = true;
+                flushSync(onOpen);
+              };
+
+              try {
+                startViewTransitionAndWait(openInTransition, ['expand']).catch(
+                  openInTransition,
+                );
+              } catch {
+                openInTransition();
               }
             }}
             size="sm"

@@ -6,7 +6,7 @@ import { Drawer } from '../../primitives/Drawer/Drawer';
 import { AttachmentRow } from '../AttachmentRow/AttachmentRow';
 import { DocumentViewer, type DocumentViewerProps } from './DocumentViewer';
 
-function createPdfDataUrl() {
+function createPdfDataUrl(firstPageMetadata = '') {
   const firstPage =
     'BT /F1 22 Tf 72 700 Td (PDF.js worker rendered page one) Tj ET';
   const secondPage =
@@ -14,7 +14,7 @@ function createPdfDataUrl() {
   const objects = [
     '<< /Type /Catalog /Pages 2 0 R >>',
     '<< /Type /Pages /Kids [3 0 R 6 0 R] /Count 2 >>',
-    '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>',
+    `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R ${firstPageMetadata} >>`,
     '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
     `<< /Length ${firstPage.length} >>\nstream\n${firstPage}\nendstream`,
     '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 7 0 R >>',
@@ -39,6 +39,7 @@ function createPdfDataUrl() {
 }
 
 const pdfDataUrl = createPdfDataUrl();
+const rotatedUserUnitPdfDataUrl = createPdfDataUrl('/Rotate 90 /UserUnit 2');
 const pdfWorkerArgs = {
   mediaType: 'pdf',
   src: pdfDataUrl,
@@ -72,10 +73,14 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-async function expectPaintedPdfPage(dialog: HTMLElement, pageText: string) {
+async function expectPaintedPdfPage(
+  dialog: HTMLElement,
+  pageText: string,
+  title = 'Workshop invoice',
+) {
   await waitFor(async () => {
     const stage = within(dialog).getByRole('region', {
-      name: 'Workshop invoice',
+      name: title,
     });
     await expect(stage).toHaveAttribute('aria-busy', 'false');
     await expect(
@@ -226,6 +231,98 @@ export const PdfWorker: Story = {
 
 export const PdfWorkerDocs: Story = {
   args: pdfWorkerArgs,
+  render: renderDocumentViewerStoryExample,
+};
+
+/** Verifies that intrinsic page rotation and PDF user units align text with its canvas. */
+export const PdfPageMetadata: Story = {
+  args: {
+    mediaType: 'pdf',
+    src: rotatedUserUnitPdfDataUrl,
+    title: 'Rotated PDF page',
+  },
+  play: async () => {
+    if ('__vitest_browser__' in globalThis) {
+      const { page } = await import('vitest/browser');
+      await page.viewport(1280, 1000);
+    }
+    await userEvent.click(
+      within(document.body).getByRole('button', {
+        name: 'Open Rotated PDF page',
+      }),
+    );
+
+    const dialog = within(document.body).getByRole('dialog', {
+      name: 'Rotated PDF page',
+    });
+    await waitFor(async () =>
+      expect(within(dialog).getByText('Page 1 of 2')).toBeVisible(),
+    );
+    await expectPaintedPdfPage(dialog, 'page one', 'Rotated PDF page');
+
+    const stage = within(dialog).getByRole('region', {
+      name: 'Rotated PDF page',
+    });
+    const pdfPage = stage.querySelector<HTMLDivElement>('.breeze-pdf-page');
+    const canvas = stage.querySelector<HTMLCanvasElement>('canvas');
+    const textLayer = stage.querySelector<HTMLDivElement>(
+      '.breeze-pdf-text-layer',
+    );
+    const textSpan = textLayer?.querySelector<HTMLSpanElement>('span');
+    if (!pdfPage || !canvas || !textLayer || !textSpan) {
+      throw new Error('The rotated PDF page layers were not rendered.');
+    }
+
+    await expect(pdfPage.style.getPropertyValue('--scale-factor')).toBe('1');
+    await expect(pdfPage.style.getPropertyValue('--user-unit')).toBe('2');
+    await expect(textLayer.dataset.mainRotation).toBe('90');
+    await expect(canvas.width / canvas.height).toBeCloseTo(792 / 612, 2);
+    await expect(getComputedStyle(textLayer).transform).toContain('matrix');
+
+    textSpan.scrollIntoView({ block: 'center', inline: 'center' });
+    const selection = document.createRange();
+    selection.selectNodeContents(textSpan);
+    const selectionBounds = selection.getBoundingClientRect();
+    const canvasBounds = canvas.getBoundingClientRect();
+    const pixels = canvas
+      .getContext('2d')
+      ?.getImageData(0, 0, canvas.width, canvas.height).data;
+    if (!pixels) throw new Error('The rendered PDF pixels were unavailable.');
+
+    let minX = canvas.width;
+    let minY = canvas.height;
+    let maxX = -1;
+    let maxY = -1;
+    for (let y = 0; y < canvas.height; y += 1) {
+      for (let x = 0; x < canvas.width; x += 1) {
+        const offset = (y * canvas.width + x) * 4;
+        if (
+          (pixels[offset] ?? 255) < 96 &&
+          (pixels[offset + 1] ?? 255) < 96 &&
+          (pixels[offset + 2] ?? 255) < 96 &&
+          (pixels[offset + 3] ?? 0) > 0
+        ) {
+          minX = Math.min(minX, x);
+          minY = Math.min(minY, y);
+          maxX = Math.max(maxX, x);
+          maxY = Math.max(maxY, y);
+        }
+      }
+    }
+
+    const inkCenterX =
+      canvasBounds.left +
+      ((minX + maxX + 1) / 2) * (canvasBounds.width / canvas.width);
+    const inkCenterY =
+      canvasBounds.top +
+      ((minY + maxY + 1) / 2) * (canvasBounds.height / canvas.height);
+    await expect(
+      Math.abs(inkCenterX - (selectionBounds.left + selectionBounds.width / 2)),
+    ).toBeLessThan(12);
+    await expect(
+      Math.abs(inkCenterY - (selectionBounds.top + selectionBounds.height / 2)),
+    ).toBeLessThan(12);
+  },
   render: renderDocumentViewerStoryExample,
 };
 
