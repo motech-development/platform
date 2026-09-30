@@ -243,8 +243,18 @@ function waitForNextMicrotask(): Promise<void> {
 function useDocumentSourceKey(
   effectiveOpen: boolean,
   reactId: string,
-  sourceSignature: string | null,
+  mediaType: DocumentViewerMediaType,
+  src: string,
+  pdfAssetDirectories?: DocumentViewerPdfAssets,
 ) {
+  const sourceSignature = effectiveOpen
+    ? JSON.stringify([
+        mediaType,
+        src,
+        pdfAssetDirectories?.cMapUrl ?? null,
+        pdfAssetDirectories?.standardFontDataUrl ?? null,
+      ])
+    : null;
   const [sourceLifecycle, setSourceLifecycle] = useState({
     generation: 0,
     signature: null as string | null,
@@ -270,8 +280,7 @@ function areSameViewerState(
   current: ExitingViewerState,
 ) {
   return Boolean(
-    previous &&
-      previous.assetKey === current.assetKey &&
+    previous?.assetKey === current.assetKey &&
       previous.downloadName === current.downloadName &&
       previous.mediaType === current.mediaType &&
       previous.pageNumber === current.pageNumber &&
@@ -369,19 +378,12 @@ function useViewerOpenChange({
         }
       };
 
-      let transition: Promise<void>;
-      try {
-        transition = startViewTransitionAndWait(closeInTransition, ['expand']);
-      } catch (error) {
-        if (callbackFailed) throw error;
-        closeInTransition();
-        return;
-      }
-
-      transition.catch((error: unknown) => {
-        if (callbackFailed) throw error;
-        closeInTransition();
-      });
+      startViewTransitionAndWait(closeInTransition, ['expand']).catch(
+        (error: unknown) => {
+          if (callbackFailed) throw error;
+          closeInTransition();
+        },
+      );
     },
     [
       currentViewerState,
@@ -639,7 +641,7 @@ function usePdfPreview({
     };
   }, [effectiveOpen, mediaType, pdfAssetDirectories, sourceKey, src]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const canvas = canvasRef.current;
     const textLayerContainer = textLayerRef.current;
     if (
@@ -658,6 +660,7 @@ function usePdfPreview({
     const controller = new AbortController();
     const outputScale =
       zoom * (canvas.ownerDocument.defaultView?.devicePixelRatio || 1);
+    setAssetState({ failed: false, key: assetKey, ready: false });
     const previousRender = renderQueueRef.current;
     const render = previousRender.then(async () => {
       if (controller.signal.aborted) return;
@@ -906,6 +909,7 @@ function DocumentViewerPanel({
 interface DocumentViewerMediaRendererProps {
   assetKey: string | null;
   canvasRef: { current: HTMLCanvasElement | null };
+  effectiveOpen: boolean;
   fitFrameToStage: () => void;
   fitImageToStage: (image: HTMLImageElement) => void;
   imageRef: { current: HTMLImageElement | null };
@@ -919,9 +923,94 @@ interface DocumentViewerMediaRendererProps {
   title: string;
 }
 
+interface NativePdfFallbackFrameProps {
+  assetKey: string;
+  effectiveOpen: boolean;
+  fitFrameToStage: () => void;
+  onAssetStateChange: (state: KeyedAsset) => void;
+  src: string;
+  title: string;
+}
+
+function NativePdfFallbackFrame({
+  assetKey,
+  effectiveOpen,
+  fitFrameToStage,
+  onAssetStateChange,
+  src,
+  title,
+}: Readonly<NativePdfFallbackFrameProps>) {
+  const [objectUrl, setObjectUrl] = useState<{
+    key: string;
+    url: string;
+  } | null>(null);
+  const objectUrlRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!effectiveOpen || objectUrl?.key === assetKey) return undefined;
+
+    const controller = new AbortController();
+    onAssetStateChange({ failed: false, key: assetKey, ready: false });
+
+    fetch(src, {
+      credentials: 'same-origin',
+      signal: controller.signal,
+    })
+      .then(async (response) => {
+        if (!response.ok) throw new Error('The PDF fallback request failed.');
+
+        const sourceBlob = await response.blob();
+        if (controller.signal.aborted) return;
+
+        const pdfBlob = new Blob([sourceBlob], { type: 'application/pdf' });
+        const nextObjectUrl = URL.createObjectURL(pdfBlob);
+        if (controller.signal.aborted) {
+          URL.revokeObjectURL(nextObjectUrl);
+          return;
+        }
+
+        objectUrlRef.current = nextObjectUrl;
+        setObjectUrl({ key: assetKey, url: nextObjectUrl });
+      })
+      .catch(() => {
+        if (controller.signal.aborted) return;
+        onAssetStateChange({ failed: true, key: assetKey, ready: true });
+      });
+
+    return () => controller.abort();
+  }, [assetKey, effectiveOpen, objectUrl?.key, onAssetStateChange, src]);
+
+  useEffect(
+    () => () => {
+      const currentObjectUrl = objectUrlRef.current;
+      objectUrlRef.current = null;
+      if (currentObjectUrl) URL.revokeObjectURL(currentObjectUrl);
+    },
+    [],
+  );
+
+  if (objectUrl?.key !== assetKey) return null;
+
+  return (
+    <iframe
+      className={variants.base.viewerFrame}
+      onError={() =>
+        onAssetStateChange({ failed: true, key: assetKey, ready: true })
+      }
+      onLoad={() => {
+        fitFrameToStage();
+        onAssetStateChange({ failed: false, key: assetKey, ready: true });
+      }}
+      src={objectUrl.url}
+      title={title}
+    />
+  );
+}
+
 function DocumentViewerMedia({
   assetKey,
   canvasRef,
+  effectiveOpen,
   fitFrameToStage,
   fitImageToStage,
   imageRef,
@@ -959,13 +1048,27 @@ function DocumentViewerMedia({
   if (isPdfCanvas && pdfSession) {
     return (
       <div className={variants.base.pdfPage} key={assetKey}>
-        <canvas aria-hidden="true" ref={canvasRef} />
+        <canvas aria-label={title} ref={canvasRef} />
         <div className={variants.base.textLayer} ref={textLayerRef} />
       </div>
     );
   }
 
-  if (mediaType === 'document' || !isPdfCanvas) {
+  if (mediaType === 'pdf' && !isPdfCanvas) {
+    return (
+      <NativePdfFallbackFrame
+        assetKey={assetKey}
+        effectiveOpen={effectiveOpen}
+        fitFrameToStage={fitFrameToStage}
+        key={assetKey}
+        onAssetStateChange={onAssetStateChange}
+        src={src}
+        title={title}
+      />
+    );
+  }
+
+  if (mediaType === 'document') {
     return (
       <iframe
         className={variants.base.viewerFrame}
@@ -974,6 +1077,7 @@ function DocumentViewerMedia({
           fitFrameToStage();
           onAssetStateChange({ failed: false, key: assetKey, ready: true });
         }}
+        sandbox="allow-downloads"
         src={src}
         title={title}
       />
@@ -1230,17 +1334,12 @@ export function DocumentViewer({
       ? { cMapUrl, standardFontDataUrl }
       : undefined;
   }, [mediaType, pdfAssets?.cMapUrl, pdfAssets?.standardFontDataUrl]);
-  const pdfAssetSignature = JSON.stringify([
-    pdfAssetDirectories?.cMapUrl ?? null,
-    pdfAssetDirectories?.standardFontDataUrl ?? null,
-  ]);
-  const sourceSignature = effectiveOpen
-    ? JSON.stringify([mediaType, src, pdfAssetSignature])
-    : null;
   const sourceKey = useDocumentSourceKey(
     effectiveOpen,
     reactId,
-    sourceSignature,
+    mediaType,
+    src,
+    pdfAssetDirectories,
   );
   const [zoomState, setZoomState] = useState<KeyedValue<number>>({
     key: null,
@@ -1469,6 +1568,7 @@ export function DocumentViewer({
                   <DocumentViewerMedia
                     assetKey={contentAssetKey}
                     canvasRef={canvasRef}
+                    effectiveOpen={effectiveOpen}
                     fitFrameToStage={fitFrameToStage}
                     fitImageToStage={fitImageToStage}
                     imageRef={imageRef}
@@ -1507,7 +1607,7 @@ export function DocumentViewer({
         >
           {messages.documentViewerAccessibility}
         </p>
-        {assetFailed ? (
+        {assetFailed && contentMediaType === 'image' ? (
           <p
             aria-live="polite"
             className={variants.base.viewerNotice}
@@ -1516,7 +1616,7 @@ export function DocumentViewer({
             {messages.documentViewerImageUnavailable}
           </p>
         ) : null}
-        {pdfFallback ? (
+        {pdfFallback && assetFailed ? (
           <p
             aria-live="polite"
             className={variants.base.viewerNotice}

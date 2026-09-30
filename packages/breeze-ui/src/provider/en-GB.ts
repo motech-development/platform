@@ -13,7 +13,7 @@ const enGB = {
   documentViewerDownload: 'Download',
   documentViewerExitFullScreen: 'Exit full screen',
   documentViewerFallback:
-    'The PDF preview is unavailable. The browser is opening the original file.',
+    'The PDF preview could not be loaded. Use Download to open the original file.',
   documentViewerFullScreen: 'Full screen',
   documentViewerImageUnavailable: 'The image preview could not be loaded.',
   documentViewerLoading: 'Loading document',

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { expect, userEvent, waitFor, within } from 'storybook/test';
 import { Button } from '../../primitives/Button/Button';
 import { Drawer } from '../../primitives/Drawer/Drawer';
@@ -663,4 +663,103 @@ export const Image: Story = {
 export const ImageDocs: Story = {
   args: imageArgs,
   render: renderDocumentViewerStoryExample,
+};
+
+const documentFrameMessage = 'document-viewer-frame-executed';
+
+function SandboxedDocumentExample() {
+  const [open, setOpen] = useState(false);
+  const [source, setSource] = useState<string | null>(null);
+
+  useEffect(() => {
+    const objectUrl = URL.createObjectURL(
+      new Blob(
+        [
+          `<!doctype html><script>parent.postMessage('${documentFrameMessage}', '*')</script><svg xmlns="http://www.w3.org/2000/svg" onload="parent.postMessage('${documentFrameMessage}', '*')"></svg>`,
+        ],
+        { type: 'text/html' },
+      ),
+    );
+    setSource(objectUrl);
+
+    return () => URL.revokeObjectURL(objectUrl);
+  }, []);
+
+  return (
+    <>
+      <Button disabled={!source} onAction={() => setOpen(true)}>
+        Open sandboxed document
+      </Button>
+      {source ? (
+        <DocumentViewer
+          mediaType="document"
+          onOpenChange={setOpen}
+          open={open}
+          src={source}
+          title="Sandboxed document"
+        />
+      ) : null}
+    </>
+  );
+}
+
+/** Verifies that active document content cannot execute scripts in the parent page. */
+export const SandboxedActiveDocument: Story = {
+  args: {
+    mediaType: 'document',
+    src: '/attachments/untrusted-document.html',
+    title: 'Sandboxed document',
+  },
+  play: async () => {
+    if (!('__vitest_browser__' in globalThis)) return;
+
+    const { page } = await import('vitest/browser');
+    await page.viewport(1280, 800);
+    const executedMessages: string[] = [];
+    const onMessage = (event: MessageEvent) => {
+      if (event.data === documentFrameMessage) {
+        executedMessages.push(documentFrameMessage);
+      }
+    };
+    window.addEventListener('message', onMessage);
+
+    try {
+      await userEvent.click(
+        within(document.body).getByRole('button', {
+          name: 'Open sandboxed document',
+        }),
+      );
+      const dialog = await within(document.body).findByRole('dialog', {
+        name: 'Sandboxed document',
+      });
+      const htmlFrame = await waitFor(() => {
+        const frame = dialog.querySelector('iframe');
+        if (!frame) throw new Error('The sandboxed HTML frame was missing.');
+        return frame;
+      });
+      await expect(htmlFrame).toHaveAttribute('sandbox', 'allow-downloads');
+      const stage = await within(dialog).findByRole('region', {
+        name: 'Sandboxed document',
+      });
+      await waitFor(() => expect(stage).toHaveAttribute('aria-busy', 'false'));
+      await new Promise<void>((resolve) => {
+        window.setTimeout(resolve, 100);
+      });
+      await expect(executedMessages).toEqual([]);
+
+      await userEvent.click(
+        within(dialog).getByRole('button', { name: 'Close' }),
+      );
+      await waitFor(() =>
+        expect(
+          within(document.body).queryByRole('dialog', {
+            name: 'Sandboxed document',
+          }),
+        ).toBeNull(),
+      );
+    } finally {
+      window.removeEventListener('message', onMessage);
+    }
+  },
+  render: () => <SandboxedDocumentExample />,
 };

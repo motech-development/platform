@@ -62,15 +62,13 @@ export async function loadPdfDocument(
   const dispose = () => {
     if (destroyPromise) return;
 
-    let destruction: Promise<void>;
-    try {
-      destruction = loadingTask.destroy();
-    } catch {
-      destroyPromise = Promise.resolve();
-      return;
-    }
-
-    destroyPromise = destruction.catch(() => undefined);
+    destroyPromise = (async () => {
+      try {
+        await loadingTask.destroy();
+      } catch {
+        // Disposal is best-effort because PDF.js may already have stopped the worker.
+      }
+    })();
   };
   let removeAbortListener: () => void = () => undefined;
   const aborted = new Promise<never>((_, reject) => {
