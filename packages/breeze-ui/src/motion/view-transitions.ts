@@ -227,7 +227,10 @@ export async function startViewTransitionAndWait(
   update: () => void | Promise<void>,
   requestedTypes: readonly ViewTransitionType[],
 ): Promise<void> {
-  await beginViewTransition(update, requestedTypes).finished;
+  const transition = beginViewTransition(update, requestedTypes);
+  transition.updateCallbackDone.catch(() => undefined);
+
+  await transition.finished;
 }
 
 /** Resolves after the current transition, if any, has finished its animation. */

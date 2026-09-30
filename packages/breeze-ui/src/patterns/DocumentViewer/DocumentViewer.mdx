@@ -10,6 +10,7 @@ import * as Stories from './DocumentViewer.stories';
 
 `DocumentViewer` presents one attachment in a modal reading surface with
 zoom, rotation, download, and optional app-owned Replace and Remove actions.
+The toolbar displays the current zoom percentage beside the zoom controls.
 Use it with `AttachmentRow` by passing the same unique `transitionName` to both
 components. The viewer owns its dialog and toolbar; the surrounding record owns
 attachment meaning, storage, replacement, and removal.
@@ -48,6 +49,9 @@ viewer:
 These URLs must serve the matching files from the same `pdfjs-dist` version.
 The viewer adds a trailing slash to each directory URL. The auxiliary assets
 are optional when a document does not reference them.
+When the application uses a bundler that cannot resolve PDF.js's worker URL
+import, provide `pdfAssets.workerSrc` with the URL emitted or copied for the
+installed `pdfjs-dist` version. Vite users can omit it and use the default.
 
 When PDF.js is unavailable or cannot render a file, the viewer fetches the PDF
 and passes its bytes to the browser's native PDF viewer as a PDF-typed Blob.
@@ -104,7 +108,7 @@ With Breeze UI's development pin `pdfjs-dist@6.3.289`, the measurement on
 
 | Payload                                                                       |  Gzip size |
 | ----------------------------------------------------------------------------- | ---------: |
-| Breeze UI library JavaScript (package output; external dependencies excluded) |  38.68 KiB |
+| Breeze UI library JavaScript (package output; external dependencies excluded) |  39.05 KiB |
 | PDF.js engine JavaScript (main + worker, independently compressed)            | 634.60 KiB |
 
 ## Actions

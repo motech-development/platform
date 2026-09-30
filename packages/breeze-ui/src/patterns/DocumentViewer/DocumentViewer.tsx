@@ -1,4 +1,5 @@
 import {
+  type CSSProperties,
   type Dispatch,
   type MouseEvent,
   type ReactNode,
@@ -59,6 +60,8 @@ const variants = {
     viewerImage: 'breeze:block breeze:object-contain',
     viewerNotice:
       'breeze:m-0 breeze:text-breeze-xs breeze:leading-breeze-snug breeze:text-breeze-ink-3',
+    zoomStatus:
+      'breeze:min-inline-size-[3rem] breeze:text-center breeze:text-breeze-xs breeze:tabular-nums breeze:text-breeze-ink-2',
   },
   compound: {},
   size: {},
@@ -74,10 +77,12 @@ const variants = {
 /** The content kind used to select the image, PDF or native frame renderer. */
 export type DocumentViewerMediaType = 'document' | 'image' | 'pdf';
 
-/** PDF.js auxiliary asset directories used by PDFs that reference them. */
+/** Optional PDF.js worker URL and auxiliary asset directories for PDF files. */
 export interface DocumentViewerPdfAssets {
   readonly cMapUrl?: string;
   readonly standardFontDataUrl?: string;
+  /** URL emitted and hosted by the application for its installed PDF.js worker. */
+  readonly workerSrc?: string;
 }
 
 interface DocumentViewerBaseProps {
@@ -106,6 +111,7 @@ type DocumentViewerMediaProps =
     }
   | {
       mediaType: 'pdf';
+      /** Optional worker and auxiliary assets used to render the PDF. */
       pdfAssets?: DocumentViewerPdfAssets;
     };
 
@@ -245,14 +251,15 @@ function useDocumentSourceKey(
   reactId: string,
   mediaType: DocumentViewerMediaType,
   src: string,
-  pdfAssetDirectories?: DocumentViewerPdfAssets,
+  pdfAssetOptions?: DocumentViewerPdfAssets,
 ) {
   const sourceSignature = effectiveOpen
     ? JSON.stringify([
         mediaType,
         src,
-        pdfAssetDirectories?.cMapUrl ?? null,
-        pdfAssetDirectories?.standardFontDataUrl ?? null,
+        pdfAssetOptions?.cMapUrl ?? null,
+        pdfAssetOptions?.standardFontDataUrl ?? null,
+        pdfAssetOptions?.workerSrc ?? null,
       ])
     : null;
   const [sourceLifecycle, setSourceLifecycle] = useState({
@@ -574,7 +581,7 @@ interface UsePdfPreviewOptions {
   effectiveOpen: boolean;
   mediaType: DocumentViewerMediaType;
   pageNumber: number;
-  pdfAssetDirectories?: DocumentViewerPdfAssets;
+  pdfAssetOptions?: DocumentViewerPdfAssets;
   setAssetState: Dispatch<SetStateAction<KeyedAsset>>;
   setMediaSizeState: Dispatch<SetStateAction<KeyedSize>>;
   sourceKey: string | null;
@@ -591,7 +598,7 @@ function usePdfPreview({
   effectiveOpen,
   mediaType,
   pageNumber,
-  pdfAssetDirectories,
+  pdfAssetOptions,
   setAssetState,
   setMediaSizeState,
   sourceKey,
@@ -619,7 +626,7 @@ function usePdfPreview({
     let loadedSession: PdfSession | null = null;
     const controller = new AbortController();
 
-    loadPdfDocument(src, controller.signal, pdfAssetDirectories)
+    loadPdfDocument(src, controller.signal, pdfAssetOptions)
       .then((nextSession) => {
         loadedSession = nextSession;
         if (!active || controller.signal.aborted) {
@@ -639,7 +646,7 @@ function usePdfPreview({
       controller.abort();
       loadedSession?.dispose();
     };
-  }, [effectiveOpen, mediaType, pdfAssetDirectories, sourceKey, src]);
+  }, [effectiveOpen, mediaType, pdfAssetOptions, sourceKey, src]);
 
   useLayoutEffect(() => {
     const canvas = canvasRef.current;
@@ -872,12 +879,14 @@ function useFullscreenState(
 interface DocumentViewerPanelProps {
   children: ReactNode;
   name: string;
+  participates: boolean;
   onRoot: (element: HTMLDivElement | null) => void;
 }
 
 function DocumentViewerPanel({
   children,
   name,
+  participates,
   onRoot,
 }: Readonly<DocumentViewerPanelProps>) {
   const transitionRef = useViewTransitionParticipant({
@@ -886,7 +895,7 @@ function DocumentViewerPanel({
   });
   const setRootRef = useCallback(
     (element: HTMLDivElement | null) => {
-      const cleanup = transitionRef(element);
+      const cleanup = participates ? transitionRef(element) : undefined;
       onRoot(element);
 
       if (!element) return cleanup;
@@ -896,7 +905,7 @@ function DocumentViewerPanel({
         cleanup?.();
       };
     },
-    [onRoot, transitionRef],
+    [onRoot, participates, transitionRef],
   );
 
   return (
@@ -1121,6 +1130,11 @@ function DocumentViewerToolbar({
   zoom,
 }: Readonly<DocumentViewerToolbarProps>) {
   const { getMessageLocale, messages } = useBreezeContext();
+  const zoomLocale = getMessageLocale('documentViewerZoom');
+  const zoomPercentage = new Intl.NumberFormat(zoomLocale, {
+    maximumFractionDigits: 0,
+    style: 'percent',
+  }).format(zoom);
 
   return (
     <div className={variants.base.toolbar}>
@@ -1128,6 +1142,14 @@ function DocumentViewerToolbar({
         {downloadName}
       </span>
       <div className={variants.base.toolbarSection}>
+        <span
+          aria-live="polite"
+          className={variants.base.zoomStatus}
+          lang={zoomLocale}
+          role="status"
+        >
+          {messages.documentViewerZoom.replace('{zoom}', zoomPercentage)}
+        </span>
         <span lang={getMessageLocale('documentViewerZoomOut')}>
           <Button
             aria-label={messages.documentViewerZoomOut}
@@ -1230,6 +1252,141 @@ function DocumentViewerToolbar({
   );
 }
 
+interface DocumentViewerViewportProps {
+  assetFailed: boolean;
+  assetKey: string | null;
+  canvasRef: { current: HTMLCanvasElement | null };
+  effectiveOpen: boolean;
+  fitFrameToStage: () => void;
+  fitImageToStage: (image: HTMLImageElement) => void;
+  imageRef: { current: HTMLImageElement | null };
+  isPdfCanvas: boolean;
+  mediaBoxStyle: CSSProperties;
+  mediaContentStyle: CSSProperties;
+  mediaSize: KeyedSize;
+  mediaType: DocumentViewerMediaType;
+  onAssetStateChange: (state: KeyedAsset) => void;
+  painted: boolean;
+  pdfFallback: boolean;
+  pdfSession: PdfSession | null;
+  setStageRef: (element: HTMLElement | null) => void;
+  src: string;
+  textLayerRef: { current: HTMLDivElement | null };
+  title: string;
+}
+
+function DocumentViewerViewport({
+  assetFailed,
+  assetKey,
+  canvasRef,
+  effectiveOpen,
+  fitFrameToStage,
+  fitImageToStage,
+  imageRef,
+  isPdfCanvas,
+  mediaBoxStyle,
+  mediaContentStyle,
+  mediaSize,
+  mediaType,
+  onAssetStateChange,
+  painted,
+  pdfFallback,
+  pdfSession,
+  setStageRef,
+  src,
+  textLayerRef,
+  title,
+}: Readonly<DocumentViewerViewportProps>) {
+  const { getMessageLocale, messages } = useBreezeContext();
+
+  /* eslint-disable jsx-a11y/no-noninteractive-tabindex -- Keyboard users need to focus this scroll region. */
+  return (
+    <>
+      <div className={variants.base.viewer}>
+        <section
+          aria-busy={!painted}
+          aria-label={title}
+          className={variants.base.stage}
+          ref={setStageRef}
+          tabIndex={0}
+        >
+          <div
+            className={[
+              variants.base.stageContent,
+              variants.state.painted[painted ? 'visible' : 'hidden'],
+            ].join(' ')}
+            inert={!painted}
+          >
+            <div className={variants.base.mediaBox} style={mediaBoxStyle}>
+              <div
+                className={variants.base.mediaContent}
+                style={mediaContentStyle}
+              >
+                <DocumentViewerMedia
+                  assetKey={assetKey}
+                  canvasRef={canvasRef}
+                  effectiveOpen={effectiveOpen}
+                  fitFrameToStage={fitFrameToStage}
+                  fitImageToStage={fitImageToStage}
+                  imageRef={imageRef}
+                  isPdfCanvas={isPdfCanvas}
+                  mediaSize={mediaSize}
+                  mediaType={mediaType}
+                  onAssetStateChange={onAssetStateChange}
+                  pdfSession={pdfSession}
+                  src={src}
+                  textLayerRef={textLayerRef}
+                  title={title}
+                />
+              </div>
+            </div>
+          </div>
+          {!painted ? (
+            <div className={variants.base.skeletonLayer}>
+              <span
+                className="breeze:block breeze:block-size-full breeze:inline-size-full"
+                lang={getMessageLocale('documentViewerLoading')}
+              >
+                <Skeleton
+                  blockSize="100%"
+                  inlineSize="100%"
+                  label={messages.documentViewerLoading}
+                  shape="rectangle"
+                />
+              </span>
+            </div>
+          ) : null}
+        </section>
+      </div>
+      <p
+        className={variants.base.viewerNotice}
+        lang={getMessageLocale('documentViewerAccessibility')}
+      >
+        {messages.documentViewerAccessibility}
+      </p>
+      {assetFailed && mediaType === 'image' ? (
+        <p
+          aria-live="polite"
+          className={variants.base.viewerNotice}
+          lang={getMessageLocale('documentViewerImageUnavailable')}
+        >
+          {messages.documentViewerImageUnavailable}
+        </p>
+      ) : null}
+      {pdfFallback && assetFailed ? (
+        <p
+          aria-live="polite"
+          className={variants.base.viewerNotice}
+          lang={getMessageLocale('documentViewerFallback')}
+        >
+          {messages.documentViewerFallback}
+        </p>
+      ) : null}
+    </>
+  );
+  /* eslint-enable jsx-a11y/no-noninteractive-tabindex */
+}
+
 interface DocumentViewerPageToolbarProps {
   currentPage: number;
   onNextPage: () => void;
@@ -1297,11 +1454,11 @@ export function DocumentViewer({
   title,
   transitionName,
 }: Readonly<DocumentViewerProps>) {
-  const { getMessageLocale, messages } = useBreezeContext();
   const reactId = useId().replace(/[^a-zA-Z0-9_-]/g, '');
   const rotateAccessibleLabelId = `${reactId}-rotate-accessible-label`;
+  const explicitTransitionName = transitionName?.trim();
   const participantName =
-    transitionName?.trim() || `breeze-document-${reactId}`;
+    explicitTransitionName || `breeze-document-${reactId}`;
   const parentOverlay = useContext(ParentOverlayContext);
   const viewerRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLElement>(null);
@@ -1323,23 +1480,29 @@ export function DocumentViewer({
   const imageRef = useRef<HTMLImageElement>(null);
   const [closingTransition, setClosingTransition] = useState(false);
   const effectiveOpen = open && parentOverlay?.open !== false;
-  const pdfAssetDirectories = useMemo(() => {
+  const pdfAssetOptions = useMemo(() => {
     if (mediaType !== 'pdf') return undefined;
 
     const cMapUrl = pdfAssets?.cMapUrl?.trim() || undefined;
     const standardFontDataUrl =
       pdfAssets?.standardFontDataUrl?.trim() || undefined;
+    const workerSrc = pdfAssets?.workerSrc?.trim() || undefined;
 
-    return cMapUrl || standardFontDataUrl
-      ? { cMapUrl, standardFontDataUrl }
+    return cMapUrl || standardFontDataUrl || workerSrc
+      ? { cMapUrl, standardFontDataUrl, workerSrc }
       : undefined;
-  }, [mediaType, pdfAssets?.cMapUrl, pdfAssets?.standardFontDataUrl]);
+  }, [
+    mediaType,
+    pdfAssets?.cMapUrl,
+    pdfAssets?.standardFontDataUrl,
+    pdfAssets?.workerSrc,
+  ]);
   const sourceKey = useDocumentSourceKey(
     effectiveOpen,
     reactId,
     mediaType,
     src,
-    pdfAssetDirectories,
+    pdfAssetOptions,
   );
   const [zoomState, setZoomState] = useState<KeyedValue<number>>({
     key: null,
@@ -1464,7 +1627,7 @@ export function DocumentViewer({
     effectiveOpen,
     mediaType,
     pageNumber,
-    pdfAssetDirectories,
+    pdfAssetOptions,
     setAssetState,
     setMediaSizeState,
     sourceKey,
@@ -1500,7 +1663,6 @@ export function DocumentViewer({
     downloadDocument(event, contentSrc, filename).catch(() => undefined);
   };
 
-  /* eslint-disable jsx-a11y/no-noninteractive-tabindex -- Keyboard users need to focus this scroll region. */
   return (
     <OverlaySurface
       closingTransition={closingTransition}
@@ -1512,7 +1674,11 @@ export function DocumentViewer({
       title={contentTitle}
       viewerSurface
     >
-      <DocumentViewerPanel name={participantName} onRoot={setViewerRef}>
+      <DocumentViewerPanel
+        name={participantName}
+        onRoot={setViewerRef}
+        participates={Boolean(explicitTransitionName)}
+      >
         <DocumentViewerToolbar
           downloadClick={handleDownloadClick}
           downloadName={filename}
@@ -1545,88 +1711,29 @@ export function DocumentViewer({
             pageCount={pageCount}
           />
         ) : null}
-        <div className={variants.base.viewer}>
-          <section
-            aria-busy={!painted}
-            aria-label={contentTitle}
-            className={variants.base.stage}
-            ref={setStageRef}
-            tabIndex={0}
-          >
-            <div
-              className={[
-                variants.base.stageContent,
-                variants.state.painted[painted ? 'visible' : 'hidden'],
-              ].join(' ')}
-              inert={!painted}
-            >
-              <div className={variants.base.mediaBox} style={mediaBoxStyle}>
-                <div
-                  className={variants.base.mediaContent}
-                  style={mediaContentStyle}
-                >
-                  <DocumentViewerMedia
-                    assetKey={contentAssetKey}
-                    canvasRef={canvasRef}
-                    effectiveOpen={effectiveOpen}
-                    fitFrameToStage={fitFrameToStage}
-                    fitImageToStage={fitImageToStage}
-                    imageRef={imageRef}
-                    isPdfCanvas={isPdfCanvas}
-                    mediaSize={mediaSize}
-                    mediaType={contentMediaType}
-                    onAssetStateChange={setAssetState}
-                    pdfSession={pdfSession}
-                    src={contentSrc}
-                    textLayerRef={textLayerRef}
-                    title={contentTitle}
-                  />
-                </div>
-              </div>
-            </div>
-            {!painted ? (
-              <div className={variants.base.skeletonLayer}>
-                <span
-                  className="breeze:block breeze:block-size-full breeze:inline-size-full"
-                  lang={getMessageLocale('documentViewerLoading')}
-                >
-                  <Skeleton
-                    blockSize="100%"
-                    inlineSize="100%"
-                    label={messages.documentViewerLoading}
-                    shape="rectangle"
-                  />
-                </span>
-              </div>
-            ) : null}
-          </section>
-        </div>
-        <p
-          className={variants.base.viewerNotice}
-          lang={getMessageLocale('documentViewerAccessibility')}
-        >
-          {messages.documentViewerAccessibility}
-        </p>
-        {assetFailed && contentMediaType === 'image' ? (
-          <p
-            aria-live="polite"
-            className={variants.base.viewerNotice}
-            lang={getMessageLocale('documentViewerImageUnavailable')}
-          >
-            {messages.documentViewerImageUnavailable}
-          </p>
-        ) : null}
-        {pdfFallback && assetFailed ? (
-          <p
-            aria-live="polite"
-            className={variants.base.viewerNotice}
-            lang={getMessageLocale('documentViewerFallback')}
-          >
-            {messages.documentViewerFallback}
-          </p>
-        ) : null}
+        <DocumentViewerViewport
+          assetFailed={assetFailed}
+          assetKey={contentAssetKey}
+          canvasRef={canvasRef}
+          effectiveOpen={effectiveOpen}
+          fitFrameToStage={fitFrameToStage}
+          fitImageToStage={fitImageToStage}
+          imageRef={imageRef}
+          isPdfCanvas={isPdfCanvas}
+          mediaBoxStyle={mediaBoxStyle}
+          mediaContentStyle={mediaContentStyle}
+          mediaSize={mediaSize}
+          mediaType={contentMediaType}
+          onAssetStateChange={setAssetState}
+          painted={painted}
+          pdfFallback={pdfFallback}
+          pdfSession={pdfSession}
+          setStageRef={setStageRef}
+          src={contentSrc}
+          textLayerRef={textLayerRef}
+          title={contentTitle}
+        />
       </DocumentViewerPanel>
     </OverlaySurface>
   );
-  /* eslint-enable jsx-a11y/no-noninteractive-tabindex */
 }

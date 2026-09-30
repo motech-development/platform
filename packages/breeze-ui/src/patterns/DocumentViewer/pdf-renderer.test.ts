@@ -1,18 +1,21 @@
-import { TextLayer } from 'pdfjs-dist';
+import * as pdfjs from 'pdfjs-dist';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { loadPdfDocument, renderPdfPage } from './pdf-renderer';
+
+const { TextLayer } = pdfjs;
 
 const pdfjsMocks = vi.hoisted(() => ({
   getDocument: vi.fn(),
   textLayerConstruct: vi.fn(),
   textLayerRender: vi.fn<() => Promise<void>>(),
+  workerAssetImport: vi.fn(),
 }));
 
 vi.mock('pdfjs-dist', async (importOriginal) => {
-  const pdfjs = await importOriginal<typeof import('pdfjs-dist')>();
+  const originalPdfjs = await importOriginal<typeof import('pdfjs-dist')>();
 
   return {
-    ...pdfjs,
+    ...originalPdfjs,
     TextLayer: class MockTextLayer {
       renderPromise: Promise<void> | undefined;
 
@@ -31,6 +34,12 @@ vi.mock('pdfjs-dist', async (importOriginal) => {
     },
     getDocument: pdfjsMocks.getDocument,
   };
+});
+
+vi.mock('pdfjs-dist/build/pdf.worker.mjs?url', () => {
+  pdfjsMocks.workerAssetImport();
+
+  return { default: '/assets/pdf.worker.mjs' };
 });
 
 function deferred<T>() {
@@ -60,6 +69,37 @@ describe('PDF renderer adapter', () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
+  });
+
+  it('uses a supplied worker URL without importing the bundler-specific worker asset', async () => {
+    const task = createLoadingTask({ numPages: 1 });
+    pdfjsMocks.getDocument.mockReturnValue(task);
+
+    await loadPdfDocument(
+      '/attachments/report.pdf',
+      new AbortController().signal,
+      { workerSrc: ' /app/assets/pdf.worker.mjs ' },
+    );
+
+    expect(pdfjs.GlobalWorkerOptions.workerSrc).toBe(
+      '/app/assets/pdf.worker.mjs',
+    );
+    expect(pdfjsMocks.workerAssetImport).not.toHaveBeenCalled();
+    expect(pdfjsMocks.getDocument).toHaveBeenCalledOnce();
+  });
+
+  it('uses the lazy worker asset when the configured worker URL is blank', async () => {
+    const task = createLoadingTask({ numPages: 1 });
+    pdfjsMocks.getDocument.mockReturnValue(task);
+
+    await loadPdfDocument(
+      '/attachments/report.pdf',
+      new AbortController().signal,
+      { workerSrc: '   ' },
+    );
+
+    expect(pdfjs.GlobalWorkerOptions.workerSrc).toBe('/assets/pdf.worker.mjs');
+    expect(pdfjsMocks.getDocument).toHaveBeenCalledOnce();
   });
 
   it('destroys a pending PDF loading task promptly when its signal aborts', async () => {

@@ -207,6 +207,8 @@ export function BreezeProvider({
           messages?.documentViewerRotate ?? enGB.documentViewerRotate,
         documentViewerRotateLabel:
           messages?.documentViewerRotateLabel ?? enGB.documentViewerRotateLabel,
+        documentViewerZoom:
+          messages?.documentViewerZoom ?? enGB.documentViewerZoom,
         documentViewerZoomIn:
           messages?.documentViewerZoomIn ?? enGB.documentViewerZoomIn,
         documentViewerZoomOut:

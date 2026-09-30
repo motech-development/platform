@@ -233,6 +233,27 @@ describe('view transition API', () => {
     expect(update).toHaveBeenCalledOnce();
   });
 
+  it('observes the update callback rejection while waiting for animation finish', async () => {
+    const failure = new Error('update callback failed');
+    const updateCallbackDone = Promise.reject(failure);
+    const finished = Promise.reject(failure);
+    const start = vi.fn(() => ({
+      finished,
+      ready: Promise.resolve(),
+      skipTransition: vi.fn(),
+      types: new Set<string>(),
+      updateCallbackDone,
+    }));
+    installViewTransitionSupport(start);
+
+    await expect(
+      startViewTransitionAndWait(() => undefined, ['expand']),
+    ).rejects.toBe(failure);
+
+    expect(start).toHaveBeenCalledOnce();
+    expect(finished).not.toBe(updateCallbackDone);
+  });
+
   it('skips an in-flight animation before starting the overlapping transition', async () => {
     let finishFirstTransition: (() => void) | undefined;
     let firstTransition: ReturnType<typeof transition> | undefined;
