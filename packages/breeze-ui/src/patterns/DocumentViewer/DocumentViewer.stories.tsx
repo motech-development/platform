@@ -75,6 +75,22 @@ async function expectPaintedPdfPage(dialog: HTMLElement, pageText: string) {
   });
 }
 
+function getFlexItemGaps(items: HTMLElement[]) {
+  return items.slice(1).map((item, index) => {
+    const previous = items[index];
+    if (!previous) return 0;
+
+    const previousBounds = previous.getBoundingClientRect();
+    const bounds = item.getBoundingClientRect();
+    const sharesRow =
+      bounds.top < previousBounds.bottom && bounds.bottom > previousBounds.top;
+
+    return sharesRow
+      ? bounds.left - previousBounds.right
+      : bounds.top - previousBounds.bottom;
+  });
+}
+
 /** A two-page PDF rendered by the optional, lazy PDF.js engine and worker. */
 export const PdfWorker: Story = {
   args: {
@@ -306,6 +322,14 @@ export const FromAttachmentRow: Story = {
       const toolbar = panel?.firstElementChild as HTMLElement | null;
       if (!panel || !toolbar)
         throw new Error('The document toolbar is missing.');
+      const toolbarActions = toolbar.children[1] as HTMLElement | undefined;
+      if (!toolbarActions)
+        throw new Error('The document toolbar actions are missing.');
+      const actionItems = Array.from(toolbarActions.children) as HTMLElement[];
+      const closeWrapper = actionItems.at(-1);
+      const closeButton = closeWrapper?.querySelector('button');
+      if (!closeWrapper || !closeButton)
+        throw new Error('The localized Close button wrapper is missing.');
       const panelBounds = panel.getBoundingClientRect();
       await expect(panelBounds.left).toBe(0);
       await expect(panelBounds.top).toBe(0);
@@ -322,6 +346,14 @@ export const FromAttachmentRow: Story = {
       await expect(
         within(dialog).getByRole('button', { name: 'Remove' }),
       ).toBeVisible();
+      await expect(getComputedStyle(toolbarActions).columnGap).toBe('6px');
+      await expect(getComputedStyle(toolbarActions).rowGap).toBe('6px');
+      await expect(getFlexItemGaps(actionItems)).toEqual(
+        actionItems.slice(1).map(() => 6),
+      );
+      await expect(closeWrapper.getBoundingClientRect().width).toBe(
+        closeButton.getBoundingClientRect().width,
+      );
 
       const desktopShot = await page.screenshot({
         path: '/tmp/document-viewer-desktop.png',
@@ -349,6 +381,11 @@ export const FromAttachmentRow: Story = {
       }
       await waitFor(async () => {
         await expect(getComputedStyle(filename).flexBasis).toBe('100%');
+        await expect(getComputedStyle(toolbarActions).columnGap).toBe('6px');
+        await expect(getComputedStyle(toolbarActions).rowGap).toBe('6px');
+        await expect(getFlexItemGaps(actionItems)).toEqual(
+          actionItems.slice(1).map(() => 6),
+        );
         await expect(filename.getBoundingClientRect().width).toBeGreaterThan(0);
         await expect(zoomOut.getBoundingClientRect().top).toBeGreaterThan(
           filename.getBoundingClientRect().top,
