@@ -49,6 +49,12 @@ These URLs must serve the matching files from the same `pdfjs-dist` version.
 The viewer adds a trailing slash to each directory URL. The auxiliary assets
 are optional when a document does not reference them.
 
+When PDF.js is unavailable or cannot render a file, the viewer fetches the PDF
+and passes its bytes to the browser's native PDF viewer as a PDF-typed Blob.
+The source must be readable by the application: same-origin files work directly,
+and cross-origin hosts must allow CORS. If the fetch fails, the preview reports
+that it is unavailable and the Download action remains available.
+
 The reader supports page navigation for multi-page PDFs. Zoom and rotation
 apply to images, rendered PDF pages, and browser-owned frames.
 Each preview starts closed inside its own frame; use its Open button to view the
@@ -83,7 +89,8 @@ original download.
 The fallback iframe is browser-owned. Its controls, keyboard behavior, and
 accessibility vary by browser and document type; Breeze cannot inspect or
 improve the embedded viewer's content. Use `mediaType="document"` for other
-browser-renderable formats when embedding is appropriate.
+browser-renderable formats when embedding is appropriate. These document frames
+are sandboxed so embedded HTML or SVG cannot run scripts in the application.
 
 ## Bundle measurement
 
@@ -97,7 +104,7 @@ With Breeze UI's development pin `pdfjs-dist@6.3.289`, the measurement on
 
 | Payload                                                                       |  Gzip size |
 | ----------------------------------------------------------------------------- | ---------: |
-| Breeze UI library JavaScript (package output; external dependencies excluded) |  38.40 KiB |
+| Breeze UI library JavaScript (package output; external dependencies excluded) |  38.68 KiB |
 | PDF.js engine JavaScript (main + worker, independently compressed)            | 634.60 KiB |
 
 ## Actions

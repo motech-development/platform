@@ -223,11 +223,11 @@ export function startViewTransition(
 }
 
 /** Waits for a Breeze-owned transition's animation, for staged content swaps. */
-export function startViewTransitionAndWait(
+export async function startViewTransitionAndWait(
   update: () => void | Promise<void>,
   requestedTypes: readonly ViewTransitionType[],
 ): Promise<void> {
-  return beginViewTransition(update, requestedTypes).finished;
+  await beginViewTransition(update, requestedTypes).finished;
 }
 
 /** Resolves after the current transition, if any, has finished its animation. */

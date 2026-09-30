@@ -7,6 +7,7 @@ import { Drawer } from '../primitives/Drawer/Drawer';
 import { BreezeProvider } from '../provider/BreezeProvider';
 import {
   startViewTransition,
+  startViewTransitionAndWait,
   useViewTransitionParticipant,
 } from './view-transitions';
 
@@ -181,6 +182,54 @@ describe('view transition API', () => {
     installViewTransitionSupport(start);
 
     await expect(startViewTransition(update, ['nav'])).rejects.toBe(failure);
+    expect(update).toHaveBeenCalledOnce();
+  });
+
+  it('rejects native startup errors from the waiting API', async () => {
+    const failure = new Error('native transition startup failed');
+    const update = vi.fn();
+    const start = vi.fn(() => {
+      throw failure;
+    });
+    installViewTransitionSupport(start);
+
+    const completion = startViewTransitionAndWait(update, ['expand']);
+
+    expect(start).toHaveBeenCalledOnce();
+    await expect(completion).rejects.toBe(failure);
+    expect(update).not.toHaveBeenCalled();
+  });
+
+  it('rejects synchronous update errors from the waiting API', async () => {
+    const failure = new Error('synchronous update failed');
+    const update = vi.fn(() => {
+      throw failure;
+    });
+    const start = vi.fn((options: StartViewTransitionOptions) =>
+      transition(() => runOptionsUpdate(options)),
+    );
+    installViewTransitionSupport(start);
+
+    const completion = startViewTransitionAndWait(update, ['expand']);
+
+    await expect(completion).rejects.toBe(failure);
+    expect(update).toHaveBeenCalledOnce();
+  });
+
+  it('rejects asynchronous update errors from the waiting API', async () => {
+    const failure = new Error('asynchronous update failed');
+    const update = vi.fn(async () => {
+      await Promise.resolve();
+      throw failure;
+    });
+    const start = vi.fn((options: StartViewTransitionOptions) =>
+      transition(() => runOptionsUpdate(options)),
+    );
+    installViewTransitionSupport(start);
+
+    const completion = startViewTransitionAndWait(update, ['expand']);
+
+    await expect(completion).rejects.toBe(failure);
     expect(update).toHaveBeenCalledOnce();
   });
 

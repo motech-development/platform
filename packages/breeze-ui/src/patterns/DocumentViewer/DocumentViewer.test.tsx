@@ -74,6 +74,10 @@ const originalCreateObjectURL = Object.getOwnPropertyDescriptor(
   URL,
   'createObjectURL',
 );
+const originalRevokeObjectURL = Object.getOwnPropertyDescriptor(
+  URL,
+  'revokeObjectURL',
+);
 const originalGetAnimations = Object.getOwnPropertyDescriptor(
   HTMLElement.prototype,
   'getAnimations',
@@ -173,6 +177,7 @@ describe('DocumentViewer', () => {
     restoreDescriptor(window, 'ResizeObserver', originalResizeObserver);
     restoreDescriptor(window, 'devicePixelRatio', originalDevicePixelRatio);
     restoreDescriptor(URL, 'createObjectURL', originalCreateObjectURL);
+    restoreDescriptor(URL, 'revokeObjectURL', originalRevokeObjectURL);
     restoreDescriptor(
       HTMLElement.prototype,
       'getAnimations',
@@ -707,7 +712,7 @@ describe('DocumentViewer', () => {
     );
 
     const fallbackText =
-      'The PDF preview is unavailable. The browser is opening the original file.';
+      'The PDF preview could not be loaded. Use Download to open the original file.';
     await screen.findByText(fallbackText);
     expect(screen.getByText(fallbackText)).toHaveAttribute('lang', 'en-GB');
     expect(
@@ -716,9 +721,8 @@ describe('DocumentViewer', () => {
       ),
     ).toHaveAttribute('lang', 'en-GB');
     expect(
-      document.body.querySelector('[aria-label="Loading document"]')
-        ?.parentElement,
-    ).toHaveAttribute('lang', 'en-GB');
+      document.body.querySelector('[aria-label="Loading document"]'),
+    ).not.toBeInTheDocument();
   });
 
   it('marks an image error notice as English under a French provider', async () => {
@@ -870,6 +874,10 @@ describe('DocumentViewer', () => {
   it('keeps an opened PDF behind its skeleton until a canvas render completes', async () => {
     const loading = deferred<PdfSession>();
     const rendering = deferred<void>();
+    const fetchMock = vi
+      .fn<typeof fetch>()
+      .mockRejectedValue(new TypeError('The request should not start yet.'));
+    vi.stubGlobal('fetch', fetchMock);
     mockLoadPdfDocument.mockReturnValue(loading.promise);
     mockRenderPdfPage.mockReturnValue(rendering.promise);
 
@@ -884,6 +892,7 @@ describe('DocumentViewer', () => {
 
     await waitFor(() => expect(mockLoadPdfDocument).toHaveBeenCalledOnce());
     expect(document.body.querySelector('iframe')).toBeNull();
+    expect(fetchMock).not.toHaveBeenCalled();
     expect(
       document.body.querySelector('[aria-label="Loading document"]'),
     ).toBeInTheDocument();
@@ -893,6 +902,9 @@ describe('DocumentViewer', () => {
       .findByRole('region', { name: 'Report' })
       .then((region) => region.querySelector('canvas'));
     expect(canvas).not.toBeNull();
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(canvas).toHaveAttribute('aria-label', 'Report');
+    expect(canvas).not.toHaveAttribute('aria-hidden');
     expect(
       document.body.querySelector('[aria-label="Loading document"]'),
     ).toBeInTheDocument();
@@ -946,6 +958,23 @@ describe('DocumentViewer', () => {
   it('renders PDF zoom at device density while retaining logical page dimensions', async () => {
     const user = userEvent.setup();
     mockLoadPdfDocument.mockResolvedValue(pdfSession(1));
+    const pendingRepaint = deferred<void>();
+    const defaultRenderer = mockRenderPdfPage.getMockImplementation();
+    if (!defaultRenderer) throw new Error('The PDF renderer mock is missing.');
+    let stage: HTMLElement | null = null;
+    let stageBusyWhenCanvasCleared = false;
+    mockRenderPdfPage
+      .mockImplementationOnce(defaultRenderer)
+      .mockImplementationOnce(async (options) => {
+        const { canvas, textLayerContainer } = options;
+        canvas.width = 0;
+        canvas.height = 0;
+        textLayerContainer.replaceChildren();
+        stageBusyWhenCanvasCleared =
+          stage?.getAttribute('aria-busy') === 'true';
+        await pendingRepaint.promise;
+        await defaultRenderer(options);
+      });
     Object.defineProperty(window, 'devicePixelRatio', {
       configurable: true,
       value: 2,
@@ -960,7 +989,7 @@ describe('DocumentViewer', () => {
       />,
     );
 
-    const stage = await screen.findByRole('region', { name: 'Report' });
+    stage = await screen.findByRole('region', { name: 'Report' });
     const canvas = await waitFor(() => {
       const renderedCanvas = stage.querySelector('canvas');
       if (!renderedCanvas) throw new Error('The PDF canvas was not rendered.');
@@ -975,7 +1004,15 @@ describe('DocumentViewer', () => {
     await user.click(screen.getByRole('button', { name: 'Zoom in' }));
 
     await waitFor(() => expect(mockRenderPdfPage).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(stage).toHaveAttribute('aria-busy', 'true'));
+    expect(stageBusyWhenCanvasCleared).toBe(true);
+    expect(
+      document.body.querySelector('[aria-label="Loading document"]'),
+    ).toBeInTheDocument();
+    expect(canvas.width).toBe(0);
+    pendingRepaint.resolve();
     expect(mockRenderPdfPage.mock.calls[1]?.[0].outputScale).toBe(2.5);
+    await waitFor(() => expect(stage).toHaveAttribute('aria-busy', 'false'));
     expect(canvas.width).toBe(1000);
     expect(canvas.height).toBe(1500);
     expect(canvas.style.width).toBe('400px');
@@ -1603,6 +1640,21 @@ describe('DocumentViewer', () => {
     mockLoadPdfDocument
       .mockRejectedValueOnce(new Error('The optional peer is unavailable.'))
       .mockResolvedValueOnce(pdfSession(1));
+    const sourceBlob = new Blob(['%PDF-1.7'], { type: 'text/html' });
+    const fetchMock = vi
+      .fn<typeof fetch>()
+      .mockResolvedValue(new Response(sourceBlob));
+    const createObjectURL = vi.fn(() => 'blob:http://localhost/report.pdf');
+    const revokeObjectURL = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+    Object.defineProperty(URL, 'createObjectURL', {
+      configurable: true,
+      value: createObjectURL,
+    });
+    Object.defineProperty(URL, 'revokeObjectURL', {
+      configurable: true,
+      value: revokeObjectURL,
+    });
 
     function ReopenViewer() {
       const [open, setOpen] = useState(true);
@@ -1624,12 +1676,23 @@ describe('DocumentViewer', () => {
     }
 
     renderBreeze(<ReopenViewer />);
-    await screen.findByText(
-      'The PDF preview is unavailable. The browser is opening the original file.',
+    const fallbackFrame = await waitFor(() => {
+      const frame = document.body.querySelector('iframe');
+      if (!frame) throw new Error('Expected the native PDF fallback.');
+      return frame;
+    });
+    expect(fetchMock).toHaveBeenCalledOnce();
+    expect(fallbackFrame).toHaveAttribute(
+      'src',
+      'blob:http://localhost/report.pdf',
     );
-    const fallbackFrame = document.body.querySelector('iframe');
-    expect(fallbackFrame).not.toBeNull();
-    if (!fallbackFrame) throw new Error('Expected the native PDF fallback.');
+    expect(fallbackFrame).not.toHaveAttribute('sandbox');
+    expect(createObjectURL).toHaveBeenCalledWith(
+      expect.objectContaining({ type: 'application/pdf' }),
+    );
+    const fallbackFetchOptions = fetchMock.mock.calls[0]?.[1];
+    expect(fallbackFetchOptions?.credentials).toBe('same-origin');
+    expect(fallbackFetchOptions?.signal).toBeInstanceOf(AbortSignal);
     fireEvent.load(fallbackFrame);
 
     await user.click(await screen.findByRole('button', { name: 'Close' }));
@@ -1645,6 +1708,153 @@ describe('DocumentViewer', () => {
     );
     expect(document.body.querySelector('iframe')).toBeNull();
     expect(mockRenderPdfPage).toHaveBeenCalledOnce();
+    expect(fetchMock).toHaveBeenCalledOnce();
+    await waitFor(() => expect(revokeObjectURL).toHaveBeenCalledOnce());
+  });
+
+  it('aborts a replaced PDF fallback fetch and leaves the download action on failure', async () => {
+    const firstFetch = deferred<Response>();
+    const fetchMock = vi
+      .fn<typeof fetch>()
+      .mockReturnValueOnce(firstFetch.promise)
+      .mockRejectedValueOnce(new TypeError('The response is blocked by CORS.'));
+    vi.stubGlobal('fetch', fetchMock);
+    mockLoadPdfDocument.mockRejectedValue(
+      new Error('The optional peer is unavailable.'),
+    );
+    let changeSource!: () => void;
+
+    function SwitchableViewer() {
+      const [src, setSrc] = useState('/attachments/first.pdf');
+      changeSource = () => setSrc('/attachments/second.pdf');
+
+      return (
+        <TestDocumentViewer
+          initialOpen
+          mediaType="pdf"
+          src={src}
+          title="Report"
+        />
+      );
+    }
+
+    renderBreeze(<SwitchableViewer />);
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledOnce());
+    const firstSignal = fetchMock.mock.calls[0]?.[1]?.signal;
+    expect(firstSignal).toBeInstanceOf(AbortSignal);
+    act(changeSource);
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
+    expect(firstSignal?.aborted).toBe(true);
+    await screen.findByText(
+      'The PDF preview could not be loaded. Use Download to open the original file.',
+    );
+    const stage = await screen.findByRole('region', { name: 'Report' });
+    await waitFor(() => expect(stage).toHaveAttribute('aria-busy', 'false'));
+    expect(stage.querySelector('iframe')).toBeNull();
+    expect(screen.getByRole('link', { name: 'Download' })).toBeInTheDocument();
+    expect(
+      screen.queryByText('The image preview could not be loaded.'),
+    ).toBeNull();
+  });
+
+  it('aborts a pending PDF fallback fetch when the viewer closes', async () => {
+    const user = userEvent.setup();
+    const pendingFetch = deferred<Response>();
+    const fetchMock = vi.fn<typeof fetch>(() => pendingFetch.promise);
+    vi.stubGlobal('fetch', fetchMock);
+    mockLoadPdfDocument.mockRejectedValueOnce(
+      new Error('The optional peer is unavailable.'),
+    );
+
+    renderBreeze(
+      <TestDocumentViewer
+        initialOpen
+        mediaType="pdf"
+        src="/attachments/report.pdf"
+        title="Report"
+      />,
+    );
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledOnce());
+    const signal = fetchMock.mock.calls[0]?.[1]?.signal;
+    expect(signal).toBeInstanceOf(AbortSignal);
+
+    await user.click(await screen.findByRole('button', { name: 'Close' }));
+
+    await waitFor(() => expect(signal?.aborted).toBe(true));
+  });
+
+  it('keeps the PDF fallback URL alive until the exiting frame is removed', async () => {
+    const user = userEvent.setup();
+    const pendingExitAnimation = deferred<void>();
+    const revokeObjectURL = vi.fn();
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        blob: vi.fn().mockResolvedValue(new Blob(['%PDF-1.7'])),
+        ok: true,
+      }),
+    );
+    Object.defineProperty(URL, 'createObjectURL', {
+      configurable: true,
+      value: vi.fn(() => 'blob:http://localhost/report.pdf'),
+    });
+    Object.defineProperty(URL, 'revokeObjectURL', {
+      configurable: true,
+      value: revokeObjectURL,
+    });
+    mockLoadPdfDocument.mockRejectedValueOnce(
+      new Error('The optional peer is unavailable.'),
+    );
+    let holdExitAnimation = false;
+    Object.defineProperty(HTMLElement.prototype, 'getAnimations', {
+      configurable: true,
+      value(this: HTMLElement) {
+        return holdExitAnimation && this.closest('[data-exiting]')
+          ? [{ finished: pendingExitAnimation.promise }]
+          : [];
+      },
+    });
+
+    renderBreeze(
+      <TestDocumentViewer
+        initialOpen
+        mediaType="pdf"
+        src="/attachments/report.pdf"
+        title="Report"
+      />,
+    );
+    const fallbackFrame = await waitFor(() => {
+      const frame = document.body.querySelector('iframe');
+      if (!frame) throw new Error('Expected the native PDF fallback.');
+      return frame;
+    });
+    fireEvent.load(fallbackFrame);
+
+    holdExitAnimation = true;
+    await user.click(await screen.findByRole('button', { name: 'Close' }));
+    const exitingOverlay = await waitFor(() => {
+      const overlay = document.body.querySelector(
+        '[data-breeze-overlay][data-exiting]',
+      );
+      if (!overlay) throw new Error('The normal overlay exit did not start.');
+      return overlay;
+    });
+    expect(exitingOverlay.querySelector('iframe')).toBe(fallbackFrame);
+    expect(revokeObjectURL).not.toHaveBeenCalled();
+
+    await act(async () => {
+      pendingExitAnimation.resolve();
+      await pendingExitAnimation.promise;
+    });
+    await waitFor(() =>
+      expect(document.body.querySelector('iframe')).toBeNull(),
+    );
+    expect(revokeObjectURL).toHaveBeenCalledWith(
+      'blob:http://localhost/report.pdf',
+    );
   });
 
   it('disposes and reloads a successful PDF session after close and reopen', async () => {
@@ -1792,6 +2002,20 @@ describe('DocumentViewer', () => {
     const staleSecondSession = pdfSession(1);
     const pendingSecondSource = deferred<PdfSession>();
     const pendingThirdSource = deferred<PdfSession>();
+    vi.stubGlobal(
+      'fetch',
+      vi
+        .fn<typeof fetch>()
+        .mockResolvedValue(new Response(new Blob(['%PDF-1.7']))),
+    );
+    Object.defineProperty(URL, 'createObjectURL', {
+      configurable: true,
+      value: vi.fn(() => 'blob:http://localhost/report.pdf'),
+    });
+    Object.defineProperty(URL, 'revokeObjectURL', {
+      configurable: true,
+      value: vi.fn(),
+    });
     mockLoadPdfDocument
       .mockRejectedValueOnce(new Error('The optional peer is unavailable.'))
       .mockReturnValueOnce(pendingSecondSource.promise)
@@ -1813,10 +2037,9 @@ describe('DocumentViewer', () => {
     }
 
     renderBreeze(<SwitchableViewer />);
-    await screen.findByText(
-      'The PDF preview is unavailable. The browser is opening the original file.',
+    await waitFor(() =>
+      expect(document.body.querySelector('iframe')).not.toBeNull(),
     );
-    expect(document.body.querySelector('iframe')).not.toBeNull();
 
     const zoomIn = await screen.findByRole('button', { name: 'Zoom in' });
     await userEvent.click(zoomIn);

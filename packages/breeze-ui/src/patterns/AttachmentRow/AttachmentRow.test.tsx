@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, expectTypeOf, it, vi } from 'vitest';
 import renderBreeze from '../../../test/render';
+import * as viewTransitions from '../../motion/view-transitions';
 import { BreezeProvider } from '../../provider/BreezeProvider';
 import {
   AttachmentRow,
@@ -238,12 +239,9 @@ describe('AttachmentRow', () => {
     expect(onOpen).toHaveBeenCalledExactlyOnceWith();
   });
 
-  it('preserves an onOpen error when the native transition start throws synchronously', async () => {
+  it('does not retry an open when transition startup throws after its update begins', async () => {
     const user = userEvent.setup();
-    const callbackError = new Error('The attachment could not be opened.');
-    const onOpen = vi.fn(() => {
-      throw callbackError;
-    });
+    const onOpen = vi.fn();
     const startViewTransition = vi.fn((options: StartViewTransitionOptions) => {
       const update = options.update as (() => void | Promise<void>) | undefined;
       const updateResult = update?.();
@@ -251,7 +249,7 @@ describe('AttachmentRow', () => {
         updateResult.catch(() => undefined);
       }
 
-      throw callbackError;
+      throw new Error('The transition could not finish starting.');
     });
 
     installTypedViewTransitionSupport();
@@ -271,38 +269,26 @@ describe('AttachmentRow', () => {
       />,
     );
 
-    const callbackErrors: unknown[] = [];
-    const onWindowError = (event: ErrorEvent) => {
-      callbackErrors.push(event.error);
-      event.preventDefault();
-    };
-    window.addEventListener('error', onWindowError);
     await user.click(screen.getByRole('button', { name: 'Open: receipt.pdf' }));
-    window.removeEventListener('error', onWindowError);
 
     expect(startViewTransition).toHaveBeenCalledOnce();
     expect(onOpen).toHaveBeenCalledExactlyOnceWith();
-    expect(callbackErrors).toContain(callbackError);
   });
 
-  it('rethrows async transition errors from onOpen without retrying', async () => {
+  it('does not retry an open when the transition finishes with an error', async () => {
     const user = userEvent.setup();
-    const onOpen = vi.fn(() => {
-      throw new Error('The attachment could not be opened.');
-    });
-    let updateCallbackDone = Promise.resolve();
-    let transitionErrorHandler: ((reason: unknown) => void) | undefined;
+    const onOpen = vi.fn();
+    const failure = new Error('The transition animation failed.');
+    let transitionFinished: Promise<void> | undefined;
     const startViewTransition = vi.fn((options: StartViewTransitionOptions) => {
       const update = options.update as (() => void | Promise<void>) | undefined;
-      updateCallbackDone = Promise.resolve().then(() => update?.());
-      const finished = updateCallbackDone;
-      vi.spyOn(finished, 'catch').mockImplementation((onRejected) => {
-        transitionErrorHandler = onRejected ?? undefined;
-        return Promise.resolve();
+      const updateCallbackDone = Promise.resolve().then(() => update?.());
+      transitionFinished = updateCallbackDone.then(() => {
+        throw failure;
       });
 
       return {
-        finished,
+        finished: transitionFinished,
         ready: Promise.resolve(),
         skipTransition: vi.fn(),
         types: new Set<string>(),
@@ -328,17 +314,66 @@ describe('AttachmentRow', () => {
     );
 
     await user.click(screen.getByRole('button', { name: 'Open: receipt.pdf' }));
-    await expect(updateCallbackDone).rejects.toThrow(
-      'The attachment could not be opened.',
-    );
-    expect(transitionErrorHandler).toBeDefined();
-    expect(() =>
-      transitionErrorHandler?.(
-        new Error('The attachment could not be opened.'),
-      ),
-    ).toThrow('The attachment could not be opened.');
+    await expect(transitionFinished).rejects.toBe(failure);
 
     expect(startViewTransition).toHaveBeenCalledOnce();
+    expect(onOpen).toHaveBeenCalledExactlyOnceWith();
+  });
+
+  it('propagates onOpen errors from the transition completion handler', async () => {
+    const user = userEvent.setup();
+    const callbackError = new Error('The attachment could not be opened.');
+    const onOpen = vi.fn(() => {
+      throw callbackError;
+    });
+    let updateError: unknown;
+    let transitionErrorHandler:
+      | ((reason: unknown) => unknown)
+      | null
+      | undefined;
+    const completion = Promise.resolve();
+    const observedCompletion = Object.defineProperty(completion, 'catch', {
+      configurable: true,
+      value: (
+        onRejected: ((reason: unknown) => unknown) | null | undefined,
+      ) => {
+        transitionErrorHandler = onRejected;
+        return Promise.resolve();
+      },
+    });
+    vi.spyOn(viewTransitions, 'startViewTransitionAndWait').mockImplementation(
+      (update) => {
+        try {
+          const updateResult = update();
+          if (updateResult instanceof Promise) {
+            updateResult.catch(() => undefined);
+          }
+        } catch (error) {
+          updateError = error;
+        }
+
+        return observedCompletion;
+      },
+    );
+
+    renderBreeze(
+      <AttachmentRow
+        fileType="document"
+        filename="receipt.pdf"
+        onOpen={onOpen}
+        sizeBytes={84_000}
+        status="Uploaded"
+        transitionName="receipt-preview"
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Open: receipt.pdf' }));
+
+    expect(updateError).toBe(callbackError);
+    expect(transitionErrorHandler).toBeDefined();
+    await expect(
+      Promise.resolve().then(() => transitionErrorHandler?.(callbackError)),
+    ).rejects.toBe(callbackError);
     expect(onOpen).toHaveBeenCalledExactlyOnceWith();
   });
 

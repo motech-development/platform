@@ -337,18 +337,10 @@ export function AttachmentRow(props: Readonly<AttachmentRowProps>) {
                 }
               };
 
-              let transitionFinished: Promise<void>;
-              try {
-                transitionFinished = startViewTransitionAndWait(
-                  openInTransition,
-                  ['expand'],
-                );
-              } catch (error) {
-                if (callbackFailed) throw error;
-                openInTransition();
-                return;
-              }
-
+              const transitionFinished = startViewTransitionAndWait(
+                openInTransition,
+                ['expand'],
+              );
               transitionFinished.catch((error) => {
                 if (callbackFailed) throw error;
                 if (!opened) openInTransition();
