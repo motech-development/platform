@@ -818,9 +818,11 @@ describe('DocumentViewer', () => {
         'The rendered document may expose no content to assistive technology. Its meaning comes from the surrounding record. Download the original file for another way to access it.',
       ),
     ).toHaveAttribute('lang', 'en-GB');
-    expect(
-      document.body.querySelector('[aria-label="Loading document"]'),
-    ).not.toBeInTheDocument();
+    await waitFor(() =>
+      expect(
+        document.body.querySelector('[aria-label="Loading document"]'),
+      ).not.toBeInTheDocument(),
+    );
   });
 
   it('marks an image error notice as English under a French provider', async () => {
