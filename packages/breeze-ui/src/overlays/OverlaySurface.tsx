@@ -56,6 +56,7 @@ function OverlaySurface({
   children,
   defaultOpen = false,
   dismissible = true,
+  fullScreen = false,
   kind,
   onOpenChange,
   open: controlledOpen,
@@ -63,12 +64,14 @@ function OverlaySurface({
   title,
   trigger,
 }: Readonly<
-  Omit<OverlayProps, 'open' | 'defaultOpen' | 'onOpenChange'> & {
+  Omit<OverlayProps, 'open' | 'defaultOpen' | 'onOpenChange' | 'trigger'> & {
     open?: boolean;
     defaultOpen?: boolean;
+    fullScreen?: boolean;
     onOpenChange?: (open: boolean) => void;
     kind: OverlayKind;
     placement?: 'top' | 'bottom' | 'start' | 'end';
+    trigger?: string;
   }
 >) {
   const { getMessageLocale, messages } = useBreezeContext();
@@ -328,6 +331,9 @@ function OverlaySurface({
     () => ({ id: layer.id, open, restoreFocus }),
     [layer.id, open, restoreFocus],
   );
+  const surfaceVariant = fullScreen
+    ? variants.variant.fullscreen
+    : variants.variant[kind];
   const body = (
     <>
       <div className={variants.base.header}>
@@ -386,15 +392,17 @@ function OverlaySurface({
 
   return (
     <>
-      <Button
-        aria-controls={open ? layer.id : undefined}
-        aria-expanded={open}
-        aria-haspopup="dialog"
-        onAction={() => changeOpen(nonModal ? !open : true)}
-        ref={triggerRef}
-      >
-        {trigger}
-      </Button>
+      {trigger ? (
+        <Button
+          aria-controls={open ? layer.id : undefined}
+          aria-expanded={open}
+          aria-haspopup="dialog"
+          onAction={() => changeOpen(nonModal ? !open : true)}
+          ref={triggerRef}
+        >
+          {trigger}
+        </Button>
+      ) : null}
       {host &&
         portalReady &&
         (nonModal ? (
@@ -439,7 +447,7 @@ function OverlaySurface({
             }
             style={{ zIndex: layer.zIndex }}
           >
-            <Modal className={variants.variant[kind]}>{content}</Modal>
+            <Modal className={surfaceVariant}>{content}</Modal>
           </ModalOverlay>
         ))}
     </>

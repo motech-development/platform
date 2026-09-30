@@ -20,6 +20,11 @@ export type {
   AttachmentRowProps,
 } from './patterns/AttachmentRow/AttachmentRow';
 export { AttachmentRow } from './patterns/AttachmentRow/AttachmentRow';
+export type {
+  DocumentViewerMediaType,
+  DocumentViewerProps,
+} from './patterns/DocumentViewer/DocumentViewer';
+export { DocumentViewer } from './patterns/DocumentViewer/DocumentViewer';
 export type { FileDropZoneProps } from './patterns/FileDropZone/FileDropZone';
 export { FileDropZone } from './patterns/FileDropZone/FileDropZone';
 export type {

@@ -155,11 +155,10 @@ function reportDuplicateNames(
 
 const activeTransitions = new WeakMap<Document, ViewTransition>();
 
-/** Runs an application-owned DOM commit inside an opted-in browser transition. */
-export function startViewTransition(
+function beginViewTransition(
   update: () => void | Promise<void>,
   requestedTypes: readonly ViewTransitionType[],
-): Promise<void> {
+): Pick<ViewTransition, 'finished' | 'updateCallbackDone'> {
   const types = normalizeTypes(requestedTypes);
   const { document } = globalThis;
 
@@ -170,11 +169,19 @@ export function startViewTransition(
     prefersReducedMotion(document)
   ) {
     try {
-      return Promise.resolve(update());
+      const immediate = Promise.resolve(update());
+      return {
+        finished: immediate,
+        updateCallbackDone: immediate,
+      };
     } catch (error) {
-      return Promise.reject(
+      const failed = Promise.reject(
         error instanceof Error ? error : new Error(String(error)),
       );
+      return {
+        finished: failed,
+        updateCallbackDone: failed,
+      };
     }
   }
 
@@ -204,7 +211,36 @@ export function startViewTransition(
   // skipped even when the first DOM commit has already completed.
   transition.finished.then(clearActiveTransition, clearActiveTransition);
 
-  return transition.updateCallbackDone;
+  return transition;
+}
+
+/** Runs an application-owned DOM commit inside an opted-in browser transition. */
+export function startViewTransition(
+  update: () => void | Promise<void>,
+  requestedTypes: readonly ViewTransitionType[],
+): Promise<void> {
+  return beginViewTransition(update, requestedTypes).updateCallbackDone;
+}
+
+/** Waits for a Breeze-owned transition's animation, for staged content swaps. */
+export function startViewTransitionAndWait(
+  update: () => void | Promise<void>,
+  requestedTypes: readonly ViewTransitionType[],
+): Promise<void> {
+  return beginViewTransition(update, requestedTypes).finished;
+}
+
+/** Resolves after the current transition, if any, has finished its animation. */
+export function waitForCurrentViewTransition(): Promise<void> {
+  const { document } = globalThis;
+  const transition = document && activeTransitions.get(document);
+
+  if (!transition) return Promise.resolve();
+
+  return transition.finished.then(
+    () => undefined,
+    () => undefined,
+  );
 }
 
 type OverlayStackSnapshot = ReturnType<

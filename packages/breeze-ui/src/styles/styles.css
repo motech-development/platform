@@ -3,6 +3,7 @@
 @import './fonts.css';
 @import './tokens.css';
 @import './base.css';
+@import './document-viewer.css';
 @import './overlays.css';
 @import './transitions.css';
 

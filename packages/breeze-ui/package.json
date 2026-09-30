@@ -38,6 +38,7 @@
     "build-storybook": "storybook build",
     "deploy": "yarn build-storybook",
     "lint": "eslint .",
+    "measure-document-viewer-size": "node scripts/measure-document-viewer-size.mjs",
     "package": "yarn build",
     "storybook": "storybook dev --port 6006",
     "test": "vitest run --project unit",
@@ -73,6 +74,7 @@
     "@vitest/coverage-v8": "4.1.9",
     "eslint": "9.37.0",
     "jsdom": "29.1.1",
+    "pdfjs-dist": "6.3.289",
     "playwright": "1.61.1",
     "prettier": "3.2.5",
     "react": "19.2.7",
@@ -84,8 +86,14 @@
     "vitest": "4.1.9"
   },
   "peerDependencies": {
+    "pdfjs-dist": "^6.2.108",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
+  },
+  "peerDependenciesMeta": {
+    "pdfjs-dist": {
+      "optional": true
+    }
   },
   "lint-staged": {
     "*": "prettier --ignore-unknown --write",

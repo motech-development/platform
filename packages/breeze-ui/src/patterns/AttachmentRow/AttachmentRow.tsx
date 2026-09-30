@@ -1,3 +1,9 @@
+import { useId } from 'react';
+import { flushSync } from 'react-dom';
+import {
+  startViewTransitionAndWait,
+  useViewTransitionParticipant,
+} from '../../motion/view-transitions';
 import { Button } from '../../primitives/Button/Button';
 import type { IconName } from '../../primitives/Icon/Icon';
 import { Icon } from '../../primitives/Icon/Icon';
@@ -69,6 +75,8 @@ interface AttachmentRowContentBaseProps {
   filename: string;
   /** Called when the direct Open action is activated. */
   onOpen?: () => void;
+  /** Shared element name for a DocumentViewer that opens from this row. */
+  transitionName?: string;
   /** File size in bytes, formatted for the Breeze provider locale. */
   sizeBytes: number;
   /** Visible attachment state, such as “Uploaded” or “Upload failed”. */
@@ -112,6 +120,8 @@ type AttachmentRowContentProps = AttachmentRowContentBaseProps &
 interface AttachmentRowLoadingProps {
   /** Omits file content while its shape is unavailable. */
   loading: true;
+  /** Shared element name used once this row has content. */
+  transitionName?: string;
 }
 
 /** Props for a neutral attached-file row or its owned loading placeholder. */
@@ -242,8 +252,16 @@ function AttachmentRowSkeleton({
 /** Presents an attached file with a type thumbnail, readable state and actions. */
 export function AttachmentRow(props: Readonly<AttachmentRowProps>) {
   const context = useBreezeContext();
-  const { loading } = props;
-
+  const reactId = useId().replace(/[^a-zA-Z0-9_-]/g, '');
+  const { loading, transitionName: requestedTransitionName } = props;
+  const transitionName =
+    !loading && requestedTransitionName?.trim()
+      ? requestedTransitionName
+      : `breeze-attachment-${reactId}`;
+  const transitionRef = useViewTransitionParticipant({
+    name: transitionName,
+    types: ['expand'],
+  });
   if (loading) {
     return <AttachmentRowSkeleton loadingLabel={context.messages.loading} />;
   }
@@ -270,7 +288,7 @@ export function AttachmentRow(props: Readonly<AttachmentRowProps>) {
   }
 
   return (
-    <div className={variants.base.row}>
+    <div className={variants.base.row} ref={transitionRef}>
       {fileType === 'document' ? (
         <DocumentThumbnail />
       ) : (
@@ -295,8 +313,17 @@ export function AttachmentRow(props: Readonly<AttachmentRowProps>) {
         >
           <Button
             aria-label={`${context.messages.attachmentOpen}: ${filename}`}
-            onAction={onOpen}
+            onAction={() => {
+              if (requestedTransitionName?.trim()) {
+                startViewTransitionAndWait(() => {
+                  flushSync(onOpen);
+                }, ['expand']).catch(() => undefined);
+              } else {
+                onOpen();
+              }
+            }}
             size="sm"
+            type="button"
             variant="secondary"
           >
             {context.messages.attachmentOpen}

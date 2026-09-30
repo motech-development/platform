@@ -1,0 +1,79 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './DocumentViewer.stories';
+
+<Meta
+  of={Stories}
+  summary="Opens an attached image or document in an accessible full-screen preview."
+/>
+
+# DocumentViewer
+
+`DocumentViewer` presents one attachment in a modal reading surface with
+zoom, rotation, download, and optional app-owned Replace and Remove actions.
+Use it with `AttachmentRow` by passing the same unique `transitionName` to both
+components. The viewer owns its dialog and toolbar; the surrounding record owns
+attachment meaning, storage, replacement, and removal.
+
+## Images and PDFs
+
+Images render directly and do not load the PDF engine. PDFs use the optional
+`pdfjs-dist` peer dependency to paint each page to a canvas and provide a
+selectable text layer. PDF.js and its worker load only after an open PDF is
+requested. Install a compatible `pdfjs-dist` version (`^6.2.108`) in the
+application to enable this renderer. If the peer is absent or PDF.js cannot
+render a file, the viewer falls back to the browser's PDF frame.
+
+The reader supports page navigation for multi-page PDFs. Zoom and rotation
+apply to images, rendered PDF pages, and browser-owned frames.
+
+<Canvas of={Stories.Image} />
+
+<Canvas of={Stories.PdfWorker} />
+
+## AttachmentRow transition
+
+Give the row and viewer the same stable `transitionName` to morph the row into
+the opened reader. The loaded image or PDF remains covered until that morph
+finishes, then its rendered content is revealed. Unsupported View Transition
+APIs and reduced-motion preferences use the same flow without animation.
+
+<Canvas of={Stories.FromAttachmentRow} />
+
+## Accessibility and fallback limits
+
+Rendered PDF canvases do not expose their page content to assistive technology.
+PDF text is selectable visually, but document tags, reading order, and scanned
+image OCR are not interpreted. The notice in the viewer therefore states that
+the attachment's meaning comes from its surrounding record and offers the
+original download.
+
+The fallback iframe is browser-owned. Its controls, keyboard behavior, and
+accessibility vary by browser and document type; Breeze cannot inspect or
+improve the embedded viewer's content. Use `mediaType="document"` for other
+browser-renderable formats when embedding is appropriate.
+
+## Bundle measurement
+
+Build the package, then run
+`yarn workspace @motech-development/breeze-ui measure-document-viewer-size`.
+The script reports Breeze UI JavaScript and the PDF.js engine as two separate
+gzip figures. The engine figure adds the independently compressed main and
+worker files; neither includes the other payload.
+With Breeze UI's development pin `pdfjs-dist@6.3.289`, the measurement on
+2026-09-30 was:
+
+| Payload                                                                       |  Gzip size |
+| ----------------------------------------------------------------------------- | ---------: |
+| Breeze UI library JavaScript (package output; external dependencies excluded) |  34.90 KiB |
+| PDF.js engine JavaScript (main + worker, independently compressed)            | 634.60 KiB |
+
+## Actions
+
+The Download link is always available. Replace and Remove buttons appear only
+when their corresponding callbacks are provided, leaving mutation and
+confirmation flows in the application. Full screen appears only when the
+browser reports support for the native Fullscreen API.
+
+## API
+
+<ArgTypes of={Stories.PdfWorker} />
