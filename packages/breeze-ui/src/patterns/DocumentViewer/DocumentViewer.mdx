@@ -25,10 +25,12 @@ render a file, the viewer falls back to the browser's PDF frame.
 
 The reader supports page navigation for multi-page PDFs. Zoom and rotation
 apply to images, rendered PDF pages, and browser-owned frames.
+Each preview starts closed inside its own frame; use its Open button to view the
+attachment. The PDF example loads PDF.js only after you open it.
 
-<Canvas of={Stories.Image} />
+<Canvas of={Stories.ImageDocs} />
 
-<Canvas of={Stories.PdfWorker} />
+<Canvas of={Stories.PdfWorkerDocs} />
 
 The compact toolbar keeps the filename and document actions in one raised strip.
 For multi-page PDFs, page navigation sits in a separate neutral row beneath it.
@@ -42,7 +44,7 @@ covered until the opening morph finishes, then its rendered content is revealed.
 Unsupported View Transition APIs and reduced-motion preferences use the same
 flow without animation.
 
-<Canvas of={Stories.FromAttachmentRow} />
+<Canvas of={Stories.FromAttachmentRowDocs} />
 
 ## Accessibility and fallback limits
 
