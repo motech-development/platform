@@ -24,6 +24,8 @@ import * as Stories from './BreezeProvider.stories';
 
 Only English (`en-GB`) messages are bundled. Supply partial `messages` to translate Breeze's loading and required announcements, the DatePicker placeholder, appearance control, overlay close button, FileDropZone instructions and feedback, and attachment labels and actions into the provider locale. Without an override, Breeze's own text uses English and is marked `lang="en-GB"`, independently of the surrounding content's language.
 
+React Aria's built-in interaction labels also ship in English only. `locale` still sets the provider language and direction and formats locale-aware values; it does not add other React Aria translations to the bundle.
+
 ```tsx
 <BreezeProvider
   locale="fr-FR"
