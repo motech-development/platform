@@ -98,13 +98,9 @@ are sandboxed so embedded HTML or SVG cannot run scripts in the application.
 
 ## Bundle measurement
 
-Build the package, then run
-`yarn workspace @motech-development/breeze-ui measure-document-viewer-size`.
-The script reports Breeze UI JavaScript and the PDF.js engine as two separate
-gzip figures. The engine figure adds the independently compressed main and
-worker files; neither includes the other payload.
-With Breeze UI's development pin `pdfjs-dist@6.3.289`, the measurement on
-2026-09-30 was:
+With Breeze UI's development pin `pdfjs-dist@6.3.289`, the measurements on
+2026-09-30 show the package and PDF.js engine as separate gzip payloads. The
+PDF.js figure sums the independently compressed main-thread and worker files.
 
 | Payload                                                                       |  Gzip size |
 | ----------------------------------------------------------------------------- | ---------: |

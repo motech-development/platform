@@ -38,7 +38,6 @@
     "build-storybook": "storybook build",
     "deploy": "yarn build-storybook",
     "lint": "eslint .",
-    "measure-document-viewer-size": "node scripts/measure-document-viewer-size.mjs",
     "package": "yarn build",
     "storybook": "storybook dev --port 6006",
     "test": "vitest run --project unit",
