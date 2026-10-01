@@ -19,8 +19,10 @@ or OCR are available to assistive technology.
 `^6.2.108` (development currently pins `6.3.289`). This excludes affected
 versions `>=5.6.83 <6.2.108` in
 [GHSA-hq66-cqwq-w95j](https://github.com/mozilla/pdf.js/security/advisories/GHSA-hq66-cqwq-w95j).
-The viewer uses PDF.js directly because `react-pdf` hard-pins its PDF.js
-dependency and cannot satisfy this security floor.
+Using `pdfjs-dist` directly as the optional peer instead of routing through a
+wrapper such as `react-pdf` keeps the engine range and security updates under
+consumer control: each application can independently resolve and update a
+compatible engine version within the declared range.
 
 The viewer dynamically imports PDF.js and its matching worker only when an
 open PDF needs rendering. It paints pages on demand to canvas and a selectable
