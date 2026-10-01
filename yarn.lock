@@ -7219,6 +7219,7 @@ __metadata:
     "@motech-development/eslint-config-motech-react": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
+    "@react-aria/optimize-locales-plugin": "npm:2.0.2"
     "@storybook/addon-a11y": "npm:10.4.6"
     "@storybook/addon-docs": "npm:10.4.6"
     "@storybook/addon-vitest": "npm:10.4.6"
@@ -9282,6 +9283,15 @@ __metadata:
   bin:
     multi-semantic-release: bin/cli.js
   checksum: 10c0/3666887ef59d0341dbad4cf6759b7a91408c6afa465ed6217ed5a6cd8ad40149cca5db977d8dcaf26b3330b2c4c48c4aa9f1b212196fc6356262ea7dbf825d79
+  languageName: node
+  linkType: hard
+
+"@react-aria/optimize-locales-plugin@npm:2.0.2":
+  version: 2.0.2
+  resolution: "@react-aria/optimize-locales-plugin@npm:2.0.2"
+  dependencies:
+    unplugin: "npm:^2.3.11"
+  checksum: 10c0/83c6e79eb5f8bdc3d0430d184ebc6711a85bbc142b3007278549155b6b4e3938768f430003b6e18e5b344242919369a8be889a7b9607d4d2281e045fc54195ee
   languageName: node
   linkType: hard
 
@@ -31573,7 +31583,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"unplugin@npm:^2.3.5":
+"unplugin@npm:^2.3.11, unplugin@npm:^2.3.5":
   version: 2.3.11
   resolution: "unplugin@npm:2.3.11"
   dependencies:

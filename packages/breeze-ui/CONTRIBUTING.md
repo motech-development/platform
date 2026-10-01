@@ -57,6 +57,29 @@ Only Button and the provider ship today. The palette and scale cover the compone
 
 Colour-scheme selection applies at the document level through `data-theme`, while painting is scoped to the Breeze root. The brand and danger fills hold the same value in both schemes to preserve contrast for white-label text; the neutral ramp and the brand and danger text tokens change.
 
+## Distribution build and size
+
+`yarn build` uses `vite.library.config.ts` to publish Breeze UI with React Aria and React Aria Components bundled together. The upstream `@react-aria/optimize-locales-plugin` keeps English translation modules in that production bundle; the library-only config does not affect the unit test or Storybook builds. `BreezeProvider.locale` still accepts any BCP 47 tag and controls language, direction and locale-aware formatting; React Aria's built-in interaction labels are English-only. Breeze-owned messages can still be overridden through `messages` where the component supports them.
+
+The build audits every emitted JavaScript chunk and its source map. It fails if a React Aria package remains external, a non-English React Aria locale module appears in a source map, an approved English locale module is missing, a source map is missing, or the sum of per-file gzip-9 sizes exceeds 140 KiB (143,360 bytes). Vite's built-in `esmExternalRequirePlugin` keeps React external while converting the bundled `use-sync-external-store` shim's CommonJS `require('react')` into an ESM import. When changing the supported translation languages, update the shared `REACT_ARIA_LOCALES` list used by the optimizer and audit, then reassess the recorded comparison and budget.
+
+The measurement used Vite 8.1.5, React Aria 3.50.0, React Aria Components 1.19.0 and `@react-aria/optimize-locales-plugin` 2.0.2. Both production builds used the same Breeze entry points, bundled both React Aria packages and kept the other externals unchanged; the only comparison change was the locale optimizer with `locales: ['en']`. Raw sizes are emitted JavaScript bytes. Gzip sizes use Node's `gzipSync` at level 9 on each JavaScript file, summed across files; CSS, source maps and fonts are excluded from the JavaScript budget.
+
+| Production JavaScript scope                    |       Raw |           Gzip-9 |
+| ---------------------------------------------- | --------: | ---------------: |
+| Same bundled build without locale optimization | 641,187 B |        161,374 B |
+| English-only build used for publishing         | 532,843 B |        135,413 B |
+| Saving                                         | 108,344 B | 25,961 B (16.1%) |
+
+The previous externalized library output was 175,660 B raw and 39,986 B gzip-9 for `index.js`, but it left React Aria external and is not comparable to the bundled measurements above. The saving justifies the small build dependency and guard; the 140 KiB budget leaves about 7.8 KiB of headroom over the measured English-only bundle. `yarn build` reports the exact per-file and aggregate JavaScript sizes. The unoptimized comparison uses the same library config with only the locale optimizer removed and fails the retained source-map and size checks. The unit suite also builds the production ESM artifact and imports it in Node with peer React, rendering the provider, calendar, and number field under English and French locales.
+
+The optional PDF peer remains dynamically loaded only when an open PDF is rendered and is not included in the library JavaScript measurements. With `pdfjs-dist` 6.3.289, its installed production files measure:
+
+| Optional PDF.js file                           |         Raw |    Gzip-9 |
+| ---------------------------------------------- | ----------: | --------: |
+| `build/pdf.mjs`                                |   860,384 B | 176,323 B |
+| `build/pdf.worker.mjs` (the URL-loaded worker) | 2,228,489 B | 473,507 B |
+
 ## Tests and coverage
 
 Run the checks in proportion to the change, then the full package suite:
