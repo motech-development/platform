@@ -1,4 +1,4 @@
-import { copyFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, resolve } from 'node:path';
 import optimizeLocales from '@react-aria/optimize-locales-plugin';
@@ -19,6 +19,15 @@ const externalPackages = Object.keys({
 });
 const esmExternalRequirePackages = ['react'];
 const bundledReactAriaPackages = ['react-aria', 'react-aria-components'];
+const bundledDependencyLicenses = [
+  { fileName: 'LICENSE', packageName: '@internationalized/number' },
+  { fileName: 'LICENSE', packageName: '@internationalized/string' },
+  { fileName: 'license', packageName: 'clsx' },
+  { fileName: 'LICENSE', packageName: 'react-aria' },
+  { fileName: 'LICENSE', packageName: 'react-aria-components' },
+  { fileName: 'LICENSE', packageName: 'react-stately' },
+  { fileName: 'LICENSE', packageName: 'use-sync-external-store' },
+];
 const appliesToLibraryBuild = (config: UserConfig) =>
   Boolean(config.build?.lib);
 
@@ -43,6 +52,39 @@ function distributionAssetsPlugin(): Plugin {
         resolve(fontPackageDirectory, 'LICENSE'),
         resolve(distributionDirectory, 'Public-Sans-LICENSE.txt'),
       );
+
+      bundledDependencyLicenses.forEach(({ fileName, packageName }) => {
+        let packageDirectory = dirname(require.resolve(packageName));
+
+        while (packageDirectory !== dirname(packageDirectory)) {
+          const packageJsonPath = resolve(packageDirectory, 'package.json');
+
+          if (existsSync(packageJsonPath)) {
+            const installedPackage = JSON.parse(
+              readFileSync(packageJsonPath, 'utf8'),
+            ) as { name?: string };
+
+            if (installedPackage.name === packageName) {
+              const outputDirectory = resolve(
+                distributionDirectory,
+                'licenses',
+                packageName,
+              );
+              mkdirSync(outputDirectory, { recursive: true });
+              copyFileSync(
+                resolve(packageDirectory, fileName),
+                resolve(outputDirectory, fileName),
+              );
+
+              return;
+            }
+          }
+
+          packageDirectory = dirname(packageDirectory);
+        }
+
+        throw new Error(`Unable to locate package root for ${packageName}`);
+      });
     },
   };
 }
