@@ -34,7 +34,7 @@
   ],
   "scripts": {
     "formatting": "prettier . --check",
-    "build": "vite build --config vite.library.config.ts && tsc --project tsconfig.build.json --emitDeclarationOnly",
+    "build": "vite build && tsc --project tsconfig.build.json --emitDeclarationOnly",
     "build-storybook": "storybook build",
     "deploy": "yarn build-storybook",
     "lint": "eslint .",

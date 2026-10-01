@@ -12,10 +12,8 @@
   "include": [
     ".storybook/**/*.ts",
     ".storybook/**/*.tsx",
-    "scripts/**/*.ts",
     "src",
     "test",
-    "vite.library.config.ts",
     "vite.config.ts",
     "vitest.config.ts"
   ]

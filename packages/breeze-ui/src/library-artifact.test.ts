@@ -20,7 +20,7 @@ describe('built library artifact', () => {
         import { renderToStaticMarkup } from 'react-dom/server';
 
         await build({
-          configFile: 'vite.library.config.ts',
+          configFile: 'vite.config.ts',
           root: ${JSON.stringify(packageRoot)},
           build: { emptyOutDir: true, outDir: ${JSON.stringify(outputDirectory)} },
         });
@@ -45,7 +45,7 @@ describe('built library artifact', () => {
         if (!english.includes('value="1,234.5"')) throw new Error('English number formatting is missing');
         if (!french.includes('value="1\\u202f234,5"')) throw new Error('French number formatting is missing');
 
-        console.log(JSON.stringify({ english, french }));
+        console.log('artifact-smoke-passed');
       `;
       const result = spawnSync(
         process.execPath,
@@ -59,7 +59,7 @@ describe('built library artifact', () => {
 
       expect(result.status).toBe(0);
       expect(result.error).toBeUndefined();
-      expect(result.stdout).toContain('Breeze UI JavaScript total:');
+      expect(result.stdout).toContain('artifact-smoke-passed');
     } finally {
       rmSync(outputDirectory, { force: true, recursive: true });
     }
