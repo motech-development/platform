@@ -69,7 +69,7 @@ The one-time comparison used Vite 8.1.5, React Aria 3.50.0, React Aria Component
 | English-only build used for publishing         | 532,843 B |        135,413 B |
 | Saving                                         | 108,344 B | 25,961 B (16.1%) |
 
-The previous externalized library output was 175,660 B raw and 39,986 B gzip-9 for `index.js`; it left React Aria external and is not comparable to the bundled measurements above. The locale optimization saves 25,961 B gzip-9 (16.1%) from the comparable bundle, which justifies shipping the English-only built-in interaction labels. These figures are a one-time comparison: the build does not enforce a locale-content check or JavaScript size limit. To ship additional built-in translations, change the optimizer's `locales: ['en']` option in `vite.config.ts`. The unit suite builds the production ESM artifact and imports it directly in Node with peer React, rendering the provider, calendar, and number field under English and French locales.
+The previous externalized library output was 175,660 B raw and 39,986 B gzip-9 for `index.js`; it left React Aria external and is not comparable to the bundled measurements above. The locale optimization saves 25,961 B gzip-9 (16.1%) from the comparable bundle, which justifies shipping the English-only built-in interaction labels. These figures are a one-time comparison: the build does not enforce a locale-content check or JavaScript size limit. To ship additional built-in translations, change the optimizer's `locales: ['en']` option in `vite.config.ts`.
 
 The optional PDF peer remains dynamically loaded only when an open PDF is rendered and is not included in the library JavaScript measurements. With `pdfjs-dist` 6.3.289, its installed production files measure:
 
