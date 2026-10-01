@@ -1,10 +1,11 @@
 import { copyFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, resolve } from 'node:path';
+import optimizeLocales from '@react-aria/optimize-locales-plugin';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
-import type { Plugin } from 'vite';
-import { defineConfig } from 'vite';
+import type { Plugin, UserConfig } from 'vite';
+import { defineConfig, esmExternalRequirePlugin } from 'vite';
 import packageJson from './package.json' with { type: 'json' };
 
 const require = createRequire(import.meta.url);
@@ -16,6 +17,15 @@ const externalPackages = Object.keys({
   ...packageJson.dependencies,
   ...packageJson.peerDependencies,
 });
+const esmExternalRequirePackages = ['react'];
+const bundledReactAriaPackages = ['react-aria', 'react-aria-components'];
+const appliesToLibraryBuild = (config: UserConfig) =>
+  Boolean(config.build?.lib);
+
+const esmExternalRequire = Object.assign(
+  esmExternalRequirePlugin({ external: esmExternalRequirePackages }),
+  { apply: appliesToLibraryBuild },
+);
 
 function distributionAssetsPlugin(): Plugin {
   return {
@@ -52,6 +62,11 @@ export default defineConfig({
     outDir: 'lib',
     rolldownOptions: {
       external: (id) =>
+        !esmExternalRequirePackages.includes(id) &&
+        !bundledReactAriaPackages.some(
+          (packageName) =>
+            id === packageName || id.startsWith(`${packageName}/`),
+        ) &&
         externalPackages.some(
           (packageName) =>
             id === packageName || id.startsWith(`${packageName}/`),
@@ -73,5 +88,15 @@ export default defineConfig({
     },
     sourcemap: true,
   },
-  plugins: [tailwindcss(), react(), distributionAssetsPlugin()],
+  plugins: [
+    tailwindcss(),
+    react(),
+    distributionAssetsPlugin(),
+    {
+      ...optimizeLocales.vite({ locales: ['en'] }),
+      apply: appliesToLibraryBuild,
+      enforce: 'pre' as const,
+    },
+    esmExternalRequire,
+  ],
 });
