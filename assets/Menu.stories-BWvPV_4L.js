@@ -1,0 +1,62 @@
+import{a as e,n as t,r as n}from"./rolldown-runtime-DaJ6WEGw.js";import{t as r}from"./react-DvlgmmzG.js";import{t as i}from"./jsx-runtime-cM__dR4X.js";import{n as a,t as o}from"./Button-ChqF1UMJ.js";import{n as s,t as c}from"./Menu-BtLy74an.js";var l=n({Controlled:()=>b,Default:()=>y,Loading:()=>x,__namedExportsOrder:()=>S,default:()=>v});function u(){let[e,t]=(0,f.useState)(!1),[n,r]=(0,f.useState)(`none`);return(0,p.jsxs)(`div`,{className:`breeze-story-action`,children:[(0,p.jsx)(c,{getItem:e=>e,items:_,onAction:e=>r(e.label),onOpenChange:t,open:e,trigger:`Account actions`,triggerIcon:`people`}),(0,p.jsxs)(`output`,{children:[`Menu is `,e?`open`:`closed`,`. Last action: `,n,`.`]})]})}function d(){let[e,t]=(0,f.useState)(!0);return(0,p.jsxs)(`div`,{className:`breeze-story-action`,children:[(0,p.jsx)(c,{getItem:e=>e,items:_,loading:e,trigger:`Account actions`,triggerIcon:`people`}),(0,p.jsx)(o,{onAction:()=>t(e=>!e),children:e?`Finish loading menu`:`Start loading menu`})]})}var f,p,m,h,g,_,v,y,b,x,S,C=t((()=>{f=e(r(),1),a(),s(),p=i(),{expect:m,userEvent:h,within:g}=__STORYBOOK_MODULE_TEST__,_=[{badge:{children:`New`,variant:`brand`},icon:`settings`,id:`settings`,label:`Settings`},{description:`End the current session.`,icon:`signOut`,id:`sign-out`,label:`Sign out`},{disabled:!0,id:`unavailable`,label:`Unavailable action`}],v={args:{defaultOpen:!0,getItem:e=>e,items:_,trigger:`Account actions`,triggerIcon:`people`},component:c,title:`Overlays/Menu`},y={play:async({canvasElement:e})=>{let t=g(e).getByRole(`button`,{name:`Account actions`}),n=(await g(document.body).findByRole(`menu`,{name:`Account actions`})).closest(`.breeze-popover`);if(!n)throw Error(`The menu popover was not rendered.`);let r=Number.parseFloat(getComputedStyle(n).minInlineSize)-t.getBoundingClientRect().width;await m(Math.abs(r)).toBeLessThan(1)}},b={render:()=>(0,p.jsx)(u,{})},x={play:async({canvasElement:e})=>{await document.fonts.ready;let t=g(e),n=t.getByRole(`button`,{name:`Account actions`}),r=n.getBoundingClientRect();await m(n).toHaveAttribute(`aria-busy`,`true`),await m(n).toHaveAttribute(`aria-disabled`,`true`),await m(n).toHaveAccessibleName(`Account actions`),await m(t.getByRole(`status`)).toHaveTextContent(`Loading`),await m(t.getByRole(`progressbar`,{name:`Loading`})).toBeInTheDocument(),await m(n.querySelector(`[data-breeze-skeleton]`)).toBeTruthy(),await h.click(t.getByRole(`button`,{name:`Finish loading menu`})),await m(n).not.toHaveAttribute(`aria-busy`),await m(t.getByRole(`status`)).toBeEmptyDOMElement();let i=n.getBoundingClientRect();await m([i.width,i.height]).toEqual([r.width,r.height]),await h.click(t.getByRole(`button`,{name:`Start loading menu`})),await m(n).toHaveAttribute(`aria-busy`,`true`),await m(n).toHaveAttribute(`aria-disabled`,`true`),await m(t.getByRole(`status`)).toHaveTextContent(`Loading`);let a=n.getBoundingClientRect();await m([a.width,a.height]).toEqual([i.width,i.height]),n.focus(),await h.click(n),await h.keyboard(`{Enter}{Space}{ArrowDown}`),await m(g(document.body).queryByRole(`menu`)).not.toBeInTheDocument()},render:()=>(0,p.jsx)(d,{})},y.parameters={...y.parameters,docs:{...y.parameters?.docs,source:{originalSource:`{
+  play: async ({
+    canvasElement
+  }) => {
+    const trigger = within(canvasElement).getByRole('button', {
+      name: 'Account actions'
+    });
+    const menu = await within(document.body).findByRole('menu', {
+      name: 'Account actions'
+    });
+    const popover = menu.closest('.breeze-popover');
+    if (!popover) throw new Error('The menu popover was not rendered.');
+    const widthDelta = Number.parseFloat(getComputedStyle(popover).minInlineSize) - trigger.getBoundingClientRect().width;
+    await expect(Math.abs(widthDelta)).toBeLessThan(1);
+  }
+}`,...y.parameters?.docs?.source},description:{story:`A compact set of account actions.`,...y.parameters?.docs?.description}}},b.parameters={...b.parameters,docs:{...b.parameters?.docs,source:{originalSource:`{
+  render: () => <ControlledExample />
+}`,...b.parameters?.docs?.source},description:{story:`Control visibility and receive the selected item's details.`,...b.parameters?.docs?.description}}},x.parameters={...x.parameters,docs:{...x.parameters?.docs,source:{originalSource:`{
+  play: async ({
+    canvasElement
+  }) => {
+    await document.fonts.ready;
+    const canvas = within(canvasElement);
+    const trigger = canvas.getByRole('button', {
+      name: 'Account actions'
+    });
+    const initialLoadingBounds = trigger.getBoundingClientRect();
+    await expect(trigger).toHaveAttribute('aria-busy', 'true');
+    await expect(trigger).toHaveAttribute('aria-disabled', 'true');
+    await expect(trigger).toHaveAccessibleName('Account actions');
+    await expect(canvas.getByRole('status')).toHaveTextContent('Loading');
+    await expect(canvas.getByRole('progressbar', {
+      name: 'Loading'
+    })).toBeInTheDocument();
+    await expect(trigger.querySelector('[data-breeze-skeleton]')).toBeTruthy();
+    await userEvent.click(canvas.getByRole('button', {
+      name: 'Finish loading menu'
+    }));
+    await expect(trigger).not.toHaveAttribute('aria-busy');
+    await expect(canvas.getByRole('status')).toBeEmptyDOMElement();
+    const readyBounds = trigger.getBoundingClientRect();
+    await expect([readyBounds.width, readyBounds.height]).toEqual([initialLoadingBounds.width, initialLoadingBounds.height]);
+    await userEvent.click(canvas.getByRole('button', {
+      name: 'Start loading menu'
+    }));
+    await expect(trigger).toHaveAttribute('aria-busy', 'true');
+    await expect(trigger).toHaveAttribute('aria-disabled', 'true');
+    await expect(canvas.getByRole('status')).toHaveTextContent('Loading');
+    const finalLoadingBounds = trigger.getBoundingClientRect();
+    await expect([finalLoadingBounds.width, finalLoadingBounds.height]).toEqual([readyBounds.width, readyBounds.height]);
+    trigger.focus();
+    await userEvent.click(trigger);
+    await userEvent.keyboard('{Enter}{Space}{ArrowDown}');
+    await expect(within(document.body).queryByRole('menu')).not.toBeInTheDocument();
+  },
+  render: () => <LoadingExample />
+}`,...x.parameters?.docs?.source},description:{story:`The trigger shows a loading bar while keeping its size and accessible name.`,...x.parameters?.docs?.description}}};try{v.displayName=`Menu`,v.__docgenInfo={description:`Displays related actions from a labelled trigger button.
+
+Set \`loading\` while the trigger should not open the menu. The loading status
+is announced while the trigger keeps its accessible name and dimensions.`,displayName:`Menu`,filePath:`/home/runner/work/platform/platform/packages/breeze-ui/src/primitives/Menu/Menu.stories.tsx`,methods:[],props:{getItem:{defaultValue:null,declarations:[{fileName:`breeze-ui/src/primitives/Menu/Menu.tsx`,name:`MenuCommonProps`},{fileName:`breeze-ui/src/primitives/Menu/Menu.tsx`,name:`MenuCommonProps`}],description:`Returns the display details for an application item.`,name:`getItem`,parent:{fileName:`breeze-ui/src/primitives/Menu/Menu.tsx`,name:`MenuCommonProps`},required:!0,tags:{},type:{name:`(item: T) => ItemDescriptor`}},items:{defaultValue:null,declarations:[{fileName:`breeze-ui/src/primitives/Menu/Menu.tsx`,name:`MenuCommonProps`},{fileName:`breeze-ui/src/primitives/Menu/Menu.tsx`,name:`MenuCommonProps`}],description:`Application items displayed as actions.`,name:`items`,parent:{fileName:`breeze-ui/src/primitives/Menu/Menu.tsx`,name:`MenuCommonProps`},required:!0,tags:{},type:{name:`T[]`}},onAction:{defaultValue:null,declarations:[{fileName:`breeze-ui/src/primitives/Menu/Menu.tsx`,name:`MenuCommonProps`},{fileName:`breeze-ui/src/primitives/Menu/Menu.tsx`,name:`MenuCommonProps`}],description:`Called with the selected action's ItemDescriptor.`,name:`onAction`,parent:{fileName:`breeze-ui/src/primitives/Menu/Menu.tsx`,name:`MenuCommonProps`},required:!1,tags:{},type:{name:`((descriptor: ItemDescriptor) => void) | undefined`}},loading:{defaultValue:{value:`false`},declarations:[{fileName:`breeze-ui/src/primitives/Menu/Menu.tsx`,name:`MenuCommonProps`},{fileName:`breeze-ui/src/primitives/Menu/Menu.tsx`,name:`MenuCommonProps`}],description:`Shows a loading bar on the trigger and prevents opening the menu.`,name:`loading`,parent:{fileName:`breeze-ui/src/primitives/Menu/Menu.tsx`,name:`MenuCommonProps`},required:!1,tags:{},type:{name:`boolean | undefined`}},triggerIcon:{defaultValue:null,declarations:[{fileName:`breeze-ui/src/primitives/Menu/Menu.tsx`,name:`MenuCommonProps`},{fileName:`breeze-ui/src/primitives/Menu/Menu.tsx`,name:`MenuCommonProps`}],description:`Icon shown beside the trigger label.`,name:`triggerIcon`,parent:{fileName:`breeze-ui/src/primitives/Menu/Menu.tsx`,name:`MenuCommonProps`},required:!1,tags:{},type:{name:`"add" | "back" | "building" | "calendar" | "camera" | "check" | "clock" | "close" | "delete" | "document" | "download" | "expand" | "forward" | "lock" | "money" | "moneyIn" | "moneyOut" | ... 9 more ... | undefined`}},triggerAriaLabel:{defaultValue:null,declarations:[{fileName:`breeze-ui/src/primitives/Menu/Menu.tsx`,name:`MenuCommonProps`},{fileName:`breeze-ui/src/primitives/Menu/Menu.tsx`,name:`MenuCommonProps`}],description:`Accessible name when it should differ from the visible trigger label.`,name:`triggerAriaLabel`,parent:{fileName:`breeze-ui/src/primitives/Menu/Menu.tsx`,name:`MenuCommonProps`},required:!1,tags:{},type:{name:`string | undefined`}},trigger:{defaultValue:null,declarations:[{fileName:`breeze-ui/src/primitives/Menu/Menu.tsx`,name:`MenuCommonProps`},{fileName:`breeze-ui/src/primitives/Menu/Menu.tsx`,name:`MenuCommonProps`}],description:`Visible label for the button that opens the menu.`,name:`trigger`,parent:{fileName:`breeze-ui/src/primitives/Menu/Menu.tsx`,name:`MenuCommonProps`},required:!0,tags:{},type:{name:`string`}},defaultOpen:{defaultValue:null,declarations:[{fileName:`breeze-ui/src/primitives/Menu/Menu.tsx`,name:`ControlledMenuProps`},{fileName:`breeze-ui/src/primitives/Menu/Menu.tsx`,name:`UncontrolledMenuProps`}],description:"Only set when visibility is uncontrolled.\nInitial visibility. Defaults to `false`.",name:`defaultOpen`,parent:{fileName:`breeze-ui/src/primitives/Menu/Menu.tsx`,name:`ControlledMenuProps`},required:!1,tags:{},type:{name:`boolean | undefined`}},onOpenChange:{defaultValue:null,declarations:[{fileName:`breeze-ui/src/primitives/Menu/Menu.tsx`,name:`ControlledMenuProps`},{fileName:`breeze-ui/src/primitives/Menu/Menu.tsx`,name:`UncontrolledMenuProps`}],description:`Called when the menu should open or close.
+Called when the menu opens or closes.`,name:`onOpenChange`,parent:{fileName:`breeze-ui/src/primitives/Menu/Menu.tsx`,name:`ControlledMenuProps`},required:!1,tags:{},type:{name:`((open: boolean) => void) | ((open: boolean) => void) | undefined`}},open:{defaultValue:null,declarations:[{fileName:`breeze-ui/src/primitives/Menu/Menu.tsx`,name:`ControlledMenuProps`},{fileName:`breeze-ui/src/primitives/Menu/Menu.tsx`,name:`UncontrolledMenuProps`}],description:`Whether the menu is open.
+Only set when visibility is controlled.`,name:`open`,parent:{fileName:`breeze-ui/src/primitives/Menu/Menu.tsx`,name:`ControlledMenuProps`},required:!1,tags:{},type:{name:`boolean | undefined`}}},tags:{summary:`A compact menu for secondary actions.`}}}catch{}try{y.displayName=`Default`,y.__docgenInfo={description:`A compact set of account actions.`,displayName:`Default`,filePath:`/home/runner/work/platform/platform/packages/breeze-ui/src/primitives/Menu/Menu.stories.tsx`,methods:[],props:{},tags:{}}}catch{}try{b.displayName=`Controlled`,b.__docgenInfo={description:`Control visibility and receive the selected item's details.`,displayName:`Controlled`,filePath:`/home/runner/work/platform/platform/packages/breeze-ui/src/primitives/Menu/Menu.stories.tsx`,methods:[],props:{},tags:{}}}catch{}try{x.displayName=`Loading`,x.__docgenInfo={description:`The trigger shows a loading bar while keeping its size and accessible name.`,displayName:`Loading`,filePath:`/home/runner/work/platform/platform/packages/breeze-ui/src/primitives/Menu/Menu.stories.tsx`,methods:[],props:{},tags:{}}}catch{}S=[`Default`,`Controlled`,`Loading`]}));C();export{b as Controlled,y as Default,x as Loading,S as __namedExportsOrder,v as default,C as n,l as t};

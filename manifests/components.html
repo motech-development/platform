@@ -588,13 +588,13 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">3/40 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">5/40 infos</a><span class="filter-pill ok" aria-disabled="true">147 stories ok</span><a class="filter-pill ok" data-k="docs" href="#filter-docs">42 docs ok</a></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">3/43 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">5/43 infos</a><span class="filter-pill ok" aria-disabled="true">163 stories ok</span><a class="filter-pill ok" data-k="docs" href="#filter-docs">45 docs ok</a></div>
   </div>
 </header>
 <main>
   <div class="wrap">
     <div class="note ok" style="margin-bottom: 16px;">
-              Using <code>react-docgen-typescript</code>. Generation took <strong>2.2s</strong>.
+              Using <code>react-docgen-typescript</code>. Generation took <strong>1.9s</strong>.
             </div>
     <h2 class="section-title">Components</h2>
     <div class="grid" role="list">
@@ -1240,15 +1240,259 @@ The action remains named and readable without a curated icon.
   no-story-error
   no-doc-error"
   role="listitem"
+  aria-label="AttachmentRow">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> AttachmentRow</h2>
+      <div class="badges">
+        <label for="c-2-files-attachmentrow-props" class="badge ok as-toggle">10 prop types</label>
+        
+        <label for="c-2-files-attachmentrow-stories" class="badge ok as-toggle">5 stories</label>
+        <label for="c-2-files-attachmentrow-docs" class="badge ok as-toggle">1 doc</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/patterns/AttachmentRow/AttachmentRow.stories.tsx">files-attachmentrow · ./src/patterns/AttachmentRow/AttachmentRow.stories.tsx</div>
+    
+    <div class="hint">Presents an attached file with a type thumbnail, readable state and actions.</div>
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-2-files-attachmentrow-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-2-files-attachmentrow-docs" class="tg tg-docs" type="checkbox" hidden />
+  
+  <input id="c-2-files-attachmentrow-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
+              <span class="badge ok">10 prop types</span>
+            </div>
+            <pre><code>Component: src/patterns/AttachmentRow/AttachmentRow.tsx::AttachmentRow</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>/**
+ * App-owned actions require an activation callback.
+ */
+actions?: AttachmentRowAction[]
+
+/**
+ * Visible name of the attached file.
+ */
+filename: string
+
+/**
+ * Distinguishes a document from a photograph.
+ */
+fileType: &quot;document&quot; | &quot;photo&quot;
+
+/**
+ * Omits file content while its shape is unavailable.
+ * Attachment content is available and displayed.
+ */
+loading?: boolean
+
+/**
+ * Called with the selected app-owned menu action.
+ * A callback is only used when actions are provided.
+ */
+onAction?: ((action: AttachmentRowAction) =&gt; void)
+
+/**
+ * Called when the direct Open action is activated.
+ */
+onOpen?: (() =&gt; void)
+
+/**
+ * File size in bytes, formatted for the Breeze provider locale.
+ */
+sizeBytes: number
+
+/**
+ * Visible attachment state, such as “Uploaded” or “Upload failed”.
+ */
+status: string
+
+/**
+ * Only photographs can provide an image thumbnail.
+ * Optional image rendered as the photograph thumbnail.
+ */
+thumbnailUrl?: string
+
+/**
+ * Shared element name used once this row has content.
+ * Shared element name for a DocumentViewer that opens from this row.
+ */
+transitionName?: string</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { AttachmentRow } from "@motech-development/breeze-ui";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Document</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A document attachment with readable metadata and working file actions.</div>
+              <pre><code>const Document = () =&gt; &lt;ActionableDocumentExample /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Narrow Container</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Shows file actions wrapping below the details in a narrow container.</div>
+              <pre><code>const NarrowContainer = () =&gt; (
+  &lt;div style={{ inlineSize: 320 }}&gt;
+    &lt;ActionableDocumentExample /&gt;
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Photo</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A photograph uses an image thumbnail when a URL is available.</div>
+              <pre><code>const Photo = () =&gt; &lt;AttachmentRow
+    fileType=&quot;photo&quot;
+    filename=&quot;IMG_4471.jpg&quot;
+    sizeBytes={1_200_000}
+    status=&quot;Uploaded&quot;
+    thumbnailUrl=&quot;data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22320%22 height=%22440%22 viewBox=%220 0 320 440%22%3E%3Crect width=%22320%22 height=%22440%22 fill=%22%23b5d8cf%22/%3E%3Cpath d=%22M0 330 110 180l95 110 50-70 65 110v110H0z%22 fill=%22%23699586%22/%3E%3Ccircle cx=%22235%22 cy=%22105%22 r=%2234%22 fill=%22%23f6d998%22/%3E%3C/svg%3E&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Upload Failed</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A failed upload remains understandable through its visible status text.</div>
+              <pre><code>const UploadFailed = () =&gt; &lt;AttachmentRow
+    fileType=&quot;document&quot;
+    filename=&quot;fen-lane-garage-invoice.pdf&quot;
+    sizeBytes={84_000}
+    status=&quot;Upload failed&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Loading</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Shows the row shape while attachment details are unavailable.</div>
+              <pre><code>const Loading = () =&gt; &lt;AttachmentRow loading /&gt;;</code></pre>
+            </div>
+        </div>
+    
+        <div class="panel panel-docs">
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Docs</span>
+                <span class="badge ok">doc ok</span>
+              </div>
+              <div class="hint">./src/patterns/AttachmentRow/AttachmentRow.mdx</div>
+              <div>Shows an attached document or photograph with its visible status and actions.</div>
+              <div class="mdx-content"><pre><code>import { ArgTypes, Canvas, Meta } from &#39;@storybook/addon-docs/blocks&#39;;
+import * as Stories from &#39;./AttachmentRow.stories&#39;;
+
+&lt;Meta
+  of={Stories}
+  summary=&quot;Shows an attached document or photograph with its visible status and actions.&quot;
+/&gt;
+
+# AttachmentRow
+
+`AttachmentRow` presents one attached file in a compact row. The caller provides
+the file name, whether it is a document or photograph, its size in bytes, and a
+visible status such as `Uploaded` or `Upload failed`. Size formatting follows
+the required Breeze provider locale.
+
+## Document and photo thumbnails
+
+Documents use a page preview and photographs use the supplied image thumbnail
+or a camera placeholder. The file type is also written as visible text, so the
+thumbnail is not the only way to tell them apart. Only a photograph accepts a
+`thumbnailUrl`.
+
+&lt;Canvas of={Stories.Document} /&gt;
+
+&lt;Canvas of={Stories.Photo} /&gt;
+
+## Open and menu actions
+
+Pass `onOpen` to show a direct Open button. Pass action descriptors and an
+`onAction` callback together to show the overflow menu. Each action has a
+visible label; icons only decorate those labels. Open and overflow buttons keep
+their short visible labels and include the file name in their accessible names.
+
+&lt;Canvas of={Stories.Document} /&gt;
+
+## Narrow containers
+
+When there is not enough horizontal room, the row wraps its actions below the
+file details so the file information remains readable.
+
+&lt;Canvas of={Stories.NarrowContainer} /&gt;
+
+## Visible state and loading
+
+The `status` text stays visible and updates are announced politely regardless
+of the file type or thumbnail. While the file details are unavailable, set
+`loading` to show the row-shaped loading placeholder and labelled progress bar.
+
+&lt;Canvas of={Stories.UploadFailed} /&gt;
+
+&lt;Canvas of={Stories.Loading} /&gt;
+
+## API
+
+&lt;ArgTypes of={Stories.Document} /&gt;
+</code></pre></div>
+            </div>
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  no-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
   aria-label="Badge">
   <div class="head">
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Badge</h2>
       <div class="badges">
-        <label for="c-2-content-badge-props" class="badge ok as-toggle">4 prop types</label>
+        <label for="c-3-content-badge-props" class="badge ok as-toggle">4 prop types</label>
         
-        <label for="c-2-content-badge-stories" class="badge ok as-toggle">3 stories</label>
-        <label for="c-2-content-badge-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-3-content-badge-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-3-content-badge-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -1261,10 +1505,10 @@ The action remains named and readable without a curated icon.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-2-content-badge-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-2-content-badge-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-3-content-badge-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-3-content-badge-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-2-content-badge-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-3-content-badge-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -1401,10 +1645,10 @@ Set `loading` to preserve the badge shape while its status text is unavailable.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> BreezeProvider</h2>
       <div class="badges">
-        <label for="c-3-foundation-breezeprovider-props" class="badge ok as-toggle">9 prop types</label>
+        <label for="c-4-foundation-breezeprovider-props" class="badge ok as-toggle">9 prop types</label>
         
-        <label for="c-3-foundation-breezeprovider-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-3-foundation-breezeprovider-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-4-foundation-breezeprovider-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-4-foundation-breezeprovider-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -1417,10 +1661,10 @@ Set `loading` to preserve the badge shape while its status text is unavailable.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-3-foundation-breezeprovider-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-3-foundation-breezeprovider-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-4-foundation-breezeprovider-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-4-foundation-breezeprovider-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-3-foundation-breezeprovider-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-4-foundation-breezeprovider-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -1459,7 +1703,7 @@ locale: string
 /**
  * Accessible messages translated into the provider locale; defaults to English.
  */
-messages?: Partial&lt;{ appearance: string; appearanceAutomatic: string; appearanceDark: string; appearanceLight: string; close: string; loading: string; noItemsToDisplay: string; primaryNavigation: string; required: string; selectDate: string; skipToMain: string; }&gt;
+messages?: Partial&lt;{ appearance: string; appearanceAutomatic: string; appearanceDark: string; appearanceLight: string; attachmentDocument: string; attachmentMoreActions: string; attachmentOpen: string; attachmentPhoto: string; close: string; documentViewerAccessibility: string; documentViewerDownload: string; documentViewerExitFullScreen: string; documentViewerFallback: string; documentViewerFullScreen: string; documentViewerImageUnavailable: string; documentViewerLoading: string; documentViewerNextPage: string; documentViewerPage: string; documentViewerPreviousPage: string; documentViewerRemove: string; documentViewerReplace: string; documentViewerRotate: string; documentViewerRotateLabel: string; documentViewerZoom: string; documentViewerZoomIn: string; documentViewerZoomOut: string; fileDropZoneAcceptedTypes: string; fileDropZoneAddedMany: string; fileDropZoneAddedOne: string; fileDropZoneAttachedCount: string; fileDropZoneChooseFiles: string; fileDropZoneCountRejectedMany: string; fileDropZoneCountRejectedOne: string; fileDropZoneDropInstructions: string; fileDropZoneMaximumFileSize: string; fileDropZoneNoFilesAdded: string; fileDropZoneReleaseInstructions: string; fileDropZoneSizeRejected: string; fileDropZoneTypeRejected: string; loading: string; noItemsToDisplay: string; primaryNavigation: string; required: string; selectDate: string; skipToMain: string; }&gt;
 
 /**
  * Reports a semantic appearance choice so the application can persist it.
@@ -1551,7 +1795,7 @@ import * as Stories from &#39;./BreezeProvider.stories&#39;;
 
 `locale` takes a BCP 47 language tag. It sets the `lang` attribute and the text direction of the provider&#39;s root element.
 
-Only English (`en-GB`) messages are bundled. Supply partial `messages` to translate Breeze&#39;s loading and required announcements, the DatePicker placeholder, appearance control and overlay close button into the provider locale. Without an override, Breeze&#39;s own text uses English and is marked `lang=&quot;en-GB&quot;`, independently of the surrounding content&#39;s language.
+Only English (`en-GB`) messages are bundled. Supply partial `messages` to translate Breeze&#39;s loading and required announcements, the DatePicker placeholder, appearance control, overlay close button, FileDropZone instructions and feedback, and attachment labels and actions into the provider locale. Without an override, Breeze&#39;s own text uses English and is marked `lang=&quot;en-GB&quot;`, independently of the surrounding content&#39;s language.
 
 ```tsx
 &lt;BreezeProvider
@@ -1564,6 +1808,30 @@ Only English (`en-GB`) messages are bundled. Supply partial `messages` to transl
 ```
 
 &lt;Canvas of={Stories.Locale} /&gt;
+
+FileDropZone message strings use flat keys. Keep their placeholders when
+providing translations: `{types}` for accepted types, `{size}` for the size
+limit, `{count}` for multiple added files, `{current}` and `{max}` for the
+attachment count, `{fileName}` for a rejected file, and `{fileNames}` for files
+rejected by the total count limit. For example:
+
+```tsx
+&lt;BreezeProvider
+  locale=&quot;fr-FR&quot;
+  messages={{
+    fileDropZoneChooseFiles: &#39;Choisir des fichiers&#39;,
+    fileDropZoneAddedMany: &#39;{count} fichiers ajoutés.&#39;,
+    fileDropZoneTypeRejected:
+      &#39;{fileName} : Type de fichier non accepté. Formats autorisés : {types}.&#39;,
+    attachmentDocument: &#39;Document&#39;,
+    attachmentPhoto: &#39;Photo&#39;,
+    attachmentOpen: &#39;Ouvrir&#39;,
+    attachmentMoreActions: &#39;Plus d’actions&#39;,
+  }}
+&gt;
+  &lt;App /&gt;
+&lt;/BreezeProvider&gt;
+```
 
 ## Appearance
 
@@ -1658,10 +1926,10 @@ Set `toastLimit` when the application needs a different number of visible confir
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Button</h2>
       <div class="badges">
-        <label for="c-4-actions-button-props" class="badge ok as-toggle">18 prop types</label>
+        <label for="c-5-actions-button-props" class="badge ok as-toggle">18 prop types</label>
         
-        <label for="c-4-actions-button-stories" class="badge ok as-toggle">9 stories</label>
-        <label for="c-4-actions-button-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-5-actions-button-stories" class="badge ok as-toggle">9 stories</label>
+        <label for="c-5-actions-button-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -1674,10 +1942,10 @@ Set `toastLimit` when the application needs a different number of visible confir
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-4-actions-button-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-4-actions-button-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-5-actions-button-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-5-actions-button-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-4-actions-button-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-5-actions-button-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -2016,10 +2284,10 @@ The label provides the accessible name and is retained while the button is loadi
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Calendar</h2>
       <div class="badges">
-        <label for="c-5-forms-calendar-props" class="badge ok as-toggle">6 prop types</label>
+        <label for="c-6-forms-calendar-props" class="badge ok as-toggle">6 prop types</label>
         
-        <label for="c-5-forms-calendar-stories" class="badge ok as-toggle">4 stories</label>
-        <label for="c-5-forms-calendar-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-6-forms-calendar-stories" class="badge ok as-toggle">4 stories</label>
+        <label for="c-6-forms-calendar-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -2032,10 +2300,10 @@ The label provides the accessible name and is retained while the button is loadi
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-5-forms-calendar-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-5-forms-calendar-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-6-forms-calendar-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-6-forms-calendar-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-5-forms-calendar-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-6-forms-calendar-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -2197,10 +2465,10 @@ selection semantics and localized weekday and date names.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Card</h2>
       <div class="badges">
-        <label for="c-6-content-card-props" class="badge ok as-toggle">6 prop types</label>
+        <label for="c-7-content-card-props" class="badge ok as-toggle">6 prop types</label>
         
-        <label for="c-6-content-card-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-6-content-card-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-7-content-card-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-7-content-card-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -2213,10 +2481,10 @@ selection semantics and localized weekday and date names.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-6-content-card-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-6-content-card-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-7-content-card-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-7-content-card-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-6-content-card-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-7-content-card-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -2361,10 +2629,10 @@ Loading belongs to the content inside the card. Compose loading-capable children
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Checkbox</h2>
       <div class="badges">
-        <label for="c-7-forms-checkbox-props" class="badge ok as-toggle">15 prop types</label>
+        <label for="c-8-forms-checkbox-props" class="badge ok as-toggle">15 prop types</label>
         
-        <label for="c-7-forms-checkbox-stories" class="badge ok as-toggle">8 stories</label>
-        <label for="c-7-forms-checkbox-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-8-forms-checkbox-stories" class="badge ok as-toggle">8 stories</label>
+        <label for="c-8-forms-checkbox-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -2377,10 +2645,10 @@ Loading belongs to the content inside the card. Compose loading-capable children
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-7-forms-checkbox-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-7-forms-checkbox-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-8-forms-checkbox-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-8-forms-checkbox-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-7-forms-checkbox-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-8-forms-checkbox-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -2646,10 +2914,10 @@ native input through `ref`.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Chip</h2>
       <div class="badges">
-        <label for="c-8-actions-chip-props" class="badge ok as-toggle">11 prop types</label>
+        <label for="c-9-actions-chip-props" class="badge ok as-toggle">11 prop types</label>
         
-        <label for="c-8-actions-chip-stories" class="badge ok as-toggle">5 stories</label>
-        <label for="c-8-actions-chip-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-9-actions-chip-stories" class="badge ok as-toggle">5 stories</label>
+        <label for="c-9-actions-chip-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -2662,10 +2930,10 @@ native input through `ref`.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-8-actions-chip-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-8-actions-chip-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-9-actions-chip-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-9-actions-chip-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-8-actions-chip-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-9-actions-chip-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -2870,10 +3138,10 @@ its pressed state and supports keyboard activation.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> ComboBox</h2>
       <div class="badges">
-        <label for="c-9-forms-combobox-props" class="badge ok as-toggle">19 prop types</label>
-        <label for="c-9-forms-combobox-info" class="badge info as-toggle">1 info</label>
-        <label for="c-9-forms-combobox-stories" class="badge ok as-toggle">6 stories</label>
-        <label for="c-9-forms-combobox-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-10-forms-combobox-props" class="badge ok as-toggle">19 prop types</label>
+        <label for="c-10-forms-combobox-info" class="badge info as-toggle">1 info</label>
+        <label for="c-10-forms-combobox-stories" class="badge ok as-toggle">6 stories</label>
+        <label for="c-10-forms-combobox-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -2885,11 +3153,11 @@ its pressed state and supports keyboard activation.
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-9-forms-combobox-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-9-forms-combobox-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-9-forms-combobox-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-10-forms-combobox-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-10-forms-combobox-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-10-forms-combobox-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-9-forms-combobox-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-10-forms-combobox-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -3190,10 +3458,10 @@ with the field. Keyboard navigation and focus management are built in.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Container</h2>
       <div class="badges">
-        <label for="c-10-layout-container-props" class="badge ok as-toggle">5 prop types</label>
+        <label for="c-11-layout-container-props" class="badge ok as-toggle">5 prop types</label>
         
-        <label for="c-10-layout-container-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-10-layout-container-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-11-layout-container-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-11-layout-container-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -3206,10 +3474,10 @@ with the field. Keyboard navigation and focus management are built in.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-10-layout-container-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-10-layout-container-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-11-layout-container-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-11-layout-container-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-10-layout-container-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-11-layout-container-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -3340,10 +3608,10 @@ Loading belongs to the content inside the container. Compose loading-capable chi
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> DatePicker</h2>
       <div class="badges">
-        <label for="c-11-forms-datepicker-props" class="badge ok as-toggle">14 prop types</label>
+        <label for="c-12-forms-datepicker-props" class="badge ok as-toggle">14 prop types</label>
         
-        <label for="c-11-forms-datepicker-stories" class="badge ok as-toggle">7 stories</label>
-        <label for="c-11-forms-datepicker-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-12-forms-datepicker-stories" class="badge ok as-toggle">7 stories</label>
+        <label for="c-12-forms-datepicker-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -3356,10 +3624,10 @@ Loading belongs to the content inside the container. Compose loading-capable chi
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-11-forms-datepicker-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-11-forms-datepicker-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-12-forms-datepicker-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-12-forms-datepicker-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-11-forms-datepicker-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-12-forms-datepicker-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -3617,10 +3885,10 @@ targets have a minimum 44px width and height.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Dialog</h2>
       <div class="badges">
-        <label for="c-12-overlays-dialog-props" class="badge ok as-toggle">7 prop types</label>
+        <label for="c-13-overlays-dialog-props" class="badge ok as-toggle">7 prop types</label>
         
-        <label for="c-12-overlays-dialog-stories" class="badge ok as-toggle">1 story</label>
-        <label for="c-12-overlays-dialog-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-13-overlays-dialog-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-13-overlays-dialog-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -3633,10 +3901,10 @@ targets have a minimum 44px width and height.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-12-overlays-dialog-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-12-overlays-dialog-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-13-overlays-dialog-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-13-overlays-dialog-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-12-overlays-dialog-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-13-overlays-dialog-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -3775,15 +4043,387 @@ Enter and exit motion respects reduced-motion preferences. A closing surface imm
   no-story-error
   no-doc-error"
   role="listitem"
+  aria-label="DocumentViewer">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> DocumentViewer</h2>
+      <div class="badges">
+        <label for="c-14-files-documentviewer-props" class="badge ok as-toggle">10 prop types</label>
+        
+        <label for="c-14-files-documentviewer-stories" class="badge ok as-toggle">8 stories</label>
+        <label for="c-14-files-documentviewer-docs" class="badge ok as-toggle">1 doc</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/patterns/DocumentViewer/DocumentViewer.stories.tsx">files-documentviewer · ./src/patterns/DocumentViewer/DocumentViewer.stories.tsx</div>
+    
+    <div class="hint">Opens an image or document in a full-screen viewer with its own toolbar.</div>
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-14-files-documentviewer-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-14-files-documentviewer-docs" class="tg tg-docs" type="checkbox" hidden />
+  
+  <input id="c-14-files-documentviewer-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
+              <span class="badge ok">10 prop types</span>
+            </div>
+            <pre><code>Component: src/patterns/DocumentViewer/DocumentViewer.tsx::DocumentViewer</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>/**
+ * Name used for the download and the labelled viewer dialog.
+ */
+downloadName?: string
+
+mediaType: &quot;document&quot; | &quot;image&quot; | &quot;pdf&quot;
+
+/**
+ * Reports state changes requested by the viewer&#39;s actions.
+ */
+onOpenChange: (open: boolean) =&gt; void
+
+/**
+ * Called when the app-owned Remove toolbar action is activated.
+ */
+onRemove?: (() =&gt; void)
+
+/**
+ * Called when the app-owned Replace toolbar action is activated.
+ */
+onReplace?: (() =&gt; void)
+
+/**
+ * Current open state controlled by the owning application.
+ */
+open: boolean
+
+/**
+ * Optional worker and auxiliary assets used to render the PDF.
+ */
+pdfAssets?: DocumentViewerPdfAssets
+
+/**
+ * URL of the source image or document.
+ */
+src: string
+
+/**
+ * Visible title and accessible name for the viewer dialog.
+ */
+title: string
+
+/**
+ * Name shared with the AttachmentRow that opens this viewer.
+ */
+transitionName?: string</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { DocumentViewer } from "@motech-development/breeze-ui";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Pdf Worker</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A two-page PDF rendered by the optional, lazy PDF.js engine and worker.</div>
+              <pre><code>function PdfWorker(
+    {
+      mediaType,
+      src,
+      title,
+    }: Pick&lt;DocumentViewerProps, &#39;mediaType&#39; | &#39;src&#39; | &#39;title&#39;&gt;
+) {
+  return (
+    &lt;DocumentViewerStoryExample mediaType={mediaType} src={src} title={title} /&gt;
+  );
+}</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Pdf Worker Docs</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>function PdfWorkerDocs(
+    {
+      mediaType,
+      src,
+      title,
+    }: Pick&lt;DocumentViewerProps, &#39;mediaType&#39; | &#39;src&#39; | &#39;title&#39;&gt;
+) {
+  return (
+    &lt;DocumentViewerStoryExample mediaType={mediaType} src={src} title={title} /&gt;
+  );
+}</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Pdf Page Metadata</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Verifies that intrinsic page rotation and PDF user units align text with its canvas.</div>
+              <pre><code>function PdfPageMetadata(
+    {
+      mediaType,
+      src,
+      title,
+    }: Pick&lt;DocumentViewerProps, &#39;mediaType&#39; | &#39;src&#39; | &#39;title&#39;&gt;
+) {
+  return (
+    &lt;DocumentViewerStoryExample mediaType={mediaType} src={src} title={title} /&gt;
+  );
+}</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">From Attachment Row</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Opens from its matching attachment row and morphs into the reader.</div>
+              <pre><code>function FromAttachmentRow() {
+  return &lt;AttachmentMorphExample /&gt;;
+}</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">From Attachment Row Docs</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>function FromAttachmentRowDocs() {
+  return &lt;AttachmentMorphExample /&gt;;
+}</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Image</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A photograph uses the same toolbar without loading the PDF engine.</div>
+              <pre><code>function Image(
+    {
+      mediaType,
+      src,
+      title,
+    }: Pick&lt;DocumentViewerProps, &#39;mediaType&#39; | &#39;src&#39; | &#39;title&#39;&gt;
+) {
+  return (
+    &lt;DocumentViewerStoryExample mediaType={mediaType} src={src} title={title} /&gt;
+  );
+}</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Image Docs</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>function ImageDocs(
+    {
+      mediaType,
+      src,
+      title,
+    }: Pick&lt;DocumentViewerProps, &#39;mediaType&#39; | &#39;src&#39; | &#39;title&#39;&gt;
+) {
+  return (
+    &lt;DocumentViewerStoryExample mediaType={mediaType} src={src} title={title} /&gt;
+  );
+}</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Sandboxed Active Document</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Verifies that active document content cannot execute scripts in the parent page.</div>
+              <pre><code>const SandboxedActiveDocument = () =&gt; &lt;SandboxedDocumentExample /&gt;;</code></pre>
+            </div>
+        </div>
+    
+        <div class="panel panel-docs">
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Docs</span>
+                <span class="badge ok">doc ok</span>
+              </div>
+              <div class="hint">./src/patterns/DocumentViewer/DocumentViewer.mdx</div>
+              <div>Opens an attached image or document in an accessible full-screen preview.</div>
+              <div class="mdx-content"><pre><code>import { ArgTypes, Canvas, Meta } from &#39;@storybook/addon-docs/blocks&#39;;
+import * as Stories from &#39;./DocumentViewer.stories&#39;;
+
+&lt;Meta
+  of={Stories}
+  summary=&quot;Opens an attached image or document in an accessible full-screen preview.&quot;
+/&gt;
+
+# DocumentViewer
+
+`DocumentViewer` presents one attachment in a modal reading surface with
+zoom, rotation, download, and optional app-owned Replace and Remove actions.
+The toolbar displays the current zoom percentage beside the zoom controls.
+Use it with `AttachmentRow` by passing the same unique `transitionName` to both
+components. The viewer owns its dialog and toolbar; the surrounding record owns
+attachment meaning, storage, replacement, and removal.
+The viewer is controlled: pass both `open` and `onOpenChange`, and let the
+owning screen provide the trigger and state.
+
+## Images and PDFs
+
+Images render directly and do not load the PDF engine. PDFs use the optional
+`pdfjs-dist` peer dependency to paint each page to a canvas and provide a
+selectable text layer. PDF.js and its worker load only after an open PDF is
+requested. Install a compatible `pdfjs-dist` version (`^6.2.108`) in the
+application to enable this renderer. If the peer is absent or PDF.js cannot
+render a file, the viewer falls back to the browser&#39;s PDF frame.
+
+PDFs that use predefined Adobe character maps or PDF.js standard font files
+also need those matching directories served by the application. Copy the
+`cmaps/` and `standard_fonts/` directories from the installed `pdfjs-dist`
+version to public asset paths, then pass their directory URLs to the PDF
+viewer:
+
+```tsx
+&lt;DocumentViewer
+  mediaType=&quot;pdf&quot;
+  onOpenChange={setOpen}
+  open={open}
+  pdfAssets={{
+    cMapUrl: &#39;/pdfjs/cmaps&#39;,
+    standardFontDataUrl: &#39;/pdfjs/standard_fonts&#39;,
+  }}
+  src={source}
+  title=&quot;Quarterly report&quot;
+/&gt;
+```
+
+These URLs must serve the matching files from the same `pdfjs-dist` version.
+The viewer adds a trailing slash to each directory URL. The auxiliary assets
+are optional when a document does not reference them.
+When the application uses a bundler that cannot resolve PDF.js&#39;s worker URL
+import, provide `pdfAssets.workerSrc` with the URL emitted or copied for the
+installed `pdfjs-dist` version. Vite users can omit it and use the default.
+
+When PDF.js is unavailable or cannot render a file, the viewer fetches the PDF
+and passes its bytes to the browser&#39;s native PDF viewer as a PDF-typed Blob.
+The source must be readable by the application: same-origin files work directly,
+and cross-origin hosts must allow CORS. If the fetch fails, the preview reports
+that it is unavailable and the Download action remains available.
+
+The reader supports page navigation for multi-page PDFs. Zoom and rotation
+apply to images, rendered PDF pages, and browser-owned frames.
+Each preview starts closed inside its own frame; use its Open button to view the
+attachment. The PDF example loads PDF.js only after you open it.
+
+&lt;Canvas of={Stories.ImageDocs} /&gt;
+
+&lt;Canvas of={Stories.PdfWorkerDocs} /&gt;
+
+The compact toolbar keeps the filename and document actions in one raised strip.
+For multi-page PDFs, page navigation sits in a separate neutral row beneath it.
+
+## AttachmentRow transition
+
+Give the row and viewer the same stable `transitionName` to morph between the
+attachment row and the reader in both directions. Close and Escape return to the
+row while preserving the surrounding overlay. The loaded image or PDF remains
+covered until the opening morph finishes, then its rendered content is revealed.
+Unsupported View Transition APIs and reduced-motion preferences use the same
+flow without animation.
+
+&lt;Canvas of={Stories.FromAttachmentRowDocs} /&gt;
+
+## Accessibility and fallback limits
+
+Rendered PDF canvases do not expose their page content to assistive technology.
+PDF text is selectable visually, but document tags, reading order, and scanned
+image OCR are not interpreted. The notice in the viewer therefore states that
+the attachment&#39;s meaning comes from its surrounding record and offers the
+original download.
+
+The fallback iframe is browser-owned. Its controls, keyboard behavior, and
+accessibility vary by browser and document type; Breeze cannot inspect or
+improve the embedded viewer&#39;s content. Use `mediaType=&quot;document&quot;` for other
+browser-renderable formats when embedding is appropriate. These document frames
+are sandboxed so embedded HTML or SVG cannot run scripts in the application.
+
+## Bundle measurement
+
+With Breeze UI&#39;s development pin `pdfjs-dist@6.3.289`, the measurements on
+2026-09-30 show the package and PDF.js engine as separate gzip payloads. The
+PDF.js figure sums the independently compressed main-thread and worker files.
+
+| Payload                                                                       |  Gzip size |
+| ----------------------------------------------------------------------------- | ---------: |
+| Breeze UI library JavaScript (package output; external dependencies excluded) |  39.05 KiB |
+| PDF.js engine JavaScript (main + worker, independently compressed)            | 634.60 KiB |
+
+## Actions
+
+The Download link is always available. Cross-origin sources are fetched as a
+blob so the requested filename is preserved; the file host must allow CORS from
+the application. If that request is blocked, the browser navigates to the
+original source in the current tab. Replace and Remove buttons appear only when
+their corresponding callbacks are provided, leaving mutation and confirmation
+flows in the application. Full screen appears only when the browser reports
+support for the native Fullscreen API.
+
+## API
+
+&lt;ArgTypes of={Stories.PdfWorker} /&gt;
+</code></pre></div>
+            </div>
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  no-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
   aria-label="Drawer">
   <div class="head">
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Drawer</h2>
       <div class="badges">
-        <label for="c-13-overlays-drawer-props" class="badge ok as-toggle">7 prop types</label>
+        <label for="c-15-overlays-drawer-props" class="badge ok as-toggle">7 prop types</label>
         
-        <label for="c-13-overlays-drawer-stories" class="badge ok as-toggle">1 story</label>
-        <label for="c-13-overlays-drawer-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-15-overlays-drawer-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-15-overlays-drawer-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -3796,10 +4436,10 @@ Enter and exit motion respects reduced-motion preferences. A closing surface imm
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-13-overlays-drawer-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-13-overlays-drawer-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-15-overlays-drawer-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-15-overlays-drawer-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-13-overlays-drawer-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-15-overlays-drawer-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -3946,15 +4586,205 @@ Enter and exit motion respects reduced-motion preferences. A closing surface imm
   no-story-error
   no-doc-error"
   role="listitem"
+  aria-label="FileDropZone">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> FileDropZone</h2>
+      <div class="badges">
+        <label for="c-16-forms-filedropzone-props" class="badge ok as-toggle">6 prop types</label>
+        
+        <label for="c-16-forms-filedropzone-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-16-forms-filedropzone-docs" class="badge ok as-toggle">1 doc</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/patterns/FileDropZone/FileDropZone.stories.tsx">forms-filedropzone · ./src/patterns/FileDropZone/FileDropZone.stories.tsx</div>
+    
+    <div class="hint">Accepts files through a drop area or an accessible file picker button.</div>
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-16-forms-filedropzone-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-16-forms-filedropzone-docs" class="tg tg-docs" type="checkbox" hidden />
+  
+  <input id="c-16-forms-filedropzone-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
+              <span class="badge ok">6 prop types</span>
+            </div>
+            <pre><code>Component: src/patterns/FileDropZone/FileDropZone.tsx::FileDropZone</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>/**
+ * Allowed file extensions and MIME types, in the native `accept` format.
+ */
+accept?: string
+
+/**
+ * Number of files already attached; used with `maxFiles` for total limits.
+ */
+currentFileCount?: number = 0
+
+/**
+ * Visible, accessible name for the drop area.
+ */
+label: string
+
+/**
+ * Maximum total number of attached files, including `currentFileCount`.
+ */
+maxFiles?: number
+
+/**
+ * Maximum size for one file, in bytes.
+ */
+maxSize?: number
+
+/**
+ * Reports only accepted files, without exposing a browser event.
+ */
+onFilesAdded: (files: readonly File[]) =&gt; void</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { FileDropZone } from "@motech-development/breeze-ui";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A labelled drop area and picker button with file type, size, and count limits.</div>
+              <pre><code>const Default = () =&gt; &lt;FileDropZone
+    accept=&quot;.pdf,image/*&quot;
+    label=&quot;Add attachments&quot;
+    maxFiles={4}
+    maxSize={5_000_000}
+    onFilesAdded={fn()} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Existing Files</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Existing attachments count toward the total limit.</div>
+              <pre><code>const WithExistingFiles = () =&gt; &lt;FileDropZone
+    accept=&quot;.pdf,image/*&quot;
+    label=&quot;Add attachments&quot;
+    maxFiles={4}
+    maxSize={5_000_000}
+    onFilesAdded={fn()}
+    currentFileCount={2} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Choose A File</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Selecting a supported file reports accepted files through the semantic callback.</div>
+              <pre><code>const ChooseAFile = () =&gt; &lt;FileDropZone
+    accept=&quot;.pdf,image/*&quot;
+    label=&quot;Add attachments&quot;
+    maxFiles={4}
+    maxSize={5_000_000}
+    onFilesAdded={fn()} /&gt;;</code></pre>
+            </div>
+        </div>
+    
+        <div class="panel panel-docs">
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Docs</span>
+                <span class="badge ok">doc ok</span>
+              </div>
+              <div class="hint">./src/patterns/FileDropZone/FileDropZone.mdx</div>
+              <div>Accepts files by drag and drop or through an accessible picker button, with visible validation feedback.</div>
+              <div class="mdx-content"><pre><code>import { ArgTypes, Canvas, Meta } from &#39;@storybook/addon-docs/blocks&#39;;
+import * as Stories from &#39;./FileDropZone.stories&#39;;
+
+&lt;Meta
+  of={Stories}
+  summary=&quot;Accepts files by drag and drop or through an accessible picker button, with visible validation feedback.&quot;
+/&gt;
+
+# FileDropZone
+
+`FileDropZone` accepts files through drag and drop or the **Choose files**
+button. The button opens a native file picker, so keyboard users can browse for
+files without dragging.
+
+&lt;Canvas of={Stories.Default} /&gt;
+
+## File limits
+
+Pass `accept` as a comma-separated list of file extensions and MIME types, such
+as `.pdf,image/*`. Dropped files are checked against the same rules. Set
+`maxSize` in bytes and `maxFiles` for the total attachment limit. When existing
+files are already attached, provide their number as `currentFileCount`.
+
+The component shows each rejection reason in visible text and announces the
+same message through a polite live region. Supported files are passed to
+`onFilesAdded` as a readonly array. The application owns the attachment state,
+upload, and storage work.
+
+Picker text, instructions, and feedback use the BreezeProvider `messages`
+override boundary. Translations retain the placeholders documented in the
+BreezeProvider locale section, and each message announces with its matching
+language.
+
+&lt;Canvas of={Stories.WithExistingFiles} /&gt;
+
+&lt;Canvas of={Stories.ChooseAFile} /&gt;
+
+## API
+
+&lt;ArgTypes of={Stories.Default} /&gt;
+</code></pre></div>
+            </div>
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  no-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
   aria-label="FormActions">
   <div class="head">
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> FormActions</h2>
       <div class="badges">
-        <label for="c-14-forms-formactions-props" class="badge ok as-toggle">2 prop types</label>
+        <label for="c-17-forms-formactions-props" class="badge ok as-toggle">2 prop types</label>
         
-        <label for="c-14-forms-formactions-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-14-forms-formactions-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-17-forms-formactions-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-17-forms-formactions-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -3967,10 +4797,10 @@ Enter and exit motion respects reduced-motion preferences. A closing surface imm
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-14-forms-formactions-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-14-forms-formactions-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-17-forms-formactions-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-17-forms-formactions-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-14-forms-formactions-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-17-forms-formactions-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -4087,10 +4917,10 @@ submit button. Both actions report visible feedback.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> FormSection</h2>
       <div class="badges">
-        <label for="c-15-forms-formsection-props" class="badge ok as-toggle">3 prop types</label>
+        <label for="c-18-forms-formsection-props" class="badge ok as-toggle">3 prop types</label>
         
-        <label for="c-15-forms-formsection-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-15-forms-formsection-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-18-forms-formsection-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-18-forms-formsection-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -4103,10 +4933,10 @@ submit button. Both actions report visible feedback.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-15-forms-formsection-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-15-forms-formsection-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-18-forms-formsection-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-18-forms-formsection-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-15-forms-formsection-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-18-forms-formsection-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -4246,10 +5076,10 @@ receives a unique id so its association stays local to its fieldset.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Grid</h2>
       <div class="badges">
-        <label for="c-16-layout-grid-props" class="badge ok as-toggle">6 prop types</label>
+        <label for="c-19-layout-grid-props" class="badge ok as-toggle">6 prop types</label>
         
-        <label for="c-16-layout-grid-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-16-layout-grid-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-19-layout-grid-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-19-layout-grid-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -4262,10 +5092,10 @@ receives a unique id so its association stays local to its fieldset.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-16-layout-grid-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-16-layout-grid-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-19-layout-grid-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-19-layout-grid-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-16-layout-grid-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-19-layout-grid-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -4405,10 +5235,10 @@ Loading belongs to the items inside the grid. Compose loading-capable children o
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Icon</h2>
       <div class="badges">
-        <label for="c-17-content-icon-props" class="badge ok as-toggle">3 prop types</label>
+        <label for="c-20-content-icon-props" class="badge ok as-toggle">3 prop types</label>
         
-        <label for="c-17-content-icon-stories" class="badge ok as-toggle">3 stories</label>
-        <label for="c-17-content-icon-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-20-content-icon-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-20-content-icon-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -4421,10 +5251,10 @@ Loading belongs to the items inside the grid. Compose loading-capable children o
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-17-content-icon-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-17-content-icon-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-20-content-icon-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-20-content-icon-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-17-content-icon-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-20-content-icon-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -4556,10 +5386,10 @@ Icons are decorative by default. Supply `label` only when the icon conveys meani
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> IconTile</h2>
       <div class="badges">
-        <label for="c-18-content-icontile-props" class="badge ok as-toggle">5 prop types</label>
+        <label for="c-21-content-icontile-props" class="badge ok as-toggle">5 prop types</label>
         
-        <label for="c-18-content-icontile-stories" class="badge ok as-toggle">3 stories</label>
-        <label for="c-18-content-icontile-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-21-content-icontile-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-21-content-icontile-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -4572,10 +5402,10 @@ Icons are decorative by default. Supply `label` only when the icon conveys meani
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-18-content-icontile-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-18-content-icontile-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-21-content-icontile-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-21-content-icontile-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-18-content-icontile-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-21-content-icontile-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -4718,10 +5548,10 @@ Artwork is decorative by default. Supply `label` only when no adjacent text name
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Inline</h2>
       <div class="badges">
-        <label for="c-19-layout-inline-props" class="badge ok as-toggle">7 prop types</label>
+        <label for="c-22-layout-inline-props" class="badge ok as-toggle">7 prop types</label>
         
-        <label for="c-19-layout-inline-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-19-layout-inline-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-22-layout-inline-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-22-layout-inline-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -4734,10 +5564,10 @@ Artwork is decorative by default. Supply `label` only when no adjacent text name
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-19-layout-inline-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-19-layout-inline-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-22-layout-inline-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-22-layout-inline-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-19-layout-inline-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-22-layout-inline-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -4885,10 +5715,10 @@ Loading belongs to the items inside the row. Compose loading-capable children or
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Link</h2>
       <div class="badges">
-        <label for="c-20-navigation-link-props" class="badge ok as-toggle">17 prop types</label>
+        <label for="c-23-navigation-link-props" class="badge ok as-toggle">17 prop types</label>
         
-        <label for="c-20-navigation-link-stories" class="badge ok as-toggle">4 stories</label>
-        <label for="c-20-navigation-link-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-23-navigation-link-stories" class="badge ok as-toggle">4 stories</label>
+        <label for="c-23-navigation-link-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -4901,10 +5731,10 @@ Loading belongs to the items inside the row. Compose loading-capable children or
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-20-navigation-link-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-20-navigation-link-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-23-navigation-link-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-23-navigation-link-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-20-navigation-link-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-23-navigation-link-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -5136,10 +5966,10 @@ The link&#39;s visible content is its accessible name by default. Use `aria-labe
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Menu</h2>
       <div class="badges">
-        <label for="c-21-overlays-menu-props" class="badge ok as-toggle">9 prop types</label>
+        <label for="c-24-overlays-menu-props" class="badge ok as-toggle">10 prop types</label>
         
-        <label for="c-21-overlays-menu-stories" class="badge ok as-toggle">3 stories</label>
-        <label for="c-21-overlays-menu-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-24-overlays-menu-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-24-overlays-menu-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -5152,10 +5982,10 @@ The link&#39;s visible content is its accessible name by default. Use `aria-labe
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-21-overlays-menu-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-21-overlays-menu-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-24-overlays-menu-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-24-overlays-menu-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-21-overlays-menu-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-24-overlays-menu-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -5165,7 +5995,7 @@ The link&#39;s visible content is its accessible name by default. Use `aria-labe
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
-              <span class="badge ok">9 prop types</span>
+              <span class="badge ok">10 prop types</span>
             </div>
             <pre><code>Component: src/primitives/Menu/Menu.tsx::Menu</code></pre>
             <pre><code>Props:</code></pre>
@@ -5211,6 +6041,11 @@ open?: boolean
  * Visible label for the button that opens the menu.
  */
 trigger: string
+
+/**
+ * Accessible name when it should differ from the visible trigger label.
+ */
+triggerAriaLabel?: string
 
 /**
  * Icon shown beside the trigger label.
@@ -5286,6 +6121,10 @@ import * as Stories from &#39;./Menu.stories&#39;;
 secondary actions, such as account settings, that should stay out of the main
 page until needed.
 
+When the visible trigger label is shared by several controls, set
+`triggerAriaLabel` to give each button a distinct accessible name while keeping
+the visible label concise.
+
 &lt;Canvas of={Stories.Default} /&gt;
 
 ## Loading the menu
@@ -5343,10 +6182,10 @@ focus to its trigger.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> NumberField</h2>
       <div class="badges">
-        <label for="c-22-forms-numberfield-props" class="badge ok as-toggle">21 prop types</label>
+        <label for="c-25-forms-numberfield-props" class="badge ok as-toggle">21 prop types</label>
         
-        <label for="c-22-forms-numberfield-stories" class="badge ok as-toggle">8 stories</label>
-        <label for="c-22-forms-numberfield-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-25-forms-numberfield-stories" class="badge ok as-toggle">8 stories</label>
+        <label for="c-25-forms-numberfield-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -5359,10 +6198,10 @@ focus to its trigger.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-22-forms-numberfield-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-22-forms-numberfield-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-25-forms-numberfield-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-25-forms-numberfield-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-22-forms-numberfield-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-25-forms-numberfield-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -5666,9 +6505,9 @@ input through `ref`.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> OverlaySurface</h2>
       <div class="badges">
-        <label for="c-23-foundations-overlay-stack-props" class="badge ok as-toggle">9 prop types</label>
-        <label for="c-23-foundations-overlay-stack-info" class="badge info as-toggle">1 info</label>
-        <label for="c-23-foundations-overlay-stack-stories" class="badge ok as-toggle">4 stories</label>
+        <label for="c-26-foundations-overlay-stack-props" class="badge ok as-toggle">13 prop types</label>
+        <label for="c-26-foundations-overlay-stack-info" class="badge info as-toggle">1 info</label>
+        <label for="c-26-foundations-overlay-stack-stories" class="badge ok as-toggle">4 stories</label>
         
         
       </div>
@@ -5681,11 +6520,11 @@ input through `ref`.
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-23-foundations-overlay-stack-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-23-foundations-overlay-stack-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-26-foundations-overlay-stack-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-26-foundations-overlay-stack-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
-  <input id="c-23-foundations-overlay-stack-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-26-foundations-overlay-stack-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -5702,7 +6541,7 @@ input through `ref`.
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
-              <span class="badge ok">9 prop types</span>
+              <span class="badge ok">13 prop types</span>
             </div>
             <pre><code>Component: src/overlays/OverlaySurface.tsx::default</code></pre>
             <pre><code>Props:</code></pre>
@@ -5711,12 +6550,16 @@ input through `ref`.
  */
 children: ReactNode
 
+closingTransition?: boolean = false
+
 defaultOpen?: boolean = false
 
 /**
  * Allows Escape and outside presses to close the surface. Defaults to true.
  */
 dismissible?: boolean = true
+
+fullScreen?: boolean = false
 
 kind: OverlayKind
 
@@ -5726,15 +6569,16 @@ open?: boolean
 
 placement?: &quot;bottom&quot; | &quot;end&quot; | &quot;start&quot; | &quot;top&quot; = bottom
 
+showHeader?: boolean = true
+
 /**
  * Visible and accessible surface title.
  */
 title: string
 
-/**
- * Label for the library-owned trigger button.
- */
-trigger: string</code></pre>
+trigger?: string
+
+viewerSurface?: boolean = false</code></pre>
           </div>
         </div>
     
@@ -5828,10 +6672,10 @@ trigger: string</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> PageHeader</h2>
       <div class="badges">
-        <label for="c-24-patterns-pageheader-props" class="badge ok as-toggle">3 prop types</label>
+        <label for="c-27-patterns-pageheader-props" class="badge ok as-toggle">3 prop types</label>
         
-        <label for="c-24-patterns-pageheader-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-24-patterns-pageheader-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-27-patterns-pageheader-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-27-patterns-pageheader-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -5844,10 +6688,10 @@ trigger: string</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-24-patterns-pageheader-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-24-patterns-pageheader-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-27-patterns-pageheader-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-27-patterns-pageheader-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-24-patterns-pageheader-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-27-patterns-pageheader-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -5969,10 +6813,10 @@ Pass application-owned controls through `actions`. Their labels, focus behavior 
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Popover</h2>
       <div class="badges">
-        <label for="c-25-overlays-popover-props" class="badge ok as-toggle">8 prop types</label>
+        <label for="c-28-overlays-popover-props" class="badge ok as-toggle">8 prop types</label>
         
-        <label for="c-25-overlays-popover-stories" class="badge ok as-toggle">1 story</label>
-        <label for="c-25-overlays-popover-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-28-overlays-popover-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-28-overlays-popover-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -5985,10 +6829,10 @@ Pass application-owned controls through `actions`. Their labels, focus behavior 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-25-overlays-popover-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-25-overlays-popover-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-28-overlays-popover-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-28-overlays-popover-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-25-overlays-popover-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-28-overlays-popover-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -6143,10 +6987,10 @@ Enter and exit motion respects reduced-motion preferences. A closing surface imm
     <div class="title">
       <h2><span class="status-dot dot-err"></span> RowList as ComponentType&lt;RowListProps&lt;unknown&gt;&gt;</h2>
       <div class="badges">
-        <label for="c-26-collections-rowlist-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-26-collections-rowlist-info" class="badge info as-toggle">1 info</label>
-        <label for="c-26-collections-rowlist-stories" class="badge ok as-toggle">6 stories</label>
-        <label for="c-26-collections-rowlist-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-29-collections-rowlist-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-29-collections-rowlist-info" class="badge info as-toggle">1 info</label>
+        <label for="c-29-collections-rowlist-stories" class="badge ok as-toggle">6 stories</label>
+        <label for="c-29-collections-rowlist-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -6157,10 +7001,10 @@ Enter and exit motion respects reduced-motion preferences. A closing surface imm
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-26-collections-rowlist-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-26-collections-rowlist-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-26-collections-rowlist-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-26-collections-rowlist-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-29-collections-rowlist-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-29-collections-rowlist-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-29-collections-rowlist-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-29-collections-rowlist-docs" class="tg tg-docs" type="checkbox" hidden />
   
   
 
@@ -6692,10 +7536,10 @@ without re-announcing existing rows.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Select</h2>
       <div class="badges">
-        <label for="c-27-forms-select-props" class="badge ok as-toggle">18 prop types</label>
+        <label for="c-30-forms-select-props" class="badge ok as-toggle">18 prop types</label>
         
-        <label for="c-27-forms-select-stories" class="badge ok as-toggle">6 stories</label>
-        <label for="c-27-forms-select-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-30-forms-select-stories" class="badge ok as-toggle">6 stories</label>
+        <label for="c-30-forms-select-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -6708,10 +7552,10 @@ without re-announcing existing rows.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-27-forms-select-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-27-forms-select-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-30-forms-select-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-30-forms-select-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-27-forms-select-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-30-forms-select-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -6991,10 +7835,10 @@ with the field. Keyboard navigation and focus management are built in.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Separator</h2>
       <div class="badges">
-        <label for="c-28-content-separator-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-31-content-separator-props" class="badge ok as-toggle">1 prop type</label>
         
-        <label for="c-28-content-separator-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-28-content-separator-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-31-content-separator-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-31-content-separator-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -7007,10 +7851,10 @@ with the field. Keyboard navigation and focus management are built in.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-28-content-separator-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-28-content-separator-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-31-content-separator-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-31-content-separator-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-28-content-separator-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-31-content-separator-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -7115,10 +7959,10 @@ The component exposes `role=&quot;separator&quot;` and the selected orientation.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Skeleton</h2>
       <div class="badges">
-        <label for="c-29-content-skeleton-props" class="badge ok as-toggle">4 prop types</label>
+        <label for="c-32-content-skeleton-props" class="badge ok as-toggle">4 prop types</label>
         
-        <label for="c-29-content-skeleton-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-29-content-skeleton-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-32-content-skeleton-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-32-content-skeleton-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -7131,10 +7975,10 @@ The component exposes `role=&quot;separator&quot;` and the selected orientation.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-29-content-skeleton-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-29-content-skeleton-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-32-content-skeleton-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-32-content-skeleton-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-29-content-skeleton-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-32-content-skeleton-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -7259,10 +8103,10 @@ Supply `label` when the skeleton owns the loading announcement. Omit it when a p
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> SkipLink</h2>
       <div class="badges">
-        <label for="c-30-accessibility-skiplink-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-33-accessibility-skiplink-props" class="badge ok as-toggle">1 prop type</label>
         
-        <label for="c-30-accessibility-skiplink-stories" class="badge ok as-toggle">1 story</label>
-        <label for="c-30-accessibility-skiplink-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-33-accessibility-skiplink-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-33-accessibility-skiplink-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -7275,10 +8119,10 @@ Supply `label` when the skeleton owns the loading announcement. Omit it when a p
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-30-accessibility-skiplink-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-30-accessibility-skiplink-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-33-accessibility-skiplink-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-33-accessibility-skiplink-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-30-accessibility-skiplink-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-33-accessibility-skiplink-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -7381,10 +8225,10 @@ Set `targetId` to the `id` of the page&#39;s main content landmark. Give that ta
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Stack</h2>
       <div class="badges">
-        <label for="c-31-layout-stack-props" class="badge ok as-toggle">5 prop types</label>
+        <label for="c-34-layout-stack-props" class="badge ok as-toggle">5 prop types</label>
         
-        <label for="c-31-layout-stack-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-31-layout-stack-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-34-layout-stack-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-34-layout-stack-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -7397,10 +8241,10 @@ Set `targetId` to the `id` of the page&#39;s main content landmark. Give that ta
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-31-layout-stack-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-31-layout-stack-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-34-layout-stack-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-34-layout-stack-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-31-layout-stack-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-34-layout-stack-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -7538,10 +8382,10 @@ Loading belongs to the items inside the stack. Compose loading-capable children 
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> StatePanel</h2>
       <div class="badges">
-        <label for="c-32-states-statepanel-props" class="badge ok as-toggle">5 prop types</label>
+        <label for="c-35-states-statepanel-props" class="badge ok as-toggle">5 prop types</label>
         
-        <label for="c-32-states-statepanel-stories" class="badge ok as-toggle">5 stories</label>
-        <label for="c-32-states-statepanel-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-35-states-statepanel-stories" class="badge ok as-toggle">5 stories</label>
+        <label for="c-35-states-statepanel-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -7554,10 +8398,10 @@ Loading belongs to the items inside the stack. Compose loading-capable children 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-32-states-statepanel-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-32-states-statepanel-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-35-states-statepanel-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-35-states-statepanel-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-32-states-statepanel-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-35-states-statepanel-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -7743,10 +8587,10 @@ describes the content.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> TextField</h2>
       <div class="badges">
-        <label for="c-33-forms-textfield-props" class="badge ok as-toggle">18 prop types</label>
+        <label for="c-36-forms-textfield-props" class="badge ok as-toggle">18 prop types</label>
         
-        <label for="c-33-forms-textfield-stories" class="badge ok as-toggle">8 stories</label>
-        <label for="c-33-forms-textfield-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-36-forms-textfield-stories" class="badge ok as-toggle">8 stories</label>
+        <label for="c-36-forms-textfield-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -7759,10 +8603,10 @@ describes the content.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-33-forms-textfield-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-33-forms-textfield-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-36-forms-textfield-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-36-forms-textfield-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-33-forms-textfield-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-36-forms-textfield-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -8042,10 +8886,10 @@ input through `ref`.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Toast</h2>
       <div class="badges">
-        <label for="c-34-feedback-toast-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-37-feedback-toast-props" class="badge ok as-toggle">1 prop type</label>
         
-        <label for="c-34-feedback-toast-stories" class="badge ok as-toggle">8 stories</label>
-        <label for="c-34-feedback-toast-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-37-feedback-toast-stories" class="badge ok as-toggle">8 stories</label>
+        <label for="c-37-feedback-toast-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -8058,10 +8902,10 @@ input through `ref`.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-34-feedback-toast-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-34-feedback-toast-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-37-feedback-toast-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-37-feedback-toast-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-34-feedback-toast-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-37-feedback-toast-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -8236,10 +9080,10 @@ The card stays 288px wide on desktop and mobile, aligned to the content gutter b
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Toggle</h2>
       <div class="badges">
-        <label for="c-35-actions-toggle-props" class="badge ok as-toggle">12 prop types</label>
+        <label for="c-38-actions-toggle-props" class="badge ok as-toggle">12 prop types</label>
         
-        <label for="c-35-actions-toggle-stories" class="badge ok as-toggle">6 stories</label>
-        <label for="c-35-actions-toggle-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-38-actions-toggle-stories" class="badge ok as-toggle">6 stories</label>
+        <label for="c-38-actions-toggle-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -8252,10 +9096,10 @@ The card stays 288px wide on desktop and mobile, aligned to the content gutter b
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-35-actions-toggle-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-35-actions-toggle-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-38-actions-toggle-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-38-actions-toggle-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-35-actions-toggle-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-38-actions-toggle-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -8488,10 +9332,10 @@ its pressed state and supports keyboard activation.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> ToggleGroup</h2>
       <div class="badges">
-        <label for="c-36-actions-togglegroup-props" class="badge ok as-toggle">11 prop types</label>
+        <label for="c-39-actions-togglegroup-props" class="badge ok as-toggle">11 prop types</label>
         
-        <label for="c-36-actions-togglegroup-stories" class="badge ok as-toggle">5 stories</label>
-        <label for="c-36-actions-togglegroup-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-39-actions-togglegroup-stories" class="badge ok as-toggle">5 stories</label>
+        <label for="c-39-actions-togglegroup-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -8504,10 +9348,10 @@ its pressed state and supports keyboard activation.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-36-actions-togglegroup-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-36-actions-togglegroup-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-39-actions-togglegroup-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-39-actions-togglegroup-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-36-actions-togglegroup-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-39-actions-togglegroup-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -8741,9 +9585,9 @@ interaction.
     <div class="title">
       <h2><span class="status-dot dot-err"></span> TransitionExample</h2>
       <div class="badges">
-        <label for="c-37-foundation-view-transitions-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-37-foundation-view-transitions-info" class="badge info as-toggle">1 info</label>
-        <label for="c-37-foundation-view-transitions-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-40-foundation-view-transitions-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-40-foundation-view-transitions-info" class="badge info as-toggle">1 info</label>
+        <label for="c-40-foundation-view-transitions-stories" class="badge ok as-toggle">1 story</label>
         
         
       </div>
@@ -8755,9 +9599,9 @@ interaction.
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-37-foundation-view-transitions-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-37-foundation-view-transitions-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-37-foundation-view-transitions-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-40-foundation-view-transitions-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-40-foundation-view-transitions-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-40-foundation-view-transitions-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
   
@@ -9146,10 +9990,10 @@ export const TypedParticipants: Story = {
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Typography</h2>
       <div class="badges">
-        <label for="c-38-content-typography-props" class="badge ok as-toggle">15 prop types</label>
+        <label for="c-41-content-typography-props" class="badge ok as-toggle">15 prop types</label>
         
-        <label for="c-38-content-typography-stories" class="badge ok as-toggle">4 stories</label>
-        <label for="c-38-content-typography-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-41-content-typography-stories" class="badge ok as-toggle">4 stories</label>
+        <label for="c-41-content-typography-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -9162,10 +10006,10 @@ export const TypedParticipants: Story = {
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-38-content-typography-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-38-content-typography-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-41-content-typography-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-41-content-typography-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-38-content-typography-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-41-content-typography-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -9427,10 +10271,10 @@ Set `loading` to preserve the text&#39;s place while its value is unavailable.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> VisuallyHidden</h2>
       <div class="badges">
-        <label for="c-39-content-visuallyhidden-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-42-content-visuallyhidden-props" class="badge ok as-toggle">1 prop type</label>
         
-        <label for="c-39-content-visuallyhidden-stories" class="badge ok as-toggle">1 story</label>
-        <label for="c-39-content-visuallyhidden-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-42-content-visuallyhidden-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-42-content-visuallyhidden-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -9443,10 +10287,10 @@ Set `loading` to preserve the text&#39;s place while its value is unavailable.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-39-content-visuallyhidden-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-39-content-visuallyhidden-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-42-content-visuallyhidden-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-42-content-visuallyhidden-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-39-content-visuallyhidden-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-42-content-visuallyhidden-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     

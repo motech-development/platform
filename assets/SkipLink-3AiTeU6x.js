@@ -1,0 +1,9 @@
+import{n as e}from"./rolldown-runtime-DaJ6WEGw.js";import{t}from"./jsx-runtime-cM__dR4X.js";import{i as n}from"./react-XnqUzw--.js";import{c as r,n as i,r as a,s as o}from"./blocks-zJh2FNJ3.js";import{t as s}from"./mdx-react-shim-y1jXGhTh.js";import{KeyboardNavigation as c,n as l,t as u}from"./SkipLink.stories-BpcV6zjG.js";function d(e){let t={code:`code`,h1:`h1`,h2:`h2`,p:`p`,...n(),...e.components};return(0,p.jsxs)(p.Fragment,{children:[(0,p.jsx)(o,{of:u,summary:`Lets keyboard users bypass repeated content and focus the main landmark.`}),`
+`,(0,p.jsx)(t.h1,{id:`skiplink`,children:`SkipLink`}),`
+`,(0,p.jsxs)(t.p,{children:[(0,p.jsx)(t.code,{children:`SkipLink`}),` is visually hidden until it receives keyboard focus. It uses the nearest `,(0,p.jsx)(t.code,{children:`BreezeProvider`}),` message for its accessible name and language.`]}),`
+`,(0,p.jsx)(a,{of:c}),`
+`,(0,p.jsx)(t.h2,{id:`choose-a-focusable-target`,children:`Choose a focusable target`}),`
+`,(0,p.jsxs)(t.p,{children:[`Set `,(0,p.jsx)(t.code,{children:`targetId`}),` to the `,(0,p.jsx)(t.code,{children:`id`}),` of the page's main content landmark. Give that target `,(0,p.jsx)(t.code,{children:`tabIndex={-1}`}),` so it can receive programmatic focus without adding it to the ordinary Tab order. The target ID must be unique in the document.`]}),`
+`,(0,p.jsxs)(t.p,{children:[(0,p.jsx)(t.code,{children:`ApplicationShell`}),` renders this link first and generates a unique, focusable main target for its children.`]}),`
+`,(0,p.jsx)(t.h2,{id:`api`,children:`API`}),`
+`,(0,p.jsx)(i,{of:c})]})}function f(e={}){let{wrapper:t}={...n(),...e.components};return t?(0,p.jsx)(t,{...e,children:(0,p.jsx)(d,{...e})}):d(e)}var p;e((()=>{p=t(),s(),r(),l()}))();export{f as default};
