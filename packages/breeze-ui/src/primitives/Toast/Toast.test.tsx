@@ -60,6 +60,56 @@ function VisibilityRaceExample({
   return <ToastTrigger />;
 }
 
+/** Captures each observer so a test can report a card's intersection ratio. */
+function stubIntersectionObserver() {
+  const observers: TestIntersectionObserver[] = [];
+  class TestIntersectionObserver {
+    callback: IntersectionObserverCallback;
+
+    observed: Element[] = [];
+
+    options: IntersectionObserverInit | undefined;
+
+    constructor(
+      callback: IntersectionObserverCallback,
+      options?: IntersectionObserverInit,
+    ) {
+      this.callback = callback;
+      this.options = options;
+      observers.push(this);
+    }
+
+    observe(element: Element) {
+      this.observed.push(element);
+    }
+
+    disconnect() {
+      this.observed = [];
+    }
+
+    emit(intersectionRatio: number) {
+      const [target] = this.observed;
+      if (!target) return;
+
+      act(() => {
+        this.callback(
+          [
+            {
+              intersectionRatio,
+              isIntersecting: intersectionRatio > 0,
+              target,
+            } as IntersectionObserverEntry,
+          ],
+          this as unknown as IntersectionObserver,
+        );
+      });
+    }
+  }
+  vi.stubGlobal('IntersectionObserver', TestIntersectionObserver);
+
+  return observers;
+}
+
 expectTypeOf<ToastEnqueue>().toEqualTypeOf<(message: string) => void>();
 expectTypeOf<ToastProps>().not.toHaveProperty('className');
 expectTypeOf<ToastProps>().not.toHaveProperty('style');
@@ -428,45 +478,7 @@ describe('Toast', () => {
 
   it('preserves the remaining lifetime while a card is clipped', () => {
     vi.useFakeTimers();
-
-    const observers: TestIntersectionObserver[] = [];
-    class TestIntersectionObserver {
-      callback: IntersectionObserverCallback;
-
-      disconnected = false;
-
-      observed: Element[] = [];
-
-      constructor(callback: IntersectionObserverCallback) {
-        this.callback = callback;
-        observers.push(this);
-      }
-
-      observe(element: Element) {
-        this.observed.push(element);
-      }
-
-      disconnect() {
-        this.disconnected = true;
-      }
-
-      emit(isVisible: boolean) {
-        const [target] = this.observed;
-        if (!target) return;
-
-        this.callback(
-          [
-            {
-              intersectionRatio: isVisible ? 1 : 0,
-              isIntersecting: isVisible,
-              target,
-            } as IntersectionObserverEntry,
-          ],
-          this as unknown as IntersectionObserver,
-        );
-      }
-    }
-    vi.stubGlobal('IntersectionObserver', TestIntersectionObserver);
+    const observers = stubIntersectionObserver();
 
     render(
       <BreezeProvider locale="en-GB" toastLimit={1}>
@@ -489,18 +501,18 @@ describe('Toast', () => {
     const observer = observers.find(({ observed }) => observed.length > 0);
     expect(observer).toBeDefined();
 
-    observer!.emit(true);
+    observer!.emit(1);
     act(() => {
       vi.advanceTimersByTime(1000);
     });
-    observer!.emit(false);
+    observer!.emit(0);
     act(() => {
       vi.advanceTimersByTime(1000);
     });
 
     expect(firstToast).toBeInTheDocument();
 
-    observer!.emit(true);
+    observer!.emit(1);
     act(() => {
       vi.advanceTimersByTime(1599);
     });
@@ -518,6 +530,42 @@ describe('Toast', () => {
 
     expect(firstToast).not.toBeInTheDocument();
     expect(screen.getByRole('status', { name: 'Second' })).toBeInTheDocument();
+  });
+
+  it('expires a card reported just below fully visible, but not a clipped one', () => {
+    vi.useFakeTimers();
+    const observers = stubIntersectionObserver();
+
+    render(
+      <BreezeProvider locale="en-GB" toastLimit={1}>
+        <ToastButtons messages={['First']} />
+      </BreezeProvider>,
+    );
+    act(() => {
+      screen.getByRole('button', { name: 'First' }).click();
+    });
+    act(() => {
+      vi.advanceTimersByTime(0);
+    });
+    act(() => {
+      vi.advanceTimersByTime(0);
+    });
+
+    const toast = screen.getByRole('status', { name: 'First' });
+    const observer = observers.find(({ observed }) => observed.length > 0);
+    expect(observer?.options?.threshold).toBeLessThan(1);
+
+    observer!.emit(0.9);
+    act(() => {
+      vi.advanceTimersByTime(5000);
+    });
+    expect(toast).toBeInTheDocument();
+
+    observer!.emit(0.995);
+    act(() => {
+      vi.advanceTimersByTime(2600);
+    });
+    expect(toast).not.toBeInTheDocument();
   });
 
   it('preserves a demoted card identity and remaining lifetime', () => {

@@ -86,7 +86,7 @@ describe('Overlay stack', () => {
     expect(upperLayer).toHaveAttribute('data-breeze-scrim', 'true');
   });
 
-  it('keeps the sheet mounted and its scrim owned while fullscreen is active', async () => {
+  it('leaves the sheet mounted, reachable and owning its scrim under fullscreen', async () => {
     renderBreeze(
       <Drawer title="Sheet" trigger="Open sheet">
         <OverlaySurface kind="fullscreen" title="Viewer" trigger="Open viewer">
@@ -104,7 +104,10 @@ describe('Overlay stack', () => {
     expect(sheet).toBeInTheDocument();
     fireEvent.scroll(sheet);
     expect(screen.getByRole('dialog', { name: 'Viewer' })).toBe(viewer);
-    expect(sheet.closest('[data-breeze-overlay]')).toHaveAttribute('inert');
+    // The non-modal trade-off recorded in ADR 0002: the covered sheet stays
+    // reachable by keyboard and assistive technology.
+    expect(sheet.closest('[data-breeze-overlay]')).not.toHaveAttribute('inert');
+    expect(screen.getByRole('dialog', { name: 'Sheet' })).toBe(sheet);
     expect(sheet.closest('[data-breeze-overlay]')).toHaveAttribute(
       'data-breeze-scrim',
       'true',
@@ -124,6 +127,75 @@ describe('Overlay stack', () => {
     expect(sheet.closest('[data-breeze-overlay]')).not.toHaveAttribute('inert');
     await userEvent.keyboard('{Escape}');
     await waitFor(() => expect(pageTrigger).toHaveFocus());
+  });
+
+  it('focuses an initially nested fullscreen surface and returns into the sheet', async () => {
+    renderBreeze(
+      <Drawer defaultOpen title="Sheet" trigger="Open sheet">
+        <OverlaySurface
+          defaultOpen
+          kind="fullscreen"
+          title="Viewer"
+          trigger="Open viewer"
+        >
+          Fullscreen content
+        </OverlaySurface>
+      </Drawer>,
+    );
+    const viewer = await screen.findByRole('dialog', { name: 'Viewer' });
+    await waitFor(() => expect(viewer).toHaveFocus());
+    const sheet = screen.getByRole('dialog', { name: 'Sheet' });
+    expect(sheet.closest('[data-breeze-overlay]')).not.toHaveAttribute('inert');
+
+    await userEvent.keyboard('{Escape}');
+    await waitFor(() =>
+      expect(
+        screen.queryByRole('dialog', { name: 'Viewer' }),
+      ).not.toBeInTheDocument(),
+    );
+    await waitFor(() =>
+      expect(sheet.contains(document.activeElement)).toBe(true),
+    );
+  });
+
+  it('returns a trigger-less controlled fullscreen surface to its opener in the sheet', async () => {
+    function Example() {
+      const [viewerOpen, setViewerOpen] = useState(false);
+      return (
+        <Drawer defaultOpen title="Sheet" trigger="Open sheet">
+          <Button onAction={() => setViewerOpen(true)}>View receipt</Button>
+          <OverlaySurface
+            kind="fullscreen"
+            onOpenChange={setViewerOpen}
+            open={viewerOpen}
+            showHeader={false}
+            title="Receipt"
+          >
+            Receipt content
+          </OverlaySurface>
+        </Drawer>
+      );
+    }
+
+    renderBreeze(<Example />);
+    const sheet = screen.getByRole('dialog', { name: 'Sheet' });
+    const sheetLayer = sheet.closest('[data-breeze-overlay]');
+    const opener = within(sheet).getByRole('button', { name: 'View receipt' });
+    await userEvent.click(opener);
+    const viewer = screen.getByRole('dialog', { name: 'Receipt' });
+    await waitFor(() => expect(viewer).toHaveFocus());
+    expect(sheetLayer).not.toHaveAttribute('inert');
+    expect(sheetLayer).toHaveAttribute('data-breeze-scrim', 'true');
+    expect(sheetLayer).toHaveAttribute('data-breeze-topmost', 'false');
+
+    await userEvent.keyboard('{Escape}');
+    await waitFor(() => expect(opener).toHaveFocus());
+    expect(
+      screen.queryByRole('dialog', { name: 'Receipt' }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole('dialog', { name: 'Sheet' })).toBe(sheet);
+    expect(sheetLayer).toHaveAttribute('data-breeze-scrim', 'true');
+    expect(sheetLayer).toHaveAttribute('data-breeze-topmost', 'true');
   });
 
   it.each(['popover', 'fullscreen'] as const)(
@@ -260,6 +332,95 @@ describe('Overlay stack', () => {
         '1',
       ),
     );
+  });
+
+  describe('page scroll lock', () => {
+    const pageOverflow = () => document.documentElement.style.overflow;
+    let setSheetOpen: (open: boolean) => void = () => {};
+    let setViewerOpen: (open: boolean) => void = () => {};
+    function Example({ inSheet }: Readonly<{ inSheet: boolean }>) {
+      const [sheetOpen, changeSheetOpen] = useState(false);
+      const [viewerOpen, changeViewerOpen] = useState(false);
+      setSheetOpen = changeSheetOpen;
+      setViewerOpen = changeViewerOpen;
+      const viewer = (
+        <OverlaySurface
+          kind="fullscreen"
+          onOpenChange={changeViewerOpen}
+          open={viewerOpen}
+          title="Viewer"
+        >
+          Fullscreen content
+        </OverlaySurface>
+      );
+      return inSheet ? (
+        <Drawer
+          onOpenChange={changeSheetOpen}
+          open={sheetOpen}
+          title="Sheet"
+          trigger="Open sheet"
+        >
+          {viewer}
+        </Drawer>
+      ) : (
+        viewer
+      );
+    }
+
+    it('locks a plain page while the viewer is open and releases it on close', async () => {
+      renderBreeze(<Example inSheet={false} />);
+      expect(pageOverflow()).toBe('');
+
+      act(() => setViewerOpen(true));
+      await screen.findByRole('dialog', { name: 'Viewer' });
+      expect(pageOverflow()).toBe('hidden');
+
+      act(() => setViewerOpen(false));
+      await waitFor(() =>
+        expect(screen.queryByRole('dialog')).not.toBeInTheDocument(),
+      );
+      expect(pageOverflow()).toBe('');
+    });
+
+    async function openSheetAndViewer() {
+      renderBreeze(<Example inSheet />);
+      act(() => setSheetOpen(true));
+      await screen.findByRole('dialog', { name: 'Sheet' });
+      expect(pageOverflow()).toBe('hidden');
+      act(() => setViewerOpen(true));
+      await screen.findByRole('dialog', { name: 'Viewer' });
+      expect(pageOverflow()).toBe('hidden');
+    }
+
+    async function closeSheet() {
+      act(() => setSheetOpen(false));
+      await waitFor(() =>
+        expect(screen.queryByRole('dialog')).not.toBeInTheDocument(),
+      );
+    }
+
+    it('keeps the sheet lock after the viewer closes and releases both after the sheet', async () => {
+      await openSheetAndViewer();
+
+      act(() => setViewerOpen(false));
+      await waitFor(() =>
+        expect(
+          screen.queryByRole('dialog', { name: 'Viewer' }),
+        ).not.toBeInTheDocument(),
+      );
+      expect(screen.getByRole('dialog', { name: 'Sheet' })).toBeVisible();
+      expect(pageOverflow()).toBe('hidden');
+
+      await closeSheet();
+      expect(pageOverflow()).toBe('');
+    });
+
+    it('releases both locks when the sheet closes before the viewer', async () => {
+      await openSheetAndViewer();
+
+      await closeSheet();
+      expect(pageOverflow()).toBe('');
+    });
   });
 
   it('unwinds sheet, fullscreen and popover in reverse order', async () => {

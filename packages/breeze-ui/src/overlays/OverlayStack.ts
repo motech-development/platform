@@ -15,6 +15,11 @@ interface Layer {
   visual: boolean;
 }
 
+/** Only modal layers make the layers beneath them inert and own a scrim. */
+function isModal(layer: Layer) {
+  return layer.kind === 'drawer' || layer.kind === 'dialog';
+}
+
 /** Breeze owns ordering; React Aria still owns modality, focus and animations. */
 export function createOverlayStack() {
   let layers: Layer[] = [];
@@ -117,17 +122,14 @@ export function useOverlayLayer(
   };
   const active = ordered.filter(isActive);
   const activeIndex = active.findIndex((layer) => layer.id === id);
+  // Non-modal popovers and full-screen surfaces leave the layers beneath them
+  // reachable; see ADR 0002 for the full-screen trade-off.
   const interactive =
-    open &&
-    activeIndex !== -1 &&
-    !active.slice(activeIndex + 1).some((layer) => layer.kind !== 'popover');
+    open && activeIndex !== -1 && !active.slice(activeIndex + 1).some(isModal);
   const topmost = open && active.at(-1)?.id === id;
-  const activeModal = active.findLast(
-    (layer) => layer.kind === 'drawer' || layer.kind === 'dialog',
-  );
+  const activeModal = active.findLast(isModal);
   const visualModal = ordered.findLast(
-    (layer) =>
-      layer.visual && (layer.kind === 'drawer' || layer.kind === 'dialog'),
+    (layer) => layer.visual && isModal(layer),
   );
   const scrim = (activeModal ?? visualModal)?.id === id;
 

@@ -9,7 +9,7 @@
     inset: 0;
     display: grid;
     place-items: center;
-    padding: 24px;
+    padding: var(--breeze-spacing-breeze-6);
     overflow: auto;
     background: transparent;
   }
@@ -48,12 +48,12 @@
   }
   :where([data-breeze-root]) .breeze-popover {
     inline-size: 320px;
-    max-inline-size: calc(100vw - 24px);
+    max-inline-size: calc(100vw - var(--breeze-spacing-breeze-6));
     outline: none;
   }
   @media (any-pointer: coarse) {
     :where([data-breeze-root]) .breeze-popover.breeze-date-picker-popover {
-      max-inline-size: calc(100vw - 8px);
+      max-inline-size: calc(100vw - var(--breeze-spacing-breeze-2));
     }
   }
   :where([data-breeze-root]) .breeze-fullscreen {
@@ -74,9 +74,19 @@
   :where([data-breeze-root]) .breeze-fullscreen[data-exiting] {
     animation: breeze-overlay-fade-out 160ms ease-in;
   }
+  /* An expand morph carries the motion alone. Without an animation, the kit
+     settles the entering surface and unmounts the exiting one at once, so
+     neither fades in the live page beside the morphing panel. */
+  @supports selector(:root:active-view-transition-type(expand)) {
+    :root:active-view-transition-type(expand)
+      :where([data-breeze-root])
+      .breeze-fullscreen:is([data-entering], [data-exiting]) {
+      animation: none;
+    }
+  }
 
   :where([data-breeze-root]) .breeze-overlay-content {
-    padding: 24px;
+    padding: var(--breeze-spacing-breeze-6);
     outline: none;
   }
 
@@ -90,14 +100,19 @@
 
   :where([data-breeze-root]) .breeze-toast-region {
     position: fixed;
-    z-index: 100;
     inset-block-start: 76px;
-    inset-inline-end: max(28px, calc((100vw - 1500px) / 2 + 28px));
+    inset-inline-end: max(
+      var(--breeze-spacing-breeze-7),
+      calc(
+        (100vw - var(--breeze-container-breeze-page)) / 2 +
+          var(--breeze-spacing-breeze-7)
+      )
+    );
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: var(--breeze-spacing-breeze-3);
     inline-size: 288px;
-    max-inline-size: calc(100vw - 32px);
+    max-inline-size: calc(100vw - var(--breeze-spacing-breeze-8));
     pointer-events: none;
   }
 
@@ -106,9 +121,9 @@
     align-items: flex-start;
     gap: 10px;
     inline-size: 288px;
-    max-inline-size: calc(100vw - 32px);
+    max-inline-size: calc(100vw - var(--breeze-spacing-breeze-8));
     box-sizing: border-box;
-    padding-block: 12px;
+    padding-block: var(--breeze-spacing-breeze-3);
     padding-inline: 14px;
     border: 1px solid
       color-mix(in srgb, var(--breeze-color-breeze-pos) 30%, transparent);
@@ -127,9 +142,9 @@
     color: var(--breeze-color-breeze-pos);
   }
 
-  @media (width < 901px) {
+  @variant max-breeze-md {
     :where([data-breeze-root]) .breeze-toast-region {
-      inset-inline-end: 16px;
+      inset-inline-end: var(--breeze-spacing-breeze-4);
     }
   }
 
@@ -147,8 +162,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 16px;
-    margin-block-end: 20px;
+    gap: var(--breeze-spacing-breeze-4);
+    margin-block-end: var(--breeze-spacing-breeze-5);
   }
   :where([data-breeze-root]) .breeze-overlay-title {
     margin: 0;
@@ -161,7 +176,7 @@
     justify-items: end;
   }
   :where([data-breeze-root]) .breeze-drawer {
-    inline-size: 610px;
+    inline-size: var(--breeze-spacing-breeze-sheet);
     block-size: 100%;
     border-radius: 0;
   }
