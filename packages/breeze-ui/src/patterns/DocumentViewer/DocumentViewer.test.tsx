@@ -536,6 +536,62 @@ describe('DocumentViewer', () => {
     );
   });
 
+  it('ignores an earlier download failure after a later attempt succeeds', async () => {
+    const revocationClock = installDownloadRevocationClock();
+    const remoteSource = 'https://files.example.test/attachments/report.pdf';
+    const earlierFetch = deferred<Response>();
+    const laterFetch = deferred<Response>();
+    const fetchMock = vi
+      .fn<typeof fetch>()
+      .mockReturnValueOnce(earlierFetch.promise)
+      .mockReturnValueOnce(laterFetch.promise);
+    vi.stubGlobal('fetch', fetchMock);
+    Object.defineProperty(URL, 'createObjectURL', {
+      configurable: true,
+      value: vi.fn(() => 'blob:http://localhost/report'),
+    });
+    const syntheticClicks: HTMLAnchorElement[] = [];
+    vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(
+      function mockAnchorClick(this: HTMLAnchorElement) {
+        if (this.hidden) syntheticClicks.push(this);
+      },
+    );
+
+    renderBreeze(
+      <TestDocumentViewer
+        initialOpen
+        mediaType="image"
+        src={remoteSource}
+        title="Quarterly report"
+      />,
+    );
+
+    const dialog = await screen.findByRole('dialog', {
+      name: 'Quarterly report',
+    });
+    const downloadLink = within(dialog).getByRole('link', { name: 'Download' });
+    fireEvent.click(downloadLink);
+    fireEvent.click(downloadLink);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+
+    await act(async () => {
+      laterFetch.resolve({
+        blob: () => Promise.resolve(new Blob(['report'])),
+        ok: true,
+      } as Response);
+      await laterFetch.promise;
+    });
+    expect(syntheticClicks).toHaveLength(1);
+
+    await act(async () => {
+      earlierFetch.reject(new TypeError('Cross-origin response is blocked.'));
+      await Promise.resolve();
+    });
+
+    expect(within(dialog).queryByRole('alert')).toBeNull();
+    revocationClock.flush();
+  });
+
   it('reports an expired presigned download in the viewer instead of navigating to it', async () => {
     const remoteSource =
       'https://files.example.test/attachments/report.pdf?X-Amz-Expires=30';

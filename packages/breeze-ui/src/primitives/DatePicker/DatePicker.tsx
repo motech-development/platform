@@ -505,18 +505,12 @@ export function DatePicker(props: Readonly<DatePickerProps>) {
 
     handleOpenChange(true);
   };
-  const reportChange = (nextValue: IsoCalendarDate | null) => {
+  const reportChange = (nextValue: IsoCalendarDate) => {
     if (value === undefined) {
       setUncontrolledValue(nextValue);
     }
 
-    // Only the optional form's callback accepts `null`.
-    if (selection.required === false) {
-      selection.onChange?.(nextValue);
-    } else if (nextValue !== null) {
-      selection.onChange?.(nextValue);
-    }
-
+    selection.onChange?.(nextValue);
     handleOpenChange(false);
   };
   const handleClear = () => {
@@ -528,7 +522,14 @@ export function DatePicker(props: Readonly<DatePickerProps>) {
       return;
     }
 
-    reportChange(null);
+    if (selection.required !== false) return;
+
+    if (value === undefined) {
+      setUncontrolledValue(null);
+    }
+
+    selection.onChange?.(null);
+    handleOpenChange(false);
   };
   const handleDateChange = (date: CalendarDate | null) => {
     if (

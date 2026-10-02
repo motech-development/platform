@@ -200,6 +200,18 @@ const signDisplay = {
   Intl.NumberFormatOptions['signDisplay']
 >;
 
+let supportedCurrencies: Set<string> | undefined;
+
+function getSupportedCurrencies(): Set<string> {
+  supportedCurrencies ??= new Set(
+    Intl.supportedValuesOf('currency').map((currency) =>
+      currency.toUpperCase(),
+    ),
+  );
+
+  return supportedCurrencies;
+}
+
 function formatCurrency(
   value: number,
   currency: string,
@@ -212,7 +224,10 @@ function formatCurrency(
     );
   }
 
-  if (!/^[A-Z]{3}$/i.test(currency)) {
+  if (
+    !/^[A-Z]{3}$/i.test(currency) ||
+    !getSupportedCurrencies().has(currency.toUpperCase())
+  ) {
     throw new RangeError(
       `Typography currency must be a three-letter ISO 4217 code; received "${currency}".`,
     );

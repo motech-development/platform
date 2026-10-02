@@ -1665,11 +1665,16 @@ export function DocumentViewer({
   const [failedDownloadKey, setFailedDownloadKey] = useState<string | null>(
     null,
   );
+  const downloadAttemptRef = useRef(0);
   const handleDownloadClick = (event: MouseEvent<HTMLAnchorElement>) => {
     const downloadKey = contentSourceKey;
+    downloadAttemptRef.current += 1;
+    const downloadAttempt = downloadAttemptRef.current;
     setFailedDownloadKey(null);
     downloadDocument(event, contentSrc, filename).catch(() => {
-      setFailedDownloadKey(downloadKey);
+      if (downloadAttempt === downloadAttemptRef.current) {
+        setFailedDownloadKey(downloadKey);
+      }
     });
   };
 

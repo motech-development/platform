@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { describe, expect, expectTypeOf, it } from 'vitest';
+import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import renderBreeze from '../../../test/render';
 import { BreezeProvider } from '../../provider/BreezeProvider';
 import { Typography, type TypographyProps } from './Typography';
@@ -24,6 +24,31 @@ expectTypeOf(loadingTypographyProps).toMatchTypeOf<
 expectTypeOf(readyTypographyProps).toMatchTypeOf<readonly TypographyProps[]>();
 
 describe('Typography', () => {
+  it('does not require supported currency values to import the public entry', async () => {
+    const descriptor = Object.getOwnPropertyDescriptor(
+      Intl,
+      'supportedValuesOf',
+    );
+
+    Object.defineProperty(Intl, 'supportedValuesOf', {
+      configurable: true,
+      value: undefined,
+    });
+
+    try {
+      vi.resetModules();
+      await expect(import('../../index')).resolves.toHaveProperty('Typography');
+    } finally {
+      if (descriptor) {
+        Object.defineProperty(Intl, 'supportedValuesOf', descriptor);
+      } else {
+        Reflect.deleteProperty(Intl, 'supportedValuesOf');
+      }
+
+      vi.resetModules();
+    }
+  });
+
   it('renders semantic interface text', () => {
     renderBreeze(
       <Typography element="h1" variant="heading">
@@ -150,6 +175,23 @@ describe('Typography', () => {
     ).toThrow(
       new RangeError(
         'Typography currency must be a three-letter ISO 4217 code; received "US".',
+      ),
+    );
+  });
+
+  it('rejects a three-letter code that is not a supported currency', () => {
+    expect(() =>
+      renderBreeze(
+        <Typography
+          currency="ZZZ"
+          format="currency"
+          value={10}
+          variant="money"
+        />,
+      ),
+    ).toThrow(
+      new RangeError(
+        'Typography currency must be a three-letter ISO 4217 code; received "ZZZ".',
       ),
     );
   });
