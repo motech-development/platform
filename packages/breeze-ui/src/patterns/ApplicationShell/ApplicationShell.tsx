@@ -23,25 +23,21 @@ const variants = {
     bottomNavSide: 'breeze:flex breeze:min-inline-0',
     brand:
       'breeze:flex breeze:min-inline-0 breeze:shrink-0 breeze:items-center',
-    context:
-      'breeze:min-inline-0 breeze:truncate breeze:border-s breeze:border-solid breeze:border-breeze-line breeze:ps-breeze-4',
+    context: 'breeze:min-inline-0 breeze:truncate',
+    divider:
+      'breeze:hidden breeze:block-breeze-5 breeze:inline-breeze-px breeze:shrink-0 breeze:bg-breeze-line breeze:breeze-md:block',
     // Clears the fixed bottom bar: 1px border, block padding and the 52px row.
-    main: 'breeze:mx-auto breeze:inline-full breeze:min-inline-0 breeze:max-inline-breeze-page breeze:ps-breeze-4 breeze:pe-breeze-4 breeze:pbe-[calc(var(--breeze-spacing-breeze-px)_+_var(--breeze-spacing-breeze-2)_+_var(--breeze-spacing-breeze-lg)_+_var(--breeze-spacing-breeze-2)_+_env(safe-area-inset-bottom))] breeze:breeze-lg:ps-breeze-7 breeze:breeze-lg:pe-breeze-7 breeze:breeze-lg:pbe-breeze-8',
+    main: 'breeze:mx-auto breeze:flex breeze:inline-full breeze:min-inline-0 breeze:max-inline-breeze-page breeze:flex-col breeze:gap-breeze-4 breeze:ps-breeze-4 breeze:pe-breeze-4 breeze:pbs-breeze-4 breeze:pbe-[calc(var(--breeze-spacing-breeze-px)_+_var(--breeze-spacing-breeze-2)_+_var(--breeze-spacing-breeze-lg)_+_var(--breeze-spacing-breeze-2)_+_env(safe-area-inset-bottom))] breeze:breeze-md:ps-breeze-7 breeze:breeze-md:pe-breeze-7 breeze:breeze-md:pbs-breeze-5 breeze:breeze-lg:pbe-[84px]',
     navLabel: 'breeze:min-inline-0 breeze:truncate',
     navMark:
       'breeze:absolute breeze:[inset-inline:0] breeze:[block-size:2px] breeze:bg-breeze-brand',
     topNav:
-      'breeze:hidden breeze:border-be breeze:border-solid breeze:border-breeze-line breeze:bg-breeze-surface breeze:breeze-lg:block',
-    topNavInner:
-      'breeze:mx-auto breeze:flex breeze:min-block-breeze-lg breeze:inline-full breeze:max-inline-breeze-page breeze:items-stretch breeze:gap-breeze-6 breeze:ps-breeze-4 breeze:pe-breeze-4 breeze:breeze-lg:ps-breeze-7 breeze:breeze-lg:pe-breeze-7',
+      'breeze:hidden breeze:block-breeze-tap breeze:items-center breeze:border-be breeze:border-solid breeze:border-breeze-line breeze:bg-breeze-surface breeze:ps-breeze-5 breeze:pe-breeze-5 breeze:breeze-lg:flex',
     topNavLink:
-      'breeze:relative breeze:inline-flex breeze:min-block-breeze-lg breeze:min-inline-0 breeze:shrink-0 breeze:items-center breeze:gap-breeze-2 breeze:rounded-breeze-sm breeze:font-breeze-sans breeze:text-breeze-sm breeze:font-medium breeze:text-breeze-ink-2 breeze:no-underline breeze:transition-colors breeze:hover:text-breeze-ink breeze:focus-visible:outline-2 breeze:focus-visible:outline-solid breeze:focus-visible:outline-breeze-brand',
-    topNavLinkCurrent: 'breeze:text-breeze-brand-text',
+      'breeze:relative breeze:flex breeze:block-breeze-tap breeze:min-inline-0 breeze:shrink-0 breeze:items-center breeze:gap-breeze-2 breeze:mx-breeze-2 breeze:rounded-breeze-sm breeze:font-breeze-sans breeze:text-breeze-sm breeze:font-medium breeze:text-breeze-ink-3 breeze:no-underline breeze:transition-colors breeze:hover:text-breeze-ink breeze:focus-visible:outline-2 breeze:focus-visible:outline-solid breeze:focus-visible:outline-breeze-brand breeze:aria-[current=page]:font-semibold breeze:aria-[current=page]:text-breeze-ink',
     topNavMark: 'breeze:[inset-block-end:0]',
     topbar:
-      'breeze:sticky breeze:[inset-block-start:0] breeze:z-30 breeze:border-be breeze:border-solid breeze:border-breeze-line breeze:bg-breeze-surface',
-    topbarInner:
-      'breeze:mx-auto breeze:flex breeze:min-block-breeze-lg breeze:inline-full breeze:max-inline-breeze-page breeze:min-inline-0 breeze:items-center breeze:gap-breeze-4 breeze:ps-breeze-4 breeze:pe-breeze-4 breeze:breeze-lg:ps-breeze-7 breeze:breeze-lg:pe-breeze-7',
+      'breeze:sticky breeze:[inset-block-start:0] breeze:z-30 breeze:flex breeze:block-[56px] breeze:items-center breeze:gap-[10px] breeze:border-be breeze:border-solid breeze:border-breeze-line breeze:bg-breeze-surface breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:py-breeze-2 breeze:breeze-md:gap-breeze-4 breeze:breeze-md:ps-breeze-5 breeze:breeze-md:pe-breeze-5',
     topbarSlots:
       'breeze:ms-auto breeze:flex breeze:min-inline-0 breeze:shrink-0 breeze:items-center breeze:gap-breeze-3',
   },
@@ -113,10 +109,7 @@ function NavigationLink({
     placement === 'top'
       ? variants.base.topNavLink
       : variants.base.bottomNavLink,
-    current &&
-      (placement === 'top'
-        ? variants.base.topNavLinkCurrent
-        : variants.base.bottomNavLinkCurrent),
+    current && placement === 'bottom' && variants.base.bottomNavLinkCurrent,
   ]
     .filter(Boolean)
     .join(' ');
@@ -179,13 +172,12 @@ export function ApplicationShell<T>({
       <SkipLink targetId={mainId} />
 
       <header className={variants.base.topbar} ref={topbarRef}>
-        <div className={variants.base.topbarInner}>
-          <div className={variants.base.brand}>{brand}</div>
-          <div className={variants.base.context}>{context}</div>
-          <div className={variants.base.topbarSlots}>
-            {notifications}
-            {account}
-          </div>
+        <div className={variants.base.brand}>{brand}</div>
+        <span aria-hidden="true" className={variants.base.divider} />
+        <div className={variants.base.context}>{context}</div>
+        <div className={variants.base.topbarSlots}>
+          {notifications}
+          {account}
         </div>
       </header>
 
@@ -195,17 +187,15 @@ export function ApplicationShell<T>({
         lang={getMessageLocale('primaryNavigation')}
         ref={topnavRef}
       >
-        <div className={variants.base.topNavInner}>
-          {navigationItems.map((item) => (
-            <NavigationLink
-              current={item.id === currentItem}
-              item={item}
-              key={item.id}
-              placement="top"
-              router={router}
-            />
-          ))}
-        </div>
+        {navigationItems.map((item) => (
+          <NavigationLink
+            current={item.id === currentItem}
+            item={item}
+            key={item.id}
+            placement="top"
+            router={router}
+          />
+        ))}
       </nav>
 
       <main className={variants.base.main} id={mainId} tabIndex={-1}>

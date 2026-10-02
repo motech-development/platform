@@ -45,7 +45,7 @@ The anchors keep native link behavior. When a same-document router is configured
 
 ## Provide the application slots
 
-`brand`, `context`, `notifications` and `account` accept `ReactNode`. Their content and semantics belong to the application: label interactive controls, keep keyboard behavior usable and provide accessible names for icon-only controls. `children` is rendered inside the shell's main landmark.
+`brand`, `context`, `notifications` and `account` accept `ReactNode`. Their content and semantics belong to the application: label interactive controls, keep keyboard behavior usable and provide accessible names for icon-only controls. `children` is rendered inside the shell's main landmark, stacked with a 16px gap. From Breeze's private `md` breakpoint (901px), a divider separates `brand` from `context`.
 
 `action` is required. It renders as a circular, icon-only `IconButton`: `icon` selects curated Breeze artwork, `label` is its accessible name, and `onAction` performs the application-owned operation.
 

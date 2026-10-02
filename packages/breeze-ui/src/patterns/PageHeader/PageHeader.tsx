@@ -8,7 +8,7 @@ const variants = {
       'breeze:flex breeze:min-inline-0 breeze:flex-wrap breeze:items-center breeze:gap-breeze-3 breeze:breeze-md:shrink-0',
     content: 'breeze:min-inline-0',
     header:
-      'breeze:flex breeze:min-inline-0 breeze:flex-wrap breeze:items-center breeze:justify-between breeze:gap-[10px] breeze:pbe-breeze-4 breeze:breeze-md:flex-nowrap breeze:breeze-md:gap-breeze-4',
+      'breeze:flex breeze:min-inline-0 breeze:flex-wrap breeze:items-center breeze:justify-between breeze:gap-[10px] breeze:breeze-md:flex-nowrap breeze:breeze-md:gap-breeze-4',
     title:
       'breeze:m-0 breeze:font-breeze-sans breeze:text-breeze-2xl breeze:font-semibold breeze:tracking-breeze-tighter breeze:text-breeze-ink',
   },

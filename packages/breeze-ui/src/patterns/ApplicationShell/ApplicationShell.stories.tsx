@@ -86,25 +86,23 @@ function ShellExample() {
         items={sections}
         notifications={<button type="button">Notifications</button>}
       >
-        <div className="breeze-story-stack" data-testid="shell-content">
-          <PageHeader
-            description="Shared navigation around application-owned page content."
-            title={currentSection.label}
-          />
-          <p role="status" data-testid="route-status">
-            {`${currentHref} · ${transitionTypes}`}
-          </p>
-          <p>Created items: {createdCount}</p>
-          <section aria-label="Recent updates" style={{ minHeight: '48rem' }}>
-            <h2>Recent updates</h2>
-            <ul>
-              <li>Planning notes were updated this morning.</li>
-              <li>A shared draft is ready for review.</li>
-              <li>The next project milestone is approaching.</li>
-            </ul>
-          </section>
-          <p data-testid="last-content">End of the page content.</p>
-        </div>
+        <PageHeader
+          description="Shared navigation around application-owned page content."
+          title={currentSection.label}
+        />
+        <p role="status" data-testid="route-status">
+          {`${currentHref} · ${transitionTypes}`}
+        </p>
+        <p>Created items: {createdCount}</p>
+        <section aria-label="Recent updates" style={{ minHeight: '48rem' }}>
+          <h2>Recent updates</h2>
+          <ul>
+            <li>Planning notes were updated this morning.</li>
+            <li>A shared draft is ready for review.</li>
+            <li>The next project milestone is approaching.</li>
+          </ul>
+        </section>
+        <p data-testid="last-content">End of the page content.</p>
       </ApplicationShell>
     </BreezeProvider>
   );
@@ -199,6 +197,36 @@ export const Default: Story = {
 
         if (width < 1181) {
           await expect(navigation.getBoundingClientRect().bottom).toBe(height);
+        } else {
+          const current = within(navigation).getByRole('link', {
+            current: 'page',
+          });
+          const other = within(navigation).getByRole('link', {
+            name: 'Projects',
+          });
+          const topbar = canvasElement.querySelector(
+            '[data-breeze-transition-name="breeze-topbar"]',
+          );
+
+          if (!topbar) throw new Error('Missing ApplicationShell top bar.');
+
+          await expect(topbar.getBoundingClientRect().height).toBe(56);
+          const pageHeader = canvas
+            .getByRole('heading', { level: 1 })
+            .closest('header');
+
+          if (!pageHeader) throw new Error('Missing PageHeader landmark.');
+
+          await expect(
+            canvas.getByTestId('route-status').getBoundingClientRect().top -
+              pageHeader.getBoundingClientRect().bottom,
+          ).toBe(16);
+          await expect(navigation.getBoundingClientRect().height).toBe(44);
+          await expect(view.getComputedStyle(current).fontWeight).toBe('600');
+          await expect(view.getComputedStyle(other).fontWeight).toBe('500');
+          await expect(view.getComputedStyle(current).color).not.toBe(
+            view.getComputedStyle(other).color,
+          );
         }
 
         await expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(
