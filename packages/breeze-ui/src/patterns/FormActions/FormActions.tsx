@@ -4,7 +4,7 @@ import { useBreezeContext } from '../../provider/BreezeContext';
 const variants = {
   base: {
     actions:
-      'breeze:flex breeze:min-inline-size-0 breeze:flex-wrap breeze:items-center breeze:gap-breeze-3',
+      'breeze:flex breeze:min-inline-0 breeze:flex-wrap breeze:items-center breeze:gap-breeze-3',
   },
   compound: {},
   size: {},
