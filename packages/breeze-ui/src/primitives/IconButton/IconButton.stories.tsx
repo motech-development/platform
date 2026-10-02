@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useState } from 'react';
+import { expect, within } from 'storybook/test';
 import type { ControlSize } from '../Button/Button';
 import {
   IconButton,
@@ -32,6 +33,23 @@ export const Default: Story = {};
 
 /** Every treatment at each size. */
 export const TreatmentsAndSizes: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    const edges = sizes.map((size) => {
+      const { height, width } = canvas
+        .getByRole('button', { name: `More actions, secondary ${size}` })
+        .getBoundingClientRect();
+
+      return [height, width];
+    });
+
+    await expect(edges).toEqual([
+      [32, 32],
+      [36, 36],
+      [52, 52],
+    ]);
+  },
   render: () => (
     <div className="breeze-story-stack">
       {sizes.map((size) => (

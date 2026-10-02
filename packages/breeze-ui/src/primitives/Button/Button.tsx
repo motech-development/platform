@@ -11,17 +11,25 @@ import { useBreezeContext } from '../../provider/BreezeContext';
 const variants = {
   base: {
     button:
-      'breeze:relative breeze:inline-grid breeze:items-center breeze:justify-center breeze:gap-breeze-2 breeze:border breeze:border-solid breeze:rounded-breeze-ctl breeze:font-breeze-sans breeze:text-breeze-sm breeze:leading-breeze-snug breeze:cursor-pointer breeze:select-none breeze:[text-align:center] breeze:outline-offset-2 breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:any-pointer-coarse:min-block-breeze-tap breeze:any-pointer-coarse:min-inline-breeze-tap',
+      'breeze:relative breeze:inline-grid breeze:items-center breeze:justify-center breeze:gap-breeze-2 breeze:border breeze:border-solid breeze:rounded-breeze-ctl breeze:font-breeze-sans breeze:font-semibold breeze:leading-breeze-snug breeze:cursor-pointer breeze:select-none breeze:[text-align:center] breeze:outline-offset-2 breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:any-pointer-coarse:min-block-breeze-tap breeze:any-pointer-coarse:min-inline-breeze-tap',
     label: 'breeze:[grid-area:1/1]',
     skeleton:
       'breeze:[grid-area:1/1] breeze:inline-full breeze:block-breeze-3 breeze:rounded-breeze-xs',
   },
   // Treatments, states and loading fills are shared with IconButton.
-  compound: {},
+  compound: {
+    // The design pads the filled primary wider than the other md treatments.
+    md: {
+      danger: 'breeze:ps-breeze-3 breeze:pe-breeze-3',
+      primary: 'breeze:ps-[14px] breeze:pe-[14px]',
+      quiet: 'breeze:ps-breeze-3 breeze:pe-breeze-3',
+      secondary: 'breeze:ps-breeze-3 breeze:pe-breeze-3',
+    },
+  },
   size: {
-    lg: 'breeze:min-block-breeze-lg breeze:ps-breeze-5 breeze:pe-breeze-5 breeze:py-breeze-3',
-    md: 'breeze:min-block-breeze-md breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:py-breeze-2',
-    sm: 'breeze:min-block-breeze-sm breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:py-breeze-1',
+    lg: 'breeze:min-block-breeze-lg breeze:ps-breeze-5 breeze:pe-breeze-5 breeze:py-breeze-3 breeze:text-breeze-sm',
+    md: 'breeze:min-block-breeze-9 breeze:text-breeze-sm',
+    sm: 'breeze:min-block-breeze-8 breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:text-breeze-xs',
   },
   state: {},
   variant: {},
@@ -29,7 +37,7 @@ const variants = {
 
 export type { ButtonVariant } from '../../buttons/button.styles';
 
-/** Shared control sizes: 34, 38 and 52px, with a 44px coarse-pointer floor. */
+/** Shared control size scale, with a 44px coarse-pointer floor. */
 export type ControlSize = 'sm' | 'md' | 'lg';
 
 export interface ButtonProps {
@@ -102,6 +110,7 @@ export function Button({
     variants.base.button,
     buttonVariants.variant[variant],
     variants.size[size],
+    size === 'md' && variants.compound.md[variant],
     disabled && buttonVariants.state.disabled,
     loading && buttonVariants.state.loading,
   ]

@@ -22,8 +22,8 @@ const variants = {
   compound: {},
   size: {
     lg: 'breeze:min-block-breeze-lg breeze:min-inline-breeze-lg',
-    md: 'breeze:min-block-breeze-md breeze:min-inline-breeze-md',
-    sm: 'breeze:min-block-breeze-sm breeze:min-inline-breeze-sm',
+    md: 'breeze:min-block-breeze-9 breeze:min-inline-breeze-9',
+    sm: 'breeze:min-block-breeze-8 breeze:min-inline-breeze-8',
   },
   state: {},
   variant: {
@@ -65,7 +65,7 @@ export interface IconButtonProps {
   ref?: Ref<HTMLButtonElement>;
   /** Selects a rounded square or a circle. Defaults to `square`. */
   shape?: IconButtonShape;
-  /** Selects the button's dimensions: 34, 38 or 52px square. Defaults to `md`. */
+  /** Selects the button's dimensions: 32, 36 or 52px square. Defaults to `md`. */
   size?: ControlSize;
   /** Selects the button's visual and semantic treatment. Defaults to `secondary`. */
   variant?: IconButtonVariant;
