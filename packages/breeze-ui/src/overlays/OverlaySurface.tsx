@@ -1,4 +1,6 @@
 import {
+  createElement,
+  type ReactNode,
   useCallback,
   useContext,
   useEffect,
@@ -9,10 +11,13 @@ import {
 } from 'react';
 import { FocusScope } from 'react-aria/FocusScope';
 import { usePreventScroll } from 'react-aria/usePreventScroll';
+import { Button as AriaButton } from 'react-aria-components/Button';
 import { Dialog as AriaDialog } from 'react-aria-components/Dialog';
 import { Modal, ModalOverlay } from 'react-aria-components/Modal';
 import { Popover as AriaPopover } from 'react-aria-components/Popover';
+import { buttonVariants } from '../buttons/button.styles';
 import { Button } from '../primitives/Button/Button';
+import { Icon } from '../primitives/Icon/Icon';
 import { useBreezeContext } from '../provider/BreezeContext';
 import type { OverlayKind, OverlayProps } from './overlay.types';
 import { useOverlayPortal } from './OverlayProvider';
@@ -20,7 +25,15 @@ import { ParentOverlayContext, useOverlayLayer } from './OverlayStack';
 
 const variants = {
   base: {
+    // The design's close is an outlined icon button wider than IconButton's square.
+    close:
+      'breeze:inline-flex breeze:shrink-0 breeze:items-center breeze:justify-center breeze:block-breeze-8 breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:border breeze:border-solid breeze:rounded-breeze-ctl breeze:cursor-pointer breeze:select-none breeze:outline-offset-2 breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:any-pointer-coarse:min-block-breeze-tap breeze:any-pointer-coarse:min-inline-breeze-tap breeze:[&>svg]:block-[14px] breeze:[&>svg]:inline-[14px]',
     content: 'breeze-overlay-content',
+    drawerBody: 'breeze-drawer-body',
+    drawerContent: 'breeze-drawer-content',
+    drawerFooter: 'breeze-drawer-footer',
+    drawerFooterGroup: 'breeze-drawer-footer-group',
+    drawerSummary: 'breeze-drawer-summary',
     header: 'breeze-overlay-header',
     title: 'breeze-overlay-title',
     viewerContent: 'breeze-document-viewer-overlay-content',
@@ -59,6 +72,9 @@ function OverlaySurface({
   children,
   defaultOpen = false,
   dismissible = true,
+  footerActions,
+  footerStart,
+  footerSummary,
   kind,
   onOpenChange,
   open: controlledOpen,
@@ -73,6 +89,9 @@ function OverlaySurface({
     open?: boolean;
     defaultOpen?: boolean;
     closingTransition?: boolean;
+    footerActions?: ReactNode;
+    footerStart?: ReactNode;
+    footerSummary?: string;
     showHeader?: boolean;
     viewerSurface?: boolean;
     onOpenChange?: (open: boolean) => void;
@@ -351,22 +370,53 @@ function OverlaySurface({
     () => ({ id: layer.id, open, restoreFocus }),
     [layer.id, open, restoreFocus],
   );
-  const contentClassName = viewerSurface
-    ? `${variants.base.content} ${variants.base.viewerContent}`
-    : variants.base.content;
+  const drawer = kind === 'drawer';
+  const contentClassName = [
+    variants.base.content,
+    viewerSurface && variants.base.viewerContent,
+    drawer && variants.base.drawerContent,
+  ]
+    .filter(Boolean)
+    .join(' ');
   const body = (
     <>
       {showHeader ? (
         <div className={variants.base.header}>
           <h2 className={variants.base.title}>{title}</h2>
-          <span lang={getMessageLocale('close')}>
-            <Button onAction={() => changeOpen(false)} variant="quiet">
-              {messages.close}
-            </Button>
-          </span>
+          <AriaButton
+            aria-label={messages.close}
+            className={`${variants.base.close} ${buttonVariants.variant.secondary}`}
+            onPress={() => changeOpen(false)}
+            render={(buttonProps) =>
+              createElement('button', {
+                ...buttonProps,
+                lang: getMessageLocale('close'),
+                type: 'button',
+              })
+            }
+          >
+            <Icon name="close" size="sm" />
+          </AriaButton>
         </div>
       ) : null}
-      {children}
+      {drawer ? (
+        <div className={variants.base.drawerBody}>{children}</div>
+      ) : (
+        children
+      )}
+      {drawer && (footerStart || footerSummary || footerActions) ? (
+        <footer className={variants.base.drawerFooter}>
+          {footerStart ? (
+            <div className={variants.base.drawerFooterGroup}>{footerStart}</div>
+          ) : null}
+          <span className={variants.base.drawerSummary}>{footerSummary}</span>
+          {footerActions ? (
+            <div className={variants.base.drawerFooterGroup}>
+              {footerActions}
+            </div>
+          ) : null}
+        </footer>
+      ) : null}
     </>
   );
   const section = (

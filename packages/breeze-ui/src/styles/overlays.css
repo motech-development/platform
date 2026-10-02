@@ -176,7 +176,66 @@
   :where([data-breeze-root]) .breeze-drawer {
     inline-size: var(--breeze-spacing-breeze-sheet);
     block-size: 100%;
+    border-width: 0;
+    border-inline-start-width: 1px;
     border-radius: 0;
+  }
+  :where([data-breeze-root]) .breeze-drawer-content {
+    display: flex;
+    flex-direction: column;
+    block-size: 100%;
+    min-block-size: 0;
+    padding: 0;
+  }
+  :where([data-breeze-root]) .breeze-drawer-content > .breeze-overlay-header {
+    flex-shrink: 0;
+    gap: var(--breeze-spacing-breeze-3);
+    margin-block-end: 0;
+    padding-block: 14px;
+    padding-inline: var(--breeze-spacing-breeze-5);
+    border-block-end: 1px solid var(--breeze-color-breeze-line);
+  }
+  :where([data-breeze-root]) .breeze-drawer-content .breeze-overlay-title {
+    flex-grow: 1;
+    font-size: var(--breeze-text-breeze-md);
+  }
+  :where([data-breeze-root]) .breeze-drawer-body {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    gap: 14px;
+    min-block-size: 0;
+    overflow: auto;
+    padding-block: var(--breeze-spacing-breeze-4);
+    padding-inline: var(--breeze-spacing-breeze-5);
+  }
+  :where([data-breeze-root]) .breeze-drawer-footer {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: var(--breeze-spacing-breeze-2);
+    padding-block: var(--breeze-spacing-breeze-3);
+    padding-inline: var(--breeze-spacing-breeze-5);
+    border-block-start: 1px solid var(--breeze-color-breeze-line);
+    background: var(--breeze-color-breeze-raised);
+  }
+  :where([data-breeze-root]) .breeze-drawer-footer-group {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: var(--breeze-spacing-breeze-2);
+  }
+  /* Also the spacer that keeps the actions at the end when there is no summary. */
+  :where([data-breeze-root]) .breeze-drawer-summary {
+    flex: 1 1 0%;
+    min-inline-size: 0;
+    overflow: hidden;
+    color: var(--breeze-color-breeze-ink-3);
+    font-size: var(--breeze-text-breeze-xs);
+    font-weight: 400;
+    line-height: calc(1 / 0.75);
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   :where([data-breeze-root]) .breeze-overlay-backdrop[data-entering] {
@@ -206,16 +265,18 @@
     }
   }
 
-  @media (width < 768px) {
+  @variant max-breeze-md {
     :where([data-breeze-root]) [data-breeze-overlay='drawer'] {
       align-items: end;
     }
     :where([data-breeze-root]) .breeze-drawer {
       inline-size: 100%;
-      block-size: auto;
-      max-block-size: 90dvh;
-      border-start-start-radius: var(--breeze-radius-breeze-panel);
-      border-start-end-radius: var(--breeze-radius-breeze-panel);
+      border-width: 0;
+    }
+  }
+  /* The design's sheet docks below md but only rises from the bottom below 768px. */
+  @media (width < 768px) {
+    :where([data-breeze-root]) .breeze-drawer {
       --breeze-drawer-x: 0;
       --breeze-drawer-y: 100%;
     }
