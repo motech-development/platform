@@ -91,11 +91,7 @@ interface CurrencyTypographyContent extends TypographyBaseProps {
   dateStyle?: never;
   /** Formats `value` as locale-aware currency. */
   format: 'currency';
-  /**
-   * Controls whether the formatted amount displays its sign. Defaults to `auto`,
-   * which signs negative amounts only; `always` also signs positive amounts.
-   * Zero is never signed.
-   */
+  /** Controls the sign: `auto` signs negatives, `always` positives too; zero never. Defaults to `auto`. */
   sign?: 'always' | 'auto' | 'never';
   /** Uses the dedicated money text role required for currency formatting. */
   variant: 'money';
@@ -194,7 +190,7 @@ function getDefaultElement(variant: TypographyVariant): TypographyElement {
   return 'span';
 }
 
-/** Zero, including negative zero and amounts that round to zero, is never signed. */
+// Zero, negative zero and amounts that round to zero are never signed.
 const signDisplay = {
   always: 'exceptZero',
   auto: 'negative',
@@ -222,8 +218,7 @@ function formatCurrency(
     );
   }
 
-  // BreezeProvider rejects an invalid locale before any Breeze component renders,
-  // so the locale needs no separate check here.
+  // BreezeProvider has already validated the locale.
   return new Intl.NumberFormat(locale, {
     currency,
     signDisplay: signDisplay[sign],
@@ -241,8 +236,7 @@ function formatDate(
 ): string {
   let date: Date;
 
-  // Calendar dates carry no time zone. Formatting their UTC midnight in UTC keeps
-  // the displayed day fixed, so the provider's time-of-day `timeZone` never applies.
+  // Calendar dates have no zone: UTC midnight formatted in UTC keeps the day fixed.
   try {
     date = parseDate(value).toDate('UTC');
   } catch {

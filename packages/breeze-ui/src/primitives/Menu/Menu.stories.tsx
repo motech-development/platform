@@ -84,7 +84,7 @@ export const IconOnlyTrigger: Story = {
       name: 'More actions',
     });
 
-    // The popover fades in from opacity 0, so wait for its entry animation.
+    // Wait out the popover's fade-in from opacity 0.
     await waitFor(async () => {
       await expect(menu).toBeVisible();
     });

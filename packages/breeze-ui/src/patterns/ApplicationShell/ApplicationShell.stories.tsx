@@ -259,7 +259,6 @@ export const Default: Story = {
             canvas.getByText('Created items: 1'),
           ).toBeInTheDocument();
 
-          // The main landmark's clearance is derived from the bar's tokens.
           await expect(
             Number.parseFloat(
               view.getComputedStyle(canvas.getByRole('main')).paddingBlockEnd,

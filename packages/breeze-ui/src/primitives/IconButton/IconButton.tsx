@@ -141,7 +141,6 @@ export function IconButton({
           .filter(Boolean)
           .join(' ')}
       >
-        {/* Artwork grows with the control: 16, 20 and 24px. */}
         <Icon name={name} size={size} />
       </span>
       {loading && (

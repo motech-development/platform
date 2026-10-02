@@ -22,7 +22,6 @@ expectTypeOf<IconButtonProps>().not.toHaveProperty('render');
 expectTypeOf<IconButtonVariant>().toEqualTypeOf<ButtonVariant>();
 expectTypeOf<IconButtonProps['label']>().toEqualTypeOf<string>();
 expectTypeOf<IconButtonProps['name']>().toEqualTypeOf<IconName>();
-// An icon-only control without an accessible name is a defect.
 expectTypeOf<{ name: 'close' }>().not.toExtend<IconButtonProps>();
 expectTypeOf<{ label: 'Close'; name: 'close' }>().toExtend<IconButtonProps>();
 
