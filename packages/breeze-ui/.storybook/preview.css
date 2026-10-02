@@ -17,3 +17,10 @@
   align-items: flex-start;
   gap: 12px;
 }
+
+.breeze-story-amount-pair {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 11rem;
+  align-items: start;
+  gap: 14px;
+}

@@ -119,6 +119,7 @@ export function TextField({
           aria-busy={loading || undefined}
           className={joinClassNames(
             fieldVariants.base.input,
+            fieldVariants.size.md,
             loading && fieldVariants.state.loadingInput,
           )}
           autoComplete={autoComplete}

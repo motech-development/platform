@@ -9,11 +9,19 @@ import * as Stories from './NumberField.stories';
 # NumberField
 
 `NumberField` is a flat labelled numeric input backed by React Aria. It uses
-the Breeze locale, includes increment and decrement controls, and displays
-figures with tabular numerals. Values remain unformatted except for React
-Aria's locale-aware input behaviour.
+the Breeze locale and displays figures with tabular numerals. There are no
+stepper buttons: the Up and Down arrow keys change the value by `step`. Values
+remain unformatted except for React Aria's locale-aware input behaviour.
 
 <Canvas of={Stories.Default} />
+
+## Sizes
+
+`size` defaults to `md`, the standard 38px control with 13px figures. Use `lg`
+for a form's primary amount: a 52px control with 20px semibold figures. Fields
+that share a row should share a size.
+
+<Canvas of={Stories.Large} />
 
 ## Supporting text and errors
 
@@ -37,6 +45,8 @@ message and prevents typing or stepping until it is removed.
 <Canvas of={Stories.ReadOnly} />
 
 <Canvas of={Stories.Loading} />
+
+<Canvas of={Stories.LargeLoading} />
 
 ## Controlled values
 
