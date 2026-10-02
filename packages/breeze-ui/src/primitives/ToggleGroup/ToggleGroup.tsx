@@ -1,11 +1,11 @@
 import type { HTMLAttributes } from 'react';
 import { useState } from 'react';
+import type { ItemDescriptor } from '../../collections/item.types';
 import { useBreezeContext } from '../../provider/BreezeContext';
+import SelectionControl from '../../selection-controls/SelectionControl';
 import { Badge } from '../Badge/Badge';
 import type { ControlSize } from '../Button/Button';
-import type { ItemDescriptor } from '../Collection/item.types';
 import { Icon } from '../Icon/Icon';
-import SelectionControl from '../SelectionControl/SelectionControl';
 import { Skeleton } from '../Skeleton/Skeleton';
 
 const variants = {
@@ -16,7 +16,7 @@ const variants = {
       'breeze:inline-flex breeze:items-center breeze:gap-breeze-1 breeze:rounded-breeze-ctl breeze:bg-breeze-sunken breeze:p-breeze-1 breeze:font-breeze-sans',
     item: 'breeze:inline-grid breeze:items-center breeze:justify-center breeze:gap-breeze-2 breeze:rounded-breeze-sm breeze:border breeze:border-solid breeze:border-transparent breeze:font-semibold breeze:text-breeze-ink-2 breeze:cursor-pointer breeze:select-none breeze:outline-offset-[-2px] breeze:data-[hovered]:bg-breeze-raised breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-60 breeze:any-pointer-coarse:min-block-breeze-tap breeze:any-pointer-coarse:min-inline-breeze-tap',
     label: 'breeze:font-medium',
-    optionContent: 'breeze:flex breeze:min-inline-size-0 breeze:flex-col',
+    optionContent: 'breeze:flex breeze:min-inline-0 breeze:flex-col',
     optionDetails: 'breeze:inline-flex breeze:items-center breeze:gap-breeze-2',
   },
   compound: {},
@@ -119,7 +119,7 @@ export function ToggleGroup<T>({
       <fieldset
         aria-describedby={ariaDescribedBy}
         aria-busy={loading || undefined}
-        className={`${variants.base.group} breeze:border-0 breeze:m-0 breeze:min-inline-size-0`}
+        className={`${variants.base.group} breeze:border-0 breeze:m-0 breeze:min-inline-0`}
         disabled={disabled}
         id={id}
       >

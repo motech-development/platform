@@ -1,14 +1,15 @@
 import type { ReactNode } from 'react';
 import { Stack } from '../../primitives/Stack/Stack';
 import { Typography } from '../../primitives/Typography/Typography';
+import { useBreezeContext } from '../../provider/BreezeContext';
 
 const variants = {
   base: {
     actions:
-      'breeze:flex breeze:min-inline-size-0 breeze:flex-wrap breeze:items-center breeze:gap-breeze-3 breeze:breeze-lg:shrink-0',
-    content: 'breeze:min-inline-size-0',
+      'breeze:flex breeze:min-inline-0 breeze:flex-wrap breeze:items-center breeze:gap-breeze-3 breeze:breeze-lg:shrink-0',
+    content: 'breeze:min-inline-0',
     header:
-      'breeze:flex breeze:min-inline-size-0 breeze:flex-col breeze:gap-breeze-4 breeze:pbe-breeze-5 breeze:breeze-lg:flex-row breeze:breeze-lg:items-end breeze:breeze-lg:justify-between',
+      'breeze:flex breeze:min-inline-0 breeze:flex-col breeze:gap-breeze-4 breeze:pbe-breeze-5 breeze:breeze-lg:flex-row breeze:breeze-lg:items-end breeze:breeze-lg:justify-between',
   },
   compound: {},
   size: {},
@@ -36,6 +37,8 @@ export function PageHeader({
   description,
   title,
 }: Readonly<PageHeaderProps>) {
+  useBreezeContext();
+
   return (
     <header className={variants.base.header}>
       <div className={variants.base.content}>

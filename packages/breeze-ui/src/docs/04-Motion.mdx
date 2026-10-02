@@ -44,7 +44,7 @@ function TransactionRow({ transaction }) {
 }
 ```
 
-Each participant name must be a valid CSS custom identifier and unique among visible participants in both snapshots. In development, Breeze reports duplicate eligible names. Names stay disabled for page participants while a visual overlay is on top; if an application-owned participant is inside an overlay, only the topmost visual overlay can enable it.
+Each participant name must be a valid CSS custom identifier and unique among visible participants in both snapshots. In development, Breeze reports duplicate eligible names. Names stay disabled for page participants while a visual overlay is on top; if an application-owned participant is inside an overlay, only the topmost visual overlay can enable it. A menu or popover stops counting as soon as it starts closing, even while its exit animation runs, so a navigation started from a menu item keeps the shell chrome and navigation marker in its transition. A closing dialog or drawer still withholds names until its exit finishes.
 
 The application shell can use Breeze's reserved roles for its chrome and current-location marker. The `topbar`, `topnav` and `botnav` roles stay pinned during page transitions:
 

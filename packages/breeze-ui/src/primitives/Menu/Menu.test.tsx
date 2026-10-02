@@ -3,8 +3,8 @@ import userEvent from '@testing-library/user-event';
 import { useRef } from 'react';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import renderBreeze from '../../../test/render';
+import type { ItemDescriptor } from '../../collections/item.types';
 import { BreezeProvider } from '../../provider/BreezeProvider';
-import type { ItemDescriptor } from '../Collection/item.types';
 import { Drawer } from '../Drawer/Drawer';
 import { Menu, type MenuProps } from './Menu';
 
@@ -94,6 +94,26 @@ expectTypeOf<{
   defaultOpen: boolean;
   trigger: string;
 }>().not.toExtend<MenuProps<Action>>();
+expectTypeOf<
+  NonNullable<MenuProps<Action>['onAction']>
+>().parameters.toEqualTypeOf<[Action]>();
+// An icon-only trigger needs both its artwork and an accessible name.
+expectTypeOf<{
+  getItem: (item: Action) => ItemDescriptor;
+  items: Action[];
+  triggerAriaLabel: string;
+  triggerIcon: 'more';
+}>().toExtend<MenuProps<Action>>();
+expectTypeOf<{
+  getItem: (item: Action) => ItemDescriptor;
+  items: Action[];
+  triggerIcon: 'more';
+}>().not.toExtend<MenuProps<Action>>();
+expectTypeOf<{
+  getItem: (item: Action) => ItemDescriptor;
+  items: Action[];
+  triggerAriaLabel: string;
+}>().not.toExtend<MenuProps<Action>>();
 
 describe('Menu', () => {
   it('requires a BreezeProvider', () => {
@@ -123,6 +143,79 @@ describe('Menu', () => {
     });
 
     expect(trigger).toHaveTextContent('More actions');
+  });
+
+  it('opens from an icon-only trigger named by its accessible label', async () => {
+    const user = userEvent.setup();
+    const onAction = vi.fn();
+
+    renderBreeze(
+      <Menu
+        getItem={(item) => item.descriptor}
+        items={actions}
+        onAction={onAction}
+        triggerAriaLabel="More actions: invoice.pdf"
+        triggerIcon="more"
+      />,
+    );
+
+    const trigger = screen.getByRole('button', {
+      name: 'More actions: invoice.pdf',
+    });
+
+    expect(trigger).toHaveTextContent('');
+    expect(trigger).toHaveAttribute('aria-haspopup', 'menu');
+    expect(trigger.querySelector('svg')).toHaveAttribute('aria-hidden', 'true');
+
+    await user.click(trigger);
+
+    const menu = screen.getByRole('menu', {
+      name: 'More actions: invoice.pdf',
+    });
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+
+    await user.click(
+      within(menu).getByRole('menuitem', { name: 'Company details' }),
+    );
+
+    expect(onAction).toHaveBeenCalledExactlyOnceWith(actions[0]);
+    await waitFor(() =>
+      expect(screen.queryByRole('menu')).not.toBeInTheDocument(),
+    );
+    await waitFor(() => expect(trigger).toHaveFocus());
+  });
+
+  it('gives a loading icon-only trigger one progress indicator and blocks opening', async () => {
+    const user = userEvent.setup();
+    const onOpenChange = vi.fn();
+
+    renderBreeze(
+      <Menu
+        getItem={(item) => item.descriptor}
+        items={actions}
+        loading
+        onOpenChange={onOpenChange}
+        triggerAriaLabel="More actions"
+        triggerIcon="more"
+      />,
+    );
+
+    // As with Button, the pending progress joins the retained label.
+    const trigger = screen.getByRole('button', {
+      name: 'More actions Loading',
+    });
+
+    expect(trigger).toHaveAttribute('aria-busy', 'true');
+    expect(trigger).toHaveAttribute('aria-disabled', 'true');
+    expect(
+      screen.getAllByRole('progressbar', { name: 'Loading' }),
+    ).toHaveLength(1);
+    expect(screen.getByRole('status')).toHaveTextContent('Loading');
+
+    await user.click(trigger);
+
+    expect(onOpenChange).not.toHaveBeenCalled();
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument();
   });
 
   it('renders the descriptor content in the provider portal', () => {
@@ -177,7 +270,7 @@ describe('Menu', () => {
     ).toHaveAccessibleName('Reports, New');
   });
 
-  it('uses keyboard navigation and reports the selected descriptor', async () => {
+  it('uses keyboard navigation and reports the selected application item', async () => {
     const user = userEvent.setup();
     const onAction = vi.fn();
     const onOpenChange = vi.fn();
@@ -212,7 +305,7 @@ describe('Menu', () => {
 
     await user.keyboard('{Enter}');
 
-    expect(onAction).toHaveBeenCalledWith(actions[2].descriptor);
+    expect(onAction).toHaveBeenCalledExactlyOnceWith(actions[2]);
     expect(onOpenChange.mock.calls).toEqual([[true], [false]]);
     await waitFor(() =>
       expect(screen.queryByRole('menu')).not.toBeInTheDocument(),
@@ -334,7 +427,7 @@ describe('Menu', () => {
     await user.click(screen.getByRole('button', { name: 'Account actions' }));
     await user.click(screen.getByRole('menuitem', { name: 'Company details' }));
 
-    expect(onAction).toHaveBeenCalledWith(actions[0].descriptor);
+    expect(onAction).toHaveBeenCalledExactlyOnceWith(actions[0]);
     await waitFor(() =>
       expect(screen.queryByRole('menu')).not.toBeInTheDocument(),
     );
@@ -442,7 +535,7 @@ describe('Menu', () => {
       within(menuElement).getByRole('menuitem', { name: 'Sign out' }),
     );
 
-    expect(onAction).toHaveBeenCalledWith(actions[2].descriptor);
+    expect(onAction).toHaveBeenCalledExactlyOnceWith(actions[2]);
     expect(onOpenChange).toHaveBeenCalledWith(false);
     expect(screen.getByRole('menu')).toBeInTheDocument();
 

@@ -14,23 +14,23 @@ import { useBreezeContext } from '../../provider/BreezeContext';
 const variants = {
   base: {
     content:
-      'breeze:flex breeze:min-inline-size-0 breeze:grow breeze:basis-[12rem] breeze:flex-col breeze:gap-breeze-px',
+      'breeze:flex breeze:min-inline-0 breeze:grow breeze:basis-[12rem] breeze:flex-col breeze:gap-breeze-px',
     documentLine:
-      'breeze:block-size-breeze-px breeze:inline-size-full breeze:rounded-breeze-xs breeze:bg-breeze-line',
+      'breeze:block-breeze-px breeze:inline-full breeze:rounded-breeze-xs breeze:bg-breeze-line',
     documentLineStrong:
-      'breeze:block-size-breeze-px breeze:inline-size-full breeze:rounded-breeze-xs breeze:bg-breeze-line-strong',
+      'breeze:block-breeze-px breeze:inline-full breeze:rounded-breeze-xs breeze:bg-breeze-line-strong',
     fileDetails:
-      'breeze:flex breeze:min-inline-size-0 breeze:flex-wrap breeze:items-center breeze:gap-x-breeze-2 breeze:text-breeze-xs breeze:leading-breeze-snug breeze:text-breeze-ink-3',
+      'breeze:flex breeze:min-inline-0 breeze:flex-wrap breeze:items-center breeze:gap-x-breeze-2 breeze:text-breeze-xs breeze:leading-breeze-snug breeze:text-breeze-ink-3',
     filename:
-      'breeze:block breeze:min-inline-size-0 breeze:overflow-hidden breeze:text-ellipsis breeze:whitespace-nowrap breeze:text-breeze-sm breeze:font-medium breeze:leading-breeze-snug breeze:text-breeze-ink',
+      'breeze:block breeze:min-inline-0 breeze:overflow-hidden breeze:text-ellipsis breeze:whitespace-nowrap breeze:text-breeze-sm breeze:font-medium breeze:leading-breeze-snug breeze:text-breeze-ink',
     loadingContent:
-      'breeze:flex breeze:min-inline-size-0 breeze:flex-1 breeze:flex-col breeze:gap-breeze-2',
+      'breeze:flex breeze:min-inline-0 breeze:flex-1 breeze:flex-col breeze:gap-breeze-2',
     photoPlaceholder: 'breeze:text-breeze-ink-3',
-    row: 'breeze:box-border breeze:flex breeze:flex-wrap breeze:min-block-breeze-row breeze:min-inline-size-0 breeze:items-center breeze:gap-breeze-3 breeze:rounded-breeze-panel breeze:border breeze:border-solid breeze:border-breeze-line breeze:bg-breeze-raised breeze:ps-breeze-3 breeze:pe-breeze-3',
+    row: 'breeze:box-border breeze:flex breeze:flex-wrap breeze:min-block-breeze-row breeze:min-inline-0 breeze:items-center breeze:gap-breeze-3 breeze:rounded-breeze-panel breeze:border breeze:border-solid breeze:border-breeze-line breeze:bg-breeze-raised breeze:ps-breeze-3 breeze:pe-breeze-3',
     thumbnail:
-      'breeze:flex breeze:block-size-breeze-tap breeze:inline-size-breeze-md breeze:shrink-0 breeze:overflow-hidden breeze:rounded-breeze-sm breeze:border breeze:border-solid breeze:border-breeze-line-strong',
+      'breeze:flex breeze:block-breeze-tap breeze:inline-breeze-md breeze:shrink-0 breeze:overflow-hidden breeze:rounded-breeze-sm breeze:border breeze:border-solid breeze:border-breeze-line-strong',
     thumbnailImage:
-      'breeze:block breeze:block-size-full breeze:inline-size-full breeze:object-cover',
+      'breeze:block breeze:block-full breeze:inline-full breeze:object-cover',
   },
   compound: {},
   size: {},
@@ -362,12 +362,7 @@ export function AttachmentRow(props: Readonly<AttachmentRowProps>) {
           <Menu
             getItem={(action) => action}
             items={actions}
-            onAction={(descriptor) => {
-              const action = actions.find((item) => item.id === descriptor.id);
-
-              if (action) onAction?.(action);
-            }}
-            trigger={context.messages.attachmentMoreActions}
+            onAction={onAction}
             triggerAriaLabel={`${context.messages.attachmentMoreActions}: ${filename}`}
             triggerIcon="more"
           />

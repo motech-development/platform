@@ -1,0 +1,54 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './IconButton.stories';
+
+<Meta of={Stories} summary="Performs an action from an icon alone." />
+
+# IconButton
+
+Icon buttons perform an action, such as closing a panel or opening more actions, where an icon alone is clear enough.
+
+## Basic icon button
+
+`name` selects the artwork from the curated Breeze icon set, and `label` gives the action its accessible name. `label` is required, because the button has no visible text.
+
+<Canvas of={Stories.Default} />
+
+## Treatments and sizes
+
+`variant` accepts the same treatments as `Button`: `secondary` (default), `primary`, `quiet` and `danger`. The default is `secondary`, because most icon-only actions, such as Close and More actions, sit beside content rather than leading it.
+
+`size` accepts `sm`, `md` (default) and `lg`. The button is square at 34, 38 or 52px, and its icon is 16, 20 or 24px.
+
+<Canvas of={Stories.TreatmentsAndSizes} />
+
+## Shapes
+
+`shape` accepts `square` (default), with the control's rounded corners, and `circle`, for a standalone action such as the application shell's centre action.
+
+<Canvas of={Stories.Shapes} />
+
+## Loading
+
+Set `loading` while the action is in progress. The icon is replaced by a skeleton, and the button cannot be activated again.
+
+<Canvas of={Stories.Loading} />
+
+## Disabled
+
+`disabled` prevents activation and removes the button from the tab order.
+
+<Canvas of={Stories.Disabled} />
+
+## Handling actions
+
+`onAction` is called when the button is activated, and takes no arguments.
+
+<Canvas of={Stories.Activation} />
+
+## Accessibility
+
+The `label` is the accessible name and is retained while the button is loading. The icon is hidden from assistive technology. Icon buttons receive a 44px minimum target on touch devices, and `aria-describedby`, `aria-controls`, `aria-expanded` and `aria-haspopup` are supported.
+
+## API
+
+<ArgTypes />

@@ -5,8 +5,15 @@ import { PageHeader, type PageHeaderProps } from './PageHeader';
 
 expectTypeOf<PageHeaderProps>().not.toHaveProperty('className');
 expectTypeOf<PageHeaderProps>().not.toHaveProperty('style');
+expectTypeOf<PageHeaderProps>().not.toHaveProperty('loading');
 
 describe('PageHeader', () => {
+  it('requires a BreezeProvider', () => {
+    expect(() => render(<PageHeader title="Activity" />)).toThrow(
+      'Breeze components must be rendered within BreezeProvider.',
+    );
+  });
+
   it('renders a level-one title with optional description and actions', () => {
     render(
       <BreezeProvider locale="en-GB">

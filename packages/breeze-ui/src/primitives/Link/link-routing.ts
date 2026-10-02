@@ -2,10 +2,11 @@ import type { MouseEvent } from 'react';
 import type { ViewTransitionType } from '../../motion/view-transitions';
 import type { BreezeRouter } from '../../provider/BreezeContext';
 
-function shouldRoute(
+/** Returns the browser-resolved same-document destination, or null to stay native. */
+function routableDestination(
   event: MouseEvent<HTMLAnchorElement>,
   download: string | boolean | undefined,
-): boolean {
+): string | null {
   if (
     event.defaultPrevented ||
     event.button !== 0 ||
@@ -15,7 +16,7 @@ function shouldRoute(
     event.shiftKey ||
     (download !== undefined && download !== false)
   ) {
-    return false;
+    return null;
   }
 
   const anchor = event.currentTarget;
@@ -29,7 +30,7 @@ function shouldRoute(
     effectiveTarget.toLowerCase() !== '' &&
     effectiveTarget.toLowerCase() !== '_self'
   ) {
-    return false;
+    return null;
   }
 
   const destination = new URL(anchor.href, document.baseURI);
@@ -39,22 +40,28 @@ function shouldRoute(
     destination.hash !== '' ||
     anchor.getAttribute('href')?.includes('#')
   ) {
-    return false;
+    return null;
   }
 
-  return true;
+  // The router receives what the browser would navigate to, so relative
+  // destinations such as `accounts`, `../x` or `?page=2` keep their meaning.
+  // Fragment links have already returned, so there is no hash to carry.
+  return `${destination.pathname}${destination.search}`;
 }
 
 /** Routes eligible same-document anchor clicks while preserving browser behavior. */
 export default function routeAnchorClick(
   event: MouseEvent<HTMLAnchorElement>,
-  href: string,
   router: BreezeRouter | undefined,
   transitionTypes: readonly ViewTransitionType[],
   download?: string | boolean,
 ) {
-  if (router === undefined || !shouldRoute(event, download)) return;
+  if (router === undefined) return;
+
+  const destination = routableDestination(event, download);
+
+  if (destination === null) return;
 
   event.preventDefault();
-  router.navigate(href, { transitionTypes });
+  router.navigate(destination, { transitionTypes });
 }

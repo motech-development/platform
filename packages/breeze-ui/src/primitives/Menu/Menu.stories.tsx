@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useState } from 'react';
-import { expect, userEvent, within } from 'storybook/test';
+import { expect, userEvent, waitFor, within } from 'storybook/test';
+import type { ItemDescriptor } from '../../collections/item.types';
 import { Button } from '../Button/Button';
-import type { ItemDescriptor } from '../Collection/item.types';
 import { Menu } from './Menu';
 
 const actions = [
@@ -64,6 +64,37 @@ export const Default: Story = {
   },
 };
 
+/** An icon-only trigger, named by `triggerAriaLabel`. */
+export const IconOnlyTrigger: Story = {
+  args: {
+    defaultOpen: false,
+    trigger: undefined,
+    triggerAriaLabel: 'More actions',
+    triggerIcon: 'more',
+  },
+  play: async ({ canvasElement }) => {
+    const trigger = within(canvasElement).getByRole('button', {
+      name: 'More actions',
+    });
+
+    await expect(trigger).toHaveTextContent('');
+    await userEvent.click(trigger);
+
+    const menu = await within(document.body).findByRole('menu', {
+      name: 'More actions',
+    });
+
+    // The popover fades in from opacity 0, so wait for its entry animation.
+    await waitFor(async () => {
+      await expect(menu).toBeVisible();
+    });
+    await expect(trigger).toHaveAttribute('aria-expanded', 'true');
+    await expect(
+      within(menu).getByRole('menuitem', { name: 'Settings, New' }),
+    ).toBeVisible();
+  },
+};
+
 function ControlledExample() {
   const [open, setOpen] = useState(false);
   const [action, setAction] = useState('none');
@@ -73,7 +104,7 @@ function ControlledExample() {
       <Menu
         getItem={(item) => item}
         items={actions}
-        onAction={(descriptor) => setAction(descriptor.label)}
+        onAction={(item) => setAction(item.label)}
         onOpenChange={setOpen}
         open={open}
         trigger="Account actions"
@@ -86,7 +117,7 @@ function ControlledExample() {
   );
 }
 
-/** Control visibility and receive the selected item's details. */
+/** Control visibility and receive the selected application item. */
 export const Controlled: Story = {
   render: () => <ControlledExample />,
 };

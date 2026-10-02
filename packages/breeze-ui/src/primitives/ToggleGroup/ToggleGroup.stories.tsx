@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useState } from 'react';
 import { expect, userEvent, within } from 'storybook/test';
+import type { ItemDescriptor } from '../../collections/item.types';
 import type { ControlSize } from '../Button/Button';
 import { Button } from '../Button/Button';
-import type { ItemDescriptor } from '../Collection/item.types';
 import { Toggle } from '../Toggle/Toggle';
 import { ToggleGroup } from './ToggleGroup';
 

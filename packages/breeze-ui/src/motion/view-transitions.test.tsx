@@ -1,9 +1,10 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { RefCallback } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import renderBreeze from '../../test/render';
 import { Drawer } from '../primitives/Drawer/Drawer';
+import { Menu } from '../primitives/Menu/Menu';
 import { BreezeProvider } from '../provider/BreezeProvider';
 import {
   startViewTransition,
@@ -300,6 +301,33 @@ function ParticipantProbe({
   return <main data-testid={name} hidden={hidden} inert={inert} ref={ref} />;
 }
 
+const menuItems = [{ id: 'reports', label: 'Reports' }];
+
+/** Holds every exit animation open until the returned callback runs. */
+function holdExitAnimations() {
+  let finish: () => void = () => undefined;
+  const finished = new Promise<void>((resolve) => {
+    finish = resolve;
+  });
+
+  vi.stubGlobal('CSSTransition', class {});
+  Object.defineProperty(Element.prototype, 'getAnimations', {
+    configurable: true,
+    value: () => [{ finished }],
+  });
+
+  return () => {
+    Reflect.deleteProperty(Element.prototype, 'getAnimations');
+    finish();
+  };
+}
+
+function TopbarProbe() {
+  const ref = useViewTransitionParticipant({ role: 'topbar' });
+
+  return <header data-testid="topbar" ref={ref} />;
+}
+
 describe('useViewTransitionParticipant', () => {
   it('declares a typed name through its ref without setting a permanent transition name', () => {
     renderBreeze(
@@ -563,6 +591,128 @@ describe('useViewTransitionParticipant', () => {
     expect(await screen.findByTestId('overlay-item')).toHaveAttribute(
       'data-breeze-transition-enabled',
       'true',
+    );
+  });
+
+  it('re-enables page participants while a closing menu exits', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <TopbarProbe />
+        <ParticipantProbe name="page-item" types={['nav']} />
+        <Menu getItem={(item) => item} items={menuItems} trigger="Account" />
+      </BreezeProvider>,
+    );
+
+    const topbar = screen.getByTestId('topbar');
+    const pageParticipant = screen.getByTestId('page-item');
+
+    await user.click(screen.getByRole('button', { name: 'Account' }));
+
+    // An open menu is the topmost layer, so the page's names stay withheld.
+    expect(topbar).toHaveAttribute('data-breeze-transition-enabled', 'false');
+    expect(pageParticipant).toHaveAttribute(
+      'data-breeze-transition-enabled',
+      'false',
+    );
+
+    const finishExit = holdExitAnimations();
+
+    try {
+      await user.click(screen.getByRole('menuitem', { name: 'Reports' }));
+
+      // The menu is still mounted for its exit animation, as it would be when
+      // a navigation captures its old snapshot.
+      expect(
+        screen.getByRole('menu').closest('[data-exiting]'),
+      ).toBeInTheDocument();
+      expect(topbar).toHaveAttribute('data-breeze-transition-enabled', 'true');
+      expect(pageParticipant).toHaveAttribute(
+        'data-breeze-transition-enabled',
+        'true',
+      );
+    } finally {
+      finishExit();
+    }
+
+    await waitFor(() =>
+      expect(screen.queryByRole('menu')).not.toBeInTheDocument(),
+    );
+    expect(topbar).toHaveAttribute('data-breeze-transition-enabled', 'true');
+  });
+
+  it('returns names to the containing overlay while its menu exits', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <Drawer defaultOpen title="Details" trigger="Open details">
+          <ParticipantProbe name="overlay-item" types={['item']} />
+          <Menu
+            getItem={(item) => item}
+            items={menuItems}
+            trigger="Record actions"
+          />
+        </Drawer>
+      </BreezeProvider>,
+    );
+
+    const drawer = await screen.findByRole('dialog', { name: 'Details' });
+    const overlayParticipant = within(drawer).getByTestId('overlay-item');
+
+    await user.click(
+      within(drawer).getByRole('button', { name: 'Record actions' }),
+    );
+    expect(overlayParticipant).toHaveAttribute(
+      'data-breeze-transition-enabled',
+      'false',
+    );
+
+    const finishExit = holdExitAnimations();
+
+    try {
+      await user.click(screen.getByRole('menuitem', { name: 'Reports' }));
+
+      expect(screen.getByRole('menu')).toBeInTheDocument();
+      expect(overlayParticipant).toHaveAttribute(
+        'data-breeze-transition-enabled',
+        'true',
+      );
+    } finally {
+      finishExit();
+    }
+  });
+
+  it('keeps page participants withheld while a closing modal exits', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <BreezeProvider locale="en-GB">
+        <TopbarProbe />
+        <Drawer defaultOpen title="Details" trigger="Open details">
+          Content
+        </Drawer>
+      </BreezeProvider>,
+    );
+
+    const topbar = screen.getByTestId('topbar');
+
+    await screen.findByRole('dialog', { name: 'Details' });
+    expect(topbar).toHaveAttribute('data-breeze-transition-enabled', 'false');
+
+    const finishExit = holdExitAnimations();
+
+    try {
+      await user.keyboard('{Escape}');
+
+      expect(topbar).toHaveAttribute('data-breeze-transition-enabled', 'false');
+    } finally {
+      finishExit();
+    }
+
+    await waitFor(() =>
+      expect(topbar).toHaveAttribute('data-breeze-transition-enabled', 'true'),
     );
   });
 });

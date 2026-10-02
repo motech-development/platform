@@ -30,6 +30,10 @@ Pass a same-document router to `BreezeProvider` when links should update applica
 
 `transitionTypes` defaults to an empty list. Breeze passes the option to `router.navigate(href, { transitionTypes })`; an existing one-argument `navigate(href)` adapter can ignore the extra argument.
 
+The router receives the destination the browser would navigate to, as a root-relative path with its query string, rather than the raw `href`. A relative `href` such as `accounts`, `../reports` or `?page=2` is resolved against the current document first, so `/accounts/transactions/` with `href="?page=2"` routes to `/accounts/transactions/?page=2`.
+
+Because the path is root-relative, it already includes any base path the application is served under. **An adapter for a router that prepends its own `basename` must strip that base before navigating**, or the base will appear twice.
+
 ## Native anchor behavior
 
 The router handles only an unmodified primary click on a same-origin HTTP or HTTPS link with no fragment, download, or alternate browsing target. External links, downloads, alternate targets, modified clicks and fragment links keep the browser's native behavior.
