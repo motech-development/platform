@@ -8,7 +8,7 @@ import * as Stories from './DocumentViewer.stories';
 
 # DocumentViewer
 
-`DocumentViewer` presents one attachment in a modal reading surface with
+`DocumentViewer` presents one attachment in a full-screen reading surface with
 zoom, rotation, download, and optional app-owned Replace and Remove actions.
 The toolbar displays the current zoom percentage beside the zoom controls.
 Use it with `AttachmentRow` by passing the same unique `transitionName` to both
@@ -17,14 +17,35 @@ attachment meaning, storage, replacement, and removal.
 The viewer is controlled: pass both `open` and `onOpenChange`, and let the
 owning screen provide the trigger and state.
 
+The viewer is non-modal. Opened from a record sheet, it covers the viewport
+without making the sheet inert, and the sheet keeps its scrim; the viewer adds
+none. Escape and Close return focus into the sheet, and closing the sheet first
+also closes the viewer.
+
+Although the covered content stays in the accessibility tree, keyboard focus is
+contained while the viewer is open: Tab and Shift+Tab wrap inside it, and focus
+moved into the covered content is returned to it. Page scrolling is locked for
+as long as it is open, whether it was opened from a sheet or from a plain page.
+ADR 0002 records why the viewer is non-modal and what that trades away.
+
 ## Images and PDFs
 
 Images render directly and do not load the PDF engine. PDFs use the optional
 `pdfjs-dist` peer dependency to paint each page to a canvas and provide a
 selectable text layer. PDF.js and its worker load only after an open PDF is
 requested. Install a compatible `pdfjs-dist` version (`^6.2.108`) in the
-application to enable this renderer. If the peer is absent or PDF.js cannot
-render a file, the viewer falls back to the browser's PDF frame.
+application to enable this renderer. If PDF.js cannot load or render a file,
+the viewer falls back to the browser's PDF frame.
+
+An absent peer is handled at build time by the application's bundler, not by
+Breeze UI. Vite replaces the unresolved optional import with a module that
+throws when it is loaded, so the viewer reaches its browser-frame fallback.
+Other bundlers may instead fail the application build; install `pdfjs-dist`
+or mark it as an ignored optional module in that bundler's configuration.
+
+PDF.js downloads each PDF in a single request rather than in byte ranges.
+Attachment URLs are presigned for 30 seconds, and a range request made after
+that window would fail with a 403 that permanently breaks the open document.
 
 PDFs that use predefined Adobe character maps or PDF.js standard font files
 also need those matching directories served by the application. Copy the
@@ -49,9 +70,12 @@ viewer:
 These URLs must serve the matching files from the same `pdfjs-dist` version.
 The viewer adds a trailing slash to each directory URL. The auxiliary assets
 are optional when a document does not reference them.
-When the application uses a bundler that cannot resolve PDF.js's worker URL
-import, provide `pdfAssets.workerSrc` with the URL emitted or copied for the
-installed `pdfjs-dist` version. Vite users can omit it and use the default.
+By default the viewer locates the worker with
+`new URL('pdfjs-dist/build/pdf.worker.mjs', import.meta.url)`, which Vite and
+webpack 5 resolve in the application's build and emit as an asset. When the
+application uses a bundler that does not support that pattern, provide
+`pdfAssets.workerSrc` with the URL emitted or copied for the installed
+`pdfjs-dist` version.
 
 When PDF.js is unavailable or cannot render a file, the viewer fetches the PDF
 and passes its bytes to the browser's native PDF viewer as a PDF-typed Blob.
@@ -60,7 +84,9 @@ and cross-origin hosts must allow CORS. If the fetch fails, the preview reports
 that it is unavailable and the Download action remains available.
 
 The reader supports page navigation for multi-page PDFs. Zoom and rotation
-apply to images, rendered PDF pages, and browser-owned frames.
+apply to images, rendered PDF pages, and browser-owned frames. Each PDF zoom
+step re-renders the page at the new density; the previous rendering stays
+visible, and the scroll position is kept, until the sharper page replaces it.
 Each preview starts closed inside its own frame; use its Open button to view the
 attachment. The PDF example loads PDF.js only after you open it.
 
@@ -99,20 +125,22 @@ are sandboxed so embedded HTML or SVG cannot run scripts in the application.
 ## Bundle measurement
 
 With Breeze UI's development pin `pdfjs-dist@6.3.289`, the measurements on
-2026-09-30 show the package and PDF.js engine as separate gzip payloads. The
+2026-10-02 show the package and PDF.js engine as separate gzip payloads. The
 PDF.js figure sums the independently compressed main-thread and worker files.
 
-| Payload                                                                       |  Gzip size |
-| ----------------------------------------------------------------------------- | ---------: |
-| Breeze UI library JavaScript (package output; external dependencies excluded) |  39.05 KiB |
-| PDF.js engine JavaScript (main + worker, independently compressed)            | 634.60 KiB |
+| Payload                                                                     |  Gzip size |
+| --------------------------------------------------------------------------- | ---------: |
+| Breeze UI library JavaScript (package output, including bundled React Aria) | 133.55 KiB |
+| PDF.js engine JavaScript (main + worker, independently compressed)          | 634.60 KiB |
 
 ## Actions
 
 The Download link is always available. Cross-origin sources are fetched as a
 blob so the requested filename is preserved; the file host must allow CORS from
-the application. If that request is blocked, the browser navigates to the
-original source in the current tab. Replace and Remove buttons appear only when
+the application. If that request fails — blocked by CORS, or refused because a
+presigned URL has expired — the viewer reports that the file could not be
+downloaded and stays open. It never navigates the application's tab to the
+source. Replace and Remove buttons appear only when
 their corresponding callbacks are provided, leaving mutation and confirmation
 flows in the application. Full screen appears only when the browser reports
 support for the native Fullscreen API.

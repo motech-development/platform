@@ -8,7 +8,6 @@ const pdfjsMocks = vi.hoisted(() => ({
   getDocument: vi.fn(),
   textLayerConstruct: vi.fn(),
   textLayerRender: vi.fn<() => Promise<void>>(),
-  workerAssetImport: vi.fn(),
 }));
 
 vi.mock('pdfjs-dist', async (importOriginal) => {
@@ -36,12 +35,6 @@ vi.mock('pdfjs-dist', async (importOriginal) => {
   };
 });
 
-vi.mock('pdfjs-dist/build/pdf.worker.mjs?url', () => {
-  pdfjsMocks.workerAssetImport();
-
-  return { default: '/assets/pdf.worker.mjs' };
-});
-
 function deferred<T>() {
   let resolve!: (value: T) => void;
   const promise = new Promise<T>((onResolve) => {
@@ -49,6 +42,16 @@ function deferred<T>() {
   });
 
   return { promise, resolve };
+}
+
+/** jsdom has no canvas backend; the renderer paints off screen, then copies. */
+function mockCanvasContext() {
+  const context = { drawImage: vi.fn() };
+  vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(
+    context as unknown as CanvasRenderingContext2D,
+  );
+
+  return context;
 }
 
 function createLoadingTask(document: object) {
@@ -71,7 +74,7 @@ describe('PDF renderer adapter', () => {
     vi.restoreAllMocks();
   });
 
-  it('uses a supplied worker URL without importing the bundler-specific worker asset', async () => {
+  it('uses a supplied worker URL instead of the bundled worker asset', async () => {
     const task = createLoadingTask({ numPages: 1 });
     pdfjsMocks.getDocument.mockReturnValue(task);
 
@@ -84,11 +87,10 @@ describe('PDF renderer adapter', () => {
     expect(pdfjs.GlobalWorkerOptions.workerSrc).toBe(
       '/app/assets/pdf.worker.mjs',
     );
-    expect(pdfjsMocks.workerAssetImport).not.toHaveBeenCalled();
     expect(pdfjsMocks.getDocument).toHaveBeenCalledOnce();
   });
 
-  it('uses the lazy worker asset when the configured worker URL is blank', async () => {
+  it('resolves the installed worker relative to the module when the configured worker URL is blank', async () => {
     const task = createLoadingTask({ numPages: 1 });
     pdfjsMocks.getDocument.mockReturnValue(task);
 
@@ -98,7 +100,9 @@ describe('PDF renderer adapter', () => {
       { workerSrc: '   ' },
     );
 
-    expect(pdfjs.GlobalWorkerOptions.workerSrc).toBe('/assets/pdf.worker.mjs');
+    expect(pdfjs.GlobalWorkerOptions.workerSrc).toMatch(
+      /\/pdfjs-dist\/build\/pdf\.worker\.mjs$/,
+    );
     expect(pdfjsMocks.getDocument).toHaveBeenCalledOnce();
   });
 
@@ -137,7 +141,7 @@ describe('PDF renderer adapter', () => {
     expect(pdfjsMocks.getDocument).not.toHaveBeenCalled();
   });
 
-  it('passes configured CMaps and standard fonts to PDF.js as directory URLs', async () => {
+  it('passes configured CMaps and standard fonts to PDF.js as directory URLs and disables ranges', async () => {
     const task = createLoadingTask({ numPages: 1 });
     pdfjsMocks.getDocument.mockReturnValue(task);
 
@@ -153,10 +157,28 @@ describe('PDF renderer adapter', () => {
     expect(pdfjsMocks.getDocument).toHaveBeenCalledWith({
       cMapPacked: true,
       cMapUrl: '/assets/pdfjs/cmaps/',
+      disableRange: true,
       standardFontDataUrl: '/',
       stopAtErrors: true,
       url: '/attachments/report.pdf',
     });
+  });
+
+  it('loads the whole file in one request because presigned range requests expire', async () => {
+    const task = createLoadingTask({ numPages: 1 });
+    pdfjsMocks.getDocument.mockReturnValue(task);
+
+    await loadPdfDocument(
+      'https://files.example.test/report.pdf?X-Amz-Expires=30',
+      new AbortController().signal,
+    );
+
+    expect(pdfjsMocks.getDocument).toHaveBeenCalledWith(
+      expect.objectContaining({
+        disableRange: true,
+        url: 'https://files.example.test/report.pdf?X-Amz-Expires=30',
+      }),
+    );
   });
 
   it('destroys a loaded task only once when the session is disposed repeatedly', async () => {
@@ -225,8 +247,7 @@ describe('PDF renderer adapter', () => {
         userUnit: 1,
       };
       const canvas = document.createElement('canvas');
-      const canvasContext = {} as CanvasRenderingContext2D;
-      vi.spyOn(canvas, 'getContext').mockReturnValue(canvasContext);
+      mockCanvasContext();
       const pageContainer = document.createElement('div');
       const textLayer = document.createElement('div');
       pageContainer.append(textLayer);
@@ -279,8 +300,7 @@ describe('PDF renderer adapter', () => {
       userUnit: 2,
     };
     const canvas = document.createElement('canvas');
-    const canvasContext = {} as CanvasRenderingContext2D;
-    vi.spyOn(canvas, 'getContext').mockReturnValue(canvasContext);
+    mockCanvasContext();
     const pageContainer = document.createElement('div');
     const textLayer = document.createElement('div');
     pageContainer.append(textLayer);
@@ -328,8 +348,7 @@ describe('PDF renderer adapter', () => {
       userUnit: 1,
     };
     const canvas = document.createElement('canvas');
-    const canvasContext = {} as CanvasRenderingContext2D;
-    vi.spyOn(canvas, 'getContext').mockReturnValue(canvasContext);
+    mockCanvasContext();
     const pageContainer = document.createElement('div');
     const textLayer = document.createElement('div');
     pageContainer.append(textLayer);
@@ -390,8 +409,7 @@ describe('PDF renderer adapter', () => {
       userUnit: 1,
     };
     const canvas = document.createElement('canvas');
-    const canvasContext = {} as CanvasRenderingContext2D;
-    vi.spyOn(canvas, 'getContext').mockReturnValue(canvasContext);
+    mockCanvasContext();
     const pageContainer = document.createElement('div');
     const textLayer = document.createElement('div');
     pageContainer.append(textLayer);
@@ -432,8 +450,7 @@ describe('PDF renderer adapter', () => {
       userUnit: 1,
     };
     const canvas = document.createElement('canvas');
-    const canvasContext = {} as CanvasRenderingContext2D;
-    vi.spyOn(canvas, 'getContext').mockReturnValue(canvasContext);
+    mockCanvasContext();
     const pageContainer = document.createElement('div');
     const textLayer = document.createElement('div');
     pageContainer.append(textLayer);
@@ -458,5 +475,107 @@ describe('PDF renderer adapter', () => {
 
     expect(page.cleanup).toHaveBeenCalledOnce();
     expect(pdfjsMocks.textLayerConstruct).not.toHaveBeenCalled();
+  });
+  it('keeps the previous paint visible until a re-render has fully finished', async () => {
+    const render = deferred<void>();
+    const page = {
+      cleanup: vi.fn(),
+      getViewport: vi
+        .fn()
+        .mockReturnValue({ height: 600, rotation: 0, scale: 1, width: 400 }),
+      render: vi
+        .fn<(options: { canvas: HTMLCanvasElement }) => object>()
+        .mockReturnValue({ promise: render.promise }),
+      rotate: 0,
+      streamTextContent: vi.fn(),
+      userUnit: 1,
+    };
+    const context = mockCanvasContext();
+    const canvas = document.createElement('canvas');
+    canvas.width = 400;
+    canvas.height = 600;
+    const pageContainer = document.createElement('div');
+    const textLayer = document.createElement('div');
+    const previousText = document.createElement('span');
+    previousText.textContent = 'Previous text';
+    textLayer.append(previousText);
+    pageContainer.append(textLayer);
+
+    const renderPage = renderPdfPage({
+      TextLayer,
+      canvas,
+      document: { getPage: vi.fn().mockResolvedValue(page) } as never,
+      outputScale: 2,
+      pageNumber: 1,
+      rotation: 0,
+      scale: 1,
+      signal: new AbortController().signal,
+      textLayerContainer: textLayer,
+    });
+    await vi.waitFor(() => expect(page.render).toHaveBeenCalledOnce());
+
+    const renderTarget = page.render.mock.calls[0]?.[0].canvas;
+    expect(renderTarget).not.toBe(canvas);
+    expect(canvas.width).toBe(400);
+    expect(canvas.height).toBe(600);
+    expect(textLayer).toContainElement(previousText);
+    expect(context.drawImage).not.toHaveBeenCalled();
+
+    render.resolve();
+    await renderPage;
+
+    expect(context.drawImage).toHaveBeenCalledWith(renderTarget, 0, 0);
+    expect(canvas.width).toBe(800);
+    expect(canvas.height).toBe(1200);
+    expect(canvas.style.width).toBe('400px');
+    expect(textLayer).not.toContainElement(previousText);
+    expect(renderTarget.width).toBe(0);
+  });
+
+  it('leaves the previous paint untouched when a re-render is cancelled', async () => {
+    const render = deferred<void>();
+    const page = {
+      cleanup: vi.fn(),
+      getViewport: vi
+        .fn()
+        .mockReturnValue({ height: 600, rotation: 0, scale: 1, width: 400 }),
+      render: vi
+        .fn()
+        .mockReturnValue({ cancel: vi.fn(), promise: render.promise }),
+      rotate: 0,
+      streamTextContent: vi.fn(),
+      userUnit: 1,
+    };
+    const context = mockCanvasContext();
+    const canvas = document.createElement('canvas');
+    canvas.width = 400;
+    canvas.height = 600;
+    const textLayer = document.createElement('div');
+    const previousText = document.createElement('span');
+    textLayer.append(previousText);
+    document.createElement('div').append(textLayer);
+    const controller = new AbortController();
+
+    const renderPage = renderPdfPage({
+      TextLayer,
+      canvas,
+      document: { getPage: vi.fn().mockResolvedValue(page) } as never,
+      outputScale: 2,
+      pageNumber: 1,
+      rotation: 0,
+      scale: 1,
+      signal: controller.signal,
+      textLayerContainer: textLayer,
+    });
+    await vi.waitFor(() => expect(page.render).toHaveBeenCalledOnce());
+    controller.abort();
+    render.resolve();
+    await renderPage;
+
+    expect(context.drawImage).not.toHaveBeenCalled();
+    expect(canvas.width).toBe(400);
+    expect(canvas.height).toBe(600);
+    expect(textLayer).toContainElement(previousText);
+    expect(page.cleanup).toHaveBeenCalledOnce();
   });
 });
