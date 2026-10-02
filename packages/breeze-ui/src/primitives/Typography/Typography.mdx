@@ -24,6 +24,20 @@ Pass semantic values with `format="currency"` or `format="date"`. Dates use the 
 
 <Canvas of={Stories.Formatting} />
 
+By default, `sign="auto"` signs negative amounts only. `sign="always"` also signs positive amounts, and `sign="never"` omits the sign for content that conveys direction another way. Zero is never signed, including negative zero and amounts that round to zero, so `-0.004` displays as `£0.00`.
+
+Calendar dates are formatted in UTC, so the displayed day never shifts. The provider's `timeZone` governs times of day and is not applied to calendar dates.
+
+### Invalid values
+
+An invalid money value is a programming error, so `Typography` throws a `RangeError` that names it instead of displaying a misleading figure:
+
+- `currency` must be a three-letter ISO 4217 code, such as `GBP`.
+- `value` must be a finite number. `NaN` and `Infinity` are rejected.
+- An invalid `locale` is rejected by `BreezeProvider` before any value is formatted, so it is never reported as a currency error.
+
+Validate or convert untrusted amounts before rendering them. A calendar-invalid date, such as `2026-02-30`, is displayed unchanged.
+
 No separate formatting components are exported.
 
 ## Accessibility

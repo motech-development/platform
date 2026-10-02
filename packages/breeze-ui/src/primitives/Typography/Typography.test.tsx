@@ -96,17 +96,97 @@ describe('Typography', () => {
     expect(screen.getByText(/1\.234,50/)).toHaveTextContent('€ −1.234,50');
   });
 
-  it('falls back to locale-aware number formatting for malformed currency codes', () => {
+  it.each([
+    ['negative zero', -0],
+    ['a negative amount that rounds to zero', -0.004],
+    ['a floating-point sum just below zero', -(0.1 + 0.2) + 0.3],
+  ])('never signs %s', (_description, value) => {
     renderBreeze(
       <Typography
-        currency="US"
+        currency="GBP"
         format="currency"
-        value={-1234.5}
+        value={value}
         variant="money"
       />,
     );
 
-    expect(screen.getByText('−1,234.5')).toBeInTheDocument();
+    expect(screen.getByText('£0.00')).toBeInTheDocument();
+  });
+
+  it('does not sign zero when signs are always shown', () => {
+    renderBreeze(
+      <>
+        <Typography
+          currency="GBP"
+          format="currency"
+          sign="always"
+          value={0}
+          variant="money"
+        />
+        <Typography
+          currency="GBP"
+          format="currency"
+          sign="always"
+          value={5}
+          variant="money"
+        />
+      </>,
+    );
+
+    expect(screen.getByText('£0.00')).toBeInTheDocument();
+    expect(screen.getByText('+£5.00')).toBeInTheDocument();
+  });
+
+  it('rejects a malformed currency code instead of dropping the currency', () => {
+    expect(() =>
+      renderBreeze(
+        <Typography
+          currency="US"
+          format="currency"
+          value={-1234.5}
+          variant="money"
+        />,
+      ),
+    ).toThrow(
+      new RangeError(
+        'Typography currency must be a three-letter ISO 4217 code; received "US".',
+      ),
+    );
+  });
+
+  it.each([Number.NaN, Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY])(
+    'rejects the non-finite amount %s',
+    (value) => {
+      expect(() =>
+        renderBreeze(
+          <Typography
+            currency="GBP"
+            format="currency"
+            value={value}
+            variant="money"
+          />,
+        ),
+      ).toThrow(
+        new RangeError(
+          `Typography currency value must be a finite number; received ${String(value)}.`,
+        ),
+      );
+    },
+  );
+
+  it('leaves an invalid locale to the provider instead of retrying it', () => {
+    expect(() =>
+      render(
+        <BreezeProvider locale="en_GB">
+          <Typography
+            currency="GBP"
+            format="currency"
+            value={10}
+            variant="money"
+          />
+        </BreezeProvider>,
+      ),
+    ).toThrow(RangeError);
   });
 
   it('formats calendar dates without shifting an ISO date', () => {
@@ -119,6 +199,24 @@ describe('Typography', () => {
       'en-GB',
     );
   });
+
+  it.each(['America/New_York', 'Pacific/Kiritimati'])(
+    'keeps the calendar day fixed when the provider time zone is %s',
+    (timeZone) => {
+      render(
+        <>
+          <BreezeProvider locale="en-GB" timeZone="UTC">
+            <Typography format="date" value="2026-01-01" />
+          </BreezeProvider>
+          <BreezeProvider locale="en-GB" timeZone={timeZone}>
+            <Typography format="date" value="2026-01-01" />
+          </BreezeProvider>
+        </>,
+      );
+
+      expect(screen.getAllByText('1 January 2026')).toHaveLength(2);
+    },
+  );
 
   it('does not throw when given a calendar-invalid date', () => {
     renderBreeze(
@@ -137,7 +235,7 @@ describe('Typography', () => {
 
     expect(screen.getByText('Long caption')).toHaveClass(
       'breeze:block',
-      'breeze:inline-size-full',
+      'breeze:inline-full',
     );
   });
 
@@ -153,7 +251,7 @@ describe('Typography', () => {
 
     expect(screen.getByText('£10.00')).toHaveClass(
       'breeze:block',
-      'breeze:inline-size-full',
+      'breeze:inline-full',
       'breeze:text-end',
     );
   });

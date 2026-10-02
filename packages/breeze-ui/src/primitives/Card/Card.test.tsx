@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { describe, expect, expectTypeOf, it } from 'vitest';
 import renderBreeze from '../../../test/render';
 import { Card, type CardProps } from './Card';
@@ -11,6 +11,12 @@ expectTypeOf<CardProps['padding']>().toEqualTypeOf<
 >();
 
 describe('Card', () => {
+  it('requires a BreezeProvider', () => {
+    expect(() => render(<Card>Balance</Card>)).toThrow(
+      'Breeze components must be rendered within BreezeProvider.',
+    );
+  });
+
   it('creates a labelled article when requested', () => {
     renderBreeze(
       <Card element="article" aria-label="Current balance">

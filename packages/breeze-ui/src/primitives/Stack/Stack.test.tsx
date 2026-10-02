@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { describe, expect, expectTypeOf, it } from 'vitest';
 import renderBreeze from '../../../test/render';
 import { Stack, type StackProps } from './Stack';
@@ -11,6 +11,12 @@ expectTypeOf<StackProps['gap']>().toEqualTypeOf<
 >();
 
 describe('Stack', () => {
+  it('requires a BreezeProvider', () => {
+    expect(() => render(<Stack>Balance</Stack>)).toThrow(
+      'Breeze components must be rendered within BreezeProvider.',
+    );
+  });
+
   it('groups content in the requested semantic element', () => {
     renderBreeze(
       <Stack element="section" gap={4} aria-label="Summary">

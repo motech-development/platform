@@ -1,12 +1,12 @@
 import type { ReactNode } from 'react';
 import { createElement } from 'react';
-import getLayoutAccessibility from '../layout.accessibility';
-import type { LayoutElement } from '../layout.types';
+import getLayoutAccessibility from '../../layout/layout.accessibility';
+import type { LayoutElement } from '../../layout/layout.types';
+import { useBreezeContext } from '../../provider/BreezeContext';
 
 const variants = {
   base: {
-    container:
-      'breeze:mx-auto breeze:inline-size-full breeze:min-inline-size-0',
+    container: 'breeze:mx-auto breeze:inline-full breeze:min-inline-0',
   },
   compound: {},
   size: {
@@ -48,6 +48,8 @@ export function Container({
   padded = true,
   width = 'page',
 }: Readonly<ContainerProps>) {
+  useBreezeContext();
+
   const { accessibleLabel, role } = getLayoutAccessibility(ariaLabel, element);
 
   return createElement(

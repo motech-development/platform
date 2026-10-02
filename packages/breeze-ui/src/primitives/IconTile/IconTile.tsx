@@ -1,3 +1,4 @@
+import { useBreezeContext } from '../../provider/BreezeContext';
 import { Icon, type IconName } from '../Icon/Icon';
 
 const variants = {
@@ -6,8 +7,8 @@ const variants = {
   },
   compound: {},
   size: {
-    lg: 'breeze:block-size-breeze-tap breeze:inline-size-breeze-tap',
-    sm: 'breeze:block-size-breeze-7 breeze:inline-size-breeze-7',
+    lg: 'breeze:block-breeze-tap breeze:inline-breeze-tap',
+    sm: 'breeze:block-breeze-7 breeze:inline-breeze-7',
   },
   state: {},
   variant: {
@@ -54,6 +55,8 @@ export function IconTile({
   size = 'lg',
   tone = 'brand',
 }: Readonly<IconTileProps>) {
+  useBreezeContext();
+
   return (
     <span
       className={[
