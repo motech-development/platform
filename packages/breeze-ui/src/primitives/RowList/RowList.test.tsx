@@ -106,6 +106,68 @@ describe('RowList', () => {
     expect(within(grid).getByText('Complete')).toBeInTheDocument();
   });
 
+  it('shows money direction through the icon tile, amount tone and sign', () => {
+    const activity = [
+      {
+        direction: 'in',
+        icon: 'incoming',
+        id: 'invoice',
+        label: 'Invoice paid',
+        value: {
+          currency: 'GBP',
+          format: 'currency',
+          sign: 'always',
+          tone: 'positive',
+          value: 2100,
+        },
+      },
+      {
+        direction: 'out',
+        icon: 'outgoing',
+        id: 'supplies',
+        label: 'Office supplies',
+        value: { currency: 'GBP', format: 'currency', value: -184.6 },
+      },
+      {
+        icon: 'document',
+        id: 'report',
+        label: 'Report',
+        value: { currency: 'GBP', format: 'currency', value: 12 },
+      },
+    ] satisfies RowListItemDescriptor[];
+
+    renderBreeze(
+      <RowList
+        aria-label="Activity"
+        getItem={(descriptor) => descriptor}
+        items={activity}
+        onAction={() => undefined}
+      />,
+    );
+
+    const tileOf = (name: string) =>
+      screen.getByRole('row', { name }).querySelector('svg')?.parentElement;
+    const moneyIn = screen.getByText('+£2,100.00');
+    const moneyOut = screen.getByText('−£184.60');
+
+    expect(tileOf('Invoice paid')).toHaveClass(
+      'breeze:bg-breeze-pos-soft',
+      'breeze:text-breeze-pos',
+    );
+    expect(tileOf('Office supplies')).toHaveClass(
+      'breeze:bg-breeze-sunken',
+      'breeze:text-breeze-ink',
+    );
+    expect(tileOf('Report')).toHaveClass('breeze:text-breeze-ink-2');
+    expect(moneyIn).toHaveClass(
+      'breeze:text-breeze-sm',
+      'breeze:font-semibold',
+      'breeze:text-breeze-pos',
+    );
+    expect(moneyOut).toHaveClass('breeze:text-breeze-ink');
+    expect(screen.getByText('£12.00')).toHaveClass('breeze:text-breeze-ink');
+  });
+
   it('keeps an empty result as a named grid with a row and cell', () => {
     renderBreeze(
       <RowList
