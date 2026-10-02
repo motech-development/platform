@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { expect, within } from 'storybook/test';
 import { Inline } from '../Inline/Inline';
 import { Badge, type BadgeVariant } from './Badge';
 
@@ -26,6 +27,29 @@ export const Default: Story = {};
 
 /** Badge's own five status treatments. */
 export const Treatments: Story = {
+  play: async ({ canvasElement }) => {
+    const badge = within(canvasElement).getByText('warning').parentElement;
+
+    if (!badge) {
+      throw new Error('The warning badge was not rendered.');
+    }
+
+    const style = getComputedStyle(badge);
+
+    await expect({
+      fontSize: style.fontSize,
+      fontWeight: style.fontWeight,
+      letterSpacing: style.letterSpacing,
+      paddingBlock: style.paddingBlockStart,
+      paddingInline: style.paddingInlineStart,
+    }).toEqual({
+      fontSize: '11px',
+      fontWeight: '600',
+      letterSpacing: 'normal',
+      paddingBlock: '1px',
+      paddingInline: '6px',
+    });
+  },
   render: () => (
     <Inline gap={2} wrap>
       {variants.map((variant) => (

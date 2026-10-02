@@ -5,7 +5,7 @@ import { VisuallyHidden } from '../VisuallyHidden/VisuallyHidden';
 const variants = {
   base: {
     badge:
-      'breeze:inline-grid breeze:shrink-0 breeze:items-center breeze:whitespace-nowrap breeze:rounded-breeze-chip breeze:ps-breeze-2 breeze:pe-breeze-2 breeze:py-breeze-px breeze:text-breeze-2xs breeze:font-bold breeze:leading-breeze-snug breeze:tracking-breeze-wide',
+      'breeze:inline-grid breeze:shrink-0 breeze:items-center breeze:whitespace-nowrap breeze:rounded-breeze-chip breeze:px-[6px] breeze:py-breeze-px breeze:text-breeze-2xs breeze:font-semibold breeze:leading-breeze-snug',
     content: 'breeze:[grid-area:1/1]',
     skeleton:
       'breeze:[grid-area:1/1] breeze:grid breeze:inline-full breeze:items-center',
