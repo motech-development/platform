@@ -32,15 +32,15 @@ Tokens are prefixed inside the Tailwind namespace. Tailwind also applies the `br
 
 ### Type scale
 
-| Size | Role                                       |
-| ---- | ------------------------------------------ |
-| 11px | Badges and compact metadata                |
-| 12px | Field labels and secondary metadata        |
-| 13px | Buttons, fields, body text and collections |
-| 15px | Card, dialog and state-panel titles        |
-| 17px | Section headings                           |
-| 22px | Page headings                              |
-| 26px | Numeric emphasis                           |
+| Size | Role                                                    |
+| ---- | ------------------------------------------------------- |
+| 11px | Badges and compact metadata                             |
+| 12px | Field labels and secondary metadata                     |
+| 13px | Buttons, fields, body text, collections and card titles |
+| 15px | State-panel, form-section and drop-zone titles          |
+| 17px | Section headings and dialog titles                      |
+| 22px | Page headings                                           |
+| 26px | Numeric emphasis                                        |
 
 Add a token together with the shipped component that uses it, and remove a token when its last use goes.
 
