@@ -29,9 +29,7 @@ const meta = {
 export default meta;
 type Story = Omit<StoryObj<typeof meta>, 'args'>;
 
-function ShellExample({
-  actionIcon = true,
-}: Readonly<{ actionIcon?: boolean }>) {
+function ShellExample() {
   const [currentHref, setCurrentHref] = useState('/overview');
   const [transitionTypes, setTransitionTypes] = useState('none');
   const [createdCount, setCreatedCount] = useState(0);
@@ -72,7 +70,7 @@ function ShellExample({
       <ApplicationShell
         account={<button type="button">Jordan Lee</button>}
         action={{
-          ...(actionIcon ? { icon: 'add' as const } : {}),
+          icon: 'add',
           label: 'Create item',
           onAction: () => setCreatedCount((count) => count + 1),
         }}
@@ -261,6 +259,13 @@ export const Default: Story = {
             canvas.getByText('Created items: 1'),
           ).toBeInTheDocument();
 
+          // The main landmark's clearance is derived from the bar's tokens.
+          await expect(
+            Number.parseFloat(
+              view.getComputedStyle(canvas.getByRole('main')).paddingBlockEnd,
+            ),
+          ).toBe(updatedNavigation.getBoundingClientRect().height);
+
           view.scrollTo(0, document.documentElement.scrollHeight);
           const lastContent = canvas.getByTestId('last-content');
           await expect(
@@ -283,45 +288,4 @@ export const Default: Story = {
     }
   },
   render: () => <ShellExample />,
-};
-
-/** The action label stays readable when no curated icon is supplied. */
-export const TextActionFallback: Story = {
-  play: async ({ canvasElement }) => {
-    if (!('__vitest_browser__' in globalThis)) return;
-
-    const browserContext = await import('vitest/browser');
-    const document = canvasElement.ownerDocument;
-    const view = document.defaultView;
-
-    if (!view) throw new Error('Missing ApplicationShell story window.');
-
-    const originalViewport = {
-      height: view.innerHeight,
-      width: view.innerWidth,
-    };
-
-    try {
-      await browserContext.page.viewport(390, 844);
-
-      const canvas = within(canvasElement);
-      const action = canvas.getByRole('button', { name: 'Create item' });
-      const label = within(action).getByText('Create item');
-      const actionRect = action.getBoundingClientRect();
-      const labelRect = label.getBoundingClientRect();
-
-      await expect(label).toBeVisible();
-      await expect(labelRect.width).toBeLessThanOrEqual(actionRect.width);
-      await expect(labelRect.height).toBeLessThanOrEqual(actionRect.height);
-      await expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(
-        view.innerWidth,
-      );
-    } finally {
-      await browserContext.page.viewport(
-        originalViewport.width,
-        originalViewport.height,
-      );
-    }
-  },
-  render: () => <ShellExample actionIcon={false} />,
 };

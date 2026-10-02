@@ -25,11 +25,20 @@ expectTypeOf<ApplicationShellProps<Destination>>().not.toHaveProperty(
   'className',
 );
 expectTypeOf<ApplicationShellProps<Destination>>().not.toHaveProperty('style');
+expectTypeOf<ApplicationShellProps<Destination>>().not.toHaveProperty(
+  'loading',
+);
+// The centre action is icon-only, so it needs both artwork and a name.
+expectTypeOf<{
+  label: string;
+  onAction: () => void;
+}>().not.toExtend<ApplicationShellProps<Destination>['action']>();
 
 function renderShell(
   router: ComponentProps<typeof BreezeProvider>['router'] = undefined,
   children: ApplicationShellProps<Destination>['children'] = null,
   action: ApplicationShellProps<Destination>['action'] = {
+    icon: 'add',
     label: 'Create transaction',
     onAction: vi.fn(),
   },
@@ -113,7 +122,7 @@ describe('ApplicationShell', () => {
     ).toBeInTheDocument();
   });
 
-  it('activates the fixed action and keeps its label accessible when it has an icon', async () => {
+  it('activates the icon-only fixed action through its accessible label', async () => {
     const onAction = vi.fn();
     renderShell(undefined, null, {
       icon: 'add',
@@ -133,7 +142,7 @@ describe('ApplicationShell', () => {
       <BreezeProvider locale="en-GB">
         <ApplicationShell
           account={null}
-          action={{ label: 'Create first', onAction: vi.fn() }}
+          action={{ icon: 'add', label: 'Create first', onAction: vi.fn() }}
           brand="First"
           context={null}
           currentItem="overview"
@@ -145,7 +154,7 @@ describe('ApplicationShell', () => {
         </ApplicationShell>
         <ApplicationShell
           account={null}
-          action={{ label: 'Create second', onAction: vi.fn() }}
+          action={{ icon: 'add', label: 'Create second', onAction: vi.fn() }}
           brand="Second"
           context={null}
           currentItem="overview"
@@ -185,7 +194,11 @@ describe('ApplicationShell', () => {
       <BreezeProvider locale="en-GB" router={{ navigate }}>
         <ApplicationShell
           account={null}
-          action={{ label: 'Create transaction', onAction: vi.fn() }}
+          action={{
+            icon: 'add',
+            label: 'Create transaction',
+            onAction: vi.fn(),
+          }}
           brand="Motech"
           context={null}
           currentItem="overview"

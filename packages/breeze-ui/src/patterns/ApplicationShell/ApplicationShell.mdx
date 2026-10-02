@@ -25,7 +25,7 @@ For example, an application can adapt its own route model while keeping the shel
 ```tsx
 <ApplicationShell
   account={<AccountMenu />}
-  action={{ label: 'Create item', onAction: createItem }}
+  action={{ icon: 'add', label: 'Create item', onAction: createItem }}
   brand={<Brand />}
   context={<WorkspaceSwitcher />}
   currentItem={currentRoute.key}
@@ -47,23 +47,13 @@ The anchors keep native link behavior. When a same-document router is configured
 
 `brand`, `context`, `notifications` and `account` accept `ReactNode`. Their content and semantics belong to the application: label interactive controls, keep keyboard behavior usable and provide accessible names for icon-only controls. `children` is rendered inside the shell's main landmark.
 
-`action` is required. Its `label` names the action, and `onAction` performs the application-owned operation. An optional curated icon is displayed inside the mobile action button; without an icon, the label is shown in a bounded, wrapping fallback.
+`action` is required. It renders as a circular, icon-only `IconButton`: `icon` selects curated Breeze artwork, `label` is its accessible name, and `onAction` performs the application-owned operation.
 
 ## Responsive behavior and motion
 
 At Breeze's private `lg` breakpoint (1181px), navigation is horizontal beneath the top bar. Below that breakpoint, the navigation is fixed to the bottom edge and the required action stays in the centre slot. The centre slot keeps its position as the current page changes. The main content includes clearance for the fixed navigation and the device safe area.
 
 The shell renders one skip link before its chrome and gives its main landmark a generated unique ID and `tabIndex={-1}`. Its top bar, top navigation, bottom navigation and current marker participate in view transitions through Breeze's built-in singleton names. Mount one visible shell at a time so those names stay unique in the document.
-
-## Text action fallback
-
-The action remains named and readable without a curated icon.
-
-<Canvas
-  layout="fullscreen"
-  of={Stories.TextActionFallback}
-  story={{ height: '844px', inline: false }}
-/>
 
 ## API
 

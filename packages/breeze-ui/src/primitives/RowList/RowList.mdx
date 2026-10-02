@@ -19,7 +19,9 @@ Pass application values through `items` and return a closed
 `RowListItemDescriptor` from `getItem`. Each descriptor has a stable `id` and a
 visible `label`. It may also include a `description`, `icon`, `badge`, or
 `disabled` state. `metadata` accepts text or an ISO calendar date. `value`
-accepts text or a currency amount, formatted with the provider locale.
+accepts text or a currency amount, formatted with the provider locale. A
+currency `value` is passed to `Typography`, so a non-finite amount or a
+malformed currency code throws a `RangeError` when the row displays its value.
 
 Use the optional `section` object to group rows under structural section
 headers. Keep each section ID stable when rows are appended or merged. Keep row
@@ -27,7 +29,8 @@ IDs unique and stable so the focused row remains mounted as data changes.
 
 ## Activate rows
 
-`onAction` receives the activated row's descriptor. React Aria supplies the
+`onAction` receives the activated row's application item from `items`, as
+`Select`, `ComboBox` and `ToggleGroup` do. React Aria supplies the
 grid-list keyboard interaction; use the arrow keys to move between rows and
 Enter or Space to activate the focused row.
 

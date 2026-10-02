@@ -2,8 +2,8 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import renderBreeze from '../../../test/render';
+import type { ItemDescriptor } from '../../collections/item.types';
 import { BreezeProvider } from '../../provider/BreezeProvider';
-import type { ItemDescriptor } from '../Collection/item.types';
 import { ToggleGroup, type ToggleGroupProps } from './ToggleGroup';
 
 const options = [

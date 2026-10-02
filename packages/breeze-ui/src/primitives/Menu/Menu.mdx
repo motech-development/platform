@@ -15,11 +15,20 @@ the visible label concise.
 
 <Canvas of={Stories.Default} />
 
+## Icon-only trigger
+
+Omit `trigger` and set `triggerIcon` and `triggerAriaLabel` together for a
+compact icon-only trigger, such as a More actions button. `triggerAriaLabel`
+is then required, because it is the trigger's only name.
+
+<Canvas of={Stories.IconOnlyTrigger} />
+
 ## Loading the menu
 
 Use `loading` when the trigger should wait before opening. It shows a loading
-bar while keeping its size and accessible label. Actions in an already-open
-menu remain available.
+bar while keeping its size and accessible label; an icon-only trigger replaces
+its icon with a skeleton, as `IconButton` does. Actions in an already-open menu
+remain available.
 
 <Canvas of={Stories.Loading} />
 
@@ -33,8 +42,9 @@ when they help people scan the choices.
 
 ## Respond to a selection
 
-`onAction` receives the selected item's `ItemDescriptor`. The menu closes when
-an action is selected. Show that action's progress, confirmation or errors in
+`onAction` receives the selected application item from `items`, as
+`Select`, `ComboBox` and `ToggleGroup` do. The menu closes when an action is
+selected. Show that action's progress, confirmation or errors in
 the page or dialog that follows.
 
 Use `defaultOpen` when the menu manages its own visibility. To control

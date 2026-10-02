@@ -4,10 +4,10 @@ import {
   GridListItem as AriaGridListItem,
   GridListSection as AriaGridListSection,
 } from 'react-aria-components/GridList';
+import type { ItemDescriptor } from '../../collections/item.types';
 import { useBreezeContext } from '../../provider/BreezeContext';
 import { Badge } from '../Badge/Badge';
 import { Button } from '../Button/Button';
-import type { ItemDescriptor } from '../Collection/item.types';
 import { Icon } from '../Icon/Icon';
 import { Skeleton } from '../Skeleton/Skeleton';
 import { type IsoCalendarDate, Typography } from '../Typography/Typography';
@@ -15,43 +15,41 @@ import { type IsoCalendarDate, Typography } from '../Typography/Typography';
 const variants = {
   base: {
     badge:
-      'breeze:block breeze:inline-size-full breeze:max-inline-size-full breeze:min-inline-size-0 breeze:overflow-hidden breeze:whitespace-nowrap breeze:[&>span]:max-inline-size-full breeze:[&>span]:min-inline-size-0 breeze:[&>span]:overflow-hidden breeze:[&>span>span:first-child]:min-inline-size-0 breeze:[&>span>span:first-child]:overflow-hidden breeze:[&>span>span:first-child]:text-ellipsis',
-    container: 'breeze:min-inline-size-0 breeze:inline-size-full',
-    content:
-      'breeze:flex breeze:min-inline-size-0 breeze:flex-1 breeze:flex-col',
+      'breeze:block breeze:inline-full breeze:max-inline-full breeze:min-inline-0 breeze:overflow-hidden breeze:whitespace-nowrap breeze:[&>span]:max-inline-full breeze:[&>span]:min-inline-0 breeze:[&>span]:overflow-hidden breeze:[&>span>span:first-child]:min-inline-0 breeze:[&>span>span:first-child]:overflow-hidden breeze:[&>span>span:first-child]:text-ellipsis',
+    container: 'breeze:min-inline-0 breeze:inline-full',
+    content: 'breeze:flex breeze:min-inline-0 breeze:flex-1 breeze:flex-col',
     description:
       'breeze:break-words breeze:text-breeze-xs breeze:font-normal breeze:leading-breeze-snug breeze:text-breeze-ink-3',
     emptyMessage:
-      'breeze:box-border breeze:inline-size-full breeze:min-inline-size-0 breeze:px-breeze-3 breeze:py-breeze-3 breeze:text-breeze-sm breeze:text-breeze-ink-2',
-    grid: 'breeze:inline-size-full breeze:min-inline-size-0 breeze:flex breeze:flex-col breeze:gap-0',
+      'breeze:box-border breeze:inline-full breeze:min-inline-0 breeze:px-breeze-3 breeze:py-breeze-3 breeze:text-breeze-sm breeze:text-breeze-ink-2',
+    grid: 'breeze:inline-full breeze:min-inline-0 breeze:flex breeze:flex-col breeze:gap-0',
     header:
-      'breeze:box-border breeze:inline-size-full breeze:min-inline-size-0 breeze:grid breeze:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] breeze:items-center breeze:gap-breeze-4 breeze:border-breeze-line breeze:border-be breeze:px-breeze-3 breeze:py-breeze-2 breeze:text-breeze-xs breeze:font-medium breeze:text-breeze-ink-2 breeze:max-breeze-md:grid-cols-1 breeze:max-breeze-md:gap-breeze-1',
-    headerLabel:
-      'breeze:col-start-1 breeze:min-inline-size-0 breeze:break-words',
-    icon: 'breeze:block-size-breeze-4 breeze:inline-size-breeze-4 breeze:shrink-0',
-    item: 'breeze:box-border breeze:inline-size-full breeze:min-inline-size-0 breeze:grid breeze:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] breeze:items-center breeze:gap-breeze-4 breeze:border-breeze-line breeze:border-be breeze:px-breeze-3 breeze:py-breeze-3 breeze:text-start breeze:outline-offset-[-2px] breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-50 breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[hovered]:bg-breeze-sunken breeze:data-[pressed]:bg-breeze-sunken breeze:any-pointer-coarse:min-block-breeze-tap breeze:max-breeze-md:grid-cols-1 breeze:max-breeze-md:gap-breeze-1',
-    label: 'breeze:min-inline-size-0 breeze:break-words breeze:font-medium',
+      'breeze:box-border breeze:inline-full breeze:min-inline-0 breeze:grid breeze:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] breeze:items-center breeze:gap-breeze-4 breeze:border-breeze-line breeze:border-be breeze:px-breeze-3 breeze:py-breeze-2 breeze:text-breeze-xs breeze:font-medium breeze:text-breeze-ink-2 breeze:max-breeze-md:grid-cols-1 breeze:max-breeze-md:gap-breeze-1',
+    headerLabel: 'breeze:col-start-1 breeze:min-inline-0 breeze:break-words',
+    icon: 'breeze:block-breeze-4 breeze:inline-breeze-4 breeze:shrink-0',
+    item: 'breeze:box-border breeze:inline-full breeze:min-inline-0 breeze:grid breeze:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] breeze:items-center breeze:gap-breeze-4 breeze:border-breeze-line breeze:border-be breeze:px-breeze-3 breeze:py-breeze-3 breeze:text-start breeze:outline-offset-[-2px] breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-50 breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[hovered]:bg-breeze-sunken breeze:data-[pressed]:bg-breeze-sunken breeze:any-pointer-coarse:min-block-breeze-tap breeze:max-breeze-md:grid-cols-1 breeze:max-breeze-md:gap-breeze-1',
+    label: 'breeze:min-inline-0 breeze:break-words breeze:font-medium',
     leading:
-      'breeze:col-start-1 breeze:flex breeze:min-inline-size-0 breeze:flex-col breeze:items-start breeze:gap-breeze-2',
+      'breeze:col-start-1 breeze:flex breeze:min-inline-0 breeze:flex-col breeze:items-start breeze:gap-breeze-2',
     loadMore:
-      'breeze:flex breeze:min-inline-size-0 breeze:justify-center breeze:py-breeze-3',
+      'breeze:flex breeze:min-inline-0 breeze:justify-center breeze:py-breeze-3',
     loadingLeading:
-      'breeze:flex breeze:min-inline-size-0 breeze:flex-col breeze:gap-breeze-2',
+      'breeze:flex breeze:min-inline-0 breeze:flex-col breeze:gap-breeze-2',
     loadingMoneyPlaceholder:
       'breeze:flex breeze:justify-end breeze:font-breeze-sans breeze:text-breeze-4xl breeze:font-semibold breeze:leading-breeze-tight breeze:tracking-breeze-tightest breeze:tabular-nums breeze:[&>progress]:[font:inherit]',
     loadingPlaceholder:
       'breeze:flex breeze:justify-end breeze:max-breeze-md:justify-start',
     loadingRow:
-      'breeze:box-border breeze:inline-size-full breeze:min-inline-size-0 breeze:grid breeze:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] breeze:items-center breeze:gap-breeze-4 breeze:border-breeze-line breeze:border-be breeze:px-breeze-3 breeze:py-breeze-3 breeze:max-breeze-md:grid-cols-1 breeze:max-breeze-md:gap-breeze-1',
+      'breeze:box-border breeze:inline-full breeze:min-inline-0 breeze:grid breeze:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] breeze:items-center breeze:gap-breeze-4 breeze:border-breeze-line breeze:border-be breeze:px-breeze-3 breeze:py-breeze-3 breeze:max-breeze-md:grid-cols-1 breeze:max-breeze-md:gap-breeze-1',
     loadingStatus: 'breeze:sr-only',
     metadata:
-      'breeze:col-start-2 breeze:min-inline-size-0 breeze:break-words breeze:text-end breeze:max-breeze-md:col-start-1 breeze:max-breeze-md:text-start',
+      'breeze:col-start-2 breeze:min-inline-0 breeze:break-words breeze:text-end breeze:max-breeze-md:col-start-1 breeze:max-breeze-md:text-start',
     primary:
-      'breeze:flex breeze:inline-size-full breeze:min-inline-size-0 breeze:items-start breeze:gap-breeze-2',
-    section: 'breeze:flex breeze:min-inline-size-0 breeze:flex-col',
-    skeletonRows: 'breeze:flex breeze:min-inline-size-0 breeze:flex-col',
+      'breeze:flex breeze:inline-full breeze:min-inline-0 breeze:items-start breeze:gap-breeze-2',
+    section: 'breeze:flex breeze:min-inline-0 breeze:flex-col',
+    skeletonRows: 'breeze:flex breeze:min-inline-0 breeze:flex-col',
     value:
-      'breeze:col-start-3 breeze:min-inline-size-0 breeze:break-words breeze:text-end breeze:max-breeze-md:col-start-1 breeze:max-breeze-md:text-start',
+      'breeze:col-start-3 breeze:min-inline-0 breeze:break-words breeze:text-end breeze:max-breeze-md:col-start-1 breeze:max-breeze-md:text-start',
   },
   compound: {},
   size: {},
@@ -107,39 +105,46 @@ export interface RowListProps<T> {
   loading?: boolean;
   /** Optional explicit action for retrieving more rows. */
   loadMore?: RowListLoadMoreProps;
-  /** Called with the activated row's descriptor. */
-  onAction: (descriptor: RowListItemDescriptor) => void;
+  /** Called with the activated row's application item. */
+  onAction: (item: T) => void;
 }
 
-interface RowGroup {
+interface Row<T> {
+  descriptor: RowListItemDescriptor;
+  item: T;
+}
+
+interface RowGroup<T> {
   id: string;
-  items: RowListItemDescriptor[];
   label: string;
+  rows: Row<T>[];
 }
 
-type ListEntry =
-  | { kind: 'row'; descriptor: RowListItemDescriptor }
-  | { group: RowGroup; kind: 'section' };
+type ListEntry<T> =
+  | { kind: 'row'; row: Row<T> }
+  | { group: RowGroup<T>; kind: 'section' };
 
-function groupRows(descriptors: RowListItemDescriptor[]): ListEntry[] {
-  const entries: ListEntry[] = [];
-  const sections = new Map<string, RowGroup>();
+function groupRows<T>(rows: Row<T>[]): ListEntry<T>[] {
+  const entries: ListEntry<T>[] = [];
+  const sections = new Map<string, RowGroup<T>>();
 
-  descriptors.forEach((descriptor) => {
-    if (!descriptor.section) {
-      entries.push({ descriptor, kind: 'row' });
+  rows.forEach((row) => {
+    const { section } = row.descriptor;
+
+    if (!section) {
+      entries.push({ kind: 'row', row });
       return;
     }
 
-    const group = sections.get(descriptor.section.id);
+    const group = sections.get(section.id);
 
     if (group) {
-      group.items.push(descriptor);
+      group.rows.push(row);
     } else {
       const newGroup = {
-        id: descriptor.section.id,
-        items: [descriptor],
-        label: descriptor.section.label,
+        id: section.id,
+        label: section.label,
+        rows: [row],
       };
       sections.set(newGroup.id, newGroup);
       entries.push({ group: newGroup, kind: 'section' });
@@ -303,9 +308,9 @@ function RowContent({
   );
 }
 
-function renderRow(
-  descriptor: RowListItemDescriptor,
-  onAction: RowListProps<unknown>['onAction'],
+function renderRow<T>(
+  { descriptor, item }: Row<T>,
+  onAction: RowListProps<T>['onAction'],
 ) {
   return (
     <AriaGridListItem
@@ -313,7 +318,7 @@ function renderRow(
       id={`row:${descriptor.id}`}
       isDisabled={descriptor.disabled}
       key={`row:${descriptor.id}`}
-      onAction={() => onAction(descriptor)}
+      onAction={() => onAction(item)}
       textValue={descriptor.label}
     >
       <RowContent descriptor={descriptor} />
@@ -335,8 +340,9 @@ export function RowList<T>({
   onAction,
 }: Readonly<RowListProps<T>>) {
   const { getMessageLocale, messages } = useBreezeContext();
-  const descriptors = items.map(getItem);
-  const entries = groupRows(descriptors);
+  const entries = groupRows(
+    items.map((item) => ({ descriptor: getItem(item), item })),
+  );
   const loadMoreLoading = loadMore?.loading ?? false;
   const isLoading = loading || loadMoreLoading;
   let statusMessage = '';
@@ -369,7 +375,7 @@ export function RowList<T>({
       >
         {entries.map((entry) => {
           if (entry.kind === 'row') {
-            return renderRow(entry.descriptor, onAction);
+            return renderRow(entry.row, onAction);
           }
 
           return (
@@ -383,9 +389,7 @@ export function RowList<T>({
                   {entry.group.label}
                 </span>
               </AriaGridListHeader>
-              {entry.group.items.map((descriptor) =>
-                renderRow(descriptor, onAction),
-              )}
+              {entry.group.rows.map((row) => renderRow(row, onAction))}
             </AriaGridListSection>
           );
         })}

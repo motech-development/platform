@@ -92,7 +92,7 @@ export function Link({
       id={id}
       lang={lang}
       onClick={(event) =>
-        routeAnchorClick(event, href, router, transitionTypes, download)
+        routeAnchorClick(event, router, transitionTypes, download)
       }
       ref={ref}
       rel={rel}

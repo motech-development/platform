@@ -1,6 +1,6 @@
 import type { ButtonHTMLAttributes, Ref } from 'react';
+import SelectionControl from '../../selection-controls/SelectionControl';
 import type { ControlSize } from '../Button/Button';
-import SelectionControl from '../SelectionControl/SelectionControl';
 
 const variants = {
   base: {
