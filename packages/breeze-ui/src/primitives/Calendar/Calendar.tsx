@@ -4,6 +4,7 @@ import {
   createElement,
   type JSX as ReactJSX,
   type KeyboardEvent as ReactKeyboardEvent,
+  type ReactElement,
   useEffect,
   useRef,
   useState,
@@ -18,7 +19,8 @@ import {
   CalendarHeaderCell as AriaCalendarHeaderCell,
   CalendarHeading as AriaCalendarHeading,
 } from 'react-aria-components/Calendar';
-import { joinClassNames } from '../Field/field.styles';
+import { joinClassNames } from '../../fields/field.styles';
+import { useBreezeContext } from '../../provider/BreezeContext';
 import { Icon } from '../Icon/Icon';
 import type { IsoCalendarDate } from '../Typography/Typography';
 
@@ -26,20 +28,20 @@ const calendarVariants = {
   base: {
     cell: 'breeze:grid breeze:min-block-breeze-8 breeze:min-inline-breeze-8 breeze:any-pointer-coarse:min-block-breeze-tap breeze:any-pointer-coarse:min-inline-breeze-tap breeze:place-items-center breeze:rounded-breeze-full breeze:font-breeze-sans breeze:text-breeze-sm breeze:text-breeze-ink breeze:outline-offset-2 breeze:data-[focused]:bg-breeze-sunken breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[hovered]:bg-breeze-sunken breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-50 breeze:data-[outside-month]:text-breeze-ink-3',
     disabledRoot: 'breeze:pointer-events-none breeze:[&>div:last-child]:hidden',
-    grid: 'breeze:w-full breeze:table-fixed breeze:border-separate breeze:border-spacing-1 breeze:any-pointer-coarse:border-spacing-0',
+    grid: 'breeze:inline-full breeze:table-fixed breeze:border-separate breeze:border-spacing-breeze-px breeze:any-pointer-coarse:border-spacing-[0px]',
     header:
-      'breeze:mb-breeze-2 breeze:flex breeze:min-block-breeze-tap breeze:items-center breeze:justify-between',
+      'breeze:mbe-breeze-2 breeze:flex breeze:min-block-breeze-tap breeze:items-center breeze:justify-between',
     heading:
       'breeze:m-0 breeze:font-breeze-sans breeze:text-breeze-sm breeze:font-semibold breeze:text-breeze-ink',
     navButton:
-      'breeze:grid breeze:block-size-breeze-8 breeze:inline-size-breeze-8 breeze:place-items-center breeze:rounded-breeze-full breeze:border-0 breeze:bg-transparent breeze:text-breeze-ink-2 breeze:outline-offset-2 breeze:hover:bg-breeze-sunken breeze:focus-visible:outline-2 breeze:focus-visible:outline-solid breeze:focus-visible:outline-breeze-brand breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-50 breeze:any-pointer-coarse:min-block-breeze-tap breeze:any-pointer-coarse:min-inline-breeze-tap',
+      'breeze:grid breeze:block-breeze-8 breeze:inline-breeze-8 breeze:place-items-center breeze:rounded-breeze-full breeze:border-0 breeze:bg-transparent breeze:text-breeze-ink-2 breeze:outline-offset-2 breeze:hover:bg-breeze-sunken breeze:focus-visible:outline-2 breeze:focus-visible:outline-solid breeze:focus-visible:outline-breeze-brand breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-50 breeze:any-pointer-coarse:min-block-breeze-tap breeze:any-pointer-coarse:min-inline-breeze-tap',
     root: 'breeze:flex breeze:flex-col breeze:gap-breeze-2 breeze:outline-none',
     selectedCell:
-      'breeze:bg-breeze-brand breeze:text-breeze-on-brand breeze:data-[focused]:data-[selected]:bg-breeze-brand breeze:data-[selected]:data-[hovered]:bg-breeze-brand breeze:data-[outside-month]:data-[selected]:text-breeze-on-brand breeze:forced-colors:data-[selected]:outline-2 breeze:forced-colors:data-[selected]:outline-solid breeze:forced-colors:data-[selected]:outline-offset-2',
+      'breeze:bg-breeze-brand breeze:data-[selected]:text-breeze-on-brand breeze:data-[focused]:data-[selected]:bg-breeze-brand breeze:data-[selected]:data-[hovered]:bg-breeze-brand breeze:data-[outside-month]:data-[selected]:text-breeze-on-brand breeze:forced-colors:data-[selected]:outline-2 breeze:forced-colors:data-[selected]:outline-solid breeze:forced-colors:data-[selected]:outline-offset-2',
     todayCell:
       'breeze:outline-2 breeze:outline-solid breeze:outline-breeze-brand',
     weekday:
-      'breeze:pb-breeze-1 breeze:text-center breeze:font-breeze-sans breeze:text-breeze-xs breeze:font-medium breeze:text-breeze-ink-3',
+      'breeze:pbe-breeze-1 breeze:text-center breeze:font-breeze-sans breeze:text-breeze-xs breeze:font-medium breeze:text-breeze-ink-3',
   },
   compound: {},
   size: {},
@@ -112,7 +114,7 @@ function CalendarContent({ disabled }: Readonly<{ disabled: boolean }>) {
           isDisabled={disabled}
           slot="next"
         >
-          <Icon name="next" size="sm" />
+          <Icon name="forward" size="sm" />
         </AriaButton>
       </div>
       <AriaCalendarGrid
@@ -160,7 +162,7 @@ export function CalendarSurface({
   label,
   onChange,
   value,
-}: Readonly<CalendarSurfaceProps>) {
+}: Readonly<CalendarSurfaceProps>): ReactElement {
   const selectedValueKey = value?.toString();
   const previousSelectedValueKey = useRef(selectedValueKey);
   const [focusedValue, setFocusedValue] = useState(value ?? undefined);
@@ -239,6 +241,8 @@ export function Calendar({
   onChange,
   value,
 }: Readonly<CalendarProps>) {
+  useBreezeContext();
+
   const selectedValue =
     value === undefined ? undefined : parseCalendarDate(value);
   const initialValue =

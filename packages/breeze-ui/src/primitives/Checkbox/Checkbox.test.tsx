@@ -160,8 +160,8 @@ describe('Checkbox', () => {
 
     expect(indicatorPlaceholder).toHaveAttribute('aria-hidden', 'true');
     expect(indicatorPlaceholder).toHaveClass(
-      'breeze:block-size-breeze-5',
-      'breeze:inline-size-breeze-5',
+      'breeze:block-breeze-5',
+      'breeze:inline-breeze-5',
     );
     expect(indicatorPlaceholder).not.toHaveClass(
       'breeze:overflow-hidden',

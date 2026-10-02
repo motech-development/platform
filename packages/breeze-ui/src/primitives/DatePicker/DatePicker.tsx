@@ -10,14 +10,15 @@ import {
 } from 'react';
 import { Button as AriaButton } from 'react-aria-components/Button';
 import { Dialog as AriaDialog } from 'react-aria-components/Dialog';
-import { useBreezeContext } from '../../provider/BreezeContext';
-import { CalendarSurface, parseCalendarDate } from '../Calendar/Calendar';
-import CollectionPopover from '../Collection/CollectionPopover';
+import CollectionPopover from '../../collections/CollectionPopover';
 import {
   FieldLabel,
   FieldSupportingContent,
-} from '../Field/field.presentation';
-import { fieldVariants, joinClassNames } from '../Field/field.styles';
+} from '../../fields/field.presentation';
+import { fieldVariants, joinClassNames } from '../../fields/field.styles';
+import { useBreezeContext } from '../../provider/BreezeContext';
+import { Button } from '../Button/Button';
+import { CalendarSurface, parseCalendarDate } from '../Calendar/Calendar';
 import { Icon } from '../Icon/Icon';
 import { Skeleton } from '../Skeleton/Skeleton';
 import type { IsoCalendarDate } from '../Typography/Typography';
@@ -25,11 +26,13 @@ import { Typography } from '../Typography/Typography';
 
 const datePickerVariants = {
   base: {
+    footer:
+      'breeze:mbs-breeze-2 breeze:flex breeze:items-center breeze:border-0 breeze:border-bs breeze:border-solid breeze:border-breeze-line breeze:pbs-breeze-2',
     popover:
-      'breeze:!inline-size-[360px] breeze:max-inline-size-[calc(100vw_-_24px)] breeze:p-breeze-3 breeze:any-pointer-coarse:!p-0 breeze-date-picker-popover',
+      'breeze:inline-[360px]! breeze:p-breeze-3 breeze:any-pointer-coarse:!p-0 breeze-date-picker-popover',
     trigger:
-      'breeze:flex breeze:min-block-breeze-md breeze:any-pointer-coarse:min-block-breeze-tap breeze:min-inline-size-0 breeze:inline-size-full breeze:items-center breeze:justify-between breeze:gap-breeze-3 breeze:rounded-breeze-ctl breeze:border breeze:border-solid breeze:border-breeze-line-strong breeze:bg-breeze-surface breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:py-breeze-2 breeze:font-breeze-sans breeze:text-breeze-sm breeze:text-breeze-ink breeze:outline-offset-2 breeze:data-[hovered]:border-breeze-brand breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[invalid]:border-breeze-danger breeze:disabled:cursor-not-allowed breeze:disabled:bg-breeze-sunken breeze:disabled:opacity-60',
-    value: 'breeze:min-inline-size-0 breeze:flex-1 breeze:text-start',
+      'breeze:flex breeze:min-block-breeze-md breeze:any-pointer-coarse:min-block-breeze-tap breeze:min-inline-0 breeze:inline-full breeze:items-center breeze:justify-between breeze:gap-breeze-3 breeze:rounded-breeze-ctl breeze:border breeze:border-solid breeze:border-breeze-line-strong breeze:bg-breeze-surface breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:py-breeze-2 breeze:font-breeze-sans breeze:text-breeze-sm breeze:text-breeze-ink breeze:outline-offset-2 breeze:data-[hovered]:border-breeze-brand breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[invalid]:border-breeze-danger breeze:aria-disabled:cursor-default breeze:aria-disabled:bg-breeze-sunken breeze:disabled:cursor-not-allowed breeze:disabled:bg-breeze-sunken breeze:disabled:opacity-60',
+    value: 'breeze:min-inline-0 breeze:flex-1 breeze:text-start',
   },
   compound: {},
   size: {},
@@ -58,12 +61,12 @@ interface DatePickerCommonProps {
   name?: string;
   /** Temporary text shown before a date is selected. */
   placeholder?: string;
-  /** Marks the field as required. Defaults to `true`. */
-  required?: boolean;
+  /** Prevents changing the date while retaining focus and form participation. */
+  readOnly?: boolean;
 }
 
-interface ControlledDatePickerProps {
-  /** Current selected ISO calendar date, or `null` when empty. */
+interface ControlledRequiredDatePickerProps {
+  /** Current selected ISO calendar date, or `null` before one is chosen. */
   value: IsoCalendarDate | null;
   /** Reports the selected ISO calendar date without exposing a DOM event. */
   onChange: (value: IsoCalendarDate) => void;
@@ -71,7 +74,7 @@ interface ControlledDatePickerProps {
   defaultValue?: never;
 }
 
-interface UncontrolledDatePickerProps {
+interface UncontrolledRequiredDatePickerProps {
   /** Initial selected ISO calendar date. */
   defaultValue?: IsoCalendarDate;
   /** Reports the selected ISO calendar date without exposing a DOM event. */
@@ -80,9 +83,48 @@ interface UncontrolledDatePickerProps {
   value?: never;
 }
 
-/** Props for controlled or uncontrolled ISO date selection. */
+interface ControlledOptionalDatePickerProps {
+  /** Current selected ISO calendar date, or `null` when empty. */
+  value: IsoCalendarDate | null;
+  /** Reports the selected ISO calendar date, or `null` when cleared. */
+  onChange: (value: IsoCalendarDate | null) => void;
+  /** Controlled and uncontrolled value props are mutually exclusive. */
+  defaultValue?: never;
+}
+
+interface UncontrolledOptionalDatePickerProps {
+  /** Initial selected ISO calendar date, or `null` when empty. */
+  defaultValue?: IsoCalendarDate | null;
+  /** Reports the selected ISO calendar date, or `null` when cleared. */
+  onChange?: (value: IsoCalendarDate | null) => void;
+  /** Controlled and uncontrolled value props are mutually exclusive. */
+  value?: never;
+}
+
+interface RequiredDatePickerProps {
+  /** Marks the field as required. Defaults to `true`; a required date cannot be cleared. */
+  required?: true;
+}
+
+interface OptionalDatePickerProps {
+  /** Makes the date optional and offers a control that clears it. */
+  required: false;
+}
+
+/** Props for required or optional, controlled or uncontrolled ISO date selection. */
 export type DatePickerProps = DatePickerCommonProps &
-  (ControlledDatePickerProps | UncontrolledDatePickerProps);
+  (
+    | (RequiredDatePickerProps &
+        (
+          | ControlledRequiredDatePickerProps
+          | UncontrolledRequiredDatePickerProps
+        ))
+    | (OptionalDatePickerProps &
+        (
+          | ControlledOptionalDatePickerProps
+          | UncontrolledOptionalDatePickerProps
+        ))
+  );
 
 function DatePickerTriggerValue({
   placeholder,
@@ -173,6 +215,28 @@ function scrollTriggerIntoView(trigger: HTMLElement): boolean {
   return didScroll;
 }
 
+function DatePickerClear({
+  disabled,
+  onClear,
+}: Readonly<{ disabled: boolean; onClear: () => void }>) {
+  const { getMessageLocale, messages } = useBreezeContext();
+
+  return (
+    <div className={datePickerVariants.base.footer}>
+      <span lang={getMessageLocale('clearDate')}>
+        <Button
+          disabled={disabled}
+          onAction={onClear}
+          size="sm"
+          variant="quiet"
+        >
+          {messages.clearDate}
+        </Button>
+      </span>
+    </div>
+  );
+}
+
 function DatePickerPopover({
   calendarKey,
   dialogId,
@@ -180,6 +244,7 @@ function DatePickerPopover({
   isOpen,
   label,
   onChange,
+  onClear,
   onOpenChange,
   triggerRef,
   value,
@@ -190,6 +255,7 @@ function DatePickerPopover({
   isOpen: boolean;
   label: string;
   onChange: (date: CalendarDate | null) => void;
+  onClear?: () => void;
   onOpenChange: (open: boolean) => void;
   triggerRef: RefObject<HTMLButtonElement | null>;
   value: IsoCalendarDate | null | undefined;
@@ -261,32 +327,40 @@ function DatePickerPopover({
           onChange={onChange}
           value={value == null ? null : parseCalendarDate(value)}
         />
+        {onClear && (
+          <DatePickerClear
+            disabled={disabled || value == null}
+            onClear={onClear}
+          />
+        )}
       </AriaDialog>
     </CollectionPopover>
   );
 }
 
 /**
- * Renders a required date field with a locale-formatted trigger and calendar.
+ * Renders a date field, required by default, with a locale-formatted trigger
+ * and calendar.
  *
  * @summary Single-date field with ISO values and a calendar popover.
  */
-export function DatePicker({
-  autoFocus = false,
-  defaultValue,
-  description,
-  disabled = false,
-  error,
-  form,
-  id,
-  label,
-  loading = false,
-  name,
-  onChange,
-  placeholder,
-  required = true,
-  value,
-}: Readonly<DatePickerProps>) {
+export function DatePicker(props: Readonly<DatePickerProps>) {
+  const {
+    autoFocus = false,
+    description,
+    disabled = false,
+    error,
+    form,
+    id,
+    label,
+    loading = false,
+    name,
+    placeholder,
+    readOnly = false,
+    ...selection
+  } = props;
+  const { defaultValue, value } = selection;
+  const required = selection.required !== false;
   const { getMessageLocale, messages } = useBreezeContext();
   const placeholderText = placeholder ?? messages.selectDate;
   const placeholderLocale =
@@ -307,7 +381,9 @@ export function DatePicker({
   const triggerId = id ?? `${fieldId}-trigger`;
   const triggerRef = useRef<HTMLButtonElement>(null);
   const hasAutoFocused = useRef(false);
-  const [uncontrolledValue, setUncontrolledValue] = useState(defaultValue);
+  const [uncontrolledValue, setUncontrolledValue] = useState<
+    IsoCalendarDate | null | undefined
+  >(defaultValue);
   const [isOpen, setIsOpen] = useState(false);
   const [calendarKey, setCalendarKey] = useState(0);
   const [fieldsetDisabled, setFieldsetDisabled] = useState(false);
@@ -367,10 +443,10 @@ export function DatePicker({
   }, [defaultValue, value]);
 
   useEffect(() => {
-    if (effectiveDisabled && isOpen) {
+    if ((effectiveDisabled || readOnly) && isOpen) {
       setIsOpen(false);
     }
-  }, [effectiveDisabled, isOpen]);
+  }, [effectiveDisabled, isOpen, readOnly]);
 
   useEffect(() => {
     if (!autoFocus || effectiveDisabled || hasAutoFocused.current) return;
@@ -383,11 +459,13 @@ export function DatePicker({
     hasAutoFocused.current = trigger.ownerDocument.activeElement === trigger;
   }, [autoFocus, effectiveDisabled]);
 
-  const visibleOpen = isOpen && !effectiveDisabled;
+  const visibleOpen = isOpen && !effectiveDisabled && !readOnly;
   const handleOpenChange = (open: boolean) => {
     if (
       open &&
-      (effectiveDisabled || triggerRef.current?.matches(':disabled'))
+      (effectiveDisabled ||
+        readOnly ||
+        triggerRef.current?.matches(':disabled'))
     ) {
       return;
     }
@@ -407,7 +485,12 @@ export function DatePicker({
 
     const trigger = triggerRef.current;
 
-    if (!trigger || effectiveDisabled || trigger.matches(':disabled')) {
+    if (
+      !trigger ||
+      effectiveDisabled ||
+      readOnly ||
+      trigger.matches(':disabled')
+    ) {
       return;
     }
 
@@ -423,23 +506,42 @@ export function DatePicker({
 
     handleOpenChange(true);
   };
-  const handleDateChange = (date: CalendarDate | null) => {
+  const reportChange = (nextValue: IsoCalendarDate | null) => {
+    if (value === undefined) {
+      setUncontrolledValue(nextValue);
+    }
+
+    // Only the optional form's callback accepts `null`.
+    if (selection.required === false) {
+      selection.onChange?.(nextValue);
+    } else if (nextValue !== null) {
+      selection.onChange?.(nextValue);
+    }
+
+    handleOpenChange(false);
+  };
+  const handleClear = () => {
     if (
-      !date ||
       effectiveDisabled ||
+      readOnly ||
       triggerRef.current?.matches(':disabled')
     ) {
       return;
     }
 
-    const nextValue = date.toString() as IsoCalendarDate;
-
-    if (value === undefined) {
-      setUncontrolledValue(nextValue);
+    reportChange(null);
+  };
+  const handleDateChange = (date: CalendarDate | null) => {
+    if (
+      !date ||
+      effectiveDisabled ||
+      readOnly ||
+      triggerRef.current?.matches(':disabled')
+    ) {
+      return;
     }
 
-    onChange?.(nextValue);
-    handleOpenChange(false);
+    reportChange(date.toString() as IsoCalendarDate);
   };
 
   return (
@@ -458,7 +560,6 @@ export function DatePicker({
         <AriaButton
           className={joinClassNames(
             datePickerVariants.base.trigger,
-            isInvalid && 'breeze:border-breeze-danger',
             loading && 'breeze:!opacity-0',
           )}
           isDisabled={interactionDisabled}
@@ -470,6 +571,7 @@ export function DatePicker({
               'aria-busy': loading || undefined,
               'aria-controls': visibleOpen ? dialogId : undefined,
               'aria-describedby': describedBy,
+              'aria-disabled': readOnly || undefined,
               'aria-errormessage': !loading ? errorId : undefined,
               'aria-expanded': visibleOpen,
               'aria-haspopup': 'dialog',
@@ -527,6 +629,7 @@ export function DatePicker({
         isOpen={visibleOpen}
         label={label}
         onChange={handleDateChange}
+        onClear={required ? undefined : handleClear}
         onOpenChange={handleOpenChange}
         triggerRef={triggerRef}
         value={selectedValue}

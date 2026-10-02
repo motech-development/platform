@@ -1,5 +1,5 @@
 import { getLocalTimeZone, today } from '@internationalized/date';
-import { screen, waitFor, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import renderBreeze from '../../../test/render';
@@ -36,6 +36,12 @@ expectTypeOf(uncontrolledCalendar).toBeObject();
 expectTypeOf(mixedCalendar).toBeObject();
 
 describe('Calendar', () => {
+  it('requires a BreezeProvider', () => {
+    expect(() =>
+      render(<Calendar defaultValue="2026-09-03" label="Choose date" />),
+    ).toThrow('Breeze components must be rendered within BreezeProvider.');
+  });
+
   it('starts weeks on Monday and always renders six weeks', () => {
     renderBreeze(<Calendar defaultValue="2026-03-15" label="Choose date" />);
 

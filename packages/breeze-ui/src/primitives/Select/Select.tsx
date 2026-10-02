@@ -1,4 +1,4 @@
-import type { RefObject } from 'react';
+import type { KeyboardEvent, RefObject } from 'react';
 import {
   createElement,
   useContext,
@@ -17,29 +17,27 @@ import {
   SelectStateContext as AriaSelectStateContext,
   SelectValue as AriaSelectValue,
 } from 'react-aria-components/Select';
-import { useBreezeContext } from '../../provider/BreezeContext';
-import collectionVariants from '../Collection/collection.styles';
-import CollectionPopover from '../Collection/CollectionPopover';
-import DescriptorContent from '../Collection/DescriptorContent';
-import type { ItemDescriptor } from '../Collection/item.types';
+import collectionVariants from '../../collections/collection.styles';
+import CollectionPopover from '../../collections/CollectionPopover';
+import DescriptorContent from '../../collections/DescriptorContent';
+import type { ItemDescriptor } from '../../collections/item.types';
 import {
   FieldLabel,
   FieldSupportingContent,
-} from '../Field/field.presentation';
-import { fieldVariants, joinClassNames } from '../Field/field.styles';
+} from '../../fields/field.presentation';
+import { fieldVariants, joinClassNames } from '../../fields/field.styles';
+import { useBreezeContext } from '../../provider/BreezeContext';
 import { Icon } from '../Icon/Icon';
 import { Skeleton } from '../Skeleton/Skeleton';
 
 const selectVariants = {
   base: {
     trigger:
-      'breeze:flex breeze:min-block-breeze-md breeze:any-pointer-coarse:min-block-breeze-tap breeze:min-inline-size-0 breeze:inline-size-full breeze:items-center breeze:justify-between breeze:rounded-breeze-ctl breeze:border breeze:border-solid breeze:border-breeze-line-strong breeze:bg-breeze-surface breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:py-breeze-2 breeze:font-breeze-sans breeze:text-breeze-sm breeze:text-breeze-ink breeze:outline-offset-2 breeze:data-[hovered]:border-breeze-brand breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[invalid]:border-breeze-danger breeze:disabled:cursor-not-allowed breeze:disabled:bg-breeze-sunken breeze:disabled:opacity-60',
+      'breeze:flex breeze:min-block-breeze-md breeze:any-pointer-coarse:min-block-breeze-tap breeze:min-inline-0 breeze:inline-full breeze:items-center breeze:justify-between breeze:rounded-breeze-ctl breeze:border breeze:border-solid breeze:border-breeze-line-strong breeze:bg-breeze-surface breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:py-breeze-2 breeze:font-breeze-sans breeze:text-breeze-sm breeze:text-breeze-ink breeze:outline-offset-2 breeze:data-[hovered]:border-breeze-brand breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[invalid]:border-breeze-danger breeze:aria-disabled:cursor-default breeze:aria-disabled:bg-breeze-sunken breeze:disabled:cursor-not-allowed breeze:disabled:bg-breeze-sunken breeze:disabled:opacity-60',
   },
   compound: {},
   size: {},
-  state: {
-    readOnlyTrigger: 'breeze:cursor-default breeze:bg-breeze-sunken',
-  },
+  state: {},
   variant: {},
 } as const;
 
@@ -97,6 +95,18 @@ interface UncontrolledSelectProps<T> {
 /** Props for controlled or uncontrolled fixed-choice selection. */
 export type SelectProps<T> = SelectCommonProps<T> &
   (ControlledSelectProps<T> | UncontrolledSelectProps<T>);
+
+/**
+ * React Aria's select trigger changes the selection on ArrowLeft, ArrowRight
+ * and type-ahead without consulting `isDisabled`, so read-only triggers must
+ * withhold those keys from its handlers.
+ */
+function changesSelection(event: KeyboardEvent): boolean {
+  if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') return true;
+  if (event.altKey || event.ctrlKey || event.metaKey) return false;
+
+  return event.key.length === 1 || !/^[A-Z]/i.test(event.key);
+}
 
 interface SelectItem<T> {
   descriptor: ItemDescriptor;
@@ -276,18 +286,21 @@ export function Select<T>({
         <AriaButton
           className={joinClassNames(
             selectVariants.base.trigger,
-            readOnly && selectVariants.state.readOnlyTrigger,
             loading && 'breeze:!opacity-0',
           )}
           isDisabled={interactionDisabled}
           ref={triggerRef}
-          render={(buttonProps) =>
+          render={({ onKeyDown, ...buttonProps }) =>
             createElement('button', {
               ...buttonProps,
               'aria-busy': loading || undefined,
               'aria-disabled': readOnly || undefined,
               'aria-invalid': isInvalid || undefined,
               'data-invalid': isInvalid || undefined,
+              onKeyDown: (event: KeyboardEvent<HTMLButtonElement>) => {
+                if (readOnly && changesSelection(event)) return;
+                onKeyDown?.(event);
+              },
               type: 'button',
             })
           }

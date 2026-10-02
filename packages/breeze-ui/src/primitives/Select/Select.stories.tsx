@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useState } from 'react';
-import type { ItemDescriptor } from '../Collection/item.types';
+import { expect, within } from 'storybook/test';
+import type { ItemDescriptor } from '../../collections/item.types';
 import { Select } from './Select';
 
 const choices = [
@@ -10,7 +11,7 @@ const choices = [
       variant: 'brand' as const,
     },
     description: 'Current account ending in 1234',
-    icon: 'money' as const,
+    icon: 'list' as const,
     id: 'bank',
     label: 'Bank account',
   },
@@ -39,6 +40,20 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+/** Resolves a Breeze colour token to the computed colour used by `element`. */
+function resolvedTokenColour(element: HTMLElement, token: string) {
+  const probe = element.ownerDocument.createElement('span');
+
+  probe.style.backgroundColor = `var(${token})`;
+  element.after(probe);
+
+  const colour = getComputedStyle(probe).backgroundColor;
+
+  probe.remove();
+
+  return colour;
+}
+
 /** A fixed-choice field backed by a popover listbox. */
 export const Default: Story = {};
 
@@ -61,6 +76,46 @@ export const Disabled: Story = {
   args: {
     disabled: true,
   },
+};
+
+/** A read-only choice stays focusable and submitted on a sunken ground. */
+export const ReadOnly: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const readOnlyTrigger = canvas.getByRole('button', {
+      name: 'Bank account Recorded payment method',
+    });
+    const editableTrigger = canvas.getByRole('button', {
+      name: 'Bank account Payment method',
+    });
+    const readOnlyBackground =
+      getComputedStyle(readOnlyTrigger).backgroundColor;
+
+    await expect(readOnlyBackground).not.toBe(
+      getComputedStyle(editableTrigger).backgroundColor,
+    );
+    await expect(readOnlyBackground).toBe(
+      resolvedTokenColour(readOnlyTrigger, '--breeze-color-breeze-sunken'),
+    );
+  },
+  render: () => (
+    <div className="breeze-story-stack">
+      <Select
+        defaultValue={choices[0]}
+        getItem={(item) => item}
+        items={choices}
+        label="Recorded payment method"
+        name="recordedPayment"
+        readOnly
+      />
+      <Select
+        defaultValue={choices[0]}
+        getItem={(item) => item}
+        items={choices}
+        label="Payment method"
+      />
+    </div>
+  ),
 };
 
 /** Loading keeps the control footprint while preventing interaction. */

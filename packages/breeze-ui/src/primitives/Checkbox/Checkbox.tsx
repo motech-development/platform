@@ -4,9 +4,9 @@ import {
   CheckboxButton as AriaCheckboxButton,
   CheckboxField as AriaCheckboxField,
 } from 'react-aria-components/Checkbox';
+import { FieldSupportingContent } from '../../fields/field.presentation';
+import { fieldVariants } from '../../fields/field.styles';
 import { useBreezeContext } from '../../provider/BreezeContext';
-import { FieldSupportingContent } from '../Field/field.presentation';
-import { fieldVariants } from '../Field/field.styles';
 import { Skeleton } from '../Skeleton/Skeleton';
 
 const variants = {
@@ -14,11 +14,11 @@ const variants = {
     control:
       'breeze:relative breeze:inline-grid breeze:min-block-breeze-tap breeze:grid-flow-col breeze:items-center breeze:gap-breeze-2 breeze:cursor-pointer breeze:select-none breeze:font-breeze-sans breeze:text-breeze-sm breeze:font-medium breeze:leading-breeze-snug breeze:text-breeze-ink breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-60',
     indicator:
-      'breeze:inline-grid breeze:block-size-breeze-5 breeze:inline-size-breeze-5 breeze:shrink-0 breeze:place-items-center breeze:rounded-breeze-chip breeze:border breeze:border-solid breeze:border-breeze-ink-3 breeze:bg-breeze-surface breeze:text-breeze-on-brand breeze:transition-colors breeze:data-[selected]:border-breeze-brand breeze:data-[selected]:bg-breeze-brand breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand',
+      'breeze:inline-grid breeze:block-breeze-5 breeze:inline-breeze-5 breeze:shrink-0 breeze:place-items-center breeze:rounded-breeze-chip breeze:border breeze:border-solid breeze:border-breeze-ink-3 breeze:bg-breeze-surface breeze:text-breeze-on-brand breeze:transition-colors breeze:data-[selected]:border-breeze-brand breeze:data-[selected]:bg-breeze-brand breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand',
     label: 'breeze:[grid-area:1/2]',
     skeleton: 'breeze:pointer-events-none breeze:[grid-area:1/2]',
     skeletonIndicator:
-      'breeze:pointer-events-none breeze:[grid-area:1/1] breeze:block-size-breeze-5 breeze:inline-size-breeze-5',
+      'breeze:pointer-events-none breeze:[grid-area:1/1] breeze:block-breeze-5 breeze:inline-breeze-5',
   },
   compound: {},
   size: {},
