@@ -35,11 +35,7 @@ interface ToastContentState {
   remember: (message: string) => void;
 }
 
-/**
- * A clipped card keeps its lifetime. Fractional layouts, such as browser zoom
- * or non-integer line heights, can report a fully visible card just below 1, so
- * the threshold allows that rounding instead of stalling the queue.
- */
+// Below 1: zoom and fractional line heights report a fully visible card just under 1.
 const toastVisibleRatio = 0.99;
 
 function isToastVisible(entry: IntersectionObserverEntry) {

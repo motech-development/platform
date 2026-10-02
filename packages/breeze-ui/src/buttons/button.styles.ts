@@ -1,4 +1,3 @@
-/** Treatments, states and loading fills shared by `Button` and `IconButton`. */
 export const buttonVariants = {
   base: {},
   compound: {

@@ -152,11 +152,7 @@ function getFullscreenTarget(element: HTMLElement) {
   return element.closest<HTMLElement>('.breeze-fullscreen') ?? element;
 }
 
-/**
- * Downloads a cross-origin file as a blob so its filename is honoured. A
- * failure rejects and leaves the page where it is: navigating to an expired
- * presigned URL would replace the app with the storage error page.
- */
+/** Blob download keeps the filename and never navigates to an expired presigned URL. */
 async function downloadDocument(
   event: MouseEvent<HTMLAnchorElement>,
   sourceUrl: string,
@@ -658,9 +654,7 @@ function usePdfPreview({
     const controller = new AbortController();
     const outputScale =
       zoom * (canvas.ownerDocument.defaultView?.devicePixelRatio || 1);
-    // A zoom step re-renders the same page at a new density. The renderer keeps
-    // its previous paint until the sharper one is ready, so the page stays
-    // painted and in flow, and the stage keeps its scroll range.
+    // A ready page stays painted while the renderer prepares the new density.
     setAssetState((current) =>
       current.key === assetKey && current.ready && !current.failed
         ? current

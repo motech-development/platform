@@ -57,7 +57,6 @@ const valueRequiredFamilies = new Set([
 const physicalArbitraryProperty =
   /\[(?:(?:min-|max-)?(?:width|height)|(?:margin|padding|border)-(?:left|right|top|bottom)(?:-\w+)?|left|right|top|bottom|border-(?:top|bottom)-(?:left|right)-radius):/;
 
-/** Splits text on whitespace and variants on colons, both outside brackets. */
 function splitOutsideBrackets(text, separator) {
   const parts = [];
   let depth = 0;

@@ -489,7 +489,6 @@ describe('AttachmentRow', () => {
       screen.getByRole('button', { name: 'More actions: receipt.jpg' }),
     ).toBeInTheDocument();
     expect(screen.getAllByText('Open')).toHaveLength(2);
-    // The overflow trigger is icon-only, as in the prototype.
     expect(screen.queryByText('More actions')).not.toBeInTheDocument();
     expect(
       screen.getByRole('button', { name: 'More actions: invoice.pdf' }),

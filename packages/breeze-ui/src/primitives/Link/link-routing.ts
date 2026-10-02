@@ -2,7 +2,6 @@ import type { MouseEvent } from 'react';
 import type { ViewTransitionType } from '../../motion/view-transitions';
 import type { BreezeRouter } from '../../provider/BreezeContext';
 
-/** Returns the browser-resolved same-document destination, or null to stay native. */
 function routableDestination(
   event: MouseEvent<HTMLAnchorElement>,
   download: string | boolean | undefined,
@@ -43,9 +42,7 @@ function routableDestination(
     return null;
   }
 
-  // The router receives what the browser would navigate to, so relative
-  // destinations such as `accounts`, `../x` or `?page=2` keep their meaning.
-  // Fragment links have already returned, so there is no hash to carry.
+  // The browser-resolved path keeps relative hrefs such as `../x` or `?page=2` meaningful.
   return `${destination.pathname}${destination.search}`;
 }
 

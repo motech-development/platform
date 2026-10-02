@@ -23,11 +23,7 @@ const stylesheets = globSync('src/styles/*.css', { cwd: packageDirectory })
     text: readFileSync(resolve(packageDirectory, file), 'utf8'),
   }));
 
-/**
- * Runs the package's production library build in memory and returns the shipped
- * stylesheet. The size and locale guard is left to `yarn build`; every other
- * plugin, including the PDF worker URL rewrite, runs as it does there.
- */
+/** Builds the shipped stylesheet in memory; only the output guard is left to `yarn build`. */
 async function buildShippedStylesheet() {
   const loaded = await loadConfigFromFile(
     { command: 'build', mode: 'production' },
@@ -96,7 +92,7 @@ async function buildShippedStylesheet() {
     : new TextDecoder().decode(stylesheet.source);
 }
 
-/** Splits on whitespace outside brackets, so arbitrary values stay whole. */
+/** Splits outside brackets so arbitrary values stay whole. */
 function breezeClassTokens(text: string) {
   const tokens: string[] = [];
   let depth = 0;
@@ -142,7 +138,7 @@ function stringLiteralTexts(file: string, text: string) {
   return texts;
 }
 
-/** Collects every class selector in the CSS, decoding CSS escapes, whatever the minifier chose. */
+/** Class selectors in the CSS, with escapes decoded. */
 function emittedClassNames(css: string) {
   const selectors = css.matchAll(
     /\.((?:\\[\da-fA-F]{1,6}\s?|\\[^\da-fA-F\n]|[\w\u0080-￿-])+)/g,

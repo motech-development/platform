@@ -3,8 +3,7 @@ import { useBreezeContext } from '../../provider/BreezeContext';
 
 const variants = {
   base: {
-    // `appearance: none` leaves each engine's progress pseudo-elements painted by
-    // its user-agent stylesheet; clearing them shows only the token background.
+    // `appearance: none` still leaves each engine's progress pseudo-elements painted.
     skeleton:
       'breeze:block breeze:animate-pulse breeze:appearance-none breeze:bg-breeze-ink-3 breeze:pointer-events-none breeze:forced-colors:outline breeze:forced-colors:outline-1 breeze:forced-colors:outline-[CanvasText] breeze:[&::-webkit-progress-bar]:[background:transparent] breeze:[&::-webkit-progress-value]:[background:transparent] breeze:[&::-moz-progress-bar]:[background:transparent]',
   },

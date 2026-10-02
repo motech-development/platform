@@ -128,8 +128,7 @@ function OverlaySurface({
     open && portalReady && host !== null,
     open || (surfaceMounted && !closingTransition),
   );
-  // React Aria locks scroll only for modal overlays. A full-screen surface hides
-  // the page too, so wheel and touch scrolling must not chain to it.
+  // React Aria only locks scroll for modal overlays.
   usePreventScroll({ isDisabled: kind !== 'fullscreen' || !open });
   const changeOpen = useCallback(
     (nextOpen: boolean) => {
@@ -142,8 +141,7 @@ function OverlaySurface({
     },
     [controlledOpen, onOpenChange, parentOpen, requestedOpen],
   );
-  // Document listeners hold gesture state across events, so they read the latest
-  // callback instead of re-subscribing whenever a consumer's handler changes.
+  // A ref keeps the gesture-tracking document listeners subscribed across new callbacks.
   const changeOpenRef = useRef(changeOpen);
   useLayoutEffect(() => {
     changeOpenRef.current = changeOpen;
@@ -189,8 +187,7 @@ function OverlaySurface({
       if (!isPrimaryPointer(event)) return;
       const pointerUpTarget = isNode(event.target) ? event.target : null;
       if (!isOutside(pointerUpTarget)) return;
-      // Only a gesture that also began outside dismisses. Either way, its
-      // pointer state lasts until its click, or one task without a click.
+      // Pointer state lasts until the click, or one task if no click follows.
       const startedOutside = isOutside(pointerDownTargetRef.current);
       clearPointerDismissTimer();
       pointerDismissTimerRef.current = setTimeout(() => {
@@ -223,9 +220,7 @@ function OverlaySurface({
       pointerDownTargetRef.current = null;
       if (
         !isOutside(target) ||
-        // Chromium targets a drag's click at the common ancestor of its
-        // pointerdown and pointerup targets, so selecting text or dragging a
-        // thumb from inside the surface arrives here as an outside click.
+        // Chromium targets a drag's click at the common ancestor, so drags from inside land here.
         (pointerTarget !== null && !isOutside(pointerTarget)) ||
         (sameTarget(blurTarget, target) &&
           sameTarget(blurTarget, pointerTarget))
@@ -278,9 +273,7 @@ function OverlaySurface({
       if (canFocus(target)) target.focus({ preventScroll: true });
       return;
     }
-    // The trigger left with this surface, as when a popover deletes its own
-    // row. An open parent keeps focus inside itself; a closing parent hands
-    // restoration on to its own trigger.
+    // The trigger was removed with this surface: an open parent keeps focus, a closing one defers.
     if (parentSurface && canFocus(parentSurface)) {
       parentSurface.focus({ preventScroll: true });
       return;
@@ -294,16 +287,13 @@ function OverlaySurface({
       refocusTimerRef.current = null;
     }
   }, []);
-  // One owner for initial focus: a first mount, a mount deferred until the
-  // portal is ready, and a reopen while the exiting surface is still mounted.
+  // Covers a first mount, a deferred portal mount and a reopen while still exiting.
   const focusOnOpen = nonModal && open && surfaceMounted;
   useEffect(() => {
     const element = contentRef.current;
     if (!focusOnOpen || !element) return undefined;
     let cancelled = false;
-    // A reopen commits before the stack has re-rendered this layer as active,
-    // so the surface is still inert when this effect runs. The stack's
-    // synchronous re-render finishes before a microtask.
+    // On reopen the layer stays inert until the stack's synchronous re-render.
     queueMicrotask(() => {
       if (
         cancelled ||
@@ -313,12 +303,7 @@ function OverlaySurface({
         return;
       }
       element.focus({ preventScroll: true });
-      // iOS Safari's VoiceOver neither moves to nor announces a dialog that
-      // takes focus as it renders. React Aria's useDialog blurs and refocuses
-      // its dialogs after 500ms for this; this non-modal section cannot use
-      // useDialog without trapping focus, so it repeats the workaround. Any
-      // genuine blur cancels it, so it never takes focus back once the user
-      // has moved it.
+      // Mirrors useDialog's 500ms refocus for iOS VoiceOver; any blur cancels it.
       refocusTimerRef.current = setTimeout(() => {
         refocusTimerRef.current = null;
         const { ownerDocument } = element;
@@ -414,9 +399,7 @@ function OverlaySurface({
       {body}
     </section>
   );
-  // A full-screen surface covers everything behind it, so Tab and Shift+Tab
-  // wrap inside it. It stays non-modal: nothing behind it is made inert or
-  // hidden from assistive technology (ADR 0002).
+  // Contains Tab without making anything behind it inert (ADR 0002).
   const nonModalSurface =
     kind === 'fullscreen' ? (
       <FocusScope contain={layer.interactive}>{section}</FocusScope>

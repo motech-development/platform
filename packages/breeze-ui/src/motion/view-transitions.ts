@@ -260,11 +260,8 @@ function orderedVisualLayers(layers: OverlayStackSnapshot) {
     ordered.push(layer);
   };
   layers.forEach(append);
-  // A closing popover stays visual while its exit animation runs, so that its
-  // geometry holds. Once inactive it is no longer the layer a person is using,
-  // and it is non-modal, so it must not withhold names from the layer beneath:
-  // a menu item that starts a navigation would otherwise capture the old
-  // snapshot while the menu fades out, without the pinned shell chrome.
+  // A closing popover is non-modal and inactive, so it must not withhold names: a menu
+  // item's navigation would otherwise snapshot the fading menu without the shell chrome.
   const isClosingPopover = (layer: OverlayLayer) =>
     layer.kind === 'popover' && !layer.active;
   const isVisual = (layer: OverlayLayer): boolean => {

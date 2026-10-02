@@ -303,7 +303,6 @@ function ParticipantProbe({
 
 const menuItems = [{ id: 'reports', label: 'Reports' }];
 
-/** Holds every exit animation open until the returned callback runs. */
 function holdExitAnimations() {
   let finish: () => void = () => undefined;
   const finished = new Promise<void>((resolve) => {
@@ -610,7 +609,6 @@ describe('useViewTransitionParticipant', () => {
 
     await user.click(screen.getByRole('button', { name: 'Account' }));
 
-    // An open menu is the topmost layer, so the page's names stay withheld.
     expect(topbar).toHaveAttribute('data-breeze-transition-enabled', 'false');
     expect(pageParticipant).toHaveAttribute(
       'data-breeze-transition-enabled',
@@ -622,8 +620,7 @@ describe('useViewTransitionParticipant', () => {
     try {
       await user.click(screen.getByRole('menuitem', { name: 'Reports' }));
 
-      // The menu is still mounted for its exit animation, as it would be when
-      // a navigation captures its old snapshot.
+      // Still exiting, as when a navigation captures its old snapshot.
       expect(
         screen.getByRole('menu').closest('[data-exiting]'),
       ).toBeInTheDocument();

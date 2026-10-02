@@ -339,8 +339,7 @@ function DatePickerPopover({
 }
 
 /**
- * Renders a date field, required by default, with a locale-formatted trigger
- * and calendar.
+ * Renders a date field, required by default, with a locale-formatted trigger and calendar.
  *
  * @summary Single-date field with ISO values and a calendar popover.
  */

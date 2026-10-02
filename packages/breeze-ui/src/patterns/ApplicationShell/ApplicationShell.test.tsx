@@ -28,7 +28,6 @@ expectTypeOf<ApplicationShellProps<Destination>>().not.toHaveProperty('style');
 expectTypeOf<ApplicationShellProps<Destination>>().not.toHaveProperty(
   'loading',
 );
-// The centre action is icon-only, so it needs both artwork and a name.
 expectTypeOf<{
   label: string;
   onAction: () => void;

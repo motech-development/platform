@@ -99,16 +99,7 @@ const ignoredPdfWorkerUrl =
 const preservedPdfWorkerUrl =
   /new URL\(\s*(['"])pdfjs-dist\/build\/pdf\.worker\.mjs\1,\s*import\.meta\.url\s*\)/;
 
-/**
- * Leaves the PDF.js worker URL for the consuming application's bundler.
- *
- * Vite resolves `new URL(<bare specifier>, import.meta.url)` and, in library
- * mode, inlines the result as base64 — here the entire 1.27 MB worker. Marking
- * the call `@vite-ignore` while the library builds stops that, and the marker is
- * stripped from the emitted chunk so the consumer's Vite or webpack still
- * resolves and emits the worker. The output guard below fails the build if the
- * published URL is not exactly the portable form.
- */
+/** Stops library mode inlining the 1.27 MB PDF.js worker, leaving its URL to the consumer's bundler. */
 function preservePdfWorkerUrlPlugin(): Plugin {
   return {
     apply: appliesToLibraryBuild,

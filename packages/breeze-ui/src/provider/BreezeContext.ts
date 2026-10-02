@@ -24,7 +24,7 @@ interface BreezeContextValue {
   router: BreezeRouter | undefined;
   resolvedAppearance: ResolvedAppearance;
   setAppearance: (appearance: Appearance) => void;
-  /** Validated zone reserved for time-of-day formatting; no component reads it yet. Never applied to calendar dates. */
+  /** Validated zone reserved for time-of-day formatting; never applied to calendar dates. */
   timeZone: string | undefined;
 }
 

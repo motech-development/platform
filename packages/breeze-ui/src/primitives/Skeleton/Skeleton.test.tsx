@@ -32,8 +32,7 @@ describe('Skeleton', () => {
     );
   });
 
-  // jsdom cannot paint, so this proves each engine's progress pseudo-elements are
-  // cleared; a browser must confirm that only the token colour is visible.
+  // jsdom cannot paint; a browser must confirm only the token colour shows.
   it('clears the native progress bar so only the token colour paints', () => {
     renderBreeze(<Skeleton label="Loading" />);
 

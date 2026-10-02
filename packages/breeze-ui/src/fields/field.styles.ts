@@ -1,4 +1,3 @@
-/** Shared field chrome used by Breeze's flat field primitives. */
 export const fieldVariants = {
   base: {
     control:

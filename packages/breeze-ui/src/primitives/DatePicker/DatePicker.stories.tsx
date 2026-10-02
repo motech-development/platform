@@ -27,7 +27,6 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-/** Resolves a Breeze colour token to the computed colour used by `element`. */
 function resolvedTokenColour(element: HTMLElement, token: string) {
   const probe = element.ownerDocument.createElement('span');
 

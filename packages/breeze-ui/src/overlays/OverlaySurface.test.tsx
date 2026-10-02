@@ -104,8 +104,7 @@ describe('Overlay stack', () => {
     expect(sheet).toBeInTheDocument();
     fireEvent.scroll(sheet);
     expect(screen.getByRole('dialog', { name: 'Viewer' })).toBe(viewer);
-    // The non-modal trade-off recorded in ADR 0002: the covered sheet stays
-    // reachable by keyboard and assistive technology.
+    // Non-modal by design (ADR 0002).
     expect(sheet.closest('[data-breeze-overlay]')).not.toHaveAttribute('inert');
     expect(screen.getByRole('dialog', { name: 'Sheet' })).toBe(sheet);
     expect(sheet.closest('[data-breeze-overlay]')).toHaveAttribute(

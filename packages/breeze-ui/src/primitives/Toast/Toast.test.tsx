@@ -60,7 +60,6 @@ function VisibilityRaceExample({
   return <ToastTrigger />;
 }
 
-/** Captures each observer so a test can report a card's intersection ratio. */
 function stubIntersectionObserver() {
   const observers: TestIntersectionObserver[] = [];
   class TestIntersectionObserver {

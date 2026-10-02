@@ -147,7 +147,6 @@ function getMenuItemAccessibleName(descriptor: ItemDescriptor) {
 
 interface MenuLoadingStatusProps {
   loading: boolean;
-  /** Whether the trigger already renders its own progress indicator. */
   triggerOwnsProgress: boolean;
 }
 

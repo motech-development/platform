@@ -96,11 +96,7 @@ interface UncontrolledSelectProps<T> {
 export type SelectProps<T> = SelectCommonProps<T> &
   (ControlledSelectProps<T> | UncontrolledSelectProps<T>);
 
-/**
- * React Aria's select trigger changes the selection on ArrowLeft, ArrowRight
- * and type-ahead without consulting `isDisabled`, so read-only triggers must
- * withhold those keys from its handlers.
- */
+/** React Aria's trigger ignores `isDisabled` for arrow keys and type-ahead, so read-only withholds them. */
 function changesSelection(event: KeyboardEvent): boolean {
   if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') return true;
   if (event.altKey || event.ctrlKey || event.metaKey) return false;

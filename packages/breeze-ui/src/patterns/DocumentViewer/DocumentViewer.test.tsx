@@ -93,10 +93,7 @@ function deferred<T>() {
   return { promise, reject, resolve };
 }
 
-/**
- * Mocks fetch the way browsers honour an AbortSignal, so a request whose effect
- * StrictMode cleaned up rejects instead of resolving into a live response.
- */
+/** Rejects aborted requests as browsers do, so StrictMode's discarded effect never resolves. */
 function abortableFetch(
   respond: (input: RequestInfo | URL) => Promise<Response>,
 ) {
@@ -123,16 +120,11 @@ function abortableFetch(
   return Object.assign(fetchMock, { delivered });
 }
 
-/** Requests whose signal is still live: StrictMode's discarded effect run aborts its own. */
 function liveFetchCalls(fetchMock: ReturnType<typeof abortableFetch>) {
   return fetchMock.mock.calls.filter(([, init]) => !init?.signal?.aborted);
 }
 
-/**
- * A successful download revokes its blob URL on a one-second timer. Fake that
- * timer, while letting time advance for user-event and waitFor, so the test can
- * flush it instead of letting it fire inside a later test.
- */
+/** Fakes the 1s blob-URL revocation timer so it is flushed, not fired in a later test. */
 function installDownloadRevocationClock() {
   vi.useFakeTimers({
     shouldAdvanceTime: true,
@@ -1199,7 +1191,6 @@ describe('DocumentViewer', () => {
     mockRenderPdfPage
       .mockImplementationOnce(defaultRenderer)
       .mockImplementationOnce(async (options) => {
-        // The renderer commits a re-render only once it has finished painting.
         await pendingRepaint.promise;
         await defaultRenderer(options);
       });
@@ -1238,7 +1229,6 @@ describe('DocumentViewer', () => {
     await waitFor(() => expect(mockRenderPdfPage).toHaveBeenCalledTimes(2));
     expect(mockRenderPdfPage.mock.calls[1]?.[0].canvas).toBe(canvas);
     expect(mockRenderPdfPage.mock.calls[1]?.[0].outputScale).toBe(2.5);
-    // The previous paint stays visible and in flow while the new density renders.
     expect(stage).toHaveAttribute('aria-busy', 'false');
     expect(stageContent).not.toHaveAttribute('inert');
     expect(stageContent).not.toHaveClass('breeze:invisible');
@@ -1863,7 +1853,7 @@ describe('DocumentViewer', () => {
         old: ['attachment'],
       });
 
-      // The viewer is non-modal: the sheet stays reachable and keeps its scrim.
+      // Non-modal by design (ADR 0002).
       const sheet = screen.getByRole('dialog', { name: 'Account record' });
       const sheetLayer = sheet.closest('[data-breeze-overlay]');
       const viewerLayer = dialog.closest('[data-breeze-overlay]');

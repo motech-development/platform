@@ -97,7 +97,6 @@ expectTypeOf<{
 expectTypeOf<
   NonNullable<MenuProps<Action>['onAction']>
 >().parameters.toEqualTypeOf<[Action]>();
-// An icon-only trigger needs both its artwork and an accessible name.
 expectTypeOf<{
   getItem: (item: Action) => ItemDescriptor;
   items: Action[];
