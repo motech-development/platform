@@ -39,12 +39,19 @@ resume when loading clears.
 
 <Canvas of={Stories.Loading} />
 
+## Full width
+
+Set `fullWidth` to stretch the group across its container and share the width
+equally between options, for example when the choice sits in a form.
+
+<Canvas of={Stories.FullWidth} />
+
 ## Sizes and accessibility
 
-`size` accepts `sm`, `md` (default) or `lg`, with minimum heights of 34, 38 and
-52px. Touch targets are at least 44px. Give each group an
-`aria-label`; each option exposes whether it is pressed and supports keyboard
-interaction.
+`size` accepts `sm` (default), `md` or `lg`, giving the group a minimum height
+of 34, 38 or 52px to align with other controls of the same size. On coarse
+pointers the `sm` and `md` groups grow to 48px. Give each group an `aria-label`;
+each option exposes whether it is pressed and supports keyboard interaction.
 
 <Canvas of={Stories.Sizes} />
 
