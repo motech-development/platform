@@ -7,6 +7,8 @@ import {
   useRef,
   useState,
 } from 'react';
+import { FocusScope } from 'react-aria/FocusScope';
+import { usePreventScroll } from 'react-aria/usePreventScroll';
 import { Dialog as AriaDialog } from 'react-aria-components/Dialog';
 import { Modal, ModalOverlay } from 'react-aria-components/Modal';
 import { Popover as AriaPopover } from 'react-aria-components/Popover';
@@ -57,7 +59,6 @@ function OverlaySurface({
   children,
   defaultOpen = false,
   dismissible = true,
-  fullScreen = false,
   kind,
   onOpenChange,
   open: controlledOpen,
@@ -71,7 +72,6 @@ function OverlaySurface({
   Omit<OverlayProps, 'open' | 'defaultOpen' | 'onOpenChange' | 'trigger'> & {
     open?: boolean;
     defaultOpen?: boolean;
-    fullScreen?: boolean;
     closingTransition?: boolean;
     showHeader?: boolean;
     viewerSurface?: boolean;
@@ -128,6 +128,9 @@ function OverlaySurface({
     open && portalReady && host !== null,
     open || (surfaceMounted && !closingTransition),
   );
+  // React Aria locks scroll only for modal overlays. A full-screen surface hides
+  // the page too, so wheel and touch scrolling must not chain to it.
+  usePreventScroll({ isDisabled: kind !== 'fullscreen' || !open });
   const changeOpen = useCallback(
     (nextOpen: boolean) => {
       if (!nextOpen && !parentOpen) {
@@ -139,6 +142,12 @@ function OverlaySurface({
     },
     [controlledOpen, onOpenChange, parentOpen, requestedOpen],
   );
+  // Document listeners hold gesture state across events, so they read the latest
+  // callback instead of re-subscribing whenever a consumer's handler changes.
+  const changeOpenRef = useRef(changeOpen);
+  useLayoutEffect(() => {
+    changeOpenRef.current = changeOpen;
+  }, [changeOpen]);
 
   useEffect(() => {
     if (parentOpen) {
@@ -178,9 +187,11 @@ function OverlaySurface({
     };
     const onPointerUp = (event: PointerEvent) => {
       if (!isPrimaryPointer(event)) return;
-      const pointerDownTarget = pointerDownTargetRef.current;
       const pointerUpTarget = isNode(event.target) ? event.target : null;
-      if (!isOutside(pointerDownTarget) || !isOutside(pointerUpTarget)) return;
+      if (!isOutside(pointerUpTarget)) return;
+      // Only a gesture that also began outside dismisses. Either way, its
+      // pointer state lasts until its click, or one task without a click.
+      const startedOutside = isOutside(pointerDownTargetRef.current);
       clearPointerDismissTimer();
       pointerDismissTimerRef.current = setTimeout(() => {
         pointerDismissTimerRef.current = null;
@@ -189,12 +200,13 @@ function OverlaySurface({
         blurDismissTargetRef.current = null;
         pointerDownTargetRef.current = null;
         if (
-          sameTarget(blurTarget, pointerUpTarget) &&
-          sameTarget(blurTarget, pointerTarget)
+          !startedOutside ||
+          (sameTarget(blurTarget, pointerUpTarget) &&
+            sameTarget(blurTarget, pointerTarget))
         ) {
           return;
         }
-        changeOpen(false);
+        changeOpenRef.current(false);
       }, 0);
     };
     const onPointerCancel = () => {
@@ -204,20 +216,23 @@ function OverlaySurface({
     };
     const onOutsideClick = (event: MouseEvent) => {
       const target = isNode(event.target) ? event.target : null;
+      const blurTarget = blurDismissTargetRef.current;
+      const pointerTarget = pointerDownTargetRef.current;
       clearPointerDismissTimer();
-      if (isOutside(target)) {
-        const blurTarget = blurDismissTargetRef.current;
-        const pointerTarget = pointerDownTargetRef.current;
-        blurDismissTargetRef.current = null;
-        pointerDownTargetRef.current = null;
-        if (
-          sameTarget(blurTarget, target) &&
-          sameTarget(blurTarget, pointerTarget)
-        ) {
-          return;
-        }
-        changeOpen(false);
+      blurDismissTargetRef.current = null;
+      pointerDownTargetRef.current = null;
+      if (
+        !isOutside(target) ||
+        // Chromium targets a drag's click at the common ancestor of its
+        // pointerdown and pointerup targets, so selecting text or dragging a
+        // thumb from inside the surface arrives here as an outside click.
+        (pointerTarget !== null && !isOutside(pointerTarget)) ||
+        (sameTarget(blurTarget, target) &&
+          sameTarget(blurTarget, pointerTarget))
+      ) {
+        return;
       }
+      changeOpenRef.current(false);
     };
     host.ownerDocument.addEventListener('pointerdown', onPointerDown, true);
     host.ownerDocument.addEventListener('pointerup', onPointerUp, true);
@@ -240,7 +255,7 @@ function OverlaySurface({
       blurDismissTargetRef.current = null;
       pointerDownTargetRef.current = null;
     };
-  }, [changeOpen, dismissible, host, kind, layer.topmost, open]);
+  }, [dismissible, host, kind, layer.topmost, open]);
 
   const restoreParentFocus = parent?.restoreFocus;
   const parentId = parent?.id;
@@ -255,17 +270,22 @@ function OverlaySurface({
       focused === parentSurface ||
       !!focused?.closest('[data-exiting]');
     if (!focusLost) return;
-    if (!target?.isConnected) {
-      restoreParentFocus?.();
+    const topmost = host.querySelector('[data-breeze-topmost="true"]');
+    const canFocus = (element: HTMLElement) =>
+      (!topmost || topmost.contains(element)) &&
+      !element.closest('[inert], [aria-hidden="true"], [data-exiting]');
+    if (target?.isConnected) {
+      if (canFocus(target)) target.focus({ preventScroll: true });
       return;
     }
-    const topmost = host.querySelector('[data-breeze-topmost="true"]');
-    if (
-      (!topmost || topmost.contains(target)) &&
-      !target.closest('[inert], [aria-hidden="true"]')
-    ) {
-      target.focus({ preventScroll: true });
+    // The trigger left with this surface, as when a popover deletes its own
+    // row. An open parent keeps focus inside itself; a closing parent hands
+    // restoration on to its own trigger.
+    if (parentSurface && canFocus(parentSurface)) {
+      parentSurface.focus({ preventScroll: true });
+      return;
     }
+    restoreParentFocus?.();
   }, [host, parentId, restoreParentFocus]);
 
   const clearRefocusTimer = useCallback(() => {
@@ -274,49 +294,58 @@ function OverlaySurface({
       refocusTimerRef.current = null;
     }
   }, []);
-  const focusSurface = useCallback(
-    (element: HTMLElement) => {
-      queueMicrotask(() => {
+  // One owner for initial focus: a first mount, a mount deferred until the
+  // portal is ready, and a reopen while the exiting surface is still mounted.
+  const focusOnOpen = nonModal && open && surfaceMounted;
+  useEffect(() => {
+    const element = contentRef.current;
+    if (!focusOnOpen || !element) return undefined;
+    let cancelled = false;
+    // A reopen commits before the stack has re-rendered this layer as active,
+    // so the surface is still inert when this effect runs. The stack's
+    // synchronous re-render finishes before a microtask.
+    queueMicrotask(() => {
+      if (
+        cancelled ||
+        !element.isConnected ||
+        element.closest('[inert], [data-exiting]')
+      ) {
+        return;
+      }
+      element.focus({ preventScroll: true });
+      // iOS Safari's VoiceOver neither moves to nor announces a dialog that
+      // takes focus as it renders. React Aria's useDialog blurs and refocuses
+      // its dialogs after 500ms for this; this non-modal section cannot use
+      // useDialog without trapping focus, so it repeats the workaround. Any
+      // genuine blur cancels it, so it never takes focus back once the user
+      // has moved it.
+      refocusTimerRef.current = setTimeout(() => {
+        refocusTimerRef.current = null;
+        const { ownerDocument } = element;
+        const { activeElement: focused } = ownerDocument;
         if (
           !element.isConnected ||
-          element.closest('[inert], [data-exiting]')
+          element.closest('[inert], [data-exiting]') ||
+          (focused !== element && focused !== ownerDocument.body)
         ) {
           return;
         }
-        clearRefocusTimer();
+        refocusingRef.current = true;
+        element.blur();
         element.focus({ preventScroll: true });
-        refocusTimerRef.current = setTimeout(() => {
-          const { ownerDocument } = element;
-          const { activeElement: focused } = ownerDocument;
-          if (
-            element.isConnected &&
-            !element.closest('[inert], [data-exiting]') &&
-            (focused === element || focused === ownerDocument.body)
-          ) {
-            refocusingRef.current = true;
-            element.blur();
-            element.focus({ preventScroll: true });
-            refocusingRef.current = false;
-          }
-          refocusTimerRef.current = null;
-        }, 500);
-      });
-    },
-    [clearRefocusTimer],
-  );
-  const previousOpenRef = useRef(open);
-  useEffect(() => {
-    const wasOpen = previousOpenRef.current;
-    previousOpenRef.current = open;
-    if (!nonModal || !open || wasOpen || !contentRef.current) return;
-    focusSurface(contentRef.current);
-  }, [focusSurface, nonModal, open]);
+        refocusingRef.current = false;
+      }, 500);
+    });
+    return () => {
+      cancelled = true;
+      clearRefocusTimer();
+    };
+  }, [clearRefocusTimer, focusOnOpen]);
 
   const surfaceRef = useCallback(
     (element: HTMLElement | null) => {
       contentRef.current = element;
       const cleanup = () => {
-        clearRefocusTimer();
         contentRef.current = null;
         setSurfaceMounted(false);
         requestAnimationFrame(restoreFocus);
@@ -326,21 +355,20 @@ function OverlaySurface({
         return undefined;
       }
       setSurfaceMounted(true);
-      if (nonModal) focusSurface(element);
       // React Aria restores ordinary closes. Nested simultaneous exits can leave
       // focus on body; repair only that gap after its focus-scope cleanup runs.
       return cleanup;
     },
-    [clearRefocusTimer, focusSurface, nonModal, restoreFocus],
+    [restoreFocus],
   );
 
   const parentContext = useMemo(
     () => ({ id: layer.id, open, restoreFocus }),
     [layer.id, open, restoreFocus],
   );
-  const surfaceVariant = fullScreen
-    ? variants.variant.fullscreen
-    : variants.variant[kind];
+  const contentClassName = viewerSurface
+    ? `${variants.base.content} ${variants.base.viewerContent}`
+    : variants.base.content;
   const body = (
     <>
       {showHeader ? (
@@ -356,45 +384,53 @@ function OverlaySurface({
       {children}
     </>
   );
+  const section = (
+    <section
+      aria-label={title}
+      className={contentClassName}
+      id={layer.id}
+      onBlur={(event) => {
+        if (refocusingRef.current) {
+          event.stopPropagation();
+          return;
+        }
+        clearRefocusTimer();
+        const { relatedTarget } = event;
+        if (
+          kind === 'popover' &&
+          dismissible &&
+          layer.topmost &&
+          isNode(relatedTarget) &&
+          !event.currentTarget.contains(relatedTarget) &&
+          !triggerRef.current?.contains(relatedTarget)
+        ) {
+          blurDismissTargetRef.current = relatedTarget;
+        }
+      }}
+      ref={surfaceRef}
+      role="dialog"
+      tabIndex={-1}
+    >
+      {body}
+    </section>
+  );
+  // A full-screen surface covers everything behind it, so Tab and Shift+Tab
+  // wrap inside it. It stays non-modal: nothing behind it is made inert or
+  // hidden from assistive technology (ADR 0002).
+  const nonModalSurface =
+    kind === 'fullscreen' ? (
+      <FocusScope contain={layer.interactive}>{section}</FocusScope>
+    ) : (
+      section
+    );
   const content = (
     <ParentOverlayContext value={parentContext}>
       {nonModal ? (
-        <section
-          aria-label={title}
-          className={variants.base.content}
-          id={layer.id}
-          onBlur={(event) => {
-            if (refocusingRef.current) {
-              event.stopPropagation();
-              return;
-            }
-            const { relatedTarget } = event;
-            if (
-              kind === 'popover' &&
-              dismissible &&
-              layer.topmost &&
-              isNode(relatedTarget) &&
-              !event.currentTarget.contains(relatedTarget) &&
-              !triggerRef.current?.contains(relatedTarget)
-            ) {
-              blurDismissTargetRef.current = relatedTarget;
-            }
-          }}
-          ref={surfaceRef}
-          role="dialog"
-          tabIndex={-1}
-        >
-          {body}
-        </section>
+        nonModalSurface
       ) : (
         <AriaDialog
           aria-label={title}
-          className={[
-            variants.base.content,
-            viewerSurface && variants.base.viewerContent,
-          ]
-            .filter(Boolean)
-            .join(' ')}
+          className={contentClassName}
           id={layer.id}
           ref={surfaceRef}
         >
@@ -461,7 +497,7 @@ function OverlaySurface({
             }
             style={{ zIndex: layer.zIndex }}
           >
-            <Modal className={surfaceVariant}>{content}</Modal>
+            <Modal className={variants.variant[kind]}>{content}</Modal>
           </ModalOverlay>
         ))}
     </>
