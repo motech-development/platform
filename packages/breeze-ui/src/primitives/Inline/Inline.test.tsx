@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { describe, expect, expectTypeOf, it } from 'vitest';
 import renderBreeze from '../../../test/render';
 import { Inline, type InlineProps } from './Inline';
@@ -11,6 +11,12 @@ expectTypeOf<InlineProps['gap']>().toEqualTypeOf<
 >();
 
 describe('Inline', () => {
+  it('requires a BreezeProvider', () => {
+    expect(() => render(<Inline>Save</Inline>)).toThrow(
+      'Breeze components must be rendered within BreezeProvider.',
+    );
+  });
+
   it('groups content in the requested semantic element', () => {
     renderBreeze(
       <Inline element="nav" gap={2} aria-label="Actions">

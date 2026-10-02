@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { useBreezeContext } from '../../provider/BreezeContext';
 
 const variants = {
   base: {
@@ -21,5 +22,7 @@ export interface VisuallyHiddenProps {
  * @summary Accessible content with no visual footprint.
  */
 export function VisuallyHidden({ children }: Readonly<VisuallyHiddenProps>) {
+  useBreezeContext();
+
   return <span className={variants.base.hidden}>{children}</span>;
 }

@@ -1,11 +1,12 @@
 import type { ReactNode } from 'react';
 import { createElement } from 'react';
-import getLayoutAccessibility from '../layout.accessibility';
-import type { LayoutGap } from '../layout.types';
+import getLayoutAccessibility from '../../layout/layout.accessibility';
+import type { LayoutGap } from '../../layout/layout.types';
+import { useBreezeContext } from '../../provider/BreezeContext';
 
 const variants = {
   base: {
-    card: 'breeze:min-inline-size-0 breeze:rounded-breeze-panel breeze:border breeze:border-solid breeze:border-breeze-line breeze:shadow-breeze-panel',
+    card: 'breeze:min-inline-0 breeze:rounded-breeze-panel breeze:border breeze:border-solid breeze:border-breeze-line breeze:shadow-breeze-panel',
   },
   compound: {},
   size: {
@@ -59,6 +60,8 @@ export function Card({
   padding = 4,
   variant = 'surface',
 }: Readonly<CardProps>) {
+  useBreezeContext();
+
   const { accessibleLabel, role } = getLayoutAccessibility(ariaLabel, element);
 
   return createElement(

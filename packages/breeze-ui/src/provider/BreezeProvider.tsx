@@ -28,6 +28,12 @@ interface BreezeProviderBaseProps {
    * The container must belong to the same document as the overlay triggers.
    */
   portalContainer?: HTMLElement;
+  /**
+   * IANA time-zone name, such as `Europe/London`, reserved for time-of-day
+   * formatting. No component formats a time of day yet, so it has no effect
+   * today; an unrecognised name still throws. Calendar dates never use it.
+   */
+  timeZone?: string;
   /** Maximum number of visible confirmations; additional messages wait in FIFO order. */
   toastLimit?: number;
   /** Optional same-document router for links that need application navigation. */
@@ -64,6 +70,25 @@ function resolveAppearance(appearance: Appearance, prefersDark: boolean) {
   return appearance;
 }
 
+/** Returns the time zone unchanged, throwing for a name the runtime does not recognise. */
+function validateTimeZone(timeZone: string | undefined) {
+  if (timeZone === undefined) {
+    return undefined;
+  }
+
+  try {
+    // Intl validates IANA names; an unknown zone throws a RangeError.
+    new Intl.DateTimeFormat(undefined, { timeZone }).resolvedOptions();
+  } catch (error) {
+    throw new RangeError(
+      `BreezeProvider timeZone must be a valid IANA time-zone name; received "${timeZone}".`,
+      { cause: error },
+    );
+  }
+
+  return timeZone;
+}
+
 function BreezeRoot({
   children,
 }: Readonly<Pick<BreezeProviderProps, 'children'>>) {
@@ -90,8 +115,12 @@ export function BreezeProvider({
   onAppearanceChange,
   portalContainer,
   router,
+  timeZone,
   toastLimit = 3,
 }: Readonly<BreezeProviderProps>) {
+  // Validates during render, but builds the Intl formatter only when the zone changes.
+  const validTimeZone = useMemo(() => validateTimeZone(timeZone), [timeZone]);
+
   const [preferredColorSchemeQuery] = useState(() =>
     typeof window === 'undefined' || !window.matchMedia
       ? null
@@ -174,12 +203,16 @@ export function BreezeProvider({
           messages?.attachmentMoreActions ?? enGB.attachmentMoreActions,
         attachmentOpen: messages?.attachmentOpen ?? enGB.attachmentOpen,
         attachmentPhoto: messages?.attachmentPhoto ?? enGB.attachmentPhoto,
+        clearDate: messages?.clearDate ?? enGB.clearDate,
         close: messages?.close ?? enGB.close,
         documentViewerAccessibility:
           messages?.documentViewerAccessibility ??
           enGB.documentViewerAccessibility,
         documentViewerDownload:
           messages?.documentViewerDownload ?? enGB.documentViewerDownload,
+        documentViewerDownloadFailed:
+          messages?.documentViewerDownloadFailed ??
+          enGB.documentViewerDownloadFailed,
         documentViewerExitFullScreen:
           messages?.documentViewerExitFullScreen ??
           enGB.documentViewerExitFullScreen,
@@ -255,6 +288,7 @@ export function BreezeProvider({
       resolvedAppearance,
       router,
       setAppearance,
+      timeZone: validTimeZone,
     }),
     [
       appearance,
@@ -264,6 +298,7 @@ export function BreezeProvider({
       resolvedAppearance,
       router,
       setAppearance,
+      validTimeZone,
     ],
   );
 
