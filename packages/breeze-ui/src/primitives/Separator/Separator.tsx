@@ -1,3 +1,5 @@
+import { useBreezeContext } from '../../provider/BreezeContext';
+
 const variants = {
   base: {
     separator:
@@ -7,15 +9,20 @@ const variants = {
   size: {},
   state: {},
   variant: {
-    horizontal: 'breeze:block-size-breeze-px breeze:inline-size-full',
-    vertical: 'breeze:block-size-full breeze:inline-size-breeze-px',
+    horizontal: 'breeze:block-breeze-px breeze:inline-full',
+    // A percentage block size cannot resolve in an auto-height row, so a vertical
+    // divider stretches to its flex or grid line instead.
+    vertical: 'breeze:self-stretch breeze:inline-breeze-px',
   },
 } as const;
 
 export type SeparatorOrientation = keyof typeof variants.variant;
 
 export interface SeparatorProps {
-  /** Sets the divider axis. Defaults to `horizontal`. */
+  /**
+   * Sets the divider axis. Defaults to `horizontal`. A vertical divider stretches
+   * to the height of its `Inline` or `Grid` row.
+   */
   orientation?: SeparatorOrientation;
 }
 
@@ -27,6 +34,8 @@ export interface SeparatorProps {
 export function Separator({
   orientation = 'horizontal',
 }: Readonly<SeparatorProps>) {
+  useBreezeContext();
+
   return (
     <hr
       aria-orientation={orientation}

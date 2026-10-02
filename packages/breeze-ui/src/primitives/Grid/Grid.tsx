@@ -1,11 +1,12 @@
 import type { ReactNode } from 'react';
 import { createElement } from 'react';
-import getLayoutAccessibility from '../layout.accessibility';
-import type { LayoutElement, LayoutGap } from '../layout.types';
+import getLayoutAccessibility from '../../layout/layout.accessibility';
+import type { LayoutElement, LayoutGap } from '../../layout/layout.types';
+import { useBreezeContext } from '../../provider/BreezeContext';
 
 const variants = {
   base: {
-    grid: 'breeze:grid breeze:min-inline-size-0',
+    grid: 'breeze:grid breeze:min-inline-0',
   },
   compound: {
     columns: {
@@ -27,6 +28,14 @@ const variants = {
         none: 'breeze:grid-cols-3',
         sm: 'breeze:grid-cols-3 breeze:max-breeze-sm:grid-cols-1',
       },
+      // A growing main column beside a 300px aside, matching the Overview page.
+      // Items keep their own height so a short aside does not stretch.
+      mainAside: {
+        lg: 'breeze:grid-cols-[minmax(0,1fr)_300px] breeze:items-start breeze:max-breeze-lg:grid-cols-1',
+        md: 'breeze:grid-cols-[minmax(0,1fr)_300px] breeze:items-start breeze:max-breeze-md:grid-cols-1',
+        none: 'breeze:grid-cols-[minmax(0,1fr)_300px] breeze:items-start',
+        sm: 'breeze:grid-cols-[minmax(0,1fr)_300px] breeze:items-start breeze:max-breeze-sm:grid-cols-1',
+      },
     },
   },
   size: {
@@ -44,7 +53,7 @@ const variants = {
   variant: {},
 } as const;
 
-export type GridColumns = 1 | 2 | 3;
+export type GridColumns = 1 | 2 | 3 | 'mainAside';
 export type GridCollapseBelow = 'lg' | 'md' | 'none' | 'sm';
 
 export interface GridProps {
@@ -54,7 +63,10 @@ export interface GridProps {
   children: ReactNode;
   /** Breakpoint below which multiple columns collapse to one. Defaults to `md`. */
   collapseBelow?: GridCollapseBelow;
-  /** Number of equal-width columns. Defaults to `2`. */
+  /**
+   * Number of equal-width columns, or `mainAside` for a growing main column
+   * beside a fixed-width aside. Defaults to `2`.
+   */
   columns?: GridColumns;
   /** Selects the semantic HTML element. Defaults to `div`. */
   element?: LayoutElement;
@@ -63,7 +75,8 @@ export interface GridProps {
 }
 
 /**
- * Arranges children in equal columns and can collapse at a Breeze breakpoint.
+ * Arranges children in equal columns, or a main column beside an aside, and can
+ * collapse to one column at a Breeze breakpoint.
  *
  * @summary A constrained responsive grid primitive.
  */
@@ -75,6 +88,8 @@ export function Grid({
   element = 'div',
   gap = 4,
 }: Readonly<GridProps>) {
+  useBreezeContext();
+
   const { accessibleLabel, role } = getLayoutAccessibility(ariaLabel, element);
 
   return createElement(

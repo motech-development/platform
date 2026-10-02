@@ -12,11 +12,11 @@ const variants = {
   compound: {},
   size: {},
   state: {
-    aligned: 'breeze:block breeze:inline-size-full',
+    aligned: 'breeze:block breeze:inline-full',
     inlineLoading: 'breeze:inline-block',
     numeric: 'breeze:tabular-nums breeze:tracking-breeze-tighter',
     truncate:
-      'breeze:block breeze:min-inline-size-0 breeze:inline-size-full breeze:overflow-hidden breeze:text-ellipsis breeze:whitespace-nowrap',
+      'breeze:block breeze:min-inline-0 breeze:inline-full breeze:overflow-hidden breeze:text-ellipsis breeze:whitespace-nowrap',
   },
   variant: {
     align: {
@@ -91,7 +91,11 @@ interface CurrencyTypographyContent extends TypographyBaseProps {
   dateStyle?: never;
   /** Formats `value` as locale-aware currency. */
   format: 'currency';
-  /** Controls whether the formatted amount displays its sign. Defaults to `auto`. */
+  /**
+   * Controls whether the formatted amount displays its sign. Defaults to `auto`,
+   * which signs negative amounts only; `always` also signs positive amounts.
+   * Zero is never signed.
+   */
   sign?: 'always' | 'auto' | 'never';
   /** Uses the dedicated money text role required for currency formatting. */
   variant: 'money';
@@ -190,31 +194,42 @@ function getDefaultElement(variant: TypographyVariant): TypographyElement {
   return 'span';
 }
 
+/** Zero, including negative zero and amounts that round to zero, is never signed. */
+const signDisplay = {
+  always: 'exceptZero',
+  auto: 'negative',
+  never: 'never',
+} as const satisfies Record<
+  NonNullable<CurrencyTypographyContent['sign']>,
+  Intl.NumberFormatOptions['signDisplay']
+>;
+
 function formatCurrency(
   value: number,
   currency: string,
   locale: string,
-  sign: CurrencyTypographyContent['sign'],
+  sign: NonNullable<CurrencyTypographyContent['sign']>,
 ): string {
-  let parts: Intl.NumberFormatPart[];
-
-  try {
-    parts = new Intl.NumberFormat(locale, {
-      currency,
-      signDisplay: sign ?? 'auto',
-      style: 'currency',
-    }).formatToParts(value);
-  } catch (error) {
-    if (!(error instanceof RangeError)) {
-      throw error;
-    }
-
-    parts = new Intl.NumberFormat(locale, {
-      signDisplay: sign ?? 'auto',
-    }).formatToParts(value);
+  if (!Number.isFinite(value)) {
+    throw new RangeError(
+      `Typography currency value must be a finite number; received ${String(value)}.`,
+    );
   }
 
-  return parts
+  if (!/^[A-Z]{3}$/i.test(currency)) {
+    throw new RangeError(
+      `Typography currency must be a three-letter ISO 4217 code; received "${currency}".`,
+    );
+  }
+
+  // BreezeProvider rejects an invalid locale before any Breeze component renders,
+  // so the locale needs no separate check here.
+  return new Intl.NumberFormat(locale, {
+    currency,
+    signDisplay: signDisplay[sign],
+    style: 'currency',
+  })
+    .formatToParts(value)
     .map((part) => (part.type === 'minusSign' ? '−' : part.value))
     .join('');
 }
@@ -226,6 +241,8 @@ function formatDate(
 ): string {
   let date: Date;
 
+  // Calendar dates carry no time zone. Formatting their UTC midnight in UTC keeps
+  // the displayed day fixed, so the provider's time-of-day `timeZone` never applies.
   try {
     date = parseDate(value).toDate('UTC');
   } catch {

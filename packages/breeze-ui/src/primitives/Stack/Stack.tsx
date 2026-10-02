@@ -1,11 +1,16 @@
 import type { ReactNode } from 'react';
 import { createElement } from 'react';
-import getLayoutAccessibility from '../layout.accessibility';
-import type { LayoutAlign, LayoutElement, LayoutGap } from '../layout.types';
+import getLayoutAccessibility from '../../layout/layout.accessibility';
+import type {
+  LayoutAlign,
+  LayoutElement,
+  LayoutGap,
+} from '../../layout/layout.types';
+import { useBreezeContext } from '../../provider/BreezeContext';
 
 const variants = {
   base: {
-    stack: 'breeze:flex breeze:min-inline-size-0 breeze:flex-col',
+    stack: 'breeze:flex breeze:min-inline-0 breeze:flex-col',
   },
   compound: {},
   size: {
@@ -53,6 +58,8 @@ export function Stack({
   gap = 3,
   horizontalAlign = 'stretch',
 }: Readonly<StackProps>) {
+  useBreezeContext();
+
   const { accessibleLabel, role } = getLayoutAccessibility(ariaLabel, element);
 
   return createElement(

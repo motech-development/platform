@@ -62,6 +62,18 @@ rejected by the total count limit. For example:
 </BreezeProvider>
 ```
 
+## Time zone
+
+`timeZone` takes an IANA time-zone name, such as `Europe/London`, reserved for formatting times of day. **No component formats a time of day yet, so today it has no visible effect**; it is validated and provided now so the API does not change when one does. Without it, times of day will use the runtime's time zone. The provider throws a `RangeError` for a name the runtime does not recognise.
+
+```tsx
+<BreezeProvider locale="en-GB" timeZone="Europe/London">
+  <App />
+</BreezeProvider>
+```
+
+`timeZone` is intentionally not applied to calendar dates. A calendar date, such as `Typography`'s `format="date"`, names a day rather than an instant, so Breeze formats it in UTC and the displayed day never shifts. Applying a western zone to a UTC-midnight date would display the previous day.
+
 ## Appearance
 
 Appearance defaults to `automatic`, which follows the operating system and keeps following it when the preference changes. The provider resolves the choice to `light` or `dark`, then applies that value and the matching `color-scheme` to the document element.

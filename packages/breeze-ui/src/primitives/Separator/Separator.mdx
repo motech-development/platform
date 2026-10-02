@@ -11,7 +11,7 @@ import * as Stories from './Separator.stories';
 
 ## Vertical separators
 
-Use the vertical orientation only inside a layout with a defined block size.
+A vertical separator stretches to the height of its row. Place it directly inside an `Inline`, or as a `Grid` item, between the regions it divides; it overrides the row's alignment, so the default centred `Inline` still produces a full-height divider. Outside a flex or grid row it has no height.
 
 <Canvas of={Stories.Vertical} />
 
