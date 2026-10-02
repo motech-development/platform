@@ -27,8 +27,11 @@ compatible engine version within the declared range.
 The viewer dynamically imports PDF.js and its matching worker only when an
 open PDF needs rendering. It paints pages on demand to canvas and a selectable
 text layer. Images render in `<img>` and never import the engine. Other
-browser-renderable documents, and PDFs when the optional peer or renderer is
-unavailable, use an `<iframe>` fallback. The native browser PDF viewer is not
+browser-renderable documents, and PDFs that PDF.js fails to load or render,
+use an `<iframe>` fallback. Whether an _absent_ peer reaches that fallback is
+decided by the consuming application's bundler, not by Breeze UI: Vite replaces
+an unresolved optional import with a module that throws when loaded, so the
+fallback applies, but other bundlers may fail the application build instead. The native browser PDF viewer is not
 the normal renderer: `#toolbar=0` is ignored by Firefox and macOS WebKit, so
 browser chrome, including annotation controls, can compete with Breeze's
 viewer. Zoom, rotation, download, and page navigation are owned by Breeze;
@@ -41,8 +44,17 @@ controls and accessibility remain browser-owned.
 
 ## Consequences
 
-- Consumers that render PDFs with canvas install `pdfjs-dist` explicitly;
-  consumers that only show images or iframe content do not need it.
+- Consumers that render PDFs with canvas install `pdfjs-dist` explicitly.
+  Consumers that only show images or iframe content do not need it under Vite;
+  with other bundlers they may need to install it anyway, or mark it as an
+  ignored optional module, to keep the build passing.
+- The worker is referenced as `new URL('pdfjs-dist/build/pdf.worker.mjs',
+import.meta.url)`, which the consuming application's Vite or webpack 5 build
+  resolves and emits. Breeze UI's own library build would otherwise inline the
+  1.27 MB worker as base64, so a library-only build plugin leaves the reference
+  for the consumer, and the build fails if the published form changes. Resolution
+  in a consumer's Vite development server and in webpack has not been verified
+  against a real consumer build.
 - PDF.js and its worker are fetched only after an open PDF is requested.
 - Applications must keep the installed PDF.js version within the declared
   peer range and update it for security fixes.

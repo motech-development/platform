@@ -9,7 +9,7 @@ import { useBreezeContext } from '../../provider/BreezeContext';
 const variants = {
   base: {
     action: 'breeze:mbs-breeze-3',
-    content: 'breeze:min-inline-size-0',
+    content: 'breeze:min-inline-0',
     panel:
       'breeze:flex breeze:items-start breeze:gap-breeze-4 breeze:px-breeze-5 breeze:py-breeze-6',
   },

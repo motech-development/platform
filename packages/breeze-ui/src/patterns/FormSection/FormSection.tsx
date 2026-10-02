@@ -6,7 +6,7 @@ import { useBreezeContext } from '../../provider/BreezeContext';
 const variants = {
   base: {
     fieldset:
-      'breeze:m-0 breeze:flex breeze:min-inline-size-0 breeze:flex-col breeze:gap-breeze-4 breeze:border-0 breeze:p-0',
+      'breeze:m-0 breeze:flex breeze:min-inline-0 breeze:flex-col breeze:gap-breeze-4 breeze:border-0 breeze:p-0',
     legend: 'breeze:p-0 breeze:pbe-breeze-1',
   },
   compound: {},

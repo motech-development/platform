@@ -57,10 +57,10 @@ type FileDropZoneAnnouncement = FileDropZoneMessage & { id: number };
 const variants = {
   base: {
     dropZone:
-      'breeze:flex breeze:min-inline-size-0 breeze:flex-col breeze:items-center breeze:gap-breeze-3 breeze:rounded-breeze-panel breeze:border-2 breeze:border-dashed breeze:border-breeze-line-strong breeze:bg-breeze-surface breeze:pbs-breeze-6 breeze:pie-breeze-4 breeze:text-center',
+      'breeze:flex breeze:min-inline-0 breeze:flex-col breeze:items-center breeze:gap-breeze-3 breeze:rounded-breeze-panel breeze:border-2 breeze:border-dashed breeze:border-breeze-line-strong breeze:bg-breeze-surface breeze:px-breeze-4 breeze:py-breeze-6 breeze:text-center',
     input: 'breeze:sr-only',
     status:
-      'breeze:min-block-size-breeze-4 breeze:text-breeze-sm breeze:text-breeze-ink-2',
+      'breeze:min-block-[1lh] breeze:text-breeze-sm breeze:text-breeze-ink-2',
   },
   compound: {},
   size: {},
