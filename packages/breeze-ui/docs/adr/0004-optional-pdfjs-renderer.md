@@ -52,9 +52,10 @@ controls and accessibility remain browser-owned.
 import.meta.url)`, which the consuming application's Vite or webpack 5 build
   resolves and emits. Breeze UI's own library build would otherwise inline the
   1.27 MB worker as base64, so a library-only build plugin leaves the reference
-  for the consumer, and the build fails if the published form changes. Resolution
-  in a consumer's Vite development server and in webpack has not been verified
-  against a real consumer build.
+  for the consumer, and the build fails if the published form changes. Vite
+  8.1.5 production builds emit the worker. Its development server needs Breeze
+  UI excluded from `optimizeDeps`, or an explicit `pdfAssets.workerSrc`.
+  Webpack has not been verified.
 - PDF.js and its worker are fetched only after an open PDF is requested.
 - Applications must keep the installed PDF.js version within the declared
   peer range and update it for security fixes.

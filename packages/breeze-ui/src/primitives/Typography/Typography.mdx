@@ -32,7 +32,9 @@ Calendar dates are formatted in UTC, so the displayed day never shifts. The prov
 
 An invalid money value is a programming error, so `Typography` throws a `RangeError` that names it instead of displaying a misleading figure:
 
-- `currency` must be a three-letter ISO 4217 code, such as `GBP`.
+- `currency` must be a well-formed three-letter code, such as `GBP`. Codes are
+  not checked against ISO 4217, so an unknown well-formed code is displayed as
+  written.
 - `value` must be a finite number. `NaN` and `Infinity` are rejected.
 - An invalid `locale` is rejected by `BreezeProvider` before any value is formatted, so it is never reported as a currency error.
 
