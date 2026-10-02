@@ -18,9 +18,19 @@ Use `raised` for a group nested inside another surface, not to create stronger e
 
 <Canvas of={Stories.Raised} />
 
+## Titles
+
+Set `title` to add a header with a second-level heading that also names the card. Add `count` to show a neutral count beside the title.
+
+<Canvas of={Stories.TitledWithCount} />
+
+Use `action` for one trailing header control, such as a link to the full list. Below a title, `padding` applies to the content only, so set it to `0` for rows that run edge to edge.
+
+<Canvas of={Stories.TitledWithAction} />
+
 ## Accessibility
 
-Cards do not become interactive. Use `article`, `aside` or `section` only when that semantic grouping is meaningful, and provide a label where the element creates a region.
+Cards do not become interactive. Use `article`, `aside` or `section` only when that semantic grouping is meaningful, and provide a label or `title` where the element creates a region. A titled card is named by its heading and does not accept `aria-label`.
 
 Loading belongs to the content inside the card. Compose loading-capable children or explicit `Skeleton` elements so placeholders match the final content structure.
 
