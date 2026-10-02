@@ -584,7 +584,7 @@ export const FromAttachmentRow: Story = {
         );
         await expect(
           zoomOut.getBoundingClientRect().height,
-        ).toBeGreaterThanOrEqual(34);
+        ).toBeGreaterThanOrEqual(32);
       });
       const phoneShot = await page.screenshot({
         path: '/tmp/document-viewer-phone.png',

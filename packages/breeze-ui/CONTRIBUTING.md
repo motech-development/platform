@@ -46,7 +46,7 @@ Add a token together with the shipped component that uses it, and remove a token
 
 ### Control sizes
 
-`sm`, `md` and `lg` map to minimum block sizes of 34, 38 and 52px, with a 44px floor applied on coarse pointers. Breakpoint thresholds are deliberately static.
+`sm`, `md` and `lg` map to minimum block sizes of 34, 38 and 52px, with a 44px floor applied on coarse pointers. `Button` and `IconButton` use 32 and 36px for `sm` and `md`, matching the design's button heights. Breakpoint thresholds are deliberately static.
 
 ### Shadows
 
