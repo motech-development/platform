@@ -74,9 +74,7 @@
   :where([data-breeze-root]) .breeze-fullscreen[data-exiting] {
     animation: breeze-overlay-fade-out 160ms ease-in;
   }
-  /* An expand morph carries the motion alone. Without an animation, the kit
-     settles the entering surface and unmounts the exiting one at once, so
-     neither fades in the live page beside the morphing panel. */
+  /* Without an animation the kit settles both surfaces at once, so only the expand morph moves. */
   @supports selector(:root:active-view-transition-type(expand)) {
     :root:active-view-transition-type(expand)
       :where([data-breeze-root])

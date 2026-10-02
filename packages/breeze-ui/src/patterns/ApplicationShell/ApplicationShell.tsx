@@ -25,8 +25,7 @@ const variants = {
       'breeze:flex breeze:min-inline-0 breeze:shrink-0 breeze:items-center',
     context:
       'breeze:min-inline-0 breeze:truncate breeze:border-s breeze:border-solid breeze:border-breeze-line breeze:ps-breeze-4',
-    // Clears the fixed bottom bar: its 1px top border, block padding either
-    // side and the 52px row of links and the centre action.
+    // Clears the fixed bottom bar: 1px border, block padding and the 52px row.
     main: 'breeze:mx-auto breeze:inline-full breeze:min-inline-0 breeze:max-inline-breeze-page breeze:ps-breeze-4 breeze:pe-breeze-4 breeze:pbe-[calc(var(--breeze-spacing-breeze-px)_+_var(--breeze-spacing-breeze-2)_+_var(--breeze-spacing-breeze-lg)_+_var(--breeze-spacing-breeze-2)_+_env(safe-area-inset-bottom))] breeze:breeze-lg:ps-breeze-7 breeze:breeze-lg:pe-breeze-7 breeze:breeze-lg:pbe-breeze-8',
     navLabel: 'breeze:min-inline-0 breeze:truncate',
     navMark:

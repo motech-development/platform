@@ -82,9 +82,7 @@
     0 8px 24px -10px rgb(22 22 22 / 25%);
 }
 
-/* CSS cannot share one declaration block between the system-preference and
-   explicit dark selectors, so the palette is repeated; tokens.test.ts keeps both
-   copies identical. */
+/* CSS cannot share a block across both dark selectors; tokens.test.ts keeps the copies identical. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
     color-scheme: dark;

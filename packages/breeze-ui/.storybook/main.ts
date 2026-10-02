@@ -45,10 +45,7 @@ const config: ManifestStorybookConfig = {
       ),
       'process.env.VIRT_ON': JSON.stringify('1'),
     },
-    // Pre-bundle every react-aria and react-aria-components subpath that `src` imports.
-    // A missing one is discovered mid-run on a cold cache, and the resulting
-    // re-optimisation reloads the page and fails the stories that were running.
-    // Keep this list in step with the imports.
+    // Keep in step with src's react-aria imports: a cold-cache re-optimisation reloads and fails running stories.
     optimizeDeps: {
       ...viteConfig.optimizeDeps,
       include: [

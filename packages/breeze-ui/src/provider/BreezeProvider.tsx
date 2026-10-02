@@ -28,11 +28,7 @@ interface BreezeProviderBaseProps {
    * The container must belong to the same document as the overlay triggers.
    */
   portalContainer?: HTMLElement;
-  /**
-   * IANA time-zone name, such as `Europe/London`, reserved for time-of-day
-   * formatting. No component formats a time of day yet, so it has no effect
-   * today; an unrecognised name still throws. Calendar dates never use it.
-   */
+  /** IANA zone, such as `Europe/London`, reserved for time-of-day formatting; unknown names throw. */
   timeZone?: string;
   /** Maximum number of visible confirmations; additional messages wait in FIFO order. */
   toastLimit?: number;
@@ -70,7 +66,6 @@ function resolveAppearance(appearance: Appearance, prefersDark: boolean) {
   return appearance;
 }
 
-/** Returns the time zone unchanged, throwing for a name the runtime does not recognise. */
 function validateTimeZone(timeZone: string | undefined) {
   if (timeZone === undefined) {
     return undefined;
@@ -118,7 +113,6 @@ export function BreezeProvider({
   timeZone,
   toastLimit = 3,
 }: Readonly<BreezeProviderProps>) {
-  // Validates during render, but builds the Intl formatter only when the zone changes.
   const validTimeZone = useMemo(() => validateTimeZone(timeZone), [timeZone]);
 
   const [preferredColorSchemeQuery] = useState(() =>

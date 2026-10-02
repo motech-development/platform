@@ -22,7 +22,6 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-/** Real browser input under the Storybook Vitest run, simulated input otherwise. */
 async function browserInput() {
   if (!('__vitest_browser__' in globalThis)) return null;
   const { userEvent: browserUserEvent } = await import('vitest/browser');
@@ -40,7 +39,6 @@ function focusIsWithin(containers: readonly HTMLElement[]) {
   );
 }
 
-/** Presses `keys` repeatedly, checking focus never leaves the containers. */
 async function expectFocusKeptWithin(
   container: HTMLElement | readonly HTMLElement[],
   keys: string,
@@ -156,11 +154,7 @@ export const SheetPopover: Story = {
   ),
 };
 
-/**
- * Internal non-modal fullscreen content covers a mounted sheet without another
- * scrim. The sheet stays reachable to assistive technology behind it, as ADR
- * 0002 records, but Tab and Shift+Tab stay inside the covering surface.
- */
+/** Non-modal fullscreen content over a sheet: no second scrim, Tab stays inside (ADR 0002). */
 export const SheetFullscreen: Story = {
   play: async ({ canvasElement }) => {
     const page = within(canvasElement.ownerDocument.body);
@@ -194,7 +188,7 @@ export const SheetFullscreen: Story = {
     });
     await expectFocusKeptWithin(viewer, '{Tab}', 4);
     await expectFocusKeptWithin(viewer, '{Shift>}{Tab}{/Shift}', 4);
-    // Focus moved into the covered sheet, as assistive technology can, returns.
+    // Assistive technology can move focus into the covered sheet.
     trigger.focus();
     await waitFor(async () => {
       await expect(
@@ -224,10 +218,7 @@ export const SheetFullscreen: Story = {
   ),
 };
 
-/**
- * A fullscreen surface opened from a plain page holds the page still: wheel
- * scrolling inside it never reaches the hidden page, and Tab stays inside it.
- */
+/** A fullscreen surface over a page keeps wheel scrolling and Tab inside it. */
 export const PageFullscreen: Story = {
   play: async ({ canvasElement }) => {
     const document = canvasElement.ownerDocument;
@@ -276,11 +267,7 @@ export const PageFullscreen: Story = {
   ),
 };
 
-/**
- * A popover nested in a fullscreen surface is a child focus scope: it takes
- * focus, Tab never strands focus outside the viewer branch, and Escape closes
- * the popover before the viewer.
- */
+/** A popover in a fullscreen surface takes focus and closes on Escape before the viewer. */
 export const FullscreenPopover: Story = {
   play: async ({ canvasElement }) => {
     const page = within(canvasElement.ownerDocument.body);
@@ -326,8 +313,6 @@ export const FullscreenPopover: Story = {
     await expect(page.getByRole('dialog', { name: 'Viewer' })).toBe(viewer);
     await expect(viewerLayer).toHaveAttribute('data-breeze-topmost', 'true');
 
-    // Tab past either end of the popover: focus stays in the viewer branch,
-    // and the viewer contains it again once the popover closes on blur.
     await openActions();
     await expectFocusKeptWithin(
       [viewerLayer, page.getByRole('dialog', { name: 'Actions' })],
@@ -370,10 +355,7 @@ export const FullscreenPopover: Story = {
   ),
 };
 
-/**
- * A modal opened above a fullscreen surface takes over containment: the viewer
- * releases focus while it is covered and contains it again once it closes.
- */
+/** A modal above a fullscreen surface takes over focus containment until it closes. */
 export const FullscreenModal: Story = {
   play: async ({ canvasElement }) => {
     const page = within(canvasElement.ownerDocument.body);

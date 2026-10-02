@@ -24,10 +24,7 @@ describe('Separator', () => {
     );
   });
 
-  // jsdom has no layout engine, so this proves the vertical divider stretches
-  // itself across its Inline row instead of relying on a percentage block size
-  // that an auto-height row cannot resolve. The Vertical story measures the
-  // rendered height in a browser.
+  // jsdom has no layout; the Vertical story measures the rendered height.
   it('stretches a vertical divider across a centred Inline row', () => {
     renderBreeze(
       <Inline>

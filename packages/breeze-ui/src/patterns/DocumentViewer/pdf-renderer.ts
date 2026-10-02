@@ -43,8 +43,7 @@ export async function loadPdfDocument(
   const pdfjs = await import('pdfjs-dist');
   throwIfAborted(signal);
 
-  // Vite and webpack 5 both resolve this pattern in the consuming app's build
-  // and emit the installed worker as an asset; `?url` imports were Vite-only.
+  // Vite and webpack 5 both emit this pattern's worker; `?url` imports are Vite-only.
   const workerSrc =
     assets?.workerSrc?.trim() ||
     new URL('pdfjs-dist/build/pdf.worker.mjs', import.meta.url).href;
@@ -56,9 +55,7 @@ export async function loadPdfDocument(
   );
   const loadingTask = pdfjs.getDocument({
     ...(cMapUrl ? { cMapPacked: true, cMapUrl } : {}),
-    // Attachment URLs are presigned for 30 seconds (#1524). A range request
-    // issued after expiry returns 403 and leaves the document permanently
-    // broken, so fetch the whole file in one request inside the window (#1596).
+    // Presigned URLs expire after 30s (#1524); a later range request 403s (#1596).
     disableRange: true,
     ...(standardFontDataUrl ? { standardFontDataUrl } : {}),
     stopAtErrors: true,
@@ -121,13 +118,7 @@ interface PdfPageRenderOptions {
   readonly textLayerContainer: HTMLDivElement;
 }
 
-/**
- * Paints one PDF page into a canvas and its selectable text layer.
- *
- * The page is drawn off screen and committed only once both layers finish, so a
- * re-render (such as a zoom step) keeps the previous paint visible until the
- * replacement is ready, and a cancelled render leaves it untouched.
- */
+/** Paints a PDF page off screen and commits once both layers finish, keeping the old paint until then. */
 export async function renderPdfPage({
   TextLayer,
   canvas,

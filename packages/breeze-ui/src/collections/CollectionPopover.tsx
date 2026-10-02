@@ -57,8 +57,7 @@ export default function CollectionPopover({
   const surfaceRef = useRef<Element | null>(null);
   const pointerDownTargetRef = useRef<Node | null>(null);
   const pointerDismissTargetRef = useRef<Node | null>(null);
-  // Consumers pass a fresh callback on every render; reading it through a ref
-  // keeps the document listeners, and the pointer state they own, stable.
+  // A ref keeps the document listeners, and their pointer state, stable across new callbacks.
   const onOpenChangeRef = useRef(onOpenChange);
   const open = requestedOpen && parentOpen;
   const layer = useOverlayLayer(

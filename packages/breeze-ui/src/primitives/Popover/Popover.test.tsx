@@ -51,10 +51,7 @@ expectTypeOf<{
 const portalBoundaryError =
   'BreezeProvider portalContainer must belong to the current document and light DOM.';
 
-/**
- * StrictMode replays layout effects, so React's act reports each rejection of
- * the same render together as an AggregateError.
- */
+/** StrictMode replays layout effects, so act reports repeated rejections as an AggregateError. */
 function renderErrorMessages(callback: () => void) {
   try {
     callback();

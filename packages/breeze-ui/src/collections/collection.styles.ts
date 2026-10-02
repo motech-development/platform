@@ -1,4 +1,3 @@
-/** Shared listbox geometry and descriptor treatment for collection controls. */
 const collectionVariants = {
   base: {
     badge: 'breeze:ms-auto',
