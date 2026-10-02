@@ -6,7 +6,7 @@ import renderBreeze from '../../../test/render';
 import type { ItemDescriptor } from '../../collections/item.types';
 import { BreezeProvider } from '../../provider/BreezeProvider';
 import { Drawer } from '../Drawer/Drawer';
-import { Menu, type MenuProps } from './Menu';
+import { Menu, type MenuItemDescriptor, type MenuProps } from './Menu';
 
 interface Action {
   descriptor: ItemDescriptor;
@@ -51,6 +51,39 @@ const badgeFallbackAction: ItemDescriptor = {
   label: 'Reports',
 };
 
+interface Company {
+  id: string;
+  initials: string;
+  name: string;
+  selected: boolean;
+}
+
+const companies: Company[] = [
+  { id: 'harbour', initials: 'HP', name: 'Harbour & Pine Ltd', selected: true },
+  {
+    id: 'wold',
+    initials: 'WF',
+    name: 'Wold Farm Joinery Ltd',
+    selected: false,
+  },
+];
+
+const companyMenuItems: (Company | 'manage')[] = [...companies, 'manage'];
+
+function getCompanyMenuItem(item: Company | 'manage'): MenuItemDescriptor {
+  if (item === 'manage') {
+    return { icon: 'settings', id: 'manage', label: 'Manage companies' };
+  }
+
+  return {
+    ...(item.selected && { badge: { children: 'Selected', variant: 'brand' } }),
+    id: item.id,
+    initials: item.initials,
+    label: item.name,
+    section: { id: 'companies', label: 'Companies' },
+  };
+}
+
 function MenuWithFocusDestination() {
   const destinationRef = useRef<HTMLButtonElement>(null);
 
@@ -69,6 +102,18 @@ function MenuWithFocusDestination() {
   );
 }
 
+expectTypeOf<{
+  icon: 'settings';
+  id: string;
+  initials: string;
+  label: string;
+}>().not.toExtend<MenuItemDescriptor>();
+expectTypeOf<{
+  id: string;
+  initials: string;
+  label: string;
+  section: { id: string };
+}>().toExtend<MenuItemDescriptor>();
 expectTypeOf<MenuProps<Action>>().not.toHaveProperty('className');
 expectTypeOf<MenuProps<Action>>().not.toHaveProperty('style');
 expectTypeOf<MenuProps<Action>>().not.toHaveProperty('slot');
@@ -252,6 +297,89 @@ describe('Menu', () => {
     expect(menu.closest('[data-breeze-portal]')).toHaveAttribute(
       'data-breeze-root',
     );
+  });
+
+  it('names sections by their header and divides neighbouring groups', () => {
+    renderBreeze(
+      <Menu
+        defaultOpen
+        getItem={getCompanyMenuItem}
+        items={companyMenuItems}
+        trigger="Harbour & Pine Ltd"
+      />,
+    );
+
+    const menu = screen.getByRole('menu', { name: 'Harbour & Pine Ltd' });
+    const section = within(menu).getByRole('group', { name: 'Companies' });
+
+    expect(
+      within(section)
+        .getAllByRole('menuitem')
+        .map((item) => item.textContent),
+    ).toEqual(['HPHarbour & Pine LtdSelected', 'WFWold Farm Joinery Ltd']);
+    expect(
+      within(section).queryByRole('menuitem', { name: 'Manage companies' }),
+    ).not.toBeInTheDocument();
+    expect(within(menu).getAllByRole('separator')).toHaveLength(1);
+    expect(
+      within(menu).getByRole('menuitem', { name: 'Manage companies' }),
+    ).toBeInTheDocument();
+  });
+
+  it('divides unlabelled sections without naming them', () => {
+    renderBreeze(
+      <Menu
+        defaultOpen
+        getItem={(item) => ({
+          ...item.descriptor,
+          section: { id: item.id === 'sign-out-action' ? 'session' : 'main' },
+        })}
+        items={actions}
+        trigger="Account actions"
+      />,
+    );
+
+    const menu = screen.getByRole('menu', { name: 'Account actions' });
+    const groups = within(menu).getAllByRole('group');
+
+    expect(groups).toHaveLength(2);
+    groups.forEach((group) => expect(group).not.toHaveAccessibleName());
+    expect(within(groups[1]).getByRole('menuitem')).toHaveAccessibleName(
+      'Sign out',
+    );
+    expect(within(menu).getAllByRole('separator')).toHaveLength(1);
+  });
+
+  it('shows initials as decorative content and reports the application item', async () => {
+    const user = userEvent.setup();
+    const onAction = vi.fn();
+
+    renderBreeze(
+      <Menu
+        getItem={getCompanyMenuItem}
+        items={companyMenuItems}
+        onAction={onAction}
+        trigger="Harbour & Pine Ltd"
+      />,
+    );
+
+    await user.click(
+      screen.getByRole('button', { name: 'Harbour & Pine Ltd' }),
+    );
+
+    const company = screen.getByRole('menuitem', {
+      name: 'Wold Farm Joinery Ltd',
+    });
+    const initials = within(company).getByText('WF');
+
+    expect(initials).toHaveAttribute('aria-hidden', 'true');
+    expect(
+      screen.getByRole('menuitem', { name: 'Harbour & Pine Ltd, Selected' }),
+    ).toBeInTheDocument();
+
+    await user.click(company);
+
+    expect(onAction).toHaveBeenCalledExactlyOnceWith(companies[1]);
   });
 
   it('falls back to visible badge text when its accessible label is blank', () => {

@@ -110,7 +110,11 @@ export type { InlineJustify, InlineProps } from './primitives/Inline/Inline';
 export { Inline } from './primitives/Inline/Inline';
 export type { LinkProps, LinkVariant } from './primitives/Link/Link';
 export { Link } from './primitives/Link/Link';
-export type { MenuProps } from './primitives/Menu/Menu';
+export type {
+  MenuItemDescriptor,
+  MenuProps,
+  MenuSectionDescriptor,
+} from './primitives/Menu/Menu';
 export { Menu } from './primitives/Menu/Menu';
 export type { NumberFieldProps } from './primitives/NumberField/NumberField';
 export { NumberField } from './primitives/NumberField/NumberField';
