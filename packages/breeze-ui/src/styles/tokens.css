@@ -33,6 +33,8 @@
   --text-breeze-md: 15px;
   --text-breeze-lg: 17px;
   --text-breeze-2xl: 22px;
+  /* Tailwind's default text-2xl line height, which the prototype's page title inherits. */
+  --text-breeze-2xl--line-height: calc(2 / 1.5);
   --text-breeze-4xl: 26px;
 
   --spacing-breeze-md: 38px;
