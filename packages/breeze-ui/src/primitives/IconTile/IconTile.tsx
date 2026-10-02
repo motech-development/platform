@@ -21,6 +21,7 @@ const variants = {
       danger: 'breeze:bg-breeze-danger/10 breeze:text-breeze-danger',
       neutral: 'breeze:bg-breeze-sunken breeze:text-breeze-ink-2',
       positive: 'breeze:bg-breeze-pos-soft breeze:text-breeze-pos',
+      strong: 'breeze:bg-breeze-sunken breeze:text-breeze-ink',
       warning: 'breeze:bg-breeze-warn-soft breeze:text-breeze-warn',
     },
   },

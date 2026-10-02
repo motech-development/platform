@@ -37,7 +37,7 @@ const variants = {
     loadingLeading:
       'breeze:flex breeze:min-inline-0 breeze:flex-col breeze:gap-breeze-2',
     loadingMoneyPlaceholder:
-      'breeze:flex breeze:justify-end breeze:font-breeze-sans breeze:text-breeze-4xl breeze:font-semibold breeze:leading-breeze-tight breeze:tracking-breeze-tightest breeze:tabular-nums breeze:[&>progress]:[font:inherit]',
+      'breeze:flex breeze:justify-end breeze:font-breeze-sans breeze:text-breeze-sm breeze:font-semibold breeze:leading-[calc(1.25/0.875)] breeze:tabular-nums breeze:[&>progress]:[font:inherit]',
     loadingPlaceholder:
       'breeze:flex breeze:justify-end breeze:max-breeze-md:justify-start',
     loadingRow:
@@ -55,7 +55,12 @@ const variants = {
   compound: {},
   size: {},
   state: {},
-  variant: {},
+  variant: {
+    direction: {
+      in: 'positive',
+      out: 'strong',
+    },
+  },
 } as const;
 
 export type RowListMetadata =
@@ -63,7 +68,15 @@ export type RowListMetadata =
   | { format: 'text'; value: string };
 
 export type RowListValue =
-  | { currency: string; format: 'currency'; value: number }
+  | {
+      currency: string;
+      format: 'currency';
+      /** Controls the sign: `auto` signs negatives, `always` positives too; zero never. Defaults to `auto`. */
+      sign?: 'always' | 'auto' | 'never';
+      /** Colours the amount; use `positive` for money in. Defaults to `default`. */
+      tone?: 'default' | 'positive';
+      value: number;
+    }
   | { format: 'text'; value: string };
 
 /** A stable named group rendered as a structural row in the list. */
@@ -74,6 +87,8 @@ export interface RowListSectionDescriptor {
 
 /** The closed content contract for a row and its aligned regions. */
 export interface RowListItemDescriptor extends ItemDescriptor {
+  /** Colours the icon tile for money in or out; neutral when omitted. */
+  direction?: 'in' | 'out';
   /** Shows quiet placeholders for supplied metadata and value regions. */
   loading?: boolean;
   /** Optional middle region, formatted as text or a locale-aware calendar date. */
@@ -249,9 +264,10 @@ function ValueContent({
         element="span"
         format="currency"
         currency={value.currency}
-        tone="secondary"
+        sign={value.sign}
+        tone={value.tone}
         value={value.value}
-        variant="money"
+        variant="amount"
       />
     );
   }
@@ -274,7 +290,11 @@ function RowContent({
             name={descriptor.icon}
             shape="circle"
             size="sm"
-            tone="neutral"
+            tone={
+              descriptor.direction
+                ? variants.variant.direction[descriptor.direction]
+                : 'neutral'
+            }
           />
         )}
         <span className={variants.base.content}>

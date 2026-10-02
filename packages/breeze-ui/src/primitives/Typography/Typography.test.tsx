@@ -18,6 +18,11 @@ const readyTypographyProps = [
   { children: 'Ready' },
 ] as const satisfies readonly TypographyProps[];
 
+expectTypeOf<{
+  children: 'Text';
+  variant: 'amount';
+}>().not.toMatchTypeOf<TypographyProps>();
+
 expectTypeOf(loadingTypographyProps).toMatchTypeOf<
   readonly TypographyProps[]
 >();
@@ -267,6 +272,28 @@ describe('Typography', () => {
       'breeze:inline-full',
       'breeze:text-end',
     );
+  });
+
+  it('formats compact row amounts without the stat-figure size', () => {
+    renderBreeze(
+      <Typography
+        currency="GBP"
+        format="currency"
+        sign="always"
+        value={2100}
+        variant="amount"
+      />,
+    );
+
+    const amount = screen.getByText('+£2,100.00');
+
+    expect(amount).toHaveClass(
+      'breeze:text-breeze-sm',
+      'breeze:font-semibold',
+      'breeze:tabular-nums',
+      'breeze:text-end',
+    );
+    expect(amount).not.toHaveClass('breeze:text-breeze-4xl');
   });
 
   it('keeps loading placeholders inline for inline text roles', () => {
