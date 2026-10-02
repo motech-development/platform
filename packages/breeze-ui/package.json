@@ -48,8 +48,7 @@
     "@internationalized/date": "3.12.2",
     "lucide-react": "1.39.0",
     "react-aria": "3.50.0",
-    "react-aria-components": "1.19.0",
-    "remark-gfm": "4.0.1"
+    "react-aria-components": "1.19.0"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "5.2.1",
@@ -79,6 +78,7 @@
     "prettier": "3.2.5",
     "react": "19.2.7",
     "react-dom": "19.2.7",
+    "remark-gfm": "4.0.1",
     "storybook": "10.4.6",
     "tailwindcss": "4.3.2",
     "typescript": "6.0.3",
