@@ -13,6 +13,7 @@
 @source '../collections/**/*.ts';
 @source '../fields/**/*.tsx';
 @source '../fields/**/*.ts';
+@source '../overlays/**/*.tsx';
 @source '../patterns/**/*.tsx';
 @source '../primitives/**/*.tsx';
 @source '../primitives/**/*.ts';

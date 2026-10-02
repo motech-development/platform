@@ -9,7 +9,7 @@ Use `Drawer` for a task or supporting content that needs a modal surface at the 
 
 ## Basic usage
 
-`trigger` supplies the label for the button Breeze renders. `title` supplies the surface's visible heading and accessible name; `children` supplies its content. Breeze also renders a close button with a label from the provider's messages.
+`trigger` supplies the label for the button Breeze renders. `title` supplies the surface's visible heading and accessible name; `children` supplies its content. Breeze also renders an icon close button whose accessible name comes from the provider's messages.
 
 ```tsx
 <Drawer title="Delivery details" trigger="View delivery details">
@@ -18,6 +18,38 @@ Use `Drawer` for a task or supporting content that needs a modal surface at the 
 ```
 
 <Canvas of={Stories.Default} />
+
+## Content and footer
+
+The content scrolls on its own between the heading bar and the footer. Three props fill a footer pinned below it, which renders only when at least one is given:
+
+- `footerStart` places an action at the start, such as Delete on an edit form.
+- `footerSummary` shows a short muted line that takes the free width and truncates.
+- `footerActions` places the actions at the end, such as Cancel and Save.
+
+```tsx
+<Drawer
+  footerActions={
+    <>
+      <Button onAction={close} variant="secondary">
+        Cancel
+      </Button>
+      <Button onAction={save}>Save transaction</Button>
+    </>
+  }
+  footerSummary="Takes £139.00 off the balance now"
+  onOpenChange={setOpen}
+  open={open}
+  title="New transaction"
+  trigger="Record transaction"
+>
+  <TextField label="Name" />
+</Drawer>
+```
+
+<Canvas of={Stories.RecordTransaction} />
+
+Below the medium breakpoint the drawer fills the screen and rises from the bottom.
 
 ## Open state
 
