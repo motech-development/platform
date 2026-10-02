@@ -39,6 +39,7 @@ Tokens are prefixed inside the Tailwind namespace. Tailwind also applies the `br
 | 13px | Buttons, fields, body text, collections and card titles |
 | 15px | State-panel, form-section and drop-zone titles          |
 | 17px | Section headings and dialog titles                      |
+| 20px | Large numeric entry                                     |
 | 22px | Page headings                                           |
 | 26px | Numeric emphasis                                        |
 

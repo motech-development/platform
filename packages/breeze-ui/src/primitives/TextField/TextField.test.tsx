@@ -98,6 +98,34 @@ describe('TextField', () => {
     expect(input).not.toBeInvalid();
   });
 
+  it('marks pointer focus with the brand border and ring, and read-only values as secondary', async () => {
+    const user = userEvent.setup();
+
+    renderBreeze(
+      <>
+        <TextField label="Supplier" />
+        <TextField defaultValue="Office" label="Category" readOnly />
+      </>,
+    );
+
+    const input = screen.getByRole('textbox', { name: 'Supplier' });
+
+    await user.click(input);
+
+    expect(input).toHaveAttribute('data-focused', 'true');
+    expect(input).toHaveClass(
+      'breeze:outline-none',
+      'breeze:data-[focused]:border-breeze-brand',
+      'breeze:data-[focused]:ring-3',
+      'breeze:data-[focused]:ring-breeze-brand/15',
+    );
+    expect(input).not.toHaveClass('breeze:data-[hovered]:border-breeze-brand');
+    expect(screen.getByRole('textbox', { name: 'Category' })).toHaveClass(
+      'breeze:read-only:bg-breeze-sunken',
+      'breeze:read-only:text-breeze-ink-2',
+    );
+  });
+
   it('keeps controlled values application-owned', async () => {
     const user = userEvent.setup();
     const onChange = vi.fn<(value: string) => void>();

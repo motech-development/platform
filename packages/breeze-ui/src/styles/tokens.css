@@ -32,6 +32,9 @@
   --text-breeze-sm: 13px;
   --text-breeze-md: 15px;
   --text-breeze-lg: 17px;
+  --text-breeze-xl: 20px;
+  /* Tailwind's default text-xl line height, which the prototype's amount field inherits. */
+  --text-breeze-xl--line-height: calc(1.75 / 1.25);
   --text-breeze-2xl: 22px;
   /* Tailwind's default text-2xl line height, which the prototype's page title inherits. */
   --text-breeze-2xl--line-height: calc(2 / 1.5);
