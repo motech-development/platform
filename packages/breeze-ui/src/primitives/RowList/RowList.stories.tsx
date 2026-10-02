@@ -115,7 +115,19 @@ async function verifyResponsiveGeometry(canvasElement: HTMLElement) {
     const coffeeValueRegionRect = coffeeValueRegion.getBoundingClientRect();
     const marketValueRegionRect = marketValueRegion.getBoundingClientRect();
 
+    const coffeeBadgeRect = within(coffeeRow)
+      .getByText(/^Needs review/)
+      .getBoundingClientRect();
+    const coffeeDescriptionRect = within(coffeeRow)
+      .getByText('Coffee shop near the station.')
+      .getBoundingClientRect();
+
     await expect(getComputedStyle(coffeeRow).display).toBe('grid');
+    await expect(coffeeBadgeRect.left).toBeGreaterThan(coffeeLabelRect.right);
+    await expect(coffeeBadgeRect.top).toBeLessThan(coffeeLabelRect.bottom);
+    await expect(coffeeDescriptionRect.top).toBeGreaterThanOrEqual(
+      coffeeLabelRect.bottom,
+    );
     await expect(coffeeLabelRect.left).toBeLessThan(coffeeDateRect.left);
     await expect(coffeeDateRect.left).toBeLessThan(coffeeValueRect.left);
     await expect(
