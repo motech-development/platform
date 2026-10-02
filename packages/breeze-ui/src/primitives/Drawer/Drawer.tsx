@@ -1,7 +1,15 @@
+import type { ReactNode } from 'react';
 import type { OverlayProps } from '../../overlays/overlay.types';
 import OverlaySurface from '../../overlays/OverlaySurface';
 
-export type DrawerProps = OverlayProps;
+export type DrawerProps = OverlayProps & {
+  /** End-aligned actions pinned below the scrolling content, such as Cancel and Save. */
+  footerActions?: ReactNode;
+  /** Leading footer action placed before the summary, such as Delete. */
+  footerStart?: ReactNode;
+  /** Muted one-line footer summary that takes the free width and truncates. */
+  footerSummary?: string;
+};
 
 /**
  * Opens a labelled drawer with library-owned nesting and motion.
@@ -11,6 +19,9 @@ export function Drawer({
   children,
   defaultOpen,
   dismissible,
+  footerActions,
+  footerStart,
+  footerSummary,
   onOpenChange,
   open,
   title,
@@ -20,6 +31,9 @@ export function Drawer({
     <OverlaySurface
       defaultOpen={defaultOpen}
       dismissible={dismissible}
+      footerActions={footerActions}
+      footerStart={footerStart}
+      footerSummary={footerSummary}
       onOpenChange={onOpenChange}
       open={open}
       title={title}
