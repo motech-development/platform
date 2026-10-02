@@ -27,6 +27,17 @@ Use the optional `section` object to group rows under structural section
 headers. Keep each section ID stable when rows are appended or merged. Keep row
 IDs unique and stable so the focused row remains mounted as data changes.
 
+## Show money in and out
+
+Currency values use the compact `amount` role in the default ink tone. Set
+`tone: 'positive'` on money in and `sign: 'always'` to show an explicit `+` or
+true minus; `sign` follows `Typography`. Set the row's `direction` to `in` or
+`out` to give its icon tile the positive or strong wash, and pair it with the
+`incoming` or `outgoing` icon. Without `direction` the tile is neutral. Colour
+is never the only signal: the sign and icon also carry the direction.
+
+<Canvas of={Stories.Activity} />
+
 ## Activate rows
 
 `onAction` receives the activated row's application item from `items`, as

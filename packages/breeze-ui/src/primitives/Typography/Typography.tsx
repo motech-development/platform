@@ -25,6 +25,9 @@ const variants = {
       start: 'breeze:text-start',
     },
     role: {
+      // Leading mirrors the prototype's Tailwind text-sm default.
+      amount:
+        'breeze:text-breeze-sm breeze:font-semibold breeze:leading-[calc(1.25/0.875)] breeze:tabular-nums',
       body: 'breeze:text-breeze-sm breeze:font-normal breeze:leading-breeze-snug',
       caption:
         'breeze:text-breeze-xs breeze:font-medium breeze:leading-breeze-snug',
@@ -64,6 +67,7 @@ export type TypographyElement =
 export type IsoCalendarDate = `${number}-${number}-${number}`;
 export type TypographyVariant = keyof typeof variants.variant.role;
 export type TypographyTone = keyof typeof variants.variant.tone;
+type CurrencyTypographyVariant = 'amount' | 'money';
 
 interface TypographyBaseProps {
   /** Provides expanded screen-reader text or names rich content. */
@@ -93,8 +97,8 @@ interface CurrencyTypographyContent extends TypographyBaseProps {
   format: 'currency';
   /** Controls the sign: `auto` signs negatives, `always` positives too; zero never. Defaults to `auto`. */
   sign?: 'always' | 'auto' | 'never';
-  /** Uses the dedicated money text role required for currency formatting. */
-  variant: 'money';
+  /** Selects a currency role: `money` for stat figures or `amount` for row amounts. */
+  variant: CurrencyTypographyVariant;
 }
 
 interface DateTypographyContent extends TypographyBaseProps {
@@ -109,7 +113,7 @@ interface DateTypographyContent extends TypographyBaseProps {
   /** Unavailable when formatting a date. */
   sign?: never;
   /** Selects the visual and typographic text role. Defaults to `body`. */
-  variant?: Exclude<TypographyVariant, 'money'>;
+  variant?: Exclude<TypographyVariant, CurrencyTypographyVariant>;
 }
 
 interface TextTypographyContent extends TypographyBaseProps {
@@ -124,7 +128,7 @@ interface TextTypographyContent extends TypographyBaseProps {
   /** Unavailable when displaying text content. */
   value?: never;
   /** Selects the visual and typographic text role. Defaults to `body`. */
-  variant?: Exclude<TypographyVariant, 'money'>;
+  variant?: Exclude<TypographyVariant, CurrencyTypographyVariant>;
 }
 
 export type TypographyProps =
@@ -296,10 +300,9 @@ export function Typography(props: Readonly<TypographyProps>) {
   } = props;
   const element = requestedElement ?? getDefaultElement(variant);
   const accessibleLabel = ariaLabel?.trim() || undefined;
-  const resolvedAlign =
-    align ?? (variant === 'money' || numeric ? 'end' : 'start');
-  const needsAlignmentBox =
-    align !== undefined || variant === 'money' || numeric;
+  const isCurrencyRole = variant === 'amount' || variant === 'money';
+  const resolvedAlign = align ?? (isCurrencyRole || numeric ? 'end' : 'start');
+  const needsAlignmentBox = align !== undefined || isCurrencyRole || numeric;
   let content = getTypographyContent(props, locale, messages.loading);
 
   const canReplaceWithAccessibleLabel =
@@ -346,7 +349,7 @@ export function Typography(props: Readonly<TypographyProps>) {
           element === 'span' &&
           !needsAlignmentBox &&
           variants.state.inlineLoading,
-        numeric && variant !== 'money' && variants.state.numeric,
+        numeric && !isCurrencyRole && variants.state.numeric,
         truncate && variants.state.truncate,
       ]
         .filter(Boolean)

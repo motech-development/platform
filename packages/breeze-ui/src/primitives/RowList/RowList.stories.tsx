@@ -183,6 +183,76 @@ export const Default: Story = {
   },
 };
 
+const activity = [
+  {
+    description: 'Website retainer · Sales',
+    direction: 'in',
+    icon: 'incoming',
+    id: 'retainer',
+    label: 'Bramble Studio',
+    value: {
+      currency: 'GBP',
+      format: 'currency',
+      sign: 'always',
+      tone: 'positive',
+      value: 2100,
+    },
+  },
+  {
+    description: 'Printer paper and toner · Office',
+    direction: 'out',
+    icon: 'outgoing',
+    id: 'supplies',
+    label: 'Northgate Supplies',
+    value: {
+      currency: 'GBP',
+      format: 'currency',
+      sign: 'always',
+      value: -184.6,
+    },
+  },
+  {
+    description: 'Return journey · Travel',
+    direction: 'out',
+    icon: 'outgoing',
+    id: 'rail',
+    label: 'Rail fare',
+    value: {
+      currency: 'GBP',
+      format: 'currency',
+      sign: 'always',
+      value: -42.3,
+    },
+  },
+] satisfies RowListItemDescriptor[];
+
+/** Money in and out carry a direction tile, amount tone and explicit sign. */
+export const Activity: Story = {
+  args: {
+    items: activity,
+    loadMore: undefined,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const moneyIn = canvas.getByText('+£2,100.00');
+    const moneyOut = canvas.getByText('−£184.60');
+    const valueRegion = moneyIn.closest<HTMLElement>(
+      '[class~="breeze:col-start-3"]',
+    );
+
+    if (!valueRegion) throw new Error('Missing the RowList value region.');
+
+    await expect(getComputedStyle(moneyIn).fontSize).toBe('13px');
+    await expect(getComputedStyle(moneyIn).fontWeight).toBe('600');
+    await expect(getComputedStyle(moneyIn).color).not.toBe(
+      getComputedStyle(moneyOut).color,
+    );
+    await expect(moneyIn.scrollWidth).toBeLessThanOrEqual(
+      valueRegion.clientWidth,
+    );
+  },
+};
+
 /** An empty result remains a named grid with a structural row and cell. */
 export const Empty: Story = {
   args: {
