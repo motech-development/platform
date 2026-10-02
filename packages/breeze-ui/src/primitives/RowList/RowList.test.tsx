@@ -51,6 +51,9 @@ function getEntryDescriptor(entry: Entry): RowListItemDescriptor {
   };
 }
 
+expectTypeOf<RowListProps<Entry>['onAction']>().parameters.toEqualTypeOf<
+  [Entry]
+>();
 expectTypeOf<RowListProps<Entry>>().not.toHaveProperty('children');
 expectTypeOf<RowListProps<Entry>>().not.toHaveProperty('className');
 expectTypeOf<RowListProps<Entry>>().not.toHaveProperty('onClick');
@@ -146,7 +149,7 @@ describe('RowList', () => {
     ).toBeInTheDocument();
   });
 
-  it('reports the descriptor for an activated row', async () => {
+  it('reports the application item for an activated row', async () => {
     const user = userEvent.setup();
     const onAction = vi.fn();
 
@@ -165,7 +168,8 @@ describe('RowList', () => {
     coffeeRow.focus();
     await user.keyboard('{Enter}');
 
-    expect(onAction).toHaveBeenCalledWith(getEntryDescriptor(entries[0]));
+    expect(onAction).toHaveBeenCalledExactlyOnceWith(entries[0]);
+    expect(onAction.mock.calls[0]?.[0]).toBe(entries[0]);
   });
 
   it('does not activate a disabled row', async () => {
