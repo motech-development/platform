@@ -1,5 +1,5 @@
-import { Badge } from '../Badge/Badge';
-import { Icon } from '../Icon/Icon';
+import { Badge } from '../primitives/Badge/Badge';
+import { Icon } from '../primitives/Icon/Icon';
 import collectionVariants from './collection.styles';
 import type { ItemDescriptor } from './item.types';
 

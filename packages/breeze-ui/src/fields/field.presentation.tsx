@@ -2,7 +2,7 @@ import type { MouseEventHandler } from 'react';
 import { FieldError as AriaFieldError } from 'react-aria-components/FieldError';
 import { Label as AriaLabel } from 'react-aria-components/Label';
 import { Text as AriaText } from 'react-aria-components/Text';
-import { Skeleton } from '../Skeleton/Skeleton';
+import { Skeleton } from '../primitives/Skeleton/Skeleton';
 import { fieldVariants } from './field.styles';
 
 interface FieldLabelProps {

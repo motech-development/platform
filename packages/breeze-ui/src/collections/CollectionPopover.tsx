@@ -8,11 +8,11 @@ import {
   useState,
 } from 'react';
 import { Popover as AriaPopover } from 'react-aria-components/Popover';
-import { useOverlayPortal } from '../../overlays/OverlayProvider';
+import { useOverlayPortal } from '../overlays/OverlayProvider';
 import {
   ParentOverlayContext,
   useOverlayLayer,
-} from '../../overlays/OverlayStack';
+} from '../overlays/OverlayStack';
 
 const triggerBoundaryError =
   'Breeze overlay triggers and portal containers must belong to the current document and light DOM.';
@@ -57,6 +57,9 @@ export default function CollectionPopover({
   const surfaceRef = useRef<Element | null>(null);
   const pointerDownTargetRef = useRef<Node | null>(null);
   const pointerDismissTargetRef = useRef<Node | null>(null);
+  // Consumers pass a fresh callback on every render; reading it through a ref
+  // keeps the document listeners, and the pointer state they own, stable.
+  const onOpenChangeRef = useRef(onOpenChange);
   const open = requestedOpen && parentOpen;
   const layer = useOverlayLayer(
     'popover',
@@ -79,6 +82,10 @@ export default function CollectionPopover({
     ) {
       throw new Error(triggerBoundaryError);
     }
+  });
+
+  useLayoutEffect(() => {
+    onOpenChangeRef.current = onOpenChange;
   });
 
   useEffect(() => setPortalReady(true), []);
@@ -133,7 +140,7 @@ export default function CollectionPopover({
       }
 
       pointerDismissTargetRef.current = pointerUpTarget;
-      onOpenChange(false);
+      onOpenChangeRef.current(false);
     };
     const onPointerCancel = () => {
       clearPointerDismissExpiry();
@@ -146,7 +153,7 @@ export default function CollectionPopover({
         isOutside(target) &&
         !sameTarget(pointerDismissTargetRef.current, target)
       ) {
-        onOpenChange(false);
+        onOpenChangeRef.current(false);
       }
       clearPointerDismissExpiry();
       pointerDownTargetRef.current = null;
@@ -174,7 +181,7 @@ export default function CollectionPopover({
       pointerDownTargetRef.current = null;
       pointerDismissTargetRef.current = null;
     };
-  }, [host, layer.topmost, onOpenChange, open, triggerRef]);
+  }, [host, layer.topmost, open, triggerRef]);
 
   useEffect(() => {
     if (parentOpen) {

@@ -1,14 +1,13 @@
 import type { ButtonHTMLAttributes, ReactNode, Ref } from 'react';
 import { createElement, useState } from 'react';
 import { ToggleButton as AriaToggleButton } from 'react-aria-components/ToggleButton';
-import { useBreezeContext } from '../../provider/BreezeContext';
-import { Skeleton } from '../Skeleton/Skeleton';
+import { Skeleton } from '../primitives/Skeleton/Skeleton';
+import { useBreezeContext } from '../provider/BreezeContext';
 
 const variants = {
   base: {
     label: 'breeze:[grid-area:1/1]',
-    skeleton:
-      'breeze:[grid-area:1/1] breeze:inline-size-full breeze:block-size-breeze-3',
+    skeleton: 'breeze:[grid-area:1/1] breeze:inline-full breeze:block-breeze-3',
     status: 'breeze:sr-only',
   },
   state: {
