@@ -15,7 +15,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-/** Locale-aware numeric entry with increment and decrement controls. */
+/** Locale-aware numeric entry; the arrow keys step the value. */
 export const Default: Story = {};
 
 /** Supporting guidance is announced with the spinbutton. */
@@ -32,7 +32,7 @@ export const Error: Story = {
   },
 };
 
-/** Disabled fields cannot receive input or stepper actions. */
+/** Disabled fields cannot receive input or arrow-key stepping. */
 export const Disabled: Story = {
   args: {
     disabled: true,
@@ -58,6 +58,41 @@ export const Required: Story = {
 export const Loading: Story = {
   args: {
     loading: true,
+  },
+};
+
+const moneyFormat = {
+  maximumFractionDigits: 2,
+  minimumFractionDigits: 2,
+};
+
+/** The large size gives a form's primary amount 52px and 20px semibold figures. */
+export const Large: Story = {
+  render: () => (
+    <div className="breeze-story-amount-pair">
+      <NumberField
+        defaultValue={120}
+        formatOptions={moneyFormat}
+        label="Amount, including VAT"
+        size="lg"
+        step={0.01}
+      />
+      <NumberField
+        defaultValue={20}
+        formatOptions={moneyFormat}
+        label="VAT paid"
+        size="lg"
+        step={0.01}
+      />
+    </div>
+  ),
+};
+
+/** Loading keeps the large control's height. */
+export const LargeLoading: Story = {
+  args: {
+    loading: true,
+    size: 'lg',
   },
 };
 

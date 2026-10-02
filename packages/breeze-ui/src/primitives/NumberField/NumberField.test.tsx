@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createRef } from 'react';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
@@ -36,7 +36,7 @@ expectTypeOf(mixedNumberField).toBeObject();
 expectTypeOf(uncontrolledNumberField).toBeObject();
 
 describe('NumberField', () => {
-  it('reports semantic numbers from stepper controls and retains tabular figures', async () => {
+  it('steps with the arrow keys, renders no stepper buttons and retains tabular figures', async () => {
     const user = userEvent.setup();
     const onChange = vi.fn<(value: number) => void>();
 
@@ -50,24 +50,97 @@ describe('NumberField', () => {
     );
 
     const input = screen.getByRole('textbox', { name: 'Quantity' });
-    const increment = screen.getByRole('button', { name: /increase/i });
 
     expect(input).toHaveClass('breeze:tabular-nums');
-    expect(input).toHaveClass(
-      'breeze:any-pointer-coarse:min-block-breeze-tap',
-      'breeze:data-[focus-visible]:!outline-none',
-    );
-    expect(increment).toHaveClass(
-      'breeze:any-pointer-coarse:min-block-breeze-tap',
-      'breeze:any-pointer-coarse:min-inline-breeze-tap',
-      'breeze:outline-offset-[-2px]',
-    );
+    expect(screen.queryByRole('button', { hidden: true })).toBeNull();
     expect(input).toHaveValue('1');
 
-    await user.click(increment);
+    await user.click(input);
+    await user.keyboard('{ArrowUp}');
 
     expect(onChange).toHaveBeenLastCalledWith(1.5);
     expect(input).toHaveValue('1.5');
+
+    await user.keyboard('{ArrowDown}{ArrowDown}');
+
+    expect(onChange).toHaveBeenLastCalledWith(0.5);
+  });
+
+  it('uses the standard control size by default and the large amount size on request', () => {
+    renderBreeze(
+      <>
+        <NumberField label="Quantity" />
+        <NumberField label="Amount, including VAT" size="lg" />
+      </>,
+    );
+
+    const standard = screen.getByRole('textbox', { name: 'Quantity' });
+    const large = screen.getByRole('textbox', {
+      name: 'Amount, including VAT',
+    });
+
+    expect(standard).toHaveClass(
+      'breeze:min-block-breeze-md',
+      'breeze:any-pointer-coarse:min-block-breeze-tap',
+      'breeze:text-breeze-sm',
+      'breeze:leading-breeze-snug',
+    );
+    expect(large).not.toHaveClass('breeze:min-block-breeze-md');
+    expect(large).toHaveClass(
+      'breeze:min-block-breeze-lg',
+      'breeze:text-breeze-xl',
+      'breeze:font-semibold',
+      'breeze:tabular-nums',
+    );
+    expect(large).not.toHaveClass('breeze:text-breeze-sm');
+  });
+
+  it('marks focus with the brand border and ring', async () => {
+    const user = userEvent.setup();
+
+    renderBreeze(<NumberField label="Amount" />);
+
+    const input = screen.getByRole('textbox', { name: 'Amount' });
+
+    await user.click(input);
+
+    expect(input).toHaveAttribute('data-focused', 'true');
+    expect(input).toHaveClass(
+      'breeze:data-[focused]:border-breeze-brand',
+      'breeze:data-[focused]:ring-3',
+      'breeze:data-[focused]:ring-breeze-brand/15',
+    );
+  });
+
+  it('keeps the large control height while loading', () => {
+    renderBreeze(<NumberField label="Amount" loading size="lg" />);
+
+    const input = screen.getByRole('textbox', { name: 'Amount' });
+
+    expect(input).toHaveClass(
+      'breeze:min-block-breeze-lg',
+      'breeze:!opacity-0',
+    );
+    expect(
+      screen.getByRole('progressbar', { name: 'Loading' }),
+    ).toBeInTheDocument();
+  });
+
+  it('ignores the mouse wheel while focused', async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn<(value: number) => void>();
+
+    renderBreeze(
+      <NumberField defaultValue={5} label="Amount" onChange={onChange} />,
+    );
+
+    const input = screen.getByRole('textbox', { name: 'Amount' });
+
+    await user.click(input);
+    fireEvent.wheel(input, { deltaY: -100 });
+
+    expect(input).toHaveValue('5');
+    expect(onChange).not.toHaveBeenCalled();
   });
 
   it('reports NaN when an uncontrolled numeric input is emptied', async () => {
@@ -135,35 +208,19 @@ describe('NumberField', () => {
     const readOnlyInput = screen.getByRole('textbox', {
       name: 'Read-only amount',
     });
-    const disabledGroup = disabledInput.parentElement;
-    const readOnlyGroup = readOnlyInput.parentElement;
-    const disabledIncrement = disabledGroup?.querySelector<HTMLButtonElement>(
-      'button[slot="increment"]',
-    );
-    const readOnlyIncrement = readOnlyGroup?.querySelector<HTMLButtonElement>(
-      'button[aria-label="Increase"]',
-    );
 
     expect(disabledInput).toBeDisabled();
-    expect(disabledGroup).toHaveAttribute('data-disabled', 'true');
-    expect(disabledGroup).not.toHaveClass('breeze:data-[disabled]:opacity-60');
     expect(disabledInput).toHaveClass('breeze:disabled:opacity-60');
-    expect(disabledIncrement).toHaveClass('breeze:disabled:opacity-50');
     expect(readOnlyInput).not.toBeDisabled();
     expect(readOnlyInput).toHaveAttribute('aria-readonly', 'true');
-    expect(readOnlyGroup).toHaveClass('breeze:!bg-breeze-sunken');
-
-    if (!readOnlyIncrement) {
-      throw new Error(
-        'Expected the read-only increment button to be rendered.',
-      );
-    }
-
-    expect(readOnlyIncrement).toBeDisabled();
-    expect(readOnlyIncrement).toHaveClass('breeze:bg-transparent');
+    expect(readOnlyInput).toHaveClass(
+      'breeze:read-only:bg-breeze-sunken',
+      'breeze:read-only:text-breeze-ink-2',
+    );
 
     await user.click(readOnlyInput);
     await user.type(readOnlyInput, '3');
+    await user.keyboard('{ArrowUp}');
 
     expect(readOnlyInput).toHaveFocus();
     expect(readOnlyInput).toHaveValue('2');
@@ -203,12 +260,6 @@ describe('NumberField', () => {
     expect(input).toHaveClass('breeze:!opacity-0');
     expect(input).not.toHaveClass('breeze:invisible');
     expect(input).toHaveAttribute('aria-busy', 'true');
-    expect(input.parentElement).toHaveClass(
-      'breeze:!bg-transparent',
-      'breeze:!border-transparent',
-      'breeze:!opacity-100',
-      'breeze:!overflow-visible',
-    );
     const loadingPlaceholder = screen.getByRole('progressbar', {
       name: 'Loading',
     });
@@ -229,22 +280,7 @@ describe('NumberField', () => {
       expect(skeleton).toHaveClass('breeze:rounded-breeze-sm');
     });
 
-    const increment = screen
-      .getAllByRole('button', { hidden: true })
-      .find((button) => button.getAttribute('slot') === 'increment');
-
-    if (!increment) {
-      throw new Error('Expected the loading increment button to be rendered.');
-    }
-
-    expect(increment).toHaveClass('breeze:!opacity-0');
-    expect(increment).not.toHaveClass('breeze:invisible');
-    expect(increment).toHaveAttribute('aria-hidden', 'true');
-    expect(
-      screen.queryByRole('button', { name: /increase/i }),
-    ).not.toBeInTheDocument();
-
-    await user.click(increment);
+    await user.type(input, '{ArrowUp}3');
 
     expect(onChange).not.toHaveBeenCalled();
   });
