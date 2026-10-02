@@ -4,20 +4,20 @@ import { Button as AriaButton } from 'react-aria-components/Button';
 import { Group as AriaGroup } from 'react-aria-components/Group';
 import { Input as AriaInput } from 'react-aria-components/Input';
 import { NumberField as AriaNumberField } from 'react-aria-components/NumberField';
-import { useBreezeContext } from '../../provider/BreezeContext';
 import {
   FieldLabel,
   FieldSupportingContent,
-} from '../Field/field.presentation';
-import { fieldVariants, joinClassNames } from '../Field/field.styles';
+} from '../../fields/field.presentation';
+import { fieldVariants, joinClassNames } from '../../fields/field.styles';
+import { useBreezeContext } from '../../provider/BreezeContext';
 import { Skeleton } from '../Skeleton/Skeleton';
 
 const variants = {
   base: {
     group:
-      'breeze:relative breeze:inline-flex breeze:min-block-breeze-md breeze:min-inline-size-0 breeze:inline-size-full breeze:items-stretch breeze:overflow-hidden breeze:rounded-breeze-ctl breeze:border breeze:border-solid breeze:border-breeze-line-strong breeze:bg-breeze-surface breeze:has-[input[data-focus-visible]]:outline-2 breeze:has-[input[data-focus-visible]]:outline-solid breeze:has-[input[data-focus-visible]]:outline-breeze-brand breeze:has-[input[data-invalid]]:border-breeze-danger breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:bg-breeze-sunken',
+      'breeze:relative breeze:inline-flex breeze:min-block-breeze-md breeze:min-inline-0 breeze:inline-full breeze:items-stretch breeze:overflow-hidden breeze:rounded-breeze-ctl breeze:border breeze:border-solid breeze:border-breeze-line-strong breeze:bg-breeze-surface breeze:has-[input[data-focus-visible]]:outline-2 breeze:has-[input[data-focus-visible]]:outline-solid breeze:has-[input[data-focus-visible]]:outline-breeze-brand breeze:has-[input[data-invalid]]:border-breeze-danger breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:bg-breeze-sunken',
     input:
-      'breeze:min-block-breeze-md breeze:min-inline-size-0 breeze:flex-1 breeze:border-0 breeze:rounded-none breeze:bg-transparent breeze:tabular-nums breeze:outline-none breeze:placeholder:text-breeze-ink-3 breeze:data-[hovered]:border-transparent breeze:data-[focus-visible]:!outline-none breeze:data-[invalid]:border-transparent breeze:disabled:cursor-not-allowed breeze:read-only:cursor-default',
+      'breeze:min-block-breeze-md breeze:min-inline-0 breeze:flex-1 breeze:border-0 breeze:rounded-none breeze:bg-transparent breeze:tabular-nums breeze:outline-none breeze:placeholder:text-breeze-ink-3 breeze:data-[hovered]:border-transparent breeze:data-[focus-visible]:!outline-none breeze:data-[invalid]:border-transparent breeze:disabled:cursor-not-allowed breeze:read-only:cursor-default',
     skeleton:
       'breeze:pointer-events-none breeze:absolute breeze:[inset-block:0] breeze:[inset-inline:0]',
     stepButton:

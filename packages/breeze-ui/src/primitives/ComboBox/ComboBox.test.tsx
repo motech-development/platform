@@ -3,9 +3,9 @@ import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import renderBreeze from '../../../test/render';
+import type { ItemDescriptor } from '../../collections/item.types';
 import { BreezeProvider } from '../../provider/BreezeProvider';
 import type { BadgeProps } from '../Badge/Badge';
-import type { ItemDescriptor } from '../Collection/item.types';
 import { ComboBox, type ComboBoxProps } from './ComboBox';
 
 const suppliers = [

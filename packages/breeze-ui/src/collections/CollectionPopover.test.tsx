@@ -2,8 +2,8 @@ import { fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useRef, useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
-import renderBreeze from '../../../test/render';
-import { BreezeProvider } from '../../provider/BreezeProvider';
+import renderBreeze from '../../test/render';
+import { BreezeProvider } from '../provider/BreezeProvider';
 import CollectionPopover from './CollectionPopover';
 
 describe('CollectionPopover', () => {
@@ -53,11 +53,7 @@ describe('CollectionPopover', () => {
       );
     }
 
-    const { rerender } = renderBreeze(
-      <BreezeProvider locale="en-GB">
-        <Example useForeignTrigger={false} />
-      </BreezeProvider>,
-    );
+    const { rerender } = renderBreeze(<Example useForeignTrigger={false} />);
 
     expect(() =>
       rerender(
@@ -205,6 +201,53 @@ describe('CollectionPopover', () => {
 
     expect(screen.getByRole('button', { name: 'Option' })).toBeInTheDocument();
     expect(onOpenChange).not.toHaveBeenCalledWith(false);
+  });
+
+  it('dismisses an outside click that spans a consumer re-render', () => {
+    const onOpenChange = vi.fn();
+
+    function Example({ revision }: { revision: number }) {
+      const triggerRef = useRef<HTMLButtonElement | null>(null);
+      const [open, setOpen] = useState(true);
+
+      return (
+        <>
+          <button ref={triggerRef} type="button">
+            Trigger
+          </button>
+          <div data-testid="background">Background content {revision}</div>
+          <CollectionPopover
+            className="popover"
+            isOpen={open}
+            onOpenChange={(nextOpen) => {
+              onOpenChange(nextOpen);
+              setOpen(nextOpen);
+            }}
+            triggerRef={triggerRef}
+          >
+            <button type="button">Option</button>
+          </CollectionPopover>
+        </>
+      );
+    }
+
+    const { rerender } = renderBreeze(<Example revision={0} />);
+
+    const background = screen.getByTestId('background');
+    fireEvent.pointerDown(background, { button: 0 });
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <Example revision={1} />
+      </BreezeProvider>,
+    );
+    fireEvent.pointerUp(background, { button: 0 });
+    fireEvent.click(background);
+
+    expect(onOpenChange).toHaveBeenCalledTimes(1);
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+    expect(
+      screen.queryByRole('button', { name: 'Option' }),
+    ).not.toBeInTheDocument();
   });
 
   it('expires pointer drag suppression before a later outside click', () => {

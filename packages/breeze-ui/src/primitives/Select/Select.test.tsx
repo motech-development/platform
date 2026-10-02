@@ -3,9 +3,9 @@ import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import renderBreeze from '../../../test/render';
+import type { ItemDescriptor } from '../../collections/item.types';
 import { BreezeProvider } from '../../provider/BreezeProvider';
 import type { BadgeProps } from '../Badge/Badge';
-import type { ItemDescriptor } from '../Collection/item.types';
 import { Select, type SelectProps } from './Select';
 
 const choices = [
@@ -15,7 +15,7 @@ const choices = [
       variant: 'brand',
     } satisfies Pick<BadgeProps, 'aria-label' | 'children' | 'variant'>,
     description: 'Current account ending in 1234',
-    icon: 'money',
+    icon: 'list',
     id: 'bank',
     label: 'Bank account',
   },
@@ -312,6 +312,77 @@ describe('Select', () => {
     expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
     expect(onChange).not.toHaveBeenCalled();
     expect(new FormData(screen.getByRole('form')).get('payment')).toBe('bank');
+  });
+
+  it.each([
+    ['ArrowRight', '{ArrowRight}'],
+    ['ArrowLeft', '{ArrowLeft}'],
+    ['a type-ahead letter', 'b'],
+  ])(
+    'keeps a read-only uncontrolled value unchanged by %s',
+    async (_, keys) => {
+      const user = userEvent.setup();
+      const onChange = vi.fn<(value: ItemDescriptor | null) => void>();
+      const keyboardChoices: ItemDescriptor[] = [
+        { id: 'bank', label: 'Bank account' },
+        { id: 'card', label: 'Card' },
+        { id: 'cash', label: 'Cash' },
+      ];
+
+      renderBreeze(
+        <form aria-label="Payment form">
+          <Select
+            defaultValue={keyboardChoices[1]}
+            getItem={getEnabledItem}
+            items={keyboardChoices}
+            label="Payment method"
+            name="payment"
+            onChange={onChange}
+            readOnly
+          />
+        </form>,
+      );
+
+      const form = screen.getByRole('form');
+      const trigger = screen.getByRole('button', {
+        name: 'Card Payment method',
+      });
+
+      await user.tab();
+      expect(trigger).toHaveFocus();
+      await user.keyboard(keys);
+
+      expect(trigger).toHaveTextContent('Card');
+      expect(new FormData(form as HTMLFormElement).get('payment')).toBe('card');
+      expect(onChange).not.toHaveBeenCalled();
+    },
+  );
+
+  it('changes an editable value with arrow keys and type-ahead', async () => {
+    const user = userEvent.setup();
+    const keyboardChoices: ItemDescriptor[] = [
+      { id: 'bank', label: 'Bank account' },
+      { id: 'card', label: 'Card' },
+      { id: 'cash', label: 'Cash' },
+    ];
+
+    renderBreeze(
+      <Select
+        defaultValue={keyboardChoices[1]}
+        getItem={getEnabledItem}
+        items={keyboardChoices}
+        label="Payment method"
+      />,
+    );
+
+    const trigger = screen.getByRole('button', { name: 'Card Payment method' });
+
+    await user.tab();
+    await user.keyboard('{ArrowRight}');
+    expect(trigger).toHaveTextContent('Cash');
+
+    await user.keyboard('b');
+    expect(trigger).toHaveTextContent('Bank account');
   });
 
   it('closes an open menu when read-only changes and stays closed', async () => {
