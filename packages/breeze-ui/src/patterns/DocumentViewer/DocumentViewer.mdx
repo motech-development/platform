@@ -71,11 +71,22 @@ These URLs must serve the matching files from the same `pdfjs-dist` version.
 The viewer adds a trailing slash to each directory URL. The auxiliary assets
 are optional when a document does not reference them.
 By default the viewer locates the worker with
-`new URL('pdfjs-dist/build/pdf.worker.mjs', import.meta.url)`, which Vite and
-webpack 5 resolve in the application's build and emit as an asset. When the
-application uses a bundler that does not support that pattern, provide
-`pdfAssets.workerSrc` with the URL emitted or copied for the installed
-`pdfjs-dist` version.
+`new URL('pdfjs-dist/build/pdf.worker.mjs', import.meta.url)`, which Vite 8.1.5
+resolves in production builds and emits as an asset. Vite's development server
+resolves this default only when Breeze UI is excluded from dependency
+pre-bundling:
+
+```ts
+export default defineConfig({
+  optimizeDeps: {
+    exclude: ['@motech-development/breeze-ui'],
+  },
+});
+```
+
+Otherwise, or when the application uses a bundler that does not support this
+pattern, provide `pdfAssets.workerSrc` with the URL emitted or copied for the
+installed `pdfjs-dist` version.
 
 When PDF.js is unavailable or cannot render a file, the viewer fetches the PDF
 and passes its bytes to the browser's native PDF viewer as a PDF-typed Blob.
