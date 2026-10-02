@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useState } from 'react';
+import { expect, within } from 'storybook/test';
 import { Button, type ButtonVariant, type ControlSize } from './Button';
 
 const meta = {
@@ -42,6 +43,39 @@ export const Danger: Story = {
 
 /** Every variant at each size. */
 export const TreatmentsAndSizes: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const measure = (name: string) => {
+      const button = canvas.getByRole('button', { name });
+      const style = getComputedStyle(button);
+
+      return {
+        fontSize: style.fontSize,
+        fontWeight: style.fontWeight,
+        height: button.getBoundingClientRect().height,
+        paddingInline: style.paddingInlineStart,
+      };
+    };
+
+    await expect(measure('secondary · sm')).toEqual({
+      fontSize: '12px',
+      fontWeight: '600',
+      height: 32,
+      paddingInline: '12px',
+    });
+    await expect(measure('primary · md')).toEqual({
+      fontSize: '13px',
+      fontWeight: '600',
+      height: 36,
+      paddingInline: '14px',
+    });
+    await expect(measure('secondary · md')).toEqual({
+      fontSize: '13px',
+      fontWeight: '600',
+      height: 36,
+      paddingInline: '12px',
+    });
+  },
   render: () => (
     <div className="breeze-story-stack">
       {(['sm', 'md', 'lg'] satisfies ControlSize[]).map((size) => (
