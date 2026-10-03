@@ -18,7 +18,9 @@ import {
   SelectValue as AriaSelectValue,
 } from 'react-aria-components/Select';
 import collectionVariants from '../../collections/collection.styles';
-import CollectionPopover from '../../collections/CollectionPopover';
+import CollectionPopover, {
+  listBoxMaxHeight,
+} from '../../collections/CollectionPopover';
 import DescriptorContent from '../../collections/DescriptorContent';
 import type { ItemDescriptor } from '../../collections/item.types';
 import {
@@ -29,17 +31,6 @@ import { fieldVariants, joinClassNames } from '../../fields/field.styles';
 import { useBreezeContext } from '../../provider/BreezeContext';
 import { Icon } from '../Icon/Icon';
 import { Skeleton } from '../Skeleton/Skeleton';
-
-const selectVariants = {
-  base: {
-    trigger:
-      'breeze:flex breeze:min-block-breeze-md breeze:any-pointer-coarse:min-block-breeze-tap breeze:min-inline-0 breeze:inline-full breeze:items-center breeze:justify-between breeze:rounded-breeze-ctl breeze:border breeze:border-solid breeze:border-breeze-line-strong breeze:bg-breeze-surface breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:py-breeze-2 breeze:font-breeze-sans breeze:text-breeze-sm breeze:text-breeze-ink breeze:outline-offset-2 breeze:data-[hovered]:border-breeze-brand breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[invalid]:border-breeze-danger breeze:aria-disabled:cursor-default breeze:aria-disabled:bg-breeze-sunken breeze:disabled:cursor-not-allowed breeze:disabled:bg-breeze-sunken breeze:disabled:opacity-60',
-  },
-  compound: {},
-  size: {},
-  state: {},
-  variant: {},
-} as const;
 
 interface SelectCommonProps<T> {
   /** Hints at the browser's autocomplete behaviour for this field. */
@@ -182,6 +173,7 @@ function SelectPopover<T>({
     <CollectionPopover
       className={collectionVariants.base.popover}
       isOpen={isOpen}
+      maxHeight={listBoxMaxHeight}
       onOpenChange={(open) => state?.setOpen(open)}
       triggerRef={triggerRef}
     >
@@ -281,7 +273,7 @@ export function Select<T>({
       <div className={fieldVariants.base.control}>
         <AriaButton
           className={joinClassNames(
-            selectVariants.base.trigger,
+            fieldVariants.base.trigger,
             loading && 'breeze:!opacity-0',
           )}
           isDisabled={interactionDisabled}
@@ -304,7 +296,7 @@ export function Select<T>({
           <AriaSelectValue
             className={joinClassNames(
               collectionVariants.base.content,
-              'breeze:text-start',
+              'breeze:text-start breeze:data-[placeholder]:text-breeze-ink-3',
             )}
           >
             {({ isPlaceholder, selectedText }) =>

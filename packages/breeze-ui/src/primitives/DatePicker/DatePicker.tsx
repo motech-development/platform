@@ -29,12 +29,11 @@ const datePickerVariants = {
   base: {
     footer:
       'breeze:mbs-breeze-2 breeze:flex breeze:items-center breeze:border-0 breeze:border-bs breeze:border-solid breeze:border-breeze-line breeze:pbs-breeze-2',
+    icon: 'breeze:inline-flex breeze:shrink-0 breeze:text-breeze-ink-3',
+    placeholder: 'breeze:text-breeze-ink-3',
     popover:
       'breeze:inline-[304px]! breeze:p-breeze-3 breeze:any-pointer-coarse:inline-[calc(7*var(--breeze-spacing-breeze-tap)+2px)]! breeze:any-pointer-coarse:!p-0 breeze-date-picker-popover',
-    today:
-      'breeze:ms-auto breeze:inline-flex breeze:items-center breeze:border-0 breeze:bg-transparent breeze:p-0 breeze:px-breeze-1 breeze:font-breeze-sans breeze:text-breeze-sm breeze:text-breeze-brand-text breeze:outline-offset-2 breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-50 breeze:any-pointer-coarse:min-block-breeze-tap',
-    trigger:
-      'breeze:flex breeze:min-block-breeze-md breeze:any-pointer-coarse:min-block-breeze-tap breeze:min-inline-0 breeze:inline-full breeze:items-center breeze:justify-between breeze:gap-breeze-3 breeze:rounded-breeze-ctl breeze:border breeze:border-solid breeze:border-breeze-line-strong breeze:bg-breeze-surface breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:py-breeze-2 breeze:font-breeze-sans breeze:text-breeze-sm breeze:text-breeze-ink breeze:outline-offset-2 breeze:data-[hovered]:border-breeze-brand breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[invalid]:border-breeze-danger breeze:aria-disabled:cursor-default breeze:aria-disabled:bg-breeze-sunken breeze:disabled:cursor-not-allowed breeze:disabled:bg-breeze-sunken breeze:disabled:opacity-60',
+    today: 'breeze:ms-auto',
     value: 'breeze:min-inline-0 breeze:flex-1 breeze:text-start',
   },
   compound: {},
@@ -145,7 +144,12 @@ function DatePickerTriggerValue({
       {value ? (
         <Typography element="span" format="date" value={value} />
       ) : (
-        <span lang={placeholderLocale}>{placeholder}</span>
+        <span
+          className={datePickerVariants.base.placeholder}
+          lang={placeholderLocale}
+        >
+          {placeholder}
+        </span>
       )}
     </span>
   );
@@ -238,20 +242,20 @@ function DatePickerFooter({
           <Button
             disabled={disabled || value == null}
             onAction={onClear}
-            size="sm"
             variant="quiet"
           >
             {messages.clearDate}
           </Button>
         </span>
       )}
-      <AriaButton
+      <span
         className={datePickerVariants.base.today}
-        isDisabled={disabled}
-        onPress={onToday}
+        lang={getMessageLocale('today')}
       >
-        <span lang={getMessageLocale('today')}>{messages.today}</span>
-      </AriaButton>
+        <Button disabled={disabled} onAction={onToday} variant="quiet">
+          {messages.today}
+        </Button>
+      </span>
     </div>
   );
 }
@@ -578,7 +582,7 @@ export function DatePicker(props: Readonly<DatePickerProps>) {
       <span className={fieldVariants.base.control}>
         <AriaButton
           className={joinClassNames(
-            datePickerVariants.base.trigger,
+            fieldVariants.base.trigger,
             loading && 'breeze:!opacity-0',
           )}
           isDisabled={interactionDisabled}
@@ -610,7 +614,9 @@ export function DatePicker(props: Readonly<DatePickerProps>) {
             value={selectedValue}
             valueId={valueId}
           />
-          <Icon name="calendar" size="sm" />
+          <span className={datePickerVariants.base.icon}>
+            <Icon name="calendar" size="sm" />
+          </span>
         </AriaButton>
         {loading && (
           <span className={fieldVariants.base.skeleton}>
