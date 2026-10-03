@@ -7,10 +7,13 @@ const enGB = {
   attachmentMoreActions: 'More actions',
   attachmentOpen: 'Open',
   attachmentPhoto: 'Photo',
+  clearDate: 'Clear date',
   close: 'Close',
+  comboBoxNoMatches: 'No matches for “{query}”',
   documentViewerAccessibility:
     'The rendered document may expose no content to assistive technology. Its meaning comes from the surrounding record. Download the original file for another way to access it.',
   documentViewerDownload: 'Download',
+  documentViewerDownloadFailed: 'The file could not be downloaded.',
   documentViewerExitFullScreen: 'Exit full screen',
   documentViewerFallback:
     'The PDF preview could not be loaded. Use Download to open the original file.',
@@ -49,6 +52,7 @@ const enGB = {
   required: 'Required',
   selectDate: 'Select a date',
   skipToMain: 'Skip to main content',
+  today: 'Today',
 };
 
 export default enGB;

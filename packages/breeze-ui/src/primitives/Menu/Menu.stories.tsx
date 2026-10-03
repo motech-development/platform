@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useState } from 'react';
-import { expect, userEvent, within } from 'storybook/test';
+import { expect, userEvent, waitFor, within } from 'storybook/test';
+import type { ItemDescriptor } from '../../collections/item.types';
 import { Button } from '../Button/Button';
-import type { ItemDescriptor } from '../Collection/item.types';
-import { Menu } from './Menu';
+import { Menu, type MenuItemDescriptor } from './Menu';
 
 const actions = [
   {
@@ -52,15 +52,108 @@ export const Default: Story = {
     const menu = await within(document.body).findByRole('menu', {
       name: 'Account actions',
     });
+    const popover = menu.closest<HTMLElement>('.breeze-popover');
+
+    if (!popover) throw new Error('The menu popover was not rendered.');
+
+    // Layout widths ignore the entry animation's scale.
+    await expect(popover.offsetWidth).toBeGreaterThanOrEqual(
+      Math.max(256, trigger.offsetWidth),
+    );
+  },
+};
+
+const companies = [
+  { id: 'harbour', initials: 'HP', name: 'Harbour & Pine Ltd' },
+  { id: 'wold', initials: 'WF', name: 'Wold Farm Joinery Ltd' },
+];
+const companyMenuItems = [...companies, null];
+
+function getCompanyMenuItem(
+  company: (typeof companies)[number] | null,
+): MenuItemDescriptor {
+  if (!company) {
+    return { icon: 'settings', id: 'manage', label: 'Manage companies' };
+  }
+
+  return {
+    ...(company.id === 'harbour' && {
+      badge: { children: 'Selected', variant: 'brand' },
+    }),
+    id: company.id,
+    initials: company.initials,
+    label: company.name,
+    section: { id: 'companies', label: 'Companies' },
+  };
+}
+
+/** A labelled section of companies shown by initials, divided from a trailing action. */
+export const Sections: Story = {
+  play: async () => {
+    await document.fonts.ready;
+
+    const menu = await within(document.body).findByRole('menu', {
+      name: 'Harbour & Pine Ltd',
+    });
     const popover = menu.closest('.breeze-popover');
 
     if (!popover) throw new Error('The menu popover was not rendered.');
 
-    const widthDelta =
-      Number.parseFloat(getComputedStyle(popover).minInlineSize) -
-      trigger.getBoundingClientRect().width;
+    // Measure after the entry animation's scale settles.
+    await Promise.all(popover.getAnimations().map(({ finished }) => finished));
 
-    await expect(Math.abs(widthDelta)).toBeLessThan(1);
+    const section = within(menu).getByRole('group', { name: 'Companies' });
+    const [selected, other] = within(section).getAllByRole('menuitem');
+    const manage = within(menu).getByRole('menuitem', {
+      name: 'Manage companies',
+    });
+
+    await expect(selected).toHaveAccessibleName('Harbour & Pine Ltd, Selected');
+    await expect(within(menu).getAllByRole('separator')).toHaveLength(1);
+    // Initials rows match the prototype's 44px; icon rows its 38.57px.
+    await expect(selected.getBoundingClientRect().height).toBeCloseTo(44, 0);
+    await expect(other.getBoundingClientRect().height).toBeCloseTo(44, 0);
+    await expect(manage.getBoundingClientRect().height).toBeCloseTo(38.57, 1);
+  },
+  render: () => (
+    <Menu
+      defaultOpen
+      getItem={getCompanyMenuItem}
+      items={companyMenuItems}
+      trigger="Harbour & Pine Ltd"
+      triggerIcon="building"
+    />
+  ),
+};
+
+/** An icon-only trigger, named by `triggerAriaLabel`. */
+export const IconOnlyTrigger: Story = {
+  args: {
+    defaultOpen: false,
+    trigger: undefined,
+    triggerAriaLabel: 'More actions',
+    triggerIcon: 'more',
+  },
+  play: async ({ canvasElement }) => {
+    const trigger = within(canvasElement).getByRole('button', {
+      name: 'More actions',
+    });
+
+    await expect(trigger).toHaveTextContent('');
+    await userEvent.click(trigger);
+
+    const menu = await within(document.body).findByRole('menu', {
+      name: 'More actions',
+    });
+
+    // Wait out the popover's fade-in from opacity 0.
+    await waitFor(async () => {
+      await expect(menu).toBeVisible();
+    });
+    await expect(trigger).toHaveAttribute('aria-expanded', 'true');
+    await expect(
+      within(menu).getByRole('menuitem', { name: 'Settings, New' }),
+    ).toBeVisible();
   },
 };
 
@@ -73,7 +166,7 @@ function ControlledExample() {
       <Menu
         getItem={(item) => item}
         items={actions}
-        onAction={(descriptor) => setAction(descriptor.label)}
+        onAction={(item) => setAction(item.label)}
         onOpenChange={setOpen}
         open={open}
         trigger="Account actions"
@@ -86,7 +179,7 @@ function ControlledExample() {
   );
 }
 
-/** Control visibility and receive the selected item's details. */
+/** Control visibility and receive the selected application item. */
 export const Controlled: Story = {
   render: () => <ControlledExample />,
 };

@@ -1,5 +1,5 @@
-import type { BadgeProps } from '../Badge/Badge';
-import type { IconName } from '../Icon/Icon';
+import type { BadgeProps } from '../primitives/Badge/Badge';
+import type { IconName } from '../primitives/Icon/Icon';
 
 /** The data contract used to render a compact status badge in a collection item. */
 export type ItemDescriptorBadge = Pick<

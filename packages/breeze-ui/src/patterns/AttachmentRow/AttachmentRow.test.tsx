@@ -489,7 +489,10 @@ describe('AttachmentRow', () => {
       screen.getByRole('button', { name: 'More actions: receipt.jpg' }),
     ).toBeInTheDocument();
     expect(screen.getAllByText('Open')).toHaveLength(2);
-    expect(screen.getAllByText('More actions')).toHaveLength(2);
+    expect(screen.queryByText('More actions')).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'More actions: invoice.pdf' }),
+    ).toHaveTextContent('');
   });
 
   it('formats the size using the provider locale', () => {

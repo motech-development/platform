@@ -26,6 +26,7 @@ import {
   Users,
   X,
 } from 'lucide-react';
+import { useBreezeContext } from '../../provider/BreezeContext';
 
 const artwork = {
   add: Plus,
@@ -41,13 +42,12 @@ const artwork = {
   download: Download,
   expand: ChevronDown,
   forward: ChevronRight,
+  incoming: ArrowDownLeft,
+  list: ListIcon,
   lock: LockKeyhole,
-  money: ListIcon,
-  moneyIn: ArrowDownLeft,
-  moneyOut: ArrowUpRight,
   more: Ellipsis,
-  next: ChevronRight,
   notifications: Bell,
+  outgoing: ArrowUpRight,
   overview: House,
   people: Users,
   settings: Settings,
@@ -62,9 +62,9 @@ const variants = {
   },
   compound: {},
   size: {
-    lg: 'breeze:block-size-breeze-6 breeze:inline-size-breeze-6',
-    md: 'breeze:block-size-breeze-5 breeze:inline-size-breeze-5',
-    sm: 'breeze:block-size-breeze-4 breeze:inline-size-breeze-4',
+    lg: 'breeze:block-breeze-6 breeze:inline-breeze-6',
+    md: 'breeze:block-breeze-5 breeze:inline-breeze-5',
+    sm: 'breeze:block-breeze-4 breeze:inline-breeze-4',
   },
   state: {
     logicalDirection: 'breeze:rtl:rotate-180',
@@ -72,7 +72,7 @@ const variants = {
   variant: {},
 } as const;
 
-const logicalDirectionIcons = new Set<IconName>(['back', 'forward', 'next']);
+const logicalDirectionIcons = new Set<IconName>(['back', 'forward']);
 
 export type IconName = keyof typeof artwork;
 export type IconSize = keyof typeof variants.size;
@@ -92,6 +92,8 @@ export interface IconProps {
  * @summary The single dependency boundary for Breeze icon artwork.
  */
 export function Icon({ label, name, size = 'md' }: Readonly<IconProps>) {
+  useBreezeContext();
+
   const Artwork = artwork[name];
   const accessibleLabel = label?.trim() || undefined;
 

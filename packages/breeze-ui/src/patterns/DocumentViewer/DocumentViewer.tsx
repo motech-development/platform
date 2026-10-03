@@ -32,42 +32,41 @@ const variants = {
     mediaBox: 'breeze:relative breeze:flex-none',
     mediaContent: 'breeze-document-viewer-media-content',
     pageStatus:
-      'breeze:min-inline-size-[6rem] breeze:text-center breeze:text-breeze-sm breeze:tabular-nums breeze:text-breeze-ink-2',
+      'breeze:min-inline-[6rem] breeze:text-center breeze:text-breeze-sm breeze:tabular-nums breeze:text-breeze-ink-2',
     pageToolbar:
-      'breeze:flex breeze:items-center breeze:justify-center breeze:gap-breeze-2 breeze:border-breeze-line breeze:border-b breeze:bg-breeze-canvas breeze:px-breeze-3 breeze:py-breeze-2',
+      'breeze:flex breeze:items-center breeze:justify-center breeze:gap-breeze-2 breeze:border-breeze-line breeze:border-be breeze:bg-breeze-canvas breeze:px-breeze-3 breeze:py-breeze-2',
     pdfPage:
-      'breeze-pdf-page breeze:relative breeze:overflow-hidden breeze:bg-white breeze:shadow-overlay',
-    root: 'breeze:flex breeze:block-size-full breeze:inline-size-full breeze:min-block-size-0 breeze:min-inline-size-0 breeze:flex-col breeze:bg-breeze-canvas',
+      'breeze-pdf-page breeze:relative breeze:overflow-hidden breeze:bg-breeze-surface breeze:shadow-breeze-overlay',
+    root: 'breeze:flex breeze:block-full breeze:inline-full breeze:min-block-0 breeze:min-inline-0 breeze:flex-col breeze:bg-breeze-canvas',
     skeletonLayer:
-      'breeze:absolute breeze:inset-0 breeze:flex breeze:items-center breeze:justify-center',
+      'breeze:absolute breeze:inset-[0] breeze:flex breeze:items-center breeze:justify-center',
     stage:
-      'breeze-document-viewer-stage breeze:relative breeze:flex breeze:min-block-size-0 breeze:min-inline-size-0 breeze:flex-1 breeze:overflow-auto breeze:rounded-breeze-sm breeze:bg-breeze-sunken breeze:p-breeze-4',
+      'breeze-document-viewer-stage breeze:relative breeze:flex breeze:min-block-0 breeze:min-inline-0 breeze:flex-1 breeze:overflow-auto breeze:rounded-breeze-sm breeze:bg-breeze-sunken breeze:p-breeze-4',
     stageContent:
-      'breeze-document-viewer-stage-content breeze:flex breeze:min-block-size-full breeze:min-inline-size-full',
+      'breeze-document-viewer-stage-content breeze:flex breeze:min-block-full breeze:min-inline-full',
     textLayer: 'breeze-pdf-text-layer',
     toolbar:
-      'breeze:flex breeze:flex-wrap breeze:items-center breeze:gap-[6px] breeze:border-breeze-line breeze:border-b breeze:bg-breeze-raised breeze:px-breeze-3 breeze:py-breeze-2',
+      'breeze:flex breeze:flex-wrap breeze:items-center breeze:gap-[6px] breeze:border-breeze-line breeze:border-be breeze:bg-breeze-raised breeze:px-breeze-3 breeze:py-breeze-2',
     toolbarLink:
-      'breeze:inline-flex breeze:min-block-breeze-sm breeze:items-center breeze:justify-center breeze:rounded-breeze-ctl breeze:border breeze:border-solid breeze:border-breeze-line-strong breeze:bg-breeze-surface breeze:px-breeze-3 breeze:text-breeze-sm breeze:leading-breeze-snug breeze:text-breeze-ink breeze:no-underline breeze:hover:bg-breeze-sunken breeze:focus-visible:outline-2 breeze:focus-visible:outline-solid breeze:focus-visible:outline-breeze-brand breeze:any-pointer-coarse:min-block-breeze-tap breeze:any-pointer-coarse:min-inline-breeze-tap',
+      'breeze:inline-flex breeze:min-block-breeze-sm breeze:items-center breeze:justify-center breeze:rounded-breeze-ctl breeze:border breeze:border-solid breeze:border-breeze-line-strong breeze:bg-breeze-surface breeze:px-breeze-3 breeze:text-breeze-sm breeze:text-breeze-ink breeze:no-underline breeze:hover:bg-breeze-sunken breeze:focus-visible:outline-2 breeze:focus-visible:outline-solid breeze:focus-visible:outline-breeze-brand breeze:any-pointer-coarse:min-block-breeze-tap breeze:any-pointer-coarse:min-inline-breeze-tap',
     toolbarSection:
       'breeze:flex breeze:flex-wrap breeze:items-center breeze:gap-[6px]',
     toolbarTitle:
-      'breeze:grow breeze:min-inline-size-0 breeze:overflow-hidden breeze:text-ellipsis breeze:whitespace-nowrap breeze:text-breeze-xs breeze:font-semibold breeze:text-breeze-ink-2 breeze:max-breeze-md:basis-full breeze:max-breeze-md:grow-0 breeze:max-breeze-md:shrink-0',
+      'breeze:grow breeze:min-inline-0 breeze:overflow-hidden breeze:text-ellipsis breeze:whitespace-nowrap breeze:text-breeze-xs breeze:font-semibold breeze:text-breeze-ink-2 breeze:max-breeze-md:basis-full breeze:max-breeze-md:grow-0 breeze:max-breeze-md:shrink-0',
     viewer:
-      'breeze:relative breeze:flex breeze:min-block-size-0 breeze:min-inline-size-0 breeze:flex-1 breeze:flex-col breeze:overflow-hidden',
+      'breeze:relative breeze:flex breeze:min-block-0 breeze:min-inline-0 breeze:flex-1 breeze:flex-col breeze:overflow-hidden',
     viewerFrame:
-      'breeze:block breeze:block-size-full breeze:min-block-size-0 breeze:inline-size-full breeze:border-0 breeze:bg-breeze-surface',
+      'breeze:block breeze:block-full breeze:min-block-0 breeze:inline-full breeze:border-0 breeze:bg-breeze-surface',
     viewerImage: 'breeze:block breeze:object-contain',
-    viewerNotice:
-      'breeze:m-0 breeze:text-breeze-xs breeze:leading-breeze-snug breeze:text-breeze-ink-3',
+    viewerNotice: 'breeze:m-0 breeze:text-breeze-xs breeze:text-breeze-ink-3',
     zoomStatus:
-      'breeze:min-inline-size-[3rem] breeze:text-center breeze:text-breeze-xs breeze:tabular-nums breeze:text-breeze-ink-2',
+      'breeze:min-inline-[3rem] breeze:text-center breeze:text-breeze-xs breeze:tabular-nums breeze:text-breeze-ink-2',
   },
   compound: {},
   size: {},
   state: {
     painted: {
-      hidden: 'breeze:invisible breeze:absolute breeze:inset-0',
+      hidden: 'breeze:invisible breeze:absolute breeze:inset-[0]',
       visible: 'breeze:visible',
     },
   },
@@ -152,16 +151,7 @@ function getFullscreenTarget(element: HTMLElement) {
   return element.closest<HTMLElement>('.breeze-fullscreen') ?? element;
 }
 
-function navigateToSource(ownerDocument: Document, source: string) {
-  const link = ownerDocument.createElement('a');
-  link.href = source;
-  link.hidden = true;
-  link.target = '_self';
-  ownerDocument.body.append(link);
-  link.click();
-  link.remove();
-}
-
+/** Blob download keeps the filename and never navigates to an expired presigned URL. */
 async function downloadDocument(
   event: MouseEvent<HTMLAnchorElement>,
   sourceUrl: string,
@@ -181,22 +171,18 @@ async function downloadDocument(
 
   event.preventDefault();
 
-  try {
-    const response = await fetch(source.href, { credentials: 'same-origin' });
-    if (!response.ok) throw new Error('The attachment download failed.');
+  const response = await fetch(source.href, { credentials: 'same-origin' });
+  if (!response.ok) throw new Error('The attachment download failed.');
 
-    const objectUrl = view.URL.createObjectURL(await response.blob());
-    const downloadLink = ownerDocument.createElement('a');
-    downloadLink.download = filename;
-    downloadLink.href = objectUrl;
-    downloadLink.hidden = true;
-    ownerDocument.body.append(downloadLink);
-    downloadLink.click();
-    downloadLink.remove();
-    view.setTimeout(() => view.URL.revokeObjectURL(objectUrl), 1000);
-  } catch {
-    navigateToSource(ownerDocument, source.href);
-  }
+  const objectUrl = view.URL.createObjectURL(await response.blob());
+  const downloadLink = ownerDocument.createElement('a');
+  downloadLink.download = filename;
+  downloadLink.href = objectUrl;
+  downloadLink.hidden = true;
+  ownerDocument.body.append(downloadLink);
+  downloadLink.click();
+  downloadLink.remove();
+  view.setTimeout(() => view.URL.revokeObjectURL(objectUrl), 1000);
 }
 
 interface ViewerModeMarker {
@@ -667,7 +653,12 @@ function usePdfPreview({
     const controller = new AbortController();
     const outputScale =
       zoom * (canvas.ownerDocument.defaultView?.devicePixelRatio || 1);
-    setAssetState({ failed: false, key: assetKey, ready: false });
+    // A ready page stays painted while the renderer prepares the new density.
+    setAssetState((current) =>
+      current.key === assetKey && current.ready && !current.failed
+        ? current
+        : { failed: false, key: assetKey, ready: false },
+    );
     const previousRender = renderQueueRef.current;
     const render = previousRender.then(async () => {
       if (controller.signal.aborted) return;
@@ -1256,6 +1247,7 @@ interface DocumentViewerViewportProps {
   assetFailed: boolean;
   assetKey: string | null;
   canvasRef: { current: HTMLCanvasElement | null };
+  downloadFailed: boolean;
   effectiveOpen: boolean;
   fitFrameToStage: () => void;
   fitImageToStage: (image: HTMLImageElement) => void;
@@ -1279,6 +1271,7 @@ function DocumentViewerViewport({
   assetFailed,
   assetKey,
   canvasRef,
+  downloadFailed,
   effectiveOpen,
   fitFrameToStage,
   fitImageToStage,
@@ -1344,7 +1337,7 @@ function DocumentViewerViewport({
           {!painted ? (
             <div className={variants.base.skeletonLayer}>
               <span
-                className="breeze:block breeze:block-size-full breeze:inline-size-full"
+                className="breeze:block breeze:block-full breeze:inline-full"
                 lang={getMessageLocale('documentViewerLoading')}
               >
                 <Skeleton
@@ -1380,6 +1373,15 @@ function DocumentViewerViewport({
           lang={getMessageLocale('documentViewerFallback')}
         >
           {messages.documentViewerFallback}
+        </p>
+      ) : null}
+      {downloadFailed ? (
+        <p
+          className={variants.base.viewerNotice}
+          lang={getMessageLocale('documentViewerDownloadFailed')}
+          role="alert"
+        >
+          {messages.documentViewerDownloadFailed}
         </p>
       ) : null}
     </>
@@ -1440,7 +1442,7 @@ function DocumentViewerPageToolbar({
 /**
  * Opens an image or document in a full-screen viewer with its own toolbar.
  *
- * @summary A modal attachment preview with lazy PDF rendering.
+ * @summary A non-modal full-screen attachment preview with lazy PDF rendering.
  */
 export function DocumentViewer({
   downloadName,
@@ -1659,15 +1661,26 @@ export function DocumentViewer({
     src,
     stageRef,
   });
+  const [failedDownloadKey, setFailedDownloadKey] = useState<string | null>(
+    null,
+  );
+  const downloadAttemptRef = useRef(0);
   const handleDownloadClick = (event: MouseEvent<HTMLAnchorElement>) => {
-    downloadDocument(event, contentSrc, filename).catch(() => undefined);
+    const downloadKey = contentSourceKey;
+    downloadAttemptRef.current += 1;
+    const downloadAttempt = downloadAttemptRef.current;
+    setFailedDownloadKey(null);
+    downloadDocument(event, contentSrc, filename).catch(() => {
+      if (downloadAttempt === downloadAttemptRef.current) {
+        setFailedDownloadKey(downloadKey);
+      }
+    });
   };
 
   return (
     <OverlaySurface
       closingTransition={closingTransition}
-      fullScreen
-      kind="dialog"
+      kind="fullscreen"
       onOpenChange={changeOpen}
       open={open}
       showHeader={false}
@@ -1715,6 +1728,9 @@ export function DocumentViewer({
           assetFailed={assetFailed}
           assetKey={contentAssetKey}
           canvasRef={canvasRef}
+          downloadFailed={
+            contentSourceKey !== null && failedDownloadKey === contentSourceKey
+          }
           effectiveOpen={effectiveOpen}
           fitFrameToStage={fitFrameToStage}
           fitImageToStage={fitImageToStage}

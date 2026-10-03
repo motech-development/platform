@@ -76,6 +76,14 @@ export const Formatting: Story = {
         value={1234.56}
         variant="money"
       />
+      <Typography
+        currency="GBP"
+        format="currency"
+        sign="always"
+        tone="positive"
+        value={2100}
+        variant="amount"
+      />
       <Typography format="date" value="2026-09-03" variant="caption" />
     </Stack>
   ),

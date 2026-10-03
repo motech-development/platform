@@ -8,11 +8,13 @@ import * as Stories from './Link.stories';
 
 # Link
 
-`Link` renders a native anchor with Breeze's link styling. Its `href` remains the destination, so browser navigation, keyboard access and open-in-new-tab behavior continue to work.
+`Link` renders a native anchor as a standalone 13px text action without an underline, such as View all money in a panel header. Its `href` remains the destination, so browser navigation, keyboard access and open-in-new-tab behavior continue to work. Use a quiet `Button` for an action that does not navigate.
 
 Without a configured router, activating the link uses the browser's native navigation. With a router, Breeze intercepts only qualifying same-document navigations.
 
 <Canvas of={Stories.Default} />
+
+<Canvas of={Stories.PanelAction} />
 
 ## Router navigation
 
@@ -30,15 +32,19 @@ Pass a same-document router to `BreezeProvider` when links should update applica
 
 `transitionTypes` defaults to an empty list. Breeze passes the option to `router.navigate(href, { transitionTypes })`; an existing one-argument `navigate(href)` adapter can ignore the extra argument.
 
+The router receives the destination the browser would navigate to, as a root-relative path with its query string, rather than the raw `href`. A relative `href` such as `accounts`, `../reports` or `?page=2` is resolved against the current document first, so `/accounts/transactions/` with `href="?page=2"` routes to `/accounts/transactions/?page=2`.
+
+Because the path is root-relative, it already includes any base path the application is served under. **An adapter for a router that prepends its own `basename` must strip that base before navigating**, or the base will appear twice.
+
 ## Native anchor behavior
 
 The router handles only an unmodified primary click on a same-origin HTTP or HTTPS link with no fragment, download, or alternate browsing target. External links, downloads, alternate targets, modified clicks and fragment links keep the browser's native behavior.
 
-Use `variant="subtle"` for a lower-emphasis link. The default variant uses the Breeze brand treatment.
+Use `variant="subtle"` for a lower-emphasis link. The default variant uses the Breeze brand text colour.
 
 ## Accessibility
 
-The link's visible content is its accessible name by default. Use `aria-label` or `aria-labelledby` when that content does not describe the destination, and `aria-current` when the link represents the current page or location.
+Links are distinguished by colour alone, so place them apart from running text rather than inside a sentence. They receive a 44px minimum height on touch devices and below the `md` breakpoint. The link's visible content is its accessible name by default. Use `aria-label` or `aria-labelledby` when that content does not describe the destination, and `aria-current` when the link represents the current page or location.
 
 ## API
 

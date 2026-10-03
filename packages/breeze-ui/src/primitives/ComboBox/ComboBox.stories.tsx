@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useState } from 'react';
-import type { ItemDescriptor } from '../Collection/item.types';
+import { expect, userEvent, within } from 'storybook/test';
+import type { ItemDescriptor } from '../../collections/item.types';
 import { ComboBox } from './ComboBox';
 
 const suppliers = [
@@ -39,6 +40,19 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+function resolvedTokenColour(element: HTMLElement, token: string) {
+  const probe = element.ownerDocument.createElement('span');
+
+  probe.style.backgroundColor = `var(${token})`;
+  element.after(probe);
+
+  const colour = getComputedStyle(probe).backgroundColor;
+
+  probe.remove();
+
+  return colour;
+}
+
 /** A filterable suggestion field. */
 export const Default: Story = {};
 
@@ -62,6 +76,67 @@ export const FreeText: Story = {
     allowsCustomValue: true,
     placeholder: 'Search or enter a name',
   },
+};
+
+/** A filter that matches no suggestion explains why the list is empty. */
+export const NoMatches: Story = {
+  play: async ({ canvasElement }) => {
+    await userEvent.type(
+      within(canvasElement).getByRole('combobox', { name: 'Supplier' }),
+      'zzz',
+    );
+
+    const listbox = await within(canvasElement.ownerDocument.body).findByRole(
+      'listbox',
+    );
+
+    await expect(
+      within(listbox).getByText('No matches for “zzz”'),
+    ).toBeVisible();
+  },
+};
+
+/** A read-only suggestion field keeps its value on a sunken ground. */
+export const ReadOnly: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const readOnlyGroup = canvas
+      .getByRole('combobox', { name: 'Recorded supplier' })
+      .closest<HTMLElement>('[role="group"]');
+    const editableGroup = canvas
+      .getByRole('combobox', { name: 'Supplier' })
+      .closest<HTMLElement>('[role="group"]');
+
+    if (!readOnlyGroup || !editableGroup) {
+      throw new globalThis.Error('Each combobox must render its field group.');
+    }
+
+    const readOnlyBackground = getComputedStyle(readOnlyGroup).backgroundColor;
+
+    await expect(readOnlyBackground).not.toBe(
+      getComputedStyle(editableGroup).backgroundColor,
+    );
+    await expect(readOnlyBackground).toBe(
+      resolvedTokenColour(readOnlyGroup, '--breeze-color-breeze-sunken'),
+    );
+  },
+  render: () => (
+    <div className="breeze-story-stack">
+      <ComboBox
+        defaultValue={suppliers[0]}
+        getItem={(item) => item}
+        items={suppliers}
+        label="Recorded supplier"
+        readOnly
+      />
+      <ComboBox
+        defaultValue={suppliers[0]}
+        getItem={(item) => item}
+        items={suppliers}
+        label="Supplier"
+      />
+    </div>
+  ),
 };
 
 /** Loading keeps the input footprint while preventing interaction. */

@@ -12,11 +12,11 @@ const variants = {
   compound: {},
   size: {},
   state: {
-    aligned: 'breeze:block breeze:inline-size-full',
+    aligned: 'breeze:block breeze:inline-full',
     inlineLoading: 'breeze:inline-block',
     numeric: 'breeze:tabular-nums breeze:tracking-breeze-tighter',
     truncate:
-      'breeze:block breeze:min-inline-size-0 breeze:inline-size-full breeze:overflow-hidden breeze:text-ellipsis breeze:whitespace-nowrap',
+      'breeze:block breeze:min-inline-0 breeze:inline-full breeze:overflow-hidden breeze:text-ellipsis breeze:whitespace-nowrap',
   },
   variant: {
     align: {
@@ -25,19 +25,17 @@ const variants = {
       start: 'breeze:text-start',
     },
     role: {
-      body: 'breeze:text-breeze-sm breeze:font-normal breeze:leading-breeze-snug',
-      caption:
-        'breeze:text-breeze-xs breeze:font-medium breeze:leading-breeze-snug',
+      amount: 'breeze:text-breeze-sm breeze:font-semibold breeze:tabular-nums',
+      body: 'breeze:text-breeze-sm breeze:font-normal',
+      caption: 'breeze:text-breeze-xs breeze:font-medium',
       heading:
         'breeze:text-breeze-2xl breeze:font-semibold breeze:leading-breeze-tight',
-      label:
-        'breeze:text-breeze-xs breeze:font-medium breeze:leading-breeze-snug',
+      label: 'breeze:text-breeze-xs breeze:font-medium',
       micro:
-        'breeze:text-breeze-2xs breeze:font-bold breeze:uppercase breeze:leading-breeze-snug breeze:tracking-breeze-caps',
+        'breeze:text-breeze-2xs breeze:font-bold breeze:uppercase breeze:tracking-breeze-caps',
       money:
         'breeze:text-breeze-4xl breeze:font-semibold breeze:leading-breeze-tight breeze:tracking-breeze-tightest breeze:tabular-nums',
-      title:
-        'breeze:text-breeze-md breeze:font-semibold breeze:leading-breeze-snug',
+      title: 'breeze:text-breeze-md breeze:font-semibold',
     },
     tone: {
       brand: 'breeze:text-breeze-brand-text',
@@ -64,6 +62,7 @@ export type TypographyElement =
 export type IsoCalendarDate = `${number}-${number}-${number}`;
 export type TypographyVariant = keyof typeof variants.variant.role;
 export type TypographyTone = keyof typeof variants.variant.tone;
+type CurrencyTypographyVariant = 'amount' | 'money';
 
 interface TypographyBaseProps {
   /** Provides expanded screen-reader text or names rich content. */
@@ -91,10 +90,10 @@ interface CurrencyTypographyContent extends TypographyBaseProps {
   dateStyle?: never;
   /** Formats `value` as locale-aware currency. */
   format: 'currency';
-  /** Controls whether the formatted amount displays its sign. Defaults to `auto`. */
+  /** Controls the sign: `auto` signs negatives, `always` positives too; zero never. Defaults to `auto`. */
   sign?: 'always' | 'auto' | 'never';
-  /** Uses the dedicated money text role required for currency formatting. */
-  variant: 'money';
+  /** Selects a currency role: `money` for stat figures or `amount` for row amounts. */
+  variant: CurrencyTypographyVariant;
 }
 
 interface DateTypographyContent extends TypographyBaseProps {
@@ -109,7 +108,7 @@ interface DateTypographyContent extends TypographyBaseProps {
   /** Unavailable when formatting a date. */
   sign?: never;
   /** Selects the visual and typographic text role. Defaults to `body`. */
-  variant?: Exclude<TypographyVariant, 'money'>;
+  variant?: Exclude<TypographyVariant, CurrencyTypographyVariant>;
 }
 
 interface TextTypographyContent extends TypographyBaseProps {
@@ -124,7 +123,7 @@ interface TextTypographyContent extends TypographyBaseProps {
   /** Unavailable when displaying text content. */
   value?: never;
   /** Selects the visual and typographic text role. Defaults to `body`. */
-  variant?: Exclude<TypographyVariant, 'money'>;
+  variant?: Exclude<TypographyVariant, CurrencyTypographyVariant>;
 }
 
 export type TypographyProps =
@@ -190,31 +189,41 @@ function getDefaultElement(variant: TypographyVariant): TypographyElement {
   return 'span';
 }
 
+// Zero, negative zero and amounts that round to zero are never signed.
+const signDisplay = {
+  always: 'exceptZero',
+  auto: 'negative',
+  never: 'never',
+} as const satisfies Record<
+  NonNullable<CurrencyTypographyContent['sign']>,
+  Intl.NumberFormatOptions['signDisplay']
+>;
+
 function formatCurrency(
   value: number,
   currency: string,
   locale: string,
-  sign: CurrencyTypographyContent['sign'],
+  sign: NonNullable<CurrencyTypographyContent['sign']>,
 ): string {
-  let parts: Intl.NumberFormatPart[];
-
-  try {
-    parts = new Intl.NumberFormat(locale, {
-      currency,
-      signDisplay: sign ?? 'auto',
-      style: 'currency',
-    }).formatToParts(value);
-  } catch (error) {
-    if (!(error instanceof RangeError)) {
-      throw error;
-    }
-
-    parts = new Intl.NumberFormat(locale, {
-      signDisplay: sign ?? 'auto',
-    }).formatToParts(value);
+  if (!Number.isFinite(value)) {
+    throw new RangeError(
+      `Typography currency value must be a finite number; received ${String(value)}.`,
+    );
   }
 
-  return parts
+  if (!/^[A-Z]{3}$/i.test(currency)) {
+    throw new RangeError(
+      `Typography currency must be a three-letter currency code; received "${currency}".`,
+    );
+  }
+
+  // BreezeProvider has already validated the locale.
+  return new Intl.NumberFormat(locale, {
+    currency,
+    signDisplay: signDisplay[sign],
+    style: 'currency',
+  })
+    .formatToParts(value)
     .map((part) => (part.type === 'minusSign' ? '−' : part.value))
     .join('');
 }
@@ -226,6 +235,7 @@ function formatDate(
 ): string {
   let date: Date;
 
+  // Calendar dates have no zone: UTC midnight formatted in UTC keeps the day fixed.
   try {
     date = parseDate(value).toDate('UTC');
   } catch {
@@ -285,10 +295,9 @@ export function Typography(props: Readonly<TypographyProps>) {
   } = props;
   const element = requestedElement ?? getDefaultElement(variant);
   const accessibleLabel = ariaLabel?.trim() || undefined;
-  const resolvedAlign =
-    align ?? (variant === 'money' || numeric ? 'end' : 'start');
-  const needsAlignmentBox =
-    align !== undefined || variant === 'money' || numeric;
+  const isCurrencyRole = variant === 'amount' || variant === 'money';
+  const resolvedAlign = align ?? (isCurrencyRole || numeric ? 'end' : 'start');
+  const needsAlignmentBox = align !== undefined || isCurrencyRole || numeric;
   let content = getTypographyContent(props, locale, messages.loading);
 
   const canReplaceWithAccessibleLabel =
@@ -335,7 +344,7 @@ export function Typography(props: Readonly<TypographyProps>) {
           element === 'span' &&
           !needsAlignmentBox &&
           variants.state.inlineLoading,
-        numeric && variant !== 'money' && variants.state.numeric,
+        numeric && !isCurrencyRole && variants.state.numeric,
         truncate && variants.state.truncate,
       ]
         .filter(Boolean)

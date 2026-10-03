@@ -8,11 +8,11 @@ import {
   useState,
 } from 'react';
 import { Popover as AriaPopover } from 'react-aria-components/Popover';
-import { useOverlayPortal } from '../../overlays/OverlayProvider';
+import { useOverlayPortal } from '../overlays/OverlayProvider';
 import {
   ParentOverlayContext,
   useOverlayLayer,
-} from '../../overlays/OverlayStack';
+} from '../overlays/OverlayStack';
 
 const triggerBoundaryError =
   'Breeze overlay triggers and portal containers must belong to the current document and light DOM.';
@@ -26,12 +26,17 @@ function isNode(value: EventTarget | null): value is Node {
   );
 }
 
+/** The design's listbox surfaces stop growing at 288px and scroll. */
+export const listBoxMaxHeight = 288;
+
 interface CollectionPopoverProps {
   children: ReactNode;
   className: string;
   /** Minimum viewport edge margin used while positioning the surface. */
   containerPadding?: number;
   isOpen: boolean;
+  /** Caps the surface's block size below the available viewport space. */
+  maxHeight?: number;
   onOpenChange: (open: boolean) => void;
   triggerRef: RefObject<Element | null>;
 }
@@ -45,6 +50,7 @@ export default function CollectionPopover({
   className,
   containerPadding,
   isOpen: requestedOpen,
+  maxHeight,
   onOpenChange,
   triggerRef,
 }: Readonly<CollectionPopoverProps>) {
@@ -57,6 +63,8 @@ export default function CollectionPopover({
   const surfaceRef = useRef<Element | null>(null);
   const pointerDownTargetRef = useRef<Node | null>(null);
   const pointerDismissTargetRef = useRef<Node | null>(null);
+  // A ref keeps the document listeners, and their pointer state, stable across new callbacks.
+  const onOpenChangeRef = useRef(onOpenChange);
   const open = requestedOpen && parentOpen;
   const layer = useOverlayLayer(
     'popover',
@@ -79,6 +87,10 @@ export default function CollectionPopover({
     ) {
       throw new Error(triggerBoundaryError);
     }
+  });
+
+  useLayoutEffect(() => {
+    onOpenChangeRef.current = onOpenChange;
   });
 
   useEffect(() => setPortalReady(true), []);
@@ -133,7 +145,7 @@ export default function CollectionPopover({
       }
 
       pointerDismissTargetRef.current = pointerUpTarget;
-      onOpenChange(false);
+      onOpenChangeRef.current(false);
     };
     const onPointerCancel = () => {
       clearPointerDismissExpiry();
@@ -146,7 +158,7 @@ export default function CollectionPopover({
         isOutside(target) &&
         !sameTarget(pointerDismissTargetRef.current, target)
       ) {
-        onOpenChange(false);
+        onOpenChangeRef.current(false);
       }
       clearPointerDismissExpiry();
       pointerDownTargetRef.current = null;
@@ -174,7 +186,7 @@ export default function CollectionPopover({
       pointerDownTargetRef.current = null;
       pointerDismissTargetRef.current = null;
     };
-  }, [host, layer.topmost, onOpenChange, open, triggerRef]);
+  }, [host, layer.topmost, open, triggerRef]);
 
   useEffect(() => {
     if (parentOpen) {
@@ -196,6 +208,8 @@ export default function CollectionPopover({
       isKeyboardDismissDisabled={!layer.topmost}
       isNonModal
       isOpen={open}
+      maxHeight={maxHeight}
+      offset={6}
       onOpenChange={onOpenChange}
       placement="bottom start"
       // Defer pointer dismissal to Breeze's provider-document policy, while

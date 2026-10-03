@@ -27,15 +27,18 @@
   --color-breeze-warn-soft: #fdf3dc;
   --color-breeze-danger: #b4231d;
 
+  /* Line heights are the prototype's Tailwind defaults; sizes without one inherit, as there. */
   --text-breeze-2xs: 11px;
   --text-breeze-xs: 12px;
+  --text-breeze-xs--line-height: calc(1 / 0.75);
   --text-breeze-sm: 13px;
-  --text-breeze-base: 14px;
+  --text-breeze-sm--line-height: calc(1.25 / 0.875);
   --text-breeze-md: 15px;
   --text-breeze-lg: 17px;
   --text-breeze-xl: 20px;
+  --text-breeze-xl--line-height: calc(1.75 / 1.25);
   --text-breeze-2xl: 22px;
-  --text-breeze-3xl: 24px;
+  --text-breeze-2xl--line-height: calc(2 / 1.5);
   --text-breeze-4xl: 26px;
 
   --spacing-breeze-md: 38px;
@@ -45,21 +48,17 @@
   --spacing-breeze-tap: 44px;
   --spacing-breeze-row: 64px;
   --spacing-breeze-sheet: 610px;
-  --spacing-breeze-card: 400px;
 
   --radius-breeze-panel: 8px;
   --radius-breeze-ctl: 6px;
   --radius-breeze-chip: 3px;
   --leading-breeze-tight: 1.1;
   --leading-breeze-snug: 1.45;
-  --leading-breeze-normal: 1.5;
   --tracking-breeze-tight: -0.008em;
   --tracking-breeze-tighter: -0.012em;
   --tracking-breeze-tightest: -0.018em;
   --tracking-breeze-caps: 0.06em;
   --tracking-breeze-wide: 0.05em;
-  --aspect-breeze-a4: 1/1.414;
-  --aspect-breeze-photo: 3/4;
   --container-breeze-page: 1500px;
   --container-breeze-read: 54ch;
   --container-breeze-prose: 52ch;
@@ -70,6 +69,7 @@
 
   --color-breeze-danger-fill: #b4231d;
   --color-breeze-danger-hover: #981e19;
+  --color-breeze-on-danger: #ffffff;
   --radius-breeze-full: 9999px;
   --spacing-breeze-1: 4px;
   --spacing-breeze-2: 8px;
@@ -79,6 +79,7 @@
   --spacing-breeze-6: 24px;
   --spacing-breeze-7: 28px;
   --spacing-breeze-8: 32px;
+  --spacing-breeze-9: 36px;
 }
 
 :root {
@@ -89,6 +90,7 @@
     0 8px 24px -10px rgb(22 22 22 / 25%);
 }
 
+/* CSS cannot share a block across both dark selectors; tokens.test.ts keeps the copies identical. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
     color-scheme: dark;
@@ -108,6 +110,9 @@
     --breeze-color-breeze-warn: #e0b341;
     --breeze-color-breeze-warn-soft: #2a2314;
     --breeze-color-breeze-danger: #f1736a;
+    --breeze-color-breeze-danger-fill: #f1736a;
+    --breeze-color-breeze-danger-hover: #f38880;
+    --breeze-color-breeze-on-danger: #161616;
     --breeze-shadow-panel: 0 1px 1px rgb(0 0 0/40%);
     --breeze-shadow-overlay: 0 1px 2px rgb(0 0 0/50%),
       0 8px 24px -10px rgb(0 0 0/70%);
@@ -132,6 +137,9 @@
   --breeze-color-breeze-warn: #e0b341;
   --breeze-color-breeze-warn-soft: #2a2314;
   --breeze-color-breeze-danger: #f1736a;
+  --breeze-color-breeze-danger-fill: #f1736a;
+  --breeze-color-breeze-danger-hover: #f38880;
+  --breeze-color-breeze-on-danger: #161616;
   --breeze-shadow-panel: 0 1px 1px rgb(0 0 0/40%);
   --breeze-shadow-overlay: 0 1px 2px rgb(0 0 0/50%),
     0 8px 24px -10px rgb(0 0 0/70%);
@@ -161,6 +169,14 @@
   gap: 0;
 }
 
+@utility min-inline-0 {
+  min-inline-size: 0;
+}
+
+@utility min-block-0 {
+  min-block-size: 0;
+}
+
 @utility font-normal {
   font-weight: 400;
 }
@@ -185,38 +201,4 @@
   50% {
     opacity: 0.5;
   }
-}
-
-/* Tailwind's height/width families emit physical dimensions. These logical
-   counterparts use the same private spacing namespace, including the touch floor. */
-@utility min-block-* {
-  min-block-size: --value(--spacing- *);
-}
-
-@utility min-inline-* {
-  min-inline-size: --value(--spacing- *);
-}
-
-@utility min-inline-size-0 {
-  min-inline-size: 0;
-}
-
-@utility block-size-full {
-  block-size: 100%;
-}
-
-@utility block-size-* {
-  block-size: --value(--spacing- *);
-}
-
-@utility inline-size-full {
-  inline-size: 100%;
-}
-
-@utility inline-size-* {
-  inline-size: --value(--spacing- *);
-}
-
-@utility max-inline-* {
-  max-inline-size: --value(--container- *);
 }

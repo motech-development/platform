@@ -4,6 +4,7 @@ import { IconTile, type IconTileTone } from './IconTile';
 
 const tones = [
   'neutral',
+  'strong',
   'brand',
   'positive',
   'warning',
@@ -35,12 +36,12 @@ export const Treatments: Story = {
   ),
 };
 
-/** A compact circular direction marker. */
+/** Compact circular markers for money in and money out. */
 export const Direction: Story = {
-  args: {
-    name: 'forward',
-    shape: 'circle',
-    size: 'sm',
-    tone: 'brand',
-  },
+  render: () => (
+    <Inline gap={3}>
+      <IconTile name="incoming" shape="circle" size="sm" tone="positive" />
+      <IconTile name="outgoing" shape="circle" size="sm" tone="strong" />
+    </Inline>
+  ),
 };

@@ -1,6 +1,7 @@
 import { copyFileSync, existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, resolve } from 'node:path';
+import { gzipSync } from 'node:zlib';
 import optimizeLocales from '@react-aria/optimize-locales-plugin';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
@@ -30,6 +31,9 @@ const bundledDependencyLicenses = [
 ];
 const appliesToLibraryBuild = (config: UserConfig) =>
   Boolean(config.build?.lib);
+const maximumLibraryGzipBytes = 140 * 1024;
+const reactAriaLocaleSource =
+  /[/\\](?:react-aria|react-aria-components|react-stately|@react-aria|@react-stately)[/\\].*[/\\]([a-z]{2})-[A-Z]{2}\.[cm]?js$/;
 
 const esmExternalRequire = Object.assign(
   esmExternalRequirePlugin({ external: esmExternalRequirePackages }),
@@ -89,6 +93,113 @@ function distributionAssetsPlugin(): Plugin {
   };
 }
 
+const pdfWorkerUrl = /new URL\(\s*(['"])pdfjs-dist\/build\/pdf\.worker\.mjs\1/g;
+const ignoredPdfWorkerUrl =
+  /\/\* @vite-ignore \*\/\s*(['"]pdfjs-dist\/build\/pdf\.worker\.mjs['"])/g;
+const preservedPdfWorkerUrl =
+  /new URL\(\s*(['"])pdfjs-dist\/build\/pdf\.worker\.mjs\1,\s*import\.meta\.url\s*\)/;
+
+/** Stops library mode inlining the 1.27 MB PDF.js worker, leaving its URL to the consumer's bundler. */
+function preservePdfWorkerUrlPlugin(): Plugin {
+  return {
+    apply: appliesToLibraryBuild,
+    enforce: 'pre',
+    name: 'breeze-preserve-pdf-worker-url',
+    renderChunk(code) {
+      return code.includes('pdf.worker.mjs')
+        ? { code: code.replace(ignoredPdfWorkerUrl, '$1'), map: null }
+        : null;
+    },
+    transform(code, id) {
+      return id.endsWith('/pdf-renderer.ts')
+        ? {
+            code: code.replace(
+              pdfWorkerUrl,
+              'new URL(/* @vite-ignore */ $1pdfjs-dist/build/pdf.worker.mjs$1',
+            ),
+            map: null,
+          }
+        : null;
+    },
+  };
+}
+
+/** Fails the library build when locale stripping or the size budget regresses. */
+function libraryOutputGuardPlugin(): Plugin {
+  return {
+    apply: appliesToLibraryBuild,
+    generateBundle(_options, bundle) {
+      // CSS entries leave empty JavaScript chunks that Vite drops after this hook.
+      const chunks = Object.values(bundle).flatMap((output) =>
+        output.type === 'chunk' && output.code.length > 0 ? [output] : [],
+      );
+      const errors: string[] = [];
+      const gzipBytes = chunks.reduce(
+        (total, chunk) => total + gzipSync(chunk.code, { level: 9 }).length,
+        0,
+      );
+      const localeSources = chunks.flatMap((chunk) => {
+        if (!chunk.map) {
+          errors.push(`${chunk.fileName} has no source map to audit locales`);
+
+          return [];
+        }
+
+        return chunk.map.sources.flatMap((source) => {
+          const language = reactAriaLocaleSource.exec(source)?.[1];
+
+          return language ? [{ language, source }] : [];
+        });
+      });
+
+      localeSources
+        .filter(({ language }) => language !== 'en')
+        .forEach(({ source }) => {
+          errors.push(`Non-English React Aria locale remains: ${source}`);
+        });
+
+      if (!localeSources.some(({ language }) => language === 'en')) {
+        errors.push(
+          'No English React Aria locale modules were found; update the locale audit pattern',
+        );
+      }
+
+      const libraryCode = chunks.map((chunk) => chunk.code).join('\n');
+
+      if (!preservedPdfWorkerUrl.test(libraryCode)) {
+        errors.push(
+          'The PDF.js worker URL is not the portable new URL("pdfjs-dist/build/pdf.worker.mjs", import.meta.url) form',
+        );
+      }
+
+      if (libraryCode.includes('pdf.worker.mjs?url')) {
+        errors.push(
+          'The Vite-only PDF.js worker ?url import is back in the output',
+        );
+      }
+
+      if (libraryCode.includes('@vite-ignore')) {
+        errors.push('A @vite-ignore marker leaked into the published output');
+      }
+
+      if (gzipBytes > maximumLibraryGzipBytes) {
+        errors.push(
+          `Library JavaScript is ${gzipBytes} B gzip-9, over the ${maximumLibraryGzipBytes} B budget`,
+        );
+      }
+
+      this.info(
+        `Library JavaScript: ${gzipBytes} B gzip-9 (budget ${maximumLibraryGzipBytes} B)`,
+      );
+
+      if (errors.length > 0) {
+        this.error(errors.join('\n'));
+      }
+    },
+    name: 'breeze-library-output-guard',
+  };
+}
+
 export default defineConfig({
   base: './',
   build: {
@@ -140,5 +251,7 @@ export default defineConfig({
       enforce: 'pre' as const,
     },
     esmExternalRequire,
+    preservePdfWorkerUrlPlugin(),
+    libraryOutputGuardPlugin(),
   ],
 });

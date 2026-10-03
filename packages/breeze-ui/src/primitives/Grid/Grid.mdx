@@ -1,11 +1,14 @@
 import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
 import * as Stories from './Grid.stories';
 
-<Meta of={Stories} summary="Arranges content in equal, responsive columns." />
+<Meta
+  of={Stories}
+  summary="Arranges content in equal or main-and-aside responsive columns."
+/>
 
 # Grid
 
-`Grid` provides one, two or three equal columns on the Breeze spacing scale. Multi-column grids collapse to one column below `md` by default.
+`Grid` provides one, two or three equal columns, or a main column beside an aside, on the Breeze spacing scale. Multi-column grids collapse to one column below `md` by default.
 
 <Canvas of={Stories.Responsive} />
 
@@ -14,6 +17,14 @@ import * as Stories from './Grid.stories';
 Set `collapseBelow="none"` only for content that remains understandable at narrow widths.
 
 <Canvas of={Stories.Fixed} />
+
+## Main and aside
+
+Set `columns="mainAside"` for a page with a primary column and a supporting aside, such as the Overview page. Pass exactly two children: the main content first, then the aside. The main column grows to fill the available space beside a 300px aside. Each column keeps its own height, so a short aside does not stretch to match the main column.
+
+Below `md`, the aside stacks under the main content. `collapseBelow` applies as it does to equal columns.
+
+<Canvas of={Stories.MainAside} />
 
 ## Accessibility
 

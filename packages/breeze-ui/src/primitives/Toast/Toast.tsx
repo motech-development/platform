@@ -35,8 +35,11 @@ interface ToastContentState {
   remember: (message: string) => void;
 }
 
+// Below 1: zoom and fractional line heights report a fully visible card just under 1.
+const toastVisibleRatio = 0.99;
+
 function isToastVisible(entry: IntersectionObserverEntry) {
-  return entry.isIntersecting && entry.intersectionRatio >= 1;
+  return entry.isIntersecting && entry.intersectionRatio >= toastVisibleRatio;
 }
 
 function handleToastIntersection(
@@ -287,7 +290,7 @@ export function ToastProviderBoundary({
             ),
           );
         },
-        { threshold: 1 },
+        { threshold: toastVisibleRatio },
       );
 
       Array.from(region.children).forEach((element) => {

@@ -1,24 +1,23 @@
-import type { Ref } from 'react';
+import { type Ref, useId } from 'react';
 import { useObjectRef } from 'react-aria/useObjectRef';
 import {
   CheckboxButton as AriaCheckboxButton,
   CheckboxField as AriaCheckboxField,
 } from 'react-aria-components/Checkbox';
+import { FieldSupportingContent } from '../../fields/field.presentation';
 import { useBreezeContext } from '../../provider/BreezeContext';
-import { FieldSupportingContent } from '../Field/field.presentation';
-import { fieldVariants } from '../Field/field.styles';
 import { Skeleton } from '../Skeleton/Skeleton';
 
 const variants = {
   base: {
     control:
-      'breeze:relative breeze:inline-grid breeze:min-block-breeze-tap breeze:grid-flow-col breeze:items-center breeze:gap-breeze-2 breeze:cursor-pointer breeze:select-none breeze:font-breeze-sans breeze:text-breeze-sm breeze:font-medium breeze:leading-breeze-snug breeze:text-breeze-ink breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-60',
+      'breeze:flex breeze:any-pointer-coarse:min-block-breeze-tap breeze:items-center breeze:gap-[10px] breeze:cursor-pointer breeze:select-none breeze:font-breeze-sans breeze:text-breeze-sm breeze:font-medium breeze:text-breeze-ink breeze:data-[disabled]:cursor-not-allowed',
     indicator:
-      'breeze:inline-grid breeze:block-size-breeze-5 breeze:inline-size-breeze-5 breeze:shrink-0 breeze:place-items-center breeze:rounded-breeze-chip breeze:border breeze:border-solid breeze:border-breeze-ink-3 breeze:bg-breeze-surface breeze:text-breeze-on-brand breeze:transition-colors breeze:data-[selected]:border-breeze-brand breeze:data-[selected]:bg-breeze-brand breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand',
-    label: 'breeze:[grid-area:1/2]',
-    skeleton: 'breeze:pointer-events-none breeze:[grid-area:1/2]',
+      'breeze:grid breeze:block-breeze-4 breeze:inline-breeze-4 breeze:shrink-0 breeze:place-items-center breeze:rounded-breeze-chip breeze:border breeze:border-solid breeze:border-breeze-ink-3 breeze:bg-breeze-surface breeze:text-breeze-xs breeze:font-bold breeze:leading-none breeze:text-breeze-on-brand breeze:transition-colors breeze:data-[selected]:border-breeze-brand breeze:data-[selected]:bg-breeze-brand breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-offset-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[disabled]:border-breeze-line-strong breeze:data-[disabled]:bg-breeze-sunken breeze:data-[disabled]:text-breeze-surface breeze:data-[disabled]:data-[selected]:border-breeze-line-strong breeze:data-[disabled]:data-[selected]:bg-breeze-line-strong',
+    root: 'breeze:min-inline-0',
     skeletonIndicator:
-      'breeze:pointer-events-none breeze:[grid-area:1/1] breeze:block-size-breeze-5 breeze:inline-size-breeze-5',
+      'breeze:pointer-events-none breeze:block-breeze-4 breeze:inline-breeze-4 breeze:shrink-0',
+    text: 'breeze:flex breeze:min-inline-0 breeze:grow breeze:flex-col breeze:gap-breeze-px',
   },
   compound: {},
   size: {},
@@ -100,18 +99,21 @@ export function Checkbox({
 }: Readonly<CheckboxProps>) {
   const { messages } = useBreezeContext();
   const inputRef = useObjectRef(ref);
+  const labelId = useId();
   const visibleDescription = description?.trim() || undefined;
   const visibleError = error?.trim() || undefined;
   const interactionDisabled = disabled || loading;
 
   return (
     <AriaCheckboxField
-      className={fieldVariants.base.root}
+      className={variants.base.root}
       defaultSelected={defaultSelected}
       form={form}
       id={id}
       inputRef={inputRef}
       aria-label={loading ? label : undefined}
+      // Supporting text shares the native label, so the name points at the label text alone.
+      aria-labelledby={loading ? undefined : labelId}
       isDisabled={interactionDisabled}
       isInvalid={!loading && visibleError !== undefined}
       isReadOnly={readOnly}
@@ -123,51 +125,50 @@ export function Checkbox({
       validationBehavior="aria"
     >
       <AriaCheckboxButton className={variants.base.control}>
-        {({ isFocusVisible, isSelected }) => (
+        {({ isDisabled, isFocusVisible, isSelected }) => (
           <>
-            {loading && (
-              <>
-                <span
-                  aria-hidden="true"
-                  className={variants.base.skeletonIndicator}
-                >
-                  <Skeleton
-                    blockSize="100%"
-                    inlineSize="100%"
-                    shape="rectangle"
-                  />
-                </span>
-                <span className={variants.base.skeleton}>
-                  <Skeleton
-                    blockSize="1lh"
-                    inlineSize="12em"
-                    label={messages.loading}
-                    shape="rectangle"
-                  />
-                </span>
-              </>
+            {loading ? (
+              <span
+                aria-hidden="true"
+                className={variants.base.skeletonIndicator}
+              >
+                <Skeleton
+                  blockSize="100%"
+                  inlineSize="100%"
+                  shape="rectangle"
+                />
+              </span>
+            ) : (
+              <span
+                aria-hidden="true"
+                className={variants.base.indicator}
+                data-disabled={isDisabled || undefined}
+                data-focus-visible={isFocusVisible || undefined}
+                data-selected={isSelected || undefined}
+              >
+                {isSelected ? '✓' : ''}
+              </span>
             )}
-            {!loading && (
-              <>
-                <span
-                  aria-hidden="true"
-                  className={variants.base.indicator}
-                  data-focus-visible={isFocusVisible || undefined}
-                  data-selected={isSelected || undefined}
-                >
-                  {isSelected ? '✓' : ''}
-                </span>
-                <span className={variants.base.label}>{label}</span>
-              </>
-            )}
+            <span className={variants.base.text}>
+              {loading ? (
+                <Skeleton
+                  blockSize="1lh"
+                  inlineSize="12em"
+                  label={messages.loading}
+                  shape="rectangle"
+                />
+              ) : (
+                <span id={labelId}>{label}</span>
+              )}
+              <FieldSupportingContent
+                description={visibleDescription}
+                error={visibleError}
+                loading={loading}
+              />
+            </span>
           </>
         )}
       </AriaCheckboxButton>
-      <FieldSupportingContent
-        description={visibleDescription}
-        error={visibleError}
-        loading={loading}
-      />
     </AriaCheckboxField>
   );
 }

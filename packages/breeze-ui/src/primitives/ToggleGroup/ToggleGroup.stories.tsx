@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useState } from 'react';
 import { expect, userEvent, within } from 'storybook/test';
+import type { ItemDescriptor } from '../../collections/item.types';
 import type { ControlSize } from '../Button/Button';
 import { Button } from '../Button/Button';
-import type { ItemDescriptor } from '../Collection/item.types';
 import { Toggle } from '../Toggle/Toggle';
 import { ToggleGroup } from './ToggleGroup';
 
@@ -31,6 +31,19 @@ const loadingOptions = [
     icon: 'check',
   },
   ...options.slice(1),
+] satisfies ItemDescriptor[];
+
+const typeOptions = [
+  {
+    icon: 'outgoing',
+    id: 'purchase',
+    label: 'Purchase',
+  },
+  {
+    icon: 'incoming',
+    id: 'sale',
+    label: 'Sale',
+  },
 ] satisfies ItemDescriptor[];
 
 const sizes = ['sm', 'md', 'lg'] satisfies ControlSize[];
@@ -146,6 +159,22 @@ export const Loading: Story = {
 
 /** All shared sizes use the same segmented treatment. */
 export const Sizes: Story = {
+  play: async ({ canvasElement }) => {
+    await document.fonts.ready;
+
+    const groups = within(canvasElement).getAllByRole('group');
+
+    await expect(
+      groups.map((group) => group.getBoundingClientRect().height),
+    ).toEqual([34, 38, 52]);
+    await expect(
+      groups.map(
+        (group) =>
+          within(group).getAllByRole('button')[0].getBoundingClientRect()
+            .height,
+      ),
+    ).toEqual([28, 32, 46]);
+  },
   render: () => (
     <div className="breeze-story-stack">
       {sizes.map((size) => (
@@ -160,6 +189,30 @@ export const Sizes: Story = {
       ))}
     </div>
   ),
+};
+
+/** A full-width group shares its width equally between options. */
+export const FullWidth: Story = {
+  args: {
+    'aria-label': 'Transaction type',
+    defaultSelected: typeOptions[0],
+    fullWidth: true,
+    items: typeOptions,
+    size: 'md',
+  },
+  play: async ({ canvasElement }) => {
+    const group = within(canvasElement).getByRole('group', {
+      name: 'Transaction type',
+    });
+    const optionWidths = within(group)
+      .getAllByRole('button')
+      .map((option) => option.getBoundingClientRect().width);
+
+    await expect(group.getBoundingClientRect().width).toBe(
+      canvasElement.getBoundingClientRect().width,
+    );
+    await expect(optionWidths[0]).toBe(optionWidths[1]);
+  },
 };
 
 /** Disabled options cannot be selected. */

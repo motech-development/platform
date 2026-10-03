@@ -1,14 +1,16 @@
 import type { ReactNode } from 'react';
-import { Stack } from '../../primitives/Stack/Stack';
 import { Typography } from '../../primitives/Typography/Typography';
+import { useBreezeContext } from '../../provider/BreezeContext';
 
 const variants = {
   base: {
     actions:
-      'breeze:flex breeze:min-inline-size-0 breeze:flex-wrap breeze:items-center breeze:gap-breeze-3 breeze:breeze-lg:shrink-0',
-    content: 'breeze:min-inline-size-0',
+      'breeze:flex breeze:min-inline-0 breeze:flex-wrap breeze:items-center breeze:gap-breeze-3 breeze:breeze-md:shrink-0',
+    content: 'breeze:min-inline-0',
     header:
-      'breeze:flex breeze:min-inline-size-0 breeze:flex-col breeze:gap-breeze-4 breeze:pbe-breeze-5 breeze:breeze-lg:flex-row breeze:breeze-lg:items-end breeze:breeze-lg:justify-between',
+      'breeze:flex breeze:min-inline-0 breeze:flex-wrap breeze:items-center breeze:justify-between breeze:gap-[10px] breeze:breeze-md:flex-nowrap breeze:breeze-md:gap-breeze-4',
+    title:
+      'breeze:m-0 breeze:font-breeze-sans breeze:text-breeze-2xl breeze:font-semibold breeze:tracking-breeze-tighter breeze:text-breeze-ink',
   },
   compound: {},
   size: {},
@@ -36,19 +38,17 @@ export function PageHeader({
   description,
   title,
 }: Readonly<PageHeaderProps>) {
+  useBreezeContext();
+
   return (
     <header className={variants.base.header}>
       <div className={variants.base.content}>
-        <Stack gap={1}>
-          <Typography element="h1" variant="heading">
-            {title}
+        <h1 className={variants.base.title}>{title}</h1>
+        {description ? (
+          <Typography tone="muted" variant="body">
+            {description}
           </Typography>
-          {description ? (
-            <Typography tone="secondary" variant="body">
-              {description}
-            </Typography>
-          ) : null}
-        </Stack>
+        ) : null}
       </div>
       {actions ? <div className={variants.base.actions}>{actions}</div> : null}
     </header>

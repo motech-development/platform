@@ -3,10 +3,10 @@ import userEvent from '@testing-library/user-event';
 import { useRef } from 'react';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import renderBreeze from '../../../test/render';
+import type { ItemDescriptor } from '../../collections/item.types';
 import { BreezeProvider } from '../../provider/BreezeProvider';
-import type { ItemDescriptor } from '../Collection/item.types';
 import { Drawer } from '../Drawer/Drawer';
-import { Menu, type MenuProps } from './Menu';
+import { Menu, type MenuItemDescriptor, type MenuProps } from './Menu';
 
 interface Action {
   descriptor: ItemDescriptor;
@@ -51,6 +51,39 @@ const badgeFallbackAction: ItemDescriptor = {
   label: 'Reports',
 };
 
+interface Company {
+  id: string;
+  initials: string;
+  name: string;
+  selected: boolean;
+}
+
+const companies: Company[] = [
+  { id: 'harbour', initials: 'HP', name: 'Harbour & Pine Ltd', selected: true },
+  {
+    id: 'wold',
+    initials: 'WF',
+    name: 'Wold Farm Joinery Ltd',
+    selected: false,
+  },
+];
+
+const companyMenuItems: (Company | 'manage')[] = [...companies, 'manage'];
+
+function getCompanyMenuItem(item: Company | 'manage'): MenuItemDescriptor {
+  if (item === 'manage') {
+    return { icon: 'settings', id: 'manage', label: 'Manage companies' };
+  }
+
+  return {
+    ...(item.selected && { badge: { children: 'Selected', variant: 'brand' } }),
+    id: item.id,
+    initials: item.initials,
+    label: item.name,
+    section: { id: 'companies', label: 'Companies' },
+  };
+}
+
 function MenuWithFocusDestination() {
   const destinationRef = useRef<HTMLButtonElement>(null);
 
@@ -69,6 +102,18 @@ function MenuWithFocusDestination() {
   );
 }
 
+expectTypeOf<{
+  icon: 'settings';
+  id: string;
+  initials: string;
+  label: string;
+}>().not.toExtend<MenuItemDescriptor>();
+expectTypeOf<{
+  id: string;
+  initials: string;
+  label: string;
+  section: { id: string };
+}>().toExtend<MenuItemDescriptor>();
 expectTypeOf<MenuProps<Action>>().not.toHaveProperty('className');
 expectTypeOf<MenuProps<Action>>().not.toHaveProperty('style');
 expectTypeOf<MenuProps<Action>>().not.toHaveProperty('slot');
@@ -93,6 +138,25 @@ expectTypeOf<{
   open: boolean;
   defaultOpen: boolean;
   trigger: string;
+}>().not.toExtend<MenuProps<Action>>();
+expectTypeOf<
+  NonNullable<MenuProps<Action>['onAction']>
+>().parameters.toEqualTypeOf<[Action]>();
+expectTypeOf<{
+  getItem: (item: Action) => ItemDescriptor;
+  items: Action[];
+  triggerAriaLabel: string;
+  triggerIcon: 'more';
+}>().toExtend<MenuProps<Action>>();
+expectTypeOf<{
+  getItem: (item: Action) => ItemDescriptor;
+  items: Action[];
+  triggerIcon: 'more';
+}>().not.toExtend<MenuProps<Action>>();
+expectTypeOf<{
+  getItem: (item: Action) => ItemDescriptor;
+  items: Action[];
+  triggerAriaLabel: string;
 }>().not.toExtend<MenuProps<Action>>();
 
 describe('Menu', () => {
@@ -123,6 +187,79 @@ describe('Menu', () => {
     });
 
     expect(trigger).toHaveTextContent('More actions');
+  });
+
+  it('opens from an icon-only trigger named by its accessible label', async () => {
+    const user = userEvent.setup();
+    const onAction = vi.fn();
+
+    renderBreeze(
+      <Menu
+        getItem={(item) => item.descriptor}
+        items={actions}
+        onAction={onAction}
+        triggerAriaLabel="More actions: invoice.pdf"
+        triggerIcon="more"
+      />,
+    );
+
+    const trigger = screen.getByRole('button', {
+      name: 'More actions: invoice.pdf',
+    });
+
+    expect(trigger).toHaveTextContent('');
+    expect(trigger).toHaveAttribute('aria-haspopup', 'menu');
+    expect(trigger.querySelector('svg')).toHaveAttribute('aria-hidden', 'true');
+
+    await user.click(trigger);
+
+    const menu = screen.getByRole('menu', {
+      name: 'More actions: invoice.pdf',
+    });
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+
+    await user.click(
+      within(menu).getByRole('menuitem', { name: 'Company details' }),
+    );
+
+    expect(onAction).toHaveBeenCalledExactlyOnceWith(actions[0]);
+    await waitFor(() =>
+      expect(screen.queryByRole('menu')).not.toBeInTheDocument(),
+    );
+    await waitFor(() => expect(trigger).toHaveFocus());
+  });
+
+  it('gives a loading icon-only trigger one progress indicator and blocks opening', async () => {
+    const user = userEvent.setup();
+    const onOpenChange = vi.fn();
+
+    renderBreeze(
+      <Menu
+        getItem={(item) => item.descriptor}
+        items={actions}
+        loading
+        onOpenChange={onOpenChange}
+        triggerAriaLabel="More actions"
+        triggerIcon="more"
+      />,
+    );
+
+    // As with Button, the pending progress joins the retained label.
+    const trigger = screen.getByRole('button', {
+      name: 'More actions Loading',
+    });
+
+    expect(trigger).toHaveAttribute('aria-busy', 'true');
+    expect(trigger).toHaveAttribute('aria-disabled', 'true');
+    expect(
+      screen.getAllByRole('progressbar', { name: 'Loading' }),
+    ).toHaveLength(1);
+    expect(screen.getByRole('status')).toHaveTextContent('Loading');
+
+    await user.click(trigger);
+
+    expect(onOpenChange).not.toHaveBeenCalled();
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument();
   });
 
   it('renders the descriptor content in the provider portal', () => {
@@ -162,6 +299,89 @@ describe('Menu', () => {
     );
   });
 
+  it('names sections by their header and divides neighbouring groups', () => {
+    renderBreeze(
+      <Menu
+        defaultOpen
+        getItem={getCompanyMenuItem}
+        items={companyMenuItems}
+        trigger="Harbour & Pine Ltd"
+      />,
+    );
+
+    const menu = screen.getByRole('menu', { name: 'Harbour & Pine Ltd' });
+    const section = within(menu).getByRole('group', { name: 'Companies' });
+
+    expect(
+      within(section)
+        .getAllByRole('menuitem')
+        .map((item) => item.textContent),
+    ).toEqual(['HPHarbour & Pine LtdSelected', 'WFWold Farm Joinery Ltd']);
+    expect(
+      within(section).queryByRole('menuitem', { name: 'Manage companies' }),
+    ).not.toBeInTheDocument();
+    expect(within(menu).getAllByRole('separator')).toHaveLength(1);
+    expect(
+      within(menu).getByRole('menuitem', { name: 'Manage companies' }),
+    ).toBeInTheDocument();
+  });
+
+  it('divides unlabelled sections without naming them', () => {
+    renderBreeze(
+      <Menu
+        defaultOpen
+        getItem={(item) => ({
+          ...item.descriptor,
+          section: { id: item.id === 'sign-out-action' ? 'session' : 'main' },
+        })}
+        items={actions}
+        trigger="Account actions"
+      />,
+    );
+
+    const menu = screen.getByRole('menu', { name: 'Account actions' });
+    const groups = within(menu).getAllByRole('group');
+
+    expect(groups).toHaveLength(2);
+    groups.forEach((group) => expect(group).not.toHaveAccessibleName());
+    expect(within(groups[1]).getByRole('menuitem')).toHaveAccessibleName(
+      'Sign out',
+    );
+    expect(within(menu).getAllByRole('separator')).toHaveLength(1);
+  });
+
+  it('shows initials as decorative content and reports the application item', async () => {
+    const user = userEvent.setup();
+    const onAction = vi.fn();
+
+    renderBreeze(
+      <Menu
+        getItem={getCompanyMenuItem}
+        items={companyMenuItems}
+        onAction={onAction}
+        trigger="Harbour & Pine Ltd"
+      />,
+    );
+
+    await user.click(
+      screen.getByRole('button', { name: 'Harbour & Pine Ltd' }),
+    );
+
+    const company = screen.getByRole('menuitem', {
+      name: 'Wold Farm Joinery Ltd',
+    });
+    const initials = within(company).getByText('WF');
+
+    expect(initials).toHaveAttribute('aria-hidden', 'true');
+    expect(
+      screen.getByRole('menuitem', { name: 'Harbour & Pine Ltd, Selected' }),
+    ).toBeInTheDocument();
+
+    await user.click(company);
+
+    expect(onAction).toHaveBeenCalledExactlyOnceWith(companies[1]);
+  });
+
   it('falls back to visible badge text when its accessible label is blank', () => {
     renderBreeze(
       <Menu
@@ -177,7 +397,7 @@ describe('Menu', () => {
     ).toHaveAccessibleName('Reports, New');
   });
 
-  it('uses keyboard navigation and reports the selected descriptor', async () => {
+  it('uses keyboard navigation and reports the selected application item', async () => {
     const user = userEvent.setup();
     const onAction = vi.fn();
     const onOpenChange = vi.fn();
@@ -212,7 +432,7 @@ describe('Menu', () => {
 
     await user.keyboard('{Enter}');
 
-    expect(onAction).toHaveBeenCalledWith(actions[2].descriptor);
+    expect(onAction).toHaveBeenCalledExactlyOnceWith(actions[2]);
     expect(onOpenChange.mock.calls).toEqual([[true], [false]]);
     await waitFor(() =>
       expect(screen.queryByRole('menu')).not.toBeInTheDocument(),
@@ -334,7 +554,7 @@ describe('Menu', () => {
     await user.click(screen.getByRole('button', { name: 'Account actions' }));
     await user.click(screen.getByRole('menuitem', { name: 'Company details' }));
 
-    expect(onAction).toHaveBeenCalledWith(actions[0].descriptor);
+    expect(onAction).toHaveBeenCalledExactlyOnceWith(actions[0]);
     await waitFor(() =>
       expect(screen.queryByRole('menu')).not.toBeInTheDocument(),
     );
@@ -442,7 +662,7 @@ describe('Menu', () => {
       within(menuElement).getByRole('menuitem', { name: 'Sign out' }),
     );
 
-    expect(onAction).toHaveBeenCalledWith(actions[2].descriptor);
+    expect(onAction).toHaveBeenCalledExactlyOnceWith(actions[2]);
     expect(onOpenChange).toHaveBeenCalledWith(false);
     expect(screen.getByRole('menu')).toBeInTheDocument();
 

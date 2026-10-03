@@ -1,6 +1,6 @@
-import { Badge } from '../Badge/Badge';
-import { Icon } from '../Icon/Icon';
+import { Icon } from '../primitives/Icon/Icon';
 import collectionVariants from './collection.styles';
+import DescriptorBadge from './DescriptorBadge';
 import type { ItemDescriptor } from './item.types';
 
 interface DescriptorContentProps {
@@ -17,31 +17,22 @@ export default function DescriptorContent({
     <>
       {descriptor.icon && <Icon name={descriptor.icon} size="sm" />}
       <span className={collectionVariants.base.content}>
-        <span className={collectionVariants.base.label}>
-          {descriptor.label}
-        </span>
+        <span>{descriptor.label}</span>
         {descriptor.description && (
           <span className={collectionVariants.base.description}>
             {descriptor.description}
           </span>
         )}
       </span>
-      {descriptor.badge && (
-        <span className={collectionVariants.base.badge}>
-          <Badge
-            aria-label={descriptor.badge['aria-label']}
-            variant={descriptor.badge.variant}
-          >
-            {descriptor.badge.children}
-          </Badge>
+      {descriptor.badge && <DescriptorBadge badge={descriptor.badge} />}
+      {isSelected && (
+        <span
+          aria-hidden="true"
+          className={collectionVariants.base.selectedIndicator}
+        >
+          <Icon name="check" size="sm" />
         </span>
       )}
-      <span
-        aria-hidden="true"
-        className={collectionVariants.base.selectedIndicator}
-      >
-        {isSelected && <Icon name="check" size="sm" />}
-      </span>
     </>
   );
 }

@@ -265,8 +265,9 @@ satisfy the operation's contract.
 ## React components, forms, and data
 
 App clients, Auth, and Apollo use named function components with default exports.
-Breeze UI uses typed `FC` arrow components. Preserve this distinction; a shared
-style guide does not require a component syntax migration.
+Breeze UI uses named `function` components with named exports and a
+`Readonly<Props>` parameter. Preserve this distinction; a shared style guide does
+not require a component syntax migration.
 
 App component shape:
 
@@ -336,9 +337,10 @@ const validationSchema = object<FormSchema>()
 Use the affected workspace's supported Yup syntax. The convention is the aligned
 form shape, conditional fields, and translated messages, not a library upgrade.
 
-In Breeze UI, define styled primitives before the exported component. Use
-transient `$` props for styling-only state and compose base components instead of
-copying their styles. Keep public props distinct from the private styling props.
+In Breeze UI, define the component's literal `variants` recipe before the exported
+component and assemble its class list from typed keys. There are no styled
+components or styling props; compose the internal bases in `src/buttons`, `src/collections`,
+`src/fields` and `src/selection-controls` instead of copying their classes.
 
 ## Tests
 
@@ -578,12 +580,12 @@ do not assume the Accounts client determines this app's component or data layer.
 
 ### `packages/breeze-ui`
 
-- Use `src/Component/Component.tsx`, nested component tests and adjacent stories where applicable. Keep shared hooks in `src/hooks` and curate public exports in `src/index.ts`.
-- Compose named local layers instead of placing every concern in the public component. `Button` uses `BaseButton` and `Loader`; `TextBox` separates its styled input, adapter and form-facing implementation.
-- Use exported `IComponentProps` interfaces and destructured defaults. Reuse platform attribute interfaces and express visual variants through unions or `keyof typeof` theme maps.
-- Keep typed styles beside their component. Use the surrounding component's transient props or forwarding filter to distinguish styling inputs from DOM attributes.
-- Reuse shared input wrappers, labels and validation hooks. Keep field identity and associated accessibility attributes visibly connected in the component markup.
-- Test public visual and interaction states with component-local tests. Keep stories as named examples of the component API rather than alternate implementations.
+- Follow `packages/breeze-ui/CONTRIBUTING.md` and use `src/primitives/Button` as the reference. Public components live in `src/primitives/Name/` or `src/patterns/Name/` beside their `.mdx`, `.stories.tsx` and `.test.tsx` files; internal shared bases live in lowercase `src/` directories such as `src/collections`, `src/fields`, `src/selection-controls` and `src/overlays`. Curate public exports in `src/index.ts`.
+- Write named `function` components with an exported `NameProps` interface, a `Readonly<NameProps>` parameter and destructured defaults — in the parameter, or at the top of the body when a discriminated union must be narrowed first, as `DatePicker` does. Enumerate props explicitly: no `className`, `style`, slot or native-event passthrough. Callbacks report semantic values, controlled and uncontrolled props are exclusive unions using `never`, and collections take `items` with a `getItem` descriptor mapping.
+- Style with one literal recipe object per component, of alphabetical `base`, `compound`, `size`, `state` and `variant` groups, selected by typed key and joined explicitly. It is usually named `variants`; shared internal modules use a qualified name such as `fieldVariants` or `collectionVariants`. Every utility is a complete `breeze:`-prefixed literal using prefixed tokens and logical properties; never interpolate utility names or add `tailwind-variants` or `tailwind-merge`. The exceptions are the hand-written classes defined in `src/styles/`, such as `breeze-overlay-content` and `breeze-pdf-page`, which exist for what utilities cannot express.
+- Build interaction on React Aria Components imported by subpath, for example `react-aria-components/Button`, and read provider state through `useBreezeContext`. Do not re-implement behaviour React Aria supplies, except for the deliberate exceptions recorded in `docs/adr/0002-react-aria-interaction-foundation.md`.
+- Accept `loading` only where the component owns the shape of the value it replaces; elsewhere assert its absence, and the absence of `className` and `style`, with `expectTypeOf`.
+- Test public behaviour with Vitest and Testing Library in jsdom, rendering through `test/render.tsx` inside `BreezeProvider`; every render runs under `StrictMode`. Stories run axe in Chromium, and `.mdx` pages document each option with a demo followed by `<ArgTypes />`.
 
 ### `packages/eslint-config-motech-base`
 

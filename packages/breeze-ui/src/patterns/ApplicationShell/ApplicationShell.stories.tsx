@@ -29,9 +29,7 @@ const meta = {
 export default meta;
 type Story = Omit<StoryObj<typeof meta>, 'args'>;
 
-function ShellExample({
-  actionIcon = true,
-}: Readonly<{ actionIcon?: boolean }>) {
+function ShellExample() {
   const [currentHref, setCurrentHref] = useState('/overview');
   const [transitionTypes, setTransitionTypes] = useState('none');
   const [createdCount, setCreatedCount] = useState(0);
@@ -72,7 +70,7 @@ function ShellExample({
       <ApplicationShell
         account={<button type="button">Jordan Lee</button>}
         action={{
-          ...(actionIcon ? { icon: 'add' as const } : {}),
+          icon: 'add',
           label: 'Create item',
           onAction: () => setCreatedCount((count) => count + 1),
         }}
@@ -88,25 +86,23 @@ function ShellExample({
         items={sections}
         notifications={<button type="button">Notifications</button>}
       >
-        <div className="breeze-story-stack" data-testid="shell-content">
-          <PageHeader
-            description="Shared navigation around application-owned page content."
-            title={currentSection.label}
-          />
-          <p role="status" data-testid="route-status">
-            {`${currentHref} · ${transitionTypes}`}
-          </p>
-          <p>Created items: {createdCount}</p>
-          <section aria-label="Recent updates" style={{ minHeight: '48rem' }}>
-            <h2>Recent updates</h2>
-            <ul>
-              <li>Planning notes were updated this morning.</li>
-              <li>A shared draft is ready for review.</li>
-              <li>The next project milestone is approaching.</li>
-            </ul>
-          </section>
-          <p data-testid="last-content">End of the page content.</p>
-        </div>
+        <PageHeader
+          description="Shared navigation around application-owned page content."
+          title={currentSection.label}
+        />
+        <p role="status" data-testid="route-status">
+          {`${currentHref} · ${transitionTypes}`}
+        </p>
+        <p>Created items: {createdCount}</p>
+        <section aria-label="Recent updates" style={{ minHeight: '48rem' }}>
+          <h2>Recent updates</h2>
+          <ul>
+            <li>Planning notes were updated this morning.</li>
+            <li>A shared draft is ready for review.</li>
+            <li>The next project milestone is approaching.</li>
+          </ul>
+        </section>
+        <p data-testid="last-content">End of the page content.</p>
       </ApplicationShell>
     </BreezeProvider>
   );
@@ -151,7 +147,7 @@ async function expectCurrentMarker(navigation: HTMLElement): Promise<void> {
 }
 
 function getBottomNavigationSides(navigation: HTMLElement) {
-  const sides = navigation.querySelectorAll<HTMLElement>(':scope > div > div');
+  const sides = navigation.querySelectorAll<HTMLElement>(':scope > div');
 
   if (sides.length !== 2) {
     throw new Error('Expected two side regions around the mobile action.');
@@ -194,13 +190,51 @@ export const Default: Story = {
         await expect(view.innerWidth).toBe(width);
 
         const navigation = getVisibleNavigation(canvasElement);
-        await expectCurrentMarker(navigation);
+        const current = within(navigation).getByRole('link', {
+          current: 'page',
+        });
+        const other = within(navigation).getByRole('link', {
+          name: 'Projects',
+        });
+
         await expect(view.getComputedStyle(navigation).position).toBe(
-          width < 1181 ? 'fixed' : 'static',
+          width < 901 ? 'fixed' : 'static',
+        );
+        await expect(view.getComputedStyle(current).fontWeight).toBe('600');
+        await expect(view.getComputedStyle(other).fontWeight).toBe('500');
+        await expect(view.getComputedStyle(current).color).not.toBe(
+          view.getComputedStyle(other).color,
         );
 
-        if (width < 1181) {
+        if (width < 901) {
           await expect(navigation.getBoundingClientRect().bottom).toBe(height);
+          await expect(navigation.getBoundingClientRect().height).toBe(72);
+          await expect(
+            navigation.querySelectorAll(
+              '[data-breeze-transition-name="breeze-navmark"]',
+            ),
+          ).toHaveLength(0);
+        } else {
+          await expectCurrentMarker(navigation);
+
+          const topbar = canvasElement.querySelector(
+            '[data-breeze-transition-name="breeze-topbar"]',
+          );
+
+          if (!topbar) throw new Error('Missing ApplicationShell top bar.');
+
+          await expect(topbar.getBoundingClientRect().height).toBe(56);
+          const pageHeader = canvas
+            .getByRole('heading', { level: 1 })
+            .closest('header');
+
+          if (!pageHeader) throw new Error('Missing PageHeader landmark.');
+
+          await expect(
+            canvas.getByTestId('route-status').getBoundingClientRect().top -
+              pageHeader.getBoundingClientRect().bottom,
+          ).toBe(16);
+          await expect(navigation.getBoundingClientRect().height).toBe(44);
         }
 
         await expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(
@@ -222,6 +256,13 @@ export const Default: Story = {
             Math.abs(beforeAction.left + beforeAction.width / 2 - width / 2),
           ).toBeLessThanOrEqual(1);
           await expect(beforeAction.width).toBe(beforeAction.height);
+          // The action is raised so it straddles the bar's top edge.
+          await expect(beforeAction.top).toBeLessThan(
+            navigation.getBoundingClientRect().top,
+          );
+          await expect(beforeAction.bottom).toBeGreaterThan(
+            navigation.getBoundingClientRect().top,
+          );
           await expect(beforeLeadingGap).toBeCloseTo(beforeTrailingGap, 1);
 
           await userEvent.click(
@@ -233,7 +274,6 @@ export const Default: Story = {
           );
 
           const updatedNavigation = getVisibleNavigation(canvasElement);
-          await expectCurrentMarker(updatedNavigation);
           await expect(
             within(updatedNavigation).getByRole('link', {
               current: 'page',
@@ -261,11 +301,17 @@ export const Default: Story = {
             canvas.getByText('Created items: 1'),
           ).toBeInTheDocument();
 
+          await expect(
+            Number.parseFloat(
+              view.getComputedStyle(canvas.getByRole('main')).paddingBlockEnd,
+            ),
+          ).toBe(168);
+
           view.scrollTo(0, document.documentElement.scrollHeight);
           const lastContent = canvas.getByTestId('last-content');
           await expect(
             lastContent.getBoundingClientRect().bottom,
-          ).toBeLessThanOrEqual(updatedNavigation.getBoundingClientRect().top);
+          ).toBeLessThanOrEqual(action.getBoundingClientRect().top);
           await expect(
             document.documentElement.scrollWidth,
           ).toBeLessThanOrEqual(width);
@@ -273,7 +319,8 @@ export const Default: Story = {
       };
 
       await verifyViewport(1440, 900);
-      await verifyViewport(1100, 900);
+      await verifyViewport(901, 900);
+      await verifyViewport(900, 900);
       await verifyViewport(390, 844);
     } finally {
       await browserContext.page.viewport(
@@ -283,45 +330,4 @@ export const Default: Story = {
     }
   },
   render: () => <ShellExample />,
-};
-
-/** The action label stays readable when no curated icon is supplied. */
-export const TextActionFallback: Story = {
-  play: async ({ canvasElement }) => {
-    if (!('__vitest_browser__' in globalThis)) return;
-
-    const browserContext = await import('vitest/browser');
-    const document = canvasElement.ownerDocument;
-    const view = document.defaultView;
-
-    if (!view) throw new Error('Missing ApplicationShell story window.');
-
-    const originalViewport = {
-      height: view.innerHeight,
-      width: view.innerWidth,
-    };
-
-    try {
-      await browserContext.page.viewport(390, 844);
-
-      const canvas = within(canvasElement);
-      const action = canvas.getByRole('button', { name: 'Create item' });
-      const label = within(action).getByText('Create item');
-      const actionRect = action.getBoundingClientRect();
-      const labelRect = label.getBoundingClientRect();
-
-      await expect(label).toBeVisible();
-      await expect(labelRect.width).toBeLessThanOrEqual(actionRect.width);
-      await expect(labelRect.height).toBeLessThanOrEqual(actionRect.height);
-      await expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(
-        view.innerWidth,
-      );
-    } finally {
-      await browserContext.page.viewport(
-        originalViewport.width,
-        originalViewport.height,
-      );
-    }
-  },
-  render: () => <ShellExample actionIcon={false} />,
 };

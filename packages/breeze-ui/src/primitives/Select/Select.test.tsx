@@ -3,9 +3,9 @@ import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import renderBreeze from '../../../test/render';
+import type { ItemDescriptor } from '../../collections/item.types';
 import { BreezeProvider } from '../../provider/BreezeProvider';
 import type { BadgeProps } from '../Badge/Badge';
-import type { ItemDescriptor } from '../Collection/item.types';
 import { Select, type SelectProps } from './Select';
 
 const choices = [
@@ -15,7 +15,7 @@ const choices = [
       variant: 'brand',
     } satisfies Pick<BadgeProps, 'aria-label' | 'children' | 'variant'>,
     description: 'Current account ending in 1234',
-    icon: 'money',
+    icon: 'list',
     id: 'bank',
     label: 'Bank account',
   },
@@ -106,7 +106,48 @@ describe('Select', () => {
     expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
   });
 
-  it('forwards hover and focus-visible states to the trigger', async () => {
+  it('shows the selected item badge between its label and the chevron', async () => {
+    const user = userEvent.setup();
+    const rates = [
+      {
+        badge: { 'aria-label': '20 percent VAT', children: '20% VAT' },
+        id: 'vehicle',
+        label: 'Vehicle',
+      },
+      { id: 'travel', label: 'Travel' },
+    ] satisfies ItemDescriptor[];
+
+    renderBreeze(
+      <Select
+        getItem={(item: ItemDescriptor) => item}
+        items={rates}
+        label="Category"
+        placeholder="Select a category"
+      />,
+    );
+
+    const trigger = screen.getByRole('button', { name: /Category/ });
+    expect(trigger).toHaveAccessibleName('Select a category Category');
+
+    await user.click(trigger);
+    await user.click(screen.getByRole('option', { name: /Vehicle/ }));
+
+    expect(trigger).toHaveAccessibleName('Vehicle 20 percent VAT Category');
+    // The value precedes the chevron, so a badge inside it sits before the chevron.
+    expect(trigger.children).toHaveLength(2);
+    expect(trigger.firstElementChild).toHaveTextContent('Vehicle 20% VAT');
+    expect(trigger.firstElementChild).toContainElement(
+      screen.getByText('20% VAT'),
+    );
+
+    await user.click(trigger);
+    await user.click(screen.getByRole('option', { name: /Travel/ }));
+
+    expect(trigger).toHaveAccessibleName('Travel Category');
+    expect(screen.queryByText('20% VAT')).not.toBeInTheDocument();
+  });
+
+  it('marks focus with the brand border and ring rather than a hover border', async () => {
     const user = userEvent.setup();
 
     renderBreeze(
@@ -120,12 +161,40 @@ describe('Select', () => {
 
     const trigger = screen.getByRole('button', { name: 'Payment method' });
     expect(trigger).toHaveAttribute('data-invalid', 'true');
-
-    await user.hover(trigger);
-    expect(trigger).toHaveAttribute('data-hovered', 'true');
+    expect(trigger).not.toHaveClass(
+      'breeze:data-[hovered]:border-breeze-brand',
+    );
 
     await user.tab();
-    expect(trigger).toHaveAttribute('data-focus-visible', 'true');
+    expect(trigger).toHaveAttribute('data-focused', 'true');
+    expect(trigger).toHaveClass(
+      'breeze:gap-breeze-2',
+      'breeze:data-[focused]:border-breeze-brand',
+      'breeze:data-[focused]:ring-3',
+      'breeze:data-[focused]:ring-breeze-brand/15',
+      'breeze:aria-disabled:text-breeze-ink-2',
+    );
+  });
+
+  it('shows the check only on the selected option', async () => {
+    const user = userEvent.setup();
+
+    renderBreeze(
+      <Select
+        defaultValue={enabledChoices[1]}
+        getItem={getEnabledItem}
+        items={enabledChoices}
+        label="Payment method"
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: /Payment method/ }));
+    const bankOption = screen.getByRole('option', { name: /Bank account/ });
+    const cashOption = screen.getByRole('option', { name: /Cash/ });
+
+    expect(cashOption).toHaveAttribute('aria-selected', 'true');
+    expect(cashOption.querySelectorAll('svg')).toHaveLength(1);
+    expect(bankOption.lastElementChild).toHaveTextContent('Primary');
   });
 
   it('focuses the trigger when the visible label is clicked', async () => {
@@ -155,7 +224,7 @@ describe('Select', () => {
     );
 
     const trigger = screen.getByRole('button', {
-      name: 'Bank account Payment method',
+      name: 'Bank account Primary Payment method',
     });
     await user.click(screen.getByText('Payment method', { selector: 'span' }));
 
@@ -205,7 +274,9 @@ describe('Select', () => {
       />,
     );
     expect(
-      screen.getByRole('button', { name: 'Bank account Payment method' }),
+      screen.getByRole('button', {
+        name: 'Bank account Primary Payment method',
+      }),
     ).toHaveTextContent('Bank account');
   });
 
@@ -260,7 +331,7 @@ describe('Select', () => {
 
     const form = screen.getByRole('form');
     const trigger = screen.getByRole('button', {
-      name: 'Bank account Payment method',
+      name: 'Bank account Primary Payment method',
     });
     expect(new FormData(form as HTMLFormElement).get('payment')).toBe('bank');
 
@@ -297,7 +368,7 @@ describe('Select', () => {
     );
 
     const trigger = screen.getByRole('button', {
-      name: 'Bank account Payment method',
+      name: 'Bank account Primary Payment method',
     });
     expect(trigger).toHaveAttribute('aria-disabled', 'true');
     expect(trigger).not.toHaveAttribute('aria-readonly');
@@ -312,6 +383,77 @@ describe('Select', () => {
     expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
     expect(onChange).not.toHaveBeenCalled();
     expect(new FormData(screen.getByRole('form')).get('payment')).toBe('bank');
+  });
+
+  it.each([
+    ['ArrowRight', '{ArrowRight}'],
+    ['ArrowLeft', '{ArrowLeft}'],
+    ['a type-ahead letter', 'b'],
+  ])(
+    'keeps a read-only uncontrolled value unchanged by %s',
+    async (_, keys) => {
+      const user = userEvent.setup();
+      const onChange = vi.fn<(value: ItemDescriptor | null) => void>();
+      const keyboardChoices: ItemDescriptor[] = [
+        { id: 'bank', label: 'Bank account' },
+        { id: 'card', label: 'Card' },
+        { id: 'cash', label: 'Cash' },
+      ];
+
+      renderBreeze(
+        <form aria-label="Payment form">
+          <Select
+            defaultValue={keyboardChoices[1]}
+            getItem={getEnabledItem}
+            items={keyboardChoices}
+            label="Payment method"
+            name="payment"
+            onChange={onChange}
+            readOnly
+          />
+        </form>,
+      );
+
+      const form = screen.getByRole('form');
+      const trigger = screen.getByRole('button', {
+        name: 'Card Payment method',
+      });
+
+      await user.tab();
+      expect(trigger).toHaveFocus();
+      await user.keyboard(keys);
+
+      expect(trigger).toHaveTextContent('Card');
+      expect(new FormData(form as HTMLFormElement).get('payment')).toBe('card');
+      expect(onChange).not.toHaveBeenCalled();
+    },
+  );
+
+  it('changes an editable value with arrow keys and type-ahead', async () => {
+    const user = userEvent.setup();
+    const keyboardChoices: ItemDescriptor[] = [
+      { id: 'bank', label: 'Bank account' },
+      { id: 'card', label: 'Card' },
+      { id: 'cash', label: 'Cash' },
+    ];
+
+    renderBreeze(
+      <Select
+        defaultValue={keyboardChoices[1]}
+        getItem={getEnabledItem}
+        items={keyboardChoices}
+        label="Payment method"
+      />,
+    );
+
+    const trigger = screen.getByRole('button', { name: 'Card Payment method' });
+
+    await user.tab();
+    await user.keyboard('{ArrowRight}');
+    expect(trigger).toHaveTextContent('Cash');
+
+    await user.keyboard('b');
+    expect(trigger).toHaveTextContent('Bank account');
   });
 
   it('closes an open menu when read-only changes and stays closed', async () => {
@@ -375,7 +517,7 @@ describe('Select', () => {
 
     const form = screen.getByRole('form');
     const trigger = screen.getByRole('button', {
-      name: 'Bank account Payment method',
+      name: 'Bank account Primary Payment method',
     });
 
     await user.click(trigger);

@@ -2,8 +2,8 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import renderBreeze from '../../../test/render';
+import type { ItemDescriptor } from '../../collections/item.types';
 import { BreezeProvider } from '../../provider/BreezeProvider';
-import type { ItemDescriptor } from '../Collection/item.types';
 import { ToggleGroup, type ToggleGroupProps } from './ToggleGroup';
 
 const options = [
@@ -67,7 +67,18 @@ describe('ToggleGroup', () => {
     expect(group.querySelector('legend')).toHaveTextContent(
       'Transaction status',
     );
-    expect(group).toHaveClass('breeze:bg-breeze-sunken');
+    expect(group).toHaveClass(
+      'breeze:border-breeze-line',
+      'breeze:bg-breeze-surface',
+    );
+    expect(group).not.toHaveClass('breeze:inline-full');
+    expect(confirmed).toHaveClass(
+      'breeze:min-block-breeze-7',
+      'breeze:text-breeze-xs',
+      'breeze:text-breeze-ink-3',
+      'breeze:data-[selected]:bg-breeze-sunken',
+    );
+    expect(confirmed).not.toHaveClass('breeze:flex-1');
     expect(confirmed).toHaveAttribute('aria-pressed', 'false');
     expect(pending).toHaveAttribute('aria-pressed', 'false');
     expect(pending).toBeDisabled();
@@ -81,6 +92,31 @@ describe('ToggleGroup', () => {
 
     expect(onChange).toHaveBeenLastCalledWith(null);
     expect(confirmed).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  it('sizes the group and stretches it with its options when full width', () => {
+    renderBreeze(
+      <ToggleGroup
+        aria-label="Transaction type"
+        fullWidth
+        getItem={getItem}
+        items={options}
+        size="lg"
+      />,
+    );
+
+    const group = screen.getByRole('group', { name: 'Transaction type' });
+
+    expect(group).toHaveClass('breeze:inline-full');
+    within(group)
+      .getAllByRole('button')
+      .forEach((option) => {
+        expect(option).toHaveClass(
+          'breeze:flex-1',
+          'breeze:min-block-[46px]',
+          'breeze:text-breeze-sm',
+        );
+      });
   });
 
   it('leaves controlled selection with its owner', async () => {

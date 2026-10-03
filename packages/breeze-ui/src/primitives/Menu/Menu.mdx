@@ -15,26 +15,49 @@ the visible label concise.
 
 <Canvas of={Stories.Default} />
 
+## Icon-only trigger
+
+Omit `trigger` and set `triggerIcon` and `triggerAriaLabel` together for a
+compact icon-only trigger, such as a More actions button. `triggerAriaLabel`
+is then required, because it is the trigger's only name.
+
+<Canvas of={Stories.IconOnlyTrigger} />
+
 ## Loading the menu
 
 Use `loading` when the trigger should wait before opening. It shows a loading
-bar while keeping its size and accessible label. Actions in an already-open
-menu remain available.
+bar while keeping its size and accessible label; an icon-only trigger replaces
+its icon with a skeleton, as `IconButton` does. Actions in an already-open menu
+remain available.
 
 <Canvas of={Stories.Loading} />
 
 ## Define actions
 
 Pass your application values in `items`. Use `getItem` to provide each value's
-`ItemDescriptor`: `id` and `label` are required, while `description`, `icon`,
-`badge` and `disabled` are optional. Give each item a unique `id` within the
+`MenuItemDescriptor`: `id` and `label` are required, while `description`,
+`icon` or `initials`, `badge`, `disabled` and `section` are optional. Give each item a unique `id` within the
 menu. Keep labels concise; use descriptions for a short explanation and icons
 when they help people scan the choices.
 
+## Group actions into sections
+
+Give items a `section` to group them. Items sharing a section `id` are shown
+together where the first of them appears, and dividers separate each section
+from its neighbours. A section `label` shows as a header and names the group
+for assistive technology; omit it to divide a group without a header.
+
+Set `initials` instead of `icon` to show a short code, such as a company's
+initials, in a brand tile before the label. The tile is decorative, so the label
+must still identify the item.
+
+<Canvas of={Stories.Sections} />
+
 ## Respond to a selection
 
-`onAction` receives the selected item's `ItemDescriptor`. The menu closes when
-an action is selected. Show that action's progress, confirmation or errors in
+`onAction` receives the selected application item from `items`, as
+`Select`, `ComboBox` and `ToggleGroup` do. The menu closes when an action is
+selected. Show that action's progress, confirmation or errors in
 the page or dialog that follows.
 
 Use `defaultOpen` when the menu manages its own visibility. To control

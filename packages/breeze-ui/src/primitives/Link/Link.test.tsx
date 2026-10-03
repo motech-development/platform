@@ -7,6 +7,7 @@ import { Link, type LinkProps, type LinkVariant } from './Link';
 
 expectTypeOf<LinkProps>().not.toHaveProperty('className');
 expectTypeOf<LinkProps>().not.toHaveProperty('style');
+expectTypeOf<LinkProps>().not.toHaveProperty('loading');
 expectTypeOf<LinkVariant>().toEqualTypeOf<'default' | 'subtle'>();
 
 function renderLink(
@@ -45,7 +46,7 @@ describe('Link', () => {
     expect(link).toHaveAttribute('rel', 'external');
     expect(link).toHaveAttribute('target', '_blank');
     expect(link).toHaveAttribute('title', 'Download ledger');
-    expect(link).toHaveClass('breeze:underline');
+    expect(link).toHaveClass('breeze:no-underline');
   });
 
   it('delegates opted-in same-origin navigation and its transition types', async () => {
@@ -77,6 +78,51 @@ describe('Link', () => {
   });
 
   it.each([
+    { expected: '/accounts/transactions/accounts', href: 'accounts' },
+    { expected: '/accounts/reports', href: '../reports' },
+    { expected: '/accounts/transactions/?page=2', href: '?page=2' },
+    { expected: '/ledger?year=2026', href: '/ledger?year=2026' },
+  ])(
+    'routes $href to the destination the browser resolves',
+    async ({ expected, href }) => {
+      const navigate = vi.fn();
+      const originalUrl = window.location.href;
+
+      window.history.replaceState(null, '', '/accounts/transactions/');
+
+      try {
+        renderLink({ navigate }, <Link href={href}>Go</Link>);
+
+        await userEvent.click(screen.getByRole('link', { name: 'Go' }));
+
+        expect(navigate).toHaveBeenCalledExactlyOnceWith(expected, {
+          transitionTypes: [],
+        });
+      } finally {
+        window.history.replaceState(null, '', originalUrl);
+      }
+    },
+  );
+
+  it.each(['altKey', 'ctrlKey', 'metaKey', 'shiftKey'] as const)(
+    'leaves a click with %s to the browser when a router is configured',
+    (modifier) => {
+      const navigate = vi.fn();
+      renderLink({ navigate });
+
+      const event = new MouseEvent('click', {
+        bubbles: true,
+        cancelable: true,
+        [modifier]: true,
+      });
+      screen.getByRole('link', { name: 'Accounts' }).dispatchEvent(event);
+
+      expect(event.defaultPrevented).toBe(false);
+      expect(navigate).not.toHaveBeenCalled();
+    },
+  );
+
+  it.each([
     {
       description: 'external origins',
       download: undefined,
@@ -105,6 +151,18 @@ describe('Link', () => {
       description: 'fragments',
       download: undefined,
       href: '#transactions',
+      target: undefined,
+    },
+    {
+      description: 'paths with a fragment',
+      download: undefined,
+      href: '/accounts#totals',
+      target: undefined,
+    },
+    {
+      description: 'paths with an empty fragment',
+      download: undefined,
+      href: '/accounts#',
       target: undefined,
     },
   ])('leaves $description to the browser', ({ download, href, target }) => {

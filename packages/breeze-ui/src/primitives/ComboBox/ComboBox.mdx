@@ -28,6 +28,12 @@ Typing filters suggestions by their descriptor labels. Set `allowsCustomValue`
 when the field should also accept text that is not one of the suggestions; the
 semantic callback then receives either an item, the entered string or `null`.
 
+When a filter matches no suggestion, the listbox stays open with a localized
+message that repeats the filter text. Free-text fields close the suggestions
+instead, because the entered text is already a valid value.
+
+<Canvas of={Stories.NoMatches} />
+
 <Canvas of={Stories.FreeText} />
 
 ## States
@@ -38,6 +44,8 @@ non-empty `error` marks the field invalid; there is no separate `invalid` prop.
 available.
 
 <Canvas of={Stories.Error} />
+
+<Canvas of={Stories.ReadOnly} />
 
 <Canvas of={Stories.Loading} />
 

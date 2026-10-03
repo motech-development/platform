@@ -1,5 +1,5 @@
 import type { ButtonHTMLAttributes, Ref } from 'react';
-import SelectionControl from '../SelectionControl/SelectionControl';
+import SelectionControl from '../../selection-controls/SelectionControl';
 
 const variants = {
   base: {

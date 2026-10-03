@@ -13,6 +13,18 @@ expectTypeOf<ButtonProps>().not.toHaveProperty('style');
 expectTypeOf<ButtonProps>().not.toHaveProperty('slot');
 expectTypeOf<ButtonProps>().not.toHaveProperty('onClick');
 expectTypeOf<ButtonProps>().not.toHaveProperty('render');
+// The quiet text action has one size.
+expectTypeOf<{
+  children: string;
+  size: 'sm';
+  variant: 'quiet';
+}>().not.toExtend<ButtonProps>();
+expectTypeOf<{ children: string; variant: 'quiet' }>().toExtend<ButtonProps>();
+expectTypeOf<{
+  children: string;
+  size: 'sm';
+  variant: 'secondary';
+}>().toExtend<ButtonProps>();
 
 describe('Button', () => {
   it('announces provider messages and restores the English fallback when removed', async () => {
@@ -246,5 +258,13 @@ describe('Button', () => {
     expect(button).toHaveAttribute('aria-expanded', 'false');
     expect(button).toHaveAttribute('aria-haspopup', 'menu');
     expect(button).toHaveAccessibleDescription('You can publish later.');
+  });
+
+  it('renders quiet as a text action without a control box', () => {
+    renderBreeze(<Button variant="quiet">Mark all as read</Button>);
+    const quiet = screen.getByRole('button', { name: 'Mark all as read' });
+
+    expect(quiet).toHaveClass('breeze:border-0', 'breeze:font-normal');
+    expect(quiet).not.toHaveClass('breeze:min-block-breeze-9');
   });
 });

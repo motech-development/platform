@@ -5,16 +5,15 @@ import routeAnchorClick from './link-routing';
 
 const variants = {
   base: {
-    link: 'breeze:font-medium breeze:underline breeze:underline-offset-2 breeze:outline-offset-2 breeze:focus-visible:outline-2 breeze:focus-visible:outline-solid breeze:focus-visible:outline-breeze-brand',
+    // The design's text action: a 13px standalone label at the body's line height, without an underline.
+    link: 'breeze:inline-flex breeze:items-center breeze:rounded-breeze-chip breeze:px-breeze-1 breeze:font-breeze-sans breeze:text-breeze-sm breeze:font-normal breeze:leading-breeze-snug breeze:no-underline breeze:outline-offset-2 breeze:focus-visible:outline-2 breeze:focus-visible:outline-solid breeze:focus-visible:outline-breeze-brand breeze:any-pointer-coarse:min-block-breeze-tap breeze:max-breeze-md:min-block-breeze-tap',
   },
   compound: {},
   size: {},
   state: {},
   variant: {
-    default:
-      'breeze:text-breeze-brand-text breeze:decoration-current breeze:hover:text-breeze-brand-hover',
-    subtle:
-      'breeze:text-breeze-ink-2 breeze:decoration-breeze-line-strong breeze:hover:text-breeze-ink',
+    default: 'breeze:text-breeze-brand-text',
+    subtle: 'breeze:text-breeze-ink-2 breeze:hover:text-breeze-ink',
   },
 } as const;
 
@@ -92,7 +91,7 @@ export function Link({
       id={id}
       lang={lang}
       onClick={(event) =>
-        routeAnchorClick(event, href, router, transitionTypes, download)
+        routeAnchorClick(event, router, transitionTypes, download)
       }
       ref={ref}
       rel={rel}
