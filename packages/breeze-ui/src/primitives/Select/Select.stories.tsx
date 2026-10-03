@@ -82,10 +82,10 @@ export const ReadOnly: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const readOnlyTrigger = canvas.getByRole('button', {
-      name: 'Bank account Recorded payment method',
+      name: 'Bank account Primary Recorded payment method',
     });
     const editableTrigger = canvas.getByRole('button', {
-      name: 'Bank account Payment method',
+      name: 'Bank account Primary Payment method',
     });
     const readOnlyBackground =
       getComputedStyle(readOnlyTrigger).backgroundColor;
@@ -160,6 +160,38 @@ export const SelectedOption: Story = {
     await expect(
       measure(listbox.getByRole('option', { name: /Card/ })),
     ).toMatchObject({ fontWeight: '400', height: '34.5625px' });
+  },
+};
+
+const categories = [
+  { badge: { children: '20% VAT' }, id: 'vehicle', label: 'Vehicle' },
+  { badge: { children: '0% VAT' }, id: 'travel', label: 'Travel' },
+] satisfies ItemDescriptor[];
+
+/** The selected item's badge stays at the end of the trigger, before the chevron. */
+export const SelectedBadge: Story = {
+  args: {
+    defaultValue: categories[0],
+    items: categories,
+    label: 'Category',
+    placeholder: 'Select a category',
+  },
+  play: async ({ canvasElement }) => {
+    const trigger = within(canvasElement).getByRole('button', {
+      name: 'Vehicle 20% VAT Category',
+    });
+    const badge = within(trigger).getByText('20% VAT').parentElement;
+
+    if (!badge) {
+      throw new globalThis.Error('The trigger must render the badge.');
+    }
+
+    const style = getComputedStyle(badge);
+
+    await expect({
+      fontWeight: style.fontWeight,
+      paddingInline: style.paddingInlineStart,
+    }).toEqual({ fontWeight: '700', paddingInline: '8px' });
   },
 };
 

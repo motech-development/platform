@@ -106,6 +106,47 @@ describe('Select', () => {
     expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
   });
 
+  it('shows the selected item badge between its label and the chevron', async () => {
+    const user = userEvent.setup();
+    const rates = [
+      {
+        badge: { 'aria-label': '20 percent VAT', children: '20% VAT' },
+        id: 'vehicle',
+        label: 'Vehicle',
+      },
+      { id: 'travel', label: 'Travel' },
+    ] satisfies ItemDescriptor[];
+
+    renderBreeze(
+      <Select
+        getItem={(item: ItemDescriptor) => item}
+        items={rates}
+        label="Category"
+        placeholder="Select a category"
+      />,
+    );
+
+    const trigger = screen.getByRole('button', { name: /Category/ });
+    expect(trigger).toHaveAccessibleName('Select a category Category');
+
+    await user.click(trigger);
+    await user.click(screen.getByRole('option', { name: /Vehicle/ }));
+
+    expect(trigger).toHaveAccessibleName('Vehicle 20 percent VAT Category');
+    // The value precedes the chevron, so a badge inside it sits before the chevron.
+    expect(trigger.children).toHaveLength(2);
+    expect(trigger.firstElementChild).toHaveTextContent('Vehicle 20% VAT');
+    expect(trigger.firstElementChild).toContainElement(
+      screen.getByText('20% VAT'),
+    );
+
+    await user.click(trigger);
+    await user.click(screen.getByRole('option', { name: /Travel/ }));
+
+    expect(trigger).toHaveAccessibleName('Travel Category');
+    expect(screen.queryByText('20% VAT')).not.toBeInTheDocument();
+  });
+
   it('marks focus with the brand border and ring rather than a hover border', async () => {
     const user = userEvent.setup();
 
@@ -183,7 +224,7 @@ describe('Select', () => {
     );
 
     const trigger = screen.getByRole('button', {
-      name: 'Bank account Payment method',
+      name: 'Bank account Primary Payment method',
     });
     await user.click(screen.getByText('Payment method', { selector: 'span' }));
 
@@ -233,7 +274,9 @@ describe('Select', () => {
       />,
     );
     expect(
-      screen.getByRole('button', { name: 'Bank account Payment method' }),
+      screen.getByRole('button', {
+        name: 'Bank account Primary Payment method',
+      }),
     ).toHaveTextContent('Bank account');
   });
 
@@ -288,7 +331,7 @@ describe('Select', () => {
 
     const form = screen.getByRole('form');
     const trigger = screen.getByRole('button', {
-      name: 'Bank account Payment method',
+      name: 'Bank account Primary Payment method',
     });
     expect(new FormData(form as HTMLFormElement).get('payment')).toBe('bank');
 
@@ -325,7 +368,7 @@ describe('Select', () => {
     );
 
     const trigger = screen.getByRole('button', {
-      name: 'Bank account Payment method',
+      name: 'Bank account Primary Payment method',
     });
     expect(trigger).toHaveAttribute('aria-disabled', 'true');
     expect(trigger).not.toHaveAttribute('aria-readonly');
@@ -474,7 +517,7 @@ describe('Select', () => {
 
     const form = screen.getByRole('form');
     const trigger = screen.getByRole('button', {
-      name: 'Bank account Payment method',
+      name: 'Bank account Primary Payment method',
     });
 
     await user.click(trigger);

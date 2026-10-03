@@ -21,6 +21,7 @@ import collectionVariants from '../../collections/collection.styles';
 import CollectionPopover, {
   listBoxMaxHeight,
 } from '../../collections/CollectionPopover';
+import DescriptorBadge from '../../collections/DescriptorBadge';
 import DescriptorContent from '../../collections/DescriptorContent';
 import type { ItemDescriptor } from '../../collections/item.types';
 import {
@@ -31,6 +32,18 @@ import { fieldVariants, joinClassNames } from '../../fields/field.styles';
 import { useBreezeContext } from '../../provider/BreezeContext';
 import { Icon } from '../Icon/Icon';
 import { Skeleton } from '../Skeleton/Skeleton';
+
+const variants = {
+  base: {
+    value:
+      'breeze:flex breeze:min-inline-0 breeze:flex-1 breeze:items-center breeze:gap-breeze-2 breeze:text-start breeze:data-[placeholder]:text-breeze-ink-3',
+    valueLabel: 'breeze:min-inline-0 breeze:flex-1',
+  },
+  compound: {},
+  size: {},
+  state: {},
+  variant: {},
+} as const;
 
 interface SelectCommonProps<T> {
   /** Hints at the browser's autocomplete behaviour for this field. */
@@ -293,15 +306,21 @@ export function Select<T>({
             })
           }
         >
-          <AriaSelectValue
-            className={joinClassNames(
-              collectionVariants.base.content,
-              'breeze:text-start breeze:data-[placeholder]:text-breeze-ink-3',
-            )}
-          >
-            {({ isPlaceholder, selectedText }) =>
-              isPlaceholder ? placeholder ?? '' : selectedText
-            }
+          <AriaSelectValue<SelectItem<T>> className={variants.base.value}>
+            {({ isPlaceholder, selectedItems: [selected], selectedText }) => {
+              if (isPlaceholder) return placeholder ?? '';
+
+              const badge = selected?.descriptor.badge;
+
+              return (
+                <>
+                  <span className={variants.base.valueLabel}>
+                    {selectedText}
+                  </span>
+                  {badge && <DescriptorBadge badge={badge} />}
+                </>
+              );
+            }}
           </AriaSelectValue>
           <Icon name="expand" size="sm" />
         </AriaButton>

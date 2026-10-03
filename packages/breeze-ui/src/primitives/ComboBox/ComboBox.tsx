@@ -26,6 +26,8 @@ import { Skeleton } from '../Skeleton/Skeleton';
 
 const variants = {
   base: {
+    emptyState:
+      'breeze:px-breeze-3 breeze:py-breeze-5 breeze:text-center breeze:font-breeze-sans breeze:text-breeze-sm breeze:leading-[calc(1.25/0.875)] breeze:text-breeze-ink',
     group:
       'breeze:relative breeze:inline-flex breeze:min-block-breeze-md breeze:any-pointer-coarse:min-block-breeze-tap breeze:min-inline-0 breeze:inline-full breeze:items-stretch breeze:overflow-hidden breeze:rounded-breeze-ctl breeze:border breeze:border-solid breeze:border-breeze-line-strong breeze:bg-breeze-surface breeze:outline-none breeze:data-[invalid]:border-breeze-danger breeze:data-[focus-within]:border-breeze-brand breeze:data-[focus-within]:ring-3 breeze:data-[focus-within]:ring-breeze-brand/15 breeze:data-[focus-within]:outline-hidden breeze:data-[readonly]:bg-breeze-sunken breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:bg-breeze-sunken',
     input:
@@ -180,9 +182,33 @@ function resolveDefaultCustomValue<T>(
   return defaultValue;
 }
 
-function ComboBoxListBox<T>({ items }: Readonly<{ items: ComboBoxItem<T>[] }>) {
+function ComboBoxListBox<T>({
+  allowsCustomValue,
+  items,
+}: Readonly<{ allowsCustomValue: boolean; items: ComboBoxItem<T>[] }>) {
+  const { getMessageLocale, messages } = useBreezeContext();
+  const state = useContext(AriaComboBoxStateContext);
+
   return (
-    <AriaListBox className={collectionVariants.base.listBox} items={items}>
+    <AriaListBox
+      className={collectionVariants.base.listBox}
+      items={items}
+      renderEmptyState={
+        allowsCustomValue
+          ? undefined
+          : () => (
+              <div
+                className={variants.base.emptyState}
+                lang={getMessageLocale('comboBoxNoMatches')}
+              >
+                {messages.comboBoxNoMatches.replace(
+                  '{query}',
+                  () => state?.inputValue ?? '',
+                )}
+              </div>
+            )
+      }
+    >
       {(item: ComboBoxItem<T>) => (
         <DescriptorOption descriptor={item.descriptor} />
       )}
@@ -206,20 +232,14 @@ function ComboBoxPopover<T>({
   triggerRef: RefObject<Element | null>;
 }>) {
   const state = useContext(AriaComboBoxStateContext);
-  const isBlocked = isDisabled || isReadOnly;
-  const isOpen =
-    !isBlocked &&
-    (hasSuggestions || allowsCustomValue) &&
-    (state?.isOpen ?? false);
+  const isBlocked = isDisabled || isReadOnly || !hasSuggestions;
+  const isOpen = !isBlocked && (state?.isOpen ?? false);
 
   useEffect(() => {
-    if (
-      (isBlocked || (!hasSuggestions && !allowsCustomValue)) &&
-      state?.isOpen
-    ) {
+    if (isBlocked && state?.isOpen) {
       state.setOpen(false);
     }
-  }, [allowsCustomValue, hasSuggestions, isBlocked, state]);
+  }, [isBlocked, state]);
 
   return (
     <CollectionPopover
@@ -229,7 +249,7 @@ function ComboBoxPopover<T>({
       onOpenChange={(open) => state?.setOpen(open)}
       triggerRef={triggerRef}
     >
-      <ComboBoxListBox items={items} />
+      <ComboBoxListBox allowsCustomValue={allowsCustomValue} items={items} />
     </CollectionPopover>
   );
 }
@@ -375,7 +395,8 @@ function ComboBoxBase<T>({ props }: Readonly<{ props: ComboBoxProps<T> }>) {
   return (
     <AriaComboBox<ComboBoxItem<T>>
       allowsCustomValue={allowsCustomValue}
-      allowsEmptyCollection={allowsCustomValue}
+      // Restricted fields stay open to show the no-match message.
+      allowsEmptyCollection={!allowsCustomValue}
       aria-label={loading ? label : undefined}
       className={fieldVariants.base.root}
       defaultFilter={contains}
