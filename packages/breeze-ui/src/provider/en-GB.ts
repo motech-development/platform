@@ -44,6 +44,7 @@ const enGB = {
   fileDropZoneNoFilesAdded: 'No files were added.',
   fileDropZoneReleaseInstructions: 'Release to add files.',
   fileDropZoneSizeRejected: '{fileName}: File exceeds the {size} size limit.',
+  fileDropZoneTakePhoto: 'Take photo',
   fileDropZoneTypeRejected:
     '{fileName}: File type is not accepted. Accepted types: {types}.',
   loading: 'Loading',
