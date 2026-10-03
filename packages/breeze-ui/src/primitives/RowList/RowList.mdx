@@ -27,6 +27,32 @@ Use the optional `section` object to group rows under structural section
 headers. Keep each section ID stable when rows are appended or merged. Keep row
 IDs unique and stable so the focused row remains mounted as data changes.
 
+`metadataAmount` adds a second, muted currency cell, such as VAT, between the
+metadata and the value. It formats like a currency `value` without a tone.
+Each metadata column is reserved only when at least one row in the list uses
+it; otherwise the leading region extends towards the value column.
+
+## Summarise a section
+
+Set the section's optional `summary` to end its header with trailing content,
+read from the first row in each section. A currency summary takes the same
+fields as a currency `value`, shown at the header's 12px size, plus a `label`
+that is visually hidden and read before the amount, such as “Confirmed daily
+total”. Breeze does not add the amounts up; pass the total with its `tone` and
+`sign`. A text summary shows a muted note instead, such as “Not in the balance
+yet” for a section that has no total.
+
+<Canvas of={Stories.Money} />
+
+## Phone layout
+
+Below Breeze's medium breakpoint the value stays at the end of the row, the
+metadata columns are hidden, and a row's badge moves under its description so
+the label keeps the full width. Keep anything essential in the label,
+description or value.
+
+<Canvas of={Stories.Phone} />
+
 ## Show money in and out
 
 Currency values use the compact `amount` role in the default ink tone. Set
