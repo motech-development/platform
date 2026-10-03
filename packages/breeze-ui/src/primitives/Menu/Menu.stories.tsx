@@ -155,6 +155,54 @@ export const NarrowWidth: Story = {
   },
 };
 
+const attachmentActions = [
+  { id: 'download', label: 'Download' },
+  { id: 'replace', label: 'Replace' },
+  { id: 'remove', label: 'Remove', section: { id: 'remove' }, tone: 'danger' },
+] satisfies MenuItemDescriptor[];
+
+/** A destructive action in the danger colour, in a menu without icons aligned to its trigger's end edge. */
+export const DestructiveAction: Story = {
+  play: async ({ canvasElement }) => {
+    const trigger = within(canvasElement).getByRole('button', {
+      name: 'More actions',
+    });
+    const menu = await within(document.body).findByRole('menu', {
+      name: 'More actions',
+    });
+    const popover = menu.closest<HTMLElement>('.breeze-popover');
+    const remove = within(menu).getByRole('menuitem', { name: 'Remove' });
+    const download = within(menu).getByRole('menuitem', { name: 'Download' });
+
+    if (!popover) throw new Error('The menu popover was not rendered.');
+
+    // Wait out the entry animation's scale before comparing edges.
+    await waitFor(async () => {
+      await expect(popover.getBoundingClientRect().right).toBeCloseTo(
+        trigger.getBoundingClientRect().right,
+        0,
+      );
+    });
+    await expect(getComputedStyle(remove).color).not.toBe(
+      getComputedStyle(download).color,
+    );
+    await expect(download.firstElementChild).toHaveTextContent('Download');
+  },
+  render: () => (
+    <div style={{ display: 'flex', inlineSize: 320, justifyContent: 'end' }}>
+      <Menu
+        defaultOpen
+        getItem={(item) => item}
+        items={attachmentActions}
+        placement="bottom end"
+        triggerAriaLabel="More actions"
+        triggerIcon="more"
+        width="sm"
+      />
+    </div>
+  ),
+};
+
 /** An icon-only trigger, named by `triggerAriaLabel`. */
 export const IconOnlyTrigger: Story = {
   args: {

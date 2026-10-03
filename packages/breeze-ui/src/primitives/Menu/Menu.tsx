@@ -37,7 +37,7 @@ const variants = {
     icon: 'breeze:block-breeze-4 breeze:inline-breeze-4 breeze:shrink-0',
     initials:
       'breeze:flex breeze:block-breeze-6 breeze:inline-breeze-6 breeze:shrink-0 breeze:items-center breeze:justify-center breeze:rounded-breeze-sm breeze:bg-breeze-brand-soft breeze:text-breeze-2xs breeze:font-bold breeze:text-breeze-brand-text',
-    item: 'breeze:flex breeze:min-inline-0 breeze:min-block-breeze-md breeze:any-pointer-coarse:min-block-breeze-tap breeze:items-center breeze:gap-breeze-2 breeze:px-[14px] breeze:py-[10px] breeze:font-breeze-sans breeze:text-breeze-sm breeze:text-breeze-ink breeze:text-start breeze:outline-offset-[-2px] breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-50 breeze:data-[focused]:bg-breeze-raised breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[hovered]:bg-breeze-raised',
+    item: 'breeze:flex breeze:min-inline-0 breeze:min-block-breeze-md breeze:any-pointer-coarse:min-block-breeze-tap breeze:items-center breeze:gap-breeze-2 breeze:px-[14px] breeze:py-[10px] breeze:font-breeze-sans breeze:text-breeze-sm breeze:text-start breeze:outline-offset-[-2px] breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-50 breeze:data-[focused]:bg-breeze-raised breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[hovered]:bg-breeze-raised',
     menu: 'breeze:min-inline-0 breeze:outline-none',
     // Shrink-wraps its items, as the prototype's menus do, instead of the shared 320px popover width.
     popover:
@@ -58,7 +58,12 @@ const variants = {
     sm: 'breeze:min-inline-[max(208px,var(--trigger-width))]',
   },
   state: {},
-  variant: {},
+  variant: {
+    tone: {
+      danger: 'breeze:text-breeze-danger',
+      default: 'breeze:text-breeze-ink',
+    },
+  },
 } as const;
 
 /** Minimum menu widths: `sm` is 208px and `md` is 256px. */
@@ -74,6 +79,8 @@ export interface MenuSectionDescriptor {
 interface MenuItemDescriptorBase extends ItemDescriptor {
   /** Groups this item with every item sharing the section `id`. */
   section?: MenuSectionDescriptor;
+  /** Shows a destructive action, such as Remove, in the danger colour. */
+  tone?: 'danger';
 }
 
 interface MenuIconItemDescriptor extends MenuItemDescriptorBase {
@@ -103,6 +110,8 @@ interface MenuCommonProps<T> {
   loading?: boolean;
   /** Minimum width of the open menu, never narrower than its trigger. Defaults to `md`. */
   width?: MenuWidth;
+  /** Aligns the menu's start or end edge with the trigger's. Defaults to `bottom start`. */
+  placement?: 'bottom end' | 'bottom start';
 }
 
 interface LabelledTriggerProps {
@@ -190,18 +199,22 @@ function groupEntries<T>(entries: MenuEntry<T>[]): MenuBlock<T>[] {
 interface MenuItemContentProps {
   descriptionId: string;
   descriptor: MenuItemDescriptor;
+  reserveIcon: boolean;
 }
 
 function MenuItemContent({
   descriptionId,
   descriptor,
+  reserveIcon,
 }: Readonly<MenuItemContentProps>) {
   return (
     <>
       {descriptor.initials === undefined ? (
-        <span aria-hidden="true" className={variants.base.icon}>
-          {descriptor.icon && <Icon name={descriptor.icon} size="sm" />}
-        </span>
+        reserveIcon && (
+          <span aria-hidden="true" className={variants.base.icon}>
+            {descriptor.icon && <Icon name={descriptor.icon} size="sm" />}
+          </span>
+        )
       ) : (
         <span aria-hidden="true" className={variants.base.initials}>
           {descriptor.initials}
@@ -243,26 +256,39 @@ function getItemKey(descriptor: MenuItemDescriptor) {
   return `item:${descriptor.id}`;
 }
 
-function renderMenuItem<T>({ descriptionId, descriptor }: MenuEntry<T>) {
+function renderMenuItem<T>(
+  { descriptionId, descriptor }: MenuEntry<T>,
+  reserveIcon: boolean,
+) {
   return (
     <AriaMenuItem
       aria-describedby={descriptor.description ? descriptionId : undefined}
       aria-label={getMenuItemAccessibleName(descriptor)}
-      className={variants.base.item}
+      className={[
+        variants.base.item,
+        variants.variant.tone[descriptor.tone ?? 'default'],
+      ].join(' ')}
       id={getItemKey(descriptor)}
       isDisabled={descriptor.disabled}
       key={getItemKey(descriptor)}
       textValue={descriptor.label}
     >
-      <MenuItemContent descriptionId={descriptionId} descriptor={descriptor} />
+      <MenuItemContent
+        descriptionId={descriptionId}
+        descriptor={descriptor}
+        reserveIcon={reserveIcon}
+      />
     </AriaMenuItem>
   );
 }
 
-function renderMenuBlock<T>(block: MenuBlock<T>) {
+function renderMenuBlock<T>(block: MenuBlock<T>, reserveIcon: boolean) {
+  const renderItem = (entry: MenuEntry<T>) =>
+    renderMenuItem(entry, reserveIcon);
+
   if (block.kind === 'item') {
     return {
-      content: [renderMenuItem(block.entry)],
+      content: [renderItem(block.entry)],
       key: getItemKey(block.entry.descriptor),
     };
   }
@@ -271,7 +297,7 @@ function renderMenuBlock<T>(block: MenuBlock<T>) {
   const key = `section:${section.id}`;
 
   // React Aria requires a named section, so unlabelled groups rely on their dividers.
-  if (!section.label) return { content: entries.map(renderMenuItem), key };
+  if (!section.label) return { content: entries.map(renderItem), key };
 
   return {
     content: [
@@ -279,7 +305,7 @@ function renderMenuBlock<T>(block: MenuBlock<T>) {
         <AriaHeader className={variants.base.header}>
           {section.label}
         </AriaHeader>
-        {entries.map(renderMenuItem)}
+        {entries.map(renderItem)}
       </AriaMenuSection>,
     ],
     key,
@@ -333,6 +359,7 @@ export function Menu<T>({
   onAction,
   onOpenChange,
   open: controlledOpen,
+  placement = 'bottom start',
   trigger,
   triggerAriaLabel,
   triggerIcon,
@@ -357,6 +384,8 @@ export function Menu<T>({
     [getItem, items, menuId],
   );
   const blocks = useMemo(() => groupEntries(entries), [entries]);
+  // Labels align with iconned neighbours; a menu without icons starts at the edge.
+  const reserveIcon = entries.some(({ descriptor }) => descriptor.icon);
   const handleOpenChange = useCallback(
     (nextOpen: boolean) => {
       if (loading && nextOpen) return;
@@ -441,6 +470,7 @@ export function Menu<T>({
           className={[variants.base.popover, variants.size[width]].join(' ')}
           isOpen={open}
           onOpenChange={handleOpenChange}
+          placement={placement}
           triggerRef={triggerRef}
         >
           <div
@@ -463,7 +493,7 @@ export function Menu<T>({
             >
               {blocks.flatMap((block, index) => {
                 const previous = blocks[index - 1];
-                const { content, key } = renderMenuBlock(block);
+                const { content, key } = renderMenuBlock(block, reserveIcon);
 
                 if (
                   !previous ||
