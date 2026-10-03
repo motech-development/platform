@@ -271,6 +271,8 @@ export function BreezeProvider({
           enGB.fileDropZoneReleaseInstructions,
         fileDropZoneSizeRejected:
           messages?.fileDropZoneSizeRejected ?? enGB.fileDropZoneSizeRejected,
+        fileDropZoneTakePhoto:
+          messages?.fileDropZoneTakePhoto ?? enGB.fileDropZoneTakePhoto,
         fileDropZoneTypeRejected:
           messages?.fileDropZoneTypeRejected ?? enGB.fileDropZoneTypeRejected,
         loading: messages?.loading ?? enGB.loading,

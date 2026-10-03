@@ -340,6 +340,114 @@ describe('FileDropZone', () => {
     expect(onFilesAdded).toHaveBeenCalledExactlyOnceWith([file]);
   });
 
+  it.each([
+    [undefined, true, true],
+    ['.pdf,.jpg,.png', true, true],
+    ['.pdf,image/*', true, true],
+    ['image/jpeg', true, true],
+    ['.pdf,.png', true, false],
+    ['.pdf,.jpg', false, false],
+  ])(
+    'offers Take photo for accept %s with camera %s: %s',
+    (accept, camera, offered) => {
+      const { container } = renderBreeze(
+        <FileDropZone
+          accept={accept}
+          camera={camera}
+          label="Invoice or receipt"
+          onFilesAdded={vi.fn()}
+        />,
+      );
+
+      expect(
+        screen.queryByRole('button', { name: 'Take photo' }) !== null,
+      ).toBe(offered);
+      expect(
+        container.querySelector('input[capture="environment"]') !== null,
+      ).toBe(offered);
+    },
+  );
+
+  it('opens the camera from Take photo with a pointer or keyboard and validates captured photos', async () => {
+    const user = userEvent.setup();
+    const onFilesAdded = vi.fn<(files: readonly File[]) => void>();
+    const { container } = renderBreeze(
+      <FileDropZone
+        accept=".pdf,.jpg,.png"
+        camera
+        compact
+        label="Invoice or receipt"
+        maxSize={100}
+        onFilesAdded={onFilesAdded}
+      />,
+    );
+    const zone = screen.getByRole('region', { name: 'Invoice or receipt' });
+    const cameraInput = container.querySelector<HTMLInputElement>(
+      'input[capture="environment"]',
+    );
+
+    expect(
+      within(zone)
+        .getAllByRole('button')
+        .map((button) => button.getAttribute('aria-label')),
+    ).toEqual(['Take photo', 'Choose files']);
+    expect(cameraInput).toHaveAttribute('accept', 'image/*');
+    expect(cameraInput).not.toHaveAttribute('multiple');
+
+    const openCamera = vi.spyOn(cameraInput!, 'click');
+    const takePhoto = screen.getByRole('button', { name: 'Take photo' });
+
+    await user.click(takePhoto);
+    takePhoto.focus();
+    await user.keyboard('{Enter}');
+
+    expect(openCamera).toHaveBeenCalledTimes(2);
+
+    const photo = new File(['jpeg'], 'image.jpg', { type: 'image/jpeg' });
+    const heic = new File(['heic'], 'image.heic', { type: 'image/heic' });
+    const large = new File(['x'.repeat(101)], 'large.jpg', {
+      type: 'image/jpeg',
+    });
+
+    await user.upload(cameraInput!, photo);
+
+    expect(onFilesAdded).toHaveBeenCalledExactlyOnceWith([photo]);
+    expect(screen.getByRole('status')).toHaveTextContent('Added 1 file.');
+
+    await user.upload(cameraInput!, heic);
+
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'No files were added. image.heic: File type is not accepted.',
+    );
+
+    await user.upload(cameraInput!, large);
+
+    expect(onFilesAdded).toHaveBeenCalledOnce();
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'No files were added. large.jpg: File exceeds the 100 bytes size limit.',
+    );
+  });
+
+  it('labels Take photo from provider messages in their language', () => {
+    render(
+      <BreezeProvider
+        locale="fr-FR"
+        messages={{ fileDropZoneTakePhoto: 'Prendre une photo' }}
+      >
+        <FileDropZone camera label="Facture ou reçu" onFilesAdded={vi.fn()} />
+      </BreezeProvider>,
+    );
+
+    expect(
+      screen
+        .getByRole('button', { name: 'Prendre une photo' })
+        .closest('[lang]'),
+    ).toHaveAttribute('lang', 'fr-FR');
+    expect(
+      screen.getByRole('button', { name: 'Choose files' }).closest('[lang]'),
+    ).toHaveAttribute('lang', 'en-GB');
+  });
+
   it('requires the Breeze provider', () => {
     expect(() =>
       render(<FileDropZone label="Add attachments" onFilesAdded={vi.fn()} />),
