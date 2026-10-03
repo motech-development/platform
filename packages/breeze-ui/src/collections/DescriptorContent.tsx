@@ -1,6 +1,6 @@
-import { Badge } from '../primitives/Badge/Badge';
 import { Icon } from '../primitives/Icon/Icon';
 import collectionVariants from './collection.styles';
+import DescriptorBadge from './DescriptorBadge';
 import type { ItemDescriptor } from './item.types';
 
 interface DescriptorContentProps {
@@ -24,16 +24,7 @@ export default function DescriptorContent({
           </span>
         )}
       </span>
-      {descriptor.badge && (
-        <span className={collectionVariants.base.badge}>
-          <Badge
-            aria-label={descriptor.badge['aria-label']}
-            variant={descriptor.badge.variant}
-          >
-            {descriptor.badge.children}
-          </Badge>
-        </span>
-      )}
+      {descriptor.badge && <DescriptorBadge badge={descriptor.badge} />}
       {isSelected && (
         <span
           aria-hidden="true"

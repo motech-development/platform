@@ -22,7 +22,7 @@ import * as Stories from './BreezeProvider.stories';
 
 `locale` takes a BCP 47 language tag. It sets the `lang` attribute and the text direction of the provider's root element.
 
-Only English (`en-GB`) messages are bundled. Supply partial `messages` to translate Breeze's loading and required announcements, the DatePicker placeholder and Today action, appearance control, overlay close button, FileDropZone instructions and feedback, and attachment labels and actions into the provider locale. Without an override, Breeze's own text uses English and is marked `lang="en-GB"`, independently of the surrounding content's language.
+Only English (`en-GB`) messages are bundled. Supply partial `messages` to translate Breeze's loading and required announcements, the DatePicker placeholder and Today action, the ComboBox no-match message, appearance control, overlay close button, FileDropZone instructions and feedback, and attachment labels and actions into the provider locale. Without an override, Breeze's own text uses English and is marked `lang="en-GB"`, independently of the surrounding content's language.
 
 Built-in interaction labels are available in English only. `locale` still sets the provider language and direction and formats locale-aware values; use `messages` for the Breeze-owned strings listed above.
 
@@ -37,6 +37,8 @@ Built-in interaction labels are available in English only. `locale` still sets t
 ```
 
 <Canvas of={Stories.Locale} />
+
+Keep `{query}` in `comboBoxNoMatches`; it is replaced with the filter text.
 
 FileDropZone message strings use flat keys. Keep their placeholders when
 providing translations: `{types}` for accepted types, `{size}` for the size

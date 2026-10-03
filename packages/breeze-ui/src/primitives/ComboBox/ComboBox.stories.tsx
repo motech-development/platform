@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useState } from 'react';
-import { expect, within } from 'storybook/test';
+import { expect, userEvent, within } from 'storybook/test';
 import type { ItemDescriptor } from '../../collections/item.types';
 import { ComboBox } from './ComboBox';
 
@@ -75,6 +75,24 @@ export const FreeText: Story = {
   args: {
     allowsCustomValue: true,
     placeholder: 'Search or enter a name',
+  },
+};
+
+/** A filter that matches no suggestion explains why the list is empty. */
+export const NoMatches: Story = {
+  play: async ({ canvasElement }) => {
+    await userEvent.type(
+      within(canvasElement).getByRole('combobox', { name: 'Supplier' }),
+      'zzz',
+    );
+
+    const listbox = await within(canvasElement.ownerDocument.body).findByRole(
+      'listbox',
+    );
+
+    await expect(
+      within(listbox).getByText('No matches for “zzz”'),
+    ).toBeVisible();
   },
 };
 

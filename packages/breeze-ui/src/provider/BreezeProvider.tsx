@@ -199,6 +199,8 @@ export function BreezeProvider({
         attachmentPhoto: messages?.attachmentPhoto ?? enGB.attachmentPhoto,
         clearDate: messages?.clearDate ?? enGB.clearDate,
         close: messages?.close ?? enGB.close,
+        comboBoxNoMatches:
+          messages?.comboBoxNoMatches ?? enGB.comboBoxNoMatches,
         documentViewerAccessibility:
           messages?.documentViewerAccessibility ??
           enGB.documentViewerAccessibility,

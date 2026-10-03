@@ -1,6 +1,8 @@
 const collectionVariants = {
   base: {
-    badge: 'breeze:ms-auto breeze:flex breeze:shrink-0',
+    // Collection pills are wider and bolder than a standalone Badge.
+    badge:
+      'breeze:ms-auto breeze:flex breeze:shrink-0 breeze:[&>span]:px-breeze-2 breeze:[&>span]:font-bold breeze:[&>span]:leading-[calc(1.25/0.875)]',
     content:
       'breeze:flex breeze:min-inline-0 breeze:flex-1 breeze:flex-col breeze:gap-breeze-1',
     description:
