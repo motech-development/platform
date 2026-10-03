@@ -24,39 +24,55 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-function contrastRatio(element: HTMLElement) {
-  const view = element.ownerDocument.defaultView;
+function luminance(cssColor: string) {
+  const channels = cssColor
+    .match(/[\d.]+/g)
+    ?.slice(0, 3)
+    .map(Number);
 
-  if (!view) throw new Error('Missing calendar story window.');
+  if (!channels || channels.length !== 3) {
+    throw new Error(`Could not parse computed color: ${cssColor}`);
+  }
 
-  const { backgroundColor, color } = view.getComputedStyle(element);
-  const getLuminance = (cssColor: string) => {
-    const channels = cssColor
-      .match(/[\d.]+/g)
-      ?.slice(0, 3)
-      .map(Number);
+  const [red, green, blue] = channels.map((channel) => {
+    const normalized = channel / 255;
 
-    if (!channels || channels.length !== 3) {
-      throw new Error(`Could not parse computed color: ${cssColor}`);
-    }
+    return normalized <= 0.04045
+      ? normalized / 12.92
+      : ((normalized + 0.055) / 1.055) ** 2.4;
+  });
 
-    const [red, green, blue] = channels.map((channel) => {
-      const normalized = channel / 255;
+  return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+}
 
-      return normalized <= 0.04045
-        ? normalized / 12.92
-        : ((normalized + 0.055) / 1.055) ** 2.4;
-    });
-
-    return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
-  };
-  const foregroundLuminance = getLuminance(color);
-  const backgroundLuminance = getLuminance(backgroundColor);
+function contrastBetween(first: string, second: string) {
+  const firstLuminance = luminance(first);
+  const secondLuminance = luminance(second);
 
   return (
-    (Math.max(foregroundLuminance, backgroundLuminance) + 0.05) /
-    (Math.min(foregroundLuminance, backgroundLuminance) + 0.05)
+    (Math.max(firstLuminance, secondLuminance) + 0.05) /
+    (Math.min(firstLuminance, secondLuminance) + 0.05)
   );
+}
+
+function contrastRatio(element: HTMLElement) {
+  const { backgroundColor, color } = getComputedStyle(element);
+
+  return contrastBetween(color, backgroundColor);
+}
+
+function backdropColor(element: HTMLElement) {
+  for (
+    let ancestor = element.parentElement;
+    ancestor !== null;
+    ancestor = ancestor.parentElement
+  ) {
+    const { backgroundColor } = getComputedStyle(ancestor);
+
+    if (!/^rgba\(.*,\s*0\)$/.test(backgroundColor)) return backgroundColor;
+  }
+
+  throw new Error('Missing calendar backdrop color.');
 }
 
 async function assertSelectedDateContrast(
@@ -72,6 +88,13 @@ async function assertSelectedDateContrast(
   });
 
   await expect(contrastRatio(selectedDate)).toBeGreaterThanOrEqual(4.5);
+  // WCAG 1.4.11: the selection fill alone must identify the selected date.
+  await expect(
+    contrastBetween(
+      getComputedStyle(selectedDate).backgroundColor,
+      backdropColor(selectedDate),
+    ),
+  ).toBeGreaterThanOrEqual(3);
 
   selectedDate.focus();
   await waitFor(() =>
