@@ -10,8 +10,9 @@ import { useBreezeContext } from '../../provider/BreezeContext';
 
 const variants = {
   base: {
+    box: 'breeze:border breeze:border-solid breeze:rounded-breeze-ctl breeze:font-semibold breeze:any-pointer-coarse:min-inline-breeze-tap',
     button:
-      'breeze:relative breeze:inline-grid breeze:items-center breeze:justify-center breeze:gap-breeze-2 breeze:border breeze:border-solid breeze:rounded-breeze-ctl breeze:font-breeze-sans breeze:font-semibold breeze:leading-breeze-snug breeze:cursor-pointer breeze:select-none breeze:[text-align:center] breeze:outline-offset-2 breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:any-pointer-coarse:min-block-breeze-tap breeze:any-pointer-coarse:min-inline-breeze-tap',
+      'breeze:relative breeze:inline-grid breeze:items-center breeze:justify-center breeze:gap-breeze-2 breeze:font-breeze-sans breeze:leading-breeze-snug breeze:cursor-pointer breeze:select-none breeze:[text-align:center] breeze:outline-offset-2 breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:any-pointer-coarse:min-block-breeze-tap',
     label: 'breeze:[grid-area:1/1]',
     skeleton:
       'breeze:[grid-area:1/1] breeze:inline-full breeze:block-breeze-3 breeze:rounded-breeze-xs',
@@ -22,7 +23,6 @@ const variants = {
     md: {
       danger: 'breeze:ps-breeze-3 breeze:pe-breeze-3',
       primary: 'breeze:ps-[14px] breeze:pe-[14px]',
-      quiet: 'breeze:ps-breeze-3 breeze:pe-breeze-3',
       secondary: 'breeze:ps-breeze-3 breeze:pe-breeze-3',
     },
   },
@@ -32,7 +32,11 @@ const variants = {
     sm: 'breeze:min-block-breeze-8 breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:text-breeze-xs',
   },
   state: {},
-  variant: {},
+  variant: {
+    // The design's text action has no control box, hover fill or size scale.
+    quiet:
+      'breeze:border-0 breeze:rounded-breeze-chip breeze:bg-transparent breeze:px-breeze-1 breeze:text-breeze-sm breeze:font-normal breeze:text-breeze-brand-text breeze:max-breeze-md:min-block-breeze-tap',
+  },
 } as const;
 
 export type { ButtonVariant } from '../../buttons/button.styles';
@@ -69,7 +73,7 @@ export interface ButtonProps {
   onAction?: () => void;
   /** Provides access to the rendered button element. */
   ref?: Ref<HTMLButtonElement>;
-  /** Selects the button's dimensions. Defaults to `md`. */
+  /** Selects the button's dimensions. Defaults to `md`; `quiet` has one size. */
   size?: ControlSize;
   /** Selects ordinary or form-submission behaviour. Defaults to `button`. */
   type?: 'button' | 'submit';
@@ -82,7 +86,7 @@ export interface ButtonProps {
 /**
  * Performs a semantic action with a visible label and an optional loading skeleton.
  *
- * @summary A closed, labelled action in four treatments and three sizes.
+ * @summary A closed, labelled action in three boxed treatments and three sizes, or a quiet text action.
  */
 export function Button({
   'aria-controls': ariaControls,
@@ -106,11 +110,13 @@ export function Button({
 }: Readonly<ButtonProps>) {
   useBreezeContext();
 
+  const boxed = variant !== 'quiet';
   const className = [
     variants.base.button,
-    buttonVariants.variant[variant],
-    variants.size[size],
-    size === 'md' && variants.compound.md[variant],
+    boxed ? variants.base.box : variants.variant.quiet,
+    boxed && buttonVariants.variant[variant],
+    boxed && variants.size[size],
+    boxed && size === 'md' && variants.compound.md[variant],
     disabled && buttonVariants.state.disabled,
     loading && buttonVariants.state.loading,
   ]
