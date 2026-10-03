@@ -121,11 +121,13 @@ export { NumberField } from './primitives/NumberField/NumberField';
 export type { PopoverProps } from './primitives/Popover/Popover';
 export { Popover } from './primitives/Popover/Popover';
 export type {
+  RowListCurrencyValue,
   RowListItemDescriptor,
   RowListLoadMoreProps,
   RowListMetadata,
   RowListProps,
   RowListSectionDescriptor,
+  RowListSectionSummary,
   RowListValue,
 } from './primitives/RowList/RowList';
 export { RowList } from './primitives/RowList/RowList';

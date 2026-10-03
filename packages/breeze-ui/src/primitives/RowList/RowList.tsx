@@ -11,11 +11,13 @@ import { Button } from '../Button/Button';
 import { IconTile } from '../IconTile/IconTile';
 import { Skeleton } from '../Skeleton/Skeleton';
 import { type IsoCalendarDate, Typography } from '../Typography/Typography';
+import { VisuallyHidden } from '../VisuallyHidden/VisuallyHidden';
 
 const variants = {
   base: {
+    // Phones move the badge below the description so the label keeps the full width.
     badge:
-      'breeze:flex breeze:max-inline-full breeze:min-inline-0 breeze:shrink-0 breeze:overflow-hidden breeze:whitespace-nowrap breeze:[&>span]:max-inline-full breeze:[&>span]:min-inline-0 breeze:[&>span]:overflow-hidden breeze:[&>span>span:first-child]:min-inline-0 breeze:[&>span>span:first-child]:overflow-hidden breeze:[&>span>span:first-child]:text-ellipsis',
+      'breeze:flex breeze:max-inline-full breeze:min-inline-0 breeze:shrink-0 breeze:overflow-hidden breeze:whitespace-nowrap breeze:max-breeze-md:order-1 breeze:max-breeze-md:mbs-breeze-1 breeze:max-breeze-md:self-start breeze:[&>span]:max-inline-full breeze:[&>span]:min-inline-0 breeze:[&>span]:overflow-hidden breeze:[&>span>span:first-child]:min-inline-0 breeze:[&>span>span:first-child]:overflow-hidden breeze:[&>span>span:first-child]:text-ellipsis',
     container: 'breeze:min-inline-0 breeze:inline-full',
     content:
       'breeze:flex breeze:min-inline-0 breeze:flex-1 breeze:flex-col breeze:gap-breeze-px',
@@ -28,7 +30,8 @@ const variants = {
     header:
       'breeze:box-border breeze:inline-full breeze:min-inline-0 breeze:flex breeze:items-center breeze:gap-[10px] breeze:border-breeze-line breeze:border-be breeze:bg-breeze-raised breeze:px-breeze-4 breeze:py-breeze-2 breeze:text-breeze-xs breeze:font-semibold breeze:leading-[calc(1/0.75)] breeze:text-breeze-ink-2',
     headerLabel: 'breeze:min-inline-0 breeze:break-words',
-    item: 'breeze:box-border breeze:inline-full breeze:min-inline-0 breeze:grid breeze:grid-cols-[minmax(0,1fr)_120px_104px] breeze:items-center breeze:gap-breeze-3 breeze:border-breeze-sunken breeze:border-be breeze:px-breeze-4 breeze:py-breeze-2 breeze:text-start breeze:outline-offset-[-2px] breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-50 breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[hovered]:bg-breeze-raised breeze:data-[pressed]:bg-breeze-raised breeze:any-pointer-coarse:min-block-breeze-tap breeze:max-breeze-md:grid-cols-1 breeze:max-breeze-md:gap-breeze-1',
+    headerSpacer: 'breeze:grow',
+    item: 'breeze:box-border breeze:inline-full breeze:min-inline-0 breeze:grid breeze:items-center breeze:gap-breeze-3 breeze:border-breeze-sunken breeze:border-be breeze:px-breeze-4 breeze:py-breeze-2 breeze:text-start breeze:outline-offset-[-2px] breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-50 breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[hovered]:bg-breeze-raised breeze:data-[pressed]:bg-breeze-raised breeze:any-pointer-coarse:min-block-breeze-tap breeze:max-breeze-md:grid-cols-[minmax(0,1fr)_104px]',
     label: 'breeze:min-inline-0 breeze:truncate',
     leading:
       'breeze:col-start-1 breeze:flex breeze:min-inline-0 breeze:items-center breeze:gap-breeze-3',
@@ -38,24 +41,36 @@ const variants = {
       'breeze:flex breeze:min-inline-0 breeze:flex-col breeze:gap-breeze-2',
     loadingMoneyPlaceholder:
       'breeze:flex breeze:justify-end breeze:font-breeze-sans breeze:text-breeze-sm breeze:font-semibold breeze:leading-[calc(1.25/0.875)] breeze:tabular-nums breeze:[&>progress]:[font:inherit]',
-    loadingPlaceholder:
-      'breeze:flex breeze:justify-end breeze:max-breeze-md:justify-start',
+    loadingPlaceholder: 'breeze:flex breeze:justify-end',
     loadingRow:
-      'breeze:box-border breeze:inline-full breeze:min-inline-0 breeze:grid breeze:grid-cols-[minmax(0,1fr)_120px_104px] breeze:items-center breeze:gap-breeze-3 breeze:border-breeze-sunken breeze:border-be breeze:px-breeze-4 breeze:py-breeze-2 breeze:max-breeze-md:grid-cols-1 breeze:max-breeze-md:gap-breeze-1',
+      'breeze:box-border breeze:inline-full breeze:min-inline-0 breeze:grid breeze:grid-cols-[minmax(0,1fr)_120px_104px] breeze:items-center breeze:gap-breeze-3 breeze:border-breeze-sunken breeze:border-be breeze:px-breeze-4 breeze:py-breeze-2 breeze:max-breeze-md:grid-cols-[minmax(0,1fr)_104px]',
     loadingStatus: 'breeze:sr-only',
+    // Metadata cells are muted 12px single lines, matching the prototype's category and VAT text.
     metadata:
-      'breeze:col-start-2 breeze:min-inline-0 breeze:break-words breeze:text-end breeze:max-breeze-md:col-start-1 breeze:max-breeze-md:text-start',
+      'breeze:col-start-2 breeze:min-inline-0 breeze:max-breeze-md:hidden breeze:[&>span]:font-normal breeze:[&>span]:leading-[calc(1/0.75)]',
+    metadataAmount:
+      'breeze:-col-end-2 breeze:min-inline-0 breeze:max-breeze-md:hidden breeze:[&>span]:text-breeze-xs breeze:[&>span]:font-normal breeze:[&>span]:leading-[calc(1/0.75)]',
     section: 'breeze:flex breeze:min-inline-0 breeze:flex-col',
     skeletonRows: 'breeze:flex breeze:min-inline-0 breeze:flex-col',
+    summaryText: 'breeze:min-inline-0 breeze:truncate breeze:text-breeze-ink-3',
+    // The total keeps the amount role's weight at the header's 12px size.
+    summaryTotal:
+      'breeze:shrink-0 breeze:[&>span:last-child]:text-breeze-xs breeze:[&>span:last-child]:leading-[calc(1/0.75)]',
     title:
-      'breeze:flex breeze:min-inline-0 breeze:items-center breeze:gap-breeze-2 breeze:text-breeze-sm breeze:font-medium breeze:leading-[calc(1.25/0.875)] breeze:max-breeze-md:flex-wrap',
+      'breeze:flex breeze:min-inline-0 breeze:items-center breeze:gap-breeze-2 breeze:text-breeze-sm breeze:font-medium breeze:leading-[calc(1.25/0.875)] breeze:max-breeze-md:contents',
     value:
-      'breeze:col-start-3 breeze:min-inline-0 breeze:break-words breeze:text-end breeze:max-breeze-md:col-start-1 breeze:max-breeze-md:text-start',
+      'breeze:-col-end-1 breeze:min-inline-0 breeze:break-words breeze:text-end',
   },
   compound: {},
   size: {},
   state: {},
   variant: {
+    columns: {
+      metadata: 'breeze:grid-cols-[minmax(0,1fr)_120px_104px]',
+      metadataAmount: 'breeze:grid-cols-[minmax(0,1fr)_80px_104px]',
+      metadataAndAmount: 'breeze:grid-cols-[minmax(0,1fr)_120px_80px_104px]',
+      valueOnly: 'breeze:grid-cols-[minmax(0,1fr)_104px]',
+    },
     direction: {
       in: 'positive',
       out: 'strong',
@@ -67,22 +82,35 @@ export type RowListMetadata =
   | { format: 'date'; value: IsoCalendarDate }
   | { format: 'text'; value: string };
 
+/** A currency amount formatted with the provider locale. */
+export interface RowListCurrencyValue {
+  currency: string;
+  format: 'currency';
+  /** Controls the sign: `auto` signs negatives, `always` positives too; zero never. Defaults to `auto`. */
+  sign?: 'always' | 'auto' | 'never';
+  /** Colours the amount; use `positive` for money in. Defaults to `default`. */
+  tone?: 'default' | 'positive';
+  value: number;
+}
+
 export type RowListValue =
-  | {
-      currency: string;
-      format: 'currency';
-      /** Controls the sign: `auto` signs negatives, `always` positives too; zero never. Defaults to `auto`. */
-      sign?: 'always' | 'auto' | 'never';
-      /** Colours the amount; use `positive` for money in. Defaults to `default`. */
-      tone?: 'default' | 'positive';
-      value: number;
-    }
+  | RowListCurrencyValue
+  | { format: 'text'; value: string };
+
+/** Trailing section header content: a labelled currency total or muted text. */
+export type RowListSectionSummary =
+  | (RowListCurrencyValue & {
+      /** Visually hidden text read before the total, such as "Confirmed daily total". */
+      label: string;
+    })
   | { format: 'text'; value: string };
 
 /** A stable named group rendered as a structural row in the list. */
 export interface RowListSectionDescriptor {
   id: string;
   label: string;
+  /** Optional trailing content at the end of the section header. */
+  summary?: RowListSectionSummary;
 }
 
 /** The closed content contract for a row and its aligned regions. */
@@ -93,6 +121,8 @@ export interface RowListItemDescriptor extends ItemDescriptor {
   loading?: boolean;
   /** Optional middle region, formatted as text or a locale-aware calendar date. */
   metadata?: RowListMetadata;
+  /** Optional muted currency figure, such as VAT, between the metadata and value regions. */
+  metadataAmount?: Omit<RowListCurrencyValue, 'tone'>;
   /** Groups this row under a structural section header. */
   section?: RowListSectionDescriptor;
   /** Optional trailing region, formatted as text or locale-aware currency. */
@@ -134,6 +164,7 @@ interface RowGroup<T> {
   id: string;
   label: string;
   rows: Row<T>[];
+  summary?: RowListSectionSummary;
 }
 
 type ListEntry<T> =
@@ -161,6 +192,7 @@ function groupRows<T>(rows: Row<T>[]): ListEntry<T>[] {
         id: section.id,
         label: section.label,
         rows: [row],
+        summary: section.summary,
       };
       sections.set(newGroup.id, newGroup);
       entries.push({ group: newGroup, kind: 'section' });
@@ -186,9 +218,7 @@ function InitialLoadingState() {
             <Skeleton blockSize="1lh" inlineSize="min(100%, 14em)" />
           </div>
           <div className={variants.base.metadata}>
-            <div className={variants.base.loadingPlaceholder}>
-              <Skeleton blockSize="1lh" inlineSize="min(100%, 7em)" />
-            </div>
+            <Skeleton blockSize="1lh" inlineSize="min(100%, 7em)" />
           </div>
           <div className={variants.base.value}>
             <div className={variants.base.loadingPlaceholder}>
@@ -207,6 +237,35 @@ function MetadataContent({
   const { metadata } = descriptor;
 
   if (!metadata) return null;
+  if (descriptor.loading) return <LoadingPlaceholder />;
+
+  if (metadata.format === 'date') {
+    return (
+      <Typography
+        element="span"
+        format="date"
+        dateStyle="medium"
+        tone="muted"
+        truncate
+        value={metadata.value}
+        variant="caption"
+      />
+    );
+  }
+
+  return (
+    <Typography element="span" tone="muted" truncate variant="caption">
+      {metadata.value}
+    </Typography>
+  );
+}
+
+function MetadataAmountContent({
+  descriptor,
+}: Readonly<{ descriptor: RowListItemDescriptor }>) {
+  const { metadataAmount } = descriptor;
+
+  if (!metadataAmount) return null;
   if (descriptor.loading) {
     return (
       <div className={variants.base.loadingPlaceholder}>
@@ -215,23 +274,17 @@ function MetadataContent({
     );
   }
 
-  if (metadata.format === 'date') {
-    return (
-      <Typography
-        element="span"
-        format="date"
-        dateStyle="medium"
-        tone="secondary"
-        value={metadata.value}
-        variant="caption"
-      />
-    );
-  }
-
   return (
-    <Typography element="span" tone="secondary" variant="caption">
-      {metadata.value}
-    </Typography>
+    <Typography
+      element="span"
+      format="currency"
+      currency={metadataAmount.currency}
+      sign={metadataAmount.sign}
+      tone="muted"
+      truncate
+      value={metadataAmount.value}
+      variant="amount"
+    />
   );
 }
 
@@ -279,6 +332,29 @@ function ValueContent({
   );
 }
 
+function SectionSummary({
+  summary,
+}: Readonly<{ summary: RowListSectionSummary }>) {
+  if (summary.format === 'text') {
+    return <span className={variants.base.summaryText}>{summary.value}</span>;
+  }
+
+  return (
+    <span className={variants.base.summaryTotal}>
+      <VisuallyHidden>{summary.label}</VisuallyHidden>
+      <Typography
+        element="span"
+        format="currency"
+        currency={summary.currency}
+        sign={summary.sign}
+        tone={summary.tone}
+        value={summary.value}
+        variant="amount"
+      />
+    </span>
+  );
+}
+
 function RowContent({
   descriptor,
 }: Readonly<{ descriptor: RowListItemDescriptor }>) {
@@ -323,6 +399,11 @@ function RowContent({
           <MetadataContent descriptor={descriptor} />
         </div>
       )}
+      {descriptor.metadataAmount && (
+        <div className={variants.base.metadataAmount}>
+          <MetadataAmountContent descriptor={descriptor} />
+        </div>
+      )}
       {descriptor.value && (
         <div className={variants.base.value}>
           <ValueContent descriptor={descriptor} />
@@ -332,13 +413,30 @@ function RowContent({
   );
 }
 
+// Only columns that some row uses are reserved.
+function getColumns(
+  descriptors: RowListItemDescriptor[],
+): keyof typeof variants.variant.columns {
+  const hasMetadata = descriptors.some(({ metadata }) => metadata);
+  const hasAmount = descriptors.some(({ metadataAmount }) => metadataAmount);
+
+  if (hasMetadata && hasAmount) return 'metadataAndAmount';
+  if (hasMetadata) return 'metadata';
+  if (hasAmount) return 'metadataAmount';
+
+  return 'valueOnly';
+}
+
 function renderRow<T>(
   { descriptor, item }: Row<T>,
   onAction: RowListProps<T>['onAction'],
+  columns: keyof typeof variants.variant.columns,
 ) {
   return (
     <AriaGridListItem
-      className={variants.base.item}
+      className={[variants.base.item, variants.variant.columns[columns]].join(
+        ' ',
+      )}
       id={`row:${descriptor.id}`}
       isDisabled={descriptor.disabled}
       key={`row:${descriptor.id}`}
@@ -364,9 +462,9 @@ export function RowList<T>({
   onAction,
 }: Readonly<RowListProps<T>>) {
   const { getMessageLocale, messages } = useBreezeContext();
-  const entries = groupRows(
-    items.map((item) => ({ descriptor: getItem(item), item })),
-  );
+  const rows = items.map((item) => ({ descriptor: getItem(item), item }));
+  const entries = groupRows(rows);
+  const columns = getColumns(rows.map(({ descriptor }) => descriptor));
   const loadMoreLoading = loadMore?.loading ?? false;
   const isLoading = loading || loadMoreLoading;
   let statusMessage = '';
@@ -399,7 +497,7 @@ export function RowList<T>({
       >
         {entries.map((entry) => {
           if (entry.kind === 'row') {
-            return renderRow(entry.row, onAction);
+            return renderRow(entry.row, onAction, columns);
           }
 
           return (
@@ -412,8 +510,14 @@ export function RowList<T>({
                 <span className={variants.base.headerLabel}>
                   {entry.group.label}
                 </span>
+                {entry.group.summary && (
+                  <>
+                    <span className={variants.base.headerSpacer} />
+                    <SectionSummary summary={entry.group.summary} />
+                  </>
+                )}
               </AriaGridListHeader>
-              {entry.group.rows.map((row) => renderRow(row, onAction))}
+              {entry.group.rows.map((row) => renderRow(row, onAction, columns))}
             </AriaGridListSection>
           );
         })}
