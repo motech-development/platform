@@ -8,7 +8,7 @@ import {
 } from '../../buttons/button.styles';
 import { useBreezeContext } from '../../provider/BreezeContext';
 import type { ControlSize } from '../Button/Button';
-import { Icon, type IconName } from '../Icon/Icon';
+import { Icon, type IconName, type IconSize } from '../Icon/Icon';
 
 const variants = {
   base: {
@@ -33,6 +33,12 @@ const variants = {
     },
   },
 } as const;
+
+const iconSizes = {
+  lg: '3xl',
+  md: 'lg',
+  sm: 'sm',
+} as const satisfies Record<ControlSize, IconSize>;
 
 /** Icon button treatments: the same type as `ButtonVariant`. */
 export type IconButtonVariant = ButtonVariant;
@@ -141,7 +147,7 @@ export function IconButton({
           .filter(Boolean)
           .join(' ')}
       >
-        <Icon name={name} size={size} />
+        <Icon name={name} size={iconSizes[size]} />
       </span>
       {loading && (
         <>
