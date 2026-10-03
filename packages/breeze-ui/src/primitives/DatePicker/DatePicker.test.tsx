@@ -1,3 +1,4 @@
+import { getLocalTimeZone, today } from '@internationalized/date';
 import { act, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
@@ -598,6 +599,56 @@ describe('DatePicker', () => {
     const clear = screen.getByRole('button', { name: 'Effacer la date' });
 
     expect(clear.parentElement).toHaveAttribute('lang', 'fr-FR');
+  });
+
+  it('selects today from its calendar footer and closes the calendar', async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn<(value: IsoCalendarDate) => void>();
+    const currentDate = today(getLocalTimeZone());
+    const currentLabel = new Intl.DateTimeFormat('en-GB', {
+      dateStyle: 'long',
+      timeZone: 'UTC',
+    }).format(currentDate.toDate('UTC'));
+
+    renderBreeze(
+      <DatePicker defaultValue="2020-01-15" label="Date" onChange={onChange} />,
+    );
+
+    await user.click(
+      screen.getByRole('button', { name: 'Date 15 January 2020' }),
+    );
+    const todayButton = within(
+      screen.getByRole('dialog', { name: 'Date' }),
+    ).getByRole('button', { name: 'Today' });
+
+    expect(todayButton.firstElementChild).toHaveAttribute('lang', 'en-GB');
+
+    await user.click(todayButton);
+
+    expect(onChange).toHaveBeenLastCalledWith(currentDate.toString());
+    expect(
+      screen.getByRole('button', { name: `Date ${currentLabel}` }),
+    ).toHaveAttribute('aria-expanded', 'false');
+    await waitFor(() =>
+      expect(
+        screen.queryByRole('dialog', { name: 'Date' }),
+      ).not.toBeInTheDocument(),
+    );
+  });
+
+  it('localizes the today control with the provider message', async () => {
+    const user = userEvent.setup();
+
+    renderBreeze(
+      <BreezeProvider locale="fr-FR" messages={{ today: "Aujourd'hui" }}>
+        <DatePicker defaultValue="2026-09-03" label="Date" />
+      </BreezeProvider>,
+    );
+
+    await user.click(screen.getByRole('button', { name: /^Date / }));
+    const todayButton = screen.getByRole('button', { name: "Aujourd'hui" });
+
+    expect(todayButton.firstElementChild).toHaveAttribute('lang', 'fr-FR');
   });
 
   it('restores uncontrolled values after owning and externally associated form resets', async () => {

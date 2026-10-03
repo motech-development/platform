@@ -1,4 +1,5 @@
 import type { CalendarDate } from '@internationalized/date';
+import { getLocalTimeZone, today } from '@internationalized/date';
 import type { RefObject } from 'react';
 import {
   createElement,
@@ -29,7 +30,9 @@ const datePickerVariants = {
     footer:
       'breeze:mbs-breeze-2 breeze:flex breeze:items-center breeze:border-0 breeze:border-bs breeze:border-solid breeze:border-breeze-line breeze:pbs-breeze-2',
     popover:
-      'breeze:inline-[360px]! breeze:p-breeze-3 breeze:any-pointer-coarse:!p-0 breeze-date-picker-popover',
+      'breeze:inline-[304px]! breeze:p-breeze-3 breeze:any-pointer-coarse:inline-[calc(7*var(--breeze-spacing-breeze-tap)+2px)]! breeze:any-pointer-coarse:!p-0 breeze-date-picker-popover',
+    today:
+      'breeze:ms-auto breeze:inline-flex breeze:items-center breeze:border-0 breeze:bg-transparent breeze:p-0 breeze:px-breeze-1 breeze:font-breeze-sans breeze:text-breeze-sm breeze:text-breeze-brand-text breeze:outline-offset-2 breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-50 breeze:any-pointer-coarse:min-block-breeze-tap',
     trigger:
       'breeze:flex breeze:min-block-breeze-md breeze:any-pointer-coarse:min-block-breeze-tap breeze:min-inline-0 breeze:inline-full breeze:items-center breeze:justify-between breeze:gap-breeze-3 breeze:rounded-breeze-ctl breeze:border breeze:border-solid breeze:border-breeze-line-strong breeze:bg-breeze-surface breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:py-breeze-2 breeze:font-breeze-sans breeze:text-breeze-sm breeze:text-breeze-ink breeze:outline-offset-2 breeze:data-[hovered]:border-breeze-brand breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[invalid]:border-breeze-danger breeze:aria-disabled:cursor-default breeze:aria-disabled:bg-breeze-sunken breeze:disabled:cursor-not-allowed breeze:disabled:bg-breeze-sunken breeze:disabled:opacity-60',
     value: 'breeze:min-inline-0 breeze:flex-1 breeze:text-start',
@@ -183,7 +186,7 @@ function getNextTriggerScrollTop(
 }
 
 function scrollTriggerIntoView(trigger: HTMLElement): boolean {
-  const requiredSpace = 400;
+  const requiredSpace = 420;
   const viewportBottom = trigger.ownerDocument.documentElement.clientHeight;
   let didScroll = false;
 
@@ -215,24 +218,40 @@ function scrollTriggerIntoView(trigger: HTMLElement): boolean {
   return didScroll;
 }
 
-function DatePickerClear({
+function DatePickerFooter({
   disabled,
   onClear,
-}: Readonly<{ disabled: boolean; onClear: () => void }>) {
+  onToday,
+  value,
+}: Readonly<{
+  disabled: boolean;
+  onClear?: () => void;
+  onToday: () => void;
+  value: IsoCalendarDate | null | undefined;
+}>) {
   const { getMessageLocale, messages } = useBreezeContext();
 
   return (
     <div className={datePickerVariants.base.footer}>
-      <span lang={getMessageLocale('clearDate')}>
-        <Button
-          disabled={disabled}
-          onAction={onClear}
-          size="sm"
-          variant="quiet"
-        >
-          {messages.clearDate}
-        </Button>
-      </span>
+      {onClear && (
+        <span lang={getMessageLocale('clearDate')}>
+          <Button
+            disabled={disabled || value == null}
+            onAction={onClear}
+            size="sm"
+            variant="quiet"
+          >
+            {messages.clearDate}
+          </Button>
+        </span>
+      )}
+      <AriaButton
+        className={datePickerVariants.base.today}
+        isDisabled={disabled}
+        onPress={onToday}
+      >
+        <span lang={getMessageLocale('today')}>{messages.today}</span>
+      </AriaButton>
     </div>
   );
 }
@@ -327,12 +346,12 @@ function DatePickerPopover({
           onChange={onChange}
           value={value == null ? null : parseCalendarDate(value)}
         />
-        {onClear && (
-          <DatePickerClear
-            disabled={disabled || value == null}
-            onClear={onClear}
-          />
-        )}
+        <DatePickerFooter
+          disabled={disabled}
+          onClear={onClear}
+          onToday={() => onChange(today(getLocalTimeZone()))}
+          value={value}
+        />
       </AriaDialog>
     </CollectionPopover>
   );

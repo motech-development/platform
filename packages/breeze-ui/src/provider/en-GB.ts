@@ -51,6 +51,7 @@ const enGB = {
   required: 'Required',
   selectDate: 'Select a date',
   skipToMain: 'Skip to main content',
+  today: 'Today',
 };
 
 export default enGB;

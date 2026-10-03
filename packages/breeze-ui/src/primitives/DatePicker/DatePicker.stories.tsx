@@ -68,6 +68,32 @@ export const Default: Story = {
   },
 };
 
+/** The calendar footer's Today action selects the current date and closes the calendar. */
+export const TodayAction: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const page = within(canvasElement.ownerDocument.body);
+
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Transaction date 3 September 2026' }),
+    );
+
+    const dialog = await page.findByRole('dialog', {
+      name: 'Transaction date',
+    });
+
+    await userEvent.click(
+      within(dialog).getByRole('button', { name: 'Today' }),
+    );
+
+    await expect(
+      canvas.getByRole('button', {
+        name: 'Transaction date 15 September 2026',
+      }),
+    ).toHaveAttribute('aria-expanded', 'false');
+  },
+};
+
 /** A visible error marks the trigger invalid. */
 export const Error: Story = {
   args: {
@@ -167,7 +193,7 @@ function ScrollingContainerExample() {
       >
         {portalContainer && (
           <BreezeProvider locale="en-GB" portalContainer={portalContainer}>
-            <div aria-hidden="true" style={{ blockSize: '175px' }} />
+            <div aria-hidden="true" style={{ blockSize: '155px' }} />
             <DatePicker defaultValue="2026-09-03" label="Transaction date" />
             {/* Keep the trigger in the inner scroller while the outer one needs to move. */}
             <div aria-hidden="true" style={{ blockSize: '400px' }} />
@@ -333,7 +359,7 @@ export const ScrollingContainer: Story = {
       try {
         container.scrollTop = 0;
         innerContainer.scrollTop = 0;
-        container.style.transform = 'translateY(-136px)';
+        container.style.transform = 'translateY(-100px)';
 
         const initialTriggerRect = trigger.getBoundingClientRect();
 
