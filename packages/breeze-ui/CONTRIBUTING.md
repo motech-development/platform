@@ -55,7 +55,7 @@ Add a token together with the shipped component that uses it, and remove a token
 
 ### Colour schemes
 
-Colour-scheme selection applies at the document level through `data-theme`, while painting is scoped to the Breeze root. The dark palette is written twice, once for the system preference and once for an explicit `data-theme="dark"`, because CSS cannot share one declaration block between the two selectors; `src/styles/tokens.test.ts` fails if the copies differ. The brand and danger fills hold the same value in both schemes to preserve contrast for white-label text; the neutral ramp and the brand and danger text tokens change.
+Colour-scheme selection applies at the document level through `data-theme`, while painting is scoped to the Breeze root. The dark palette is written twice, once for the system preference and once for an explicit `data-theme="dark"`, because CSS cannot share one declaration block between the two selectors; `src/styles/tokens.test.ts` fails if the copies differ. The brand fill holds the same value in both schemes to preserve contrast for its white label. The dark danger fill lightens to match the design, so its label switches from white to near-black to keep AA contrast. The neutral ramp and the brand and danger text tokens also change.
 
 ## Distribution build and size
 
