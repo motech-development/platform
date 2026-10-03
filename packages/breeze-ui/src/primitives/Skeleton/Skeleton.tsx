@@ -5,7 +5,7 @@ const variants = {
   base: {
     // `appearance: none` still leaves each engine's progress pseudo-elements painted.
     skeleton:
-      'breeze:block breeze:animate-pulse breeze:appearance-none breeze:bg-breeze-ink-3 breeze:pointer-events-none breeze:forced-colors:outline breeze:forced-colors:outline-1 breeze:forced-colors:outline-[CanvasText] breeze:[&::-webkit-progress-bar]:[background:transparent] breeze:[&::-webkit-progress-value]:[background:transparent] breeze:[&::-moz-progress-bar]:[background:transparent]',
+      'breeze:block breeze:animate-breeze-skeleton breeze:appearance-none breeze:bg-breeze-sunken breeze:pointer-events-none breeze:forced-colors:outline breeze:forced-colors:outline-1 breeze:forced-colors:outline-[CanvasText] breeze:[&::-webkit-progress-bar]:[background:transparent] breeze:[&::-webkit-progress-value]:[background:transparent] breeze:[&::-moz-progress-bar]:[background:transparent]',
   },
   compound: {},
   size: {},
