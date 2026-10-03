@@ -32,7 +32,7 @@ const variants = {
       'breeze:absolute breeze:inset-bs-[-2px] breeze:end-[-2px] breeze:box-border breeze:block-[10px] breeze:inline-[10px] breeze:rounded-breeze-full breeze:border-2 breeze:border-solid breeze:border-breeze-surface breeze:bg-breeze-danger',
     // The design's close is an outlined icon button wider than IconButton's square.
     close:
-      'breeze:inline-flex breeze:shrink-0 breeze:items-center breeze:justify-center breeze:block-breeze-8 breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:border breeze:border-solid breeze:rounded-breeze-ctl breeze:cursor-pointer breeze:select-none breeze:outline-offset-2 breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:any-pointer-coarse:min-block-breeze-tap breeze:any-pointer-coarse:min-inline-breeze-tap breeze:[&>svg]:block-[14px] breeze:[&>svg]:inline-[14px]',
+      'breeze:inline-flex breeze:shrink-0 breeze:items-center breeze:justify-center breeze:block-breeze-8 breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:border breeze:border-solid breeze:rounded-breeze-ctl breeze:cursor-pointer breeze:select-none breeze:outline-offset-2 breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:any-pointer-coarse:min-block-breeze-tap breeze:any-pointer-coarse:min-inline-breeze-tap',
     content: 'breeze-overlay-content',
     drawerBody: 'breeze-drawer-body',
     drawerContent: 'breeze-drawer-content',
@@ -411,7 +411,7 @@ function OverlaySurface({
               })
             }
           >
-            <Icon name="close" size="sm" />
+            <Icon name="close" size="2xs" />
           </AriaButton>
         </div>
       ) : null}

@@ -67,7 +67,7 @@ export function IconTile({
         variants.size[size],
       ].join(' ')}
     >
-      <Icon label={label} name={name} size={size === 'lg' ? 'md' : 'sm'} />
+      <Icon label={label} name={name} size={size === 'lg' ? '2xl' : 'xs'} />
     </span>
   );
 }

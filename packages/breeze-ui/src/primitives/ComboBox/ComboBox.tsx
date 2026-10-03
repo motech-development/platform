@@ -448,7 +448,7 @@ function ComboBoxBase<T>({ props }: Readonly<{ props: ComboBoxProps<T> }>) {
             loading && variants.state.loadingTrigger,
           )}
         >
-          <Icon name="expand" size="sm" />
+          <Icon name="expand" size="xs" />
         </AriaButton>
         {loading && (
           <span className={variants.base.skeleton}>

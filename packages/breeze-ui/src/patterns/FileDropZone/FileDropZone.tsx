@@ -448,10 +448,10 @@ export function FileDropZone({
       >
         {compact ? (
           <span aria-hidden="true" className={variants.base.thumbnail}>
-            <Icon name="upload" size="sm" />
+            <Icon name="upload" size="md" />
           </span>
         ) : (
-          <Icon name="upload" size="lg" />
+          <Icon name="upload" size="4xl" />
         )}
         <div
           className={[variants.base.text, variants.variant.text[layout]].join(
