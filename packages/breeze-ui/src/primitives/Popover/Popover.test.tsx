@@ -48,6 +48,28 @@ expectTypeOf<{
   onOpenChange: (open: boolean) => void;
 }>().toExtend<PopoverProps>();
 
+expectTypeOf<{
+  children: string;
+  dismissible: false;
+  title: string;
+  trigger: string;
+  variant: 'panel';
+}>().not.toExtend<PopoverProps>();
+expectTypeOf<{
+  children: string;
+  title: string;
+  trigger: string;
+  triggerIndicator: true;
+}>().not.toExtend<PopoverProps>();
+expectTypeOf<{
+  children: string;
+  title: string;
+  trigger: string;
+  triggerIndicator: true;
+  triggerInitials: string;
+  variant: 'panel';
+}>().toExtend<PopoverProps>();
+
 const portalBoundaryError =
   'BreezeProvider portalContainer must belong to the current document and light DOM.';
 
@@ -492,6 +514,75 @@ describe('Popover', () => {
       screen.getByRole('button', { name: 'Fermer' }).closest('[lang]'),
     ).toHaveAttribute('lang', 'fr-FR');
     expect(screen.queryByText('Delivery information')).not.toBeInTheDocument();
+  });
+
+  it('names a panel by its title without showing a title or close button', async () => {
+    renderBreeze(
+      <Popover title="Account" trigger="Open account" variant="panel">
+        Notifications
+      </Popover>,
+    );
+    const trigger = screen.getByRole('button', { name: 'Open account' });
+
+    await userEvent.click(trigger);
+
+    const surface = screen.getByRole('dialog', { name: 'Account' });
+    expect(surface).toHaveTextContent('Notifications');
+    expect(within(surface).queryByRole('heading')).not.toBeInTheDocument();
+    expect(within(surface).queryByRole('button')).not.toBeInTheDocument();
+
+    await userEvent.keyboard('{Escape}');
+
+    await waitFor(() =>
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument(),
+    );
+    await waitFor(() => expect(trigger).toHaveFocus());
+  });
+
+  it('opens from an initials trigger named by its trigger label', async () => {
+    renderBreeze(
+      <Popover
+        title="Account"
+        trigger="Account and notifications, 2 unread"
+        triggerIndicator
+        triggerInitials="MG"
+        variant="panel"
+      >
+        Notifications
+      </Popover>,
+    );
+    const trigger = screen.getByRole('button', {
+      name: 'Account and notifications, 2 unread',
+    });
+
+    expect(trigger).toHaveTextContent(/^MG$/);
+    expect(trigger.querySelector('[aria-hidden="true"]')).toBeInTheDocument();
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+
+    await userEvent.click(trigger);
+
+    expect(screen.getByRole('dialog', { name: 'Account' })).toBeVisible();
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+
+    await userEvent.click(trigger);
+
+    await waitFor(() =>
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument(),
+    );
+  });
+
+  it('shows no attention dot on an initials trigger by default', () => {
+    renderBreeze(
+      <Popover title="Account" trigger="Account" triggerInitials="MG">
+        Notifications
+      </Popover>,
+    );
+
+    expect(
+      screen
+        .getByRole('button', { name: 'Account' })
+        .querySelector('[aria-hidden="true"]'),
+    ).not.toBeInTheDocument();
   });
 
   it('requires a BreezeProvider', () => {

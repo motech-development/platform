@@ -25,6 +25,11 @@ import { ParentOverlayContext, useOverlayLayer } from './OverlayStack';
 
 const variants = {
   base: {
+    // The prototype's account avatar: a filled circle of initials.
+    avatar:
+      'breeze:relative breeze:inline-flex breeze:block-breeze-8 breeze:inline-breeze-8 breeze:shrink-0 breeze:items-center breeze:justify-center breeze:rounded-breeze-full breeze:border-0 breeze:bg-breeze-ink breeze:p-0 breeze:font-breeze-sans breeze:text-breeze-2xs breeze:font-semibold breeze:text-breeze-surface breeze:cursor-pointer breeze:select-none breeze:outline-offset-2 breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:max-breeze-md:block-breeze-tap breeze:max-breeze-md:inline-breeze-tap breeze:max-breeze-md:text-breeze-sm breeze:any-pointer-coarse:block-breeze-tap breeze:any-pointer-coarse:inline-breeze-tap',
+    avatarIndicator:
+      'breeze:absolute breeze:inset-bs-[-2px] breeze:end-[-2px] breeze:box-border breeze:block-[10px] breeze:inline-[10px] breeze:rounded-breeze-full breeze:border-2 breeze:border-solid breeze:border-breeze-surface breeze:bg-breeze-danger',
     // The design's close is an outlined icon button wider than IconButton's square.
     close:
       'breeze:inline-flex breeze:shrink-0 breeze:items-center breeze:justify-center breeze:block-breeze-8 breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:border breeze:border-solid breeze:rounded-breeze-ctl breeze:cursor-pointer breeze:select-none breeze:outline-offset-2 breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:any-pointer-coarse:min-block-breeze-tap breeze:any-pointer-coarse:min-inline-breeze-tap breeze:[&>svg]:block-[14px] breeze:[&>svg]:inline-[14px]',
@@ -35,6 +40,10 @@ const variants = {
     drawerFooterGroup: 'breeze-drawer-footer-group',
     drawerSummary: 'breeze-drawer-summary',
     header: 'breeze-overlay-header',
+    // Fits its content from 336px, and spans the viewport less 12px gutters on phones.
+    panel:
+      'breeze:inline-auto breeze:min-inline-[336px] breeze:max-breeze-md:inline-[calc(100vw-24px)] breeze:max-breeze-md:min-inline-0',
+    panelContent: 'breeze:p-0',
     title: 'breeze-overlay-title',
     viewerContent: 'breeze-document-viewer-overlay-content',
   },
@@ -78,12 +87,15 @@ function OverlaySurface({
   kind,
   onOpenChange,
   open: controlledOpen,
+  panel = false,
   placement = 'bottom',
   closingTransition = false,
   showHeader = true,
   viewerSurface = false,
   title,
   trigger,
+  triggerIndicator = false,
+  triggerInitials,
 }: Readonly<
   Omit<OverlayProps, 'open' | 'defaultOpen' | 'onOpenChange' | 'trigger'> & {
     open?: boolean;
@@ -92,12 +104,15 @@ function OverlaySurface({
     footerActions?: ReactNode;
     footerStart?: ReactNode;
     footerSummary?: string;
+    panel?: boolean;
     showHeader?: boolean;
     viewerSurface?: boolean;
     onOpenChange?: (open: boolean) => void;
     kind: OverlayKind;
-    placement?: 'top' | 'bottom' | 'start' | 'end';
+    placement?: 'top' | 'bottom' | 'start' | 'end' | 'bottom end';
     trigger?: string;
+    triggerIndicator?: boolean;
+    triggerInitials?: string;
   }
 >) {
   const { getMessageLocale, messages } = useBreezeContext();
@@ -375,12 +390,13 @@ function OverlaySurface({
     variants.base.content,
     viewerSurface && variants.base.viewerContent,
     drawer && variants.base.drawerContent,
+    panel && variants.base.panelContent,
   ]
     .filter(Boolean)
     .join(' ');
   const body = (
     <>
-      {showHeader ? (
+      {showHeader && !panel ? (
         <div className={variants.base.header}>
           <h2 className={variants.base.title}>{title}</h2>
           <AriaButton
@@ -475,7 +491,26 @@ function OverlaySurface({
 
   return (
     <>
-      {trigger ? (
+      {trigger && triggerInitials ? (
+        <AriaButton
+          aria-controls={open ? layer.id : undefined}
+          aria-expanded={open}
+          aria-haspopup="dialog"
+          aria-label={trigger}
+          className={variants.base.avatar}
+          onPress={() => changeOpen(nonModal ? !open : true)}
+          ref={triggerRef}
+        >
+          {triggerInitials}
+          {triggerIndicator ? (
+            <span
+              aria-hidden="true"
+              className={variants.base.avatarIndicator}
+            />
+          ) : null}
+        </AriaButton>
+      ) : null}
+      {trigger && !triggerInitials ? (
         <Button
           aria-controls={open ? layer.id : undefined}
           aria-expanded={open}
@@ -490,7 +525,9 @@ function OverlaySurface({
         portalReady &&
         (nonModal ? (
           <AriaPopover
-            className={variants.variant[kind]}
+            className={[variants.variant[kind], panel && variants.base.panel]
+              .filter(Boolean)
+              .join(' ')}
             data-breeze-overlay={kind}
             data-breeze-topmost={layer.topmost}
             data-breeze-interactive={layer.interactive}
