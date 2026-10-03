@@ -3,7 +3,9 @@ import { useMemo, useState } from 'react';
 import { expect, userEvent, within } from 'storybook/test';
 import type { RouterNavigationOptions } from '../../provider/BreezeContext';
 import { BreezeProvider } from '../../provider/BreezeProvider';
+import { Card } from '../Card/Card';
 import { Inline } from '../Inline/Inline';
+import { Typography } from '../Typography/Typography';
 import { Link, type LinkVariant } from './Link';
 
 const variants = ['default', 'subtle'] satisfies LinkVariant[];
@@ -29,6 +31,39 @@ export const Subtle: Story = {
     children: 'View details',
     variant: 'subtle',
   },
+};
+
+/** A panel header's navigation action. */
+export const PanelAction: Story = {
+  play: async ({ canvasElement }) => {
+    const link = within(canvasElement).getByRole('link', {
+      name: 'View all money',
+    });
+    const style = getComputedStyle(link);
+
+    await expect({
+      fontSize: style.fontSize,
+      fontWeight: style.fontWeight,
+      height: link.getBoundingClientRect().height,
+      paddingInline: style.paddingInlineStart,
+      textDecoration: style.textDecorationLine,
+    }).toEqual({
+      fontSize: '13px',
+      fontWeight: '400',
+      height: 18.84375,
+      paddingInline: '4px',
+      textDecoration: 'none',
+    });
+  },
+  render: () => (
+    <Card
+      action={<Link href="#money">View all money</Link>}
+      element="section"
+      title="Recent activity"
+    >
+      <Typography tone="secondary">Your latest transactions.</Typography>
+    </Card>
+  ),
 };
 
 /** Both closed visual treatments. */
