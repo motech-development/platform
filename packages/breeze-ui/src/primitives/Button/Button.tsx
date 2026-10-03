@@ -7,6 +7,7 @@ import {
   buttonVariants,
 } from '../../buttons/button.styles';
 import { useBreezeContext } from '../../provider/BreezeContext';
+import { Icon, type IconName } from '../Icon/Icon';
 
 const variants = {
   base: {
@@ -14,6 +15,7 @@ const variants = {
     button:
       'breeze:relative breeze:inline-grid breeze:items-center breeze:justify-center breeze:gap-breeze-2 breeze:font-breeze-sans breeze:cursor-pointer breeze:select-none breeze:[text-align:center] breeze:outline-offset-2 breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:any-pointer-coarse:min-block-breeze-tap',
     label: 'breeze:[grid-area:1/1]',
+    labelWithIcon: 'breeze:inline-flex breeze:items-center breeze:gap-breeze-2',
     skeleton:
       'breeze:[grid-area:1/1] breeze:inline-full breeze:block-breeze-3 breeze:rounded-breeze-xs',
   },
@@ -61,6 +63,8 @@ interface ButtonCommonProps {
   children: string;
   /** Prevents activation and removes the button from the tab order. */
   disabled?: boolean;
+  /** Decorative icon shown before the label. */
+  icon?: IconName;
   /** Associates a submit button with a form by its HTML `id`. */
   form?: ButtonHTMLAttributes<HTMLButtonElement>['form'];
   /** Sets the rendered button's HTML `id`. */
@@ -112,6 +116,7 @@ export function Button({
   children,
   disabled = false,
   form,
+  icon,
   id,
   loading = false,
   name,
@@ -172,12 +177,20 @@ export function Button({
       <span
         className={[
           variants.base.label,
+          icon && variants.base.labelWithIcon,
           loading && buttonVariants.state.loadingContent,
         ]
           .filter(Boolean)
           .join(' ')}
       >
-        {children}
+        {icon ? (
+          <>
+            <Icon name={icon} size="sm" />
+            <span>{children}</span>
+          </>
+        ) : (
+          children
+        )}
       </span>
       {loading && (
         <>

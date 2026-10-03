@@ -30,6 +30,26 @@ export const Secondary: Story = {
   },
 };
 
+/** A decorative icon leads the label, as on a page's primary action. */
+export const WithIcon: Story = {
+  args: {
+    children: 'Record transaction',
+    icon: 'add',
+  },
+  play: async ({ canvasElement }) => {
+    const button = within(canvasElement).getByRole('button', {
+      name: 'Record transaction',
+    });
+    const icon = button.querySelector('svg')!.getBoundingClientRect();
+    const label = within(button)
+      .getByText('Record transaction')
+      .getBoundingClientRect();
+
+    await expect(icon.width).toBe(16);
+    await expect(label.left - icon.right).toBe(8);
+  },
+};
+
 /** A text action without a control box. */
 export const Quiet: Story = {
   args: {
