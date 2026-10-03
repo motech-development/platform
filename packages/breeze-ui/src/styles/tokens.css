@@ -67,6 +67,7 @@
 
   --color-breeze-danger-fill: #b4231d;
   --color-breeze-danger-hover: #981e19;
+  --color-breeze-on-danger: #ffffff;
   --radius-breeze-full: 9999px;
   --spacing-breeze-1: 4px;
   --spacing-breeze-2: 8px;
@@ -107,6 +108,9 @@
     --breeze-color-breeze-warn: #e0b341;
     --breeze-color-breeze-warn-soft: #2a2314;
     --breeze-color-breeze-danger: #f1736a;
+    --breeze-color-breeze-danger-fill: #f1736a;
+    --breeze-color-breeze-danger-hover: #f38880;
+    --breeze-color-breeze-on-danger: #161616;
     --breeze-shadow-panel: 0 1px 1px rgb(0 0 0/40%);
     --breeze-shadow-overlay: 0 1px 2px rgb(0 0 0/50%),
       0 8px 24px -10px rgb(0 0 0/70%);
@@ -131,6 +135,9 @@
   --breeze-color-breeze-warn: #e0b341;
   --breeze-color-breeze-warn-soft: #2a2314;
   --breeze-color-breeze-danger: #f1736a;
+  --breeze-color-breeze-danger-fill: #f1736a;
+  --breeze-color-breeze-danger-hover: #f38880;
+  --breeze-color-breeze-on-danger: #161616;
   --breeze-shadow-panel: 0 1px 1px rgb(0 0 0/40%);
   --breeze-shadow-overlay: 0 1px 2px rgb(0 0 0/50%),
     0 8px 24px -10px rgb(0 0 0/70%);
