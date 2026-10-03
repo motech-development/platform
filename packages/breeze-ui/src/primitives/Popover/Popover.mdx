@@ -7,6 +7,8 @@ import * as Stories from './Popover.stories';
 
 Use `Popover` for non-modal contextual content anchored to a trigger. The surrounding surface remains interactive and available to assistive technology; the popover has no dimmed scrim. Render it inside `BreezeProvider`.
 
+Choose `Popover` rather than `Menu` when the content mixes information with controls, such as a list of notifications with their own actions beside an `AppearanceControl`. A `Menu` holds only a list of actions.
+
 ## Basic usage
 
 `trigger` supplies the label for the button Breeze renders. `title` supplies the surface's visible heading and accessible name; `children` supplies its content. Breeze also renders a close button with a label from the provider's messages.
