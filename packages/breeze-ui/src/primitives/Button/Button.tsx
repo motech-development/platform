@@ -44,7 +44,7 @@ export type { ButtonVariant } from '../../buttons/button.styles';
 /** Shared control size scale, with a 44px coarse-pointer floor. */
 export type ControlSize = 'sm' | 'md' | 'lg';
 
-export interface ButtonProps {
+interface ButtonCommonProps {
   /** Identifies the element whose contents or presence this button controls. */
   'aria-controls'?: ButtonHTMLAttributes<HTMLButtonElement>['aria-controls'];
   /** Identifies elements that provide additional information about the button. */
@@ -73,15 +73,29 @@ export interface ButtonProps {
   onAction?: () => void;
   /** Provides access to the rendered button element. */
   ref?: Ref<HTMLButtonElement>;
-  /** Selects the button's dimensions. Defaults to `md`; `quiet` has one size. */
-  size?: ControlSize;
   /** Selects ordinary or form-submission behaviour. Defaults to `button`. */
   type?: 'button' | 'submit';
   /** Sets the value submitted when this button submits a form. */
   value?: string;
-  /** Selects the button's visual and semantic treatment. Defaults to `primary`. */
-  variant?: ButtonVariant;
 }
+
+interface BoxedButtonProps {
+  /** Selects the button's dimensions. Defaults to `md`. */
+  size?: ControlSize;
+  /** Selects the button's visual and semantic treatment. Defaults to `primary`. */
+  variant?: Exclude<ButtonVariant, 'quiet'>;
+}
+
+interface QuietButtonProps {
+  /** The quiet text action has one size. */
+  size?: never;
+  /** Renders a text action without a control box. */
+  variant: 'quiet';
+}
+
+/** Props for a boxed button in three sizes, or a single-size quiet text action. */
+export type ButtonProps = ButtonCommonProps &
+  (BoxedButtonProps | QuietButtonProps);
 
 /**
  * Performs a semantic action with a visible label and an optional loading skeleton.

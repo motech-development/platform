@@ -60,6 +60,27 @@ describe('ComboBox', () => {
     ).toHaveAttribute('aria-haspopup', 'listbox');
   });
 
+  it('marks focus on the field with the brand border and ring', async () => {
+    const user = userEvent.setup();
+
+    renderBreeze(
+      <ComboBox getItem={getItem} items={suppliers} label="Supplier" />,
+    );
+
+    const input = screen.getByRole('combobox', { name: 'Supplier' });
+    const group = input.parentElement;
+
+    await user.click(input);
+
+    expect(group).toHaveAttribute('data-focus-within', 'true');
+    expect(group).toHaveClass(
+      'breeze:data-[focus-within]:border-breeze-brand',
+      'breeze:data-[focus-within]:ring-3',
+      'breeze:data-[focus-within]:ring-breeze-brand/15',
+    );
+    expect(input).toHaveClass('breeze:read-only:text-breeze-ink-2');
+  });
+
   it('filters suggestions as the user types', async () => {
     const user = userEvent.setup();
 

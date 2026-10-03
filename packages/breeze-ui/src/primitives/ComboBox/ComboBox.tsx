@@ -10,7 +10,9 @@ import { Group as AriaGroup } from 'react-aria-components/Group';
 import { Input as AriaInput } from 'react-aria-components/Input';
 import { ListBox as AriaListBox } from 'react-aria-components/ListBox';
 import collectionVariants from '../../collections/collection.styles';
-import CollectionPopover from '../../collections/CollectionPopover';
+import CollectionPopover, {
+  listBoxMaxHeight,
+} from '../../collections/CollectionPopover';
 import DescriptorOption from '../../collections/DescriptorOption';
 import type { ItemDescriptor } from '../../collections/item.types';
 import {
@@ -25,11 +27,9 @@ import { Skeleton } from '../Skeleton/Skeleton';
 const variants = {
   base: {
     group:
-      'breeze:relative breeze:inline-flex breeze:min-block-breeze-md breeze:any-pointer-coarse:min-block-breeze-tap breeze:min-inline-0 breeze:inline-full breeze:items-stretch breeze:overflow-hidden breeze:rounded-breeze-ctl breeze:border breeze:border-solid breeze:border-breeze-line-strong breeze:bg-breeze-surface breeze:has-[input[data-focus-visible]]:outline-2 breeze:has-[input[data-focus-visible]]:outline-solid breeze:has-[input[data-focus-visible]]:outline-breeze-brand breeze:data-[readonly]:bg-breeze-sunken breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:bg-breeze-sunken breeze:data-[invalid]:border-breeze-danger',
+      'breeze:relative breeze:inline-flex breeze:min-block-breeze-md breeze:any-pointer-coarse:min-block-breeze-tap breeze:min-inline-0 breeze:inline-full breeze:items-stretch breeze:overflow-hidden breeze:rounded-breeze-ctl breeze:border breeze:border-solid breeze:border-breeze-line-strong breeze:bg-breeze-surface breeze:outline-none breeze:data-[invalid]:border-breeze-danger breeze:data-[focus-within]:border-breeze-brand breeze:data-[focus-within]:ring-3 breeze:data-[focus-within]:ring-breeze-brand/15 breeze:data-[focus-within]:outline-hidden breeze:data-[readonly]:bg-breeze-sunken breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:bg-breeze-sunken',
     input:
-      'breeze:min-block-breeze-md breeze:min-inline-0 breeze:flex-1 breeze:border-0 breeze:bg-transparent breeze:ps-breeze-3 breeze:pe-breeze-2 breeze:py-breeze-2 breeze:font-breeze-sans breeze:text-breeze-sm breeze:leading-breeze-snug breeze:text-breeze-ink breeze:outline-none breeze:placeholder:text-breeze-ink-3 breeze:data-[hovered]:border-transparent breeze:data-[focus-visible]:!outline-none breeze:data-[invalid]:border-transparent breeze:disabled:cursor-not-allowed breeze:read-only:cursor-default',
-    popover:
-      'breeze:min-inline-[var(--trigger-width)] breeze:max-inline-[calc(100vw-24px)] breeze:overflow-auto breeze:rounded-breeze-panel breeze:border breeze:border-solid breeze:border-breeze-line breeze:bg-breeze-surface breeze:p-breeze-1 breeze:shadow-breeze-overlay',
+      'breeze:min-inline-0 breeze:flex-1 breeze:border-0 breeze:bg-transparent breeze:ps-breeze-3 breeze:pe-breeze-2 breeze:py-breeze-2 breeze:font-breeze-sans breeze:text-breeze-sm breeze:leading-breeze-snug breeze:text-breeze-ink breeze:outline-none breeze:placeholder:text-breeze-ink-3 breeze:data-[hovered]:border-transparent breeze:data-[focus-visible]:!outline-none breeze:data-[invalid]:border-transparent breeze:disabled:cursor-not-allowed breeze:read-only:cursor-default breeze:read-only:text-breeze-ink-2',
     skeleton:
       'breeze:pointer-events-none breeze:absolute breeze:[inset-block:0] breeze:[inset-inline:0]',
     trigger:
@@ -223,8 +223,9 @@ function ComboBoxPopover<T>({
 
   return (
     <CollectionPopover
-      className={variants.base.popover}
+      className={collectionVariants.base.popover}
       isOpen={isOpen}
+      maxHeight={listBoxMaxHeight}
       onOpenChange={(open) => state?.setOpen(open)}
       triggerRef={triggerRef}
     >

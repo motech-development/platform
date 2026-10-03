@@ -157,26 +157,26 @@ export const TreatmentsAndSizes: Story = {
   ),
 };
 
-/** Every variant and size while loading. */
+/** Every boxed treatment and size, and the quiet text action, while loading. */
 export const Loading: Story = {
   render: () => (
     <div className="breeze-story-stack">
       {(['sm', 'md', 'lg'] satisfies ControlSize[]).map((size) => (
         <div className="breeze-story-row" key={size}>
-          {(
-            [
-              'primary',
-              'secondary',
-              'quiet',
-              'danger',
-            ] satisfies ButtonVariant[]
-          ).map((variant) => (
-            <Button key={variant} loading size={size} variant={variant}>
-              {`${variant} · ${size}`}
-            </Button>
-          ))}
+          {(['primary', 'secondary', 'danger'] satisfies ButtonVariant[]).map(
+            (variant) => (
+              <Button key={variant} loading size={size} variant={variant}>
+                {`${variant} · ${size}`}
+              </Button>
+            ),
+          )}
         </div>
       ))}
+      <div className="breeze-story-row">
+        <Button loading variant="quiet">
+          quiet
+        </Button>
+      </div>
     </div>
   ),
 };

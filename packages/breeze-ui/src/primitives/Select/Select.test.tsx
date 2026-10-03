@@ -106,7 +106,7 @@ describe('Select', () => {
     expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
   });
 
-  it('forwards hover and focus-visible states to the trigger', async () => {
+  it('marks focus with the brand border and ring rather than a hover border', async () => {
     const user = userEvent.setup();
 
     renderBreeze(
@@ -120,12 +120,40 @@ describe('Select', () => {
 
     const trigger = screen.getByRole('button', { name: 'Payment method' });
     expect(trigger).toHaveAttribute('data-invalid', 'true');
-
-    await user.hover(trigger);
-    expect(trigger).toHaveAttribute('data-hovered', 'true');
+    expect(trigger).not.toHaveClass(
+      'breeze:data-[hovered]:border-breeze-brand',
+    );
 
     await user.tab();
-    expect(trigger).toHaveAttribute('data-focus-visible', 'true');
+    expect(trigger).toHaveAttribute('data-focused', 'true');
+    expect(trigger).toHaveClass(
+      'breeze:gap-breeze-2',
+      'breeze:data-[focused]:border-breeze-brand',
+      'breeze:data-[focused]:ring-3',
+      'breeze:data-[focused]:ring-breeze-brand/15',
+      'breeze:aria-disabled:text-breeze-ink-2',
+    );
+  });
+
+  it('shows the check only on the selected option', async () => {
+    const user = userEvent.setup();
+
+    renderBreeze(
+      <Select
+        defaultValue={enabledChoices[1]}
+        getItem={getEnabledItem}
+        items={enabledChoices}
+        label="Payment method"
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: /Payment method/ }));
+    const bankOption = screen.getByRole('option', { name: /Bank account/ });
+    const cashOption = screen.getByRole('option', { name: /Cash/ });
+
+    expect(cashOption).toHaveAttribute('aria-selected', 'true');
+    expect(cashOption.querySelectorAll('svg')).toHaveLength(1);
+    expect(bankOption.lastElementChild).toHaveTextContent('Primary');
   });
 
   it('focuses the trigger when the visible label is clicked', async () => {
