@@ -5,20 +5,23 @@ import { AttachmentRow, type AttachmentRowAction } from './AttachmentRow';
 
 const actions = [
   {
-    icon: 'download',
+    icon: 'document',
+    id: 'open',
+    label: 'Open full screen',
+  },
+  {
     id: 'download',
     label: 'Download',
   },
   {
-    description: 'Choose a different attachment.',
-    icon: 'upload',
     id: 'replace',
     label: 'Replace',
   },
   {
-    icon: 'delete',
     id: 'remove',
     label: 'Remove',
+    section: { id: 'remove' },
+    tone: 'danger',
   },
 ] satisfies AttachmentRowAction[];
 
