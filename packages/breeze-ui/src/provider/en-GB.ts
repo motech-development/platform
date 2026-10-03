@@ -9,6 +9,7 @@ const enGB = {
   attachmentPhoto: 'Photo',
   clearDate: 'Clear date',
   close: 'Close',
+  comboBoxNoMatches: 'No matches for “{query}”',
   documentViewerAccessibility:
     'The rendered document may expose no content to assistive technology. Its meaning comes from the surrounding record. Download the original file for another way to access it.',
   documentViewerDownload: 'Download',
