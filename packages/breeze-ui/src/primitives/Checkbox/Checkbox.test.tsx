@@ -118,7 +118,6 @@ describe('Checkbox', () => {
       'Money a supplier paid back to you',
     );
     expect(description.closest('label')).toBe(checkbox.closest('label'));
-    expect(description).toHaveClass('breeze:leading-[calc(1/0.75)]');
   });
 
   it('marks the box disabled without dimming the label', () => {

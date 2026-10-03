@@ -32,16 +32,18 @@ Tokens are prefixed inside the Tailwind namespace. Tailwind also applies the `br
 
 ### Type scale
 
-| Size | Role                                                    |
-| ---- | ------------------------------------------------------- |
-| 11px | Badges and compact metadata                             |
-| 12px | Field labels and secondary metadata                     |
-| 13px | Buttons, fields, body text, collections and card titles |
-| 15px | State-panel and form-section titles                     |
-| 17px | Section headings and dialog titles                      |
-| 20px | Large numeric entry                                     |
-| 22px | Page headings                                           |
-| 26px | Numeric emphasis                                        |
+| Size | Line height | Role                                                    |
+| ---- | ----------- | ------------------------------------------------------- |
+| 11px | Inherited   | Badges and compact metadata                             |
+| 12px | 16px        | Field labels and secondary metadata                     |
+| 13px | 18.57px     | Buttons, fields, body text, collections and card titles |
+| 15px | Inherited   | State-panel and form-section titles                     |
+| 17px | Inherited   | Section headings and dialog titles                      |
+| 20px | 28px        | Large numeric entry                                     |
+| 22px | 29.33px     | Page headings                                           |
+| 26px | 28.6px      | Numeric emphasis                                        |
+
+Line heights follow the prototype. The 12, 13, 20 and 22px sizes use Tailwind's defaults for the prototype's matching sizes; the others set none and inherit, which the Breeze root starts at the prototype's body value, `leading-breeze-snug` (1.45). Set leading explicitly only where the prototype does, such as `leading-breeze-tight` on numeric emphasis, or where the prototype's text sets no size and so keeps the body's line height, as text actions do.
 
 Add a token together with the shipped component that uses it, and remove a token when its last use goes.
 

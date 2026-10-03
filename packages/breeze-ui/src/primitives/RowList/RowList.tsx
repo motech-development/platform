@@ -21,14 +21,13 @@ const variants = {
     container: 'breeze:min-inline-0 breeze:inline-full',
     content:
       'breeze:flex breeze:min-inline-0 breeze:flex-1 breeze:flex-col breeze:gap-breeze-px',
-    // Line heights mirror the prototype's Tailwind text-sm and text-xs defaults.
     description:
-      'breeze:truncate breeze:text-breeze-xs breeze:font-normal breeze:leading-[calc(1/0.75)] breeze:text-breeze-ink-3',
+      'breeze:truncate breeze:text-breeze-xs breeze:font-normal breeze:text-breeze-ink-3',
     emptyMessage:
       'breeze:box-border breeze:inline-full breeze:min-inline-0 breeze:px-breeze-4 breeze:py-breeze-3 breeze:text-breeze-sm breeze:text-breeze-ink-2',
     grid: 'breeze:inline-full breeze:min-inline-0 breeze:flex breeze:flex-col breeze:gap-0',
     header:
-      'breeze:box-border breeze:inline-full breeze:min-inline-0 breeze:flex breeze:items-center breeze:gap-[10px] breeze:border-breeze-line breeze:border-be breeze:bg-breeze-raised breeze:px-breeze-4 breeze:py-breeze-2 breeze:text-breeze-xs breeze:font-semibold breeze:leading-[calc(1/0.75)] breeze:text-breeze-ink-2',
+      'breeze:box-border breeze:inline-full breeze:min-inline-0 breeze:flex breeze:items-center breeze:gap-[10px] breeze:border-breeze-line breeze:border-be breeze:bg-breeze-raised breeze:px-breeze-4 breeze:py-breeze-2 breeze:text-breeze-xs breeze:font-semibold breeze:text-breeze-ink-2',
     headerLabel: 'breeze:min-inline-0 breeze:break-words',
     headerSpacer: 'breeze:grow',
     item: 'breeze:box-border breeze:inline-full breeze:min-inline-0 breeze:grid breeze:items-center breeze:gap-breeze-3 breeze:border-breeze-sunken breeze:border-be breeze:px-breeze-4 breeze:py-breeze-2 breeze:text-start breeze:outline-offset-[-2px] breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-50 breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[hovered]:bg-breeze-raised breeze:data-[pressed]:bg-breeze-raised breeze:any-pointer-coarse:min-block-breeze-tap breeze:max-breeze-md:grid-cols-[minmax(0,1fr)_104px]',
@@ -40,24 +39,23 @@ const variants = {
     loadingLeading:
       'breeze:flex breeze:min-inline-0 breeze:flex-col breeze:gap-breeze-2',
     loadingMoneyPlaceholder:
-      'breeze:flex breeze:justify-end breeze:font-breeze-sans breeze:text-breeze-sm breeze:font-semibold breeze:leading-[calc(1.25/0.875)] breeze:tabular-nums breeze:[&>progress]:[font:inherit]',
+      'breeze:flex breeze:justify-end breeze:font-breeze-sans breeze:text-breeze-sm breeze:font-semibold breeze:tabular-nums breeze:[&>progress]:[font:inherit]',
     loadingPlaceholder: 'breeze:flex breeze:justify-end',
     loadingRow:
       'breeze:box-border breeze:inline-full breeze:min-inline-0 breeze:grid breeze:grid-cols-[minmax(0,1fr)_120px_104px] breeze:items-center breeze:gap-breeze-3 breeze:border-breeze-sunken breeze:border-be breeze:px-breeze-4 breeze:py-breeze-2 breeze:max-breeze-md:grid-cols-[minmax(0,1fr)_104px]',
     loadingStatus: 'breeze:sr-only',
     // Metadata cells are muted 12px single lines, matching the prototype's category and VAT text.
     metadata:
-      'breeze:col-start-2 breeze:min-inline-0 breeze:max-breeze-md:hidden breeze:[&>span]:font-normal breeze:[&>span]:leading-[calc(1/0.75)]',
+      'breeze:col-start-2 breeze:min-inline-0 breeze:max-breeze-md:hidden breeze:[&>span]:font-normal',
     metadataAmount:
-      'breeze:-col-end-2 breeze:min-inline-0 breeze:max-breeze-md:hidden breeze:[&>span]:text-breeze-xs breeze:[&>span]:font-normal breeze:[&>span]:leading-[calc(1/0.75)]',
+      'breeze:-col-end-2 breeze:min-inline-0 breeze:max-breeze-md:hidden breeze:[&>span]:text-breeze-xs breeze:[&>span]:font-normal',
     section: 'breeze:flex breeze:min-inline-0 breeze:flex-col',
     skeletonRows: 'breeze:flex breeze:min-inline-0 breeze:flex-col',
     summaryText: 'breeze:min-inline-0 breeze:truncate breeze:text-breeze-ink-3',
     // The total keeps the amount role's weight at the header's 12px size.
-    summaryTotal:
-      'breeze:shrink-0 breeze:[&>span:last-child]:text-breeze-xs breeze:[&>span:last-child]:leading-[calc(1/0.75)]',
+    summaryTotal: 'breeze:shrink-0 breeze:[&>span:last-child]:text-breeze-xs',
     title:
-      'breeze:flex breeze:min-inline-0 breeze:items-center breeze:gap-breeze-2 breeze:text-breeze-sm breeze:font-medium breeze:leading-[calc(1.25/0.875)] breeze:max-breeze-md:contents',
+      'breeze:flex breeze:min-inline-0 breeze:items-center breeze:gap-breeze-2 breeze:text-breeze-sm breeze:font-medium breeze:max-breeze-md:contents',
     value:
       'breeze:-col-end-1 breeze:min-inline-0 breeze:break-words breeze:text-end',
   },

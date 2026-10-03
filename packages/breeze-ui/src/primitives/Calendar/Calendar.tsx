@@ -36,7 +36,7 @@ const calendarVariants = {
       'breeze:grid breeze:block-breeze-8 breeze:inline-breeze-8 breeze:shrink-0 breeze:place-items-center breeze:rounded-breeze-ctl breeze:border-0 breeze:bg-transparent breeze:p-0 breeze:text-breeze-ink breeze:outline-offset-2 breeze:data-[hovered]:bg-breeze-raised breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-50 breeze:any-pointer-coarse:min-block-breeze-tap breeze:any-pointer-coarse:min-inline-breeze-tap',
     root: 'breeze:flex breeze:flex-col breeze:gap-breeze-2 breeze:outline-none',
     weekday:
-      'breeze:p-0 breeze:pbe-[7px] breeze:block-[35px] breeze:text-center breeze:font-breeze-sans breeze:text-breeze-2xs breeze:font-semibold breeze:uppercase breeze:tracking-[0.05em] breeze:text-breeze-ink-3',
+      'breeze:p-0 breeze:pbe-[7px] breeze:block-[35px] breeze:text-center breeze:font-breeze-sans breeze:text-breeze-2xs breeze:font-semibold breeze:uppercase breeze:tracking-breeze-wide breeze:text-breeze-ink-3',
   },
   compound: {},
   size: {},

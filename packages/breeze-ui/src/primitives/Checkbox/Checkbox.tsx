@@ -11,7 +11,7 @@ import { Skeleton } from '../Skeleton/Skeleton';
 const variants = {
   base: {
     control:
-      'breeze:flex breeze:any-pointer-coarse:min-block-breeze-tap breeze:items-center breeze:gap-[10px] breeze:cursor-pointer breeze:select-none breeze:font-breeze-sans breeze:text-breeze-sm breeze:font-medium breeze:leading-[calc(1.25/0.875)] breeze:text-breeze-ink breeze:data-[disabled]:cursor-not-allowed',
+      'breeze:flex breeze:any-pointer-coarse:min-block-breeze-tap breeze:items-center breeze:gap-[10px] breeze:cursor-pointer breeze:select-none breeze:font-breeze-sans breeze:text-breeze-sm breeze:font-medium breeze:text-breeze-ink breeze:data-[disabled]:cursor-not-allowed',
     indicator:
       'breeze:grid breeze:block-breeze-4 breeze:inline-breeze-4 breeze:shrink-0 breeze:place-items-center breeze:rounded-breeze-chip breeze:border breeze:border-solid breeze:border-breeze-ink-3 breeze:bg-breeze-surface breeze:text-breeze-xs breeze:font-bold breeze:leading-none breeze:text-breeze-on-brand breeze:transition-colors breeze:data-[selected]:border-breeze-brand breeze:data-[selected]:bg-breeze-brand breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-offset-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[disabled]:border-breeze-line-strong breeze:data-[disabled]:bg-breeze-sunken breeze:data-[disabled]:text-breeze-surface breeze:data-[disabled]:data-[selected]:border-breeze-line-strong breeze:data-[disabled]:data-[selected]:bg-breeze-line-strong',
     root: 'breeze:min-inline-0',
@@ -161,7 +161,6 @@ export function Checkbox({
                 <span id={labelId}>{label}</span>
               )}
               <FieldSupportingContent
-                choice
                 description={visibleDescription}
                 error={visibleError}
                 loading={loading}

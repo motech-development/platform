@@ -31,21 +31,20 @@ const variants = {
     content:
       'breeze:flex breeze:min-inline-0 breeze:flex-1 breeze:flex-col breeze:gap-breeze-1',
     description:
-      'breeze:text-breeze-xs breeze:font-normal breeze:leading-breeze-snug breeze:text-breeze-ink-3',
-    // The prototype's tracking-wide is 0.05em; Breeze has no matching token.
+      'breeze:text-breeze-xs breeze:font-normal breeze:text-breeze-ink-3',
     header:
-      'breeze:block breeze:border-breeze-line breeze:border-be breeze:px-[14px] breeze:py-[10px] breeze:font-breeze-sans breeze:text-breeze-2xs breeze:font-semibold breeze:uppercase breeze:leading-breeze-snug breeze:tracking-[0.05em] breeze:text-breeze-ink-3',
+      'breeze:block breeze:border-breeze-line breeze:border-be breeze:px-[14px] breeze:py-[10px] breeze:font-breeze-sans breeze:text-breeze-2xs breeze:font-semibold breeze:uppercase breeze:tracking-breeze-wide breeze:text-breeze-ink-3',
     icon: 'breeze:block-breeze-4 breeze:inline-breeze-4 breeze:shrink-0',
     initials:
       'breeze:flex breeze:block-breeze-6 breeze:inline-breeze-6 breeze:shrink-0 breeze:items-center breeze:justify-center breeze:rounded-breeze-sm breeze:bg-breeze-brand-soft breeze:text-breeze-2xs breeze:font-bold breeze:text-breeze-brand-text',
-    // Line height mirrors the prototype's Tailwind text-sm default.
-    item: 'breeze:flex breeze:min-inline-0 breeze:min-block-breeze-md breeze:any-pointer-coarse:min-block-breeze-tap breeze:items-center breeze:gap-breeze-2 breeze:px-[14px] breeze:py-[10px] breeze:font-breeze-sans breeze:text-breeze-sm breeze:leading-[calc(1.25/0.875)] breeze:text-breeze-ink breeze:text-start breeze:outline-offset-[-2px] breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-50 breeze:data-[focused]:bg-breeze-raised breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[hovered]:bg-breeze-raised',
+    item: 'breeze:flex breeze:min-inline-0 breeze:min-block-breeze-md breeze:any-pointer-coarse:min-block-breeze-tap breeze:items-center breeze:gap-breeze-2 breeze:px-[14px] breeze:py-[10px] breeze:font-breeze-sans breeze:text-breeze-sm breeze:text-breeze-ink breeze:text-start breeze:outline-offset-[-2px] breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-50 breeze:data-[focused]:bg-breeze-raised breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[hovered]:bg-breeze-raised',
     menu: 'breeze:min-inline-0 breeze:outline-none',
     // Shrink-wraps its items, as the prototype's menus do, instead of the shared 320px popover width.
     popover:
       'breeze:inline-auto breeze:min-inline-[max(256px,var(--trigger-width))] breeze:max-inline-[calc(100vw-24px)] breeze:overflow-auto breeze:rounded-breeze-panel breeze:border breeze:border-solid breeze:border-breeze-line breeze:bg-breeze-surface breeze:shadow-breeze-overlay',
     separator:
       'breeze:m-0 breeze:block-breeze-px breeze:border-0 breeze:bg-breeze-line',
+    // The prototype's trigger sets no text size, so it keeps the body's line height.
     trigger:
       'breeze:inline-flex breeze:min-block-breeze-md breeze:any-pointer-coarse:min-block-breeze-tap breeze:items-center breeze:gap-breeze-2 breeze:rounded-breeze-ctl breeze:border breeze:border-solid breeze:border-breeze-line-strong breeze:bg-breeze-surface breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:py-breeze-2 breeze:font-breeze-sans breeze:text-breeze-sm breeze:leading-breeze-snug breeze:text-breeze-ink breeze:outline-offset-2 breeze:data-[hovered]:bg-breeze-sunken breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand',
     triggerLabel: 'breeze:inline-grid breeze:min-inline-0 breeze:items-center',

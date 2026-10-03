@@ -63,7 +63,7 @@ const variants = {
     input: 'breeze:sr-only',
     primary: 'breeze:m-0 breeze:text-breeze-sm breeze:text-breeze-ink',
     secondary:
-      'breeze:m-0 breeze:text-breeze-xs breeze:font-normal breeze:leading-[calc(1/0.75)] breeze:text-breeze-ink-3',
+      'breeze:m-0 breeze:text-breeze-xs breeze:font-normal breeze:text-breeze-ink-3',
     // Out of flow while empty so the live region stays exposed without adding a gap.
     status:
       'breeze:text-breeze-sm breeze:text-breeze-ink-2 breeze:empty:sr-only',
@@ -86,7 +86,8 @@ const variants = {
         'breeze:flex-col breeze:items-center breeze:gap-[6px] breeze:border-2 breeze:px-breeze-4 breeze:py-breeze-6 breeze:text-center',
     },
     primary: {
-      compact: 'breeze:font-medium breeze:leading-[calc(1.25/0.875)]',
+      compact: 'breeze:font-medium',
+      // The prototype's stacked prompt sets no text size, so it keeps the body's line height.
       stacked: 'breeze:font-semibold breeze:leading-breeze-snug',
     },
     text: {
