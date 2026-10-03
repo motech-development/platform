@@ -1,0 +1,47 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './StatStrip.stories';
+
+<Meta
+  of={Stories}
+  summary="Presents a few headline currency figures side by side in one panel."
+/>
+
+# StatStrip
+
+`StatStrip` presents headline currency figures, such as a balance and the VAT
+owed, as labelled cells in one panel. It reads as a named group containing a
+description list, so each label is announced with its figure.
+
+<Canvas of={Stories.Overview} />
+
+## Describe each figure
+
+Pass application values through `items` and return a closed
+`StatStripItemDescriptor` from `getItem`. Each descriptor has a stable `id`, a
+visible `label`, and a `value` with its `currency`. The value is formatted by
+`Typography`'s `money` role for the provider locale, with a minus sign for
+negative amounts; a non-finite value or a malformed currency code throws a
+`RangeError`.
+
+An optional `badge` follows the label to show the figure's scope, such as the
+VAT scheme. It takes the same `children`, `variant` and `aria-label` fields as a
+collection item's badge.
+
+## Loading
+
+Set `loading` to replace the figures with three skeleton cells shaped like the
+labels and figures they stand in for. `items` and `getItem` are optional while
+loading.
+
+<Canvas of={Stories.Loading} />
+
+## Phone layout
+
+Below Breeze's medium breakpoint the cells stack in one column, with a divider
+above each cell after the first.
+
+<Canvas of={Stories.Phone} />
+
+## API
+
+<ArgTypes of={Stories.Overview} />

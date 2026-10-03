@@ -52,6 +52,11 @@ export type {
   StatePanelVariant,
 } from './patterns/StatePanel/StatePanel';
 export { StatePanel } from './patterns/StatePanel/StatePanel';
+export type {
+  StatStripItemDescriptor,
+  StatStripProps,
+} from './patterns/StatStrip/StatStrip';
+export { StatStrip } from './patterns/StatStrip/StatStrip';
 export type { BadgeProps, BadgeVariant } from './primitives/Badge/Badge';
 export { Badge } from './primitives/Badge/Badge';
 export type {
