@@ -27,6 +27,17 @@ export const WithExistingFiles: Story = {
   },
 };
 
+/** One attachment-height row, as for a single invoice or receipt. */
+export const Compact: Story = {
+  args: {
+    accept: '.pdf,.jpg,.png',
+    compact: true,
+    label: 'Invoice or receipt',
+    maxFiles: 1,
+    maxSize: undefined,
+  },
+};
+
 /** Selecting a supported file reports accepted files through the semantic callback. */
 export const ChooseAFile: Story = {
   play: async ({ args, canvasElement }) => {

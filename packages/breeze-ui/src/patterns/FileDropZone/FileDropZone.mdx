@@ -10,9 +10,18 @@ import * as Stories from './FileDropZone.stories';
 
 `FileDropZone` accepts files through drag and drop or the **Choose files**
 button. The button opens a native file picker, so keyboard users can browse for
-files without dragging.
+files without dragging. `label` is shown as a field label above the drop area
+and names it.
 
 <Canvas of={Stories.Default} />
+
+## Compact
+
+Set `compact` to lay the drop area out as one row at the height of an
+`AttachmentRow`, so a single attachment keeps its position whether or not a file
+is attached.
+
+<Canvas of={Stories.Compact} />
 
 ## File limits
 
