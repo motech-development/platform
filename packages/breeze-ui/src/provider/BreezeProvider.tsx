@@ -278,6 +278,7 @@ export function BreezeProvider({
         required: messages?.required ?? enGB.required,
         selectDate: messages?.selectDate ?? enGB.selectDate,
         skipToMain: messages?.skipToMain ?? enGB.skipToMain,
+        today: messages?.today ?? enGB.today,
       },
       resolvedAppearance,
       router,

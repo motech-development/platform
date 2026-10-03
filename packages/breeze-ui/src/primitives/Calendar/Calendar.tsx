@@ -26,26 +26,29 @@ import type { IsoCalendarDate } from '../Typography/Typography';
 
 const calendarVariants = {
   base: {
-    cell: 'breeze:grid breeze:min-block-breeze-8 breeze:min-inline-breeze-8 breeze:any-pointer-coarse:min-block-breeze-tap breeze:any-pointer-coarse:min-inline-breeze-tap breeze:place-items-center breeze:rounded-breeze-full breeze:font-breeze-sans breeze:text-breeze-sm breeze:text-breeze-ink breeze:outline-offset-2 breeze:data-[focused]:bg-breeze-sunken breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[hovered]:bg-breeze-sunken breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-50 breeze:data-[outside-month]:text-breeze-ink-3',
+    cell: 'breeze:grid breeze:block-breeze-9 breeze:inline-full breeze:any-pointer-coarse:min-block-breeze-tap breeze:any-pointer-coarse:min-inline-breeze-tap breeze:place-items-center breeze:rounded-breeze-ctl breeze:font-breeze-sans breeze:text-breeze-sm breeze:tabular-nums breeze:outline-offset-2 breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand',
     disabledRoot: 'breeze:pointer-events-none breeze:[&>div:last-child]:hidden',
-    grid: 'breeze:inline-full breeze:table-fixed breeze:border-separate breeze:border-spacing-breeze-px breeze:any-pointer-coarse:border-spacing-[0px]',
-    header:
-      'breeze:mbe-breeze-2 breeze:flex breeze:min-block-breeze-tap breeze:items-center breeze:justify-between',
+    grid: 'breeze:-m-breeze-px breeze:inline-[calc(100%+2px)] breeze:table-fixed breeze:border-separate breeze:border-spacing-breeze-px breeze:any-pointer-coarse:m-0 breeze:any-pointer-coarse:inline-full breeze:any-pointer-coarse:border-spacing-[0px]',
+    header: 'breeze:flex breeze:items-center breeze:gap-[6px]',
     heading:
-      'breeze:m-0 breeze:font-breeze-sans breeze:text-breeze-sm breeze:font-semibold breeze:text-breeze-ink',
+      'breeze:m-0 breeze:min-inline-0 breeze:grow breeze:font-breeze-sans breeze:text-breeze-sm breeze:font-semibold breeze:text-breeze-ink',
     navButton:
-      'breeze:grid breeze:block-breeze-8 breeze:inline-breeze-8 breeze:place-items-center breeze:rounded-breeze-full breeze:border-0 breeze:bg-transparent breeze:text-breeze-ink-2 breeze:outline-offset-2 breeze:hover:bg-breeze-sunken breeze:focus-visible:outline-2 breeze:focus-visible:outline-solid breeze:focus-visible:outline-breeze-brand breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-50 breeze:any-pointer-coarse:min-block-breeze-tap breeze:any-pointer-coarse:min-inline-breeze-tap',
+      'breeze:grid breeze:block-breeze-8 breeze:inline-breeze-8 breeze:shrink-0 breeze:place-items-center breeze:rounded-breeze-ctl breeze:border-0 breeze:bg-transparent breeze:p-0 breeze:text-breeze-ink breeze:outline-offset-2 breeze:data-[hovered]:bg-breeze-raised breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-50 breeze:any-pointer-coarse:min-block-breeze-tap breeze:any-pointer-coarse:min-inline-breeze-tap',
     root: 'breeze:flex breeze:flex-col breeze:gap-breeze-2 breeze:outline-none',
-    selectedCell:
-      'breeze:bg-breeze-brand breeze:data-[selected]:text-breeze-on-brand breeze:data-[focused]:data-[selected]:bg-breeze-brand breeze:data-[selected]:data-[hovered]:bg-breeze-brand breeze:data-[outside-month]:data-[selected]:text-breeze-on-brand breeze:forced-colors:data-[selected]:outline-2 breeze:forced-colors:data-[selected]:outline-solid breeze:forced-colors:data-[selected]:outline-offset-2',
-    todayCell:
-      'breeze:outline-2 breeze:outline-solid breeze:outline-breeze-brand',
     weekday:
-      'breeze:pbe-breeze-1 breeze:text-center breeze:font-breeze-sans breeze:text-breeze-xs breeze:font-medium breeze:text-breeze-ink-3',
+      'breeze:p-0 breeze:pbe-[7px] breeze:block-[35px] breeze:text-center breeze:font-breeze-sans breeze:text-breeze-2xs breeze:font-semibold breeze:uppercase breeze:tracking-[0.05em] breeze:text-breeze-ink-3',
   },
   compound: {},
   size: {},
-  state: {},
+  state: {
+    disabledCell: 'breeze:cursor-not-allowed breeze:opacity-50',
+    plainCell:
+      'breeze:text-breeze-ink breeze:data-[hovered]:bg-breeze-raised breeze:data-[outside-month]:text-breeze-ink-3',
+    selectedCell:
+      'breeze:bg-breeze-brand breeze:font-semibold breeze:text-breeze-on-brand breeze:forced-colors:data-[selected]:outline-2 breeze:forced-colors:data-[selected]:outline-solid breeze:forced-colors:data-[selected]:outline-offset-2',
+    todayCell:
+      'breeze:border breeze:border-solid breeze:border-breeze-brand breeze:font-semibold breeze:text-breeze-brand-text',
+  },
   variant: {},
 } as const;
 
@@ -101,6 +104,7 @@ function CalendarContent({ disabled }: Readonly<{ disabled: boolean }>) {
   return (
     <>
       <div className={calendarVariants.base.header}>
+        <AriaCalendarHeading className={calendarVariants.base.heading} />
         <AriaButton
           className={calendarVariants.base.navButton}
           isDisabled={disabled}
@@ -108,7 +112,6 @@ function CalendarContent({ disabled }: Readonly<{ disabled: boolean }>) {
         >
           <Icon name="back" size="sm" />
         </AriaButton>
-        <AriaCalendarHeading className={calendarVariants.base.heading} />
         <AriaButton
           className={calendarVariants.base.navButton}
           isDisabled={disabled}
@@ -119,7 +122,7 @@ function CalendarContent({ disabled }: Readonly<{ disabled: boolean }>) {
       </div>
       <AriaCalendarGrid
         className={calendarVariants.base.grid}
-        weekdayStyle="short"
+        weekdayStyle="narrow"
       >
         <AriaCalendarGridHeader>
           {(day) => (
@@ -134,8 +137,10 @@ function CalendarContent({ disabled }: Readonly<{ disabled: boolean }>) {
               className={({ isSelected, isToday }) =>
                 joinClassNames(
                   calendarVariants.base.cell,
-                  isSelected && calendarVariants.base.selectedCell,
-                  isToday && !isSelected && calendarVariants.base.todayCell,
+                  disabled && calendarVariants.state.disabledCell,
+                  isSelected && calendarVariants.state.selectedCell,
+                  isToday && !isSelected && calendarVariants.state.todayCell,
+                  !isToday && !isSelected && calendarVariants.state.plainCell,
                 )
               }
               date={date}

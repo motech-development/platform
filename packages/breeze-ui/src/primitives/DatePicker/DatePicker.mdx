@@ -21,6 +21,13 @@ value is retained.
 
 <Canvas of={Stories.Default} />
 
+## Today
+
+The calendar footer offers a Today action, labelled by the provider's `today`
+message. It selects the current date, reports it and closes the calendar.
+
+<Canvas of={Stories.TodayAction} />
+
 ## States
 
 Use `error` to display validation feedback and `disabled` to prevent interaction.
@@ -36,7 +43,7 @@ applications record are non-null, so an empty date is not a state worth
 offering. A required date does not provide a clear control.
 
 Set `required={false}` for an optional date. Its calendar then shows a clear
-control, labelled by the provider's `clearDate` message, which empties the
+control beside the Today action, labelled by the provider's `clearDate` message, which empties the
 field, closes the calendar and reports `null`. The control is unavailable while
 the field is empty. An optional `onChange` must accept `null`, and an optional
 uncontrolled field may start from a `null` `defaultValue`; TypeScript rejects
@@ -62,8 +69,8 @@ for an empty controlled selection. Use `defaultValue` and an optional `onChange`
 for uncontrolled usage; the two forms cannot be mixed, whether the date is
 required or optional. An uncontrolled date returns to `defaultValue` when its
 owning form resets. With a `name`, the selected ISO date is included in form
-submission; an empty value submits an empty string. Override the provider's `required` and `clearDate` messages to
-localize the required announcement and the clear control.
+submission; an empty value submits an empty string. Override the provider's `required`, `clearDate` and `today` messages to
+localize the required announcement, the clear control and the Today action.
 
 <Canvas of={Stories.Controlled} />
 

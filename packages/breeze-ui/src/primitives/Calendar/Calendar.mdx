@@ -8,9 +8,12 @@ import * as Stories from './Calendar.stories';
 
 # Calendar
 
-`Calendar` renders a locale-aware calendar grid. Weeks begin on Monday and each
-month uses six rows. Leading and trailing dates remain visible in muted text.
-Selected dates use a brand fill; today uses a brand outline unless it is selected.
+`Calendar` renders a locale-aware calendar grid. The month heading sits at the
+start of the header with the previous and next month controls together at the
+end. Weeks begin on Monday, weekday columns use the provider locale's narrow
+names, and each month uses six rows. Leading and trailing dates remain visible
+in muted text. Selected dates use a brand fill; today uses a brand outline unless
+it is selected.
 
 <Canvas of={Stories.Default} />
 
@@ -29,7 +32,10 @@ ISO `YYYY-MM-DD` string, never a DOM event. Use `defaultValue` and an optional
 ## Accessibility
 
 The `label` names the calendar. React Aria provides keyboard navigation,
-selection semantics and localized weekday and date names.
+selection semantics and localized weekday and date names. Each date's accessible
+name includes its full weekday, so the narrow column headings are not its only
+cue. The selection fill keeps at least 3:1 contrast with the background in both
+appearances, so the selected date needs no additional outline.
 
 ## API
 
