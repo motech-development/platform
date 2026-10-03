@@ -27,7 +27,7 @@ describe('Skeleton', () => {
     expect(
       screen.getByRole('progressbar', { name: 'Loading receipt preview' }),
     ).toHaveClass(
-      'breeze:bg-breeze-ink-3',
+      'breeze:bg-breeze-sunken',
       'breeze:forced-colors:outline-[CanvasText]',
     );
   });
@@ -38,7 +38,7 @@ describe('Skeleton', () => {
 
     expect(screen.getByRole('progressbar', { name: 'Loading' })).toHaveClass(
       'breeze:appearance-none',
-      'breeze:bg-breeze-ink-3',
+      'breeze:bg-breeze-sunken',
       'breeze:[&::-webkit-progress-bar]:[background:transparent]',
       'breeze:[&::-webkit-progress-value]:[background:transparent]',
       'breeze:[&::-moz-progress-bar]:[background:transparent]',
