@@ -11,7 +11,7 @@ import { Skeleton } from '../Skeleton/Skeleton';
 const variants = {
   base: {
     description:
-      'breeze:text-breeze-2xs breeze:font-normal breeze:leading-breeze-snug breeze:text-breeze-ink-3',
+      'breeze:text-breeze-2xs breeze:font-normal breeze:text-breeze-ink-3',
     group:
       'breeze:m-0 breeze:inline-flex breeze:min-inline-0 breeze:gap-[2px] breeze:rounded-breeze-ctl breeze:border breeze:border-solid breeze:border-breeze-line breeze:bg-breeze-surface breeze:p-[2px] breeze:font-breeze-sans',
     item: 'breeze:inline-grid breeze:items-center breeze:justify-center breeze:rounded-breeze-sm breeze:py-breeze-1 breeze:font-medium breeze:text-breeze-ink-3 breeze:cursor-pointer breeze:select-none breeze:outline-offset-[-2px] breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-60 breeze:any-pointer-coarse:min-inline-breeze-tap',

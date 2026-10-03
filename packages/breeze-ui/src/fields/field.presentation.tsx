@@ -37,8 +37,6 @@ export function FieldLabel({
 }
 
 interface FieldSupportProps {
-  /** Uses the text-xs rhythm of supporting text set beside a choice control. */
-  choice?: boolean;
   description?: string;
   descriptionId?: string;
   error?: string;
@@ -47,25 +45,17 @@ interface FieldSupportProps {
 }
 
 export function FieldSupportingContent({
-  choice = false,
   description,
   descriptionId,
   error,
   errorId,
   loading,
 }: Readonly<FieldSupportProps>) {
-  const descriptionClassName = choice
-    ? fieldVariants.base.choiceDescription
-    : fieldVariants.base.description;
-  const errorClassName = choice
-    ? fieldVariants.base.choiceError
-    : fieldVariants.base.error;
-
   return (
     <>
       {description && (
         <AriaText
-          className={descriptionClassName}
+          className={fieldVariants.base.description}
           id={descriptionId}
           slot="description"
         >
@@ -78,11 +68,15 @@ export function FieldSupportingContent({
       )}
       {error &&
         (loading ? (
-          <span aria-hidden="true" className={errorClassName} id={errorId}>
+          <span
+            aria-hidden="true"
+            className={fieldVariants.base.error}
+            id={errorId}
+          >
             <Skeleton blockSize="1lh" inlineSize="12em" shape="rectangle" />
           </span>
         ) : (
-          <AriaFieldError className={errorClassName} id={errorId}>
+          <AriaFieldError className={fieldVariants.base.error} id={errorId}>
             {error}
           </AriaFieldError>
         ))}

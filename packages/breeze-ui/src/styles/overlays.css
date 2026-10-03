@@ -131,7 +131,7 @@
     box-shadow: var(--breeze-shadow-overlay);
     font-size: var(--breeze-text-breeze-sm);
     font-weight: 500;
-    line-height: var(--breeze-leading-breeze-snug);
+    line-height: var(--breeze-text-breeze-sm--line-height);
     overflow-wrap: anywhere;
     animation: breeze-toast-in 160ms ease-out both;
   }
@@ -233,7 +233,7 @@
     color: var(--breeze-color-breeze-ink-3);
     font-size: var(--breeze-text-breeze-xs);
     font-weight: 400;
-    line-height: calc(1 / 0.75);
+    line-height: var(--breeze-text-breeze-xs--line-height);
     text-overflow: ellipsis;
     white-space: nowrap;
   }

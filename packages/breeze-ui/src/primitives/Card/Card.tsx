@@ -11,9 +11,8 @@ const variants = {
     header:
       'breeze:flex breeze:items-center breeze:gap-breeze-2 breeze:border-be breeze:border-breeze-line breeze:px-breeze-4 breeze:py-breeze-3 breeze:max-breeze-md:flex-wrap',
     spacer: 'breeze:grow',
-    // Line height mirrors the prototype's Tailwind text-sm default.
     title:
-      'breeze:m-0 breeze:text-breeze-sm breeze:font-semibold breeze:leading-[calc(1.25/0.875)] breeze:text-breeze-ink',
+      'breeze:m-0 breeze:text-breeze-sm breeze:font-semibold breeze:text-breeze-ink',
   },
   compound: {},
   size: {

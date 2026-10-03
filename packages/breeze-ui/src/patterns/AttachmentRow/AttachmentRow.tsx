@@ -20,9 +20,9 @@ const variants = {
     documentLineStrong:
       'breeze:block-breeze-px breeze:inline-full breeze:rounded-breeze-xs breeze:bg-breeze-line-strong',
     fileDetails:
-      'breeze:flex breeze:min-inline-0 breeze:flex-wrap breeze:items-center breeze:gap-x-breeze-2 breeze:text-breeze-xs breeze:leading-breeze-snug breeze:text-breeze-ink-3',
+      'breeze:flex breeze:min-inline-0 breeze:flex-wrap breeze:items-center breeze:gap-x-breeze-2 breeze:text-breeze-xs breeze:text-breeze-ink-3',
     filename:
-      'breeze:block breeze:min-inline-0 breeze:overflow-hidden breeze:text-ellipsis breeze:whitespace-nowrap breeze:text-breeze-sm breeze:font-medium breeze:leading-breeze-snug breeze:text-breeze-ink',
+      'breeze:block breeze:min-inline-0 breeze:overflow-hidden breeze:text-ellipsis breeze:whitespace-nowrap breeze:text-breeze-sm breeze:font-medium breeze:text-breeze-ink',
     loadingContent:
       'breeze:flex breeze:min-inline-0 breeze:flex-1 breeze:flex-col breeze:gap-breeze-2',
     photoPlaceholder: 'breeze:text-breeze-ink-3',

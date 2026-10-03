@@ -17,7 +17,7 @@ const variants = {
     bottomNav:
       'breeze:fixed breeze:[inset-block-end:0] breeze:[inset-inline:0] breeze:z-30 breeze:flex breeze:block-[calc(72px_+_env(safe-area-inset-bottom))] breeze:items-center breeze:border-bs-[length:var(--breeze-spacing-breeze-px)] breeze:border-solid breeze:border-breeze-line breeze:bg-breeze-surface breeze:pbs-[6px] breeze:pbe-[env(safe-area-inset-bottom)] breeze:px-[2px] breeze:breeze-md:hidden',
     bottomNavLink:
-      'breeze:flex breeze:min-block-breeze-lg breeze:min-inline-0 breeze:flex-1 breeze:flex-col breeze:items-center breeze:justify-center breeze:gap-[2px] breeze:rounded-breeze-sm breeze:font-breeze-sans breeze:text-breeze-2xs breeze:font-medium breeze:leading-breeze-snug breeze:text-breeze-ink-3 breeze:no-underline breeze:focus-visible:outline-2 breeze:focus-visible:outline-solid breeze:focus-visible:outline-breeze-brand breeze:aria-[current=page]:font-semibold breeze:aria-[current=page]:text-breeze-brand-text breeze:[&>svg]:block-[21px] breeze:[&>svg]:inline-[21px]',
+      'breeze:flex breeze:min-block-breeze-lg breeze:min-inline-0 breeze:flex-1 breeze:flex-col breeze:items-center breeze:justify-center breeze:gap-[2px] breeze:rounded-breeze-sm breeze:font-breeze-sans breeze:text-breeze-2xs breeze:font-medium breeze:text-breeze-ink-3 breeze:no-underline breeze:focus-visible:outline-2 breeze:focus-visible:outline-solid breeze:focus-visible:outline-breeze-brand breeze:aria-[current=page]:font-semibold breeze:aria-[current=page]:text-breeze-brand-text breeze:[&>svg]:block-[21px] breeze:[&>svg]:inline-[21px]',
     bottomNavSide: 'breeze:flex breeze:min-inline-0 breeze:flex-1',
     brand:
       'breeze:flex breeze:min-inline-0 breeze:shrink-0 breeze:items-center',

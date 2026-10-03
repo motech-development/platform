@@ -83,7 +83,6 @@ describe('NumberField', () => {
       'breeze:min-block-breeze-md',
       'breeze:any-pointer-coarse:min-block-breeze-tap',
       'breeze:text-breeze-sm',
-      'breeze:leading-breeze-snug',
     );
     expect(large).not.toHaveClass('breeze:min-block-breeze-md');
     expect(large).toHaveClass(
