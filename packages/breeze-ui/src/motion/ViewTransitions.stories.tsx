@@ -108,7 +108,7 @@ function TransitionExample() {
 
 const meta = {
   component: TransitionExample,
-  title: 'Foundation/View transitions',
+  title: 'Foundations/View transitions',
 } satisfies Meta<typeof TransitionExample>;
 
 export default meta;
