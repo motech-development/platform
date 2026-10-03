@@ -30,7 +30,7 @@ export default function DescriptorContent({
           aria-hidden="true"
           className={collectionVariants.base.selectedIndicator}
         >
-          <Icon name="check" size="sm" />
+          <Icon name="check" size="xs" />
         </span>
       )}
     </>

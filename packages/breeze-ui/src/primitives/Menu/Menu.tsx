@@ -463,7 +463,7 @@ export function Menu<T>({
                 </span>
               )}
             </span>
-            <Icon name="expand" size="sm" />
+            <Icon name="expand" size="2xs" />
           </AriaButton>
         )}
         <CollectionPopover

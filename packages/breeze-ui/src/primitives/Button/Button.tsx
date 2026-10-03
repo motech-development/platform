@@ -7,7 +7,7 @@ import {
   buttonVariants,
 } from '../../buttons/button.styles';
 import { useBreezeContext } from '../../provider/BreezeContext';
-import { Icon, type IconName } from '../Icon/Icon';
+import { Icon, type IconName, type IconSize } from '../Icon/Icon';
 
 const variants = {
   base: {
@@ -40,6 +40,12 @@ const variants = {
       'breeze:border-0 breeze:rounded-breeze-chip breeze:bg-transparent breeze:px-breeze-1 breeze:text-breeze-sm breeze:font-normal breeze:leading-breeze-snug breeze:text-breeze-brand-text breeze:max-breeze-md:min-block-breeze-tap',
   },
 } as const;
+
+const iconSizes = {
+  lg: 'sm',
+  md: 'sm',
+  sm: 'xs',
+} as const satisfies Record<ControlSize, IconSize>;
 
 export type { ButtonVariant } from '../../buttons/button.styles';
 
@@ -185,7 +191,7 @@ export function Button({
       >
         {icon ? (
           <>
-            <Icon name={icon} size="sm" />
+            <Icon name={icon} size={iconSizes[size]} />
             <span>{children}</span>
           </>
         ) : (

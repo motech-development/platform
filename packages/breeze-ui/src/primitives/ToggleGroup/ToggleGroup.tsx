@@ -160,7 +160,7 @@ export function ToggleGroup<T>({
             pressed={selectedKey === descriptor.id}
           >
             <span className={variants.base.optionDetails}>
-              {descriptor.icon && <Icon name={descriptor.icon} size="sm" />}
+              {descriptor.icon && <Icon name={descriptor.icon} size="xs" />}
               <span className={variants.base.optionContent}>
                 <span>{descriptor.label}</span>
                 {descriptor.description && (

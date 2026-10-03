@@ -615,7 +615,7 @@ export function DatePicker(props: Readonly<DatePickerProps>) {
             valueId={valueId}
           />
           <span className={datePickerVariants.base.icon}>
-            <Icon name="calendar" size="sm" />
+            <Icon name="calendar" size="md" />
           </span>
         </AriaButton>
         {loading && (

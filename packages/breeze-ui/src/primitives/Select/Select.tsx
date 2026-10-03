@@ -322,7 +322,7 @@ export function Select<T>({
               );
             }}
           </AriaSelectValue>
-          <Icon name="expand" size="sm" />
+          <Icon name="expand" size="xs" />
         </AriaButton>
         {loading && (
           <span className={fieldVariants.base.skeleton}>

@@ -12,6 +12,24 @@ import * as Stories from './Icon.stories';
 
 <Canvas of={Stories.Gallery} />
 
+## Sizes
+
+`size` selects a square from a closed scale that follows the design's icon sizes. It defaults to `sm`.
+
+| Size  | Pixels | Typical use                                                 |
+| ----- | ------ | ----------------------------------------------------------- |
+| `2xs` | 14     | Overlay close and menu trigger chevrons                     |
+| `xs`  | 15     | Field chevrons, selected ticks, row tiles and small buttons |
+| `sm`  | 16     | Buttons, menu items, calendar navigation and toasts         |
+| `md`  | 17     | Date picker trigger and compact upload thumbnail            |
+| `lg`  | 20     | Medium icon buttons                                         |
+| `xl`  | 21     | Bottom navigation                                           |
+| `2xl` | 22     | Large icon tiles in content states                          |
+| `3xl` | 24     | Large icon buttons, such as the raised action               |
+| `4xl` | 26     | Stacked file drop zone                                      |
+
+<Canvas of={Stories.Sizes} />
+
 ## Accessible names
 
 Icons are decorative by default. Supply `label` only when the icon conveys meaning without adjacent text.
