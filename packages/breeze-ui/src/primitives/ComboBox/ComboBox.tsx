@@ -27,11 +27,11 @@ import { Skeleton } from '../Skeleton/Skeleton';
 const variants = {
   base: {
     emptyState:
-      'breeze:px-breeze-3 breeze:py-breeze-5 breeze:text-center breeze:font-breeze-sans breeze:text-breeze-sm breeze:leading-[calc(1.25/0.875)] breeze:text-breeze-ink',
+      'breeze:px-breeze-3 breeze:py-breeze-5 breeze:text-center breeze:font-breeze-sans breeze:text-breeze-sm breeze:text-breeze-ink',
     group:
       'breeze:relative breeze:inline-flex breeze:min-block-breeze-md breeze:any-pointer-coarse:min-block-breeze-tap breeze:min-inline-0 breeze:inline-full breeze:items-stretch breeze:overflow-hidden breeze:rounded-breeze-ctl breeze:border breeze:border-solid breeze:border-breeze-line-strong breeze:bg-breeze-surface breeze:outline-none breeze:data-[invalid]:border-breeze-danger breeze:data-[focus-within]:border-breeze-brand breeze:data-[focus-within]:ring-3 breeze:data-[focus-within]:ring-breeze-brand/15 breeze:data-[focus-within]:outline-hidden breeze:data-[readonly]:bg-breeze-sunken breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:bg-breeze-sunken',
     input:
-      'breeze:min-inline-0 breeze:flex-1 breeze:border-0 breeze:bg-transparent breeze:ps-breeze-3 breeze:pe-breeze-2 breeze:py-breeze-2 breeze:font-breeze-sans breeze:text-breeze-sm breeze:leading-breeze-snug breeze:text-breeze-ink breeze:outline-none breeze:placeholder:text-breeze-ink-3 breeze:data-[hovered]:border-transparent breeze:data-[focus-visible]:!outline-none breeze:data-[invalid]:border-transparent breeze:disabled:cursor-not-allowed breeze:read-only:cursor-default breeze:read-only:text-breeze-ink-2',
+      'breeze:min-inline-0 breeze:flex-1 breeze:border-0 breeze:bg-transparent breeze:ps-breeze-3 breeze:pe-breeze-2 breeze:py-breeze-2 breeze:font-breeze-sans breeze:text-breeze-sm breeze:text-breeze-ink breeze:outline-none breeze:placeholder:text-breeze-ink-3 breeze:data-[hovered]:border-transparent breeze:data-[focus-visible]:!outline-none breeze:data-[invalid]:border-transparent breeze:disabled:cursor-not-allowed breeze:read-only:cursor-default breeze:read-only:text-breeze-ink-2',
     skeleton:
       'breeze:pointer-events-none breeze:absolute breeze:[inset-block:0] breeze:[inset-inline:0]',
     trigger:

@@ -12,7 +12,7 @@ const variants = {
   base: {
     box: 'breeze:border breeze:border-solid breeze:rounded-breeze-ctl breeze:font-semibold breeze:any-pointer-coarse:min-inline-breeze-tap',
     button:
-      'breeze:relative breeze:inline-grid breeze:items-center breeze:justify-center breeze:gap-breeze-2 breeze:font-breeze-sans breeze:leading-breeze-snug breeze:cursor-pointer breeze:select-none breeze:[text-align:center] breeze:outline-offset-2 breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:any-pointer-coarse:min-block-breeze-tap',
+      'breeze:relative breeze:inline-grid breeze:items-center breeze:justify-center breeze:gap-breeze-2 breeze:font-breeze-sans breeze:cursor-pointer breeze:select-none breeze:[text-align:center] breeze:outline-offset-2 breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:any-pointer-coarse:min-block-breeze-tap',
     label: 'breeze:[grid-area:1/1]',
     skeleton:
       'breeze:[grid-area:1/1] breeze:inline-full breeze:block-breeze-3 breeze:rounded-breeze-xs',
@@ -33,9 +33,9 @@ const variants = {
   },
   state: {},
   variant: {
-    // The design's text action has no control box, hover fill or size scale.
+    // The design's text action has no control box, hover fill or size scale, and keeps the body's line height.
     quiet:
-      'breeze:border-0 breeze:rounded-breeze-chip breeze:bg-transparent breeze:px-breeze-1 breeze:text-breeze-sm breeze:font-normal breeze:text-breeze-brand-text breeze:max-breeze-md:min-block-breeze-tap',
+      'breeze:border-0 breeze:rounded-breeze-chip breeze:bg-transparent breeze:px-breeze-1 breeze:text-breeze-sm breeze:font-normal breeze:leading-breeze-snug breeze:text-breeze-brand-text breeze:max-breeze-md:min-block-breeze-tap',
   },
 } as const;
 

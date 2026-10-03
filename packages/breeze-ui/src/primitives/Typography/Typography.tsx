@@ -25,22 +25,17 @@ const variants = {
       start: 'breeze:text-start',
     },
     role: {
-      // Leading mirrors the prototype's Tailwind text-sm default.
-      amount:
-        'breeze:text-breeze-sm breeze:font-semibold breeze:leading-[calc(1.25/0.875)] breeze:tabular-nums',
-      body: 'breeze:text-breeze-sm breeze:font-normal breeze:leading-breeze-snug',
-      caption:
-        'breeze:text-breeze-xs breeze:font-medium breeze:leading-breeze-snug',
+      amount: 'breeze:text-breeze-sm breeze:font-semibold breeze:tabular-nums',
+      body: 'breeze:text-breeze-sm breeze:font-normal',
+      caption: 'breeze:text-breeze-xs breeze:font-medium',
       heading:
         'breeze:text-breeze-2xl breeze:font-semibold breeze:leading-breeze-tight',
-      label:
-        'breeze:text-breeze-xs breeze:font-medium breeze:leading-breeze-snug',
+      label: 'breeze:text-breeze-xs breeze:font-medium',
       micro:
-        'breeze:text-breeze-2xs breeze:font-bold breeze:uppercase breeze:leading-breeze-snug breeze:tracking-breeze-caps',
+        'breeze:text-breeze-2xs breeze:font-bold breeze:uppercase breeze:tracking-breeze-caps',
       money:
         'breeze:text-breeze-4xl breeze:font-semibold breeze:leading-breeze-tight breeze:tracking-breeze-tightest breeze:tabular-nums',
-      title:
-        'breeze:text-breeze-md breeze:font-semibold breeze:leading-breeze-snug',
+      title: 'breeze:text-breeze-md breeze:font-semibold',
     },
     tone: {
       brand: 'breeze:text-breeze-brand-text',
