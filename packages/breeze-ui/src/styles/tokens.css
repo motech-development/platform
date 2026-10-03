@@ -18,6 +18,10 @@
   --color-breeze-sunken: #eff3f8;
   --color-breeze-line: #e3e8ee;
   --color-breeze-line-strong: #cfd7e0;
+  /* The native checkbox's own palette, which no neutral token matches in both schemes. */
+  --color-breeze-control: #ffffff;
+  --color-breeze-control-line: #767676;
+  --color-breeze-control-disabled: #d1d1d1;
   --color-breeze-ink: #161616;
   --color-breeze-ink-2: #4a4f57;
   --color-breeze-ink-3: #66707c;
@@ -102,6 +106,9 @@
     --breeze-color-breeze-sunken: #262626;
     --breeze-color-breeze-line: #303030;
     --breeze-color-breeze-line-strong: #3d3d3d;
+    --breeze-color-breeze-control: #3b3b3b;
+    --breeze-color-breeze-control-line: #858585;
+    --breeze-color-breeze-control-disabled: #757575;
     --breeze-color-breeze-ink: #f2f2f2;
     --breeze-color-breeze-ink-2: #b4b4b4;
     --breeze-color-breeze-ink-3: #949494;
@@ -129,6 +136,9 @@
   --breeze-color-breeze-sunken: #262626;
   --breeze-color-breeze-line: #303030;
   --breeze-color-breeze-line-strong: #3d3d3d;
+  --breeze-color-breeze-control: #3b3b3b;
+  --breeze-color-breeze-control-line: #858585;
+  --breeze-color-breeze-control-disabled: #757575;
   --breeze-color-breeze-ink: #f2f2f2;
   --breeze-color-breeze-ink-2: #b4b4b4;
   --breeze-color-breeze-ink-3: #949494;

@@ -70,7 +70,7 @@ describe('Checkbox', () => {
     expect(indicator).toHaveClass(
       'breeze:block-breeze-4',
       'breeze:inline-breeze-4',
-      'breeze:border-breeze-ink-3',
+      'breeze:border-breeze-control-line',
     );
     expect(indicator).toHaveClass(
       'breeze:data-[focus-visible]:outline-2',
