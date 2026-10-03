@@ -299,6 +299,31 @@ describe('Menu', () => {
     );
   });
 
+  it.each([
+    { minimum: '256px', width: undefined },
+    { minimum: '256px', width: 'md' },
+    { minimum: '208px', width: 'sm' },
+  ] as const)(
+    'sets a $minimum minimum width for width $width, never narrower than the trigger',
+    ({ minimum, width }) => {
+      renderBreeze(
+        <Menu
+          defaultOpen
+          getItem={(item) => item.descriptor}
+          items={actions}
+          trigger="Account actions"
+          width={width}
+        />,
+      );
+
+      const popover = screen.getByRole('menu').closest('.breeze-popover');
+
+      expect(popover?.className).toContain(
+        `breeze:min-inline-[max(${minimum},var(--trigger-width))]`,
+      );
+    },
+  );
+
   it('names sections by their header and divides neighbouring groups', () => {
     renderBreeze(
       <Menu
