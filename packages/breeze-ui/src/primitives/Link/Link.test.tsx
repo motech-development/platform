@@ -46,7 +46,7 @@ describe('Link', () => {
     expect(link).toHaveAttribute('rel', 'external');
     expect(link).toHaveAttribute('target', '_blank');
     expect(link).toHaveAttribute('title', 'Download ledger');
-    expect(link).toHaveClass('breeze:underline');
+    expect(link).toHaveClass('breeze:no-underline');
   });
 
   it('delegates opted-in same-origin navigation and its transition types', async () => {

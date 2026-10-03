@@ -247,4 +247,24 @@ describe('Button', () => {
     expect(button).toHaveAttribute('aria-haspopup', 'menu');
     expect(button).toHaveAccessibleDescription('You can publish later.');
   });
+
+  it('renders quiet as a single-size text action', () => {
+    renderBreeze(
+      <>
+        <Button size="sm" variant="quiet">
+          Small
+        </Button>
+        <Button size="lg" variant="quiet">
+          Large
+        </Button>
+      </>,
+    );
+    const small = screen.getByRole('button', { name: 'Small' });
+
+    expect(small).toHaveClass('breeze:border-0', 'breeze:font-normal');
+    expect(small).not.toHaveClass('breeze:min-block-breeze-8');
+    expect(small.className).toBe(
+      screen.getByRole('button', { name: 'Large' }).className,
+    );
+  });
 });
