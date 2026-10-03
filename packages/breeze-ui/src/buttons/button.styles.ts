@@ -2,7 +2,7 @@ export const buttonVariants = {
   base: {},
   compound: {
     loading: {
-      danger: 'breeze:bg-breeze-on-brand/35',
+      danger: 'breeze:bg-breeze-on-danger/35',
       primary: 'breeze:bg-breeze-on-brand/35',
       quiet: 'breeze:bg-breeze-line-strong',
       secondary: 'breeze:bg-breeze-line-strong',
@@ -17,7 +17,7 @@ export const buttonVariants = {
   },
   variant: {
     danger:
-      'breeze:border-transparent breeze:bg-breeze-danger-fill breeze:text-breeze-on-brand breeze:data-[hovered]:bg-breeze-danger-hover breeze:data-[pressed]:bg-breeze-danger-hover',
+      'breeze:border-transparent breeze:bg-breeze-danger-fill breeze:text-breeze-on-danger breeze:data-[hovered]:bg-breeze-danger-hover breeze:data-[pressed]:bg-breeze-danger-hover',
     primary:
       'breeze:border-transparent breeze:bg-breeze-brand breeze:text-breeze-on-brand breeze:data-[hovered]:bg-breeze-brand-hover breeze:data-[pressed]:bg-breeze-brand-hover',
     quiet:
