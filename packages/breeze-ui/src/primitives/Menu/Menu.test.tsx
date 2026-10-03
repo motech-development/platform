@@ -407,6 +407,47 @@ describe('Menu', () => {
     expect(onAction).toHaveBeenCalledExactlyOnceWith(companies[1]);
   });
 
+  it('shows a destructive item in the danger colour', () => {
+    renderBreeze(
+      <Menu
+        defaultOpen
+        getItem={(item) => item}
+        items={
+          [
+            { id: 'replace', label: 'Replace' },
+            { id: 'remove', label: 'Remove', tone: 'danger' },
+          ] satisfies MenuItemDescriptor[]
+        }
+        trigger="Attachment actions"
+      />,
+    );
+
+    expect(screen.getByRole('menuitem', { name: 'Remove' })).toHaveClass(
+      'breeze:text-breeze-danger',
+    );
+    expect(screen.getByRole('menuitem', { name: 'Replace' })).not.toHaveClass(
+      'breeze:text-breeze-danger',
+    );
+  });
+
+  it('reserves no icon space when no item has an icon', () => {
+    renderBreeze(
+      <Menu
+        defaultOpen
+        getItem={(item) => item}
+        items={[
+          { id: 'download', label: 'Download' },
+          { id: 'replace', label: 'Replace' },
+        ]}
+        trigger="Attachment actions"
+      />,
+    );
+
+    expect(
+      screen.getByRole('menuitem', { name: 'Download' }).firstElementChild,
+    ).toHaveTextContent('Download');
+  });
+
   it('falls back to visible badge text when its accessible label is blank', () => {
     renderBreeze(
       <Menu

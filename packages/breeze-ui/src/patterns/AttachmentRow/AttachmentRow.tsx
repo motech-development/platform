@@ -7,7 +7,7 @@ import {
 import { Button } from '../../primitives/Button/Button';
 import type { IconName } from '../../primitives/Icon/Icon';
 import { Icon } from '../../primitives/Icon/Icon';
-import { Menu } from '../../primitives/Menu/Menu';
+import { Menu, type MenuSectionDescriptor } from '../../primitives/Menu/Menu';
 import { Skeleton } from '../../primitives/Skeleton/Skeleton';
 import { useBreezeContext } from '../../provider/BreezeContext';
 
@@ -68,6 +68,10 @@ export interface AttachmentRowAction {
   id: string;
   /** Visible and accessible action label. */
   label: string;
+  /** Groups the action with others sharing the section `id`, divided from the rest. */
+  section?: MenuSectionDescriptor;
+  /** Shows a destructive action, such as Remove, in the danger colour. */
+  tone?: 'danger';
 }
 
 interface AttachmentRowContentBaseProps {
@@ -363,6 +367,7 @@ export function AttachmentRow(props: Readonly<AttachmentRowProps>) {
             getItem={(action) => action}
             items={actions}
             onAction={onAction}
+            placement="bottom end"
             triggerAriaLabel={`${context.messages.attachmentMoreActions}: ${filename}`}
             triggerIcon="more"
             width="sm"

@@ -38,6 +38,7 @@ interface CollectionPopoverProps {
   /** Caps the surface's block size below the available viewport space. */
   maxHeight?: number;
   onOpenChange: (open: boolean) => void;
+  placement?: 'bottom end' | 'bottom start';
   triggerRef: RefObject<Element | null>;
 }
 
@@ -52,6 +53,7 @@ export default function CollectionPopover({
   isOpen: requestedOpen,
   maxHeight,
   onOpenChange,
+  placement = 'bottom start',
   triggerRef,
 }: Readonly<CollectionPopoverProps>) {
   const host = useOverlayPortal();
@@ -211,7 +213,7 @@ export default function CollectionPopover({
       maxHeight={maxHeight}
       offset={6}
       onOpenChange={onOpenChange}
-      placement="bottom start"
+      placement={placement}
       // Defer pointer dismissal to Breeze's provider-document policy, while
       // retaining React Aria's keyboard/focus dismissal behavior.
       shouldCloseOnInteractOutside={(element) =>

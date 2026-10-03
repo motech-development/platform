@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, expectTypeOf, it, vi } from 'vitest';
 import renderBreeze from '../../../test/render';
@@ -413,6 +413,42 @@ describe('AttachmentRow', () => {
     await user.click(await screen.findByRole('menuitem', { name: 'Download' }));
 
     expect(onAction).toHaveBeenCalledExactlyOnceWith(downloadAction);
+  });
+
+  it('divides a destructive action from the others and shows it in the danger colour', async () => {
+    const user = userEvent.setup();
+    const onAction = vi.fn<(action: AttachmentRowAction) => void>();
+    const removeAction = {
+      id: 'remove',
+      label: 'Remove',
+      section: { id: 'remove' },
+      tone: 'danger',
+    } satisfies AttachmentRowAction;
+
+    renderBreeze(
+      <AttachmentRow
+        actions={[{ id: 'replace', label: 'Replace' }, removeAction]}
+        fileType="document"
+        filename="receipt.pdf"
+        onAction={onAction}
+        sizeBytes={84_000}
+        status="Uploaded"
+      />,
+    );
+
+    await user.click(
+      screen.getByRole('button', { name: 'More actions: receipt.pdf' }),
+    );
+
+    const menu = await screen.findByRole('menu');
+    const remove = within(menu).getByRole('menuitem', { name: 'Remove' });
+
+    expect(within(menu).getAllByRole('separator')).toHaveLength(1);
+    expect(remove).toHaveClass('breeze:text-breeze-danger');
+
+    await user.click(remove);
+
+    expect(onAction).toHaveBeenCalledExactlyOnceWith(removeAction);
   });
 
   it('replaces unavailable attachment details with a labelled loading progress bar', () => {

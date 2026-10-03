@@ -36,9 +36,20 @@ remain available.
 
 Pass your application values in `items`. Use `getItem` to provide each value's
 `MenuItemDescriptor`: `id` and `label` are required, while `description`,
-`icon` or `initials`, `badge`, `disabled` and `section` are optional. Give each item a unique `id` within the
+`icon` or `initials`, `badge`, `disabled`, `section` and `tone` are optional. Give each item a unique `id` within the
 menu. Keep labels concise; use descriptions for a short explanation and icons
-when they help people scan the choices.
+when they help people scan the choices. When any item has an icon, items
+without one keep its space so every label lines up; a menu without icons starts
+its labels at the edge.
+
+## Destructive actions
+
+Set `tone: 'danger'` on an action that removes or discards something, such as
+Remove, to show it in the danger colour. Place it last, in its own `section`,
+so a divider separates it from the other actions. The action runs when
+selected; confirm its result in the page, as with any other action.
+
+<Canvas of={Stories.DestructiveAction} />
 
 ## Group actions into sections
 
@@ -61,6 +72,13 @@ such as a company switcher; `sm` is 208px and suits a short list of actions,
 such as the file actions in `AttachmentRow`.
 
 <Canvas of={Stories.NarrowWidth} />
+
+## Placement
+
+The menu opens below its trigger with their start edges aligned. Set
+`placement` to `bottom end` to align their end edges instead, for a trigger at
+the end of a row. Start and end follow the provider's text direction, and the
+menu can adjust its position to fit the available space.
 
 ## Panels that are not menus
 
