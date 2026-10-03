@@ -1,4 +1,10 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import renderBreeze from '../../../test/render';
@@ -47,6 +53,42 @@ describe('FileDropZone', () => {
     expect(onFilesAdded).toHaveBeenCalledExactlyOnceWith([pdf]);
     expect(screen.getByRole('status')).toHaveTextContent('Added 1 file.');
     expect(screen.getByRole('status')).toHaveAttribute('aria-live', 'polite');
+  });
+
+  it.each([false, true])(
+    'names the drop area from a field label above it and describes its limits when compact is %s',
+    (compact) => {
+      renderBreeze(
+        <FileDropZone
+          accept=".pdf,image/*"
+          compact={compact}
+          label="Invoice or receipt"
+          maxSize={5_000_000}
+          onFilesAdded={vi.fn()}
+        />,
+      );
+
+      const zone = screen.getByRole('region', { name: 'Invoice or receipt' });
+
+      expect(zone).not.toContainElement(screen.getByText('Invoice or receipt'));
+      expect(zone).toHaveAccessibleDescription(
+        'Drop files here or choose files. Accepted file types: .pdf, image/*. ' +
+          'Maximum file size: 5 megabytes.',
+      );
+      expect(
+        within(zone).getByRole('button', { name: 'Choose files' }),
+      ).toBeEnabled();
+    },
+  );
+
+  it('describes the drop area with its instructions alone when it has no limits', () => {
+    renderBreeze(
+      <FileDropZone label="Add attachments" onFilesAdded={vi.fn()} />,
+    );
+
+    expect(
+      screen.getByRole('region', { name: 'Add attachments' }),
+    ).toHaveAccessibleDescription('Drop files here or choose files.');
   });
 
   it('uses the same validation for dropped files and announces type, size, and count rejections', () => {
