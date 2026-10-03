@@ -1,5 +1,9 @@
 export const fieldVariants = {
   base: {
+    choiceDescription:
+      'breeze:m-0 breeze:text-breeze-xs breeze:font-normal breeze:leading-[calc(1/0.75)] breeze:text-breeze-ink-3',
+    choiceError:
+      'breeze:m-0 breeze:text-breeze-xs breeze:font-normal breeze:leading-[calc(1/0.75)] breeze:text-breeze-danger',
     control:
       'breeze:relative breeze:inline-grid breeze:min-inline-0 breeze:inline-full',
     description:

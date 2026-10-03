@@ -67,9 +67,14 @@ describe('Checkbox', () => {
 
     expect(checkbox).toHaveFocus();
     expect(indicator).toHaveAttribute('data-focus-visible', 'true');
-    expect(indicator).toHaveClass('breeze:border-breeze-ink-3');
+    expect(indicator).toHaveClass(
+      'breeze:block-breeze-4',
+      'breeze:inline-breeze-4',
+      'breeze:border-breeze-ink-3',
+    );
     expect(indicator).toHaveClass(
       'breeze:data-[focus-visible]:outline-2',
+      'breeze:data-[focus-visible]:outline-offset-2',
       'breeze:data-[focus-visible]:outline-solid',
       'breeze:data-[focus-visible]:outline-breeze-brand',
     );
@@ -93,6 +98,41 @@ describe('Checkbox', () => {
     expect(checkbox).toBeRequired();
     expect(checkbox).toHaveAccessibleDescription(
       'Confirm the details before continuing. Confirmation is required.',
+    );
+  });
+
+  it('sets supporting text beside the box inside the label', () => {
+    renderBreeze(
+      <Checkbox
+        description="Money a supplier paid back to you"
+        label="This is a refund"
+      />,
+    );
+
+    const checkbox = screen.getByRole('checkbox', {
+      name: 'This is a refund',
+    });
+    const description = screen.getByText('Money a supplier paid back to you');
+
+    expect(checkbox).toHaveAccessibleDescription(
+      'Money a supplier paid back to you',
+    );
+    expect(description.closest('label')).toBe(checkbox.closest('label'));
+    expect(description).toHaveClass('breeze:leading-[calc(1/0.75)]');
+  });
+
+  it('marks the box disabled without dimming the label', () => {
+    renderBreeze(<Checkbox defaultSelected disabled label="Refund" />);
+
+    const checkbox = screen.getByRole('checkbox', { name: 'Refund' });
+    const indicator = checkbox
+      .closest('label')
+      ?.querySelector('span[data-selected]');
+
+    expect(checkbox).toBeDisabled();
+    expect(indicator).toHaveAttribute('data-disabled', 'true');
+    expect(checkbox.closest('label')).not.toHaveClass(
+      'breeze:data-[disabled]:opacity-60',
     );
   });
 
@@ -146,36 +186,17 @@ describe('Checkbox', () => {
       expect(skeleton).toHaveClass('breeze:rounded-breeze-sm');
     });
 
-    const placeholders = Array.from(
-      checkbox.closest('label')?.querySelectorAll('span') ?? [],
-    ).filter((element) =>
-      String(element.className).includes('breeze:pointer-events-none'),
-    );
-    const indicatorPlaceholder = placeholders.find((element) =>
-      String(element.className).includes('breeze:[grid-area:1/1]'),
-    );
-    const labelPlaceholder = placeholders.find((element) =>
-      String(element.className).includes('breeze:[grid-area:1/2]'),
-    );
+    const indicatorPlaceholder = allSkeletons[0]?.parentElement;
 
     expect(indicatorPlaceholder).toHaveAttribute('aria-hidden', 'true');
     expect(indicatorPlaceholder).toHaveClass(
-      'breeze:block-breeze-5',
-      'breeze:inline-breeze-5',
+      'breeze:block-breeze-4',
+      'breeze:inline-breeze-4',
     );
     expect(indicatorPlaceholder).not.toHaveClass(
       'breeze:overflow-hidden',
       'breeze:rounded-breeze-chip',
     );
-    expect(indicatorPlaceholder?.querySelector('progress')).toHaveClass(
-      'breeze:rounded-breeze-sm',
-    );
-    expect(labelPlaceholder).toHaveClass('breeze:[grid-area:1/2]');
-    expect(labelPlaceholder).not.toHaveClass('breeze:rounded-breeze-chip');
-    expect(labelPlaceholder?.querySelector('progress')).toHaveClass(
-      'breeze:rounded-breeze-sm',
-    );
-    expect(placeholders).toHaveLength(2);
     expect(checkbox).toHaveAttribute('name', 'alerts');
     expect(checkbox).toHaveAttribute('value', 'email');
 
