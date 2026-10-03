@@ -17,9 +17,7 @@ export default function DescriptorContent({
     <>
       {descriptor.icon && <Icon name={descriptor.icon} size="sm" />}
       <span className={collectionVariants.base.content}>
-        <span className={collectionVariants.base.label}>
-          {descriptor.label}
-        </span>
+        <span>{descriptor.label}</span>
         {descriptor.description && (
           <span className={collectionVariants.base.description}>
             {descriptor.description}
@@ -36,12 +34,14 @@ export default function DescriptorContent({
           </Badge>
         </span>
       )}
-      <span
-        aria-hidden="true"
-        className={collectionVariants.base.selectedIndicator}
-      >
-        {isSelected && <Icon name="check" size="sm" />}
-      </span>
+      {isSelected && (
+        <span
+          aria-hidden="true"
+          className={collectionVariants.base.selectedIndicator}
+        >
+          <Icon name="check" size="sm" />
+        </span>
+      )}
     </>
   );
 }

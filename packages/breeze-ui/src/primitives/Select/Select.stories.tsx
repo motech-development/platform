@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useState } from 'react';
-import { expect, within } from 'storybook/test';
+import { expect, userEvent, within } from 'storybook/test';
 import type { ItemDescriptor } from '../../collections/item.types';
 import { Select } from './Select';
 
@@ -96,6 +96,9 @@ export const ReadOnly: Story = {
     await expect(readOnlyBackground).toBe(
       resolvedTokenColour(readOnlyTrigger, '--breeze-color-breeze-sunken'),
     );
+    await expect(getComputedStyle(readOnlyTrigger).color).toBe(
+      resolvedTokenColour(readOnlyTrigger, '--breeze-color-breeze-ink-2'),
+    );
   },
   render: () => (
     <div className="breeze-story-stack">
@@ -115,6 +118,49 @@ export const ReadOnly: Story = {
       />
     </div>
   ),
+};
+
+/** The open listbox marks the selected option in semibold brand text with a check. */
+export const SelectedOption: Story = {
+  args: {
+    defaultValue: choices[1],
+  },
+  play: async ({ canvasElement }) => {
+    await userEvent.click(
+      within(canvasElement).getByRole('button', { name: /Payment method/ }),
+    );
+
+    const listbox = within(
+      await within(canvasElement.ownerDocument.body).findByRole('listbox'),
+    );
+    const measure = (option: HTMLElement) => {
+      const style = getComputedStyle(option);
+
+      return {
+        background: style.backgroundColor,
+        borderRadius: style.borderRadius,
+        fontWeight: style.fontWeight,
+        // The computed size ignores the popover's entry transform.
+        height: style.height,
+        paddingInline: style.paddingInlineStart,
+      };
+    };
+    const selected = listbox.getByRole('option', { name: /Cash/ });
+
+    await expect(measure(selected)).toEqual({
+      background: resolvedTokenColour(
+        selected,
+        '--breeze-color-breeze-brand-soft',
+      ),
+      borderRadius: '6px',
+      fontWeight: '600',
+      height: '34.5625px',
+      paddingInline: '10px',
+    });
+    await expect(
+      measure(listbox.getByRole('option', { name: /Card/ })),
+    ).toMatchObject({ fontWeight: '400', height: '34.5625px' });
+  },
 };
 
 /** Loading keeps the control footprint while preventing interaction. */

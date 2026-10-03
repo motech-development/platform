@@ -98,10 +98,31 @@ describe('DatePicker', () => {
     expect(trigger).toHaveAttribute('aria-expanded', 'false');
     expect(trigger).not.toHaveAttribute('aria-controls');
     expect(trigger).toHaveTextContent('3 September 2026');
-    expect(trigger.lastElementChild?.tagName.toLowerCase()).toBe('svg');
+    expect(trigger.lastElementChild?.querySelector('svg')).not.toBeNull();
     expect(
       container.querySelector('input[type="date"]'),
     ).not.toBeInTheDocument();
+  });
+
+  it('marks trigger focus with the brand border and ring rather than a hover border', async () => {
+    const user = userEvent.setup();
+
+    renderBreeze(<DatePicker label="Date" placeholder="Choose a date" />);
+    const trigger = screen.getByRole('button', { name: 'Date Choose a date' });
+
+    expect(trigger).not.toHaveClass(
+      'breeze:data-[hovered]:border-breeze-brand',
+    );
+
+    await user.tab();
+
+    expect(trigger).toHaveAttribute('data-focused', 'true');
+    expect(trigger).toHaveClass(
+      'breeze:gap-breeze-2',
+      'breeze:data-[focused]:border-breeze-brand',
+      'breeze:data-[focused]:ring-3',
+      'breeze:data-[focused]:ring-breeze-brand/15',
+    );
   });
 
   it('formats the trigger date using the provider locale', () => {
@@ -621,7 +642,7 @@ describe('DatePicker', () => {
       screen.getByRole('dialog', { name: 'Date' }),
     ).getByRole('button', { name: 'Today' });
 
-    expect(todayButton.firstElementChild).toHaveAttribute('lang', 'en-GB');
+    expect(todayButton.parentElement).toHaveAttribute('lang', 'en-GB');
 
     await user.click(todayButton);
 
@@ -648,7 +669,7 @@ describe('DatePicker', () => {
     await user.click(screen.getByRole('button', { name: /^Date / }));
     const todayButton = screen.getByRole('button', { name: "Aujourd'hui" });
 
-    expect(todayButton.firstElementChild).toHaveAttribute('lang', 'fr-FR');
+    expect(todayButton.parentElement).toHaveAttribute('lang', 'fr-FR');
   });
 
   it('restores uncontrolled values after owning and externally associated form resets', async () => {

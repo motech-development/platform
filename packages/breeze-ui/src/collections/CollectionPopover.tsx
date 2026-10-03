@@ -26,12 +26,17 @@ function isNode(value: EventTarget | null): value is Node {
   );
 }
 
+/** The design's listbox surfaces stop growing at 288px and scroll. */
+export const listBoxMaxHeight = 288;
+
 interface CollectionPopoverProps {
   children: ReactNode;
   className: string;
   /** Minimum viewport edge margin used while positioning the surface. */
   containerPadding?: number;
   isOpen: boolean;
+  /** Caps the surface's block size below the available viewport space. */
+  maxHeight?: number;
   onOpenChange: (open: boolean) => void;
   triggerRef: RefObject<Element | null>;
 }
@@ -45,6 +50,7 @@ export default function CollectionPopover({
   className,
   containerPadding,
   isOpen: requestedOpen,
+  maxHeight,
   onOpenChange,
   triggerRef,
 }: Readonly<CollectionPopoverProps>) {
@@ -202,6 +208,8 @@ export default function CollectionPopover({
       isKeyboardDismissDisabled={!layer.topmost}
       isNonModal
       isOpen={open}
+      maxHeight={maxHeight}
+      offset={6}
       onOpenChange={onOpenChange}
       placement="bottom start"
       // Defer pointer dismissal to Breeze's provider-document policy, while
