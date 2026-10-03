@@ -43,6 +43,12 @@ Labels wrap and increase the height of the button:
 
 <Canvas of={Stories.LongLabel} />
 
+## Icon
+
+`icon` places a 16px Breeze icon 8px before the label, in every variant and size. The icon is decorative, so the label remains the accessible name. While loading, the icon is hidden with the label.
+
+<Canvas of={Stories.WithIcon} />
+
 ## Loading
 
 Set `loading` while the action is in progress. The label is replaced by a skeleton, and the button cannot be activated again.
