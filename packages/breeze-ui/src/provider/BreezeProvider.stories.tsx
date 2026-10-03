@@ -8,7 +8,7 @@ const meta = {
     locale: 'en-GB',
   },
   component: BreezeProvider,
-  title: 'Foundation/BreezeProvider',
+  title: 'Foundations/BreezeProvider',
 } satisfies Meta<typeof BreezeProvider>;
 
 export default meta;
