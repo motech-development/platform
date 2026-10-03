@@ -53,6 +53,28 @@ must still identify the item.
 
 <Canvas of={Stories.Sections} />
 
+## Menu width
+
+The open menu fits its items and is never narrower than its trigger. `width`
+sets its minimum width: `md`, the default, is 256px and suits a list of names
+such as a company switcher; `sm` is 208px and suits a short list of actions,
+such as the file actions in `AttachmentRow`.
+
+<Canvas of={Stories.NarrowWidth} />
+
+## Panels that are not menus
+
+A menu contains only actions, optionally grouped into labelled sections. Do not
+use `Menu` for a panel that also shows information people read but cannot act
+on, places controls inside a row or header, or offers a toggle group. Assistive
+technology presents a menu as its menu items alone, so plain-text rows are
+skipped, and the menu's arrow keys cannot reach a button placed inside an item
+or a section header.
+
+An account panel that lists notifications, gives one of them a Download action,
+offers Mark all as read and an `AppearanceControl`, and then links to settings
+is such a panel. Build it as a `Popover` with application content instead.
+
 ## Respond to a selection
 
 `onAction` receives the selected application item from `items`, as

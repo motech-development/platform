@@ -114,6 +114,7 @@ export type {
   MenuItemDescriptor,
   MenuProps,
   MenuSectionDescriptor,
+  MenuWidth,
 } from './primitives/Menu/Menu';
 export { Menu } from './primitives/Menu/Menu';
 export type { NumberFieldProps } from './primitives/NumberField/NumberField';

@@ -41,7 +41,7 @@ const variants = {
     menu: 'breeze:min-inline-0 breeze:outline-none',
     // Shrink-wraps its items, as the prototype's menus do, instead of the shared 320px popover width.
     popover:
-      'breeze:inline-auto breeze:min-inline-[max(256px,var(--trigger-width))] breeze:max-inline-[calc(100vw-24px)] breeze:overflow-auto breeze:rounded-breeze-panel breeze:border breeze:border-solid breeze:border-breeze-line breeze:bg-breeze-surface breeze:shadow-breeze-overlay',
+      'breeze:inline-auto breeze:max-inline-[calc(100vw-24px)] breeze:overflow-auto breeze:rounded-breeze-panel breeze:border breeze:border-solid breeze:border-breeze-line breeze:bg-breeze-surface breeze:shadow-breeze-overlay',
     separator:
       'breeze:m-0 breeze:block-breeze-px breeze:border-0 breeze:bg-breeze-line',
     // The prototype's trigger sets no text size, so it keeps the body's line height.
@@ -53,10 +53,16 @@ const variants = {
     triggerLoadingStatus: 'breeze:sr-only',
   },
   compound: {},
-  size: {},
+  size: {
+    md: 'breeze:min-inline-[max(256px,var(--trigger-width))]',
+    sm: 'breeze:min-inline-[max(208px,var(--trigger-width))]',
+  },
   state: {},
   variant: {},
 } as const;
+
+/** Minimum menu widths: `sm` is 208px and `md` is 256px. */
+export type MenuWidth = keyof typeof variants.size;
 
 /** A group of menu items, divided from neighbouring groups. */
 export interface MenuSectionDescriptor {
@@ -95,6 +101,8 @@ interface MenuCommonProps<T> {
   onAction?: (item: T) => void;
   /** Shows a loading state on the trigger and prevents opening the menu. */
   loading?: boolean;
+  /** Minimum width of the open menu, never narrower than its trigger. Defaults to `md`. */
+  width?: MenuWidth;
 }
 
 interface LabelledTriggerProps {
@@ -296,6 +304,7 @@ export function Menu<T>({
   trigger,
   triggerAriaLabel,
   triggerIcon,
+  width = 'md',
 }: Readonly<MenuProps<T>>) {
   useBreezeContext();
 
@@ -397,7 +406,7 @@ export function Menu<T>({
           </AriaButton>
         )}
         <CollectionPopover
-          className={variants.base.popover}
+          className={[variants.base.popover, variants.size[width]].join(' ')}
           isOpen={open}
           onOpenChange={handleOpenChange}
           triggerRef={triggerRef}

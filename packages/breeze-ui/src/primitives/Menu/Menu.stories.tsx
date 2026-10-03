@@ -126,6 +126,35 @@ export const Sections: Story = {
   ),
 };
 
+const fileActions = [
+  { icon: 'document', id: 'open', label: 'Open full screen' },
+  { icon: 'download', id: 'download', label: 'Download' },
+  { icon: 'upload', id: 'replace', label: 'Replace' },
+  { icon: 'delete', id: 'remove', label: 'Remove' },
+] satisfies ItemDescriptor[];
+
+/** A short list of file actions opened at the narrower `sm` width. */
+export const NarrowWidth: Story = {
+  args: {
+    items: fileActions,
+    trigger: undefined,
+    triggerAriaLabel: 'More actions',
+    triggerIcon: 'more',
+    width: 'sm',
+  },
+  play: async () => {
+    const menu = await within(document.body).findByRole('menu', {
+      name: 'More actions',
+    });
+    const popover = menu.closest<HTMLElement>('.breeze-popover');
+
+    if (!popover) throw new Error('The menu popover was not rendered.');
+
+    // Layout widths ignore the entry animation's scale.
+    await expect(popover.offsetWidth).toBe(208);
+  },
+};
+
 /** An icon-only trigger, named by `triggerAriaLabel`. */
 export const IconOnlyTrigger: Story = {
   args: {

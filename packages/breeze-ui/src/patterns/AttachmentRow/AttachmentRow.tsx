@@ -365,6 +365,7 @@ export function AttachmentRow(props: Readonly<AttachmentRowProps>) {
             onAction={onAction}
             triggerAriaLabel={`${context.messages.attachmentMoreActions}: ${filename}`}
             triggerIcon="more"
+            width="sm"
           />
         </span>
       ) : null}
