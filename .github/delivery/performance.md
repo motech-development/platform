@@ -1,6 +1,6 @@
-# Delivery performance measurements
+# Delivery performance history
 
-This document records the pre-change reference and the measurement protocol for the dependency and workflow-transfer optimisation. Step durations come from GitHub Actions timestamps; cache post-save time is included where the old cache incurred it.
+This document preserves historical delivery performance measurements and the evidence behind the optimisations. Temporary workflow timing instrumentation used to collect per-step dependency, package, transfer, and ClamAV breakdowns has been removed; the capture protocol below is retired. The recorded observations and source links remain historical evidence.
 
 ## Pre-change reference
 
@@ -13,11 +13,11 @@ This document records the pre-change reference and the measurement protocol for 
 | Small-value transfer       |                                                  1s restore for the cache-backed `.env.production` file, plus cache post-processing | [Preview run 29852527144](https://github.com/motech-development/platform/actions/runs/29852527144), client shard 1   |
 | Overall representative job |                                                                                    145s for accounts API; 150s for accounts storage | [Preview run 29852527144](https://github.com/motech-development/platform/actions/runs/29852527144)                   |
 
-## Post-change capture
+## Historical post-change capture (retired protocol)
 
-The reusable dependency action writes `Dependency setup (<route>)` to the job summary and distinguishes exact installed cache hit, archive fallback, and cold install. Every selected Deployment Unit records its manifest-rooted workspace package build, and the API job records the small-value client configuration transfer. GitHub's job timestamps remain the source for overall representative job timing.
+At the time, the reusable dependency action wrote `Dependency setup (<route>)` to the job summary and distinguished exact installed cache hit, archive fallback, and cold install. Selected Deployment Unit jobs also recorded their manifest-rooted workspace package build, and the API job recorded the small-value client configuration transfer. GitHub's job timestamps supplied the overall representative job timing. The temporary per-step summaries have since been removed.
 
-Capture the first post-change run for each route in this table:
+The first captured post-change run for each route is listed here:
 
 | Path                       | Post-change run                                                                                                                                  |               Duration |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------: |
@@ -28,7 +28,7 @@ Capture the first post-change run for each route in this table:
 | Small-value transfer       | [Preview run 29937430985](https://github.com/motech-development/platform/actions/runs/29937430985), accounts API `Client configuration transfer` |                     1s |
 | Overall representative job | [Preview run 29937430985](https://github.com/motech-development/platform/actions/runs/29937430985), accounts API and storage                     | 140s API; 186s storage |
 
-Do not compare queued time or unrelated deployment time. Use step timestamps for cache/build/transfer rows and job `startedAt`/`completedAt` for the overall row.
+The original comparisons excluded queued time and unrelated deployment time. They used step timestamps for cache, build, and transfer rows, and job `startedAt`/`completedAt` for the overall row.
 
 Temporary validation PR [#1505](https://github.com/motech-development/platform/pull/1505) exercised the two missing routes without running a Deployment Unit. Commit [`050d0468`](https://github.com/motech-development/platform/commit/050d0468950c37c2505035c4b9455188fb0b9f0f) changed only the exact installed-dependencies namespace: all five jobs missed that cache, restored the unchanged 273 MB Yarn archive by its exact key, and completed the immutable install. Commit [`998e97c1`](https://github.com/motech-development/platform/commit/998e97c12c1f809c44ff333116690bc6490b8490) changed both cache namespaces and the archive restore prefix: both tiers missed in all five jobs, and every immutable install completed successfully. The cold route averaged 13.4s (20.6%) slower under these concurrent QA workloads.
 

@@ -1,7 +1,3 @@
-      - name: Start ClamAV timing
-        id: clamav-timing
-        run: echo "cache-started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
-
       - name: Check ClamAV binary cache compatibility
         id: clamav-cache
         shell: bash
@@ -28,39 +24,20 @@
         if: steps.clamav-cache.outputs.supported == 'true'
         env:
           CACHE_MATCHED_KEY: ${{ steps.clamav-binaries.outputs.cache-matched-key }}
-          CACHE_STARTED_AT: ${{ steps.clamav-timing.outputs.cache-started-at }}
         run: |
-          validation_started_at="$(date +%s)"
-          restore_elapsed=$(( validation_started_at - CACHE_STARTED_AT ))
           if [[ -z "$CACHE_MATCHED_KEY" ]]; then
-            cache_state="miss"
             valid=false
           elif applications/core/anti-virus/scripts/cache.sh validate; then
-            cache_state="hit"
             valid=true
           else
-            cache_state="invalid"
             valid=false
             rm -rf applications/core/anti-virus/bin
           fi
-          validation_elapsed=$(( $(date +%s) - validation_started_at ))
           echo "valid=$valid" >> "$GITHUB_OUTPUT"
-          echo "| ClamAV cache restore | ${restore_elapsed}s ($cache_state) |" >> "$RUNNER_TEMP/delivery-timing.md"
-          echo "| ClamAV cache validation | ${validation_elapsed}s ($cache_state) |" >> "$RUNNER_TEMP/delivery-timing.md"
 
       - name: Build ClamAV binaries
-        env:
-          CACHE_VALID: ${{ steps.clamav-validation.outputs.valid }}
         run: |
-          started_at="$(date +%s)"
           yarn workspace @core/anti-virus predeploy
-          elapsed_seconds=$(( $(date +%s) - started_at ))
-          if [[ "$CACHE_VALID" == "true" ]]; then
-            route="cache hit"
-          else
-            route="source build"
-          fi
-          echo "| ClamAV source build ($route) | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
 
       - name: Save rebuilt ClamAV binaries
         if: steps.clamav-cache.outputs.supported == 'true' && steps.clamav-validation.outputs.valid != 'true'
@@ -71,7 +48,4 @@
 
       - name: Package anti-virus
         run: |
-          started_at="$(date +%s)"
           yarn workspace @core/anti-virus exec serverless package --stage $STAGE --package "$RUNNER_TEMP/anti-virus-package"
-          elapsed_seconds=$(( $(date +%s) - started_at ))
-          echo "| Anti-virus packaging | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"

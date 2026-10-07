@@ -1,7 +1,6 @@
       - name: Export client configuration
         id: client-config
         run: |
-          started_at="$(date +%s)"
           appsync_url="$(
             aws cloudformation describe-stacks \
               --stack-name "accounts-${STAGE}-api" \
@@ -15,5 +14,3 @@
           fi
           echo "appsync-url=$appsync_url" >> "$GITHUB_OUTPUT"
           echo "aws-region=$aws_region" >> "$GITHUB_OUTPUT"
-          elapsed_seconds=$(( $(date +%s) - started_at ))
-          echo "| Client configuration transfer | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"

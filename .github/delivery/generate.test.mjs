@@ -1335,11 +1335,15 @@ test('anti-virus deployments reuse only validated binaries from pinned build inp
     );
     assert.match(
       antiVirus,
-      /\| ClamAV cache restore \|[\s\S]*\| ClamAV cache validation \|/,
+      /if \[\[ -z "\$CACHE_MATCHED_KEY" \]\][\s\S]*valid=false[\s\S]*elif applications\/core\/anti-virus\/scripts\/cache\.sh validate; then[\s\S]*valid=true[\s\S]*else[\s\S]*valid=false[\s\S]*rm -rf applications\/core\/anti-virus\/bin[\s\S]*echo "valid=\$valid" >> "\$GITHUB_OUTPUT"/,
     );
     assert.match(
       antiVirus,
-      /- name: Build ClamAV binaries[\s\S]*\| ClamAV source build \([^)]*\) \|/,
+      /- name: Build ClamAV binaries\n        run: \|\n          yarn workspace @core\/anti-virus predeploy/,
+    );
+    assert.doesNotMatch(
+      antiVirus,
+      /timing|delivery-timing|started_at|elapsed_seconds|CACHE_VALID|cache_state/,
     );
     assert.match(
       antiVirus,
@@ -1347,7 +1351,7 @@ test('anti-virus deployments reuse only validated binaries from pinned build inp
     );
     assert.match(
       antiVirus,
-      /- name: Package anti-virus[\s\S]*serverless package --stage \$STAGE --package "\$RUNNER_TEMP\/anti-virus-package"[\s\S]*\| Anti-virus packaging \|/,
+      /- name: Package anti-virus\n        run: \|\n          yarn workspace @core\/anti-virus exec serverless package --stage \$STAGE --package "\$RUNNER_TEMP\/anti-virus-package"/,
     );
     assert.match(
       antiVirus,
@@ -1385,177 +1389,114 @@ test('anti-virus deployments reuse only validated binaries from pinned build inp
   assert.match(cacheScript, /cmp -s "\$BUILD_MANIFEST" "\$actual_manifest"/);
 });
 
-test('workflow timing evidence distinguishes every dependency and transfer path', async () => {
-  const [action, generated, measurements] = await Promise.all([
+test('delivery workflows preserve pipeline behavior without temporary timing instrumentation', async () => {
+  const [action, generated, measurements, readme] = await Promise.all([
     readFile(
       new URL('../actions/setup-dependencies/action.yml', import.meta.url),
       'utf8',
     ),
     generateWorkflows({ write: false }),
     readFile(new URL('./performance.md', import.meta.url), 'utf8'),
+    readFile(new URL('./README.md', import.meta.url), 'utf8'),
   ]);
 
-  const timingStep = action.match(
-    /    - name: Record dependency setup timing[\s\S]*?(?=\n    - name:|(?![\s\S]))/m,
-  )?.[0];
-  assert.ok(timingStep);
-  const timingScript = timingStep
-    .match(/^      run: \|\n([\s\S]+)$/m)?.[1]
-    ?.replace(/^ {8}/gm, '')
-    .trimEnd();
-  assert.ok(timingScript);
-
-  async function recordedRoute(installedCacheHit, archiveCacheHit) {
-    const temporaryDirectory = await mkdtemp(
-      join(tmpdir(), 'dependency-route-'),
-    );
-    const summary = join(temporaryDirectory, 'summary.md');
-    try {
-      await execFileAsync('bash', ['-c', timingScript], {
-        env: {
-          ...process.env,
-          ARCHIVE_CACHE_HIT: archiveCacheHit,
-          GITHUB_STEP_SUMMARY: summary,
-          INSTALLED_CACHE_HIT: installedCacheHit,
-          STARTED_AT: `${Math.floor(Date.now() / 1000)}`,
-        },
-      });
-      return await readFile(summary, 'utf8');
-    } finally {
-      await rm(temporaryDirectory, { recursive: true });
-    }
-  }
-
+  assert.doesNotMatch(action, /timing|GITHUB_STEP_SUMMARY|STARTED_AT/);
+  assert.doesNotMatch(action, /id: yarn-archives/);
   assert.match(
-    await recordedRoute('true', ''),
-    /^\| Measurement \| Duration \|\n\| --- \| ---: \|\n\| Dependency setup \(exact installed cache hit\) \| \d+s \|\n$/,
+    action,
+    /Restore Yarn archives[\s\S]*if: steps\.installed-dependencies\.outputs\.cache-hit != 'true'[\s\S]*restore-keys:/,
   );
-  assert.match(await recordedRoute('', 'false'), /archive fallback/);
-  assert.match(await recordedRoute('', ''), /cold install/);
+  assert.match(
+    action,
+    /Install dependencies[\s\S]*if: steps\.installed-dependencies\.outputs\.cache-hit != 'true'[\s\S]*run: yarn install --immutable/,
+  );
 
   const preview = generated['deploy-to-environment.yml'];
   const accountsData = workflowJob(preview, 'accounts-data');
-  assert.match(
+  assert.doesNotMatch(
     accountsData,
-    /\| Measurement \| Duration \|[\s\S]*\| --- \| ---: \|/,
-  );
-  assert.match(accountsData, /: > "\$RUNNER_TEMP\/delivery-timing\.md"/);
-  assert.match(
-    accountsData,
-    /Workspace package build[^\n]+>> "\$RUNNER_TEMP\/delivery-timing\.md"/,
+    /timing|delivery-timing|started_at|elapsed_seconds|GITHUB_STEP_SUMMARY/,
   );
   assert.match(
     accountsData,
-    /Record delivery timing summary[\s\S]*cat "\$RUNNER_TEMP\/delivery-timing\.md"/,
-  );
-  assert.equal(
-    accountsData.match(/name: Record delivery timing summary/g)?.length,
-    1,
-  );
-  const renderTimingScript = accountsData
-    .match(
-      /      - name: Record delivery timing summary[\s\S]*?^        run: \|\n([\s\S]*?)(?=^      - name:|^  #|(?![\s\S]))/m,
-    )?.[1]
-    ?.replace(/^ {10}/gm, '')
-    .trimEnd();
-  assert.ok(renderTimingScript);
-
-  const timingDirectory = await mkdtemp(join(tmpdir(), 'delivery-timing-'));
-  const timingSummary = join(timingDirectory, 'summary.md');
-  try {
-    await writeFile(
-      join(timingDirectory, 'delivery-timing.md'),
-      '| First measurement | 1s |\n| Second measurement | 2s |\n',
-    );
-    await execFileAsync('bash', ['-c', renderTimingScript], {
-      env: {
-        ...process.env,
-        GITHUB_STEP_SUMMARY: timingSummary,
-        RUNNER_TEMP: timingDirectory,
-      },
-    });
-    assert.equal(
-      await readFile(timingSummary, 'utf8'),
-      '| Measurement | Duration |\n| --- | ---: |\n| First measurement | 1s |\n| Second measurement | 2s |\n',
-    );
-  } finally {
-    await rm(timingDirectory, { recursive: true });
-  }
-
-  assert.match(
-    workflowJob(preview, 'accounts-api'),
-    /Client configuration transfer/,
+    /name: Build required workspace packages\n        run: \|\n          yarn workspaces foreach -Rpt --from '@accounts\/data' run package/,
   );
   assert.match(
-    workflowJob(preview, 'accounts-client'),
-    /name: Record delivery timing summary/,
+    accountsData,
+    /name: Record successful Deployment[\s\S]*name: Record failed Deployment/,
   );
 
-  for (const label of [
-    'Exact installed cache hit',
-    'Archive fallback',
-    'Cold install',
-    'Workspace package build',
-    'Small-value transfer',
-    'Overall representative job',
-  ]) {
-    assert.match(measurements, new RegExp(label, 'i'));
-  }
-  for (const label of [
-    'ClamAV source build',
-    'ClamAV cache restore',
-    'ClamAV cache validation',
-    'Anti-virus packaging',
-    'Anti-virus overall job',
-  ]) {
-    assert.match(measurements, new RegExp(label, 'i'));
-  }
+  const accountsApi = workflowJob(preview, 'accounts-api');
+  assert.doesNotMatch(
+    accountsApi,
+    /timing|delivery-timing|started_at|elapsed_seconds|GITHUB_STEP_SUMMARY/,
+  );
+  assert.match(
+    accountsApi,
+    /echo "appsync-url=\$appsync_url" >> "\$GITHUB_OUTPUT"/,
+  );
+  assert.match(
+    accountsApi,
+    /echo "aws-region=\$aws_region" >> "\$GITHUB_OUTPUT"/,
+  );
+
+  const accountsClient = workflowJob(preview, 'accounts-client');
+  assert.match(
+    accountsClient,
+    /REACT_APP_APPSYNC_URL:[\s\S]*\.env\.production/,
+  );
+  assert.doesNotMatch(
+    accountsClient,
+    /timing|delivery-timing|GITHUB_STEP_SUMMARY/,
+  );
+
+  assert.match(measurements, /retired/i);
   assert.match(measurements, /29852527144/);
+  assert.doesNotMatch(readme, /post-change capture protocol/i);
 });
 
 test('templates own shared operational workflow fragments', async () => {
-  const [
-    generator,
-    dependencyFragment,
-    apiFragment,
-    clientFragment,
-    timingFragment,
-  ] = await Promise.all([
-    readFile(new URL('./generate.mjs', import.meta.url), 'utf8'),
-    readFile(
-      new URL(
-        './templates/fragments/dependency-steps.yml.tmpl',
-        import.meta.url,
+  const [generator, dependencyFragment, apiFragment, clientFragment] =
+    await Promise.all([
+      readFile(new URL('./generate.mjs', import.meta.url), 'utf8'),
+      readFile(
+        new URL(
+          './templates/fragments/dependency-steps.yml.tmpl',
+          import.meta.url,
+        ),
+        'utf8',
       ),
-      'utf8',
-    ),
-    readFile(
-      new URL(
-        './templates/fragments/api-client-output.yml.tmpl',
-        import.meta.url,
+      readFile(
+        new URL(
+          './templates/fragments/api-client-output.yml.tmpl',
+          import.meta.url,
+        ),
+        'utf8',
       ),
-      'utf8',
-    ),
-    readFile(
-      new URL(
-        './templates/fragments/client-api-input.yml.tmpl',
-        import.meta.url,
+      readFile(
+        new URL(
+          './templates/fragments/client-api-input.yml.tmpl',
+          import.meta.url,
+        ),
+        'utf8',
       ),
-      'utf8',
-    ),
-    readFile(
-      new URL('./templates/fragments/timing-summary.yml.tmpl', import.meta.url),
-      'utf8',
-    ),
-  ]);
+    ]);
 
   assert.doesNotMatch(generator, /yarn workspaces foreach/);
   assert.doesNotMatch(generator, /AccountsApiUrl/);
   assert.doesNotMatch(generator, /clamav-binaries-v1/);
+  assert.doesNotMatch(generator, /timing-summary|delivery-timing/);
   assert.match(dependencyFragment, /yarn workspaces foreach/);
+  assert.doesNotMatch(
+    dependencyFragment,
+    /timing|delivery-timing|started_at|elapsed_seconds/,
+  );
   assert.match(apiFragment, /AccountsApiUrl/);
+  assert.doesNotMatch(
+    apiFragment,
+    /delivery-timing|started_at|elapsed_seconds/,
+  );
   assert.match(clientFragment, /needs\.accounts-api\.outputs\.appsync-url/);
-  assert.match(timingFragment, /cat "\$RUNNER_TEMP\/delivery-timing\.md"/);
 });
 
 test('generator emits deterministic static workflow graphs with one job per Deployment Unit', async () => {
@@ -1751,6 +1692,25 @@ test('generated preview workflow plans per pull request and selectively deploys 
     playwright,
     /run: yarn workspace @accounts\/client e2e-ci --shard=\$\{\{ matrix\.containers \}\}\/2/,
   );
+  const cacheRestore = playwright.match(
+    /- name: Restore cache\n[\s\S]*?background: true[\s\S]*?key: \$\{\{ runner\.os \}\}-cache-v4-\$\{\{ hashFiles\('\*\*\/yarn\.lock'\) \}\}/,
+  );
+  assert.ok(cacheRestore);
+  const restoreIndex = playwright.indexOf('- name: Restore cache');
+  const packageBuildIndex = playwright.indexOf(
+    '- name: Build required workspace packages',
+  );
+  const cacheWaitIndex = playwright.indexOf('- wait: cache');
+  const browserInstallIndex = playwright.indexOf(
+    '- name: Install Playwright browsers',
+  );
+  assert.ok(restoreIndex < packageBuildIndex);
+  assert.ok(packageBuildIndex < cacheWaitIndex);
+  assert.ok(cacheWaitIndex < browserInstallIndex);
+  assert.match(
+    playwright,
+    /- wait: cache\n\n      - name: Install Playwright browsers\n        if: steps\.cache\.outputs\.cache-hit != 'true'/,
+  );
   assert.match(
     playwright,
     /uses: actions\/checkout@[a-f0-9]{40} # v\d+\.\d+\.\d+\n        with:\n          ref: \$\{\{ github\.event\.pull_request\.head\.sha \}\}/,
@@ -1783,6 +1743,55 @@ test('generated preview workflow plans per pull request and selectively deploys 
   );
   assert.doesNotMatch(preview, /\n  core-infrastructure:\n/);
   assert.doesNotMatch(preview, /\n  accounts-infrastructure:\n/);
+});
+
+test('environment-state reads run concurrently and join before planning', async () => {
+  const generated = await generateWorkflows({ write: false });
+  const previewSetup = workflowJob(
+    generated['deploy-to-environment.yml'],
+    'setup',
+  );
+  const previewReads = previewSetup.match(
+    /^      - parallel:\n([\s\S]*?)(?=^      - name: Read changes from recorded Preview State)/m,
+  )?.[1];
+  assert.ok(previewReads);
+  assert.match(
+    previewReads,
+    /^          - name: Read Preview Environment stacks\n            if: github\.event\.action == 'synchronize'$/m,
+  );
+  assert.match(
+    previewReads,
+    /^          - name: Read GitHub Deployments as Preview State\n            if: github\.event\.action == 'synchronize'$/m,
+  );
+  assert.match(previewReads, /existing-stacks\.json/);
+  assert.match(previewReads, /deployments\.json/);
+  assert.match(
+    previewSetup,
+    /- parallel:[\s\S]*- name: Read changes from recorded Preview State[\s\S]*- name: Create Preview Plan/,
+  );
+
+  for (const filename of [
+    'deploy-to-develop.yml',
+    'deploy-to-production.yml',
+  ]) {
+    const setup = workflowJob(generated[filename], 'setup');
+    const stateReads = setup.match(
+      /^      - parallel:\n([\s\S]*?)(?=^      - name: Create Reconciliation Plan)/m,
+    )?.[1];
+    assert.ok(stateReads, filename);
+    assert.match(
+      setup,
+      /Configure AWS credentials for reconciliation[\s\S]*^      - parallel:/m,
+      filename,
+    );
+    assert.match(stateReads, /name: Read expected cloud stacks/);
+    assert.match(
+      stateReads,
+      /name: Read GitHub Deployments as Environment State/,
+    );
+    assert.match(stateReads, /existing-stacks\.json/);
+    assert.match(stateReads, /deployments\.json/);
+  }
 });
 
 test('generated teardown checks for missing resources and blocks dependencies after genuine failures', async () => {
@@ -1892,6 +1901,22 @@ test('pull-request quality assurance validates the catalog and generated workflo
     qualityAssurance,
     /name: Validate delivery catalog[\s\S]*node --test \.github\/delivery\/\*\.test\.mjs[\s\S]*node \.github\/delivery\/generate\.mjs --check/,
   );
+  const catalogChecks = workflowJob(qualityAssurance, 'delivery-catalog').match(
+    /^      - parallel:\n([\s\S]*)$/m,
+  )?.[1];
+  assert.ok(catalogChecks);
+  assert.match(
+    catalogChecks,
+    /- name: Test planner and generator\n[\s\S]*run: node --test \.github\/delivery\/\*\.test\.mjs/,
+  );
+  assert.match(
+    catalogChecks,
+    /- name: Check generated workflows\n[\s\S]*run: node \.github\/delivery\/generate\.mjs --check/,
+  );
+  assert.match(
+    catalogChecks,
+    /- name: Test dependency maintenance policy\n[\s\S]*run: node --test \.github\/renovate\/\*\.test\.mjs/,
+  );
   assert.doesNotMatch(
     workflowJob(qualityAssurance, 'delivery-catalog'),
     /setup-dependencies/,
@@ -1908,6 +1933,40 @@ test('pull-request quality assurance validates the catalog and generated workflo
       jobId,
     );
   }
+});
+
+test('scheduled production test jobs overlap dependency and browser cache setup', async () => {
+  const workflow = await readFile(
+    new URL('../workflows/production-scheduled-tests.yml', import.meta.url),
+    'utf8',
+  );
+  const setup = workflowJob(workflow, 'setup');
+  const setupGroup = setup.match(/^      - parallel:\n([\s\S]*)$/m)?.[1];
+  assert.ok(setupGroup);
+  assert.match(
+    setupGroup,
+    /name: Setup dependencies\n[\s\S]*uses: \.\/\.github\/actions\/setup-dependencies/,
+  );
+  assert.match(
+    setupGroup,
+    /name: Restore cache\n[\s\S]*id: cache[\s\S]*uses: actions\/cache@[a-f0-9]{40} # v\d+\.\d+\.\d+[\s\S]*path: ~\/\.cache\/ms-playwright[\s\S]*key: \$\{\{ runner\.os \}\}-cache-v4-\$\{\{ hashFiles\('\*\*\/yarn\.lock'\) \}\}/,
+  );
+
+  const accountsTests = workflowJob(workflow, 'accounts-tests');
+  const testSetupGroup = accountsTests.match(
+    /^      - parallel:\n([\s\S]*?)(?=^      - name: Install Playwright browsers)/m,
+  )?.[1];
+  assert.ok(testSetupGroup);
+  assert.match(testSetupGroup, /name: Setup dependencies/);
+  assert.match(testSetupGroup, /name: Restore cache/);
+  assert.match(
+    accountsTests,
+    /- parallel:[\s\S]*- name: Install Playwright browsers\n        if: steps\.cache\.outputs\.cache-hit != 'true'[\s\S]*run: yarn workspace @accounts\/client playwright install --with-deps[\s\S]*- name: Smoke tests\n        run: yarn workspace @accounts\/client e2e-ci --shard=\$\{\{ matrix\.containers \}\}\/2/,
+  );
+  assert.match(
+    accountsTests,
+    /matrix:\n        containers:\n          - 1\n          - 2/,
+  );
 });
 
 test('pull-request quality categories start independently with bounded workspace tests', async () => {
@@ -1955,6 +2014,23 @@ test('pull-request quality categories start independently with bounded workspace
   assert.match(
     workflowJob(qualityAssurance, 'unit-tests'),
     /name: Build packages[\s\S]*run: yarn package[\s\S]*name: Unit test/,
+  );
+  const unitTests = workflowJob(qualityAssurance, 'unit-tests');
+  const buildAndBrowserCache = unitTests.match(
+    /^      - parallel:\n([\s\S]*?)(?=^      - name: Install Playwright browsers)/m,
+  )?.[1];
+  assert.ok(buildAndBrowserCache);
+  assert.match(
+    buildAndBrowserCache,
+    /name: Build packages\n[\s\S]*run: yarn package/,
+  );
+  assert.match(
+    buildAndBrowserCache,
+    /name: Restore cache\n[\s\S]*id: cache[\s\S]*path: ~\/\.cache\/ms-playwright[\s\S]*key: \$\{\{ runner\.os \}\}-cache-v4-\$\{\{ hashFiles\('\*\*\/yarn\.lock'\) \}\}/,
+  );
+  assert.match(
+    unitTests,
+    /- parallel:[\s\S]*- name: Install Playwright browsers[\s\S]*- name: Unit test\n        run: yarn workspaces foreach -Wp -j 3 run test-ci/,
   );
   assert.match(
     workflowJob(qualityAssurance, 'chromatic'),

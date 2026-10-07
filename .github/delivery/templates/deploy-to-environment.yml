@@ -61,51 +61,52 @@ jobs:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
-      - name: Read Preview Environment stacks
-        if: github.event.action == 'synchronize'
-        run: |
-          aws cloudformation describe-stacks --query 'Stacks[].StackName' --output json > "$RUNNER_TEMP/existing-stacks.json"
+      - parallel:
+          - name: Read Preview Environment stacks
+            if: github.event.action == 'synchronize'
+            run: |
+              aws cloudformation describe-stacks --query 'Stacks[].StackName' --output json > "$RUNNER_TEMP/existing-stacks.json"
 
-      - name: Read GitHub Deployments as Preview State
-        if: github.event.action == 'synchronize'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: bash
-        run: |
-          : > "$RUNNER_TEMP/deployments.jsonl"
-          while IFS= read -r task; do
-            while IFS= read -r encoded_deployment; do
-              deployment="$(printf '%s' "$encoded_deployment" | base64 --decode)"
-              deployment_id="$(jq -r .id <<< "$deployment")"
-              statuses="$(
-                gh api \
-                  "repos/${GITHUB_REPOSITORY}/deployments/$deployment_id/statuses?per_page=100" \
-                  --jq '[.[] | {state}]'
-              )"
-              jq -c \
-                --argjson statuses "$statuses" \
-                '. + {statuses: $statuses} | {environment, task, ref, statuses}' \
-                <<< "$deployment" \
-                >> "$RUNNER_TEMP/deployments.jsonl"
-            done < <(
-              gh api -X GET "repos/${GITHUB_REPOSITORY}/deployments" \
-                -f environment="pr-${{ github.event.pull_request.number }}" \
-                -f task="$task" \
-                -f per_page=1 \
-                --jq '.[] | {id, environment, task, ref} | @base64'
-            )
-          done < <(
-            while IFS= read -r unit_id; do
-              printf 'deploy:%s\n' "$unit_id"
-            done < <(
-              jq -r \
-                '.units[] | select(.targets | index("preview")) | .id' \
-                .github/delivery/catalog.json
-            )
-            printf 'validate:playwright\n'
-          )
-          jq -s '.' "$RUNNER_TEMP/deployments.jsonl" \
-            > "$RUNNER_TEMP/deployments.json"
+          - name: Read GitHub Deployments as Preview State
+            if: github.event.action == 'synchronize'
+            env:
+              GH_TOKEN: ${{ github.token }}
+            shell: bash
+            run: |
+              : > "$RUNNER_TEMP/deployments.jsonl"
+              while IFS= read -r task; do
+                while IFS= read -r encoded_deployment; do
+                  deployment="$(printf '%s' "$encoded_deployment" | base64 --decode)"
+                  deployment_id="$(jq -r .id <<< "$deployment")"
+                  statuses="$(
+                    gh api \
+                      "repos/${GITHUB_REPOSITORY}/deployments/$deployment_id/statuses?per_page=100" \
+                      --jq '[.[] | {state}]'
+                  )"
+                  jq -c \
+                    --argjson statuses "$statuses" \
+                    '. + {statuses: $statuses} | {environment, task, ref, statuses}' \
+                    <<< "$deployment" \
+                    >> "$RUNNER_TEMP/deployments.jsonl"
+                done < <(
+                  gh api -X GET "repos/${GITHUB_REPOSITORY}/deployments" \
+                    -f environment="pr-${{ github.event.pull_request.number }}" \
+                    -f task="$task" \
+                    -f per_page=1 \
+                    --jq '.[] | {id, environment, task, ref} | @base64'
+                )
+              done < <(
+                while IFS= read -r unit_id; do
+                  printf 'deploy:%s\n' "$unit_id"
+                done < <(
+                  jq -r \
+                    '.units[] | select(.targets | index("preview")) | .id' \
+                    .github/delivery/catalog.json
+                )
+                printf 'validate:playwright\n'
+              )
+              jq -s '.' "$RUNNER_TEMP/deployments.jsonl" \
+                > "$RUNNER_TEMP/deployments.json"
 
       - name: Read changes from recorded Preview State
         if: github.event.action == 'synchronize'
@@ -685,16 +686,19 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
-      # {{fragment:dependency-steps:@accounts/client}}
-
       - name: Restore cache
         id: cache
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        background: true
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-cache-v4-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-cache-
+
+      # {{fragment:dependency-steps:@accounts/client}}
+
+      - wait: cache
 
       - name: Install Playwright browsers
         if: steps.cache.outputs.cache-hit != 'true'
@@ -707,8 +711,6 @@ jobs:
 
       - name: Smoke tests
         run: yarn workspace @accounts/client e2e-ci --shard=${{ matrix.containers }}/2
-
-      # {{fragment:timing-summary}}
 
   # Playwright status
   playwright-status:
