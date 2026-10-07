@@ -902,7 +902,6 @@ const workflowFragmentNames = [
   'api-client-output',
   'client-api-input',
   'anti-virus-cache',
-  'timing-summary',
 ];
 
 function splitCoreInfrastructureJob(workflow) {
@@ -1056,51 +1055,52 @@ function environmentReconciliationSteps() {
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
-      - name: Read expected cloud stacks
-        shell: bash
-        run: |
-          aws cloudformation describe-stacks \\
-            --query 'Stacks[].StackName' \\
-            --output json \\
-            > "$RUNNER_TEMP/existing-stacks.json"
+      - parallel:
+          - name: Read expected cloud stacks
+            shell: bash
+            run: |
+              aws cloudformation describe-stacks \\
+                --query 'Stacks[].StackName' \\
+                --output json \\
+                > "$RUNNER_TEMP/existing-stacks.json"
 
-      - name: Read GitHub Deployments as Environment State
-        env:
-          GH_TOKEN: \${{ github.token }}
-        shell: bash
-        run: |
-          : > "$RUNNER_TEMP/deployments.jsonl"
-          while IFS= read -r unit_id; do
-            task="deploy:$unit_id"
-            while IFS= read -r encoded_deployment; do
-              deployment="$(printf '%s' "$encoded_deployment" | base64 --decode)"
-              deployment_id="$(jq -r .id <<< "$deployment")"
-              statuses="$(
-                gh api \\
-                  "repos/\${GITHUB_REPOSITORY}/deployments/$deployment_id/statuses?per_page=100" \\
-                  --jq '[.[] | {state}]'
-              )"
-              jq -c \\
-                --argjson statuses "$statuses" \\
-                '. + {statuses: $statuses} | {environment, task, ref, statuses}' \\
-                <<< "$deployment" \\
-                >> "$RUNNER_TEMP/deployments.jsonl"
+          - name: Read GitHub Deployments as Environment State
+            env:
+              GH_TOKEN: \${{ github.token }}
+            shell: bash
+            run: |
+              : > "$RUNNER_TEMP/deployments.jsonl"
+              while IFS= read -r unit_id; do
+                task="deploy:$unit_id"
+                while IFS= read -r encoded_deployment; do
+                  deployment="$(printf '%s' "$encoded_deployment" | base64 --decode)"
+                  deployment_id="$(jq -r .id <<< "$deployment")"
+                  statuses="$(
+                    gh api \\
+                      "repos/\${GITHUB_REPOSITORY}/deployments/$deployment_id/statuses?per_page=100" \\
+                      --jq '[.[] | {state}]'
+                  )"
+                  jq -c \\
+                    --argjson statuses "$statuses" \\
+                    '. + {statuses: $statuses} | {environment, task, ref, statuses}' \\
+                    <<< "$deployment" \\
+                    >> "$RUNNER_TEMP/deployments.jsonl"
 
-            done < <(
-              gh api -X GET "repos/\${GITHUB_REPOSITORY}/deployments" \\
-                -f environment="$ENVIRONMENT" \\
-                -f task="$task" \\
-                -f per_page=1 \\
-                --jq '.[] | {id, environment, task, ref} | @base64'
-            )
-          done < <(
-            jq -r \\
-              --arg target "$TARGET" \\
-              '.units[] | select(.targets | index($target)) | .id' \\
-              .github/delivery/catalog.json
-          )
-          jq -s '.' "$RUNNER_TEMP/deployments.jsonl" \\
-            > "$RUNNER_TEMP/deployments.json"
+                done < <(
+                  gh api -X GET "repos/\${GITHUB_REPOSITORY}/deployments" \\
+                    -f environment="$ENVIRONMENT" \\
+                    -f task="$task" \\
+                    -f per_page=1 \\
+                    --jq '.[] | {id, environment, task, ref} | @base64'
+                )
+              done < <(
+                jq -r \\
+                  --arg target "$TARGET" \\
+                  '.units[] | select(.targets | index($target)) | .id' \\
+                  .github/delivery/catalog.json
+              )
+              jq -s '.' "$RUNNER_TEMP/deployments.jsonl" \\
+                > "$RUNNER_TEMP/deployments.json"
 
       - name: Create Reconciliation Plan
         id: plan
@@ -1508,10 +1508,6 @@ function rewriteJob(workflow, templateJobId, unit, needs, definition) {
   rewritten = rewritten.replace(
     /\{\{fragment:dependency-steps:[^}]+\}\}/,
     `{{fragment:dependency-steps:${unit.workspace}}}`,
-  );
-  rewritten = appendJobContent(
-    rewritten,
-    '      # {{fragment:timing-summary}}',
   );
 
   return workflow.replace(jobPattern, rewritten);

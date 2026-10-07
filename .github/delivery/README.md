@@ -20,7 +20,9 @@ The generator emits a standard job for an ordinary Deployment Unit from its cata
 
 Quality and publication jobs use `.github/actions/setup-dependencies/action.yml`. Generated Deployment Unit jobs inline the equivalent dependency fragment so checking out an older Release tag cannot hide the action definition. The exact installed-dependency cache has no fallback key and includes the resolved platform, Node runtime, Yarn configuration and release, lockfile, plugins, and every workspace manifest. An exact miss restores Yarn archives before running an immutable install. Deployment Unit jobs then build only the transitive workspace packages selected from their owning manifest; generated package outputs and stage-specific Serverless directories are never cached.
 
-The accounts API exposes its public URL and AWS region as job outputs. Client jobs recreate `.env.production` from those outputs instead of using a cache as a workflow hand-off. Baseline measurements and the post-change capture protocol live in `performance.md`.
+The accounts API exposes its public URL and AWS region as job outputs. Client jobs recreate `.env.production` from those outputs instead of using a cache as a workflow hand-off. Historical delivery performance measurements, including evidence collected with retired timing instrumentation, live in `performance.md`.
+
+Independent workflow steps use GitHub Actions `parallel` groups or `background` plus `wait`: environment-state reads join before planning, and Playwright cache restore may overlap dependency setup or package builds. Dependency restoration and installation remain sequential; browser installation and tests wait for browser-cache restoration and required builds. Keep this orchestration at workflow level; the local dependency setup action remains sequential.
 
 ## Preview planning
 

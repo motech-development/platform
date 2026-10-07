@@ -62,51 +62,52 @@ jobs:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
-      - name: Read Preview Environment stacks
-        if: github.event.action == 'synchronize'
-        run: |
-          aws cloudformation describe-stacks --query 'Stacks[].StackName' --output json > "$RUNNER_TEMP/existing-stacks.json"
+      - parallel:
+          - name: Read Preview Environment stacks
+            if: github.event.action == 'synchronize'
+            run: |
+              aws cloudformation describe-stacks --query 'Stacks[].StackName' --output json > "$RUNNER_TEMP/existing-stacks.json"
 
-      - name: Read GitHub Deployments as Preview State
-        if: github.event.action == 'synchronize'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: bash
-        run: |
-          : > "$RUNNER_TEMP/deployments.jsonl"
-          while IFS= read -r task; do
-            while IFS= read -r encoded_deployment; do
-              deployment="$(printf '%s' "$encoded_deployment" | base64 --decode)"
-              deployment_id="$(jq -r .id <<< "$deployment")"
-              statuses="$(
-                gh api \
-                  "repos/${GITHUB_REPOSITORY}/deployments/$deployment_id/statuses?per_page=100" \
-                  --jq '[.[] | {state}]'
-              )"
-              jq -c \
-                --argjson statuses "$statuses" \
-                '. + {statuses: $statuses} | {environment, task, ref, statuses}' \
-                <<< "$deployment" \
-                >> "$RUNNER_TEMP/deployments.jsonl"
-            done < <(
-              gh api -X GET "repos/${GITHUB_REPOSITORY}/deployments" \
-                -f environment="pr-${{ github.event.pull_request.number }}" \
-                -f task="$task" \
-                -f per_page=1 \
-                --jq '.[] | {id, environment, task, ref} | @base64'
-            )
-          done < <(
-            while IFS= read -r unit_id; do
-              printf 'deploy:%s\n' "$unit_id"
-            done < <(
-              jq -r \
-                '.units[] | select(.targets | index("preview")) | .id' \
-                .github/delivery/catalog.json
-            )
-            printf 'validate:playwright\n'
-          )
-          jq -s '.' "$RUNNER_TEMP/deployments.jsonl" \
-            > "$RUNNER_TEMP/deployments.json"
+          - name: Read GitHub Deployments as Preview State
+            if: github.event.action == 'synchronize'
+            env:
+              GH_TOKEN: ${{ github.token }}
+            shell: bash
+            run: |
+              : > "$RUNNER_TEMP/deployments.jsonl"
+              while IFS= read -r task; do
+                while IFS= read -r encoded_deployment; do
+                  deployment="$(printf '%s' "$encoded_deployment" | base64 --decode)"
+                  deployment_id="$(jq -r .id <<< "$deployment")"
+                  statuses="$(
+                    gh api \
+                      "repos/${GITHUB_REPOSITORY}/deployments/$deployment_id/statuses?per_page=100" \
+                      --jq '[.[] | {state}]'
+                  )"
+                  jq -c \
+                    --argjson statuses "$statuses" \
+                    '. + {statuses: $statuses} | {environment, task, ref, statuses}' \
+                    <<< "$deployment" \
+                    >> "$RUNNER_TEMP/deployments.jsonl"
+                done < <(
+                  gh api -X GET "repos/${GITHUB_REPOSITORY}/deployments" \
+                    -f environment="pr-${{ github.event.pull_request.number }}" \
+                    -f task="$task" \
+                    -f per_page=1 \
+                    --jq '.[] | {id, environment, task, ref} | @base64'
+                )
+              done < <(
+                while IFS= read -r unit_id; do
+                  printf 'deploy:%s\n' "$unit_id"
+                done < <(
+                  jq -r \
+                    '.units[] | select(.targets | index("preview")) | .id' \
+                    .github/delivery/catalog.json
+                )
+                printf 'validate:playwright\n'
+              )
+              jq -s '.' "$RUNNER_TEMP/deployments.jsonl" \
+                > "$RUNNER_TEMP/deployments.json"
 
       - name: Read changes from recorded Preview State
         if: github.event.action == 'synchronize'
@@ -352,12 +353,6 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
-      - name: Start dependency setup measurement
-        id: dependency-timing
-        run: |
-          : > "$RUNNER_TEMP/delivery-timing.md"
-          echo "started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
-
       - name: Set Node version
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -379,7 +374,6 @@ jobs:
           key: ${{ runner.os }}-${{ runner.arch }}-installed-dependencies-v1-node-${{ steps.runtime.outputs.version }}-${{ hashFiles('.nvmrc') }}-${{ hashFiles('yarn.lock', '.yarnrc.yml', '.yarn/releases/**', '.yarn/plugins/**', '.yarn/patches/**', 'package.json', 'applications/*/*/package.json', 'packages/*/package.json') }}
 
       - name: Restore Yarn archives
-        id: yarn-archives
         if: steps.installed-dependencies.outputs.cache-hit != 'true'
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
@@ -394,33 +388,9 @@ jobs:
         if: steps.installed-dependencies.outputs.cache-hit != 'true'
         run: yarn install --immutable
 
-      - name: Record dependency setup timing
-        if: always()
-        env:
-          ARCHIVE_CACHE_HIT: ${{ steps.yarn-archives.outputs.cache-hit }}
-          INSTALLED_CACHE_HIT: ${{ steps.installed-dependencies.outputs.cache-hit }}
-          STARTED_AT: ${{ steps.dependency-timing.outputs.started-at }}
-        run: |
-          if [[ "$INSTALLED_CACHE_HIT" == "true" ]]; then
-            route="exact installed cache hit"
-          elif [[ -n "$ARCHIVE_CACHE_HIT" ]]; then
-            route="archive fallback"
-          else
-            route="cold install"
-          fi
-          elapsed_seconds=$(( $(date +%s) - STARTED_AT ))
-          echo "| Dependency setup ($route) | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
-
       - name: Build required workspace packages
         run: |
-          started_at="$(date +%s)"
           yarn workspaces foreach -Rpt --from '@core/anti-virus' run package
-          elapsed_seconds=$(( $(date +%s) - started_at ))
-          echo "| Workspace package build (@core/anti-virus) | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
-
-      - name: Start ClamAV timing
-        id: clamav-timing
-        run: echo "cache-started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
 
       - name: Check ClamAV binary cache compatibility
         id: clamav-cache
@@ -448,39 +418,20 @@ jobs:
         if: steps.clamav-cache.outputs.supported == 'true'
         env:
           CACHE_MATCHED_KEY: ${{ steps.clamav-binaries.outputs.cache-matched-key }}
-          CACHE_STARTED_AT: ${{ steps.clamav-timing.outputs.cache-started-at }}
         run: |
-          validation_started_at="$(date +%s)"
-          restore_elapsed=$(( validation_started_at - CACHE_STARTED_AT ))
           if [[ -z "$CACHE_MATCHED_KEY" ]]; then
-            cache_state="miss"
             valid=false
           elif applications/core/anti-virus/scripts/cache.sh validate; then
-            cache_state="hit"
             valid=true
           else
-            cache_state="invalid"
             valid=false
             rm -rf applications/core/anti-virus/bin
           fi
-          validation_elapsed=$(( $(date +%s) - validation_started_at ))
           echo "valid=$valid" >> "$GITHUB_OUTPUT"
-          echo "| ClamAV cache restore | ${restore_elapsed}s ($cache_state) |" >> "$RUNNER_TEMP/delivery-timing.md"
-          echo "| ClamAV cache validation | ${validation_elapsed}s ($cache_state) |" >> "$RUNNER_TEMP/delivery-timing.md"
 
       - name: Build ClamAV binaries
-        env:
-          CACHE_VALID: ${{ steps.clamav-validation.outputs.valid }}
         run: |
-          started_at="$(date +%s)"
           yarn workspace @core/anti-virus predeploy
-          elapsed_seconds=$(( $(date +%s) - started_at ))
-          if [[ "$CACHE_VALID" == "true" ]]; then
-            route="cache hit"
-          else
-            route="source build"
-          fi
-          echo "| ClamAV source build ($route) | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
 
       - name: Save rebuilt ClamAV binaries
         if: steps.clamav-cache.outputs.supported == 'true' && steps.clamav-validation.outputs.valid != 'true'
@@ -491,10 +442,7 @@ jobs:
 
       - name: Package anti-virus
         run: |
-          started_at="$(date +%s)"
           yarn workspace @core/anti-virus exec serverless package --stage $STAGE --package "$RUNNER_TEMP/anti-virus-package"
-          elapsed_seconds=$(( $(date +%s) - started_at ))
-          echo "| Anti-virus packaging | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@517a711dbcd0e402f90c77e7e2f81e849156e31d # v6.2.2
@@ -582,18 +530,6 @@ jobs:
             | gh api --method POST \
               "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
               --input -
-
-      - name: Record delivery timing summary
-        if: always()
-        shell: bash
-        run: |
-          if [[ -s "$RUNNER_TEMP/delivery-timing.md" ]]; then
-            {
-              echo "| Measurement | Duration |"
-              echo "| --- | ---: |"
-              cat "$RUNNER_TEMP/delivery-timing.md"
-            } >> "$GITHUB_STEP_SUMMARY"
-          fi
   # Accounts (queue)
   accounts-queue:
     name: Deploy accounts queue
@@ -625,12 +561,6 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
-      - name: Start dependency setup measurement
-        id: dependency-timing
-        run: |
-          : > "$RUNNER_TEMP/delivery-timing.md"
-          echo "started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
-
       - name: Set Node version
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -652,7 +582,6 @@ jobs:
           key: ${{ runner.os }}-${{ runner.arch }}-installed-dependencies-v1-node-${{ steps.runtime.outputs.version }}-${{ hashFiles('.nvmrc') }}-${{ hashFiles('yarn.lock', '.yarnrc.yml', '.yarn/releases/**', '.yarn/plugins/**', '.yarn/patches/**', 'package.json', 'applications/*/*/package.json', 'packages/*/package.json') }}
 
       - name: Restore Yarn archives
-        id: yarn-archives
         if: steps.installed-dependencies.outputs.cache-hit != 'true'
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
@@ -667,29 +596,9 @@ jobs:
         if: steps.installed-dependencies.outputs.cache-hit != 'true'
         run: yarn install --immutable
 
-      - name: Record dependency setup timing
-        if: always()
-        env:
-          ARCHIVE_CACHE_HIT: ${{ steps.yarn-archives.outputs.cache-hit }}
-          INSTALLED_CACHE_HIT: ${{ steps.installed-dependencies.outputs.cache-hit }}
-          STARTED_AT: ${{ steps.dependency-timing.outputs.started-at }}
-        run: |
-          if [[ "$INSTALLED_CACHE_HIT" == "true" ]]; then
-            route="exact installed cache hit"
-          elif [[ -n "$ARCHIVE_CACHE_HIT" ]]; then
-            route="archive fallback"
-          else
-            route="cold install"
-          fi
-          elapsed_seconds=$(( $(date +%s) - STARTED_AT ))
-          echo "| Dependency setup ($route) | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
-
       - name: Build required workspace packages
         run: |
-          started_at="$(date +%s)"
           yarn workspaces foreach -Rpt --from '@accounts/queue' run package
-          elapsed_seconds=$(( $(date +%s) - started_at ))
-          echo "| Workspace package build (@accounts/queue) | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@517a711dbcd0e402f90c77e7e2f81e849156e31d # v6.2.2
@@ -763,18 +672,6 @@ jobs:
             | gh api --method POST \
               "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
               --input -
-
-      - name: Record delivery timing summary
-        if: always()
-        shell: bash
-        run: |
-          if [[ -s "$RUNNER_TEMP/delivery-timing.md" ]]; then
-            {
-              echo "| Measurement | Duration |"
-              echo "| --- | ---: |"
-              cat "$RUNNER_TEMP/delivery-timing.md"
-            } >> "$GITHUB_STEP_SUMMARY"
-          fi
   # Accounts (storage)
   accounts-storage:
     name: Deploy accounts storage
@@ -806,12 +703,6 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
-      - name: Start dependency setup measurement
-        id: dependency-timing
-        run: |
-          : > "$RUNNER_TEMP/delivery-timing.md"
-          echo "started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
-
       - name: Set Node version
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -833,7 +724,6 @@ jobs:
           key: ${{ runner.os }}-${{ runner.arch }}-installed-dependencies-v1-node-${{ steps.runtime.outputs.version }}-${{ hashFiles('.nvmrc') }}-${{ hashFiles('yarn.lock', '.yarnrc.yml', '.yarn/releases/**', '.yarn/plugins/**', '.yarn/patches/**', 'package.json', 'applications/*/*/package.json', 'packages/*/package.json') }}
 
       - name: Restore Yarn archives
-        id: yarn-archives
         if: steps.installed-dependencies.outputs.cache-hit != 'true'
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
@@ -848,29 +738,9 @@ jobs:
         if: steps.installed-dependencies.outputs.cache-hit != 'true'
         run: yarn install --immutable
 
-      - name: Record dependency setup timing
-        if: always()
-        env:
-          ARCHIVE_CACHE_HIT: ${{ steps.yarn-archives.outputs.cache-hit }}
-          INSTALLED_CACHE_HIT: ${{ steps.installed-dependencies.outputs.cache-hit }}
-          STARTED_AT: ${{ steps.dependency-timing.outputs.started-at }}
-        run: |
-          if [[ "$INSTALLED_CACHE_HIT" == "true" ]]; then
-            route="exact installed cache hit"
-          elif [[ -n "$ARCHIVE_CACHE_HIT" ]]; then
-            route="archive fallback"
-          else
-            route="cold install"
-          fi
-          elapsed_seconds=$(( $(date +%s) - STARTED_AT ))
-          echo "| Dependency setup ($route) | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
-
       - name: Build required workspace packages
         run: |
-          started_at="$(date +%s)"
           yarn workspaces foreach -Rpt --from '@accounts/storage' run package
-          elapsed_seconds=$(( $(date +%s) - started_at ))
-          echo "| Workspace package build (@accounts/storage) | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@517a711dbcd0e402f90c77e7e2f81e849156e31d # v6.2.2
@@ -944,18 +814,6 @@ jobs:
             | gh api --method POST \
               "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
               --input -
-
-      - name: Record delivery timing summary
-        if: always()
-        shell: bash
-        run: |
-          if [[ -s "$RUNNER_TEMP/delivery-timing.md" ]]; then
-            {
-              echo "| Measurement | Duration |"
-              echo "| --- | ---: |"
-              cat "$RUNNER_TEMP/delivery-timing.md"
-            } >> "$GITHUB_STEP_SUMMARY"
-          fi
   # Accounts (data)
   accounts-data:
     name: Deploy accounts data
@@ -988,12 +846,6 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
-      - name: Start dependency setup measurement
-        id: dependency-timing
-        run: |
-          : > "$RUNNER_TEMP/delivery-timing.md"
-          echo "started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
-
       - name: Set Node version
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -1015,7 +867,6 @@ jobs:
           key: ${{ runner.os }}-${{ runner.arch }}-installed-dependencies-v1-node-${{ steps.runtime.outputs.version }}-${{ hashFiles('.nvmrc') }}-${{ hashFiles('yarn.lock', '.yarnrc.yml', '.yarn/releases/**', '.yarn/plugins/**', '.yarn/patches/**', 'package.json', 'applications/*/*/package.json', 'packages/*/package.json') }}
 
       - name: Restore Yarn archives
-        id: yarn-archives
         if: steps.installed-dependencies.outputs.cache-hit != 'true'
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
@@ -1030,29 +881,9 @@ jobs:
         if: steps.installed-dependencies.outputs.cache-hit != 'true'
         run: yarn install --immutable
 
-      - name: Record dependency setup timing
-        if: always()
-        env:
-          ARCHIVE_CACHE_HIT: ${{ steps.yarn-archives.outputs.cache-hit }}
-          INSTALLED_CACHE_HIT: ${{ steps.installed-dependencies.outputs.cache-hit }}
-          STARTED_AT: ${{ steps.dependency-timing.outputs.started-at }}
-        run: |
-          if [[ "$INSTALLED_CACHE_HIT" == "true" ]]; then
-            route="exact installed cache hit"
-          elif [[ -n "$ARCHIVE_CACHE_HIT" ]]; then
-            route="archive fallback"
-          else
-            route="cold install"
-          fi
-          elapsed_seconds=$(( $(date +%s) - STARTED_AT ))
-          echo "| Dependency setup ($route) | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
-
       - name: Build required workspace packages
         run: |
-          started_at="$(date +%s)"
           yarn workspaces foreach -Rpt --from '@accounts/data' run package
-          elapsed_seconds=$(( $(date +%s) - started_at ))
-          echo "| Workspace package build (@accounts/data) | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@517a711dbcd0e402f90c77e7e2f81e849156e31d # v6.2.2
@@ -1126,18 +957,6 @@ jobs:
             | gh api --method POST \
               "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
               --input -
-
-      - name: Record delivery timing summary
-        if: always()
-        shell: bash
-        run: |
-          if [[ -s "$RUNNER_TEMP/delivery-timing.md" ]]; then
-            {
-              echo "| Measurement | Duration |"
-              echo "| --- | ---: |"
-              cat "$RUNNER_TEMP/delivery-timing.md"
-            } >> "$GITHUB_STEP_SUMMARY"
-          fi
   # Accounts (notifications)
   accounts-notifications:
     name: Deploy accounts notifications
@@ -1168,12 +987,6 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
-      - name: Start dependency setup measurement
-        id: dependency-timing
-        run: |
-          : > "$RUNNER_TEMP/delivery-timing.md"
-          echo "started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
-
       - name: Set Node version
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -1195,7 +1008,6 @@ jobs:
           key: ${{ runner.os }}-${{ runner.arch }}-installed-dependencies-v1-node-${{ steps.runtime.outputs.version }}-${{ hashFiles('.nvmrc') }}-${{ hashFiles('yarn.lock', '.yarnrc.yml', '.yarn/releases/**', '.yarn/plugins/**', '.yarn/patches/**', 'package.json', 'applications/*/*/package.json', 'packages/*/package.json') }}
 
       - name: Restore Yarn archives
-        id: yarn-archives
         if: steps.installed-dependencies.outputs.cache-hit != 'true'
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
@@ -1210,29 +1022,9 @@ jobs:
         if: steps.installed-dependencies.outputs.cache-hit != 'true'
         run: yarn install --immutable
 
-      - name: Record dependency setup timing
-        if: always()
-        env:
-          ARCHIVE_CACHE_HIT: ${{ steps.yarn-archives.outputs.cache-hit }}
-          INSTALLED_CACHE_HIT: ${{ steps.installed-dependencies.outputs.cache-hit }}
-          STARTED_AT: ${{ steps.dependency-timing.outputs.started-at }}
-        run: |
-          if [[ "$INSTALLED_CACHE_HIT" == "true" ]]; then
-            route="exact installed cache hit"
-          elif [[ -n "$ARCHIVE_CACHE_HIT" ]]; then
-            route="archive fallback"
-          else
-            route="cold install"
-          fi
-          elapsed_seconds=$(( $(date +%s) - STARTED_AT ))
-          echo "| Dependency setup ($route) | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
-
       - name: Build required workspace packages
         run: |
-          started_at="$(date +%s)"
           yarn workspaces foreach -Rpt --from '@accounts/notifications' run package
-          elapsed_seconds=$(( $(date +%s) - started_at ))
-          echo "| Workspace package build (@accounts/notifications) | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@517a711dbcd0e402f90c77e7e2f81e849156e31d # v6.2.2
@@ -1306,18 +1098,6 @@ jobs:
             | gh api --method POST \
               "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
               --input -
-
-      - name: Record delivery timing summary
-        if: always()
-        shell: bash
-        run: |
-          if [[ -s "$RUNNER_TEMP/delivery-timing.md" ]]; then
-            {
-              echo "| Measurement | Duration |"
-              echo "| --- | ---: |"
-              cat "$RUNNER_TEMP/delivery-timing.md"
-            } >> "$GITHUB_STEP_SUMMARY"
-          fi
   # Accounts (reports)
   accounts-reports:
     name: Deploy accounts reports
@@ -1351,12 +1131,6 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
-      - name: Start dependency setup measurement
-        id: dependency-timing
-        run: |
-          : > "$RUNNER_TEMP/delivery-timing.md"
-          echo "started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
-
       - name: Set Node version
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -1378,7 +1152,6 @@ jobs:
           key: ${{ runner.os }}-${{ runner.arch }}-installed-dependencies-v1-node-${{ steps.runtime.outputs.version }}-${{ hashFiles('.nvmrc') }}-${{ hashFiles('yarn.lock', '.yarnrc.yml', '.yarn/releases/**', '.yarn/plugins/**', '.yarn/patches/**', 'package.json', 'applications/*/*/package.json', 'packages/*/package.json') }}
 
       - name: Restore Yarn archives
-        id: yarn-archives
         if: steps.installed-dependencies.outputs.cache-hit != 'true'
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
@@ -1393,29 +1166,9 @@ jobs:
         if: steps.installed-dependencies.outputs.cache-hit != 'true'
         run: yarn install --immutable
 
-      - name: Record dependency setup timing
-        if: always()
-        env:
-          ARCHIVE_CACHE_HIT: ${{ steps.yarn-archives.outputs.cache-hit }}
-          INSTALLED_CACHE_HIT: ${{ steps.installed-dependencies.outputs.cache-hit }}
-          STARTED_AT: ${{ steps.dependency-timing.outputs.started-at }}
-        run: |
-          if [[ "$INSTALLED_CACHE_HIT" == "true" ]]; then
-            route="exact installed cache hit"
-          elif [[ -n "$ARCHIVE_CACHE_HIT" ]]; then
-            route="archive fallback"
-          else
-            route="cold install"
-          fi
-          elapsed_seconds=$(( $(date +%s) - STARTED_AT ))
-          echo "| Dependency setup ($route) | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
-
       - name: Build required workspace packages
         run: |
-          started_at="$(date +%s)"
           yarn workspaces foreach -Rpt --from '@accounts/reports' run package
-          elapsed_seconds=$(( $(date +%s) - started_at ))
-          echo "| Workspace package build (@accounts/reports) | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@517a711dbcd0e402f90c77e7e2f81e849156e31d # v6.2.2
@@ -1489,18 +1242,6 @@ jobs:
             | gh api --method POST \
               "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
               --input -
-
-      - name: Record delivery timing summary
-        if: always()
-        shell: bash
-        run: |
-          if [[ -s "$RUNNER_TEMP/delivery-timing.md" ]]; then
-            {
-              echo "| Measurement | Duration |"
-              echo "| --- | ---: |"
-              cat "$RUNNER_TEMP/delivery-timing.md"
-            } >> "$GITHUB_STEP_SUMMARY"
-          fi
   # Accounts (API)
   accounts-api:
     name: Deploy accounts API
@@ -1541,12 +1282,6 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
-      - name: Start dependency setup measurement
-        id: dependency-timing
-        run: |
-          : > "$RUNNER_TEMP/delivery-timing.md"
-          echo "started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
-
       - name: Set Node version
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -1568,7 +1303,6 @@ jobs:
           key: ${{ runner.os }}-${{ runner.arch }}-installed-dependencies-v1-node-${{ steps.runtime.outputs.version }}-${{ hashFiles('.nvmrc') }}-${{ hashFiles('yarn.lock', '.yarnrc.yml', '.yarn/releases/**', '.yarn/plugins/**', '.yarn/patches/**', 'package.json', 'applications/*/*/package.json', 'packages/*/package.json') }}
 
       - name: Restore Yarn archives
-        id: yarn-archives
         if: steps.installed-dependencies.outputs.cache-hit != 'true'
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
@@ -1583,29 +1317,9 @@ jobs:
         if: steps.installed-dependencies.outputs.cache-hit != 'true'
         run: yarn install --immutable
 
-      - name: Record dependency setup timing
-        if: always()
-        env:
-          ARCHIVE_CACHE_HIT: ${{ steps.yarn-archives.outputs.cache-hit }}
-          INSTALLED_CACHE_HIT: ${{ steps.installed-dependencies.outputs.cache-hit }}
-          STARTED_AT: ${{ steps.dependency-timing.outputs.started-at }}
-        run: |
-          if [[ "$INSTALLED_CACHE_HIT" == "true" ]]; then
-            route="exact installed cache hit"
-          elif [[ -n "$ARCHIVE_CACHE_HIT" ]]; then
-            route="archive fallback"
-          else
-            route="cold install"
-          fi
-          elapsed_seconds=$(( $(date +%s) - STARTED_AT ))
-          echo "| Dependency setup ($route) | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
-
       - name: Build required workspace packages
         run: |
-          started_at="$(date +%s)"
           yarn workspaces foreach -Rpt --from '@accounts/api' run package
-          elapsed_seconds=$(( $(date +%s) - started_at ))
-          echo "| Workspace package build (@accounts/api) | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@517a711dbcd0e402f90c77e7e2f81e849156e31d # v6.2.2
@@ -1653,7 +1367,6 @@ jobs:
       - name: Export client configuration
         id: client-config
         run: |
-          started_at="$(date +%s)"
           appsync_url="$(
             aws cloudformation describe-stacks \
               --stack-name "accounts-${STAGE}-api" \
@@ -1667,8 +1380,6 @@ jobs:
           fi
           echo "appsync-url=$appsync_url" >> "$GITHUB_OUTPUT"
           echo "aws-region=$aws_region" >> "$GITHUB_OUTPUT"
-          elapsed_seconds=$(( $(date +%s) - started_at ))
-          echo "| Client configuration transfer | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
 
       - name: Record successful Deployment
         id: deployment-success
@@ -1720,18 +1431,6 @@ jobs:
             | gh api --method POST \
               "repos/${GITHUB_REPOSITORY}/deployments/${{ steps.deployment.outputs.id }}/statuses" \
               --input -
-
-      - name: Record delivery timing summary
-        if: always()
-        shell: bash
-        run: |
-          if [[ -s "$RUNNER_TEMP/delivery-timing.md" ]]; then
-            {
-              echo "| Measurement | Duration |"
-              echo "| --- | ---: |"
-              cat "$RUNNER_TEMP/delivery-timing.md"
-            } >> "$GITHUB_STEP_SUMMARY"
-          fi
   # Preview status
   preview-status:
     name: Preview
@@ -1809,11 +1508,15 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
-      - name: Start dependency setup measurement
-        id: dependency-timing
-        run: |
-          : > "$RUNNER_TEMP/delivery-timing.md"
-          echo "started-at=$(date +%s)" >> "$GITHUB_OUTPUT"
+      - name: Restore cache
+        id: cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        background: true
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-cache-v4-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cache-
 
       - name: Set Node version
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
@@ -1836,7 +1539,6 @@ jobs:
           key: ${{ runner.os }}-${{ runner.arch }}-installed-dependencies-v1-node-${{ steps.runtime.outputs.version }}-${{ hashFiles('.nvmrc') }}-${{ hashFiles('yarn.lock', '.yarnrc.yml', '.yarn/releases/**', '.yarn/plugins/**', '.yarn/patches/**', 'package.json', 'applications/*/*/package.json', 'packages/*/package.json') }}
 
       - name: Restore Yarn archives
-        id: yarn-archives
         if: steps.installed-dependencies.outputs.cache-hit != 'true'
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
@@ -1851,38 +1553,11 @@ jobs:
         if: steps.installed-dependencies.outputs.cache-hit != 'true'
         run: yarn install --immutable
 
-      - name: Record dependency setup timing
-        if: always()
-        env:
-          ARCHIVE_CACHE_HIT: ${{ steps.yarn-archives.outputs.cache-hit }}
-          INSTALLED_CACHE_HIT: ${{ steps.installed-dependencies.outputs.cache-hit }}
-          STARTED_AT: ${{ steps.dependency-timing.outputs.started-at }}
-        run: |
-          if [[ "$INSTALLED_CACHE_HIT" == "true" ]]; then
-            route="exact installed cache hit"
-          elif [[ -n "$ARCHIVE_CACHE_HIT" ]]; then
-            route="archive fallback"
-          else
-            route="cold install"
-          fi
-          elapsed_seconds=$(( $(date +%s) - STARTED_AT ))
-          echo "| Dependency setup ($route) | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
-
       - name: Build required workspace packages
         run: |
-          started_at="$(date +%s)"
           yarn workspaces foreach -Rpt --from '@accounts/client' run package
-          elapsed_seconds=$(( $(date +%s) - started_at ))
-          echo "| Workspace package build (@accounts/client) | ${elapsed_seconds}s |" >> "$RUNNER_TEMP/delivery-timing.md"
 
-      - name: Restore cache
-        id: cache
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-cache-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-cache-
+      - wait: cache
 
       - name: Install Playwright browsers
         if: steps.cache.outputs.cache-hit != 'true'
@@ -1901,18 +1576,6 @@ jobs:
 
       - name: Smoke tests
         run: yarn workspace @accounts/client e2e-ci --shard=${{ matrix.containers }}/2
-
-      - name: Record delivery timing summary
-        if: always()
-        shell: bash
-        run: |
-          if [[ -s "$RUNNER_TEMP/delivery-timing.md" ]]; then
-            {
-              echo "| Measurement | Duration |"
-              echo "| --- | ---: |"
-              cat "$RUNNER_TEMP/delivery-timing.md"
-            } >> "$GITHUB_STEP_SUMMARY"
-          fi
 
   # Playwright status
   playwright-status:

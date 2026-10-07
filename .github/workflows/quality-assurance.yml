@@ -35,14 +35,15 @@ jobs:
         with:
           node-version-file: .nvmrc
 
-      - name: Test planner and generator
-        run: node --test .github/delivery/*.test.mjs
+      - parallel:
+          - name: Test planner and generator
+            run: node --test .github/delivery/*.test.mjs
 
-      - name: Check generated workflows
-        run: node .github/delivery/generate.mjs --check
+          - name: Check generated workflows
+            run: node .github/delivery/generate.mjs --check
 
-      - name: Test dependency maintenance policy
-        run: node --test .github/renovate/*.test.mjs
+          - name: Test dependency maintenance policy
+            run: node --test .github/renovate/*.test.mjs
 
   formatting:
     name: Formatting
@@ -124,17 +125,18 @@ jobs:
       - name: Setup dependencies
         uses: ./.github/actions/setup-dependencies
 
-      - name: Build packages
-        run: yarn package
+      - parallel:
+          - name: Build packages
+            run: yarn package
 
-      - name: Restore cache
-        id: cache
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-cache-v4-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-cache-
+          - name: Restore cache
+            id: cache
+            uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+            with:
+              path: ~/.cache/ms-playwright
+              key: ${{ runner.os }}-cache-v4-${{ hashFiles('**/yarn.lock') }}
+              restore-keys: |
+                ${{ runner.os }}-cache-
 
       - name: Install Playwright browsers
         run: yarn workspace @motech-development/breeze-ui playwright install --with-deps chromium
