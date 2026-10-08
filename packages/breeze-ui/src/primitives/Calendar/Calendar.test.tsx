@@ -1,5 +1,5 @@
 import { getLocalTimeZone, today } from '@internationalized/date';
-import { screen, waitFor, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import renderBreeze from '../../../test/render';
@@ -36,6 +36,12 @@ expectTypeOf(uncontrolledCalendar).toBeObject();
 expectTypeOf(mixedCalendar).toBeObject();
 
 describe('Calendar', () => {
+  it('requires a BreezeProvider', () => {
+    expect(() =>
+      render(<Calendar defaultValue="2026-09-03" label="Choose date" />),
+    ).toThrow('Breeze components must be rendered within BreezeProvider.');
+  });
+
   it('starts weeks on Monday and always renders six weeks', () => {
     renderBreeze(<Calendar defaultValue="2026-03-15" label="Choose date" />);
 
@@ -49,10 +55,24 @@ describe('Calendar', () => {
       Array.from(grid.querySelectorAll('thead th')).map(
         (cell) => cell.textContent,
       ),
-    ).toEqual(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']);
+    ).toEqual(['M', 'T', 'W', 'T', 'F', 'S', 'S']);
     expect(
       within(calendar).getByRole('button', { name: /23 February 2026/ }),
     ).toHaveAttribute('data-outside-month', 'true');
+  });
+
+  it('labels weekdays with narrow names in the provider locale', () => {
+    renderBreeze(
+      <Calendar defaultValue="2026-03-15" label="Choisir une date" />,
+      'fr-FR',
+    );
+
+    expect(
+      Array.from(
+        screen.getByRole('grid').querySelectorAll('thead th'),
+        (cell) => cell.textContent,
+      ),
+    ).toEqual(['L', 'M', 'M', 'J', 'V', 'S', 'D']);
   });
 
   it('renders six rows for February 2027', () => {
@@ -320,7 +340,7 @@ describe('Calendar', () => {
       'breeze:forced-colors:data-[selected]:outline-solid',
       'breeze:forced-colors:data-[selected]:outline-offset-2',
     );
-    expect(todayCell).not.toHaveClass('breeze:outline-breeze-brand');
+    expect(todayCell).not.toHaveClass('breeze:border-breeze-brand');
 
     await user.click(
       screen.getByRole('button', { name: formatDate(nextDate) }),
@@ -341,8 +361,7 @@ describe('Calendar', () => {
         name: /^Thursday, 3 September 2026 selected$/,
       }),
     ).toHaveClass(
-      'breeze:min-block-breeze-8',
-      'breeze:min-inline-breeze-8',
+      'breeze:block-breeze-9',
       'breeze:any-pointer-coarse:min-block-breeze-tap',
       'breeze:any-pointer-coarse:min-inline-breeze-tap',
     );

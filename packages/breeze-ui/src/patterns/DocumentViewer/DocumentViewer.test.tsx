@@ -93,6 +93,58 @@ function deferred<T>() {
   return { promise, reject, resolve };
 }
 
+/** Rejects aborted requests as browsers do, so StrictMode's discarded effect never resolves. */
+function abortableFetch(
+  respond: (input: RequestInfo | URL) => Promise<Response>,
+) {
+  const delivered: Response[] = [];
+  const fetchMock = vi.fn<typeof fetch>(
+    (input, init) =>
+      new Promise<Response>((resolve, reject) => {
+        const { signal } = init ?? {};
+        const abort = () =>
+          reject(new DOMException('The request was aborted.', 'AbortError'));
+        if (signal?.aborted) {
+          abort();
+          return;
+        }
+        signal?.addEventListener('abort', abort, { once: true });
+        respond(input).then((response) => {
+          if (signal?.aborted) return;
+          delivered.push(response);
+          resolve(response);
+        }, reject);
+      }),
+  );
+
+  return Object.assign(fetchMock, { delivered });
+}
+
+function liveFetchCalls(fetchMock: ReturnType<typeof abortableFetch>) {
+  return fetchMock.mock.calls.filter(([, init]) => !init?.signal?.aborted);
+}
+
+/** Fakes the 1s blob-URL revocation timer so it is flushed, not fired in a later test. */
+function installDownloadRevocationClock() {
+  vi.useFakeTimers({
+    shouldAdvanceTime: true,
+    toFake: ['setTimeout', 'clearTimeout'],
+  });
+  const revokeObjectURL = vi.fn();
+  Object.defineProperty(URL, 'revokeObjectURL', {
+    configurable: true,
+    value: revokeObjectURL,
+  });
+
+  return {
+    flush: () =>
+      act(() => {
+        vi.advanceTimersByTime(1000);
+      }),
+    revokeObjectURL,
+  };
+}
+
 function pdfSession(numPages = 2): PdfSession {
   return {
     dispose: vi.fn(),
@@ -162,6 +214,8 @@ expectTypeOf<{
 
 describe('DocumentViewer', () => {
   afterEach(() => {
+    // Discards any fake timer a failed test left pending.
+    vi.useRealTimers();
     restoreDescriptor(document, 'startViewTransition', originalStartTransition);
     restoreDescriptor(window, 'ViewTransition', originalViewTransition);
     restoreDescriptor(window, 'CSS', originalCss);
@@ -360,6 +414,7 @@ describe('DocumentViewer', () => {
   });
 
   it('downloads cross-origin files as blobs so the filename is honored', async () => {
+    const revocationClock = installDownloadRevocationClock();
     const user = userEvent.setup();
     const remoteSource = 'https://files.example.test/attachments/report.pdf';
     mockLoadPdfDocument.mockResolvedValue(pdfSession(1));
@@ -403,9 +458,15 @@ describe('DocumentViewer', () => {
       'download',
       'Quarterly report.pdf',
     );
+
+    revocationClock.flush();
+    expect(revocationClock.revokeObjectURL).toHaveBeenCalledExactlyOnceWith(
+      'blob:http://localhost/report',
+    );
   });
 
-  it('navigates to the source after a delayed cross-origin download failure', async () => {
+  it('reports a delayed cross-origin download failure without leaving the page', async () => {
+    const revocationClock = installDownloadRevocationClock();
     const user = userEvent.setup();
     const remoteSource = 'https://files.example.test/attachments/report.pdf';
     const pendingFetch = deferred<Response>();
@@ -413,12 +474,10 @@ describe('DocumentViewer', () => {
       'fetch',
       vi.fn(() => pendingFetch.promise),
     );
-    const fallbackLinks: HTMLAnchorElement[] = [];
+    const syntheticClicks: HTMLAnchorElement[] = [];
     vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(
-      function mockFallbackNavigation(this: HTMLAnchorElement) {
-        if (this.hidden && this.href === remoteSource) {
-          fallbackLinks.push(this);
-        }
+      function mockSyntheticClick(this: HTMLAnchorElement) {
+        if (this.hidden) syntheticClicks.push(this);
       },
     );
 
@@ -431,18 +490,138 @@ describe('DocumentViewer', () => {
       />,
     );
 
-    await user.click(await screen.findByRole('link', { name: 'Download' }));
-    expect(fallbackLinks).toHaveLength(0);
+    const dialog = await screen.findByRole('dialog', {
+      name: 'Quarterly report',
+    });
+    const downloadLink = within(dialog).getByRole('link', { name: 'Download' });
+    expect(fireEvent.click(downloadLink)).toBe(false);
+    expect(within(dialog).queryByRole('alert')).toBeNull();
 
     await act(async () => {
       pendingFetch.reject(new TypeError('Cross-origin response is blocked.'));
       await Promise.resolve();
     });
 
-    await waitFor(() => expect(fallbackLinks).toHaveLength(1));
-    expect(fallbackLinks[0]).toHaveAttribute('href', remoteSource);
-    expect(fallbackLinks[0]).toHaveAttribute('target', '_self');
-    expect(fallbackLinks[0]).not.toHaveAttribute('download');
+    expect(await within(dialog).findByRole('alert')).toHaveTextContent(
+      'The file could not be downloaded.',
+    );
+    expect(syntheticClicks).toHaveLength(0);
+    expect(screen.getByRole('dialog', { name: 'Quarterly report' })).toBe(
+      dialog,
+    );
+
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        blob: vi.fn().mockResolvedValue(new Blob(['report'])),
+        ok: true,
+      }),
+    );
+    Object.defineProperty(URL, 'createObjectURL', {
+      configurable: true,
+      value: vi.fn(() => 'blob:http://localhost/retry'),
+    });
+    await user.click(downloadLink);
+
+    await waitFor(() => expect(syntheticClicks).toHaveLength(1));
+    expect(syntheticClicks[0]).toHaveAttribute(
+      'href',
+      'blob:http://localhost/retry',
+    );
+    expect(within(dialog).queryByRole('alert')).toBeNull();
+
+    revocationClock.flush();
+    expect(revocationClock.revokeObjectURL).toHaveBeenCalledExactlyOnceWith(
+      'blob:http://localhost/retry',
+    );
+  });
+
+  it('ignores an earlier download failure after a later attempt succeeds', async () => {
+    const revocationClock = installDownloadRevocationClock();
+    const remoteSource = 'https://files.example.test/attachments/report.pdf';
+    const earlierFetch = deferred<Response>();
+    const laterFetch = deferred<Response>();
+    const fetchMock = vi
+      .fn<typeof fetch>()
+      .mockReturnValueOnce(earlierFetch.promise)
+      .mockReturnValueOnce(laterFetch.promise);
+    vi.stubGlobal('fetch', fetchMock);
+    Object.defineProperty(URL, 'createObjectURL', {
+      configurable: true,
+      value: vi.fn(() => 'blob:http://localhost/report'),
+    });
+    const syntheticClicks: HTMLAnchorElement[] = [];
+    vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(
+      function mockAnchorClick(this: HTMLAnchorElement) {
+        if (this.hidden) syntheticClicks.push(this);
+      },
+    );
+
+    renderBreeze(
+      <TestDocumentViewer
+        initialOpen
+        mediaType="image"
+        src={remoteSource}
+        title="Quarterly report"
+      />,
+    );
+
+    const dialog = await screen.findByRole('dialog', {
+      name: 'Quarterly report',
+    });
+    const downloadLink = within(dialog).getByRole('link', { name: 'Download' });
+    fireEvent.click(downloadLink);
+    fireEvent.click(downloadLink);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+
+    await act(async () => {
+      laterFetch.resolve({
+        blob: () => Promise.resolve(new Blob(['report'])),
+        ok: true,
+      } as Response);
+      await laterFetch.promise;
+    });
+    expect(syntheticClicks).toHaveLength(1);
+
+    await act(async () => {
+      earlierFetch.reject(new TypeError('Cross-origin response is blocked.'));
+      await Promise.resolve();
+    });
+
+    expect(within(dialog).queryByRole('alert')).toBeNull();
+    revocationClock.flush();
+  });
+
+  it('reports an expired presigned download in the viewer instead of navigating to it', async () => {
+    const remoteSource =
+      'https://files.example.test/attachments/report.pdf?X-Amz-Expires=30';
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({ ok: false, status: 403 }),
+    );
+    const syntheticClicks: HTMLAnchorElement[] = [];
+    vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(
+      function mockSyntheticClick(this: HTMLAnchorElement) {
+        if (this.hidden) syntheticClicks.push(this);
+      },
+    );
+
+    renderBreeze(
+      <TestDocumentViewer
+        initialOpen
+        mediaType="image"
+        src={remoteSource}
+        title="Quarterly report"
+      />,
+    );
+
+    const downloadLink = await screen.findByRole('link', { name: 'Download' });
+    expect(fireEvent.click(downloadLink)).toBe(false);
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'The file could not be downloaded.',
+    );
+    expect(syntheticClicks).toHaveLength(0);
   });
 
   it.each([
@@ -683,6 +862,7 @@ describe('DocumentViewer', () => {
     const observers: {
       callback: ResizeObserverCallback;
       disconnect: ReturnType<typeof vi.fn>;
+      observe: ReturnType<typeof vi.fn<(target: Element) => void>>;
     }[] = [];
     class TestResizeObserver {
       callback: ResizeObserverCallback;
@@ -694,7 +874,7 @@ describe('DocumentViewer', () => {
         observers.push(this);
       }
 
-      observe = vi.fn();
+      observe = vi.fn<(target: Element) => void>();
 
       unobserve = vi.fn();
     }
@@ -740,7 +920,10 @@ describe('DocumentViewer', () => {
     expect(mediaContent.style.height).toBe('328px');
 
     vi.spyOn(stage, 'getBoundingClientRect').mockReturnValue(bounds(320, 240));
-    const observer = observers[0];
+    // React Aria's popover positioning observes its own elements as well.
+    const observer = observers.findLast(({ observe }) =>
+      observe.mock.calls.some(([target]) => target === stage),
+    );
     if (!observer) throw new Error('The stage was not observed.');
     act(() => observer.callback([], observer as unknown as ResizeObserver));
 
@@ -1061,17 +1244,9 @@ describe('DocumentViewer', () => {
     const pendingRepaint = deferred<void>();
     const defaultRenderer = mockRenderPdfPage.getMockImplementation();
     if (!defaultRenderer) throw new Error('The PDF renderer mock is missing.');
-    let stage: HTMLElement | null = null;
-    let stageBusyWhenCanvasCleared = false;
     mockRenderPdfPage
       .mockImplementationOnce(defaultRenderer)
       .mockImplementationOnce(async (options) => {
-        const { canvas, textLayerContainer } = options;
-        canvas.width = 0;
-        canvas.height = 0;
-        textLayerContainer.replaceChildren();
-        stageBusyWhenCanvasCleared =
-          stage?.getAttribute('aria-busy') === 'true';
         await pendingRepaint.promise;
         await defaultRenderer(options);
       });
@@ -1089,7 +1264,7 @@ describe('DocumentViewer', () => {
       />,
     );
 
-    stage = await screen.findByRole('region', { name: 'Report' });
+    const stage = await screen.findByRole('region', { name: 'Report' });
     const canvas = await waitFor(() => {
       const renderedCanvas = stage.querySelector('canvas');
       if (!renderedCanvas) throw new Error('The PDF canvas was not rendered.');
@@ -1100,33 +1275,46 @@ describe('DocumentViewer', () => {
     expect(canvas.height).toBe(1200);
     expect(canvas.style.width).toBe('400px');
     expect(canvas.style.height).toBe('600px');
+    const stageContent = stage.firstElementChild;
+    if (!stageContent) throw new Error('The stage content is missing.');
+    stage.scrollTop = 120;
+    stage.scrollLeft = 40;
 
     await user.click(screen.getByRole('button', { name: 'Zoom in' }));
 
     await waitFor(() => expect(mockRenderPdfPage).toHaveBeenCalledTimes(2));
-    await waitFor(() => expect(stage).toHaveAttribute('aria-busy', 'true'));
-    expect(stageBusyWhenCanvasCleared).toBe(true);
-    expect(
-      document.body.querySelector('[aria-label="Loading document"]'),
-    ).toBeInTheDocument();
-    expect(canvas.width).toBe(0);
-    pendingRepaint.resolve();
+    expect(mockRenderPdfPage.mock.calls[1]?.[0].canvas).toBe(canvas);
     expect(mockRenderPdfPage.mock.calls[1]?.[0].outputScale).toBe(2.5);
-    await waitFor(() => expect(stage).toHaveAttribute('aria-busy', 'false'));
-    expect(canvas.width).toBe(1000);
-    expect(canvas.height).toBe(1500);
-    expect(canvas.style.width).toBe('400px');
-    expect(canvas.style.height).toBe('600px');
     expect(stage).toHaveAttribute('aria-busy', 'false');
+    expect(stageContent).not.toHaveAttribute('inert');
+    expect(stageContent).not.toHaveClass('breeze:invisible');
+    expect(stageContent).not.toHaveClass('breeze:absolute');
     expect(
       document.body.querySelector('[aria-label="Loading document"]'),
     ).not.toBeInTheDocument();
+    expect(stage.querySelector('canvas')).toBe(canvas);
+    expect(canvas.width).toBe(800);
     expect(
       document.body.querySelector('.breeze-document-viewer-media-content'),
     ).toHaveStyle({
       transform: 'translate(-50%, -50%) rotate(0deg) scale(1.25)',
       width: '400px',
     });
+
+    await act(async () => {
+      pendingRepaint.resolve();
+      await pendingRepaint.promise;
+    });
+    await waitFor(() => expect(canvas.width).toBe(1000));
+    expect(canvas.height).toBe(1500);
+    expect(canvas.style.width).toBe('400px');
+    expect(canvas.style.height).toBe('600px');
+    expect(stage).toHaveAttribute('aria-busy', 'false');
+    expect(stage.scrollTop).toBe(120);
+    expect(stage.scrollLeft).toBe(40);
+    expect(
+      document.body.querySelector('[aria-label="Loading document"]'),
+    ).not.toBeInTheDocument();
   });
 
   it('waits for a cancelled PDF paint before rendering the updated zoom', async () => {
@@ -1235,7 +1423,8 @@ describe('DocumentViewer', () => {
       if (!overlay) throw new Error('The normal overlay exit did not start.');
       return overlay;
     });
-    expect(exitingOverlay).toHaveAttribute('data-breeze-scrim', 'true');
+    expect(exitingOverlay).toHaveAttribute('data-breeze-overlay', 'fullscreen');
+    expect(exitingOverlay).not.toHaveAttribute('data-breeze-scrim', 'true');
     expect(exitingOverlay).toContainElement(reopenedDialog);
 
     await act(async () => {
@@ -1720,6 +1909,19 @@ describe('DocumentViewer', () => {
         old: ['attachment'],
       });
 
+      // Non-modal by design (ADR 0002).
+      const sheet = screen.getByRole('dialog', { name: 'Account record' });
+      const sheetLayer = sheet.closest('[data-breeze-overlay]');
+      const viewerLayer = dialog.closest('[data-breeze-overlay]');
+      expect(dialog).not.toHaveAttribute('aria-modal', 'true');
+      expect(viewerLayer).toHaveAttribute('data-breeze-overlay', 'fullscreen');
+      expect(viewerLayer).not.toHaveAttribute('data-breeze-scrim', 'true');
+      expect(sheetLayer).not.toHaveAttribute('inert');
+      expect(sheetLayer).toHaveAttribute('data-breeze-scrim', 'true');
+      expect(
+        document.querySelectorAll('[data-breeze-scrim="true"]'),
+      ).toHaveLength(1);
+
       await user.keyboard('{Escape}');
       await waitFor(() => expect(expandSnapshots()).toHaveLength(2));
       expect(expandSnapshots()[1]).toMatchObject({
@@ -1727,8 +1929,81 @@ describe('DocumentViewer', () => {
         old: ['viewer'],
       });
       await waitFor(() => expect(row).toHaveFocus());
+      expect(screen.getByRole('dialog', { name: 'Account record' })).toBe(
+        sheet,
+      );
+      expect(sheetLayer).toHaveAttribute('data-breeze-scrim', 'true');
+      expect(sheetLayer).toHaveAttribute('data-breeze-topmost', 'true');
     },
   );
+
+  it('closes a nested viewer with its sheet when the sheet closes first', async () => {
+    const user = userEvent.setup();
+    const viewerOpenChange = vi.fn();
+    let closeSheet!: () => void;
+
+    function SheetViewerExample() {
+      const [sheetOpen, setSheetOpen] = useState(false);
+      const [viewerOpen, setViewerOpen] = useState(false);
+      closeSheet = () => setSheetOpen(false);
+
+      return (
+        <Drawer
+          onOpenChange={setSheetOpen}
+          open={sheetOpen}
+          title="Account record"
+          trigger="Open account record"
+        >
+          <AttachmentRow
+            fileType="photo"
+            filename="receipt.jpg"
+            onOpen={() => setViewerOpen(true)}
+            sizeBytes={12_000}
+            status="Uploaded"
+            transitionName="outer-first-preview"
+          />
+          <DocumentViewer
+            mediaType="image"
+            onOpenChange={(nextOpen) => {
+              viewerOpenChange(nextOpen);
+              setViewerOpen(nextOpen);
+            }}
+            open={viewerOpen}
+            src="/attachments/receipt.jpg"
+            title="Receipt"
+            transitionName="outer-first-preview"
+          />
+        </Drawer>
+      );
+    }
+
+    renderBreeze(<SheetViewerExample />);
+    const pageTrigger = screen.getByRole('button', {
+      name: 'Open account record',
+    });
+    await user.click(pageTrigger);
+    await user.click(
+      await screen.findByRole('button', { name: 'Open: receipt.jpg' }),
+    );
+    await screen.findByRole('dialog', { name: 'Receipt' });
+
+    act(closeSheet);
+
+    await waitFor(() =>
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument(),
+    );
+    await waitFor(() => expect(pageTrigger).toHaveFocus());
+    expect(viewerOpenChange).toHaveBeenLastCalledWith(false);
+    expect(
+      document.querySelector('[data-breeze-scrim="true"]'),
+    ).not.toBeInTheDocument();
+
+    await user.click(pageTrigger);
+    expect(
+      await screen.findByRole('dialog', { name: 'Account record' }),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('dialog', { name: 'Receipt' })).toBeNull();
+  });
 
   it('resets the page when the opened source changes', async () => {
     const user = userEvent.setup();
@@ -1796,9 +2071,9 @@ describe('DocumentViewer', () => {
       .mockRejectedValueOnce(new Error('The optional peer is unavailable.'))
       .mockResolvedValueOnce(pdfSession(1));
     const sourceBlob = new Blob(['%PDF-1.7'], { type: 'text/html' });
-    const fetchMock = vi
-      .fn<typeof fetch>()
-      .mockResolvedValue(new Response(sourceBlob));
+    const fetchMock = abortableFetch(() =>
+      Promise.resolve(new Response(sourceBlob)),
+    );
     const createObjectURL = vi.fn(() => 'blob:http://localhost/report.pdf');
     const revokeObjectURL = vi.fn();
     vi.stubGlobal('fetch', fetchMock);
@@ -1836,19 +2111,20 @@ describe('DocumentViewer', () => {
       if (!frame) throw new Error('Expected the native PDF fallback.');
       return frame;
     });
-    expect(fetchMock).toHaveBeenCalledOnce();
+    expect(fetchMock.delivered).toHaveLength(1);
     expect(fallbackFrame).toHaveAttribute(
       'src',
       'blob:http://localhost/report.pdf',
     );
     expect(fallbackFrame).not.toHaveAttribute('sandbox');
-    expect(createObjectURL).toHaveBeenCalledWith(
+    expect(createObjectURL).toHaveBeenCalledExactlyOnceWith(
       expect.objectContaining({ type: 'application/pdf' }),
     );
-    const fallbackFetchOptions = fetchMock.mock.calls[0]?.[1];
+    const fallbackFetchOptions = fetchMock.mock.lastCall?.[1];
     expect(fallbackFetchOptions?.credentials).toBe('same-origin');
     expect(fallbackFetchOptions?.signal).toBeInstanceOf(AbortSignal);
     fireEvent.load(fallbackFrame);
+    const fallbackRequests = fetchMock.mock.calls.length;
 
     await user.click(await screen.findByRole('button', { name: 'Close' }));
     const reopenButton = document.body.querySelector(
@@ -1863,16 +2139,23 @@ describe('DocumentViewer', () => {
     );
     expect(document.body.querySelector('iframe')).toBeNull();
     expect(mockRenderPdfPage).toHaveBeenCalledOnce();
-    expect(fetchMock).toHaveBeenCalledOnce();
-    await waitFor(() => expect(revokeObjectURL).toHaveBeenCalledOnce());
+    expect(fetchMock).toHaveBeenCalledTimes(fallbackRequests);
+    await waitFor(() =>
+      expect(revokeObjectURL).toHaveBeenCalledExactlyOnceWith(
+        'blob:http://localhost/report.pdf',
+      ),
+    );
   });
 
   it('aborts a replaced PDF fallback fetch and leaves the download action on failure', async () => {
     const firstFetch = deferred<Response>();
-    const fetchMock = vi
-      .fn<typeof fetch>()
-      .mockReturnValueOnce(firstFetch.promise)
-      .mockRejectedValueOnce(new TypeError('The response is blocked by CORS.'));
+    const fetchMock = abortableFetch((input) =>
+      input === '/attachments/first.pdf'
+        ? firstFetch.promise
+        : Promise.reject(new TypeError('The response is blocked by CORS.')),
+    );
+    const requestsFor = (source: string) =>
+      liveFetchCalls(fetchMock).filter(([input]) => input === source);
     vi.stubGlobal('fetch', fetchMock);
     mockLoadPdfDocument.mockRejectedValue(
       new Error('The optional peer is unavailable.'),
@@ -1895,13 +2178,22 @@ describe('DocumentViewer', () => {
 
     renderBreeze(<SwitchableViewer />);
 
-    await waitFor(() => expect(fetchMock).toHaveBeenCalledOnce());
-    const firstSignal = fetchMock.mock.calls[0]?.[1]?.signal;
+    await waitFor(() =>
+      expect(requestsFor('/attachments/first.pdf')).toHaveLength(1),
+    );
+    const firstSignal = requestsFor('/attachments/first.pdf')[0]?.[1]?.signal;
     expect(firstSignal).toBeInstanceOf(AbortSignal);
     act(changeSource);
 
-    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
+    await waitFor(() =>
+      expect(
+        fetchMock.mock.calls.filter(
+          ([input]) => input === '/attachments/second.pdf',
+        ),
+      ).not.toHaveLength(0),
+    );
     expect(firstSignal?.aborted).toBe(true);
+    expect(liveFetchCalls(fetchMock)).toHaveLength(1);
     await screen.findByText(
       'The PDF preview could not be loaded. Use Download to open the original file.',
     );
@@ -1917,7 +2209,7 @@ describe('DocumentViewer', () => {
   it('aborts a pending PDF fallback fetch when the viewer closes', async () => {
     const user = userEvent.setup();
     const pendingFetch = deferred<Response>();
-    const fetchMock = vi.fn<typeof fetch>(() => pendingFetch.promise);
+    const fetchMock = abortableFetch(() => pendingFetch.promise);
     vi.stubGlobal('fetch', fetchMock);
     mockLoadPdfDocument.mockRejectedValueOnce(
       new Error('The optional peer is unavailable.'),
@@ -1932,8 +2224,8 @@ describe('DocumentViewer', () => {
       />,
     );
 
-    await waitFor(() => expect(fetchMock).toHaveBeenCalledOnce());
-    const signal = fetchMock.mock.calls[0]?.[1]?.signal;
+    await waitFor(() => expect(liveFetchCalls(fetchMock)).toHaveLength(1));
+    const signal = liveFetchCalls(fetchMock)[0]?.[1]?.signal;
     expect(signal).toBeInstanceOf(AbortSignal);
 
     await user.click(await screen.findByRole('button', { name: 'Close' }));
@@ -2159,9 +2451,9 @@ describe('DocumentViewer', () => {
     const pendingThirdSource = deferred<PdfSession>();
     vi.stubGlobal(
       'fetch',
-      vi
-        .fn<typeof fetch>()
-        .mockResolvedValue(new Response(new Blob(['%PDF-1.7']))),
+      abortableFetch(() =>
+        Promise.resolve(new Response(new Blob(['%PDF-1.7']))),
+      ),
     );
     Object.defineProperty(URL, 'createObjectURL', {
       configurable: true,

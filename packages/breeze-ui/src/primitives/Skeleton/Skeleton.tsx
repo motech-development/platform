@@ -3,8 +3,9 @@ import { useBreezeContext } from '../../provider/BreezeContext';
 
 const variants = {
   base: {
+    // `appearance: none` still leaves each engine's progress pseudo-elements painted.
     skeleton:
-      'breeze:block breeze:animate-pulse breeze:appearance-none breeze:bg-breeze-ink-3 breeze:pointer-events-none breeze:forced-colors:outline breeze:forced-colors:outline-1 breeze:forced-colors:outline-[CanvasText]',
+      'breeze:block breeze:animate-breeze-skeleton breeze:appearance-none breeze:bg-breeze-sunken breeze:pointer-events-none breeze:forced-colors:outline breeze:forced-colors:outline-1 breeze:forced-colors:outline-[CanvasText] breeze:[&::-webkit-progress-bar]:[background:transparent] breeze:[&::-webkit-progress-value]:[background:transparent] breeze:[&::-moz-progress-bar]:[background:transparent]',
   },
   compound: {},
   size: {},
@@ -12,7 +13,7 @@ const variants = {
   variant: {
     circle: 'breeze:aspect-square breeze:rounded-breeze-full',
     rectangle: 'breeze:rounded-breeze-sm',
-    text: 'breeze:block-size-breeze-3 breeze:inline-size-full breeze:rounded-breeze-xs',
+    text: 'breeze:block-breeze-3 breeze:inline-full breeze:rounded-breeze-xs',
   },
 } as const;
 

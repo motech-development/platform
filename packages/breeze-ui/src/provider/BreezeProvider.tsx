@@ -28,6 +28,8 @@ interface BreezeProviderBaseProps {
    * The container must belong to the same document as the overlay triggers.
    */
   portalContainer?: HTMLElement;
+  /** IANA zone, such as `Europe/London`, reserved for time-of-day formatting; unknown names throw. */
+  timeZone?: string;
   /** Maximum number of visible confirmations; additional messages wait in FIFO order. */
   toastLimit?: number;
   /** Optional same-document router for links that need application navigation. */
@@ -64,6 +66,24 @@ function resolveAppearance(appearance: Appearance, prefersDark: boolean) {
   return appearance;
 }
 
+function validateTimeZone(timeZone: string | undefined) {
+  if (timeZone === undefined) {
+    return undefined;
+  }
+
+  try {
+    // Intl validates IANA names; an unknown zone throws a RangeError.
+    new Intl.DateTimeFormat(undefined, { timeZone }).resolvedOptions();
+  } catch (error) {
+    throw new RangeError(
+      `BreezeProvider timeZone must be a valid IANA time-zone name; received "${timeZone}".`,
+      { cause: error },
+    );
+  }
+
+  return timeZone;
+}
+
 function BreezeRoot({
   children,
 }: Readonly<Pick<BreezeProviderProps, 'children'>>) {
@@ -90,8 +110,11 @@ export function BreezeProvider({
   onAppearanceChange,
   portalContainer,
   router,
+  timeZone,
   toastLimit = 3,
 }: Readonly<BreezeProviderProps>) {
+  const validTimeZone = useMemo(() => validateTimeZone(timeZone), [timeZone]);
+
   const [preferredColorSchemeQuery] = useState(() =>
     typeof window === 'undefined' || !window.matchMedia
       ? null
@@ -174,12 +197,18 @@ export function BreezeProvider({
           messages?.attachmentMoreActions ?? enGB.attachmentMoreActions,
         attachmentOpen: messages?.attachmentOpen ?? enGB.attachmentOpen,
         attachmentPhoto: messages?.attachmentPhoto ?? enGB.attachmentPhoto,
+        clearDate: messages?.clearDate ?? enGB.clearDate,
         close: messages?.close ?? enGB.close,
+        comboBoxNoMatches:
+          messages?.comboBoxNoMatches ?? enGB.comboBoxNoMatches,
         documentViewerAccessibility:
           messages?.documentViewerAccessibility ??
           enGB.documentViewerAccessibility,
         documentViewerDownload:
           messages?.documentViewerDownload ?? enGB.documentViewerDownload,
+        documentViewerDownloadFailed:
+          messages?.documentViewerDownloadFailed ??
+          enGB.documentViewerDownloadFailed,
         documentViewerExitFullScreen:
           messages?.documentViewerExitFullScreen ??
           enGB.documentViewerExitFullScreen,
@@ -242,6 +271,8 @@ export function BreezeProvider({
           enGB.fileDropZoneReleaseInstructions,
         fileDropZoneSizeRejected:
           messages?.fileDropZoneSizeRejected ?? enGB.fileDropZoneSizeRejected,
+        fileDropZoneTakePhoto:
+          messages?.fileDropZoneTakePhoto ?? enGB.fileDropZoneTakePhoto,
         fileDropZoneTypeRejected:
           messages?.fileDropZoneTypeRejected ?? enGB.fileDropZoneTypeRejected,
         loading: messages?.loading ?? enGB.loading,
@@ -251,10 +282,12 @@ export function BreezeProvider({
         required: messages?.required ?? enGB.required,
         selectDate: messages?.selectDate ?? enGB.selectDate,
         skipToMain: messages?.skipToMain ?? enGB.skipToMain,
+        today: messages?.today ?? enGB.today,
       },
       resolvedAppearance,
       router,
       setAppearance,
+      timeZone: validTimeZone,
     }),
     [
       appearance,
@@ -264,6 +297,7 @@ export function BreezeProvider({
       resolvedAppearance,
       router,
       setAppearance,
+      validTimeZone,
     ],
   );
 

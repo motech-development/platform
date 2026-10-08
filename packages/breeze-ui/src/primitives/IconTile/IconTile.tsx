@@ -1,3 +1,4 @@
+import { useBreezeContext } from '../../provider/BreezeContext';
 import { Icon, type IconName } from '../Icon/Icon';
 
 const variants = {
@@ -6,8 +7,8 @@ const variants = {
   },
   compound: {},
   size: {
-    lg: 'breeze:block-size-breeze-tap breeze:inline-size-breeze-tap',
-    sm: 'breeze:block-size-breeze-7 breeze:inline-size-breeze-7',
+    lg: 'breeze:block-breeze-tap breeze:inline-breeze-tap',
+    sm: 'breeze:block-breeze-7 breeze:inline-breeze-7',
   },
   state: {},
   variant: {
@@ -20,6 +21,7 @@ const variants = {
       danger: 'breeze:bg-breeze-danger/10 breeze:text-breeze-danger',
       neutral: 'breeze:bg-breeze-sunken breeze:text-breeze-ink-2',
       positive: 'breeze:bg-breeze-pos-soft breeze:text-breeze-pos',
+      strong: 'breeze:bg-breeze-sunken breeze:text-breeze-ink',
       warning: 'breeze:bg-breeze-warn-soft breeze:text-breeze-warn',
     },
   },
@@ -54,6 +56,8 @@ export function IconTile({
   size = 'lg',
   tone = 'brand',
 }: Readonly<IconTileProps>) {
+  useBreezeContext();
+
   return (
     <span
       className={[
@@ -63,7 +67,7 @@ export function IconTile({
         variants.size[size],
       ].join(' ')}
     >
-      <Icon label={label} name={name} size={size === 'lg' ? 'md' : 'sm'} />
+      <Icon label={label} name={name} size={size === 'lg' ? '2xl' : 'xs'} />
     </span>
   );
 }

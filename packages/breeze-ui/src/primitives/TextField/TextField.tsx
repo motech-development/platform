@@ -1,12 +1,12 @@
 import type { Ref } from 'react';
 import { Input as AriaInput } from 'react-aria-components/Input';
 import { TextField as AriaTextField } from 'react-aria-components/TextField';
-import { useBreezeContext } from '../../provider/BreezeContext';
 import {
   FieldLabel,
   FieldSupportingContent,
-} from '../Field/field.presentation';
-import { fieldVariants, joinClassNames } from '../Field/field.styles';
+} from '../../fields/field.presentation';
+import { fieldVariants, joinClassNames } from '../../fields/field.styles';
+import { useBreezeContext } from '../../provider/BreezeContext';
 import { Skeleton } from '../Skeleton/Skeleton';
 
 type TextInputType = 'email' | 'password' | 'search' | 'tel' | 'text' | 'url';
@@ -119,6 +119,7 @@ export function TextField({
           aria-busy={loading || undefined}
           className={joinClassNames(
             fieldVariants.base.input,
+            fieldVariants.size.md,
             loading && fieldVariants.state.loadingInput,
           )}
           autoComplete={autoComplete}

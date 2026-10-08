@@ -1,4 +1,4 @@
-import type { RefObject } from 'react';
+import type { KeyboardEvent, RefObject } from 'react';
 import {
   createElement,
   useContext,
@@ -17,29 +17,31 @@ import {
   SelectStateContext as AriaSelectStateContext,
   SelectValue as AriaSelectValue,
 } from 'react-aria-components/Select';
-import { useBreezeContext } from '../../provider/BreezeContext';
-import collectionVariants from '../Collection/collection.styles';
-import CollectionPopover from '../Collection/CollectionPopover';
-import DescriptorContent from '../Collection/DescriptorContent';
-import type { ItemDescriptor } from '../Collection/item.types';
+import collectionVariants from '../../collections/collection.styles';
+import CollectionPopover, {
+  listBoxMaxHeight,
+} from '../../collections/CollectionPopover';
+import DescriptorBadge from '../../collections/DescriptorBadge';
+import DescriptorContent from '../../collections/DescriptorContent';
+import type { ItemDescriptor } from '../../collections/item.types';
 import {
   FieldLabel,
   FieldSupportingContent,
-} from '../Field/field.presentation';
-import { fieldVariants, joinClassNames } from '../Field/field.styles';
+} from '../../fields/field.presentation';
+import { fieldVariants, joinClassNames } from '../../fields/field.styles';
+import { useBreezeContext } from '../../provider/BreezeContext';
 import { Icon } from '../Icon/Icon';
 import { Skeleton } from '../Skeleton/Skeleton';
 
-const selectVariants = {
+const variants = {
   base: {
-    trigger:
-      'breeze:flex breeze:min-block-breeze-md breeze:any-pointer-coarse:min-block-breeze-tap breeze:min-inline-size-0 breeze:inline-size-full breeze:items-center breeze:justify-between breeze:rounded-breeze-ctl breeze:border breeze:border-solid breeze:border-breeze-line-strong breeze:bg-breeze-surface breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:py-breeze-2 breeze:font-breeze-sans breeze:text-breeze-sm breeze:text-breeze-ink breeze:outline-offset-2 breeze:data-[hovered]:border-breeze-brand breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[invalid]:border-breeze-danger breeze:disabled:cursor-not-allowed breeze:disabled:bg-breeze-sunken breeze:disabled:opacity-60',
+    value:
+      'breeze:flex breeze:min-inline-0 breeze:flex-1 breeze:items-center breeze:gap-breeze-2 breeze:text-start breeze:data-[placeholder]:text-breeze-ink-3',
+    valueLabel: 'breeze:min-inline-0 breeze:flex-1',
   },
   compound: {},
   size: {},
-  state: {
-    readOnlyTrigger: 'breeze:cursor-default breeze:bg-breeze-sunken',
-  },
+  state: {},
   variant: {},
 } as const;
 
@@ -97,6 +99,14 @@ interface UncontrolledSelectProps<T> {
 /** Props for controlled or uncontrolled fixed-choice selection. */
 export type SelectProps<T> = SelectCommonProps<T> &
   (ControlledSelectProps<T> | UncontrolledSelectProps<T>);
+
+/** React Aria's trigger ignores `isDisabled` for arrow keys and type-ahead, so read-only withholds them. */
+function changesSelection(event: KeyboardEvent): boolean {
+  if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') return true;
+  if (event.altKey || event.ctrlKey || event.metaKey) return false;
+
+  return event.key.length === 1 || !/^[A-Z]/i.test(event.key);
+}
 
 interface SelectItem<T> {
   descriptor: ItemDescriptor;
@@ -176,6 +186,7 @@ function SelectPopover<T>({
     <CollectionPopover
       className={collectionVariants.base.popover}
       isOpen={isOpen}
+      maxHeight={listBoxMaxHeight}
       onOpenChange={(open) => state?.setOpen(open)}
       triggerRef={triggerRef}
     >
@@ -275,34 +286,43 @@ export function Select<T>({
       <div className={fieldVariants.base.control}>
         <AriaButton
           className={joinClassNames(
-            selectVariants.base.trigger,
-            readOnly && selectVariants.state.readOnlyTrigger,
+            fieldVariants.base.trigger,
             loading && 'breeze:!opacity-0',
           )}
           isDisabled={interactionDisabled}
           ref={triggerRef}
-          render={(buttonProps) =>
+          render={({ onKeyDown, ...buttonProps }) =>
             createElement('button', {
               ...buttonProps,
               'aria-busy': loading || undefined,
               'aria-disabled': readOnly || undefined,
               'aria-invalid': isInvalid || undefined,
               'data-invalid': isInvalid || undefined,
+              onKeyDown: (event: KeyboardEvent<HTMLButtonElement>) => {
+                if (readOnly && changesSelection(event)) return;
+                onKeyDown?.(event);
+              },
               type: 'button',
             })
           }
         >
-          <AriaSelectValue
-            className={joinClassNames(
-              collectionVariants.base.content,
-              'breeze:text-start',
-            )}
-          >
-            {({ isPlaceholder, selectedText }) =>
-              isPlaceholder ? placeholder ?? '' : selectedText
-            }
+          <AriaSelectValue<SelectItem<T>> className={variants.base.value}>
+            {({ isPlaceholder, selectedItems: [selected], selectedText }) => {
+              if (isPlaceholder) return placeholder ?? '';
+
+              const badge = selected?.descriptor.badge;
+
+              return (
+                <>
+                  <span className={variants.base.valueLabel}>
+                    {selectedText}
+                  </span>
+                  {badge && <DescriptorBadge badge={badge} />}
+                </>
+              );
+            }}
           </AriaSelectValue>
-          <Icon name="expand" size="sm" />
+          <Icon name="expand" size="xs" />
         </AriaButton>
         {loading && (
           <span className={fieldVariants.base.skeleton}>

@@ -260,9 +260,17 @@ function orderedVisualLayers(layers: OverlayStackSnapshot) {
     ordered.push(layer);
   };
   layers.forEach(append);
+  // A closing popover is non-modal and inactive, so it must not withhold names: a menu
+  // item's navigation would otherwise snapshot the fading menu without the shell chrome.
+  const isClosingPopover = (layer: OverlayLayer) =>
+    layer.kind === 'popover' && !layer.active;
   const isVisual = (layer: OverlayLayer): boolean => {
     const ancestor = layers.find((entry) => entry.id === layer.parent);
-    return layer.visual && (!ancestor || isVisual(ancestor));
+    return (
+      layer.visual &&
+      !isClosingPopover(layer) &&
+      (!ancestor || isVisual(ancestor))
+    );
   };
 
   return ordered.filter(isVisual);

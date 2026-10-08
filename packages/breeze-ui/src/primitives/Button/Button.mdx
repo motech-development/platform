@@ -21,9 +21,11 @@ Secondary buttons are neutral alternatives to the primary action, such as cancel
 
 ## Quiet button
 
-Quiet buttons are low emphasis, for actions that sit alongside content.
+Quiet buttons are 13px text actions with no border, fill or control height, for actions that sit alongside content, such as Mark all as read in a panel header or Download on a row. They have one size and do not accept `size`. Use a `Link` when the action navigates.
 
 <Canvas of={Stories.Quiet} />
+
+<Canvas of={Stories.RowAction} />
 
 ## Danger button
 
@@ -33,13 +35,19 @@ Danger buttons are destructive actions. Use a label that states what will be rem
 
 ## Sizes
 
-`size` accepts `sm`, `md` (default) and `lg`, with minimum heights of 34, 38 and 52px.
+`size` accepts `sm`, `md` (default) and `lg`, with minimum heights of 32, 36 and 52px. Small labels are 12px and the others 13px, all semibold. Sizes apply to the `primary`, `secondary` and `danger` treatments.
 
 <Canvas of={Stories.TreatmentsAndSizes} />
 
 Labels wrap and increase the height of the button:
 
 <Canvas of={Stories.LongLabel} />
+
+## Icon
+
+`icon` places a 16px Breeze icon 8px before the label, in every variant and size. The icon is decorative, so the label remains the accessible name. While loading, the icon is hidden with the label.
+
+<Canvas of={Stories.WithIcon} />
 
 ## Loading
 
@@ -65,7 +73,7 @@ Use `type="submit"` to submit the containing form, and handle submission on the 
 
 ## Accessibility
 
-The label provides the accessible name and is retained while the button is loading. Buttons receive a 44px minimum target on touch devices, and `aria-label`, `aria-labelledby`, `aria-describedby`, `aria-controls`, `aria-expanded` and `aria-haspopup` are supported.
+The label provides the accessible name and is retained while the button is loading. Buttons receive a 44px minimum target on touch devices. Quiet buttons receive a 44px minimum height instead, on touch devices and below the `md` breakpoint. `aria-label`, `aria-labelledby`, `aria-describedby`, `aria-controls`, `aria-expanded` and `aria-haspopup` are supported.
 
 ## API
 

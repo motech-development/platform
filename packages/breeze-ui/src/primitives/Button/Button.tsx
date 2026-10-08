@@ -1,71 +1,58 @@
 import type { ButtonHTMLAttributes, Ref } from 'react';
 import { createElement } from 'react';
 import { Button as AriaButton } from 'react-aria-components/Button';
-import { ProgressBarContext } from 'react-aria-components/ProgressBar';
-import { useSlottedContext } from 'react-aria-components/slots';
+import ButtonLoadingStatus from '../../buttons/button.presentation';
+import {
+  type ButtonVariant,
+  buttonVariants,
+} from '../../buttons/button.styles';
 import { useBreezeContext } from '../../provider/BreezeContext';
+import { Icon, type IconName, type IconSize } from '../Icon/Icon';
 
 const variants = {
   base: {
+    box: 'breeze:border breeze:border-solid breeze:rounded-breeze-ctl breeze:font-semibold breeze:any-pointer-coarse:min-inline-breeze-tap',
     button:
-      'breeze:relative breeze:inline-grid breeze:items-center breeze:justify-center breeze:gap-breeze-2 breeze:border breeze:border-solid breeze:rounded-breeze-ctl breeze:font-breeze-sans breeze:text-breeze-sm breeze:leading-breeze-snug breeze:cursor-pointer breeze:select-none breeze:[text-align:center] breeze:outline-offset-2 breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:any-pointer-coarse:min-block-breeze-tap breeze:any-pointer-coarse:min-inline-breeze-tap',
+      'breeze:relative breeze:inline-grid breeze:items-center breeze:justify-center breeze:gap-breeze-2 breeze:font-breeze-sans breeze:cursor-pointer breeze:select-none breeze:[text-align:center] breeze:outline-offset-2 breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:any-pointer-coarse:min-block-breeze-tap',
     label: 'breeze:[grid-area:1/1]',
+    labelWithIcon: 'breeze:inline-flex breeze:items-center breeze:gap-breeze-2',
     skeleton:
-      'breeze:[grid-area:1/1] breeze:inline-size-full breeze:block-size-breeze-3 breeze:rounded-breeze-xs',
+      'breeze:[grid-area:1/1] breeze:inline-full breeze:block-breeze-3 breeze:rounded-breeze-xs',
   },
+  // Treatments, states and loading fills are shared with IconButton.
   compound: {
-    loading: {
-      danger: 'breeze:bg-breeze-on-brand/35',
-      primary: 'breeze:bg-breeze-on-brand/35',
-      quiet: 'breeze:bg-breeze-line-strong',
-      secondary: 'breeze:bg-breeze-line-strong',
+    // The design pads the filled primary wider than the other md treatments.
+    md: {
+      danger: 'breeze:ps-breeze-3 breeze:pe-breeze-3',
+      primary: 'breeze:ps-[14px] breeze:pe-[14px]',
+      secondary: 'breeze:ps-breeze-3 breeze:pe-breeze-3',
     },
   },
   size: {
-    lg: 'breeze:min-block-breeze-lg breeze:ps-breeze-5 breeze:pe-breeze-5 breeze:py-breeze-3',
-    md: 'breeze:min-block-breeze-md breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:py-breeze-2',
-    sm: 'breeze:min-block-breeze-sm breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:py-breeze-1',
+    lg: 'breeze:min-block-breeze-lg breeze:ps-breeze-5 breeze:pe-breeze-5 breeze:py-breeze-3 breeze:text-breeze-sm',
+    md: 'breeze:min-block-breeze-9 breeze:text-breeze-sm',
+    sm: 'breeze:min-block-breeze-8 breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:text-breeze-xs',
   },
-  state: {
-    disabled: 'breeze:cursor-not-allowed breeze:opacity-50',
-    loading: 'breeze:cursor-wait',
-    loadingLabel: 'breeze:opacity-0',
-    loadingStatus: 'breeze:sr-only',
-  },
+  state: {},
   variant: {
-    danger:
-      'breeze:border-transparent breeze:bg-breeze-danger-fill breeze:text-breeze-on-brand breeze:data-[hovered]:bg-breeze-danger-hover breeze:data-[pressed]:bg-breeze-danger-hover',
-    primary:
-      'breeze:border-transparent breeze:bg-breeze-brand breeze:text-breeze-on-brand breeze:data-[hovered]:bg-breeze-brand-hover breeze:data-[pressed]:bg-breeze-brand-hover',
+    // The design's text action has no control box, hover fill or size scale, and keeps the body's line height.
     quiet:
-      'breeze:border-transparent breeze:bg-transparent breeze:text-breeze-brand-text breeze:data-[hovered]:bg-breeze-brand-soft breeze:data-[pressed]:bg-breeze-brand-soft',
-    secondary:
-      'breeze:border-breeze-line-strong breeze:bg-breeze-surface breeze:text-breeze-ink breeze:data-[hovered]:bg-breeze-sunken breeze:data-[pressed]:bg-breeze-sunken',
+      'breeze:border-0 breeze:rounded-breeze-chip breeze:bg-transparent breeze:px-breeze-1 breeze:text-breeze-sm breeze:font-normal breeze:leading-breeze-snug breeze:text-breeze-brand-text breeze:max-breeze-md:min-block-breeze-tap',
   },
 } as const;
 
-/** Connect the pending announcement to a phrasing element inside the button. */
-function LoadingStatus() {
-  const progress = useSlottedContext(ProgressBarContext);
-  const { getMessageLocale, messages } = useBreezeContext();
+const iconSizes = {
+  lg: 'sm',
+  md: 'sm',
+  sm: 'xs',
+} as const satisfies Record<ControlSize, IconSize>;
 
-  return (
-    <progress
-      aria-label={messages.loading}
-      className={variants.state.loadingStatus}
-      id={progress?.id}
-      lang={getMessageLocale('loading')}
-    />
-  );
-}
+export type { ButtonVariant } from '../../buttons/button.styles';
 
-/** Button-specific visual treatments. */
-export type ButtonVariant = keyof typeof variants.variant;
-
-/** Shared control sizes: 34, 38 and 52px, with a 44px coarse-pointer floor. */
+/** Shared control size scale, with a 44px coarse-pointer floor. */
 export type ControlSize = 'sm' | 'md' | 'lg';
 
-export interface ButtonProps {
+interface ButtonCommonProps {
   /** Identifies the element whose contents or presence this button controls. */
   'aria-controls'?: ButtonHTMLAttributes<HTMLButtonElement>['aria-controls'];
   /** Identifies elements that provide additional information about the button. */
@@ -82,6 +69,8 @@ export interface ButtonProps {
   children: string;
   /** Prevents activation and removes the button from the tab order. */
   disabled?: boolean;
+  /** Decorative icon shown before the label. */
+  icon?: IconName;
   /** Associates a submit button with a form by its HTML `id`. */
   form?: ButtonHTMLAttributes<HTMLButtonElement>['form'];
   /** Sets the rendered button's HTML `id`. */
@@ -94,20 +83,34 @@ export interface ButtonProps {
   onAction?: () => void;
   /** Provides access to the rendered button element. */
   ref?: Ref<HTMLButtonElement>;
-  /** Selects the button's dimensions. Defaults to `md`. */
-  size?: ControlSize;
   /** Selects ordinary or form-submission behaviour. Defaults to `button`. */
   type?: 'button' | 'submit';
   /** Sets the value submitted when this button submits a form. */
   value?: string;
-  /** Selects the button's visual and semantic treatment. Defaults to `primary`. */
-  variant?: ButtonVariant;
 }
+
+interface BoxedButtonProps {
+  /** Selects the button's dimensions. Defaults to `md`. */
+  size?: ControlSize;
+  /** Selects the button's visual and semantic treatment. Defaults to `primary`. */
+  variant?: Exclude<ButtonVariant, 'quiet'>;
+}
+
+interface QuietButtonProps {
+  /** The quiet text action has one size. */
+  size?: never;
+  /** Renders a text action without a control box. */
+  variant: 'quiet';
+}
+
+/** Props for a boxed button in three sizes, or a single-size quiet text action. */
+export type ButtonProps = ButtonCommonProps &
+  (BoxedButtonProps | QuietButtonProps);
 
 /**
  * Performs a semantic action with a visible label and an optional loading skeleton.
  *
- * @summary A closed, labelled action in four treatments and three sizes.
+ * @summary A closed, labelled action in three boxed treatments and three sizes, or a quiet text action.
  */
 export function Button({
   'aria-controls': ariaControls,
@@ -119,6 +122,7 @@ export function Button({
   children,
   disabled = false,
   form,
+  icon,
   id,
   loading = false,
   name,
@@ -131,12 +135,15 @@ export function Button({
 }: Readonly<ButtonProps>) {
   useBreezeContext();
 
+  const boxed = variant !== 'quiet';
   const className = [
     variants.base.button,
-    variants.variant[variant],
-    variants.size[size],
-    disabled && variants.state.disabled,
-    loading && variants.state.loading,
+    boxed ? variants.base.box : variants.variant.quiet,
+    boxed && buttonVariants.variant[variant],
+    boxed && variants.size[size],
+    boxed && size === 'md' && variants.compound.md[variant],
+    disabled && buttonVariants.state.disabled,
+    loading && buttonVariants.state.loading,
   ]
     .filter(Boolean)
     .join(' ');
@@ -174,20 +181,31 @@ export function Button({
       value={value}
     >
       <span
-        className={[variants.base.label, loading && variants.state.loadingLabel]
+        className={[
+          variants.base.label,
+          icon && variants.base.labelWithIcon,
+          loading && buttonVariants.state.loadingContent,
+        ]
           .filter(Boolean)
           .join(' ')}
       >
-        {children}
+        {icon ? (
+          <>
+            <Icon name={icon} size={iconSizes[size]} />
+            <span>{children}</span>
+          </>
+        ) : (
+          children
+        )}
       </span>
       {loading && (
         <>
-          <LoadingStatus />
+          <ButtonLoadingStatus />
           <span
             aria-hidden="true"
             className={[
               variants.base.skeleton,
-              variants.compound.loading[variant],
+              buttonVariants.compound.loading[variant],
             ].join(' ')}
             data-breeze-skeleton=""
           />

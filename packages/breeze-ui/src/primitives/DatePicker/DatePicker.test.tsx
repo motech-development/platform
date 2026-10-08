@@ -1,3 +1,4 @@
+import { getLocalTimeZone, today } from '@internationalized/date';
 import { act, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
@@ -9,9 +10,15 @@ import { DatePicker, type DatePickerProps } from './DatePicker';
 expectTypeOf<DatePickerProps>().not.toHaveProperty('className');
 expectTypeOf<DatePickerProps>().not.toHaveProperty('style');
 expectTypeOf<DatePickerProps>().not.toHaveProperty('slot');
-expectTypeOf<DatePickerProps['onChange']>().toEqualTypeOf<
-  ((value: IsoCalendarDate) => void) | undefined
->();
+expectTypeOf<
+  Exclude<DatePickerProps, { required: false }>['onChange']
+>().toEqualTypeOf<((value: IsoCalendarDate) => void) | undefined>();
+expectTypeOf<
+  Extract<DatePickerProps, { required: false }>['onChange']
+>().toEqualTypeOf<((value: IsoCalendarDate | null) => void) | undefined>();
+expectTypeOf<
+  Extract<DatePickerProps, { required: false }>['defaultValue']
+>().toEqualTypeOf<IsoCalendarDate | null | undefined>();
 expectTypeOf<DatePickerProps['loading']>().toEqualTypeOf<boolean | undefined>();
 
 const controlledDatePicker = (
@@ -33,6 +40,46 @@ const mixedDatePicker = (
   />
 );
 
+const optionalControlledDatePicker = (
+  <DatePicker
+    label="Date"
+    onChange={(nextValue: IsoCalendarDate | null) => nextValue}
+    required={false}
+    value={null}
+  />
+);
+const optionalUncontrolledDatePicker = (
+  <DatePicker defaultValue={null} label="Date" required={false} />
+);
+const requiredNullDefaultDatePicker = (
+  // @ts-expect-error A required date has no empty default.
+  <DatePicker defaultValue={null} label="Date" />
+);
+const optionalNonNullCallbackDatePicker = (
+  // @ts-expect-error An optional date's callback must accept `null`.
+  <DatePicker
+    label="Date"
+    onChange={(nextValue: IsoCalendarDate) => nextValue}
+    required={false}
+    value="2026-09-03"
+  />
+);
+const optionalMixedDatePicker = (
+  <DatePicker
+    defaultValue="2026-09-03"
+    label="Date"
+    onChange={() => undefined}
+    required={false}
+    // @ts-expect-error Controlled and uncontrolled values are exclusive.
+    value="2026-09-04"
+  />
+);
+
+expectTypeOf(optionalControlledDatePicker).toBeObject();
+expectTypeOf(optionalUncontrolledDatePicker).toBeObject();
+expectTypeOf(requiredNullDefaultDatePicker).toBeObject();
+expectTypeOf(optionalNonNullCallbackDatePicker).toBeObject();
+expectTypeOf(optionalMixedDatePicker).toBeObject();
 expectTypeOf(controlledDatePicker).toBeObject();
 expectTypeOf(controlledEmptyDatePicker).toBeObject();
 expectTypeOf(uncontrolledDatePicker).toBeObject();
@@ -51,10 +98,31 @@ describe('DatePicker', () => {
     expect(trigger).toHaveAttribute('aria-expanded', 'false');
     expect(trigger).not.toHaveAttribute('aria-controls');
     expect(trigger).toHaveTextContent('3 September 2026');
-    expect(trigger.lastElementChild?.tagName.toLowerCase()).toBe('svg');
+    expect(trigger.lastElementChild?.querySelector('svg')).not.toBeNull();
     expect(
       container.querySelector('input[type="date"]'),
     ).not.toBeInTheDocument();
+  });
+
+  it('marks trigger focus with the brand border and ring rather than a hover border', async () => {
+    const user = userEvent.setup();
+
+    renderBreeze(<DatePicker label="Date" placeholder="Choose a date" />);
+    const trigger = screen.getByRole('button', { name: 'Date Choose a date' });
+
+    expect(trigger).not.toHaveClass(
+      'breeze:data-[hovered]:border-breeze-brand',
+    );
+
+    await user.tab();
+
+    expect(trigger).toHaveAttribute('data-focused', 'true');
+    expect(trigger).toHaveClass(
+      'breeze:gap-breeze-2',
+      'breeze:data-[focused]:border-breeze-brand',
+      'breeze:data-[focused]:ring-3',
+      'breeze:data-[focused]:ring-breeze-brand/15',
+    );
   });
 
   it('formats the trigger date using the provider locale', () => {
@@ -333,6 +401,64 @@ describe('DatePicker', () => {
     expect(dialog.contains(document.activeElement)).toBe(false);
   });
 
+  it('keeps a read-only date focusable and submitted without opening', async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn<(value: IsoCalendarDate) => void>();
+
+    renderBreeze(
+      <form aria-label="Date form">
+        <DatePicker
+          defaultValue="2026-09-03"
+          label="Date"
+          name="date"
+          onChange={onChange}
+          readOnly
+        />
+      </form>,
+    );
+
+    const trigger = screen.getByRole('button', {
+      name: 'Date 3 September 2026',
+    });
+    expect(trigger).toHaveAttribute('aria-disabled', 'true');
+    expect(trigger).not.toBeDisabled();
+
+    await user.tab();
+    expect(trigger).toHaveFocus();
+    await user.keyboard('{Enter}');
+    await user.keyboard(' ');
+    await user.click(trigger);
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    expect(onChange).not.toHaveBeenCalled();
+    expect(new FormData(screen.getByRole('form')).get('date')).toBe(
+      '2026-09-03',
+    );
+  });
+
+  it('closes an open calendar when it becomes read-only', async () => {
+    const user = userEvent.setup();
+    const { rerender } = renderBreeze(
+      <DatePicker defaultValue="2026-09-03" label="Date" />,
+    );
+    const trigger = screen.getByRole('button', {
+      name: 'Date 3 September 2026',
+    });
+
+    await user.click(trigger);
+    const dialog = screen.getByRole('dialog', { name: 'Date' });
+
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <DatePicker defaultValue="2026-09-03" label="Date" readOnly />
+      </BreezeProvider>,
+    );
+
+    await waitFor(() => expect(dialog).not.toBeInTheDocument());
+    expect(trigger).toHaveTextContent('3 September 2026');
+  });
+
   it('closes and prevents selection when an ancestor fieldset becomes disabled', async () => {
     const user = userEvent.setup();
     const onChange = vi.fn<(value: IsoCalendarDate) => void>();
@@ -412,11 +538,138 @@ describe('DatePicker', () => {
     await user.click(trigger);
 
     expect(
-      within(screen.getByRole('dialog', { name: 'Date' })).queryByRole(
-        'button',
-        { name: /clear/i },
-      ),
-    ).not.toBeInTheDocument();
+      within(screen.getByRole('dialog', { name: 'Date' })).getByRole('button', {
+        name: 'Clear date',
+      }),
+    ).toBeDisabled();
+  });
+
+  it('clears an optional uncontrolled date and submits it empty', async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn<(value: IsoCalendarDate | null) => void>();
+
+    renderBreeze(
+      <form aria-label="Date form">
+        <DatePicker
+          defaultValue="2026-09-03"
+          label="Date"
+          name="date"
+          onChange={onChange}
+          required={false}
+        />
+      </form>,
+    );
+
+    const trigger = screen.getByRole('button', {
+      name: 'Date 3 September 2026',
+    });
+    expect(trigger).not.toHaveAccessibleDescription('Required');
+
+    await user.click(trigger);
+    const clear = within(
+      screen.getByRole('dialog', { name: 'Date' }),
+    ).getByRole('button', { name: 'Clear date' });
+    expect(clear.parentElement).toHaveAttribute('lang', 'en-GB');
+    await user.click(clear);
+
+    expect(onChange).toHaveBeenCalledExactlyOnceWith(null);
+    await waitFor(() =>
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument(),
+    );
+    expect(trigger).toHaveAccessibleName('Date Select a date');
+    expect(new FormData(screen.getByRole('form')).get('date')).toBe('');
+  });
+
+  it('reports a cleared optional controlled date without changing it', async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn<(value: IsoCalendarDate | null) => void>();
+
+    renderBreeze(
+      <DatePicker
+        label="Date"
+        onChange={onChange}
+        required={false}
+        value="2026-09-03"
+      />,
+    );
+
+    await user.click(
+      screen.getByRole('button', { name: 'Date 3 September 2026' }),
+    );
+    await user.click(screen.getByRole('button', { name: 'Clear date' }));
+
+    expect(onChange).toHaveBeenCalledExactlyOnceWith(null);
+    expect(
+      screen.getByRole('button', { name: 'Date 3 September 2026' }),
+    ).toBeInTheDocument();
+  });
+
+  it('localizes the clear control with the provider message', async () => {
+    const user = userEvent.setup();
+
+    renderBreeze(
+      <BreezeProvider
+        locale="fr-FR"
+        messages={{ clearDate: 'Effacer la date' }}
+      >
+        <DatePicker defaultValue="2026-09-03" label="Date" required={false} />
+      </BreezeProvider>,
+    );
+
+    await user.click(screen.getByRole('button', { name: /^Date / }));
+    const clear = screen.getByRole('button', { name: 'Effacer la date' });
+
+    expect(clear.parentElement).toHaveAttribute('lang', 'fr-FR');
+  });
+
+  it('selects today from its calendar footer and closes the calendar', async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn<(value: IsoCalendarDate) => void>();
+    const currentDate = today(getLocalTimeZone());
+    const currentLabel = new Intl.DateTimeFormat('en-GB', {
+      dateStyle: 'long',
+      timeZone: 'UTC',
+    }).format(currentDate.toDate('UTC'));
+
+    renderBreeze(
+      <DatePicker defaultValue="2020-01-15" label="Date" onChange={onChange} />,
+    );
+
+    await user.click(
+      screen.getByRole('button', { name: 'Date 15 January 2020' }),
+    );
+    const todayButton = within(
+      screen.getByRole('dialog', { name: 'Date' }),
+    ).getByRole('button', { name: 'Today' });
+
+    expect(todayButton.parentElement).toHaveAttribute('lang', 'en-GB');
+
+    await user.click(todayButton);
+
+    expect(onChange).toHaveBeenLastCalledWith(currentDate.toString());
+    expect(
+      screen.getByRole('button', { name: `Date ${currentLabel}` }),
+    ).toHaveAttribute('aria-expanded', 'false');
+    await waitFor(() =>
+      expect(
+        screen.queryByRole('dialog', { name: 'Date' }),
+      ).not.toBeInTheDocument(),
+    );
+  });
+
+  it('localizes the today control with the provider message', async () => {
+    const user = userEvent.setup();
+
+    renderBreeze(
+      <BreezeProvider locale="fr-FR" messages={{ today: "Aujourd'hui" }}>
+        <DatePicker defaultValue="2026-09-03" label="Date" />
+      </BreezeProvider>,
+    );
+
+    await user.click(screen.getByRole('button', { name: /^Date / }));
+    const todayButton = screen.getByRole('button', { name: "Aujourd'hui" });
+
+    expect(todayButton.parentElement).toHaveAttribute('lang', 'fr-FR');
   });
 
   it('restores uncontrolled values after owning and externally associated form resets', async () => {

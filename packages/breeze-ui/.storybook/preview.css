@@ -18,9 +18,9 @@
   gap: 12px;
 }
 
-.breeze-story-shadow-panel {
-  padding: 16px;
-  border-radius: var(--breeze-radius-breeze-panel);
-  background: var(--breeze-color-breeze-surface);
-  box-shadow: var(--breeze-shadow-panel);
+.breeze-story-amount-pair {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 11rem;
+  align-items: start;
+  gap: 14px;
 }

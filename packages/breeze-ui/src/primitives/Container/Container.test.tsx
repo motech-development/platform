@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { describe, expect, expectTypeOf, it } from 'vitest';
 import renderBreeze from '../../../test/render';
 import { Container, type ContainerProps } from './Container';
@@ -11,6 +11,12 @@ expectTypeOf<ContainerProps['width']>().toEqualTypeOf<
 >();
 
 describe('Container', () => {
+  it('requires a BreezeProvider', () => {
+    expect(() => render(<Container>Page content</Container>)).toThrow(
+      'Breeze components must be rendered within BreezeProvider.',
+    );
+  });
+
   it('provides a labelled page content boundary', () => {
     renderBreeze(
       <Container element="main" aria-label="Accounts">

@@ -1,4 +1,5 @@
 import {
+  act,
   fireEvent,
   render,
   screen,
@@ -6,7 +7,8 @@ import {
   within,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, expectTypeOf, it, vi } from 'vitest';
+import { useState } from 'react';
+import { afterEach, describe, expect, expectTypeOf, it, vi } from 'vitest';
 import renderBreeze from '../../../test/render';
 import { BreezeProvider } from '../../provider/BreezeProvider';
 import { Button } from '../Button/Button';
@@ -45,6 +47,46 @@ expectTypeOf<{
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }>().toExtend<PopoverProps>();
+
+expectTypeOf<{
+  children: string;
+  dismissible: false;
+  title: string;
+  trigger: string;
+  variant: 'panel';
+}>().not.toExtend<PopoverProps>();
+expectTypeOf<{
+  children: string;
+  title: string;
+  trigger: string;
+  triggerIndicator: true;
+}>().not.toExtend<PopoverProps>();
+expectTypeOf<{
+  children: string;
+  title: string;
+  trigger: string;
+  triggerIndicator: true;
+  triggerInitials: string;
+  variant: 'panel';
+}>().toExtend<PopoverProps>();
+
+const portalBoundaryError =
+  'BreezeProvider portalContainer must belong to the current document and light DOM.';
+
+/** StrictMode replays layout effects, so act reports repeated rejections as an AggregateError. */
+function renderErrorMessages(callback: () => void) {
+  try {
+    callback();
+  } catch (error) {
+    const errors = error instanceof AggregateError ? error.errors : [error];
+    return errors.map((entry) => (entry as Error).message);
+  }
+  return [];
+}
+
+afterEach(() => {
+  vi.useRealTimers();
+});
 
 describe('Popover', () => {
   it('opens from its trigger and restores focus after closing', async () => {
@@ -179,6 +221,128 @@ describe('Popover', () => {
     );
   });
 
+  it('stays open when a gesture that starts inside is released outside', async () => {
+    const onOpenChange = vi.fn();
+    renderBreeze(
+      <>
+        <Popover
+          onOpenChange={onOpenChange}
+          open
+          title="Details"
+          trigger="Open details"
+        >
+          Delivery information
+        </Popover>
+        <Button>Outside action</Button>
+      </>,
+    );
+    const surface = await screen.findByRole('dialog', { name: 'Details' });
+    const outside = screen.getByRole('button', { name: 'Outside action' });
+
+    // Chromium sends the click to the common ancestor of the two targets.
+    fireEvent.pointerDown(within(surface).getByText('Delivery information'), {
+      button: 0,
+    });
+    fireEvent.pointerUp(outside, { button: 0 });
+    fireEvent.click(document.body);
+    await new Promise<void>((resolve) => {
+      setTimeout(resolve, 10);
+    });
+    expect(onOpenChange).not.toHaveBeenCalled();
+
+    await userEvent.click(outside);
+    expect(onOpenChange).toHaveBeenCalledExactlyOnceWith(false);
+  });
+
+  it('keeps an outside gesture when a re-render replaces the change handler', async () => {
+    const changes: boolean[] = [];
+    function Example({ revision }: Readonly<{ revision: number }>) {
+      return (
+        <BreezeProvider locale="en-GB">
+          <Popover
+            defaultOpen
+            onOpenChange={(nextOpen) => changes.push(nextOpen)}
+            title="Details"
+            trigger="Open details"
+          >
+            {`Delivery information ${revision}`}
+          </Popover>
+          <Button disabled>Disabled outside</Button>
+        </BreezeProvider>
+      );
+    }
+    const { rerender } = render(<Example revision={1} />);
+    const outside = screen.getByRole('button', { name: 'Disabled outside' });
+
+    fireEvent.pointerDown(outside, { button: 0 });
+    rerender(<Example revision={2} />);
+    fireEvent.pointerUp(outside, { button: 0 });
+
+    await waitFor(() =>
+      expect(
+        screen.queryByRole('dialog', { name: 'Details' }),
+      ).not.toBeInTheDocument(),
+    );
+    expect(changes).toEqual([false]);
+  });
+
+  it('refocuses a newly opened surface once for VoiceOver', async () => {
+    vi.useFakeTimers();
+    renderBreeze(
+      <Popover defaultOpen title="Details" trigger="Open details">
+        Delivery information
+      </Popover>,
+    );
+    const surface = screen.getByRole('dialog', { name: 'Details' });
+    // Initial focus waits for the stack's synchronous re-render (a microtask).
+    await Promise.resolve();
+    expect(surface).toHaveFocus();
+    const onFocus = vi.fn();
+    surface.addEventListener('focus', onFocus);
+
+    act(() => {
+      vi.advanceTimersByTime(499);
+    });
+    expect(onFocus).not.toHaveBeenCalled();
+    act(() => {
+      vi.advanceTimersByTime(1);
+    });
+    expect(onFocus).toHaveBeenCalledOnce();
+    expect(surface).toHaveFocus();
+    expect(screen.getByRole('dialog', { name: 'Details' })).toBe(surface);
+
+    act(() => {
+      vi.advanceTimersByTime(1000);
+    });
+    expect(onFocus).toHaveBeenCalledOnce();
+  });
+
+  it('does not take focus back after the user moves it away', async () => {
+    vi.useFakeTimers();
+    renderBreeze(
+      <Popover
+        defaultOpen
+        dismissible={false}
+        title="Details"
+        trigger="Open details"
+      >
+        Delivery information
+      </Popover>,
+    );
+    const surface = screen.getByRole('dialog', { name: 'Details' });
+    await Promise.resolve();
+    expect(surface).toHaveFocus();
+
+    act(() => {
+      surface.blur();
+    });
+    act(() => {
+      vi.advanceTimersByTime(500);
+    });
+    expect(document.body).toHaveFocus();
+    expect(screen.getByRole('dialog', { name: 'Details' })).toBe(surface);
+  });
+
   it.each([1, 2])(
     'ignores a non-primary outside pointerup (%s)',
     async (button) => {
@@ -270,7 +434,7 @@ describe('Popover', () => {
     secondaryDocument.body.append(appContainer);
     secondaryDocument.body.append(portalContainer);
 
-    expect(() =>
+    const messages = renderErrorMessages(() =>
       render(
         <BreezeProvider locale="en-GB" portalContainer={portalContainer}>
           <Popover defaultOpen title="Details" trigger="Open details">
@@ -279,9 +443,9 @@ describe('Popover', () => {
         </BreezeProvider>,
         { baseElement: secondaryDocument.body, container: appContainer },
       ),
-    ).toThrow(
-      'BreezeProvider portalContainer must belong to the current document and light DOM.',
     );
+    expect(messages).not.toHaveLength(0);
+    expect(new Set(messages)).toEqual(new Set([portalBoundaryError]));
     iframe.remove();
   });
 
@@ -292,7 +456,7 @@ describe('Popover', () => {
     const portalContainer = document.createElement('section');
     shadowRoot.append(portalContainer);
 
-    expect(() =>
+    const messages = renderErrorMessages(() =>
       render(
         <BreezeProvider locale="en-GB" portalContainer={portalContainer}>
           <Popover defaultOpen title="Details" trigger="Open details">
@@ -300,9 +464,9 @@ describe('Popover', () => {
           </Popover>
         </BreezeProvider>,
       ),
-    ).toThrow(
-      'BreezeProvider portalContainer must belong to the current document and light DOM.',
     );
+    expect(messages).not.toHaveLength(0);
+    expect(new Set(messages)).toEqual(new Set([portalBoundaryError]));
     host.remove();
   });
 
@@ -352,6 +516,75 @@ describe('Popover', () => {
     expect(screen.queryByText('Delivery information')).not.toBeInTheDocument();
   });
 
+  it('names a panel by its title without showing a title or close button', async () => {
+    renderBreeze(
+      <Popover title="Account" trigger="Open account" variant="panel">
+        Notifications
+      </Popover>,
+    );
+    const trigger = screen.getByRole('button', { name: 'Open account' });
+
+    await userEvent.click(trigger);
+
+    const surface = screen.getByRole('dialog', { name: 'Account' });
+    expect(surface).toHaveTextContent('Notifications');
+    expect(within(surface).queryByRole('heading')).not.toBeInTheDocument();
+    expect(within(surface).queryByRole('button')).not.toBeInTheDocument();
+
+    await userEvent.keyboard('{Escape}');
+
+    await waitFor(() =>
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument(),
+    );
+    await waitFor(() => expect(trigger).toHaveFocus());
+  });
+
+  it('opens from an initials trigger named by its trigger label', async () => {
+    renderBreeze(
+      <Popover
+        title="Account"
+        trigger="Account and notifications, 2 unread"
+        triggerIndicator
+        triggerInitials="MG"
+        variant="panel"
+      >
+        Notifications
+      </Popover>,
+    );
+    const trigger = screen.getByRole('button', {
+      name: 'Account and notifications, 2 unread',
+    });
+
+    expect(trigger).toHaveTextContent(/^MG$/);
+    expect(trigger.querySelector('[aria-hidden="true"]')).toBeInTheDocument();
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+
+    await userEvent.click(trigger);
+
+    expect(screen.getByRole('dialog', { name: 'Account' })).toBeVisible();
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+
+    await userEvent.click(trigger);
+
+    await waitFor(() =>
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument(),
+    );
+  });
+
+  it('shows no attention dot on an initials trigger by default', () => {
+    renderBreeze(
+      <Popover title="Account" trigger="Account" triggerInitials="MG">
+        Notifications
+      </Popover>,
+    );
+
+    expect(
+      screen
+        .getByRole('button', { name: 'Account' })
+        .querySelector('[aria-hidden="true"]'),
+    ).not.toBeInTheDocument();
+  });
+
   it('requires a BreezeProvider', () => {
     expect(() =>
       render(
@@ -383,6 +616,36 @@ describe('Popover inside Drawer', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Sheet action' }));
     expect(onAction).toHaveBeenCalledOnce();
     expect(sheet).toBeInTheDocument();
+  });
+
+  it('keeps focus in the open sheet when a popover removes its own trigger', async () => {
+    function Example() {
+      const [rows, setRows] = useState(['Invoice']);
+      return (
+        <Drawer defaultOpen title="Sheet" trigger="Open sheet">
+          {rows.map((row) => (
+            <Popover key={row} title={`${row} actions`} trigger={`${row} menu`}>
+              <Button onAction={() => setRows([])}>{`Delete ${row}`}</Button>
+            </Popover>
+          ))}
+        </Drawer>
+      );
+    }
+
+    renderBreeze(<Example />);
+    const sheet = screen.getByRole('dialog', { name: 'Sheet' });
+    await userEvent.click(screen.getByRole('button', { name: 'Invoice menu' }));
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Delete Invoice' }),
+    );
+
+    await waitFor(() =>
+      expect(
+        screen.queryByRole('dialog', { name: 'Invoice actions' }),
+      ).not.toBeInTheDocument(),
+    );
+    await waitFor(() => expect(sheet).toHaveFocus());
+    expect(screen.getByRole('dialog', { name: 'Sheet' })).toBe(sheet);
   });
 
   it('keeps the drawer scrim while the popover is topmost and restores focus', async () => {

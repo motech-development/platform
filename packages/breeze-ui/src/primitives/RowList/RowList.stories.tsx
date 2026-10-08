@@ -95,10 +95,10 @@ async function verifyResponsiveGeometry(canvasElement: HTMLElement) {
       '[class~="breeze:col-start-2"]',
     );
     const coffeeValueRegion = coffeeRow.querySelector<HTMLElement>(
-      '[class~="breeze:col-start-3"]',
+      '[class~="breeze:-col-end-1"]',
     );
     const marketValueRegion = marketRow.querySelector<HTMLElement>(
-      '[class~="breeze:col-start-3"]',
+      '[class~="breeze:-col-end-1"]',
     );
 
     if (
@@ -115,7 +115,19 @@ async function verifyResponsiveGeometry(canvasElement: HTMLElement) {
     const coffeeValueRegionRect = coffeeValueRegion.getBoundingClientRect();
     const marketValueRegionRect = marketValueRegion.getBoundingClientRect();
 
+    const coffeeBadgeRect = within(coffeeRow)
+      .getByText(/^Needs review/)
+      .getBoundingClientRect();
+    const coffeeDescriptionRect = within(coffeeRow)
+      .getByText('Coffee shop near the station.')
+      .getBoundingClientRect();
+
     await expect(getComputedStyle(coffeeRow).display).toBe('grid');
+    await expect(coffeeBadgeRect.left).toBeGreaterThan(coffeeLabelRect.right);
+    await expect(coffeeBadgeRect.top).toBeLessThan(coffeeLabelRect.bottom);
+    await expect(coffeeDescriptionRect.top).toBeGreaterThanOrEqual(
+      coffeeLabelRect.bottom,
+    );
     await expect(coffeeLabelRect.left).toBeLessThan(coffeeDateRect.left);
     await expect(coffeeDateRect.left).toBeLessThan(coffeeValueRect.left);
     await expect(
@@ -125,11 +137,13 @@ async function verifyResponsiveGeometry(canvasElement: HTMLElement) {
       Math.abs(coffeeValueRegionRect.left - marketValueRegionRect.left),
     ).toBeLessThan(1);
     await expect(
-      Math.abs(coffeeDateRect.right - marketDateRect.right),
+      Math.abs(coffeeDateRect.left - marketDateRect.left),
     ).toBeLessThan(1);
     await expect(
       Math.abs(coffeeValueRect.right - marketValueRect.right),
     ).toBeLessThan(1);
+    await expect(coffeeMetadataRect.width).toBe(120);
+    await expect(coffeeValueRegionRect.width).toBe(104);
 
     await browserContext.page.viewport(375, 812);
     await expect(view.innerWidth).toBe(375);
@@ -138,18 +152,32 @@ async function verifyResponsiveGeometry(canvasElement: HTMLElement) {
     const narrowCoffeeRow = within(narrowGrid).getByRole('row', {
       name: 'Coffee shop',
     });
+    const narrowRow = narrowCoffeeRow.getBoundingClientRect();
     const narrowLabel = within(narrowCoffeeRow)
       .getByText('Coffee shop')
       .getBoundingClientRect();
-    const narrowDate = within(narrowCoffeeRow)
-      .getByText('14 Sept 2026')
+    const narrowDescription = within(narrowCoffeeRow)
+      .getByText('Coffee shop near the station.')
+      .getBoundingClientRect();
+    const narrowBadge = within(narrowCoffeeRow)
+      .getByText(/^Needs review/)
       .getBoundingClientRect();
     const narrowValue = within(narrowCoffeeRow)
       .getByText('£4.75')
       .getBoundingClientRect();
 
-    await expect(narrowDate.top).toBeGreaterThan(narrowLabel.top);
-    await expect(narrowValue.top).toBeGreaterThan(narrowDate.top);
+    await expect(
+      within(narrowCoffeeRow).getByText('14 Sept 2026'),
+    ).not.toBeVisible();
+    await expect(narrowBadge.left).toBeLessThan(narrowLabel.right);
+    await expect(narrowBadge.top).toBeGreaterThanOrEqual(
+      narrowDescription.bottom + 4,
+    );
+    await expect(narrowValue.top).toBeLessThan(narrowDescription.bottom);
+    await expect(narrowValue.left).toBeGreaterThan(narrowDescription.right);
+    await expect(
+      Math.abs(narrowValue.right - (narrowRow.right - 16)),
+    ).toBeLessThan(1);
     await expect(narrowGrid.scrollWidth).toBeLessThanOrEqual(
       narrowGrid.clientWidth,
     );
@@ -164,10 +192,311 @@ async function verifyResponsiveGeometry(canvasElement: HTMLElement) {
   }
 }
 
-/** Three aligned regions stack below Breeze's medium breakpoint. */
+/** Below Breeze's medium breakpoint the metadata hides and the badge moves under the description. */
 export const Default: Story = {
   play: async ({ canvasElement }) => {
     await verifyResponsiveGeometry(canvasElement);
+  },
+};
+
+const activity = [
+  {
+    description: 'Website retainer · Sales',
+    direction: 'in',
+    icon: 'incoming',
+    id: 'retainer',
+    label: 'Bramble Studio',
+    value: {
+      currency: 'GBP',
+      format: 'currency',
+      sign: 'always',
+      tone: 'positive',
+      value: 2100,
+    },
+  },
+  {
+    description: 'Printer paper and toner · Office',
+    direction: 'out',
+    icon: 'outgoing',
+    id: 'supplies',
+    label: 'Northgate Supplies',
+    value: {
+      currency: 'GBP',
+      format: 'currency',
+      sign: 'always',
+      value: -184.6,
+    },
+  },
+  {
+    description: 'Return journey · Travel',
+    direction: 'out',
+    icon: 'outgoing',
+    id: 'rail',
+    label: 'Rail fare',
+    value: {
+      currency: 'GBP',
+      format: 'currency',
+      sign: 'always',
+      value: -42.3,
+    },
+  },
+] satisfies RowListItemDescriptor[];
+
+/** Money in and out carry a direction tile, amount tone and explicit sign. */
+export const Activity: Story = {
+  args: {
+    items: activity,
+    loadMore: undefined,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const moneyIn = canvas.getByText('+£2,100.00');
+    const moneyOut = canvas.getByText('−£184.60');
+    const valueRegion = moneyIn.closest<HTMLElement>(
+      '[class~="breeze:-col-end-1"]',
+    );
+    const row = canvas.getByRole('row', { name: 'Bramble Studio' });
+
+    if (!valueRegion) throw new Error('Missing the RowList value region.');
+
+    const rowRect = row.getBoundingClientRect();
+    const leadingRect = within(row)
+      .getByText('Bramble Studio')
+      .closest('[class~="breeze:col-start-1"]')
+      ?.getBoundingClientRect();
+
+    await expect(getComputedStyle(moneyIn).fontSize).toBe('13px');
+    await expect(getComputedStyle(moneyIn).fontWeight).toBe('600');
+    await expect(getComputedStyle(moneyIn).color).not.toBe(
+      getComputedStyle(moneyOut).color,
+    );
+    await expect(moneyIn.scrollWidth).toBeLessThanOrEqual(
+      valueRegion.clientWidth,
+    );
+    // Without metadata only the value column is reserved beside the leading region.
+    await expect(leadingRect?.width).toBe(rowRect.width - 32 - 12 - 104);
+  },
+};
+
+const money = [
+  {
+    description: 'Website retainer, October',
+    direction: 'in',
+    icon: 'incoming',
+    id: 'retainer-october',
+    label: 'Bramble Studio',
+    metadata: { format: 'text', value: 'Sales' },
+    metadataAmount: { currency: 'GBP', format: 'currency', value: 400 },
+    section: {
+      id: 'pending',
+      label: 'Pending',
+      summary: { format: 'text', value: 'Not in the balance yet' },
+    },
+    value: {
+      currency: 'GBP',
+      format: 'currency',
+      sign: 'always',
+      tone: 'positive',
+      value: 2400,
+    },
+  },
+  {
+    badge: { children: 'Publishes 8 Sep', variant: 'brand' },
+    description: 'Standing order, workshop rent',
+    direction: 'out',
+    icon: 'outgoing',
+    id: 'rent',
+    label: 'Northgate Supplies',
+    metadata: { format: 'text', value: 'Premises' },
+    metadataAmount: { currency: 'GBP', format: 'currency', value: 53.07 },
+    section: {
+      id: 'pending',
+      label: 'Pending',
+      summary: { format: 'text', value: 'Not in the balance yet' },
+    },
+    value: {
+      currency: 'GBP',
+      format: 'currency',
+      sign: 'always',
+      value: -318.4,
+    },
+  },
+  {
+    description: 'Website retainer, September',
+    direction: 'in',
+    icon: 'incoming',
+    id: 'retainer-september',
+    label: 'Bramble Studio',
+    metadata: { format: 'text', value: 'Sales' },
+    metadataAmount: { currency: 'GBP', format: 'currency', value: 350.07 },
+    section: {
+      id: '2026-09-03',
+      label: 'Thursday 3 September',
+      summary: {
+        currency: 'GBP',
+        format: 'currency',
+        label: 'Confirmed daily total',
+        sign: 'always',
+        tone: 'positive',
+        value: 1776.4,
+      },
+    },
+    value: {
+      currency: 'GBP',
+      format: 'currency',
+      sign: 'always',
+      tone: 'positive',
+      value: 2100,
+    },
+  },
+  {
+    badge: { children: 'No receipt', variant: 'warning' },
+    description: 'Van service and MOT',
+    direction: 'out',
+    icon: 'outgoing',
+    id: 'garage',
+    label: 'Fen Lane Garage',
+    metadata: { format: 'text', value: 'Vehicle' },
+    metadataAmount: { currency: 'GBP', format: 'currency', value: 23.17 },
+    section: {
+      id: '2026-09-03',
+      label: 'Thursday 3 September',
+      summary: {
+        currency: 'GBP',
+        format: 'currency',
+        label: 'Confirmed daily total',
+        sign: 'always',
+        tone: 'positive',
+        value: 1776.4,
+      },
+    },
+    value: { currency: 'GBP', format: 'currency', sign: 'always', value: -139 },
+  },
+  {
+    description: 'Mobile and broadband',
+    direction: 'out',
+    icon: 'outgoing',
+    id: 'telecom',
+    label: 'Meridian Telecom',
+    metadata: { format: 'text', value: 'Utilities' },
+    metadataAmount: { currency: 'GBP', format: 'currency', value: 10.81 },
+    section: {
+      id: '2026-09-02',
+      label: 'Wednesday 2 September',
+      summary: {
+        currency: 'GBP',
+        format: 'currency',
+        label: 'Confirmed daily total',
+        sign: 'always',
+        value: -64.85,
+      },
+    },
+    value: {
+      currency: 'GBP',
+      format: 'currency',
+      sign: 'always',
+      value: -64.85,
+    },
+  },
+] satisfies RowListItemDescriptor[];
+
+/** Category and VAT columns, with section headers ending in a daily total or a muted note. */
+export const Money: Story = {
+  args: {
+    'aria-label': 'Transactions',
+    items: money,
+    loadMore: undefined,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const confirmed = canvas.getByRole('rowheader', {
+      name: /^Thursday 3 September/,
+    });
+    const total = within(confirmed).getByText('+£1,776.40');
+    const note = canvas.getByText('Not in the balance yet');
+
+    await expect(confirmed).toHaveTextContent(
+      'Thursday 3 SeptemberConfirmed daily total+£1,776.40',
+    );
+    await expect(getComputedStyle(total).fontSize).toBe('12px');
+    await expect(getComputedStyle(total).fontWeight).toBe('600');
+    await expect(getComputedStyle(note).fontSize).toBe('12px');
+    await expect(getComputedStyle(note).color).not.toBe(
+      getComputedStyle(canvas.getByText('Pending')).color,
+    );
+
+    const row = canvas.getByRole('row', { name: 'Fen Lane Garage' });
+    const rowRect = row.getBoundingClientRect();
+    const category = within(row).getByText('Vehicle');
+    const categoryRect = category.getBoundingClientRect();
+    const vat = within(row).getByText('£23.17');
+    const vatRect = vat.getBoundingClientRect();
+    const amountRect = within(row)
+      .getByText('−£139.00')
+      .getBoundingClientRect();
+
+    const textStyle = (element: HTMLElement) => {
+      const { color, fontSize, fontWeight, lineHeight } =
+        getComputedStyle(element);
+
+      return { color, fontSize, fontWeight, lineHeight };
+    };
+    const mutedText = {
+      color: getComputedStyle(note).color,
+      fontSize: '12px',
+      fontWeight: '400',
+      lineHeight: '16px',
+    };
+
+    await expect(textStyle(category)).toEqual(mutedText);
+    await expect(textStyle(vat)).toEqual(mutedText);
+    // Category, VAT and amount columns are 120, 80 and 104px with 12px gaps.
+    await expect(amountRect.right).toBe(rowRect.right - 16);
+    await expect(vatRect.right).toBe(amountRect.right - 104 - 12);
+    await expect(vatRect.width).toBe(80);
+    await expect(categoryRect.left).toBe(vatRect.left - 12 - 120);
+  },
+};
+
+const phoneViewport = {
+  options: {
+    rowListPhone: {
+      name: 'RowList phone',
+      styles: { height: '812px', width: '375px' },
+      type: 'mobile',
+    },
+  },
+};
+
+/** At phone width amounts stay inline, badges move under the description and metadata hides. */
+export const Phone: Story = {
+  args: Money.args,
+  globals: { viewport: { value: 'rowListPhone' } },
+  parameters: {
+    chromatic: {
+      viewports: [375],
+    },
+    viewport: phoneViewport,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const row = canvas.getByRole('row', { name: 'Fen Lane Garage' });
+    const rowRect = row.getBoundingClientRect();
+    const description = within(row)
+      .getByText('Van service and MOT')
+      .getBoundingClientRect();
+    const badge = within(row).getByText('No receipt').getBoundingClientRect();
+    const amount = within(row).getByText('−£139.00').getBoundingClientRect();
+
+    await expect(canvasElement.ownerDocument.defaultView?.innerWidth).toBe(375);
+    await expect(within(row).getByText('Vehicle')).not.toBeVisible();
+    await expect(badge.top).toBeGreaterThanOrEqual(description.bottom + 4);
+    await expect(Math.abs(amount.right - (rowRect.right - 16))).toBeLessThan(1);
+    await expect(
+      Math.abs(
+        amount.top + amount.height / 2 - (rowRect.top + rowRect.height / 2),
+      ),
+    ).toBeLessThan(1);
   },
 };
 

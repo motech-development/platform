@@ -1,11 +1,17 @@
-import { fireEvent, screen, waitFor } from '@testing-library/react';
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import renderBreeze from '../../../test/render';
+import type { ItemDescriptor } from '../../collections/item.types';
 import { BreezeProvider } from '../../provider/BreezeProvider';
 import type { BadgeProps } from '../Badge/Badge';
-import type { ItemDescriptor } from '../Collection/item.types';
 import { ComboBox, type ComboBoxProps } from './ComboBox';
 
 const suppliers = [
@@ -60,6 +66,27 @@ describe('ComboBox', () => {
     ).toHaveAttribute('aria-haspopup', 'listbox');
   });
 
+  it('marks focus on the field with the brand border and ring', async () => {
+    const user = userEvent.setup();
+
+    renderBreeze(
+      <ComboBox getItem={getItem} items={suppliers} label="Supplier" />,
+    );
+
+    const input = screen.getByRole('combobox', { name: 'Supplier' });
+    const group = input.parentElement;
+
+    await user.click(input);
+
+    expect(group).toHaveAttribute('data-focus-within', 'true');
+    expect(group).toHaveClass(
+      'breeze:data-[focus-within]:border-breeze-brand',
+      'breeze:data-[focus-within]:ring-3',
+      'breeze:data-[focus-within]:ring-breeze-brand/15',
+    );
+    expect(input).toHaveClass('breeze:read-only:text-breeze-ink-2');
+  });
+
   it('filters suggestions as the user types', async () => {
     const user = userEvent.setup();
 
@@ -80,6 +107,69 @@ describe('ComboBox', () => {
     expect(
       screen.queryByRole('option', { name: /Acme Supplies/ }),
     ).not.toBeInTheDocument();
+  });
+
+  it('explains when the filter matches no suggestions', async () => {
+    const user = userEvent.setup();
+
+    renderBreeze(
+      <ComboBox getItem={getItem} items={suppliers} label="Supplier" />,
+    );
+
+    await user.type(screen.getByRole('combobox', { name: 'Supplier' }), 'zzz');
+
+    const listbox = screen.getByRole('listbox');
+    expect(listbox).toBeVisible();
+    expect(listbox).toHaveAttribute('data-empty', 'true');
+    expect(within(listbox).getByText('No matches for “zzz”')).toHaveAttribute(
+      'lang',
+      'en-GB',
+    );
+  });
+
+  it('translates the no-match message with the filter text', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <BreezeProvider
+        locale="fr-FR"
+        messages={{ comboBoxNoMatches: 'Aucun résultat pour « {query} »' }}
+      >
+        <ComboBox getItem={getItem} items={suppliers} label="Fournisseur" />
+      </BreezeProvider>,
+    );
+
+    await user.type(screen.getByRole('combobox'), '$&');
+
+    expect(screen.getByText('Aucun résultat pour « $& »')).toHaveAttribute(
+      'lang',
+      'fr-FR',
+    );
+  });
+
+  it('closes free-text suggestions when none match', async () => {
+    const user = userEvent.setup();
+
+    renderBreeze(
+      <ComboBox
+        allowsCustomValue
+        getItem={getItem}
+        items={suppliers}
+        label="Supplier"
+      />,
+    );
+
+    const input = screen.getByRole('combobox', { name: 'Supplier' });
+    await user.type(input, 'brass');
+    expect(screen.getByRole('listbox')).toBeVisible();
+
+    await user.type(input, 'zzz');
+
+    await waitFor(() =>
+      expect(screen.queryByRole('listbox')).not.toBeInTheDocument(),
+    );
+    expect(screen.queryByText(/No matches/)).not.toBeInTheDocument();
+    expect(input).toHaveValue('brasszzz');
   });
 
   it('keeps surviving suggestions stable when items are reordered and removed', async () => {

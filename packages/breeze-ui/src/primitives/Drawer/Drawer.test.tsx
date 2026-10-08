@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import renderBreeze from '../../../test/render';
 import { BreezeProvider } from '../../provider/BreezeProvider';
+import { Button } from '../Button/Button';
 import { Skeleton } from '../Skeleton/Skeleton';
 import { Drawer, type DrawerProps } from './Drawer';
 
@@ -119,6 +120,53 @@ describe('Drawer', () => {
     );
   });
 
+  it('renders the footer start action, summary and actions in order after the content', async () => {
+    const onCancel = vi.fn();
+    renderBreeze(
+      <Drawer
+        defaultOpen
+        footerActions={
+          <Button onAction={onCancel} variant="secondary">
+            Cancel
+          </Button>
+        }
+        footerStart={<Button variant="danger">Delete</Button>}
+        footerSummary="Takes £139.00 off the balance now"
+        title="Transaction"
+        trigger="Edit"
+      >
+        Transaction fields
+      </Drawer>,
+    );
+    const surface = screen.getByRole('dialog', { name: 'Transaction' });
+    const sequence = [
+      within(surface).getByText('Transaction fields'),
+      within(surface).getByRole('button', { name: 'Delete' }),
+      within(surface).getByText('Takes £139.00 off the balance now'),
+      within(surface).getByRole('button', { name: 'Cancel' }),
+    ];
+    sequence.slice(1).forEach((element, index) => {
+      expect(sequence[index].compareDocumentPosition(element)).toBe(
+        Node.DOCUMENT_POSITION_FOLLOWING,
+      );
+    });
+    await userEvent.click(
+      within(surface).getByRole('button', { name: 'Cancel' }),
+    );
+    expect(onCancel).toHaveBeenCalledOnce();
+  });
+
+  it('omits the footer when no footer content is given', () => {
+    renderBreeze(
+      <Drawer defaultOpen title="Details" trigger="Open details">
+        Delivery information
+      </Drawer>,
+    );
+    expect(
+      screen.getByRole('dialog', { name: 'Details' }).querySelector('footer'),
+    ).toBeNull();
+  });
+
   it('renders caller-owned loading content and localizes the close action', () => {
     render(
       <BreezeProvider
@@ -136,9 +184,9 @@ describe('Drawer', () => {
     expect(
       screen.getByRole('progressbar', { name: 'Chargement' }),
     ).toHaveAttribute('lang', 'fr-FR');
-    expect(
-      screen.getByRole('button', { name: 'Fermer' }).closest('[lang]'),
-    ).toHaveAttribute('lang', 'fr-FR');
+    const close = screen.getByRole('button', { name: 'Fermer' });
+    expect(close.closest('[lang]')).toHaveAttribute('lang', 'fr-FR');
+    expect(close).toHaveTextContent('');
   });
 
   it('requires a BreezeProvider', () => {

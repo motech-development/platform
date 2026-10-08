@@ -16,9 +16,9 @@ compose checkbox parts or provide an escape hatch.
 
 ## Supporting text and errors
 
-Use `description` for guidance. A non-empty `error` marks the checkbox invalid
-and associates the message with the native input. There is no separate invalid
-prop.
+Use `description` for guidance. It sits under the label, beside the box. A
+non-empty `error` marks the checkbox invalid, appears in the same place and is
+associated with the native input. There is no separate invalid prop.
 
 <Canvas of={Stories.Description} />
 
@@ -27,8 +27,9 @@ prop.
 ## States
 
 `required`, `disabled` and `readOnly` map to the corresponding accessible input
-semantics. `loading` keeps the checkbox's shape, announces the provider loading
-message and prevents selection until it is removed.
+semantics. A disabled checkbox greys its box and keeps its label legible.
+`loading` keeps the checkbox's shape, announces the provider loading message and
+prevents selection until it is removed.
 
 <Canvas of={Stories.Required} />
 
@@ -48,9 +49,10 @@ optional `onChange` for uncontrolled usage; the two forms cannot be mixed.
 
 ## Accessibility
 
-The visible label names the native checkbox. Descriptions and errors are
-announced through React Aria's field relationships, and the field exposes its
-native input through `ref`.
+The visible label alone names the native checkbox, even though its supporting
+text shares the clickable label. Descriptions and errors are announced through
+React Aria's field relationships, and the field exposes its native input through
+`ref`.
 
 ## API
 

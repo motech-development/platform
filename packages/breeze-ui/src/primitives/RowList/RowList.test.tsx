@@ -51,6 +51,9 @@ function getEntryDescriptor(entry: Entry): RowListItemDescriptor {
   };
 }
 
+expectTypeOf<RowListProps<Entry>['onAction']>().parameters.toEqualTypeOf<
+  [Entry]
+>();
 expectTypeOf<RowListProps<Entry>>().not.toHaveProperty('children');
 expectTypeOf<RowListProps<Entry>>().not.toHaveProperty('className');
 expectTypeOf<RowListProps<Entry>>().not.toHaveProperty('onClick');
@@ -103,6 +106,225 @@ describe('RowList', () => {
     expect(within(grid).getByText('Complete')).toBeInTheDocument();
   });
 
+  it('shows money direction through the icon tile, amount tone and sign', () => {
+    const activity = [
+      {
+        direction: 'in',
+        icon: 'incoming',
+        id: 'invoice',
+        label: 'Invoice paid',
+        value: {
+          currency: 'GBP',
+          format: 'currency',
+          sign: 'always',
+          tone: 'positive',
+          value: 2100,
+        },
+      },
+      {
+        direction: 'out',
+        icon: 'outgoing',
+        id: 'supplies',
+        label: 'Office supplies',
+        value: { currency: 'GBP', format: 'currency', value: -184.6 },
+      },
+      {
+        icon: 'document',
+        id: 'report',
+        label: 'Report',
+        value: { currency: 'GBP', format: 'currency', value: 12 },
+      },
+    ] satisfies RowListItemDescriptor[];
+
+    renderBreeze(
+      <RowList
+        aria-label="Activity"
+        getItem={(descriptor) => descriptor}
+        items={activity}
+        onAction={() => undefined}
+      />,
+    );
+
+    const tileOf = (name: string) =>
+      screen.getByRole('row', { name }).querySelector('svg')?.parentElement;
+    const moneyIn = screen.getByText('+£2,100.00');
+    const moneyOut = screen.getByText('−£184.60');
+
+    expect(tileOf('Invoice paid')).toHaveClass(
+      'breeze:bg-breeze-pos-soft',
+      'breeze:text-breeze-pos',
+    );
+    expect(tileOf('Office supplies')).toHaveClass(
+      'breeze:bg-breeze-sunken',
+      'breeze:text-breeze-ink',
+    );
+    expect(tileOf('Report')).toHaveClass('breeze:text-breeze-ink-2');
+    expect(moneyIn).toHaveClass(
+      'breeze:text-breeze-sm',
+      'breeze:font-semibold',
+      'breeze:text-breeze-pos',
+    );
+    expect(moneyOut).toHaveClass('breeze:text-breeze-ink');
+    expect(screen.getByText('£12.00')).toHaveClass('breeze:text-breeze-ink');
+  });
+
+  it('ends section headers with a labelled total or a muted note', () => {
+    const days = [
+      {
+        id: 'quote',
+        label: 'Insurance quote',
+        section: {
+          id: 'pending',
+          label: 'Pending',
+          summary: { format: 'text', value: 'Not in the balance yet' },
+        },
+      },
+      {
+        id: 'retainer',
+        label: 'Retainer',
+        section: {
+          id: 'thursday',
+          label: 'Thursday 3 September',
+          summary: {
+            currency: 'GBP',
+            format: 'currency',
+            label: 'Confirmed daily total',
+            sign: 'always',
+            tone: 'positive',
+            value: 1776.4,
+          },
+        },
+      },
+    ] satisfies RowListItemDescriptor[];
+
+    renderBreeze(
+      <RowList
+        aria-label="Transactions"
+        getItem={(descriptor) => descriptor}
+        items={days}
+        onAction={() => undefined}
+      />,
+    );
+
+    const confirmed = screen.getByRole('rowheader', {
+      name: /^Thursday 3 September/,
+    });
+    const total = within(confirmed).getByText('+£1,776.40');
+
+    expect(confirmed).toHaveTextContent(
+      'Thursday 3 SeptemberConfirmed daily total+£1,776.40',
+    );
+    expect(within(confirmed).getByText('Confirmed daily total')).toHaveClass(
+      'breeze:sr-only',
+    );
+    expect(total).toHaveClass('breeze:font-semibold', 'breeze:text-breeze-pos');
+    expect(
+      within(screen.getByRole('rowheader', { name: /^Pending/ })).getByText(
+        'Not in the balance yet',
+      ),
+    ).toHaveClass('breeze:text-breeze-ink-3');
+  });
+
+  it('reserves the metadata columns only when a row uses them', () => {
+    const withoutMetadata = [
+      { id: 'invoice', label: 'Invoice paid' },
+    ] satisfies RowListItemDescriptor[];
+    const withMetadata = [
+      ...withoutMetadata,
+      {
+        id: 'supplies',
+        label: 'Office supplies',
+        metadata: { format: 'text', value: 'Materials' },
+      },
+    ] satisfies RowListItemDescriptor[];
+    const withAmount = [
+      ...withoutMetadata,
+      {
+        id: 'fuel',
+        label: 'Fuel',
+        metadataAmount: { currency: 'GBP', format: 'currency', value: 9.5 },
+      },
+    ] satisfies RowListItemDescriptor[];
+
+    renderBreeze(
+      <>
+        <RowList
+          aria-label="Overview"
+          getItem={(descriptor) => descriptor}
+          items={withoutMetadata}
+          onAction={() => undefined}
+        />
+        <RowList
+          aria-label="Money"
+          getItem={(descriptor) => descriptor}
+          items={withMetadata}
+          onAction={() => undefined}
+        />
+        <RowList
+          aria-label="VAT"
+          getItem={(descriptor) => descriptor}
+          items={withAmount}
+          onAction={() => undefined}
+        />
+        <RowList
+          aria-label="Both"
+          getItem={(descriptor) => descriptor}
+          items={[...withMetadata, ...withAmount.slice(1)]}
+          onAction={() => undefined}
+        />
+      </>,
+    );
+
+    const rowIn = (grid: string) =>
+      within(screen.getByRole('grid', { name: grid })).getByRole('row', {
+        name: 'Invoice paid',
+      });
+
+    expect(rowIn('Overview')).toHaveClass(
+      'breeze:grid-cols-[minmax(0,1fr)_104px]',
+    );
+    expect(rowIn('Money')).toHaveClass(
+      'breeze:grid-cols-[minmax(0,1fr)_120px_104px]',
+    );
+    expect(rowIn('VAT')).toHaveClass(
+      'breeze:grid-cols-[minmax(0,1fr)_80px_104px]',
+    );
+    expect(rowIn('Both')).toHaveClass(
+      'breeze:grid-cols-[minmax(0,1fr)_120px_80px_104px]',
+    );
+  });
+
+  it('shows muted metadata text and a metadata amount', () => {
+    const descriptor = {
+      id: 'garage',
+      label: 'Fen Lane Garage',
+      metadata: { format: 'text', value: 'Vehicle' },
+      metadataAmount: { currency: 'GBP', format: 'currency', value: 23.17 },
+      value: { currency: 'GBP', format: 'currency', value: -139 },
+    } satisfies RowListItemDescriptor;
+
+    renderBreeze(
+      <RowList
+        aria-label="Transactions"
+        getItem={() => descriptor}
+        items={[descriptor]}
+        onAction={() => undefined}
+      />,
+    );
+
+    const row = screen.getByRole('row', { name: 'Fen Lane Garage' });
+
+    expect(within(row).getByText('Vehicle')).toHaveClass(
+      'breeze:text-breeze-ink-3',
+      'breeze:text-ellipsis',
+    );
+    expect(within(row).getByText('£23.17')).toHaveClass(
+      'breeze:text-breeze-ink-3',
+      'breeze:tabular-nums',
+      'breeze:text-end',
+    );
+  });
+
   it('keeps an empty result as a named grid with a row and cell', () => {
     renderBreeze(
       <RowList
@@ -146,7 +368,7 @@ describe('RowList', () => {
     ).toBeInTheDocument();
   });
 
-  it('reports the descriptor for an activated row', async () => {
+  it('reports the application item for an activated row', async () => {
     const user = userEvent.setup();
     const onAction = vi.fn();
 
@@ -165,7 +387,8 @@ describe('RowList', () => {
     coffeeRow.focus();
     await user.keyboard('{Enter}');
 
-    expect(onAction).toHaveBeenCalledWith(getEntryDescriptor(entries[0]));
+    expect(onAction).toHaveBeenCalledExactlyOnceWith(entries[0]);
+    expect(onAction.mock.calls[0]?.[0]).toBe(entries[0]);
   });
 
   it('does not activate a disabled row', async () => {

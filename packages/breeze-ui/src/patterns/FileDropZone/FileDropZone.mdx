@@ -10,9 +10,40 @@ import * as Stories from './FileDropZone.stories';
 
 `FileDropZone` accepts files through drag and drop or the **Choose files**
 button. The button opens a native file picker, so keyboard users can browse for
-files without dragging.
+files without dragging. `label` is shown as a field label above the drop area
+and names it.
 
 <Canvas of={Stories.Default} />
+
+## Compact
+
+Set `compact` to lay the drop area out as one row at the height of an
+`AttachmentRow`, so a single attachment keeps its position whether or not a file
+is attached. Its secondary line stays on one line and truncates with an
+ellipsis.
+
+<Canvas of={Stories.Compact} />
+
+## Take photo
+
+Set `camera` to offer **Take photo** before **Choose files**. It opens a native
+file input with `accept="image/*"` and `capture="environment"`, so phones open
+the rear camera and other devices fall back to an image picker. Cameras deliver
+JPEG photos, so the action appears only when `accept` is omitted or allows JPEG
+through `image/*`, `image/jpeg`, `.jpg`, `.jpeg` or `*/*`. Captured photos pass
+the same type, size and count checks as chosen files and reach `onFilesAdded`
+the same way.
+
+On coarse pointers and below Breeze's `md` breakpoint, Take photo is filled in
+the brand colour. Below `md` it also fills the stacked layout's action row, the
+stacked layout hides its drag-and-drop line, and the compact layout reduces both
+actions to icons that keep their accessible names.
+
+<Canvas of={Stories.TakePhoto} />
+
+<Canvas of={Stories.Phone} />
+
+<Canvas of={Stories.CompactPhone} />
 
 ## File limits
 

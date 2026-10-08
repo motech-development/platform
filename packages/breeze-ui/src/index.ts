@@ -1,4 +1,13 @@
 export type {
+  ItemDescriptor,
+  ItemDescriptorBadge,
+} from './collections/item.types';
+export type {
+  LayoutAlign,
+  LayoutElement,
+  LayoutGap,
+} from './layout/layout.types';
+export type {
   ViewTransitionParticipantOptions,
   ViewTransitionRole,
   ViewTransitionType,
@@ -43,6 +52,11 @@ export type {
   StatePanelVariant,
 } from './patterns/StatePanel/StatePanel';
 export { StatePanel } from './patterns/StatePanel/StatePanel';
+export type {
+  StatStripItemDescriptor,
+  StatStripProps,
+} from './patterns/StatStrip/StatStrip';
+export { StatStrip } from './patterns/StatStrip/StatStrip';
 export type { BadgeProps, BadgeVariant } from './primitives/Badge/Badge';
 export { Badge } from './primitives/Badge/Badge';
 export type {
@@ -63,10 +77,6 @@ export type { CheckboxProps } from './primitives/Checkbox/Checkbox';
 export { Checkbox } from './primitives/Checkbox/Checkbox';
 export type { ChipProps } from './primitives/Chip/Chip';
 export { Chip } from './primitives/Chip/Chip';
-export type {
-  ItemDescriptor,
-  ItemDescriptorBadge,
-} from './primitives/Collection/item.types';
 export type { ComboBoxProps } from './primitives/ComboBox/ComboBox';
 export { ComboBox } from './primitives/ComboBox/ComboBox';
 export type {
@@ -89,6 +99,12 @@ export { Grid } from './primitives/Grid/Grid';
 export type { IconName, IconProps, IconSize } from './primitives/Icon/Icon';
 export { Icon } from './primitives/Icon/Icon';
 export type {
+  IconButtonProps,
+  IconButtonShape,
+  IconButtonVariant,
+} from './primitives/IconButton/IconButton';
+export { IconButton } from './primitives/IconButton/IconButton';
+export type {
   IconTileProps,
   IconTileShape,
   IconTileSize,
@@ -97,25 +113,27 @@ export type {
 export { IconTile } from './primitives/IconTile/IconTile';
 export type { InlineJustify, InlineProps } from './primitives/Inline/Inline';
 export { Inline } from './primitives/Inline/Inline';
-export type {
-  LayoutAlign,
-  LayoutElement,
-  LayoutGap,
-} from './primitives/layout.types';
 export type { LinkProps, LinkVariant } from './primitives/Link/Link';
 export { Link } from './primitives/Link/Link';
-export type { MenuProps } from './primitives/Menu/Menu';
+export type {
+  MenuItemDescriptor,
+  MenuProps,
+  MenuSectionDescriptor,
+  MenuWidth,
+} from './primitives/Menu/Menu';
 export { Menu } from './primitives/Menu/Menu';
 export type { NumberFieldProps } from './primitives/NumberField/NumberField';
 export { NumberField } from './primitives/NumberField/NumberField';
 export type { PopoverProps } from './primitives/Popover/Popover';
 export { Popover } from './primitives/Popover/Popover';
 export type {
+  RowListCurrencyValue,
   RowListItemDescriptor,
   RowListLoadMoreProps,
   RowListMetadata,
   RowListProps,
   RowListSectionDescriptor,
+  RowListSectionSummary,
   RowListValue,
 } from './primitives/RowList/RowList';
 export { RowList } from './primitives/RowList/RowList';

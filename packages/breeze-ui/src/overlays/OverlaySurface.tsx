@@ -1,4 +1,6 @@
 import {
+  createElement,
+  type ReactNode,
   useCallback,
   useContext,
   useEffect,
@@ -7,10 +9,15 @@ import {
   useRef,
   useState,
 } from 'react';
+import { FocusScope } from 'react-aria/FocusScope';
+import { usePreventScroll } from 'react-aria/usePreventScroll';
+import { Button as AriaButton } from 'react-aria-components/Button';
 import { Dialog as AriaDialog } from 'react-aria-components/Dialog';
 import { Modal, ModalOverlay } from 'react-aria-components/Modal';
 import { Popover as AriaPopover } from 'react-aria-components/Popover';
+import { buttonVariants } from '../buttons/button.styles';
 import { Button } from '../primitives/Button/Button';
+import { Icon } from '../primitives/Icon/Icon';
 import { useBreezeContext } from '../provider/BreezeContext';
 import type { OverlayKind, OverlayProps } from './overlay.types';
 import { useOverlayPortal } from './OverlayProvider';
@@ -18,8 +25,25 @@ import { ParentOverlayContext, useOverlayLayer } from './OverlayStack';
 
 const variants = {
   base: {
+    // The prototype's account avatar: a filled circle of initials.
+    avatar:
+      'breeze:relative breeze:inline-flex breeze:block-breeze-8 breeze:inline-breeze-8 breeze:shrink-0 breeze:items-center breeze:justify-center breeze:rounded-breeze-full breeze:border-0 breeze:bg-breeze-avatar breeze:p-0 breeze:font-breeze-sans breeze:text-breeze-2xs breeze:font-semibold breeze:text-breeze-on-avatar breeze:cursor-pointer breeze:select-none breeze:outline-offset-2 breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:max-breeze-md:block-breeze-tap breeze:max-breeze-md:inline-breeze-tap breeze:max-breeze-md:text-breeze-sm breeze:any-pointer-coarse:block-breeze-tap breeze:any-pointer-coarse:inline-breeze-tap',
+    avatarIndicator:
+      'breeze:absolute breeze:inset-bs-[-2px] breeze:end-[-2px] breeze:box-border breeze:block-[10px] breeze:inline-[10px] breeze:rounded-breeze-full breeze:border-2 breeze:border-solid breeze:border-breeze-surface breeze:bg-breeze-danger',
+    // The design's close is an outlined icon button wider than IconButton's square.
+    close:
+      'breeze:inline-flex breeze:shrink-0 breeze:items-center breeze:justify-center breeze:block-breeze-8 breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:border breeze:border-solid breeze:rounded-breeze-ctl breeze:cursor-pointer breeze:select-none breeze:outline-offset-2 breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:any-pointer-coarse:min-block-breeze-tap breeze:any-pointer-coarse:min-inline-breeze-tap',
     content: 'breeze-overlay-content',
+    drawerBody: 'breeze-drawer-body',
+    drawerContent: 'breeze-drawer-content',
+    drawerFooter: 'breeze-drawer-footer',
+    drawerFooterGroup: 'breeze-drawer-footer-group',
+    drawerSummary: 'breeze-drawer-summary',
     header: 'breeze-overlay-header',
+    // Fits its content from 336px, and spans the viewport less 12px gutters on phones.
+    panel:
+      'breeze:inline-auto breeze:min-inline-[336px] breeze:max-breeze-md:inline-[calc(100vw-24px)] breeze:max-breeze-md:min-inline-0',
+    panelContent: 'breeze:p-0',
     title: 'breeze-overlay-title',
     viewerContent: 'breeze-document-viewer-overlay-content',
   },
@@ -57,28 +81,38 @@ function OverlaySurface({
   children,
   defaultOpen = false,
   dismissible = true,
-  fullScreen = false,
+  footerActions,
+  footerStart,
+  footerSummary,
   kind,
   onOpenChange,
   open: controlledOpen,
+  panel = false,
   placement = 'bottom',
   closingTransition = false,
   showHeader = true,
   viewerSurface = false,
   title,
   trigger,
+  triggerIndicator = false,
+  triggerInitials,
 }: Readonly<
   Omit<OverlayProps, 'open' | 'defaultOpen' | 'onOpenChange' | 'trigger'> & {
     open?: boolean;
     defaultOpen?: boolean;
-    fullScreen?: boolean;
     closingTransition?: boolean;
+    footerActions?: ReactNode;
+    footerStart?: ReactNode;
+    footerSummary?: string;
+    panel?: boolean;
     showHeader?: boolean;
     viewerSurface?: boolean;
     onOpenChange?: (open: boolean) => void;
     kind: OverlayKind;
-    placement?: 'top' | 'bottom' | 'start' | 'end';
+    placement?: 'top' | 'bottom' | 'start' | 'end' | 'bottom end';
     trigger?: string;
+    triggerIndicator?: boolean;
+    triggerInitials?: string;
   }
 >) {
   const { getMessageLocale, messages } = useBreezeContext();
@@ -128,6 +162,8 @@ function OverlaySurface({
     open && portalReady && host !== null,
     open || (surfaceMounted && !closingTransition),
   );
+  // React Aria only locks scroll for modal overlays.
+  usePreventScroll({ isDisabled: kind !== 'fullscreen' || !open });
   const changeOpen = useCallback(
     (nextOpen: boolean) => {
       if (!nextOpen && !parentOpen) {
@@ -139,6 +175,11 @@ function OverlaySurface({
     },
     [controlledOpen, onOpenChange, parentOpen, requestedOpen],
   );
+  // A ref keeps the gesture-tracking document listeners subscribed across new callbacks.
+  const changeOpenRef = useRef(changeOpen);
+  useLayoutEffect(() => {
+    changeOpenRef.current = changeOpen;
+  }, [changeOpen]);
 
   useEffect(() => {
     if (parentOpen) {
@@ -178,9 +219,10 @@ function OverlaySurface({
     };
     const onPointerUp = (event: PointerEvent) => {
       if (!isPrimaryPointer(event)) return;
-      const pointerDownTarget = pointerDownTargetRef.current;
       const pointerUpTarget = isNode(event.target) ? event.target : null;
-      if (!isOutside(pointerDownTarget) || !isOutside(pointerUpTarget)) return;
+      if (!isOutside(pointerUpTarget)) return;
+      // Pointer state lasts until the click, or one task if no click follows.
+      const startedOutside = isOutside(pointerDownTargetRef.current);
       clearPointerDismissTimer();
       pointerDismissTimerRef.current = setTimeout(() => {
         pointerDismissTimerRef.current = null;
@@ -189,12 +231,13 @@ function OverlaySurface({
         blurDismissTargetRef.current = null;
         pointerDownTargetRef.current = null;
         if (
-          sameTarget(blurTarget, pointerUpTarget) &&
-          sameTarget(blurTarget, pointerTarget)
+          !startedOutside ||
+          (sameTarget(blurTarget, pointerUpTarget) &&
+            sameTarget(blurTarget, pointerTarget))
         ) {
           return;
         }
-        changeOpen(false);
+        changeOpenRef.current(false);
       }, 0);
     };
     const onPointerCancel = () => {
@@ -204,20 +247,21 @@ function OverlaySurface({
     };
     const onOutsideClick = (event: MouseEvent) => {
       const target = isNode(event.target) ? event.target : null;
+      const blurTarget = blurDismissTargetRef.current;
+      const pointerTarget = pointerDownTargetRef.current;
       clearPointerDismissTimer();
-      if (isOutside(target)) {
-        const blurTarget = blurDismissTargetRef.current;
-        const pointerTarget = pointerDownTargetRef.current;
-        blurDismissTargetRef.current = null;
-        pointerDownTargetRef.current = null;
-        if (
-          sameTarget(blurTarget, target) &&
-          sameTarget(blurTarget, pointerTarget)
-        ) {
-          return;
-        }
-        changeOpen(false);
+      blurDismissTargetRef.current = null;
+      pointerDownTargetRef.current = null;
+      if (
+        !isOutside(target) ||
+        // Chromium targets a drag's click at the common ancestor, so drags from inside land here.
+        (pointerTarget !== null && !isOutside(pointerTarget)) ||
+        (sameTarget(blurTarget, target) &&
+          sameTarget(blurTarget, pointerTarget))
+      ) {
+        return;
       }
+      changeOpenRef.current(false);
     };
     host.ownerDocument.addEventListener('pointerdown', onPointerDown, true);
     host.ownerDocument.addEventListener('pointerup', onPointerUp, true);
@@ -240,7 +284,7 @@ function OverlaySurface({
       blurDismissTargetRef.current = null;
       pointerDownTargetRef.current = null;
     };
-  }, [changeOpen, dismissible, host, kind, layer.topmost, open]);
+  }, [dismissible, host, kind, layer.topmost, open]);
 
   const restoreParentFocus = parent?.restoreFocus;
   const parentId = parent?.id;
@@ -255,17 +299,20 @@ function OverlaySurface({
       focused === parentSurface ||
       !!focused?.closest('[data-exiting]');
     if (!focusLost) return;
-    if (!target?.isConnected) {
-      restoreParentFocus?.();
+    const topmost = host.querySelector('[data-breeze-topmost="true"]');
+    const canFocus = (element: HTMLElement) =>
+      (!topmost || topmost.contains(element)) &&
+      !element.closest('[inert], [aria-hidden="true"], [data-exiting]');
+    if (target?.isConnected) {
+      if (canFocus(target)) target.focus({ preventScroll: true });
       return;
     }
-    const topmost = host.querySelector('[data-breeze-topmost="true"]');
-    if (
-      (!topmost || topmost.contains(target)) &&
-      !target.closest('[inert], [aria-hidden="true"]')
-    ) {
-      target.focus({ preventScroll: true });
+    // The trigger was removed with this surface: an open parent keeps focus, a closing one defers.
+    if (parentSurface && canFocus(parentSurface)) {
+      parentSurface.focus({ preventScroll: true });
+      return;
     }
+    restoreParentFocus?.();
   }, [host, parentId, restoreParentFocus]);
 
   const clearRefocusTimer = useCallback(() => {
@@ -274,49 +321,50 @@ function OverlaySurface({
       refocusTimerRef.current = null;
     }
   }, []);
-  const focusSurface = useCallback(
-    (element: HTMLElement) => {
-      queueMicrotask(() => {
+  // Covers a first mount, a deferred portal mount and a reopen while still exiting.
+  const focusOnOpen = nonModal && open && surfaceMounted;
+  useEffect(() => {
+    const element = contentRef.current;
+    if (!focusOnOpen || !element) return undefined;
+    let cancelled = false;
+    // On reopen the layer stays inert until the stack's synchronous re-render.
+    queueMicrotask(() => {
+      if (
+        cancelled ||
+        !element.isConnected ||
+        element.closest('[inert], [data-exiting]')
+      ) {
+        return;
+      }
+      element.focus({ preventScroll: true });
+      // Mirrors useDialog's 500ms refocus for iOS VoiceOver; any blur cancels it.
+      refocusTimerRef.current = setTimeout(() => {
+        refocusTimerRef.current = null;
+        const { ownerDocument } = element;
+        const { activeElement: focused } = ownerDocument;
         if (
           !element.isConnected ||
-          element.closest('[inert], [data-exiting]')
+          element.closest('[inert], [data-exiting]') ||
+          (focused !== element && focused !== ownerDocument.body)
         ) {
           return;
         }
-        clearRefocusTimer();
+        refocusingRef.current = true;
+        element.blur();
         element.focus({ preventScroll: true });
-        refocusTimerRef.current = setTimeout(() => {
-          const { ownerDocument } = element;
-          const { activeElement: focused } = ownerDocument;
-          if (
-            element.isConnected &&
-            !element.closest('[inert], [data-exiting]') &&
-            (focused === element || focused === ownerDocument.body)
-          ) {
-            refocusingRef.current = true;
-            element.blur();
-            element.focus({ preventScroll: true });
-            refocusingRef.current = false;
-          }
-          refocusTimerRef.current = null;
-        }, 500);
-      });
-    },
-    [clearRefocusTimer],
-  );
-  const previousOpenRef = useRef(open);
-  useEffect(() => {
-    const wasOpen = previousOpenRef.current;
-    previousOpenRef.current = open;
-    if (!nonModal || !open || wasOpen || !contentRef.current) return;
-    focusSurface(contentRef.current);
-  }, [focusSurface, nonModal, open]);
+        refocusingRef.current = false;
+      }, 500);
+    });
+    return () => {
+      cancelled = true;
+      clearRefocusTimer();
+    };
+  }, [clearRefocusTimer, focusOnOpen]);
 
   const surfaceRef = useCallback(
     (element: HTMLElement | null) => {
       contentRef.current = element;
       const cleanup = () => {
-        clearRefocusTimer();
         contentRef.current = null;
         setSurfaceMounted(false);
         requestAnimationFrame(restoreFocus);
@@ -326,75 +374,112 @@ function OverlaySurface({
         return undefined;
       }
       setSurfaceMounted(true);
-      if (nonModal) focusSurface(element);
       // React Aria restores ordinary closes. Nested simultaneous exits can leave
       // focus on body; repair only that gap after its focus-scope cleanup runs.
       return cleanup;
     },
-    [clearRefocusTimer, focusSurface, nonModal, restoreFocus],
+    [restoreFocus],
   );
 
   const parentContext = useMemo(
     () => ({ id: layer.id, open, restoreFocus }),
     [layer.id, open, restoreFocus],
   );
-  const surfaceVariant = fullScreen
-    ? variants.variant.fullscreen
-    : variants.variant[kind];
+  const drawer = kind === 'drawer';
+  const contentClassName = [
+    variants.base.content,
+    viewerSurface && variants.base.viewerContent,
+    drawer && variants.base.drawerContent,
+    panel && variants.base.panelContent,
+  ]
+    .filter(Boolean)
+    .join(' ');
   const body = (
     <>
-      {showHeader ? (
+      {showHeader && !panel ? (
         <div className={variants.base.header}>
           <h2 className={variants.base.title}>{title}</h2>
-          <span lang={getMessageLocale('close')}>
-            <Button onAction={() => changeOpen(false)} variant="quiet">
-              {messages.close}
-            </Button>
-          </span>
+          <AriaButton
+            aria-label={messages.close}
+            className={`${variants.base.close} ${buttonVariants.variant.secondary}`}
+            onPress={() => changeOpen(false)}
+            render={(buttonProps) =>
+              createElement('button', {
+                ...buttonProps,
+                lang: getMessageLocale('close'),
+                type: 'button',
+              })
+            }
+          >
+            <Icon name="close" size="2xs" />
+          </AriaButton>
         </div>
       ) : null}
-      {children}
+      {drawer ? (
+        <div className={variants.base.drawerBody}>{children}</div>
+      ) : (
+        children
+      )}
+      {drawer && (footerStart || footerSummary || footerActions) ? (
+        <footer className={variants.base.drawerFooter}>
+          {footerStart ? (
+            <div className={variants.base.drawerFooterGroup}>{footerStart}</div>
+          ) : null}
+          <span className={variants.base.drawerSummary}>{footerSummary}</span>
+          {footerActions ? (
+            <div className={variants.base.drawerFooterGroup}>
+              {footerActions}
+            </div>
+          ) : null}
+        </footer>
+      ) : null}
     </>
   );
+  const section = (
+    <section
+      aria-label={title}
+      className={contentClassName}
+      id={layer.id}
+      onBlur={(event) => {
+        if (refocusingRef.current) {
+          event.stopPropagation();
+          return;
+        }
+        clearRefocusTimer();
+        const { relatedTarget } = event;
+        if (
+          kind === 'popover' &&
+          dismissible &&
+          layer.topmost &&
+          isNode(relatedTarget) &&
+          !event.currentTarget.contains(relatedTarget) &&
+          !triggerRef.current?.contains(relatedTarget)
+        ) {
+          blurDismissTargetRef.current = relatedTarget;
+        }
+      }}
+      ref={surfaceRef}
+      role="dialog"
+      tabIndex={-1}
+    >
+      {body}
+    </section>
+  );
+  // Contains Tab without making anything behind it inert (ADR 0002).
+  const nonModalSurface =
+    kind === 'fullscreen' ? (
+      <FocusScope contain={layer.interactive}>{section}</FocusScope>
+    ) : (
+      section
+    );
   const content = (
     <ParentOverlayContext value={parentContext}>
       {nonModal ? (
-        <section
-          aria-label={title}
-          className={variants.base.content}
-          id={layer.id}
-          onBlur={(event) => {
-            if (refocusingRef.current) {
-              event.stopPropagation();
-              return;
-            }
-            const { relatedTarget } = event;
-            if (
-              kind === 'popover' &&
-              dismissible &&
-              layer.topmost &&
-              isNode(relatedTarget) &&
-              !event.currentTarget.contains(relatedTarget) &&
-              !triggerRef.current?.contains(relatedTarget)
-            ) {
-              blurDismissTargetRef.current = relatedTarget;
-            }
-          }}
-          ref={surfaceRef}
-          role="dialog"
-          tabIndex={-1}
-        >
-          {body}
-        </section>
+        nonModalSurface
       ) : (
         <AriaDialog
           aria-label={title}
-          className={[
-            variants.base.content,
-            viewerSurface && variants.base.viewerContent,
-          ]
-            .filter(Boolean)
-            .join(' ')}
+          className={contentClassName}
           id={layer.id}
           ref={surfaceRef}
         >
@@ -406,7 +491,26 @@ function OverlaySurface({
 
   return (
     <>
-      {trigger ? (
+      {trigger && triggerInitials ? (
+        <AriaButton
+          aria-controls={open ? layer.id : undefined}
+          aria-expanded={open}
+          aria-haspopup="dialog"
+          aria-label={trigger}
+          className={variants.base.avatar}
+          onPress={() => changeOpen(nonModal ? !open : true)}
+          ref={triggerRef}
+        >
+          {triggerInitials}
+          {triggerIndicator ? (
+            <span
+              aria-hidden="true"
+              className={variants.base.avatarIndicator}
+            />
+          ) : null}
+        </AriaButton>
+      ) : null}
+      {trigger && !triggerInitials ? (
         <Button
           aria-controls={open ? layer.id : undefined}
           aria-expanded={open}
@@ -421,7 +525,9 @@ function OverlaySurface({
         portalReady &&
         (nonModal ? (
           <AriaPopover
-            className={variants.variant[kind]}
+            className={[variants.variant[kind], panel && variants.base.panel]
+              .filter(Boolean)
+              .join(' ')}
             data-breeze-overlay={kind}
             data-breeze-topmost={layer.topmost}
             data-breeze-interactive={layer.interactive}
@@ -461,7 +567,7 @@ function OverlaySurface({
             }
             style={{ zIndex: layer.zIndex }}
           >
-            <Modal className={surfaceVariant}>{content}</Modal>
+            <Modal className={variants.variant[kind]}>{content}</Modal>
           </ModalOverlay>
         ))}
     </>

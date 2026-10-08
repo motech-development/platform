@@ -27,9 +27,31 @@ describe('Skeleton', () => {
     expect(
       screen.getByRole('progressbar', { name: 'Loading receipt preview' }),
     ).toHaveClass(
-      'breeze:bg-breeze-ink-3',
+      'breeze:bg-breeze-sunken',
       'breeze:forced-colors:outline-[CanvasText]',
     );
+  });
+
+  // jsdom cannot paint; a browser must confirm only the token colour shows.
+  it('clears the native progress bar so only the token colour paints', () => {
+    renderBreeze(<Skeleton label="Loading" />);
+
+    expect(screen.getByRole('progressbar', { name: 'Loading' })).toHaveClass(
+      'breeze:appearance-none',
+      'breeze:bg-breeze-sunken',
+      'breeze:[&::-webkit-progress-bar]:[background:transparent]',
+      'breeze:[&::-webkit-progress-value]:[background:transparent]',
+      'breeze:[&::-moz-progress-bar]:[background:transparent]',
+    );
+  });
+
+  it('remains an indeterminate progress bar', () => {
+    renderBreeze(<Skeleton label="Loading" />);
+
+    const progressbar = screen.getByRole('progressbar', { name: 'Loading' });
+
+    expect(progressbar).not.toHaveAttribute('value');
+    expect(progressbar).not.toHaveAttribute('aria-valuenow');
   });
 
   it('retains the fallback loading message language', () => {

@@ -7,10 +7,18 @@
 @import './overlays.css';
 @import './transitions.css';
 
+@source '../buttons/**/*.tsx';
+@source '../buttons/**/*.ts';
+@source '../collections/**/*.tsx';
+@source '../collections/**/*.ts';
+@source '../fields/**/*.tsx';
+@source '../fields/**/*.ts';
+@source '../overlays/**/*.tsx';
+@source '../patterns/**/*.tsx';
 @source '../primitives/**/*.tsx';
 @source '../primitives/**/*.ts';
-@source '../patterns/**/*.tsx';
 @source '../provider/**/*.tsx';
+@source '../selection-controls/**/*.tsx';
 @source not '../**/*.stories.tsx';
 @source not '../**/*.test.tsx';
 

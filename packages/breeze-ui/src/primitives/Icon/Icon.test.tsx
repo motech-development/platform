@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { describe, expect, expectTypeOf, it } from 'vitest';
 import renderBreeze from '../../../test/render';
 import { Icon, type IconProps } from './Icon';
@@ -8,6 +8,12 @@ expectTypeOf<IconProps>().not.toHaveProperty('loading');
 expectTypeOf<IconProps>().not.toHaveProperty('style');
 
 describe('Icon', () => {
+  it('requires a BreezeProvider', () => {
+    expect(() => render(<Icon name="calendar" />)).toThrow(
+      'Breeze components must be rendered within BreezeProvider.',
+    );
+  });
+
   it('provides an accessible name when the artwork conveys meaning', () => {
     renderBreeze(<Icon label="Choose a date" name="calendar" />);
 

@@ -8,6 +8,16 @@ export default defineConfig([
   },
   config,
   {
+    // Storybook configuration is dev-only tooling, so it may import devDependencies.
+    files: ['.storybook/**/*.{ts,tsx}'],
+    rules: {
+      'import/no-extraneous-dependencies': [
+        'error',
+        { devDependencies: true, optionalDependencies: false },
+      ],
+    },
+  },
+  {
     files: ['src/**/*.{ts,tsx}'],
     plugins: {
       breeze: {

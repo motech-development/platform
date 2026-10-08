@@ -27,9 +27,15 @@ thumbnail is not the only way to tell them apart. Only a photograph accepts a
 ## Open and menu actions
 
 Pass `onOpen` to show a direct Open button. Pass action descriptors and an
-`onAction` callback together to show the overflow menu. Each action has a
-visible label; icons only decorate those labels. Open and overflow buttons keep
-their short visible labels and include the file name in their accessible names.
+`onAction` callback together to show the overflow menu; `onAction` receives the
+selected action from `actions`. Each action has a visible label; icons only
+decorate those labels. The Open button keeps its short visible label, and the
+overflow menu opens from an icon-only More actions button. Both include the
+file name in their accessible names.
+
+The menu opens aligned to the end edge of its button. Give a destructive action, such as
+Remove, `tone: 'danger'` and its own `section` so it shows in the danger
+colour below a divider.
 
 <Canvas of={Stories.Document} />
 

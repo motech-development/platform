@@ -3,7 +3,7 @@ import * as Stories from './DatePicker.stories';
 
 <Meta
   of={Stories}
-  summary="A required date field with an ISO value and localized trigger."
+  summary="A date field, required by default, with an ISO value and localized trigger."
 />
 
 # DatePicker
@@ -21,16 +21,44 @@ value is retained.
 
 <Canvas of={Stories.Default} />
 
+## Today
+
+The calendar footer offers a Today action, labelled by the provider's `today`
+message. It selects the current date, reports it and closes the calendar.
+
+<Canvas of={Stories.TodayAction} />
+
 ## States
 
 Use `error` to display validation feedback and `disabled` to prevent interaction.
-Use `loading` while the field's date is unavailable; errors are hidden and an
-open calendar closes while loading. The field is required by default and does
-not provide a clear control.
+`readOnly` keeps the trigger focusable and the date in form submission, but the
+calendar cannot be opened, so the date cannot change; use it to show a recorded
+date in view mode. A disabled date is omitted from form submission. Use
+`loading` while the field's date is unavailable; errors are hidden and an open
+calendar closes while loading.
+
+Unlike the other fields, whose `required` defaults to `false`, `DatePicker`
+defaults to `required`. This is a deliberate exception: the dates Breeze
+applications record are non-null, so an empty date is not a state worth
+offering. A required date does not provide a clear control.
+
+Set `required={false}` for an optional date. Its calendar then shows a clear
+control beside the Today action, labelled by the provider's `clearDate` message, which empties the
+field, closes the calendar and reports `null`. The control is unavailable while
+the field is empty. An optional `onChange` must accept `null`, and an optional
+uncontrolled field may start from a `null` `defaultValue`; TypeScript rejects
+either on a required date.
+
+There is no `autoComplete` prop. The trigger is a button, not a text input, so
+browser autofill has nothing to fill.
 
 <Canvas of={Stories.Error} />
 
 <Canvas of={Stories.Disabled} />
+
+<Canvas of={Stories.ReadOnly} />
+
+<Canvas of={Stories.Optional} />
 
 <Canvas of={Stories.Loading} />
 
@@ -38,11 +66,11 @@ not provide a clear control.
 
 Provide both `value` and `onChange` for controlled usage. Set `value` to `null`
 for an empty controlled selection. Use `defaultValue` and an optional `onChange`
-for uncontrolled usage; the two forms cannot be mixed. An uncontrolled date
-returns to `defaultValue` when its owning form resets. With a `name`, the
-selected ISO date is included in form submission; an empty value submits an
-empty string. Override the provider's `required` message to localize the
-required announcement.
+for uncontrolled usage; the two forms cannot be mixed, whether the date is
+required or optional. An uncontrolled date returns to `defaultValue` when its
+owning form resets. With a `name`, the selected ISO date is included in form
+submission; an empty value submits an empty string. Override the provider's `required`, `clearDate` and `today` messages to
+localize the required announcement, the clear control and the Today action.
 
 <Canvas of={Stories.Controlled} />
 

@@ -6,11 +6,13 @@ import {
   useRef,
   useState,
 } from 'react';
+import { FieldLabel } from '../../fields/field.presentation';
+import { fieldVariants } from '../../fields/field.styles';
 import { Button } from '../../primitives/Button/Button';
-import { Typography } from '../../primitives/Typography/Typography';
+import { Icon } from '../../primitives/Icon/Icon';
 import { useBreezeContext } from '../../provider/BreezeContext';
 
-type FileDropZoneVariant = 'idle' | 'dragging';
+type FileDropZoneLayout = 'compact' | 'stacked';
 
 type FileDropZoneMessage =
   | {
@@ -54,21 +56,66 @@ type FileDropZoneMessage =
 
 type FileDropZoneAnnouncement = FileDropZoneMessage & { id: number };
 
+// Phone cameras deliver JPEG photos.
+const cameraPhotoTypes = new Set([
+  '*/*',
+  '.jpeg',
+  '.jpg',
+  'image/*',
+  'image/jpeg',
+]);
+
 const variants = {
   base: {
+    action: 'breeze:flex',
+    actions: 'breeze:flex',
+    // Touch devices and phones lead with the camera, overriding the secondary button.
+    camera:
+      'breeze:pointer-coarse:[&>button]:border-breeze-brand breeze:pointer-coarse:[&>button]:bg-breeze-brand breeze:pointer-coarse:[&>button]:text-breeze-on-brand breeze:pointer-coarse:[&>button[data-hovered]]:bg-breeze-brand-hover breeze:pointer-coarse:[&>button[data-pressed]]:bg-breeze-brand-hover breeze:max-breeze-md:grow breeze:max-breeze-md:[&>button]:inline-full breeze:max-breeze-md:[&>button]:border-breeze-brand breeze:max-breeze-md:[&>button]:bg-breeze-brand breeze:max-breeze-md:[&>button]:text-breeze-on-brand breeze:max-breeze-md:[&>button[data-hovered]]:bg-breeze-brand-hover breeze:max-breeze-md:[&>button[data-pressed]]:bg-breeze-brand-hover',
     dropZone:
-      'breeze:flex breeze:min-inline-size-0 breeze:flex-col breeze:items-center breeze:gap-breeze-3 breeze:rounded-breeze-panel breeze:border-2 breeze:border-dashed breeze:border-breeze-line-strong breeze:bg-breeze-surface breeze:pbs-breeze-6 breeze:pie-breeze-4 breeze:text-center',
+      'breeze:box-border breeze:flex breeze:min-inline-0 breeze:rounded-breeze-panel breeze:border-dashed breeze:border-breeze-line-strong breeze:bg-breeze-raised breeze:data-[dragging]:border-breeze-brand breeze:data-[dragging]:bg-breeze-brand-soft',
     input: 'breeze:sr-only',
+    primary: 'breeze:m-0 breeze:text-breeze-sm breeze:text-breeze-ink',
+    secondary:
+      'breeze:m-0 breeze:text-breeze-xs breeze:font-normal breeze:text-breeze-ink-3',
+    // Out of flow while empty so the live region stays exposed without adding a gap.
     status:
-      'breeze:min-block-size-breeze-4 breeze:text-breeze-sm breeze:text-breeze-ink-2',
+      'breeze:text-breeze-sm breeze:text-breeze-ink-2 breeze:empty:sr-only',
+    text: 'breeze:flex breeze:min-inline-0 breeze:flex-col',
+    thumbnail:
+      'breeze:flex breeze:block-breeze-tap breeze:inline-breeze-md breeze:shrink-0 breeze:items-center breeze:justify-center breeze:rounded-breeze-sm breeze:border breeze:border-dashed breeze:border-breeze-line-strong breeze:bg-breeze-sunken breeze:text-breeze-ink-3',
   },
   compound: {},
   size: {},
   state: {},
   variant: {
+    actions: {
+      // Phones show compact actions as icons; Button still names them.
+      compact:
+        'breeze:shrink-0 breeze:gap-breeze-3 breeze:max-breeze-md:[&_svg+span]:hidden',
+      stacked:
+        'breeze:mbs-[6px] breeze:gap-breeze-2 breeze:max-breeze-md:inline-full',
+    },
     dropZone: {
-      dragging: 'breeze:border-breeze-brand breeze:bg-breeze-brand-soft',
-      idle: '',
+      compact:
+        'breeze:min-block-breeze-row breeze:items-center breeze:gap-breeze-3 breeze:border breeze:px-breeze-3 breeze:py-breeze-1',
+      stacked:
+        'breeze:flex-col breeze:items-center breeze:gap-[6px] breeze:border-2 breeze:px-breeze-4 breeze:py-breeze-6 breeze:text-center',
+    },
+    primary: {
+      compact: 'breeze:font-medium',
+      // The prototype's stacked prompt sets no text size, so it keeps the body's line height.
+      stacked:
+        'breeze:font-semibold breeze:leading-breeze-snug breeze:max-breeze-md:hidden',
+    },
+    secondary: {
+      compact:
+        'breeze:overflow-hidden breeze:text-ellipsis breeze:whitespace-nowrap',
+      stacked: '',
+    },
+    text: {
+      compact: 'breeze:grow breeze:gap-breeze-px breeze:text-start',
+      stacked: 'breeze:items-center breeze:gap-[6px]',
     },
   },
 } as const satisfies {
@@ -76,9 +123,7 @@ const variants = {
   compound: Record<string, never>;
   size: Record<string, never>;
   state: Record<string, never>;
-  variant: {
-    dropZone: Record<FileDropZoneVariant, string>;
-  };
+  variant: Record<string, Record<FileDropZoneLayout, string>>;
 };
 
 function getAcceptedTypes(accept: string) {
@@ -160,9 +205,13 @@ function interpolateMessage(
 export interface FileDropZoneProps {
   /** Allowed file extensions and MIME types, in the native `accept` format. */
   accept?: string;
+  /** Offers a Take photo action that opens the device camera when `accept` allows JPEG photos. */
+  camera?: boolean;
+  /** Lays the drop area out as one attachment-height row instead of a stacked panel. */
+  compact?: boolean;
   /** Number of files already attached; used with `maxFiles` for total limits. */
   currentFileCount?: number;
-  /** Visible, accessible name for the drop area. */
+  /** Visible field label and accessible name for the drop area. */
   label: string;
   /** Maximum size for one file, in bytes. */
   maxSize?: number;
@@ -179,6 +228,8 @@ export interface FileDropZoneProps {
  */
 export function FileDropZone({
   accept,
+  camera = false,
+  compact = false,
   currentFileCount = 0,
   label,
   maxFiles,
@@ -187,9 +238,11 @@ export function FileDropZone({
 }: Readonly<FileDropZoneProps>) {
   const { getMessageLocale, messages } = useBreezeContext();
   const inputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
   const announcementSequence = useRef(0);
   const labelId = useId();
   const instructionsId = useId();
+  const limitsId = useId();
   const [isDragging, setIsDragging] = useState(false);
   const [announcements, setAnnouncements] = useState<
     FileDropZoneAnnouncement[]
@@ -210,24 +263,25 @@ export function FileDropZone({
   }
 
   const acceptedTypes = getAcceptedTypes(accept ?? '');
-  const variant = isDragging ? 'dragging' : 'idle';
-  const instructions: FileDropZoneMessage[] = [
-    {
-      key: isDragging
-        ? 'fileDropZoneReleaseInstructions'
-        : 'fileDropZoneDropInstructions',
-    },
-  ];
+  const layout = compact ? 'compact' : 'stacked';
+  const showCamera =
+    camera &&
+    (acceptedTypes.length === 0 ||
+      acceptedTypes.some((acceptedType) => cameraPhotoTypes.has(acceptedType)));
+  const instructionKey = isDragging
+    ? 'fileDropZoneReleaseInstructions'
+    : 'fileDropZoneDropInstructions';
+  const limits: FileDropZoneMessage[] = [];
 
   if (acceptedTypes.length > 0) {
-    instructions.push({
+    limits.push({
       key: 'fileDropZoneAcceptedTypes',
       values: { types: acceptedTypes.join(', ') },
     });
   }
 
   if (maxSize !== undefined) {
-    instructions.push({
+    limits.push({
       key: 'fileDropZoneMaximumFileSize',
       values: {
         size: formatFileSize(
@@ -239,7 +293,7 @@ export function FileDropZone({
   }
 
   if (maxFiles !== undefined) {
-    instructions.push({
+    limits.push({
       key: 'fileDropZoneAttachedCount',
       values: { current: currentFileCount, max: maxFiles },
     });
@@ -367,63 +421,136 @@ export function FileDropZone({
   }
 
   return (
-    <section
-      aria-describedby={instructionsId}
-      aria-labelledby={labelId}
-      className={[
-        variants.base.dropZone,
-        variants.variant.dropZone[variant],
-      ].join(' ')}
-      onDragEnter={handleDragEnter}
-      onDragLeave={handleDragLeave}
-      onDragOver={(event) => {
-        if (!isFileDrag(event.dataTransfer)) {
-          setIsDragging(false);
-          return;
+    <div className={fieldVariants.base.root}>
+      <FieldLabel id={labelId} label={label} loading={false} />
+      <section
+        aria-describedby={
+          limits.length > 0 ? `${instructionsId} ${limitsId}` : instructionsId
         }
+        aria-labelledby={labelId}
+        className={[
+          variants.base.dropZone,
+          variants.variant.dropZone[layout],
+        ].join(' ')}
+        data-dragging={isDragging || undefined}
+        onDragEnter={handleDragEnter}
+        onDragLeave={handleDragLeave}
+        onDragOver={(event) => {
+          if (!isFileDrag(event.dataTransfer)) {
+            setIsDragging(false);
+            return;
+          }
 
-        event.preventDefault();
-        setIsDragging(true);
-      }}
-      onDrop={handleDrop}
-    >
-      <Typography element="p" id={labelId} variant="title">
-        {label}
-      </Typography>
-      <Typography
-        element="p"
-        id={instructionsId}
-        tone="secondary"
-        variant="body"
+          event.preventDefault();
+          setIsDragging(true);
+        }}
+        onDrop={handleDrop}
       >
-        {instructions.map((message, index) => (
-          <Fragment key={message.key}>
-            {index > 0 ? ' ' : null}
-            <span lang={getMessageLocale(message.key)}>
-              {interpolateMessage(
-                messages[message.key],
-                'values' in message ? message.values : undefined,
-                getMessageLocale(message.key),
-              )}
+        {compact ? (
+          <span aria-hidden="true" className={variants.base.thumbnail}>
+            <Icon name="upload" size="md" />
+          </span>
+        ) : (
+          <Icon name="upload" size="4xl" />
+        )}
+        <div
+          className={[variants.base.text, variants.variant.text[layout]].join(
+            ' ',
+          )}
+        >
+          <p
+            className={[
+              variants.base.primary,
+              variants.variant.primary[layout],
+            ].join(' ')}
+            id={instructionsId}
+            lang={getMessageLocale(instructionKey)}
+          >
+            {messages[instructionKey]}
+          </p>
+          {limits.length > 0 ? (
+            <p
+              className={[
+                variants.base.secondary,
+                variants.variant.secondary[layout],
+              ]
+                .filter(Boolean)
+                .join(' ')}
+              id={limitsId}
+            >
+              {limits.map((message, index) => (
+                <Fragment key={message.key}>
+                  {index > 0 ? ' ' : null}
+                  <span lang={getMessageLocale(message.key)}>
+                    {interpolateMessage(
+                      messages[message.key],
+                      'values' in message ? message.values : undefined,
+                      getMessageLocale(message.key),
+                    )}
+                  </span>
+                </Fragment>
+              ))}
+            </p>
+          ) : null}
+        </div>
+        <div
+          className={[
+            variants.base.actions,
+            variants.variant.actions[layout],
+          ].join(' ')}
+        >
+          {showCamera ? (
+            <span
+              className={[variants.base.action, variants.base.camera].join(' ')}
+              lang={getMessageLocale('fileDropZoneTakePhoto')}
+            >
+              <Button
+                icon="camera"
+                onAction={() => cameraInputRef.current?.click()}
+                size="sm"
+                variant="secondary"
+              >
+                {messages.fileDropZoneTakePhoto}
+              </Button>
             </span>
-          </Fragment>
-        ))}
-      </Typography>
-      <span lang={getMessageLocale('fileDropZoneChooseFiles')}>
-        <Button onAction={() => inputRef.current?.click()} variant="secondary">
-          {messages.fileDropZoneChooseFiles}
-        </Button>
-      </span>
-      <input
-        accept={accept}
-        aria-hidden="true"
-        className={variants.base.input}
-        multiple
-        onChange={handlePickerChange}
-        ref={inputRef}
-        tabIndex={-1}
-        type="file"
-      />
+          ) : null}
+          <span
+            className={variants.base.action}
+            lang={getMessageLocale('fileDropZoneChooseFiles')}
+          >
+            <Button
+              icon={compact ? 'upload' : undefined}
+              onAction={() => inputRef.current?.click()}
+              size="sm"
+              variant="secondary"
+            >
+              {messages.fileDropZoneChooseFiles}
+            </Button>
+          </span>
+        </div>
+        <input
+          accept={accept}
+          aria-hidden="true"
+          className={variants.base.input}
+          multiple
+          onChange={handlePickerChange}
+          ref={inputRef}
+          tabIndex={-1}
+          type="file"
+        />
+        {showCamera ? (
+          <input
+            accept="image/*"
+            aria-hidden="true"
+            capture="environment"
+            className={variants.base.input}
+            onChange={handlePickerChange}
+            ref={cameraInputRef}
+            tabIndex={-1}
+            type="file"
+          />
+        ) : null}
+      </section>
       <output
         aria-atomic="true"
         aria-live="polite"
@@ -442,6 +569,6 @@ export function FileDropZone({
           </Fragment>
         ))}
       </output>
-    </section>
+    </div>
   );
 }

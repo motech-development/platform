@@ -5,20 +5,23 @@ import { AttachmentRow, type AttachmentRowAction } from './AttachmentRow';
 
 const actions = [
   {
-    icon: 'download',
+    icon: 'document',
+    id: 'open',
+    label: 'Open full screen',
+  },
+  {
     id: 'download',
     label: 'Download',
   },
   {
-    description: 'Choose a different attachment.',
-    icon: 'upload',
     id: 'replace',
     label: 'Replace',
   },
   {
-    icon: 'delete',
     id: 'remove',
     label: 'Remove',
+    section: { id: 'remove' },
+    tone: 'danger',
   },
 ] satisfies AttachmentRowAction[];
 
@@ -62,6 +65,14 @@ export const Document: Story = {
         name: 'More actions: fen-lane-garage-invoice.pdf',
       }),
     );
+
+    const menu = await within(document.body).findByRole('menu');
+    const popover = menu.closest<HTMLElement>('.breeze-popover');
+
+    if (!popover) throw new Error('The menu popover was not rendered.');
+
+    // The narrower minimum lets these actions shrink-wrap below Menu's default 256px.
+    await expect(popover.offsetWidth).toBeLessThan(256);
     await userEvent.click(
       await within(document.body).findByRole('menuitem', { name: 'Download' }),
     );

@@ -1,11 +1,18 @@
 import type { ReactNode } from 'react';
-import { createElement } from 'react';
-import getLayoutAccessibility from '../layout.accessibility';
-import type { LayoutGap } from '../layout.types';
+import { createElement, useId } from 'react';
+import getLayoutAccessibility from '../../layout/layout.accessibility';
+import type { LayoutGap } from '../../layout/layout.types';
+import { useBreezeContext } from '../../provider/BreezeContext';
+import { Badge } from '../Badge/Badge';
 
 const variants = {
   base: {
-    card: 'breeze:min-inline-size-0 breeze:rounded-breeze-panel breeze:border breeze:border-solid breeze:border-breeze-line breeze:shadow-breeze-panel',
+    card: 'breeze:min-inline-0 breeze:rounded-breeze-panel breeze:border breeze:border-solid breeze:border-breeze-line breeze:shadow-breeze-panel',
+    header:
+      'breeze:flex breeze:items-center breeze:gap-breeze-2 breeze:border-be breeze:border-breeze-line breeze:px-breeze-4 breeze:py-breeze-3 breeze:max-breeze-md:flex-wrap',
+    spacer: 'breeze:grow',
+    title:
+      'breeze:m-0 breeze:text-breeze-sm breeze:font-semibold breeze:text-breeze-ink',
   },
   compound: {},
   size: {
@@ -31,20 +38,42 @@ const variants = {
 export type CardVariant = keyof typeof variants.variant;
 export type CardElement = 'article' | 'aside' | 'div' | 'section';
 
-export interface CardProps {
-  /** Names the card region when its visible content does not provide a suitable label. */
-  'aria-label'?: string;
+interface CardBaseProps {
   /** Content displayed inside the card. */
   children: ReactNode;
   /** Clips content to the rounded card boundary. Defaults to `true`. */
   clipped?: boolean;
   /** Selects the semantic HTML element. Defaults to `div`. */
   element?: CardElement;
-  /** Applies padding from the Breeze spacing scale. Defaults to `4`. */
+  /** Applies padding from the Breeze spacing scale to the content. Defaults to `4`. */
   padding?: LayoutGap;
   /** Selects the card surface treatment. Defaults to `surface`. */
   variant?: CardVariant;
 }
+
+interface TitledCardProps extends CardBaseProps {
+  /** Unavailable when `title` names the card. */
+  'aria-label'?: never;
+  /** Trailing header content, such as a link to the full list. */
+  action?: ReactNode;
+  /** Count displayed beside the title. */
+  count?: number;
+  /** Heading displayed in the card header, which also names the card. */
+  title: string;
+}
+
+interface UntitledCardProps extends CardBaseProps {
+  /** Names the card region when its visible content does not provide a suitable label. */
+  'aria-label'?: string;
+  /** Unavailable without a `title`. */
+  action?: never;
+  /** Unavailable without a `title`. */
+  count?: never;
+  /** Omit to render the content without a header. */
+  title?: never;
+}
+
+export type CardProps = TitledCardProps | UntitledCardProps;
 
 /**
  * Decorates related content as a bordered Breeze panel.
@@ -53,28 +82,57 @@ export interface CardProps {
  */
 export function Card({
   'aria-label': ariaLabel,
+  action,
   children,
   clipped = true,
+  count,
   element = 'div',
   padding = 4,
+  title,
   variant = 'surface',
 }: Readonly<CardProps>) {
-  const { accessibleLabel, role } = getLayoutAccessibility(ariaLabel, element);
+  useBreezeContext();
+
+  const titleId = useId();
+  const { accessibleLabel, role } = getLayoutAccessibility(
+    ariaLabel ?? title,
+    element,
+  );
+  const titled = title !== undefined;
 
   return createElement(
     element,
     {
-      'aria-label': accessibleLabel,
+      'aria-label': titled ? undefined : accessibleLabel,
+      'aria-labelledby': titled ? titleId : undefined,
       className: [
         variants.base.card,
         variants.variant[variant],
-        variants.size[padding],
+        !titled && variants.size[padding],
         clipped && variants.state.clipped,
       ]
         .filter(Boolean)
         .join(' '),
       role,
     },
-    children,
+    titled ? (
+      <>
+        <div className={variants.base.header}>
+          <h2 className={variants.base.title} id={titleId}>
+            {title}
+          </h2>
+          {count === undefined ? null : <Badge>{count}</Badge>}
+          {action === undefined ? null : (
+            <>
+              <span className={variants.base.spacer} />
+              {action}
+            </>
+          )}
+        </div>
+        <div className={variants.size[padding]}>{children}</div>
+      </>
+    ) : (
+      children
+    ),
   );
 }

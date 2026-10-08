@@ -1,33 +1,37 @@
 import type { HTMLAttributes } from 'react';
 import { useState } from 'react';
+import type { ItemDescriptor } from '../../collections/item.types';
 import { useBreezeContext } from '../../provider/BreezeContext';
+import SelectionControl from '../../selection-controls/SelectionControl';
 import { Badge } from '../Badge/Badge';
 import type { ControlSize } from '../Button/Button';
-import type { ItemDescriptor } from '../Collection/item.types';
 import { Icon } from '../Icon/Icon';
-import SelectionControl from '../SelectionControl/SelectionControl';
 import { Skeleton } from '../Skeleton/Skeleton';
 
 const variants = {
   base: {
     description:
-      'breeze:text-breeze-2xs breeze:font-normal breeze:leading-breeze-snug breeze:text-breeze-ink-3',
+      'breeze:text-breeze-2xs breeze:font-normal breeze:text-breeze-ink-3',
     group:
-      'breeze:inline-flex breeze:items-center breeze:gap-breeze-1 breeze:rounded-breeze-ctl breeze:bg-breeze-sunken breeze:p-breeze-1 breeze:font-breeze-sans',
-    item: 'breeze:inline-grid breeze:items-center breeze:justify-center breeze:gap-breeze-2 breeze:rounded-breeze-sm breeze:border breeze:border-solid breeze:border-transparent breeze:font-semibold breeze:text-breeze-ink-2 breeze:cursor-pointer breeze:select-none breeze:outline-offset-[-2px] breeze:data-[hovered]:bg-breeze-raised breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-60 breeze:any-pointer-coarse:min-block-breeze-tap breeze:any-pointer-coarse:min-inline-breeze-tap',
-    label: 'breeze:font-medium',
-    optionContent: 'breeze:flex breeze:min-inline-size-0 breeze:flex-col',
-    optionDetails: 'breeze:inline-flex breeze:items-center breeze:gap-breeze-2',
+      'breeze:m-0 breeze:inline-flex breeze:min-inline-0 breeze:gap-[2px] breeze:rounded-breeze-ctl breeze:border breeze:border-solid breeze:border-breeze-line breeze:bg-breeze-surface breeze:p-[2px] breeze:font-breeze-sans',
+    item: 'breeze:inline-grid breeze:items-center breeze:justify-center breeze:rounded-breeze-sm breeze:py-breeze-1 breeze:font-medium breeze:text-breeze-ink-3 breeze:cursor-pointer breeze:select-none breeze:outline-offset-[-2px] breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-60 breeze:any-pointer-coarse:min-inline-breeze-tap',
+    optionContent: 'breeze:flex breeze:min-inline-0 breeze:flex-col',
+    optionDetails: 'breeze:inline-flex breeze:items-center breeze:gap-[6px]',
   },
   compound: {},
   size: {
-    lg: 'breeze:min-block-breeze-lg breeze:ps-breeze-4 breeze:pe-breeze-4 breeze:py-breeze-2 breeze:text-breeze-sm',
-    md: 'breeze:min-block-breeze-md breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:py-breeze-2 breeze:text-breeze-sm',
-    sm: 'breeze:min-block-breeze-sm breeze:ps-breeze-2 breeze:pe-breeze-2 breeze:py-breeze-1 breeze:text-breeze-xs',
+    // Options carry the height because flex items inside a fieldset do not stretch to its min-block size.
+    lg: 'breeze:min-block-[46px] breeze:ps-breeze-4 breeze:pe-breeze-4 breeze:text-breeze-sm',
+    md: 'breeze:min-block-breeze-8 breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:text-breeze-xs breeze:any-pointer-coarse:min-block-[42px]',
+    sm: 'breeze:min-block-breeze-7 breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:text-breeze-xs breeze:any-pointer-coarse:min-block-[42px]',
   },
   state: {
+    fullWidth: {
+      group: 'breeze:inline-full',
+      item: 'breeze:flex-1',
+    },
     selected:
-      'breeze:data-[selected]:border-breeze-line-strong breeze:data-[selected]:bg-breeze-surface breeze:data-[selected]:text-breeze-ink breeze:forced-colors:data-[selected]:outline-2 breeze:forced-colors:data-[selected]:outline-offset-2',
+      'breeze:data-[selected]:bg-breeze-sunken breeze:data-[selected]:font-semibold breeze:data-[selected]:text-breeze-ink breeze:forced-colors:data-[selected]:outline-2 breeze:forced-colors:data-[selected]:outline-offset-2',
   },
   variant: {},
 } as const;
@@ -39,6 +43,8 @@ interface ToggleGroupCommonProps<T> {
   'aria-describedby'?: HTMLAttributes<HTMLFieldSetElement>['aria-describedby'];
   /** Prevents every option in the group from being activated. */
   disabled?: boolean;
+  /** Stretches the group to its container and shares the width between options. Defaults to `false`. */
+  fullWidth?: boolean;
   /** Supplies the display details for an option. */
   getItem: (item: T) => ItemDescriptor;
   /** Sets the rendered group's HTML `id`. */
@@ -47,7 +53,7 @@ interface ToggleGroupCommonProps<T> {
   items: T[];
   /** Shows placeholders while a selection change is being saved. */
   loading?: boolean;
-  /** Selects the group's dimensions. Defaults to `md`. */
+  /** Selects the group's height. Defaults to `sm`. */
   size?: ControlSize;
 }
 
@@ -88,13 +94,14 @@ export function ToggleGroup<T>({
   'aria-label': ariaLabel,
   defaultSelected,
   disabled = false,
+  fullWidth = false,
   getItem,
   id,
   items,
   loading = false,
   onChange,
   selected,
-  size = 'md',
+  size = 'sm',
 }: Readonly<ToggleGroupProps<T>>) {
   const { getMessageLocale, messages } = useBreezeContext();
 
@@ -119,7 +126,12 @@ export function ToggleGroup<T>({
       <fieldset
         aria-describedby={ariaDescribedBy}
         aria-busy={loading || undefined}
-        className={`${variants.base.group} breeze:border-0 breeze:m-0 breeze:min-inline-size-0`}
+        className={[
+          variants.base.group,
+          fullWidth && variants.state.fullWidth.group,
+        ]
+          .filter(Boolean)
+          .join(' ')}
         disabled={disabled}
         id={id}
       >
@@ -132,7 +144,10 @@ export function ToggleGroup<T>({
               variants.base.item,
               variants.size[size],
               variants.state.selected,
-            ].join(' ')}
+              fullWidth && variants.state.fullWidth.item,
+            ]
+              .filter(Boolean)
+              .join(' ')}
             disabled={disabled || descriptor.disabled === true}
             loading={loading}
             onChange={(pressed) => {
@@ -145,9 +160,9 @@ export function ToggleGroup<T>({
             pressed={selectedKey === descriptor.id}
           >
             <span className={variants.base.optionDetails}>
-              {descriptor.icon && <Icon name={descriptor.icon} size="sm" />}
+              {descriptor.icon && <Icon name={descriptor.icon} size="xs" />}
               <span className={variants.base.optionContent}>
-                <span className={variants.base.label}>{descriptor.label}</span>
+                <span>{descriptor.label}</span>
                 {descriptor.description && (
                   <span className={variants.base.description}>
                     {descriptor.description}

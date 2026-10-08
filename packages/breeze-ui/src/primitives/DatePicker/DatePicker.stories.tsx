@@ -27,6 +27,19 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+function resolvedTokenColour(element: HTMLElement, token: string) {
+  const probe = element.ownerDocument.createElement('span');
+
+  probe.style.backgroundColor = `var(${token})`;
+  element.after(probe);
+
+  const colour = getComputedStyle(probe).backgroundColor;
+
+  probe.remove();
+
+  return colour;
+}
+
 /** A required date field with a localized long-form trigger. */
 export const Default: Story = {
   play: async ({ canvasElement }) => {
@@ -55,6 +68,32 @@ export const Default: Story = {
   },
 };
 
+/** The calendar footer's Today action selects the current date and closes the calendar. */
+export const TodayAction: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const page = within(canvasElement.ownerDocument.body);
+
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Transaction date 3 September 2026' }),
+    );
+
+    const dialog = await page.findByRole('dialog', {
+      name: 'Transaction date',
+    });
+
+    await userEvent.click(
+      within(dialog).getByRole('button', { name: 'Today' }),
+    );
+
+    await expect(
+      canvas.getByRole('button', {
+        name: 'Transaction date 15 September 2026',
+      }),
+    ).toHaveAttribute('aria-expanded', 'false');
+  },
+};
+
 /** A visible error marks the trigger invalid. */
 export const Error: Story = {
   args: {
@@ -67,6 +106,46 @@ export const Disabled: Story = {
   args: {
     disabled: true,
   },
+};
+
+/** An optional date offers a clear control in its calendar. */
+export const Optional: Story = {
+  args: {
+    required: false,
+  },
+};
+
+/** A read-only date stays focusable and submitted but cannot be opened. */
+export const ReadOnly: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const readOnlyTrigger = canvas.getByRole('button', {
+      name: 'Recorded date 3 September 2026',
+    });
+    const editableTrigger = canvas.getByRole('button', {
+      name: 'Transaction date 3 September 2026',
+    });
+    const readOnlyBackground =
+      getComputedStyle(readOnlyTrigger).backgroundColor;
+
+    await expect(readOnlyBackground).not.toBe(
+      getComputedStyle(editableTrigger).backgroundColor,
+    );
+    await expect(readOnlyBackground).toBe(
+      resolvedTokenColour(readOnlyTrigger, '--breeze-color-breeze-sunken'),
+    );
+  },
+  render: () => (
+    <div className="breeze-story-stack">
+      <DatePicker
+        defaultValue="2026-09-03"
+        label="Recorded date"
+        name="recordedDate"
+        readOnly
+      />
+      <DatePicker defaultValue="2026-09-03" label="Transaction date" />
+    </div>
+  ),
 };
 
 /** A shape-preserving loading field keeps its value out of form submission. */
@@ -114,7 +193,7 @@ function ScrollingContainerExample() {
       >
         {portalContainer && (
           <BreezeProvider locale="en-GB" portalContainer={portalContainer}>
-            <div aria-hidden="true" style={{ blockSize: '175px' }} />
+            <div aria-hidden="true" style={{ blockSize: '155px' }} />
             <DatePicker defaultValue="2026-09-03" label="Transaction date" />
             {/* Keep the trigger in the inner scroller while the outer one needs to move. */}
             <div aria-hidden="true" style={{ blockSize: '400px' }} />
@@ -280,7 +359,7 @@ export const ScrollingContainer: Story = {
       try {
         container.scrollTop = 0;
         innerContainer.scrollTop = 0;
-        container.style.transform = 'translateY(-136px)';
+        container.style.transform = 'translateY(-100px)';
 
         const initialTriggerRect = trigger.getBoundingClientRect();
 

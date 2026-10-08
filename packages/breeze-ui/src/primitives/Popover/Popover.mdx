@@ -7,6 +7,8 @@ import * as Stories from './Popover.stories';
 
 Use `Popover` for non-modal contextual content anchored to a trigger. The surrounding surface remains interactive and available to assistive technology; the popover has no dimmed scrim. Render it inside `BreezeProvider`.
 
+Choose `Popover` rather than `Menu` when the content mixes information with controls, such as a list of notifications with their own actions beside an `AppearanceControl`. A `Menu` holds only a list of actions.
+
 ## Basic usage
 
 `trigger` supplies the label for the button Breeze renders. `title` supplies the surface's visible heading and accessible name; `children` supplies its content. Breeze also renders a close button with a label from the provider's messages.
@@ -38,11 +40,32 @@ To control the surface from application state, supply both `open` and `onOpenCha
 
 ## Dismissal
 
-`dismissible` defaults to `true`, allowing Escape and interaction outside the surface to dismiss it. Set it to `false` when those interactions should leave the surface open. The close button remains available.
+`dismissible` defaults to `true`, allowing Escape and interaction outside the surface to dismiss it. Set it to `false` when those interactions should leave the surface open. The close button remains available, so a `panel` cannot set it to `false`.
 
 ## Placement
 
-`placement` accepts `top`, `bottom` (default), `start` or `end`. Start and end follow the provider's text direction. The surface can adjust its position to fit the available space.
+`placement` accepts `top`, `bottom` (default), `start`, `end` or `bottom end`. `bottom end` opens below the trigger with their end edges aligned, for a trigger at the end of a bar. Start and end follow the provider's text direction. The surface can adjust its position to fit the available space.
+
+## Panels
+
+Set `variant` to `panel` for content that names its own purpose, such as an account panel of notifications and settings. A panel shows no title or close button; `title` still names it for assistive technology. Its content runs edge to edge with no padding, and it fits that content from a minimum of 336px, or spans the viewport less 12px on each side on narrow screens. A panel closes with Escape or a press outside it, so it cannot set `dismissible` to `false`.
+
+Set `triggerInitials` to open the popover from a circular button showing a person's initials. `trigger` then supplies only the button's accessible name, so describe what it opens. Set `triggerIndicator` to add an attention dot, such as for unread notifications, and say so in `trigger`, for example "Account and notifications, 2 unread".
+
+```tsx
+<Popover
+  placement="bottom end"
+  title="Account and notifications"
+  trigger="Account and notifications, 2 unread"
+  triggerIndicator
+  triggerInitials="MG"
+  variant="panel"
+>
+  {/* Notifications, AppearanceControl and account links */}
+</Popover>
+```
+
+<Canvas of={Stories.AccountPanel} />
 
 ## Accessibility and motion
 

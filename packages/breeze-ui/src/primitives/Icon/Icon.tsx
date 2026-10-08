@@ -26,6 +26,7 @@ import {
   Users,
   X,
 } from 'lucide-react';
+import { useBreezeContext } from '../../provider/BreezeContext';
 
 const artwork = {
   add: Plus,
@@ -41,13 +42,12 @@ const artwork = {
   download: Download,
   expand: ChevronDown,
   forward: ChevronRight,
+  incoming: ArrowDownLeft,
+  list: ListIcon,
   lock: LockKeyhole,
-  money: ListIcon,
-  moneyIn: ArrowDownLeft,
-  moneyOut: ArrowUpRight,
   more: Ellipsis,
-  next: ChevronRight,
   notifications: Bell,
+  outgoing: ArrowUpRight,
   overview: House,
   people: Users,
   settings: Settings,
@@ -62,9 +62,15 @@ const variants = {
   },
   compound: {},
   size: {
-    lg: 'breeze:block-size-breeze-6 breeze:inline-size-breeze-6',
-    md: 'breeze:block-size-breeze-5 breeze:inline-size-breeze-5',
-    sm: 'breeze:block-size-breeze-4 breeze:inline-size-breeze-4',
+    '2xl': 'breeze:block-[22px] breeze:inline-[22px]',
+    '2xs': 'breeze:block-[14px] breeze:inline-[14px]',
+    '3xl': 'breeze:block-breeze-6 breeze:inline-breeze-6',
+    '4xl': 'breeze:block-[26px] breeze:inline-[26px]',
+    lg: 'breeze:block-breeze-5 breeze:inline-breeze-5',
+    md: 'breeze:block-[17px] breeze:inline-[17px]',
+    sm: 'breeze:block-breeze-4 breeze:inline-breeze-4',
+    xl: 'breeze:block-[21px] breeze:inline-[21px]',
+    xs: 'breeze:block-[15px] breeze:inline-[15px]',
   },
   state: {
     logicalDirection: 'breeze:rtl:rotate-180',
@@ -72,7 +78,7 @@ const variants = {
   variant: {},
 } as const;
 
-const logicalDirectionIcons = new Set<IconName>(['back', 'forward', 'next']);
+const logicalDirectionIcons = new Set<IconName>(['back', 'forward']);
 
 export type IconName = keyof typeof artwork;
 export type IconSize = keyof typeof variants.size;
@@ -82,7 +88,7 @@ export interface IconProps {
   label?: string;
   /** Selects artwork from the curated Breeze icon set. */
   name: IconName;
-  /** Selects `sm`, `md`, or `lg` dimensions. Defaults to `md`. */
+  /** Selects dimensions from `2xs` (14px) to `4xl` (26px). Defaults to `sm` (16px). */
   size?: IconSize;
 }
 
@@ -91,7 +97,9 @@ export interface IconProps {
  *
  * @summary The single dependency boundary for Breeze icon artwork.
  */
-export function Icon({ label, name, size = 'md' }: Readonly<IconProps>) {
+export function Icon({ label, name, size = 'sm' }: Readonly<IconProps>) {
+  useBreezeContext();
+
   const Artwork = artwork[name];
   const accessibleLabel = label?.trim() || undefined;
 

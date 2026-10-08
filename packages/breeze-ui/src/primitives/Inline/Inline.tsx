@@ -1,11 +1,16 @@
 import type { ReactNode } from 'react';
 import { createElement } from 'react';
-import getLayoutAccessibility from '../layout.accessibility';
-import type { LayoutAlign, LayoutElement, LayoutGap } from '../layout.types';
+import getLayoutAccessibility from '../../layout/layout.accessibility';
+import type {
+  LayoutAlign,
+  LayoutElement,
+  LayoutGap,
+} from '../../layout/layout.types';
+import { useBreezeContext } from '../../provider/BreezeContext';
 
 const variants = {
   base: {
-    inline: 'breeze:flex breeze:min-inline-size-0',
+    inline: 'breeze:flex breeze:min-inline-0',
   },
   compound: {},
   size: {
@@ -71,6 +76,8 @@ export function Inline({
   verticalAlign = 'center',
   wrap = false,
 }: Readonly<InlineProps>) {
+  useBreezeContext();
+
   const { accessibleLabel, role } = getLayoutAccessibility(ariaLabel, element);
 
   return createElement(

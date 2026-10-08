@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, expectTypeOf, it, vi } from 'vitest';
 import renderBreeze from '../../../test/render';
@@ -415,6 +415,42 @@ describe('AttachmentRow', () => {
     expect(onAction).toHaveBeenCalledExactlyOnceWith(downloadAction);
   });
 
+  it('divides a destructive action from the others and shows it in the danger colour', async () => {
+    const user = userEvent.setup();
+    const onAction = vi.fn<(action: AttachmentRowAction) => void>();
+    const removeAction = {
+      id: 'remove',
+      label: 'Remove',
+      section: { id: 'remove' },
+      tone: 'danger',
+    } satisfies AttachmentRowAction;
+
+    renderBreeze(
+      <AttachmentRow
+        actions={[{ id: 'replace', label: 'Replace' }, removeAction]}
+        fileType="document"
+        filename="receipt.pdf"
+        onAction={onAction}
+        sizeBytes={84_000}
+        status="Uploaded"
+      />,
+    );
+
+    await user.click(
+      screen.getByRole('button', { name: 'More actions: receipt.pdf' }),
+    );
+
+    const menu = await screen.findByRole('menu');
+    const remove = within(menu).getByRole('menuitem', { name: 'Remove' });
+
+    expect(within(menu).getAllByRole('separator')).toHaveLength(1);
+    expect(remove).toHaveClass('breeze:text-breeze-danger');
+
+    await user.click(remove);
+
+    expect(onAction).toHaveBeenCalledExactlyOnceWith(removeAction);
+  });
+
   it('replaces unavailable attachment details with a labelled loading progress bar', () => {
     renderBreeze(<AttachmentRow loading />);
 
@@ -489,7 +525,10 @@ describe('AttachmentRow', () => {
       screen.getByRole('button', { name: 'More actions: receipt.jpg' }),
     ).toBeInTheDocument();
     expect(screen.getAllByText('Open')).toHaveLength(2);
-    expect(screen.getAllByText('More actions')).toHaveLength(2);
+    expect(screen.queryByText('More actions')).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'More actions: invoice.pdf' }),
+    ).toHaveTextContent('');
   });
 
   it('formats the size using the provider locale', () => {

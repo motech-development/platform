@@ -13,6 +13,12 @@ function AppearanceProbe() {
   return <output>{`${appearance}:${resolvedAppearance}`}</output>;
 }
 
+function TimeZoneProbe() {
+  const { timeZone } = useBreezeContext();
+
+  return <output>{timeZone ?? 'runtime'}</output>;
+}
+
 describe('BreezeProvider', () => {
   beforeEach(() => {
     document.documentElement.removeAttribute('data-theme');
@@ -191,5 +197,37 @@ describe('BreezeProvider', () => {
     expect(
       screen.getByRole('progressbar', { name: 'Loading' }),
     ).toBeInTheDocument();
+  });
+
+  it('provides its time-of-day zone to Breeze components', () => {
+    const { rerender } = render(
+      <BreezeProvider locale="en-GB">
+        <TimeZoneProbe />
+      </BreezeProvider>,
+    );
+
+    expect(screen.getByText('runtime')).toBeInTheDocument();
+
+    rerender(
+      <BreezeProvider locale="en-GB" timeZone="Pacific/Kiritimati">
+        <TimeZoneProbe />
+      </BreezeProvider>,
+    );
+
+    expect(screen.getByText('Pacific/Kiritimati')).toBeInTheDocument();
+  });
+
+  it('rejects a time zone that is not a valid IANA name', () => {
+    expect(() =>
+      render(
+        <BreezeProvider locale="en-GB" timeZone="Mars/Olympus_Mons">
+          <TimeZoneProbe />
+        </BreezeProvider>,
+      ),
+    ).toThrow(
+      new RangeError(
+        'BreezeProvider timeZone must be a valid IANA time-zone name; received "Mars/Olympus_Mons".',
+      ),
+    );
   });
 });
