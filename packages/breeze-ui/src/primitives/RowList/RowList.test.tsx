@@ -227,7 +227,11 @@ describe('RowList', () => {
 
   it('reserves the metadata columns only when a row uses them', () => {
     const withoutMetadata = [
-      { id: 'invoice', label: 'Invoice paid' },
+      {
+        id: 'invoice',
+        label: 'Invoice paid',
+        value: { format: 'text', value: 'Paid' },
+      },
     ] satisfies RowListItemDescriptor[];
     const withMetadata = [
       ...withoutMetadata,
@@ -292,6 +296,57 @@ describe('RowList', () => {
     expect(rowIn('Both')).toHaveClass(
       'breeze:grid-cols-[minmax(0,1fr)_120px_80px_104px]',
     );
+  });
+
+  it('reserves the value column only when a row uses it', () => {
+    const labelOnly = [
+      { id: 'invoice', label: 'Invoice paid' },
+    ] satisfies RowListItemDescriptor[];
+    const withCategories = [
+      ...labelOnly,
+      {
+        id: 'fuel',
+        label: 'Fuel',
+        metadata: { format: 'text', value: 'Vehicle' },
+        metadataAmount: { currency: 'GBP', format: 'currency', value: 9.5 },
+      },
+    ] satisfies RowListItemDescriptor[];
+
+    renderBreeze(
+      <>
+        <RowList
+          aria-label="Labels"
+          getItem={(descriptor) => descriptor}
+          items={labelOnly}
+          onAction={() => undefined}
+        />
+        <RowList
+          aria-label="Categories"
+          getItem={(descriptor) => descriptor}
+          items={withCategories}
+          onAction={() => undefined}
+        />
+      </>,
+    );
+
+    const rowIn = (grid: string, name: string) =>
+      within(screen.getByRole('grid', { name: grid })).getByRole('row', {
+        name,
+      });
+
+    expect(rowIn('Labels', 'Invoice paid')).toHaveClass(
+      'breeze:grid-cols-[minmax(0,1fr)]',
+    );
+    expect(rowIn('Labels', 'Invoice paid')).not.toHaveClass(
+      'breeze:max-breeze-md:grid-cols-[minmax(0,1fr)_104px]',
+    );
+    expect(rowIn('Categories', 'Invoice paid')).toHaveClass(
+      'breeze:grid-cols-[minmax(0,1fr)_120px_80px]',
+      'breeze:max-breeze-md:grid-cols-[minmax(0,1fr)]',
+    );
+    expect(
+      within(rowIn('Categories', 'Fuel')).getByText('£9.50').parentElement,
+    ).toHaveClass('breeze:-col-end-1');
   });
 
   it('shows muted metadata text and a metadata amount', () => {

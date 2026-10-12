@@ -30,7 +30,7 @@ const variants = {
       'breeze:box-border breeze:inline-full breeze:min-inline-0 breeze:flex breeze:items-center breeze:gap-[10px] breeze:border-breeze-line breeze:border-be breeze:bg-breeze-raised breeze:px-breeze-4 breeze:py-breeze-2 breeze:text-breeze-xs breeze:font-semibold breeze:text-breeze-ink-2',
     headerLabel: 'breeze:min-inline-0 breeze:break-words',
     headerSpacer: 'breeze:grow',
-    item: 'breeze:box-border breeze:inline-full breeze:min-inline-0 breeze:grid breeze:items-center breeze:gap-breeze-3 breeze:border-breeze-sunken breeze:border-be breeze:px-breeze-4 breeze:py-breeze-2 breeze:text-start breeze:outline-offset-[-2px] breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-50 breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[hovered]:bg-breeze-raised breeze:data-[pressed]:bg-breeze-raised breeze:any-pointer-coarse:min-block-breeze-tap breeze:max-breeze-md:grid-cols-[minmax(0,1fr)_104px]',
+    item: 'breeze:box-border breeze:inline-full breeze:min-inline-0 breeze:grid breeze:items-center breeze:gap-breeze-3 breeze:border-breeze-sunken breeze:border-be breeze:px-breeze-4 breeze:py-breeze-2 breeze:text-start breeze:outline-offset-[-2px] breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-50 breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[hovered]:bg-breeze-raised breeze:data-[pressed]:bg-breeze-raised breeze:any-pointer-coarse:min-block-breeze-tap',
     label: 'breeze:min-inline-0 breeze:truncate',
     leading:
       'breeze:col-start-1 breeze:flex breeze:min-inline-0 breeze:items-center breeze:gap-breeze-3',
@@ -48,7 +48,7 @@ const variants = {
     metadata:
       'breeze:col-start-2 breeze:min-inline-0 breeze:max-breeze-md:hidden breeze:[&>span]:font-normal',
     metadataAmount:
-      'breeze:-col-end-2 breeze:min-inline-0 breeze:max-breeze-md:hidden breeze:[&>span]:text-breeze-xs breeze:[&>span]:font-normal',
+      'breeze:min-inline-0 breeze:max-breeze-md:hidden breeze:[&>span]:text-breeze-xs breeze:[&>span]:font-normal',
     section: 'breeze:flex breeze:min-inline-0 breeze:flex-col',
     skeletonRows: 'breeze:flex breeze:min-inline-0 breeze:flex-col',
     summaryText: 'breeze:min-inline-0 breeze:truncate breeze:text-breeze-ink-3',
@@ -63,15 +63,34 @@ const variants = {
   size: {},
   state: {},
   variant: {
+    // Phones hide the metadata columns, so they keep only the leading and any value column.
     columns: {
-      metadata: 'breeze:grid-cols-[minmax(0,1fr)_120px_104px]',
-      metadataAmount: 'breeze:grid-cols-[minmax(0,1fr)_80px_104px]',
-      metadataAndAmount: 'breeze:grid-cols-[minmax(0,1fr)_120px_80px_104px]',
-      valueOnly: 'breeze:grid-cols-[minmax(0,1fr)_104px]',
+      unvalued: {
+        leading: 'breeze:grid-cols-[minmax(0,1fr)]',
+        metadata:
+          'breeze:grid-cols-[minmax(0,1fr)_120px] breeze:max-breeze-md:grid-cols-[minmax(0,1fr)]',
+        metadataAmount:
+          'breeze:grid-cols-[minmax(0,1fr)_80px] breeze:max-breeze-md:grid-cols-[minmax(0,1fr)]',
+        metadataAndAmount:
+          'breeze:grid-cols-[minmax(0,1fr)_120px_80px] breeze:max-breeze-md:grid-cols-[minmax(0,1fr)]',
+      },
+      valued: {
+        leading: 'breeze:grid-cols-[minmax(0,1fr)_104px]',
+        metadata:
+          'breeze:grid-cols-[minmax(0,1fr)_120px_104px] breeze:max-breeze-md:grid-cols-[minmax(0,1fr)_104px]',
+        metadataAmount:
+          'breeze:grid-cols-[minmax(0,1fr)_80px_104px] breeze:max-breeze-md:grid-cols-[minmax(0,1fr)_104px]',
+        metadataAndAmount:
+          'breeze:grid-cols-[minmax(0,1fr)_120px_80px_104px] breeze:max-breeze-md:grid-cols-[minmax(0,1fr)_104px]',
+      },
     },
     direction: {
       in: 'positive',
       out: 'strong',
+    },
+    metadataAmountColumn: {
+      unvalued: 'breeze:-col-end-1',
+      valued: 'breeze:-col-end-2',
     },
   },
 } as const;
@@ -353,9 +372,12 @@ function SectionSummary({
   );
 }
 
+type ColumnLayout = keyof typeof variants.variant.columns;
+
 function RowContent({
   descriptor,
-}: Readonly<{ descriptor: RowListItemDescriptor }>) {
+  layout,
+}: Readonly<{ descriptor: RowListItemDescriptor; layout: ColumnLayout }>) {
   return (
     <>
       <div className={variants.base.leading}>
@@ -398,7 +420,12 @@ function RowContent({
         </div>
       )}
       {descriptor.metadataAmount && (
-        <div className={variants.base.metadataAmount}>
+        <div
+          className={[
+            variants.base.metadataAmount,
+            variants.variant.metadataAmountColumn[layout],
+          ].join(' ')}
+        >
           <MetadataAmountContent descriptor={descriptor} />
         </div>
       )}
@@ -411,37 +438,42 @@ function RowContent({
   );
 }
 
+interface Columns {
+  layout: ColumnLayout;
+  regions: keyof (typeof variants.variant.columns)[ColumnLayout];
+}
+
 // Only columns that some row uses are reserved.
-function getColumns(
-  descriptors: RowListItemDescriptor[],
-): keyof typeof variants.variant.columns {
+function getColumns(descriptors: RowListItemDescriptor[]): Columns {
   const hasMetadata = descriptors.some(({ metadata }) => metadata);
   const hasAmount = descriptors.some(({ metadataAmount }) => metadataAmount);
+  const layout = descriptors.some(({ value }) => value) ? 'valued' : 'unvalued';
 
-  if (hasMetadata && hasAmount) return 'metadataAndAmount';
-  if (hasMetadata) return 'metadata';
-  if (hasAmount) return 'metadataAmount';
+  if (hasMetadata && hasAmount) return { layout, regions: 'metadataAndAmount' };
+  if (hasMetadata) return { layout, regions: 'metadata' };
+  if (hasAmount) return { layout, regions: 'metadataAmount' };
 
-  return 'valueOnly';
+  return { layout, regions: 'leading' };
 }
 
 function renderRow<T>(
   { descriptor, item }: Row<T>,
   onAction: RowListProps<T>['onAction'],
-  columns: keyof typeof variants.variant.columns,
+  { layout, regions }: Columns,
 ) {
   return (
     <AriaGridListItem
-      className={[variants.base.item, variants.variant.columns[columns]].join(
-        ' ',
-      )}
+      className={[
+        variants.base.item,
+        variants.variant.columns[layout][regions],
+      ].join(' ')}
       id={`row:${descriptor.id}`}
       isDisabled={descriptor.disabled}
       key={`row:${descriptor.id}`}
       onAction={() => onAction(item)}
       textValue={descriptor.label}
     >
-      <RowContent descriptor={descriptor} />
+      <RowContent descriptor={descriptor} layout={layout} />
     </AriaGridListItem>
   );
 }
