@@ -28,11 +28,15 @@ const variants = {
     main: 'breeze:mx-auto breeze:flex breeze:inline-full breeze:min-inline-0 breeze:max-inline-breeze-page breeze:flex-col breeze:gap-breeze-4 breeze:ps-breeze-4 breeze:pe-breeze-4 breeze:pbs-breeze-4 breeze:pbe-[calc(168px_+_env(safe-area-inset-bottom))] breeze:breeze-md:ps-breeze-7 breeze:breeze-md:pe-breeze-7 breeze:breeze-md:pbs-breeze-5 breeze:breeze-md:pbe-[84px]',
     navLabel: 'breeze:min-inline-0 breeze:truncate',
     navMark:
-      'breeze:absolute breeze:[inset-inline:0] breeze:[inset-block-end:0] breeze:[block-size:2px] breeze:bg-breeze-brand',
+      'breeze:absolute breeze:[inset-inline:var(--breeze-spacing-breeze-1)] breeze:[inset-block-end:0] breeze:[block-size:2px] breeze:bg-breeze-brand',
     topNav:
-      'breeze:hidden breeze:block-breeze-tap breeze:items-center breeze:border-be breeze:border-solid breeze:border-breeze-line breeze:bg-breeze-surface breeze:ps-breeze-5 breeze:pe-breeze-5 breeze:breeze-md:flex',
+      'breeze:hidden breeze:min-block-breeze-tap breeze:border-be breeze:border-solid breeze:border-breeze-line breeze:bg-breeze-surface breeze:ps-breeze-5 breeze:pe-breeze-5 breeze:breeze-md:flex',
+    // Padding leaves room for the focus ring the scroll region would otherwise clip.
     topNavLink:
-      'breeze:relative breeze:flex breeze:block-breeze-tap breeze:min-inline-0 breeze:shrink-0 breeze:items-center breeze:gap-breeze-2 breeze:mx-breeze-2 breeze:rounded-breeze-sm breeze:font-breeze-sans breeze:text-breeze-sm breeze:font-medium breeze:text-breeze-ink-3 breeze:no-underline breeze:transition-colors breeze:hover:text-breeze-ink breeze:focus-visible:outline-2 breeze:focus-visible:outline-solid breeze:focus-visible:outline-breeze-brand breeze:aria-[current=page]:font-semibold breeze:aria-[current=page]:text-breeze-ink',
+      'breeze:relative breeze:flex breeze:block-breeze-tap breeze:min-inline-0 breeze:shrink-0 breeze:items-center breeze:gap-breeze-2 breeze:mx-breeze-1 breeze:px-breeze-1 breeze:rounded-breeze-sm breeze:font-breeze-sans breeze:text-breeze-sm breeze:font-medium breeze:text-breeze-ink-3 breeze:no-underline breeze:transition-colors breeze:hover:text-breeze-ink breeze:focus-visible:outline-2 breeze:focus-visible:outline-offset-[-2px] breeze:focus-visible:outline-solid breeze:focus-visible:outline-breeze-brand breeze:aria-[current=page]:font-semibold breeze:aria-[current=page]:text-breeze-ink',
+    // Scrolls links that do not fit; overlapping the nav's border keeps the current-item mark on it.
+    topNavLinks:
+      'breeze:flex breeze:min-inline-0 breeze:flex-1 breeze:items-center breeze:overflow-x-auto breeze:-mbe-breeze-px',
     topbar:
       'breeze:sticky breeze:[inset-block-start:0] breeze:z-30 breeze:flex breeze:block-[56px] breeze:items-center breeze:gap-[10px] breeze:border-be breeze:border-solid breeze:border-breeze-line breeze:bg-breeze-surface breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:py-breeze-2 breeze:breeze-md:gap-breeze-4 breeze:breeze-md:ps-breeze-5 breeze:breeze-md:pe-breeze-5',
     topbarSlots:
@@ -175,15 +179,17 @@ export function ApplicationShell<T>({
         lang={getMessageLocale('primaryNavigation')}
         ref={topnavRef}
       >
-        {navigationItems.map((item) => (
-          <NavigationLink
-            current={item.id === currentItem}
-            item={item}
-            key={item.id}
-            placement="top"
-            router={router}
-          />
-        ))}
+        <div className={variants.base.topNavLinks}>
+          {navigationItems.map((item) => (
+            <NavigationLink
+              current={item.id === currentItem}
+              item={item}
+              key={item.id}
+              placement="top"
+              router={router}
+            />
+          ))}
+        </div>
       </nav>
 
       <main className={variants.base.main} id={mainId} tabIndex={-1}>
