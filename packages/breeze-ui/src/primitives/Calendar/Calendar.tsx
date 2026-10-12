@@ -4,7 +4,6 @@ import {
   createElement,
   type JSX as ReactJSX,
   type KeyboardEvent as ReactKeyboardEvent,
-  type ReactElement,
   useEffect,
   useRef,
   useState,
@@ -162,7 +161,7 @@ export function CalendarSurface({
   label,
   onChange,
   value,
-}: Readonly<CalendarSurfaceProps>): ReactElement {
+}: Readonly<CalendarSurfaceProps>) {
   const selectedValueKey = value?.toString();
   const previousSelectedValueKey = useRef(selectedValueKey);
   const [focusedValue, setFocusedValue] = useState(value ?? undefined);
