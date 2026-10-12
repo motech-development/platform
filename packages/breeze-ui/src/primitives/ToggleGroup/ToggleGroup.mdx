@@ -50,8 +50,9 @@ equally between options, for example when the choice sits in a form.
 
 `size` accepts `sm` (default), `md` or `lg`, giving the group a minimum height
 of 34, 38 or 52px to align with other controls of the same size. On coarse
-pointers the `sm` and `md` groups grow to 48px. Give each group an `aria-label`;
-each option exposes whether it is pressed and supports keyboard interaction.
+pointers every option is at least 44px tall to meet the touch-target minimum, so
+the `sm` and `md` groups grow to 50px. Give each group an `aria-label`; each
+option exposes whether it is pressed and supports keyboard interaction.
 
 <Canvas of={Stories.Sizes} />
 
