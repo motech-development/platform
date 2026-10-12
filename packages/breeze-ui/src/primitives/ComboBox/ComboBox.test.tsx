@@ -147,6 +147,54 @@ describe('ComboBox', () => {
     );
   });
 
+  it('explains no matches when a restricted field has no suggestions', async () => {
+    const user = userEvent.setup();
+
+    renderBreeze(<ComboBox getItem={getItem} items={[]} label="Supplier" />);
+
+    await user.type(screen.getByRole('combobox', { name: 'Supplier' }), 'ac');
+
+    expect(screen.getByRole('listbox')).toBeVisible();
+    expect(screen.getByText('No matches for “ac”')).toBeVisible();
+  });
+
+  it('keeps a restricted field open when its suggestions are removed', async () => {
+    const user = userEvent.setup();
+    const { rerender } = renderBreeze(
+      <ComboBox getItem={getItem} items={suppliers} label="Supplier" />,
+    );
+
+    await user.type(screen.getByRole('combobox', { name: 'Supplier' }), 'ac');
+    expect(screen.getByRole('option', { name: /Acme Supplies/ })).toBeVisible();
+
+    rerender(
+      <BreezeProvider locale="en-GB">
+        <ComboBox getItem={getItem} items={[]} label="Supplier" />
+      </BreezeProvider>,
+    );
+
+    expect(screen.getByRole('listbox')).toBeVisible();
+    expect(screen.getByText('No matches for “ac”')).toBeVisible();
+  });
+
+  it('keeps a free-text field closed without suggestions', async () => {
+    const user = userEvent.setup();
+
+    renderBreeze(
+      <ComboBox
+        allowsCustomValue
+        getItem={getItem}
+        items={[]}
+        label="Supplier"
+      />,
+    );
+
+    await user.type(screen.getByRole('combobox', { name: 'Supplier' }), 'ac');
+    await user.click(screen.getByRole('button', { name: /Show suggestions/ }));
+
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+  });
+
   it('closes free-text suggestions when none match', async () => {
     const user = userEvent.setup();
 

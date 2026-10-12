@@ -232,7 +232,9 @@ function ComboBoxPopover<T>({
   triggerRef: RefObject<Element | null>;
 }>) {
   const state = useContext(AriaComboBoxStateContext);
-  const isBlocked = isDisabled || isReadOnly || !hasSuggestions;
+  // Restricted fields open without suggestions to explain that nothing matches.
+  const isBlocked =
+    isDisabled || isReadOnly || (allowsCustomValue && !hasSuggestions);
   const isOpen = !isBlocked && (state?.isOpen ?? false);
 
   useEffect(() => {
