@@ -119,6 +119,26 @@ describe('ToggleGroup', () => {
       });
   });
 
+  it.each(['sm', 'md'] as const)(
+    'raises %s options to the coarse-pointer tap floor',
+    (size) => {
+      renderBreeze(
+        <ToggleGroup
+          aria-label="Transaction status"
+          getItem={getItem}
+          items={options}
+          size={size}
+        />,
+      );
+
+      screen.getAllByRole('button').forEach((option) => {
+        expect(option).toHaveClass(
+          'breeze:any-pointer-coarse:min-block-breeze-tap',
+        );
+      });
+    },
+  );
+
   it('leaves controlled selection with its owner', async () => {
     const user = userEvent.setup();
     const onChange = vi.fn<(selected: Option | null) => void>();

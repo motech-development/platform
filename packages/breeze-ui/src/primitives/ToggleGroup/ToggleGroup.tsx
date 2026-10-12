@@ -22,8 +22,8 @@ const variants = {
   size: {
     // Options carry the height because flex items inside a fieldset do not stretch to its min-block size.
     lg: 'breeze:min-block-[46px] breeze:ps-breeze-4 breeze:pe-breeze-4 breeze:text-breeze-sm',
-    md: 'breeze:min-block-breeze-8 breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:text-breeze-xs breeze:any-pointer-coarse:min-block-[42px]',
-    sm: 'breeze:min-block-breeze-7 breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:text-breeze-xs breeze:any-pointer-coarse:min-block-[42px]',
+    md: 'breeze:min-block-breeze-8 breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:text-breeze-xs breeze:any-pointer-coarse:min-block-breeze-tap',
+    sm: 'breeze:min-block-breeze-7 breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:text-breeze-xs breeze:any-pointer-coarse:min-block-breeze-tap',
   },
   state: {
     fullWidth: {
