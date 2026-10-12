@@ -326,7 +326,7 @@ describe('Menu', () => {
     ).toBeInTheDocument();
   });
 
-  it('divides unlabelled sections without naming them', () => {
+  it('divides unlabelled sections without unnamed groups', () => {
     renderBreeze(
       <Menu
         defaultOpen
@@ -340,14 +340,66 @@ describe('Menu', () => {
     );
 
     const menu = screen.getByRole('menu', { name: 'Account actions' });
-    const groups = within(menu).getAllByRole('group');
 
-    expect(groups).toHaveLength(2);
-    groups.forEach((group) => expect(group).not.toHaveAccessibleName());
-    expect(within(groups[1]).getByRole('menuitem')).toHaveAccessibleName(
-      'Sign out',
+    expect(within(menu).queryAllByRole('group')).toHaveLength(0);
+    expect(
+      Array.from(menu.children, (child) => [
+        child.getAttribute('role'),
+        child.getAttribute('aria-label'),
+      ]),
+    ).toEqual([
+      ['menuitem', 'Company details'],
+      ['menuitem', 'Unavailable action'],
+      ['separator', null],
+      ['menuitem', 'Sign out'],
+    ]);
+  });
+
+  it('keeps item ids apart from section and separator keys', async () => {
+    const user = userEvent.setup();
+    const consoleError = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined);
+    const onAction = vi.fn<(item: MenuItemDescriptor) => void>();
+    const items: MenuItemDescriptor[] = [
+      { id: 'section:companies', label: 'Company settings' },
+      { id: 'separator:section:companies', label: 'Separator settings' },
+      {
+        id: 'harbour',
+        label: 'Harbour & Pine Ltd',
+        section: { id: 'companies', label: 'Companies' },
+      },
+    ];
+
+    renderBreeze(
+      <Menu
+        defaultOpen
+        getItem={(item) => item}
+        items={items}
+        onAction={onAction}
+        trigger="Settings"
+      />,
     );
-    expect(within(menu).getAllByRole('separator')).toHaveLength(1);
+
+    const errors = [...consoleError.mock.calls];
+    consoleError.mockRestore();
+    const menu = screen.getByRole('menu', { name: 'Settings' });
+
+    expect(errors).toEqual([]);
+    expect(
+      Array.from(menu.querySelectorAll('[role="menuitem"]'), (item) =>
+        item.getAttribute('aria-label'),
+      ),
+    ).toEqual(['Company settings', 'Separator settings', 'Harbour & Pine Ltd']);
+    expect(
+      within(menu).getByRole('group', { name: 'Companies' }),
+    ).toBeInTheDocument();
+
+    await user.click(
+      within(menu).getByRole('menuitem', { name: 'Company settings' }),
+    );
+
+    expect(onAction).toHaveBeenCalledExactlyOnceWith(items[0]);
   });
 
   it('shows initials as decorative content and reports the application item', async () => {

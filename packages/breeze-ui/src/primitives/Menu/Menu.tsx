@@ -230,20 +230,52 @@ function getMenuItemAccessibleName(descriptor: MenuItemDescriptor) {
   return `${descriptor.label}, ${badgeLabel}`;
 }
 
+// Prefixed so item ids cannot collide with section and separator keys.
+function getItemKey(descriptor: MenuItemDescriptor) {
+  return `item:${descriptor.id}`;
+}
+
 function renderMenuItem<T>({ descriptionId, descriptor }: MenuEntry<T>) {
   return (
     <AriaMenuItem
       aria-describedby={descriptor.description ? descriptionId : undefined}
       aria-label={getMenuItemAccessibleName(descriptor)}
       className={variants.base.item}
-      id={descriptor.id}
+      id={getItemKey(descriptor)}
       isDisabled={descriptor.disabled}
-      key={descriptor.id}
+      key={getItemKey(descriptor)}
       textValue={descriptor.label}
     >
       <MenuItemContent descriptionId={descriptionId} descriptor={descriptor} />
     </AriaMenuItem>
   );
+}
+
+function renderMenuBlock<T>(block: MenuBlock<T>) {
+  if (block.kind === 'item') {
+    return {
+      content: [renderMenuItem(block.entry)],
+      key: getItemKey(block.entry.descriptor),
+    };
+  }
+
+  const { entries, section } = block.group;
+  const key = `section:${section.id}`;
+
+  // React Aria requires a named section, so unlabelled groups rely on their dividers.
+  if (!section.label) return { content: entries.map(renderMenuItem), key };
+
+  return {
+    content: [
+      <AriaMenuSection key={key}>
+        <AriaHeader className={variants.base.header}>
+          {section.label}
+        </AriaHeader>
+        {entries.map(renderMenuItem)}
+      </AriaMenuSection>,
+    ],
+    key,
+  };
 }
 
 interface MenuLoadingStatusProps {
@@ -412,7 +444,7 @@ export function Menu<T>({
               id={menuId}
               onAction={(key) => {
                 const entry = entries.find(
-                  ({ descriptor }) => descriptor.id === key,
+                  ({ descriptor }) => getItemKey(descriptor) === key,
                 );
                 if (entry) {
                   restoreFocusRef.current = true;
@@ -422,33 +454,21 @@ export function Menu<T>({
             >
               {blocks.flatMap((block, index) => {
                 const previous = blocks[index - 1];
-                const content =
-                  block.kind === 'item' ? (
-                    renderMenuItem(block.entry)
-                  ) : (
-                    <AriaMenuSection key={`section:${block.group.section.id}`}>
-                      {block.group.section.label ? (
-                        <AriaHeader className={variants.base.header}>
-                          {block.group.section.label}
-                        </AriaHeader>
-                      ) : null}
-                      {block.group.entries.map(renderMenuItem)}
-                    </AriaMenuSection>
-                  );
+                const { content, key } = renderMenuBlock(block);
 
                 if (
                   !previous ||
                   (block.kind === 'item' && previous.kind === 'item')
                 ) {
-                  return [content];
+                  return content;
                 }
 
                 return [
                   <AriaSeparator
                     className={variants.base.separator}
-                    key={`separator:${content.key}`}
+                    key={`separator:${key}`}
                   />,
-                  content,
+                  ...content,
                 ];
               })}
             </AriaMenu>
