@@ -18,6 +18,18 @@ const sections = [
   { href: '/settings', icon: 'settings', id: 'settings', label: 'Settings' },
 ] satisfies ApplicationShellNavigationItem[];
 
+const manySections = [
+  ...sections,
+  { href: '/people', icon: 'people', id: 'people', label: 'People' },
+  { href: '/calendar', icon: 'calendar', id: 'calendar', label: 'Calendar' },
+  { href: '/documents', icon: 'document', id: 'documents', label: 'Documents' },
+  { href: '/uploads', icon: 'upload', id: 'uploads', label: 'Uploads' },
+  { href: '/downloads', icon: 'download', id: 'downloads', label: 'Downloads' },
+  { href: '/incoming', icon: 'incoming', id: 'incoming', label: 'Incoming' },
+  { href: '/outgoing', icon: 'outgoing', id: 'outgoing', label: 'Outgoing' },
+  { href: '/security', icon: 'lock', id: 'security', label: 'Security' },
+] satisfies ApplicationShellNavigationItem[];
+
 const meta = {
   component: ApplicationShell as ComponentType<
     ApplicationShellProps<ApplicationShellNavigationItem>
@@ -29,11 +41,13 @@ const meta = {
 export default meta;
 type Story = Omit<StoryObj<typeof meta>, 'args'>;
 
-function ShellExample() {
+function ShellExample({
+  items = sections,
+}: Readonly<{ items?: ApplicationShellNavigationItem[] }>) {
   const [currentHref, setCurrentHref] = useState('/overview');
   const [transitionTypes, setTransitionTypes] = useState('none');
   const [createdCount, setCreatedCount] = useState(0);
-  const currentSection = sections.find(({ href }) => href === currentHref);
+  const currentSection = items.find(({ href }) => href === currentHref);
   const router = useMemo(
     () => ({
       navigate: (href: string, options: RouterNavigationOptions) => {
@@ -83,7 +97,7 @@ function ShellExample() {
           id: item.id,
           label: item.label,
         })}
-        items={sections}
+        items={items}
         notifications={<button type="button">Notifications</button>}
       >
         <PageHeader
@@ -330,4 +344,70 @@ export const Default: Story = {
     }
   },
   render: () => <ShellExample />,
+};
+
+/** Section links that do not fit scroll within the top navigation. */
+export const OverflowingNavigation: Story = {
+  play: async ({ canvasElement }) => {
+    if (!('__vitest_browser__' in globalThis)) return;
+
+    const browserContext = await import('vitest/browser');
+    const document = canvasElement.ownerDocument;
+    const view = document.defaultView;
+
+    if (!view) throw new Error('Missing ApplicationShell story window.');
+
+    const originalViewport = {
+      height: view.innerHeight,
+      width: view.innerWidth,
+    };
+
+    try {
+      await browserContext.page.viewport(901, 900);
+
+      const navigation = getVisibleNavigation(canvasElement);
+      const lastLink = within(navigation).getByRole('link', {
+        name: 'Security',
+      });
+      const links = lastLink.parentElement;
+
+      if (!links) throw new Error('Missing the top navigation links.');
+
+      await expect(navigation.getBoundingClientRect().height).toBe(44);
+      await expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(
+        901,
+      );
+      await expect(links.scrollWidth).toBeGreaterThan(links.clientWidth);
+
+      within(navigation).getByRole('link', { name: 'Outgoing' }).focus();
+      await userEvent.keyboard('{Tab}');
+      await expect(lastLink).toHaveFocus();
+
+      const linksRect = links.getBoundingClientRect();
+
+      await expect(lastLink.getBoundingClientRect().right).toBeLessThanOrEqual(
+        linksRect.right,
+      );
+
+      await userEvent.click(lastLink);
+      await expect(lastLink).toHaveAttribute('aria-current', 'page');
+      await expectCurrentMarker(navigation);
+
+      const markerRect = lastLink
+        .querySelector('[data-breeze-transition-name="breeze-navmark"]')
+        ?.getBoundingClientRect();
+
+      // The mark stays unclipped on the navigation's bottom border.
+      await expect(markerRect?.bottom).toBe(
+        navigation.getBoundingClientRect().bottom,
+      );
+      await expect(markerRect?.bottom).toBeLessThanOrEqual(linksRect.bottom);
+    } finally {
+      await browserContext.page.viewport(
+        originalViewport.width,
+        originalViewport.height,
+      );
+    }
+  },
+  render: () => <ShellExample items={manySections} />,
 };

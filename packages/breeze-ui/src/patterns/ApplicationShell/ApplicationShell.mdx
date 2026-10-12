@@ -51,7 +51,13 @@ The anchors keep native link behavior. When a same-document router is configured
 
 ## Responsive behavior and motion
 
-From Breeze's private `md` breakpoint (901px), navigation is horizontal beneath the top bar. Below that breakpoint, the navigation is a 72px bar fixed to the bottom edge, and the required action is raised over the bar's top edge in a fixed centre slot between the two halves of the items. The centre slot keeps its position as the current page changes. The main content includes clearance for the bar, the raised action and the device safe area.
+From Breeze's private `md` breakpoint (901px), navigation is horizontal beneath the top bar and scrolls horizontally when its links do not fit; a focused link scrolls into view. Below that breakpoint, the navigation is a 72px bar fixed to the bottom edge, and the required action is raised over the bar's top edge in a fixed centre slot between the two halves of the items. The centre slot keeps its position as the current page changes. The main content includes clearance for the bar, the raised action and the device safe area.
+
+<Canvas
+  layout="fullscreen"
+  of={Stories.OverflowingNavigation}
+  story={{ height: '844px', inline: false }}
+/>
 
 The shell renders one skip link before its chrome and gives its main landmark a generated unique ID and `tabIndex={-1}`. Its top bar, top navigation, bottom navigation and current marker participate in view transitions through Breeze's built-in singleton names. Mount one visible shell at a time so those names stay unique in the document.
 
