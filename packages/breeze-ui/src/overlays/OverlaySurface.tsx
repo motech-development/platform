@@ -68,6 +68,107 @@ function hasOverlayMarker(element: Element) {
   );
 }
 
+function surfaceClassName(kind: OverlayKind, viewerSurface: boolean) {
+  return [
+    variants.base.content,
+    viewerSurface && variants.base.viewerContent,
+    kind === 'drawer' && variants.base.drawerContent,
+  ]
+    .filter(Boolean)
+    .join(' ');
+}
+
+function OverlayHeader({
+  onClose,
+  title,
+}: Readonly<{ onClose: () => void; title: string }>) {
+  const { getMessageLocale, messages } = useBreezeContext();
+
+  return (
+    <div className={variants.base.header}>
+      <h2 className={variants.base.title}>{title}</h2>
+      <AriaButton
+        aria-label={messages.close}
+        className={`${variants.base.close} ${buttonVariants.variant.secondary}`}
+        onPress={onClose}
+        render={(buttonProps) =>
+          createElement('button', {
+            ...buttonProps,
+            lang: getMessageLocale('close'),
+            type: 'button',
+          })
+        }
+      >
+        <Icon name="close" size="sm" />
+      </AriaButton>
+    </div>
+  );
+}
+
+type DrawerFooterProps = {
+  footerActions?: ReactNode;
+  footerStart?: ReactNode;
+  footerSummary?: string;
+};
+
+function DrawerFooter({
+  footerActions,
+  footerStart,
+  footerSummary,
+}: Readonly<DrawerFooterProps>) {
+  if (!footerStart && !footerSummary && !footerActions) return null;
+
+  // A neutral strip: a native footer would expose a duplicate contentinfo landmark.
+  return (
+    <div className={variants.base.drawerFooter}>
+      {footerStart ? (
+        <div className={variants.base.drawerFooterGroup}>{footerStart}</div>
+      ) : null}
+      <span className={variants.base.drawerSummary}>{footerSummary}</span>
+      {footerActions ? (
+        <div className={variants.base.drawerFooterGroup}>{footerActions}</div>
+      ) : null}
+    </div>
+  );
+}
+
+function OverlayBody({
+  children,
+  drawer,
+  footerActions,
+  footerStart,
+  footerSummary,
+  onClose,
+  showHeader,
+  title,
+}: Readonly<
+  DrawerFooterProps & {
+    children: ReactNode;
+    drawer: boolean;
+    onClose: () => void;
+    showHeader: boolean;
+    title: string;
+  }
+>) {
+  return (
+    <>
+      {showHeader ? <OverlayHeader onClose={onClose} title={title} /> : null}
+      {drawer ? (
+        <>
+          <div className={variants.base.drawerBody}>{children}</div>
+          <DrawerFooter
+            footerActions={footerActions}
+            footerStart={footerStart}
+            footerSummary={footerSummary}
+          />
+        </>
+      ) : (
+        children
+      )}
+    </>
+  );
+}
+
 function OverlaySurface({
   children,
   defaultOpen = false,
@@ -85,22 +186,19 @@ function OverlaySurface({
   title,
   trigger,
 }: Readonly<
-  Omit<OverlayProps, 'open' | 'defaultOpen' | 'onOpenChange' | 'trigger'> & {
-    open?: boolean;
-    defaultOpen?: boolean;
-    closingTransition?: boolean;
-    footerActions?: ReactNode;
-    footerStart?: ReactNode;
-    footerSummary?: string;
-    showHeader?: boolean;
-    viewerSurface?: boolean;
-    onOpenChange?: (open: boolean) => void;
-    kind: OverlayKind;
-    placement?: 'top' | 'bottom' | 'start' | 'end';
-    trigger?: string;
-  }
+  Omit<OverlayProps, 'open' | 'defaultOpen' | 'onOpenChange' | 'trigger'> &
+    DrawerFooterProps & {
+      open?: boolean;
+      defaultOpen?: boolean;
+      closingTransition?: boolean;
+      showHeader?: boolean;
+      viewerSurface?: boolean;
+      onOpenChange?: (open: boolean) => void;
+      kind: OverlayKind;
+      placement?: 'top' | 'bottom' | 'start' | 'end';
+      trigger?: string;
+    }
 >) {
-  const { getMessageLocale, messages } = useBreezeContext();
   const nonModal = kind === 'popover' || kind === 'fullscreen';
   const host = useOverlayPortal();
   const parent = useContext(ParentOverlayContext);
@@ -370,54 +468,19 @@ function OverlaySurface({
     () => ({ id: layer.id, open, restoreFocus }),
     [layer.id, open, restoreFocus],
   );
-  const drawer = kind === 'drawer';
-  const contentClassName = [
-    variants.base.content,
-    viewerSurface && variants.base.viewerContent,
-    drawer && variants.base.drawerContent,
-  ]
-    .filter(Boolean)
-    .join(' ');
+  const contentClassName = surfaceClassName(kind, viewerSurface);
   const body = (
-    <>
-      {showHeader ? (
-        <div className={variants.base.header}>
-          <h2 className={variants.base.title}>{title}</h2>
-          <AriaButton
-            aria-label={messages.close}
-            className={`${variants.base.close} ${buttonVariants.variant.secondary}`}
-            onPress={() => changeOpen(false)}
-            render={(buttonProps) =>
-              createElement('button', {
-                ...buttonProps,
-                lang: getMessageLocale('close'),
-                type: 'button',
-              })
-            }
-          >
-            <Icon name="close" size="sm" />
-          </AriaButton>
-        </div>
-      ) : null}
-      {drawer ? (
-        <div className={variants.base.drawerBody}>{children}</div>
-      ) : (
-        children
-      )}
-      {drawer && (footerStart || footerSummary || footerActions) ? (
-        <footer className={variants.base.drawerFooter}>
-          {footerStart ? (
-            <div className={variants.base.drawerFooterGroup}>{footerStart}</div>
-          ) : null}
-          <span className={variants.base.drawerSummary}>{footerSummary}</span>
-          {footerActions ? (
-            <div className={variants.base.drawerFooterGroup}>
-              {footerActions}
-            </div>
-          ) : null}
-        </footer>
-      ) : null}
-    </>
+    <OverlayBody
+      drawer={kind === 'drawer'}
+      footerActions={footerActions}
+      footerStart={footerStart}
+      footerSummary={footerSummary}
+      onClose={() => changeOpen(false)}
+      showHeader={showHeader}
+      title={title}
+    >
+      {children}
+    </OverlayBody>
   );
   const section = (
     <section

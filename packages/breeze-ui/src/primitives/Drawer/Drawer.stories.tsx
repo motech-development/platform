@@ -114,11 +114,14 @@ export const RecordTransaction: Story = {
     const summaryStyle = getComputedStyle(summary);
     await expect(summaryStyle.fontSize).toBe('12px');
     await expect(summaryStyle.textOverflow).toBe('ellipsis');
-    await expect(summary.getBoundingClientRect().right).toBeLessThanOrEqual(
-      within(surface)
-        .getByRole('button', { name: 'Cancel' })
-        .getBoundingClientRect().left,
-    );
+    const summaryBox = summary.getBoundingClientRect();
+    const cancelBox = within(surface)
+      .getByRole('button', { name: 'Cancel' })
+      .getBoundingClientRect();
+    // Beside the actions on wide drawers, above them on narrow sheets.
+    await expect(
+      summaryBox.right <= cancelBox.left || summaryBox.bottom <= cancelBox.top,
+    ).toBe(true);
     const body = scrollParent(within(surface).getByLabelText('Name'));
     const closeTop = close.getBoundingClientRect().top;
     const saveTop = save.getBoundingClientRect().top;
@@ -140,4 +143,47 @@ export const RecordTransaction: Story = {
     });
   },
   render: () => <RecordTransactionDrawer />,
+};
+
+/** An edit form whose footer adds a start action and wraps its long actions to the end when they run out of room. */
+export const EditTransaction: Story = {
+  args: {
+    children: <TextField defaultValue="Northwind Supplies" label="Name" />,
+    footerActions: (
+      <>
+        <Button variant="secondary">Discard unsaved changes</Button>
+        <Button>Save changes and record another transaction</Button>
+      </>
+    ),
+    footerStart: <Button variant="danger">Delete transaction</Button>,
+    footerSummary: 'Takes £139.00 off the balance now',
+    title: 'Edit transaction',
+    trigger: 'Edit transaction',
+  },
+  play: async ({ canvasElement }) => {
+    const page = within(canvasElement.ownerDocument.body);
+    const surface = await page.findByRole('dialog', {
+      name: 'Edit transaction',
+    });
+    const footer = within(surface).getByText(
+      'Takes £139.00 off the balance now',
+    ).parentElement;
+    if (!footer) throw new Error('Missing drawer footer.');
+    const footerBox = footer.getBoundingClientRect();
+    const footerStyle = getComputedStyle(footer);
+
+    await expect(footer.scrollWidth).toBeLessThanOrEqual(footer.clientWidth);
+    await expect(
+      within(surface)
+        .getByRole('button', { name: 'Delete transaction' })
+        .getBoundingClientRect().left,
+    ).toBeCloseTo(footerBox.left + parseFloat(footerStyle.paddingInlineStart));
+    await expect(
+      within(surface)
+        .getByRole('button', {
+          name: 'Save changes and record another transaction',
+        })
+        .getBoundingClientRect().right,
+    ).toBeCloseTo(footerBox.right - parseFloat(footerStyle.paddingInlineEnd));
+  },
 };

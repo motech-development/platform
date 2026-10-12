@@ -139,6 +139,7 @@ describe('Drawer', () => {
       </Drawer>,
     );
     const surface = screen.getByRole('dialog', { name: 'Transaction' });
+    expect(screen.queryByRole('contentinfo')).not.toBeInTheDocument();
     const sequence = [
       within(surface).getByText('Transaction fields'),
       within(surface).getByRole('button', { name: 'Delete' }),
@@ -163,8 +164,8 @@ describe('Drawer', () => {
       </Drawer>,
     );
     expect(
-      screen.getByRole('dialog', { name: 'Details' }).querySelector('footer'),
-    ).toBeNull();
+      screen.getByRole('dialog', { name: 'Details' }).lastElementChild,
+    ).toBe(screen.getByText('Delivery information'));
   });
 
   it('renders caller-owned loading content and localizes the close action', () => {
