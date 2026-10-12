@@ -212,6 +212,7 @@
   :where([data-breeze-root]) .breeze-drawer-footer {
     display: flex;
     flex-shrink: 0;
+    flex-wrap: wrap;
     align-items: center;
     gap: var(--breeze-spacing-breeze-2);
     padding-block: var(--breeze-spacing-breeze-3);
@@ -222,8 +223,17 @@
   :where([data-breeze-root]) .breeze-drawer-footer-group {
     display: flex;
     flex-shrink: 0;
+    flex-wrap: wrap;
     align-items: center;
     gap: var(--breeze-spacing-breeze-2);
+    max-inline-size: 100%;
+  }
+  /* Keeps the actions at the end when they wrap onto their own line. */
+  :where([data-breeze-root])
+    .breeze-drawer-summary
+    + .breeze-drawer-footer-group {
+    justify-content: flex-end;
+    margin-inline-start: auto;
   }
   /* Also the spacer that keeps the actions at the end when there is no summary. */
   :where([data-breeze-root]) .breeze-drawer-summary {
@@ -279,6 +289,11 @@
     :where([data-breeze-root]) .breeze-drawer {
       --breeze-drawer-x: 0;
       --breeze-drawer-y: 100%;
+    }
+    /* The sheet's summary keeps its full text, so the actions wrap below it first. */
+    :where([data-breeze-root]) .breeze-drawer-summary {
+      flex-basis: auto;
+      max-inline-size: 100%;
     }
   }
 }
