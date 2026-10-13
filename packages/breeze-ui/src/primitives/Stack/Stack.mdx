@@ -8,21 +8,23 @@ import * as Stories from './Stack.stories';
 
 # Stack
 
-`Stack` arranges related content vertically. Choose `gap` from the 4px Breeze spacing scale and use `horizontalAlign` to align the children across the row axis.
+`Stack` arranges related content in a column. Set `gap` to choose the spacing from the 4px Breeze spacing scale, and `horizontalAlign` to align the children horizontally.
 
 <Canvas of={Stories.Default} />
 
 ## Alignment
 
-The default stretches children. Use `start`, `center` or `end` when their intrinsic width should be retained.
+By default, children stretch to the full width of the stack. Set `horizontalAlign` to `start`, `center` or `end` to keep each child at its natural width.
 
 <Canvas of={Stories.Centred} />
 
+## Loading
+
+`Stack` has no loading state of its own. Show loading inside each item, using components with a `loading` prop or a `Skeleton` sized like the final content, so the spacing stays the same when the content arrives.
+
 ## Accessibility
 
-The default `div` adds no semantics. Select `main`, `nav` or `section` only when the content has that meaning, and label landmarks or regions with `aria-label`.
-
-Loading belongs to the items inside the stack. Compose loading-capable children or explicit `Skeleton` elements so placeholders match the final vertical rhythm.
+`Stack` renders a `div` by default, which adds no meaning for assistive technology. Set `element` to `main`, `nav` or `section` only when the content has that meaning, and name landmarks or regions with `aria-label`.
 
 ## API
 

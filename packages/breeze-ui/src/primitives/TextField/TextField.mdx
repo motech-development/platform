@@ -8,16 +8,17 @@ import * as Stories from './TextField.stories';
 
 # TextField
 
-`TextField` is a closed, single-line text input. Its `label`, optional
-`description` and optional `error` are flat props, so applications do not need
-to compose field parts or provide an escape hatch.
+`TextField` is a single-line text input with a label. Pass `label`, and
+optionally `description` and `error`, as props; there are no separate field
+parts to assemble.
 
 <Canvas of={Stories.Default} />
 
-## Supporting text and errors
+## Description and errors
 
-Use `description` for guidance. A non-empty `error` marks the field invalid and
-associates the message with the native input. There is no separate invalid prop.
+Use `description` for guidance about what to enter. Pass a non-empty `error`
+to mark the field invalid and show the message; there is no separate `invalid`
+prop.
 
 <Canvas of={Stories.Description} />
 
@@ -25,9 +26,11 @@ associates the message with the native input. There is no separate invalid prop.
 
 ## States
 
-`required`, `disabled` and `readOnly` map to the corresponding accessible input
-semantics. `loading` keeps the field's shape, announces the provider loading
-message and prevents interaction until it is removed.
+`required`, `disabled` and `readOnly` behave as they do on a native input.
+
+Set `loading` while the value is not yet available. The field keeps its shape,
+screen readers announce the provider's loading message, and the field cannot be
+edited until loading ends.
 
 <Canvas of={Stories.Required} />
 
@@ -37,19 +40,19 @@ message and prevents interaction until it is removed.
 
 <Canvas of={Stories.Loading} />
 
-## Controlled values
+## Controlled
 
-Provide both `value` and `onChange` for controlled usage. The callback receives
-the next string value, never a DOM event. Use `defaultValue` and an optional
-`onChange` for uncontrolled usage; the two forms cannot be mixed.
+To control the value, pass both `value` and `onChange`. `onChange` receives the
+new string, not a DOM event. For an uncontrolled field, pass `defaultValue` and
+optionally `onChange`. Controlled and uncontrolled props cannot be combined.
 
 <Canvas of={Stories.Controlled} />
 
 ## Accessibility
 
-The visible label names the native input. Descriptions and errors are announced
-through React Aria's field relationships, and the field exposes its native
-input through `ref`.
+The visible label names the input, and screen readers announce the description
+and any error with it. Use `ref` to reach the native input, for example to
+focus it.
 
 ## API
 

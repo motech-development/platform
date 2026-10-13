@@ -8,28 +8,21 @@ import * as Stories from './StatePanel.stories';
 
 # StatePanel
 
-`StatePanel` presents application-owned copy for an empty or failed content
-state as a labelled section.
-
-The section is not a live region. Applications own any dynamic announcements
-needed when content changes.
-
-When `StatePanel` owns the page's primary action, omit that action from the page
-header so the page does not show duplicate calls to action.
+`StatePanel` explains why there is no content to show, either because there is nothing yet or because loading it failed. Pass a `title`, a `description` and a `variant` of `empty` or `error`, with an optional action.
 
 ## Empty states
 
-Provide the title and explanation your application owns. An empty state may omit
-an action or offer one primary action.
+Use `variant="empty"` when there is no content yet. Add an `action`, such as creating the first item, when there is an obvious next step.
 
 <Canvas of={Stories.Empty} />
 
 <Canvas of={Stories.EmptyWithAction} />
 
+If the panel shows the page's primary action, leave that action out of the page header so it does not appear twice.
+
 ## Error states
 
-An error recovery action is optional. When supplied, its label and callback are
-required together, and activating it must perform the recovery work.
+Use `variant="error"` when content could not be loaded. To let people retry, pass an `action` whose `onAction` performs the recovery.
 
 <Canvas of={Stories.Error} />
 
@@ -37,11 +30,13 @@ required together, and activating it must perform the recovery work.
 
 ## Icon
 
-The panel selects a brand document icon for empty states and a danger warning
-icon for errors. Set `icon` to another curated Breeze icon when that better
-describes the content.
+Empty states show a document icon in the brand colour, and error states a warning icon in the danger colour. Set `icon` to another Breeze icon when it better describes the content.
 
 <Canvas of={Stories.CustomIcon} />
+
+## Accessibility
+
+The panel is a section labelled by its title. It is not a live region, so when it replaces content dynamically, announce the change yourself if people need to hear it.
 
 ## API
 

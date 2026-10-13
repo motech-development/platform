@@ -8,53 +8,58 @@ import * as Stories from './ToggleGroup.stories';
 
 # ToggleGroup
 
-`ToggleGroup` presents a single choice as connected segments. Each option is a
-button with an accessible pressed state. Press the selected option again to
-clear the selection.
+`ToggleGroup` is a segmented control: a row of connected buttons from which
+people choose one option, such as a time period. Pressing the selected option
+again clears the selection.
 
 <Canvas of={Stories.Default} />
 
 ## Options
 
-Provide `items` and a `getItem` function that describes each option. Return a
-unique `id` and visible `label`. You can also provide a `description`, `icon`,
-`badge` or `disabled` flag. Disabled options cannot be selected.
+Pass your data as `items` and a `getItem` function that describes each option.
+Return a unique `id` and a visible `label`, and optionally a `description`,
+`icon`, `badge` or `disabled` flag. Disabled options cannot be selected.
 
 <Canvas of={Stories.DisabledOption} />
 
-## Controlled selection
+## Controlled
 
-Use `defaultSelected` with an optional `onChange` for uncontrolled use. Provide
-`selected` and `onChange` when the application owns state. The callback receives
-the selected item, or `null` when the choice is cleared. Choose one of these
-state approaches for each group.
+For an uncontrolled group, pass `defaultSelected` and optionally `onChange`. To
+control the selection from your own state, pass both `selected` and
+`onChange`. `onChange` receives the selected item from `items`, or `null` when
+the choice is cleared. Controlled and uncontrolled props cannot be combined.
 
 <Canvas of={Stories.Controlled} />
 
 ## Loading
 
 Set `loading` while saving a selection. A slim loading bar replaces each
-option's content while its size and selected appearance stay in place. Changes
-resume when loading clears.
+option's content, while the options keep their size and the selected option
+stays highlighted. The selection cannot be changed until loading ends.
 
 <Canvas of={Stories.Loading} />
 
 ## Full width
 
-Set `fullWidth` to stretch the group across its container and share the width
-equally between options, for example when the choice sits in a form.
+Set `fullWidth` to stretch the group across its container, sharing the width
+equally between options, for example in a form.
 
 <Canvas of={Stories.FullWidth} />
 
-## Sizes and accessibility
+## Sizes
 
 `size` accepts `sm` (default), `md` or `lg`, giving the group a minimum height
-of 34, 38 or 52px to align with other controls of the same size. On coarse
-pointers every option is at least 44px tall to meet the touch-target minimum, so
-the `sm` and `md` groups grow to 50px. Give each group an `aria-label`; each
-option exposes whether it is pressed and supports keyboard interaction.
+of 34, 38 or 52px to line up with other controls of the same size. On touch
+devices, every option is at least 44px tall, so `sm` and `md` groups grow to
+50px.
 
 <Canvas of={Stories.Sizes} />
+
+## Accessibility
+
+Give each group an `aria-label` that describes the choice. Screen readers
+announce whether each option is pressed, and options can be chosen with the
+keyboard.
 
 ## API
 

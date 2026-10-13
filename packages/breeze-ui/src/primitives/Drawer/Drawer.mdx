@@ -5,11 +5,11 @@ import * as Stories from './Drawer.stories';
 
 # Drawer
 
-Use `Drawer` for a task or supporting content that needs a modal surface at the edge of the page. Render it inside `BreezeProvider`.
+A drawer is a modal panel that slides in from the edge of the page. Use it for a focused task, such as recording a transaction, or for supporting content that should not replace the current page.
 
-## Basic usage
+## Basic drawer
 
-`trigger` supplies the label for the button Breeze renders. `title` supplies the surface's visible heading and accessible name; `children` supplies its content. Breeze also renders an icon close button whose accessible name comes from the provider's messages.
+Pass `trigger` as the label of the button that opens the drawer, `title` as its heading and `children` as its content. The drawer includes a close button, labelled with the provider's messages.
 
 ```tsx
 <Drawer title="Delivery details" trigger="View delivery details">
@@ -21,7 +21,7 @@ Use `Drawer` for a task or supporting content that needs a modal surface at the 
 
 ## Content and footer
 
-The content scrolls on its own between the heading bar and the footer. Three props fill a footer pinned below it, which renders only when at least one is given:
+The content scrolls independently between the heading and the footer. The footer stays pinned to the bottom and appears only when you pass at least one of these props:
 
 - `footerStart` places an action at the start, such as Delete on an edit form.
 - `footerSummary` shows a short muted line that takes the free width and truncates.
@@ -49,17 +49,17 @@ The content scrolls on its own between the heading bar and the footer. Three pro
 
 <Canvas of={Stories.RecordTransaction} />
 
-When the footer runs out of room, its actions wrap onto their own line and stay at the end. Below 768px the summary keeps its full text and moves the actions to the next line, truncating only when it is wider than the footer.
+When the footer runs out of room, the actions wrap onto their own line and stay at the end. Below 768px, the summary keeps its full text and the actions move to the next line; the summary truncates only when it is wider than the footer.
 
 <Canvas of={Stories.EditTransaction} />
 
-Below the medium breakpoint the drawer fills the screen and rises from the bottom.
+Below the `md` breakpoint, the drawer fills the screen and slides up from the bottom.
 
 ## Open state
 
-By default, the component manages its own open state. Set `defaultOpen` to start open, and optionally use `onOpenChange` to observe changes.
+By default, the drawer manages its own open state. Set `defaultOpen` to start open, and use `onOpenChange` to respond to changes.
 
-To control the surface from application state, supply both `open` and `onOpenChange`. `open` and `defaultOpen` are mutually exclusive.
+To control the drawer from your own state, pass both `open` and `onOpenChange`. `open` and `defaultOpen` cannot be combined.
 
 ```tsx
 <Drawer
@@ -74,21 +74,21 @@ To control the surface from application state, supply both `open` and `onOpenCha
 
 ## Dismissal
 
-`dismissible` defaults to `true`, allowing Escape and interaction outside the surface to dismiss it. Set it to `false` when those interactions should leave the surface open. The close button remains available.
+By default, pressing Escape or clicking outside the drawer closes it. Set `dismissible={false}` to keep it open in those cases, for example while a form has unsaved changes. The close button still works.
 
-## Surfaces above a sheet
+## Opening other overlays from a drawer
 
-A `Popover` can open above the drawer without blocking interaction with the sheet or hiding its content from assistive technology. The drawer keeps its scrim, and Escape dismisses the popover before the sheet.
+A `Popover` opened inside a drawer appears above it. The drawer stays interactive and keeps its dimmed backdrop, and Escape closes the popover before the drawer.
 
-`DocumentViewer` opens a non-modal full-screen surface above the drawer. It covers the sheet while keeping it mounted and preserving its scrim. Because the surface is not modal, the covered sheet stays available to assistive technology, while Tab and Shift+Tab stay inside the full-screen surface. Escape closes the full-screen surface before the sheet and restores focus to its opener in the sheet.
+A `DocumentViewer` opened inside a drawer covers it with a full-screen view. The drawer stays open underneath, keeping its state, and remains available to screen readers. Tab and Shift+Tab stay inside the full-screen view, and Escape closes it before the drawer, returning focus to the button that opened it.
 
-The `Foundations/Overlay stack` stories cover sheet/popover and sheet/full-screen compositions, including closing the outer sheet first and starting with nested surfaces open.
+See the `Foundations/Overlay stack` stories for more combinations.
 
-## Accessibility and motion
+## Accessibility
 
-Breeze manages focus on opening and restores it on closing. Modal surfaces contain keyboard focus while open. The provider's portal host keeps the surface's locale, direction and scoped styles intact.
+Opening the drawer moves focus into it, and focus stays inside while it is open. Closing it returns focus to the trigger. The drawer keeps the provider's locale and text direction even though it renders outside your component tree.
 
-Enter and exit motion respects reduced-motion preferences. A closing surface immediately leaves the active stack while its exit animation completes.
+The open and close animations respect the user's reduced-motion setting. As soon as a drawer starts to close, the content beneath it becomes interactive again, without waiting for the animation to finish.
 
 ## API
 

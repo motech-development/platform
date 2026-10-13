@@ -8,29 +8,33 @@ import * as Stories from './Grid.stories';
 
 # Grid
 
-`Grid` provides one, two or three equal columns, or a main column beside an aside, on the Breeze spacing scale. Multi-column grids collapse to one column below `md` by default.
+`Grid` arranges content in one, two or three equal columns, or in a main column beside an aside. Set `columns` to choose the layout (it defaults to `2`) and `gap` to choose the spacing from the Breeze spacing scale.
+
+By default, a multi-column grid collapses to a single column below the `md` breakpoint. Use `collapseBelow` to change the breakpoint.
 
 <Canvas of={Stories.Responsive} />
 
 ## Fixed columns
 
-Set `collapseBelow="none"` only for content that remains understandable at narrow widths.
+Set `collapseBelow="none"` to keep the columns at every width. Use this only for content that still reads well on narrow screens.
 
 <Canvas of={Stories.Fixed} />
 
 ## Main and aside
 
-Set `columns="mainAside"` for a page with a primary column and a supporting aside, such as the Overview page. Pass exactly two children: the main content first, then the aside. The main column grows to fill the available space beside a 300px aside. Each column keeps its own height, so a short aside does not stretch to match the main column.
+Set `columns="mainAside"` for a page with a primary column and a supporting aside, such as a dashboard overview. Pass exactly two children: the main content first, then the aside.
 
-Below `md`, the aside stacks under the main content. `collapseBelow` applies as it does to equal columns.
+The aside is 300px wide and the main column fills the remaining space. Each column keeps its own height, so a short aside does not stretch to match the main column. Below `md`, the aside stacks under the main content; `collapseBelow` changes this breakpoint as it does for equal columns.
 
 <Canvas of={Stories.MainAside} />
 
+## Loading
+
+`Grid` has no loading state of its own. Show loading inside each item, using components with a `loading` prop or a `Skeleton` sized like the final content.
+
 ## Accessibility
 
-Grid changes visual arrangement, not reading order. Author children in the order they should be read.
-
-Loading belongs to the items inside the grid. Compose loading-capable children or explicit `Skeleton` elements so each placeholder matches its final item.
+`Grid` changes the visual layout, not the reading order. Write children in the order they should be read.
 
 ## API
 

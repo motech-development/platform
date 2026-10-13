@@ -8,51 +8,55 @@ import * as Stories from './Checkbox.stories';
 
 # Checkbox
 
-`Checkbox` is a closed, labelled boolean control. Its label, optional
-description and optional error are flat props, so applications do not need to
-compose checkbox parts or provide an escape hatch.
+`Checkbox` lets people turn a single option on or off. Pass the visible text as `label`.
 
 <Canvas of={Stories.Default} />
 
-## Supporting text and errors
+## Description and errors
 
-Use `description` for guidance. It sits under the label, beside the box. A
-non-empty `error` marks the checkbox invalid, appears in the same place and is
-associated with the native input. There is no separate invalid prop.
+Use `description` for guidance shown under the label. Set `error` to a non-empty message to show it in the same place and mark the checkbox invalid.
 
 <Canvas of={Stories.Description} />
 
 <Canvas of={Stories.Error} />
 
-## States
+## Required
 
-`required`, `disabled` and `readOnly` map to the corresponding accessible input
-semantics. A disabled checkbox greys its box and keeps its label legible.
-`loading` keeps the checkbox's shape, announces the provider loading message and
-prevents selection until it is removed.
+Set `required` to mark the checkbox as required.
 
 <Canvas of={Stories.Required} />
 
+## Disabled
+
+Set `disabled` to prevent selection and focus. The box is greyed out and the label stays legible.
+
 <Canvas of={Stories.Disabled} />
 
+## Read only
+
+Set `readOnly` to prevent changes while keeping the checkbox focusable and included in form submission.
+
 <Canvas of={Stories.ReadOnly} />
+
+## Loading
+
+Set `loading` while the value is unavailable. The checkbox keeps its shape, announces the provider's loading message and cannot be selected until loading ends.
 
 <Canvas of={Stories.Loading} />
 
 ## Controlled values
 
-Provide both `selected` and `onChange` for controlled usage. The callback
-receives the next boolean, never a DOM event. Use `defaultSelected` and an
-optional `onChange` for uncontrolled usage; the two forms cannot be mixed.
+Pass `selected` and `onChange` to control the checkbox. `onChange` receives the new `boolean` value.
+
+For an uncontrolled checkbox, use `defaultSelected` with an optional `onChange`. Controlled and uncontrolled props cannot be combined.
 
 <Canvas of={Stories.Controlled} />
 
 ## Accessibility
 
-The visible label alone names the native checkbox, even though its supporting
-text shares the clickable label. Descriptions and errors are announced through
-React Aria's field relationships, and the field exposes its native input through
-`ref`.
+- The checkbox is a native input named by its `label`. Clicking the description also toggles it, but the description is not part of the name.
+- The description and error are announced with the checkbox.
+- `ref` gives access to the native input.
 
 ## API
 

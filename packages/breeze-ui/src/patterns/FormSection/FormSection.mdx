@@ -8,22 +8,23 @@ import * as Stories from './FormSection.stories';
 
 # FormSection
 
-`FormSection` groups related fields under a native fieldset legend. It requires
-the Breeze provider and accepts only app-owned copy and child content.
+`FormSection` groups related form fields under a title. Render it inside `BreezeProvider`.
 
 ## Title and description
 
-The required `title` becomes the fieldset legend. An optional `description` is
-associated with the group for assistive technology.
+`title` is required and labels the group. Add an optional `description` to explain the fields; it is announced with the group.
 
 <Canvas of={Stories.Default} />
 
-## Multiple groups
+## Multiple sections
 
-Use separate sections to label independent groups of fields. Each description
-receives a unique id so its association stays local to its fieldset.
+Use a separate section for each independent group of fields. Each description is announced only with its own group.
 
 <Canvas of={Stories.MultipleSections} />
+
+## Accessibility
+
+`FormSection` renders a native `fieldset`, with `title` as its `legend`, so screen readers announce the title when focus enters the group.
 
 ## API
 

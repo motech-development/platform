@@ -8,55 +8,47 @@ import * as Stories from './AttachmentRow.stories';
 
 # AttachmentRow
 
-`AttachmentRow` presents one attached file in a compact row. The caller provides
-the file name, whether it is a document or photograph, its size in bytes, and a
-visible status such as `Uploaded` or `Upload failed`. Size formatting follows
-the required Breeze provider locale.
+`AttachmentRow` shows one attached file in a compact row, with its name, type, size, status and actions. Use it to list the files attached to a record.
 
-## Document and photo thumbnails
+Pass `filename`, `fileType` (`document` or `photo`), `sizeBytes` and a visible `status` such as `Uploaded` or `Upload failed`. The size is formatted for the `BreezeProvider` locale.
 
-Documents use a page preview and photographs use the supplied image thumbnail
-or a camera placeholder. The file type is also written as visible text, so the
-thumbnail is not the only way to tell them apart. Only a photograph accepts a
-`thumbnailUrl`.
+## Documents and photos
+
+Documents show a page preview. Photos show the image passed as `thumbnailUrl`, or a camera placeholder without one; only photos accept `thumbnailUrl`. The file type is also written as text, so the thumbnail is not the only way to tell them apart.
 
 <Canvas of={Stories.Document} />
 
 <Canvas of={Stories.Photo} />
 
-## Open and menu actions
+## Actions
 
-Pass `onOpen` to show a direct Open button. Pass action descriptors and an
-`onAction` callback together to show the overflow menu; `onAction` receives the
-selected action from `actions`. Each action has a visible label; icons only
-decorate those labels. The Open button keeps its short visible label, and the
-overflow menu opens from an icon-only More actions button. Both include the
-file name in their accessible names.
+Pass `onOpen` to show an **Open** button. To open the file in a `DocumentViewer` with a transition between the two, give both the same `transitionName`.
 
-The menu opens aligned to the end edge of its button. Give a destructive action, such as
-Remove, `tone: 'danger'` and its own `section` so it shows in the danger
-colour below a divider.
+To add an overflow menu, pass an `actions` array together with `onAction`. Each action has an `id` and a visible `label`, plus an optional `icon`, `description` and `disabled` flag. `onAction` receives the selected action. The menu opens from a **More actions** button, aligned to its end edge.
+
+For a destructive action such as Remove, set `tone: 'danger'` and give it its own `section` so it appears in the danger colour below a divider.
 
 <Canvas of={Stories.Document} />
 
 ## Narrow containers
 
-When there is not enough horizontal room, the row wraps its actions below the
-file details so the file information remains readable.
+When horizontal space is limited, the actions wrap below the file details so the file information stays readable.
 
 <Canvas of={Stories.NarrowContainer} />
 
-## Visible state and loading
+## Status and loading
 
-The `status` text stays visible and updates are announced politely regardless
-of the file type or thumbnail. While the file details are unavailable, set
-`loading` to show the row-shaped loading placeholder and labelled progress bar.
-The placeholder row sits on the surface fill rather than the raised fill, so its
-skeletons stay visible in the dark appearance.
+The `status` text is always visible. Set `loading` while the file details are unavailable to show a row-shaped placeholder with a labelled progress bar.
 
 <Canvas of={Stories.UploadFailed} />
 
 <Canvas of={Stories.Loading} />
+
+## Accessibility
+
+- The **Open** and **More actions** buttons include the file name in their accessible names.
+- Changes to `status` are announced politely to screen readers.
+- Action icons are decorative; each action is named by its label.
 
 ## API
 

@@ -5,19 +5,23 @@ import * as Stories from './Badge.stories';
 
 # Badge
 
-`Badge` is compact, non-interactive status content. Its `neutral`, `brand`, `positive`, `warning` and `danger` variants are Badge treatments—not shared control variants.
+`Badge` shows a short, non-interactive status or count, such as "Paid" or "3".
+
+## Variants
+
+`variant` accepts `neutral`, `brand`, `positive`, `warning` and `danger`.
 
 <Canvas of={Stories.Treatments} />
 
-## Accessibility
-
-Keep wording meaningful without colour. Do not put controls inside a badge, and do not use it for long prose.
-
 ## Loading
 
-Set `loading` to preserve the badge shape while its status text is unavailable.
+Set `loading` to keep the badge's shape while its text is unavailable.
 
 <Canvas of={Stories.Loading} />
+
+## Accessibility
+
+Make the text meaningful on its own, without relying on colour. Keep it short, and do not put controls inside a badge.
 
 ## API
 

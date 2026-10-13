@@ -8,31 +8,35 @@ import * as Stories from './Card.stories';
 
 # Card
 
-`Card` groups related non-interactive content on a surface with panel elevation. Padding is selected from the Breeze spacing scale.
+`Card` groups related content on a bordered panel. Set `padding` to a value from the Breeze spacing scale; it defaults to `4`.
 
 <Canvas of={Stories.Surface} />
 
 ## Raised cards
 
-Use `raised` for a group nested inside another surface, not to create stronger elevation.
+Use `variant="raised"` for a group nested inside another surface. It does not add stronger elevation.
 
 <Canvas of={Stories.Raised} />
 
 ## Titles
 
-Set `title` to add a header with a second-level heading that also names the card. Add `count` to show a neutral count beside the title.
+Set `title` to add a header with a second-level heading. Add `count` to show a neutral count beside the title.
 
 <Canvas of={Stories.TitledWithCount} />
 
-Use `action` for one trailing header control, such as a link to the full list. Below a title, `padding` applies to the content only, so set it to `0` for rows that run edge to edge.
+Use `action` for one control at the end of the header, such as a link to the full list. With a title, `padding` applies only to the content below it, so set `padding={0}` for rows that run edge to edge.
 
 <Canvas of={Stories.TitledWithAction} />
 
+## Loading
+
+Cards have no loading state of their own. Use loading-capable children or `Skeleton` elements inside the card so the placeholders match the final content.
+
 ## Accessibility
 
-Cards do not become interactive. Use `article`, `aside` or `section` only when that semantic grouping is meaningful, and provide a label or `title` where the element creates a region. A titled card is named by its heading and does not accept `aria-label`.
-
-Loading belongs to the content inside the card. Compose loading-capable children or explicit `Skeleton` elements so placeholders match the final content structure.
+- The card itself is not interactive and cannot be made clickable as a whole.
+- Set `element` to `article`, `aside` or `section` only when that grouping is meaningful, and give a region a name with `title` or `aria-label`.
+- A titled card is named by its heading, so `aria-label` is not accepted alongside `title`.
 
 ## API
 

@@ -8,15 +8,15 @@ import * as Stories from './SkipLink.stories';
 
 # SkipLink
 
-`SkipLink` is visually hidden until it receives keyboard focus. It uses the nearest `BreezeProvider` message for its accessible name and language.
+`SkipLink` lets keyboard users jump past repeated content, such as navigation, straight to the main content. It is hidden until it receives keyboard focus, so render it first on the page, where it is the first Tab stop. Its text, “Skip to main content”, comes from the provider's `skipToMain` message.
 
 <Canvas of={Stories.KeyboardNavigation} />
 
-## Choose a focusable target
+## Target
 
-Set `targetId` to the `id` of the page's main content landmark. Give that target `tabIndex={-1}` so it can receive programmatic focus without adding it to the ordinary Tab order. The target ID must be unique in the document.
+Set `targetId` to the `id` of the page's main content element. The `id` must be unique in the document. Give the target `tabIndex={-1}`, so the link can move focus to it without adding it to the normal Tab order.
 
-`ApplicationShell` renders this link first and generates a unique, focusable main target for its children.
+If you use `ApplicationShell`, you do not need to add a `SkipLink`: the shell includes one and a focusable main content target.
 
 ## API
 

@@ -5,11 +5,11 @@ import * as Stories from './Button.stories';
 
 # Button
 
-Buttons let users perform an action, such as saving a record or submitting a form.
+Buttons let people perform an action, such as saving a record or submitting a form.
 
 ## Basic button
 
-`Button` comes with four variants: `primary` (default), `secondary`, `quiet` and `danger`. The `children` prop sets the visible label.
+`Button` has four variants: `primary` (default), `secondary`, `quiet` and `danger`. `children` sets the visible label.
 
 <Canvas of={Stories.Primary} />
 
@@ -21,7 +21,7 @@ Secondary buttons are neutral alternatives to the primary action, such as cancel
 
 ## Quiet button
 
-Quiet buttons are 13px text actions with no border, fill or control height, for actions that sit alongside content, such as Mark all as read in a panel header or Download on a row. They have one size and do not accept `size`. Use a `Link` when the action navigates.
+Quiet buttons are text-only actions with no border or fill, for actions that sit alongside content, such as **Mark all as read** in a panel header or **Download** on a row. They come in one size and do not accept `size`. Use a `Link` instead when the action navigates.
 
 <Canvas of={Stories.Quiet} />
 
@@ -35,7 +35,7 @@ Danger buttons are destructive actions. Use a label that states what will be rem
 
 ## Sizes
 
-`size` accepts `sm`, `md` (default) and `lg`, with minimum heights of 32, 36 and 52px. Small labels are 12px and the others 13px, all semibold. Sizes apply to the `primary`, `secondary` and `danger` treatments.
+`size` accepts `sm`, `md` (default) and `lg`, with minimum heights of 32, 36 and 52px. Small labels are 12px and the others 13px, all semibold. Sizes apply to the `primary`, `secondary` and `danger` variants.
 
 <Canvas of={Stories.TreatmentsAndSizes} />
 
@@ -45,13 +45,13 @@ Labels wrap and increase the height of the button:
 
 ## Icon
 
-`icon` places a Breeze icon 8px before the label, in every variant and size: 15px at `size="sm"`, and 16px at `md` and `lg`. The icon is decorative, so the label remains the accessible name. While loading, the icon is hidden with the label.
+Set `icon` to show a Breeze icon before the label. It works with every variant and size, and is 15px at `size="sm"` and 16px at `md` and `lg`. While loading, the icon is hidden along with the label.
 
 <Canvas of={Stories.WithIcon} />
 
 ## Loading
 
-Set `loading` while the action is in progress. The label is replaced by a skeleton, and the button cannot be activated again.
+Set `loading` while the action is in progress. A placeholder replaces the label, and the button cannot be activated again until loading ends.
 
 <Canvas of={Stories.Loading} />
 
@@ -63,17 +63,19 @@ Set `loading` while the action is in progress. The label is replaced by a skelet
 
 ## Handling actions
 
-`onAction` is called when the button is activated, and takes no arguments.
+`onAction` is called with no arguments when the button is activated by pointer, touch or keyboard.
 
 <Canvas of={Stories.Activation} />
 
 ## Form submission
 
-Use `type="submit"` to submit the containing form, and handle submission on the form. The default is `type="button"`. The `form`, `name` and `value` props are available for form association.
+Buttons default to `type="button"`. Set `type="submit"` to submit the surrounding form, and handle submission on the form. `form`, `name` and `value` are also supported.
 
 ## Accessibility
 
-The label provides the accessible name and is retained while the button is loading. Buttons receive a 44px minimum target on touch devices. Quiet buttons receive a 44px minimum height instead, on touch devices and below the `md` breakpoint. `aria-label`, `aria-labelledby`, `aria-describedby`, `aria-controls`, `aria-expanded` and `aria-haspopup` are supported.
+- The label is the button's accessible name, including while it is loading. Icons are decorative.
+- On touch devices, buttons have a minimum 44px target. Quiet buttons have a minimum 44px height on touch devices and below 901px.
+- `aria-label`, `aria-labelledby`, `aria-describedby`, `aria-controls`, `aria-expanded` and `aria-haspopup` are supported.
 
 ## API
 

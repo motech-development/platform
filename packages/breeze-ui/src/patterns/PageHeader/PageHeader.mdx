@@ -8,15 +8,19 @@ import * as Stories from './PageHeader.stories';
 
 # PageHeader
 
-`PageHeader` presents the page's level-one heading, optional description and optional action content. Use one page header for the main heading of a page.
+`PageHeader` shows a page's main heading with an optional description and actions. Use one per page.
 
 <Canvas of={Stories.Default} />
 
 ## Page actions
 
-Pass application-owned controls through `actions`. Their labels, focus behavior and accessible names remain the application's responsibility.
+Pass buttons or links through `actions` to show them alongside the heading.
 
 <Canvas of={Stories.WithActions} />
+
+## Accessibility
+
+The title is rendered as the page's level-one heading. Give each control in `actions` a clear accessible name.
 
 ## API
 

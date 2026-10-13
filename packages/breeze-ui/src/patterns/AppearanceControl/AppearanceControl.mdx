@@ -8,17 +8,23 @@ import * as Stories from './AppearanceControl.stories';
 
 # AppearanceControl
 
-`AppearanceControl` lets a person choose Light, Auto or Dark. It reads and updates the nearest `BreezeProvider`, which resolves Auto against the operating system preference.
+`AppearanceControl` lets people choose a Light, Auto or Dark colour scheme for your application. Place it anywhere inside `BreezeProvider`; it reads and updates the provider's appearance, and Auto follows the operating system preference.
 
 <Canvas of={Stories.Default} />
 
-The application owns persistence. Save the value reported by `BreezeProvider` and pass it back as `appearance` on the next visit; `AppearanceControl` does not read or write browser storage.
+## Remembering the choice
 
-## Theme-reactive shadows
+The control does not save the choice in browser storage. To restore it on the next visit, store the value reported by the provider's `onAppearanceChange` and pass it back as `appearance`.
 
-Shadows use CSS variables so they change with the resolved appearance alongside colours and native controls.
+## Shadows
+
+Shadows change with the selected appearance, along with colours and native controls.
 
 <Canvas of={Stories.ThemeReactiveShadow} />
+
+## Accessibility
+
+The three options form a single-selection group named by the provider's `appearance` message, so screen readers announce which option is selected.
 
 ## API
 

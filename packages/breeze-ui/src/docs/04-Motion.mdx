@@ -7,13 +7,13 @@ import { Meta } from '@storybook/addon-docs/blocks';
 
 # Motion
 
-Breeze provides a small opt-in adapter for the browser's same-document View Transition API. Use it when a transition explains a relationship between two states. A link does not start an animation by itself: the application router owns the route update and may opt into a transition with `startViewTransition`.
+Breeze UI provides an opt-in helper for the browser's same-document View Transition API. Use a transition when it helps people follow how one state relates to the next.
 
-These examples use stable React 19 and React DOM APIs. Breeze adds no runtime dependency for view transitions.
+Links do not animate on their own. Your router performs the route update and can wrap it in `startViewTransition` to animate it. The examples use stable React 19 and React DOM APIs, and no extra dependency is needed.
 
 ## Transition types
 
-Use the type that describes the change. Breeze accepts these five values:
+Choose the type that describes the change:
 
 | Type     | Use it for                                                   |
 | -------- | ------------------------------------------------------------ |
@@ -23,13 +23,16 @@ Use the type that describes the change. Breeze accepts these five values:
 | `item`   | Changing one item while the surrounding page stays in place. |
 | `expand` | Expanding one item into a larger view of that same item.     |
 
-These types let the stylesheet choose which parts can move. `nav` and `mode` may transition the page root; `list`, `item` and `expand` keep the root live and animate only named participants. Breeze does not prescribe an animation for every use of a type.
+The type decides which parts of the page can move. `nav` and `mode` may transition the whole page; `list`, `item` and `expand` leave the page in place and animate only the named participants.
 
-Keep appearance changes, segmented-control state, typing and in-place recalculation immediate; transitions add no useful relationship to those updates, and immediate input keeps the caret stable. Keep form steps inside a sheet immediate too: the sheet frame stays in place, a nested transition would separate its contents from the frame, and the step indicator already shows progress.
+Some updates should stay immediate:
+
+- appearance changes, segmented-control state, typing and in-place recalculation, so input and the caret stay stable;
+- form steps inside a sheet, where the sheet stays in place and the step indicator already shows progress.
 
 ## Declare a participant
 
-Call `useViewTransitionParticipant` below `BreezeProvider` and attach its ref to the element that represents the same thing before and after the update. Breeze grants its view-transition name only while one of the declared types is active.
+Call `useViewTransitionParticipant` below `BreezeProvider` and attach its ref to the element that represents the same thing before and after the update. The element takes part only while one of its `types` is active.
 
 ```tsx
 import { useViewTransitionParticipant } from '@motech-development/breeze-ui';
@@ -44,9 +47,13 @@ function TransactionRow({ transaction }) {
 }
 ```
 
-Each participant name must be a valid CSS custom identifier and unique among visible participants in both snapshots. In development, Breeze reports duplicate eligible names. Names stay disabled for page participants while a visual overlay is on top; if an application-owned participant is inside an overlay, only the topmost visual overlay can enable it. A menu or popover stops counting as soon as it starts closing, even while its exit animation runs, so a navigation started from a menu item keeps the shell chrome and navigation marker in its transition. A closing dialog or drawer still withholds names until its exit finishes.
+Each `name` must be a valid CSS identifier and unique among the visible participants before and after the update. In development, Breeze UI logs a console error for duplicate names.
 
-The application shell can use Breeze's reserved roles for its chrome and current-location marker. The `topbar`, `topnav` and `botnav` roles stay pinned during page transitions:
+While a dialog, drawer, menu or popover is open on top of the page, participants beneath it do not animate. A participant inside an overlay animates only when that overlay is the topmost one. A menu or popover stops counting as soon as it starts closing, so a navigation started from a menu item still animates the page; a closing dialog or drawer blocks transitions until its exit animation finishes.
+
+### Application shell roles
+
+Instead of a `name`, pass one of the reserved roles for your application's chrome:
 
 ```tsx
 import { useViewTransitionParticipant } from '@motech-development/breeze-ui';
@@ -58,11 +65,18 @@ function TopBar() {
 }
 ```
 
-The fixed roles are `topbar`, `topnav`, `botnav` and `navmark`. The first three are enabled for `nav` and `mode`; `navmark` marks the current location and moves during `nav` only. These roles reserve Breeze's singleton names, so use each role on at most one visible element in a snapshot.
+| Role      | Behaviour                                                      |
+| --------- | -------------------------------------------------------------- |
+| `topbar`  | Stays pinned during `nav` and `mode` transitions.              |
+| `topnav`  | Stays pinned during `nav` and `mode` transitions.              |
+| `botnav`  | Stays pinned during `nav` and `mode` transitions.              |
+| `navmark` | Marks the current location and moves during `nav` transitions. |
+
+Use each role on at most one visible element at a time. `ApplicationShell` already uses all four.
 
 ## Start a router transition
 
-`Link` passes its `transitionTypes` to the configured `router.navigate` callback. The router can wrap its real route update with `startViewTransition`:
+`Link` passes its `transitionTypes` to the `router.navigate` callback configured on `BreezeProvider`. Wrap the router's route update in `startViewTransition`:
 
 ```tsx
 import { useState } from 'react';
@@ -108,13 +122,17 @@ function TransactionsPage() {
 }
 ```
 
-The router must make the update callback cover the actual DOM commit. For a synchronous React state update, `flushSync` commits it before the callback returns. For asynchronous routing, await the router's commit-ready signal and resolve only after the intended DOM has committed; data-fetch completion or scheduling a state update is not enough. If the destination suspends, coordinate with the router so the callback does not settle while the UI is still showing a fallback instead of the intended route.
+The update callback must not settle until the new page is in the DOM:
 
-An empty type list, an unsupported typed View Transition API, or a reduced-motion preference skips the animation and still runs the update. The helper returns a promise for update completion and propagates failures from the update. If a transition is already active, Breeze skips it before starting the next one.
+- For a synchronous React state update, wrap it in `flushSync`, as above.
+- For asynchronous routing, wait for the router to signal that the new route has rendered. Finishing a data fetch or scheduling a state update is not enough.
+- If the destination suspends, make sure the callback does not settle while a fallback is still showing.
 
-## Overlay lifecycle
+`startViewTransition` returns a promise that resolves when the update completes and rejects if the update fails. The update still runs, without animation, when the type list is empty, the browser does not support typed view transitions, or the person prefers reduced motion. If a transition is already running, it is skipped before the next one starts.
 
-Dialogs, drawers, menus and popovers keep their React Aria Components lifecycle and existing overlay motion. Toast confirmations keep their own lifecycle and existing motion. Do not use `startViewTransition` for an overlay or confirmation opening or closing.
+## Overlays and toasts
+
+Dialogs, drawers, menus, popovers and toasts have their own open and close animations. Do not wrap their opening or closing in `startViewTransition`.
 
 ## Browser reference
 

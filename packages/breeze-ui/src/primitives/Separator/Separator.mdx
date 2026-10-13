@@ -5,19 +5,21 @@ import * as Stories from './Separator.stories';
 
 # Separator
 
-`Separator` draws the one-token line used between related regions.
+`Separator` draws a thin line between related regions, such as sections of a panel. It is horizontal by default.
 
 <Canvas of={Stories.Horizontal} />
 
 ## Vertical separators
 
-A vertical separator stretches to the height of its row. Place it directly inside an `Inline`, or as a `Grid` item, between the regions it divides; it overrides the row's alignment, so the default centred `Inline` still produces a full-height divider. Outside a flex or grid row it has no height.
+Set `orientation="vertical"` to divide items in a row. Place the separator directly inside an `Inline`, or as a `Grid` item, between the regions it divides. It stretches to the full height of the row, even when the `Inline` centres its other items.
+
+A vertical separator needs a row to take its height from, so it is not visible outside an `Inline` or `Grid`.
 
 <Canvas of={Stories.Vertical} />
 
 ## Accessibility
 
-The component exposes `role="separator"` and the selected orientation.
+Screen readers recognise the line as a separator and are told its orientation.
 
 ## API
 

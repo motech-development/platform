@@ -8,25 +8,29 @@ import * as Stories from './NumberField.stories';
 
 # NumberField
 
-`NumberField` is a flat labelled numeric input backed by React Aria. It uses
-the Breeze locale and displays figures with tabular numerals. There are no
-stepper buttons: the Up and Down arrow keys change the value by `step`. Values
-remain unformatted except for React Aria's locale-aware input behaviour.
+`NumberField` is a labelled input for entering numbers, such as an amount.
+It reads and displays numbers using the provider's locale, and shows figures
+with tabular numerals so digits line up.
+
+There are no stepper buttons. Up and Down arrow keys change the value by
+`step`, which defaults to `1`. Beyond the locale's number conventions, values
+are not formatted unless you pass `formatOptions`.
 
 <Canvas of={Stories.Default} />
 
 ## Sizes
 
-`size` defaults to `md`, the standard 38px control with 13px figures. Use `lg`
-for a form's primary amount: a 52px control with 20px semibold figures. Fields
-that share a row should share a size.
+`size` defaults to `md`, a 38px control with 13px figures. Use `lg` for a
+form's main amount: a 52px control with 20px semibold figures. Fields in the
+same row should use the same size.
 
 <Canvas of={Stories.Large} />
 
-## Supporting text and errors
+## Description and errors
 
-Use `description` for guidance. A non-empty `error` marks the field invalid and
-associates the message with the native input. There is no separate invalid prop.
+Use `description` for guidance about what to enter. Pass a non-empty `error`
+to mark the field invalid and show the message; there is no separate `invalid`
+prop.
 
 <Canvas of={Stories.Description} />
 
@@ -34,9 +38,11 @@ associates the message with the native input. There is no separate invalid prop.
 
 ## States
 
-`required`, `disabled` and `readOnly` map to the corresponding accessible input
-semantics. `loading` keeps the field's shape, announces the provider loading
-message and prevents typing or stepping until it is removed.
+`required`, `disabled` and `readOnly` behave as they do on a native input.
+
+Set `loading` while the value is not yet available. The field keeps its shape,
+screen readers announce the provider's loading message, and the value cannot be
+typed or stepped until loading ends.
 
 <Canvas of={Stories.Required} />
 
@@ -48,21 +54,22 @@ message and prevents typing or stepping until it is removed.
 
 <Canvas of={Stories.LargeLoading} />
 
-## Controlled values
+## Controlled
 
-Provide both `value` and `onChange` for controlled usage. The callback receives
-the next number, never a DOM event. React Aria reports `NaN` while the input is
-empty, which lets applications distinguish an empty value from zero. Use
-`defaultValue` and an optional `onChange` for uncontrolled usage; the two forms
-cannot be mixed.
+To control the value, pass both `value` and `onChange`. `onChange` receives the
+new number, not a DOM event. While the input is empty, the value is `NaN`, so
+you can tell an empty field from zero.
+
+For an uncontrolled field, pass `defaultValue` and optionally `onChange`.
+Controlled and uncontrolled props cannot be combined.
 
 <Canvas of={Stories.Controlled} />
 
 ## Accessibility
 
-The visible label names the native input. Descriptions and errors are announced
-through React Aria's field relationships, and the field exposes its native
-input through `ref`.
+The visible label names the input, and screen readers announce the description
+and any error with it. Use `ref` to reach the native input, for example to
+focus it.
 
 ## API
 

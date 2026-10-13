@@ -8,21 +8,23 @@ import * as Stories from './Inline.stories';
 
 # Inline
 
-`Inline` lays related items out horizontally. Its gap, alignment and distribution choices are closed to the arrangements used by Breeze.
+`Inline` arranges related items in a row, such as a group of buttons or badges. Set `gap` to choose the spacing from the Breeze spacing scale, `verticalAlign` to align items (centred by default) and `justify` to distribute them along the row.
 
 <Canvas of={Stories.Default} />
 
 ## Wrapping
 
-Enable `wrap` for collections of labels or actions that may not fit on one line.
+Set `wrap` when the items may not fit on one line, such as a list of labels or actions. Items that do not fit move onto the next row.
 
 <Canvas of={Stories.Wrapped} />
 
+## Loading
+
+`Inline` has no loading state of its own. Show loading inside each item, using components with a `loading` prop or a `Skeleton` sized like the final content.
+
 ## Accessibility
 
-Choose a semantic element only when the content forms a landmark or labelled region. Visual order and document order remain the same.
-
-Loading belongs to the items inside the row. Compose loading-capable children or explicit `Skeleton` elements so placeholders retain the intended item sizes.
+`Inline` renders a `div` by default, which adds no meaning for assistive technology. Use `element` to choose a landmark or region only when the content is one, and name it with `aria-label`. Items are read in the same order they appear.
 
 ## API
 

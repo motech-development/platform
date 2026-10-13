@@ -8,50 +8,60 @@ import * as Stories from './DocumentViewer.stories';
 
 # DocumentViewer
 
-`DocumentViewer` presents one attachment in a full-screen reading surface with
-zoom, rotation, download, and optional app-owned Replace and Remove actions.
-The toolbar displays the current zoom percentage beside the zoom controls.
-Use it with `AttachmentRow` by passing the same unique `transitionName` to both
-components. The viewer owns its dialog and toolbar; the surrounding record owns
-attachment meaning, storage, replacement, and removal.
-The viewer is controlled: pass both `open` and `onOpenChange`, and let the
-owning screen provide the trigger and state.
+`DocumentViewer` opens an attached image, PDF or other document in a full-screen preview with zoom, rotation and download controls. Use it to let people read an attachment without leaving the record it belongs to.
 
-The viewer is non-modal. Opened from a record sheet, it covers the viewport
-without making the sheet inert, and the sheet keeps its scrim; the viewer adds
-none. Escape and Close return focus into the sheet, and closing the sheet first
-also closes the viewer.
+## Basic viewer
 
-Although the covered content stays in the accessibility tree, keyboard focus is
-contained while the viewer is open: Tab and Shift+Tab wrap inside it, and focus
-moved into the covered content is returned to it. Page scrolling is locked for
-as long as it is open, whether it was opened from a sheet or from a plain page.
-ADR 0002 records why the viewer is non-modal and what that trades away.
+The viewer is controlled: pass `open` and `onOpenChange`, and render your own trigger, such as the Open button of an `AttachmentRow`. Set `src` to the file URL, `title` to the visible title, and `mediaType` to `image`, `pdf` or `document`.
 
-## Images and PDFs
+Each example below starts closed; use its Open button to view the attachment.
 
-Images render directly and do not load the PDF engine. PDFs use the optional
-`pdfjs-dist` peer dependency to paint each page to a canvas and provide a
-selectable text layer. PDF.js and its worker load only after an open PDF is
-requested. Install a compatible `pdfjs-dist` version (`^6.2.108`) in the
-application to enable this renderer. If PDF.js cannot load or render a file,
-the viewer falls back to the browser's PDF frame.
+<Canvas of={Stories.ImageDocs} />
 
-An absent peer is handled at build time by the application's bundler, not by
-Breeze UI. Vite replaces the unresolved optional import with a module that
-throws when it is loaded, so the viewer reaches its browser-frame fallback.
-Other bundlers may instead fail the application build; install `pdfjs-dist`
-or mark it as an ignored optional module in that bundler's configuration.
+<Canvas of={Stories.PdfWorkerDocs} />
 
-PDF.js downloads each PDF in a single request rather than in byte ranges.
-Attachment URLs are presigned for 30 seconds, and a range request made after
-that window would fail with a 403 that permanently breaks the open document.
+## Toolbar
 
-PDFs that use predefined Adobe character maps or PDF.js standard font files
-also need those matching directories served by the application. Copy the
-`cmaps/` and `standard_fonts/` directories from the installed `pdfjs-dist`
-version to public asset paths, then pass their directory URLs to the PDF
-viewer:
+The toolbar shows the file name, the current zoom percentage and these actions:
+
+- **Zoom** and **Rotate**, for images, PDF pages and embedded documents.
+- **Download**, always available. `downloadName` sets the saved file name.
+- **Full screen**, shown only when the browser supports the Fullscreen API.
+- **Replace** and **Remove**, shown only when you pass `onReplace` or `onRemove`. Handle any confirmation in your application.
+
+Multi-page PDFs add page navigation in a separate row beneath the toolbar. When you zoom a PDF, the current page stays visible and keeps its scroll position until the sharper version replaces it.
+
+Downloads from another origin need the file host to allow CORS from your application, so the file name can be kept. If a download fails, for example because a presigned URL has expired, the viewer shows an error and stays open; it never navigates away to the file URL.
+
+## PDFs
+
+Images and other documents need no setup. PDFs are rendered page by page with selectable text using the optional `pdfjs-dist` peer dependency. Install a compatible version in your application:
+
+```sh
+yarn add pdfjs-dist@^6.2.108
+```
+
+PDF.js and its worker are loaded only when a PDF is opened, so they add nothing to your initial bundle. Together they are roughly 635 KiB gzipped.
+
+PDF.js downloads each file in a single request rather than in byte ranges, so short-lived presigned URLs keep working while the document is open.
+
+### Worker
+
+By default, the viewer locates the PDF.js worker with `new URL('pdfjs-dist/build/pdf.worker.mjs', import.meta.url)`. Vite resolves this in production builds and emits the worker as an asset. For Vite's development server, exclude Breeze UI from dependency pre-bundling:
+
+```ts
+export default defineConfig({
+  optimizeDeps: {
+    exclude: ['@motech-development/breeze-ui'],
+  },
+});
+```
+
+With another bundler, or if you prefer not to change `optimizeDeps`, host the worker for your installed `pdfjs-dist` version and pass its URL as `pdfAssets.workerSrc`.
+
+### Fonts and character maps
+
+Some PDFs use predefined Adobe character maps or PDF.js standard fonts. To support them, copy the `cmaps/` and `standard_fonts/` directories from your installed `pdfjs-dist` version to public asset paths, and pass their URLs through `pdfAssets`:
 
 ```tsx
 <DocumentViewer
@@ -67,94 +77,30 @@ viewer:
 />
 ```
 
-These URLs must serve the matching files from the same `pdfjs-dist` version.
-The viewer adds a trailing slash to each directory URL. The auxiliary assets
-are optional when a document does not reference them.
-By default the viewer locates the worker with
-`new URL('pdfjs-dist/build/pdf.worker.mjs', import.meta.url)`, which Vite 8.1.5
-resolves in production builds and emits as an asset. Vite's development server
-resolves this default only when Breeze UI is excluded from dependency
-pre-bundling:
+The files must come from the same `pdfjs-dist` version. A trailing slash is added to each URL. Documents that do not use these assets work without them.
 
-```ts
-export default defineConfig({
-  optimizeDeps: {
-    exclude: ['@motech-development/breeze-ui'],
-  },
-});
-```
+### Without PDF.js
 
-Otherwise, or when the application uses a bundler that does not support this
-pattern, provide `pdfAssets.workerSrc` with the URL emitted or copied for the
-installed `pdfjs-dist` version.
+If PDF.js is not installed or cannot render a file, the viewer shows the PDF in the browser's built-in PDF viewer instead. It fetches the file first, so the source must be same-origin or allow CORS. If the fetch fails, the viewer reports that the preview is unavailable and Download remains available.
 
-When PDF.js is unavailable or cannot render a file, the viewer fetches the PDF
-and passes its bytes to the browser's native PDF viewer as a PDF-typed Blob.
-The source must be readable by the application: same-origin files work directly,
-and cross-origin hosts must allow CORS. If the fetch fails, the preview reports
-that it is unavailable and the Download action remains available.
+When `pdfjs-dist` is not installed, Vite builds still succeed and use this fallback. Other bundlers may fail the build; install `pdfjs-dist`, or configure the bundler to ignore the missing optional module.
 
-The reader supports page navigation for multi-page PDFs. Zoom and rotation
-apply to images, rendered PDF pages, and browser-owned frames. Each PDF zoom
-step re-renders the page at the new density; the previous rendering stays
-visible, and the scroll position is kept, until the sharper page replaces it.
-Each preview starts closed inside its own frame; use its Open button to view the
-attachment. The PDF example loads PDF.js only after you open it.
+## Opening from an AttachmentRow
 
-<Canvas of={Stories.ImageDocs} />
-
-<Canvas of={Stories.PdfWorkerDocs} />
-
-The compact toolbar keeps the filename and document actions in one raised strip.
-For multi-page PDFs, page navigation sits in a separate neutral row beneath it.
-
-## AttachmentRow transition
-
-Give the row and viewer the same stable `transitionName` to morph between the
-attachment row and the reader in both directions. Close and Escape return to the
-row while preserving the surrounding overlay. The loaded image or PDF remains
-covered until the opening morph finishes, then its rendered content is revealed.
-Unsupported View Transition APIs and reduced-motion preferences use the same
-flow without animation.
+Give the `AttachmentRow` and the viewer the same unique `transitionName` to animate between the row and the viewer in both directions. The file is revealed once the opening animation finishes. Closing returns to the row, and any sheet or dialog around it stays open. Browsers without view transition support, and people who prefer reduced motion, see the same flow without animation.
 
 <Canvas of={Stories.FromAttachmentRowDocs} />
 
-## Accessibility and fallback limits
+## Accessibility
 
-Rendered PDF canvases do not expose their page content to assistive technology.
-PDF text is selectable visually, but document tags, reading order, and scanned
-image OCR are not interpreted. The notice in the viewer therefore states that
-the attachment's meaning comes from its surrounding record and offers the
-original download.
+- `title` names the viewer.
+- While the viewer is open, Tab and Shift+Tab cycle through its controls, and page scrolling is locked.
+- Escape and the Close button close the viewer.
+- Opened from a sheet, the viewer covers the screen while the sheet stays open behind it. Closing the viewer returns focus to the sheet, and closing the sheet also closes the viewer.
 
-The fallback iframe is browser-owned. Its controls, keyboard behavior, and
-accessibility vary by browser and document type; Breeze cannot inspect or
-improve the embedded viewer's content. Use `mediaType="document"` for other
-browser-renderable formats when embedding is appropriate. These document frames
-are sandboxed so embedded HTML or SVG cannot run scripts in the application.
+Rendered PDF pages are drawn as images, so screen readers cannot read their content. PDF text can be selected, but document tags, reading order and text in scanned images are not available. The viewer shows a notice to this effect and offers the original file for download, so make sure the surrounding record describes the attachment.
 
-## Bundle measurement
-
-With Breeze UI's development pin `pdfjs-dist@6.3.289`, the measurements on
-2026-10-02 show the package and PDF.js engine as separate gzip payloads. The
-PDF.js figure sums the independently compressed main-thread and worker files.
-
-| Payload                                                                     |  Gzip size |
-| --------------------------------------------------------------------------- | ---------: |
-| Breeze UI library JavaScript (package output, including bundled React Aria) | 133.55 KiB |
-| PDF.js engine JavaScript (main + worker, independently compressed)          | 634.60 KiB |
-
-## Actions
-
-The Download link is always available. Cross-origin sources are fetched as a
-blob so the requested filename is preserved; the file host must allow CORS from
-the application. If that request fails — blocked by CORS, or refused because a
-presigned URL has expired — the viewer reports that the file could not be
-downloaded and stays open. It never navigates the application's tab to the
-source. Replace and Remove buttons appear only when
-their corresponding callbacks are provided, leaving mutation and confirmation
-flows in the application. Full screen appears only when the browser reports
-support for the native Fullscreen API.
+For `mediaType="document"`, the browser's own viewer displays the file, and its controls, keyboard support and accessibility vary by browser and file type. These frames are sandboxed, so embedded HTML or SVG cannot run scripts in your application.
 
 ## API
 

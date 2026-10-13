@@ -8,77 +8,73 @@ import * as Stories from './DatePicker.stories';
 
 # DatePicker
 
-`DatePicker` opens a calendar from a button showing the selected date in the
-provider locale's long form. The calendar glyph stays at the far edge of the
-trigger. The value and callback use ISO `YYYY-MM-DD` strings.
-
-When the field is empty, `placeholder` overrides the provider's `selectDate`
-message. Without either override, the English fallback is marked `en-GB` for
-assistive technology. `loading` replaces the label, trigger and supporting text
-with shape-preserving skeletons, announces the provider loading message, and
-disables interaction and form submission until loading clears. The selected
-value is retained.
+`DatePicker` is a form field for choosing a date from a calendar. The field shows the selected date in the provider locale's long format, and opens the calendar when activated. Values are ISO `YYYY-MM-DD` strings.
 
 <Canvas of={Stories.Default} />
 
+When no date is selected, the field shows `placeholder`, or the provider's `selectDate` message if you omit it.
+
 ## Today
 
-The calendar footer offers a Today action, labelled by the provider's `today`
-message. It selects the current date, reports it and closes the calendar.
+The calendar has a **Today** button that selects the current date, reports it through `onChange` and closes the calendar.
 
 <Canvas of={Stories.TodayAction} />
 
-## States
+## Validation
 
-Use `error` to display validation feedback and `disabled` to prevent interaction.
-`readOnly` keeps the trigger focusable and the date in form submission, but the
-calendar cannot be opened, so the date cannot change; use it to show a recorded
-date in view mode. A disabled date is omitted from form submission. Use
-`loading` while the field's date is unavailable; errors are hidden and an open
-calendar closes while loading.
-
-Unlike the other fields, whose `required` defaults to `false`, `DatePicker`
-defaults to `required`. This is a deliberate exception: the dates Breeze
-applications record are non-null, so an empty date is not a state worth
-offering. A required date does not provide a clear control.
-
-Set `required={false}` for an optional date. Its calendar then shows a clear
-control beside the Today action, labelled by the provider's `clearDate` message, which empties the
-field, closes the calendar and reports `null`. The control is unavailable while
-the field is empty. An optional `onChange` must accept `null`, and an optional
-uncontrolled field may start from a `null` `defaultValue`; TypeScript rejects
-either on a required date.
-
-There is no `autoComplete` prop. The trigger is a button, not a text input, so
-browser autofill has nothing to fill.
+Set `error` to a non-empty message to show it and mark the field invalid.
 
 <Canvas of={Stories.Error} />
 
+## Disabled
+
+Set `disabled` to prevent interaction. A disabled date is not included in form submission.
+
 <Canvas of={Stories.Disabled} />
+
+## Read only
+
+Set `readOnly` to show a recorded date that cannot be changed, for example in a view mode. The field stays focusable and the date is included in form submission, but the calendar does not open.
 
 <Canvas of={Stories.ReadOnly} />
 
+## Optional dates
+
+Unlike other fields, `DatePicker` is required by default, and a required date cannot be cleared.
+
+Set `required={false}` to make the date optional. The calendar then shows a clear button beside **Today**, which empties the field, closes the calendar and reports `null`. The clear button is unavailable while the field is empty.
+
+With an optional date, `onChange` must accept `null`, and an uncontrolled field can start from `defaultValue={null}`. TypeScript rejects both on a required date.
+
 <Canvas of={Stories.Optional} />
+
+## Loading
+
+Set `loading` while the date is unavailable. The label, field and supporting text are replaced by placeholders, the provider's loading message is announced, and the field cannot be used or submitted until loading ends. Errors are hidden and an open calendar closes; the selected value is kept.
 
 <Canvas of={Stories.Loading} />
 
 ## Controlled values
 
-Provide both `value` and `onChange` for controlled usage. Set `value` to `null`
-for an empty controlled selection. Use `defaultValue` and an optional `onChange`
-for uncontrolled usage; the two forms cannot be mixed, whether the date is
-required or optional. An uncontrolled date returns to `defaultValue` when its
-owning form resets. With a `name`, the selected ISO date is included in form
-submission; an empty value submits an empty string. Override the provider's `required`, `clearDate` and `today` messages to
-localize the required announcement, the clear control and the Today action.
+Pass `value` and `onChange` to control the field. Set `value` to `null` for an empty field.
+
+For an uncontrolled field, use `defaultValue` with an optional `onChange`. Controlled and uncontrolled props cannot be combined. An uncontrolled field returns to `defaultValue` when its form is reset.
 
 <Canvas of={Stories.Controlled} />
 
+## Forms
+
+Set `name` to include the date in form submission as an ISO string; an empty field submits an empty string. There is no `autoComplete` prop, as browser autofill does not apply to the date button.
+
+## Localisation
+
+Override the provider's `selectDate`, `today`, `clearDate` and `required` messages to translate the placeholder, the **Today** and clear buttons, and the required announcement. Untranslated messages are in English and marked as `en-GB` for screen readers.
+
 ## Accessibility
 
-The visible label names the trigger, which exposes required and invalid state.
-The calendar supports keyboard navigation and localized date names. Coarse-pointer
-targets have a minimum 44px width and height.
+- The visible label names the field, which announces whether it is required or invalid.
+- The calendar supports keyboard navigation and announces dates in the provider locale.
+- On touch devices, controls have a minimum 44px target.
 
 ## API
 

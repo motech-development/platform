@@ -8,29 +8,42 @@ import * as Stories from './Typography.stories';
 
 # Typography
 
-`Typography` provides the money, amount, heading, title, body, caption, label and micro roles. Money uses negative tracking and tabular numerals. Set `numeric` on other figure text; interface text retains normal tracking.
+`Typography` displays text in one of the Breeze text styles, called roles: `money`, `amount`, `heading`, `title`, `body`, `caption`, `label` and `micro`. It also formats currency amounts and dates for the provider's locale.
 
 <Canvas of={Stories.Roles} />
 
 ## Numeric figures
 
-Set `numeric` on figures outside the money role. They gain tabular numerals, negative tracking and logical end alignment without tightening interface headings.
+The `money` role is designed for figures: digits line up in columns and are spaced slightly tighter. Set `numeric` to give figures in any other role the same treatment; they are also aligned to the end of the line. Text without `numeric` keeps its normal spacing.
 
 <Canvas of={Stories.FiguresAndInterfaceText} />
 
 ## Money and dates
 
-Pass semantic values with `format="currency"` or `format="date"`. Currency uses the `money` role for stat figures or the `amount` role, a semibold body-size figure, for row amounts. Dates use the exported `IsoCalendarDate` string contract. Formatting uses the nearest `BreezeProvider` locale. Currency signs retain that locale's placement and use a true minus character.
+Set `format="currency"` or `format="date"` and pass the raw value; it is formatted for the nearest `BreezeProvider` locale.
+
+- Currency uses the `money` role for headline figures, or the `amount` role, a semibold body-size figure, for amounts in rows. The sign follows the locale's placement and uses a true minus character.
+- Dates take an ISO calendar date string, typed as `IsoCalendarDate`, such as `2026-03-14`.
 
 <Canvas of={Stories.Formatting} />
 
-By default, `sign="auto"` signs negative amounts only. `sign="always"` also signs positive amounts, and `sign="never"` omits the sign for content that conveys direction another way. Zero is never signed, including negative zero and amounts that round to zero, so `-0.004` displays as `£0.00`.
+### Signs
 
-Calendar dates are formatted in UTC, so the displayed day never shifts. The provider's `timeZone` governs times of day and is not applied to calendar dates.
+`sign` controls the sign of a currency amount:
+
+- `auto` (default) shows a sign on negative amounts only.
+- `always` also shows `+` on positive amounts.
+- `never` hides the sign, for content that shows direction another way.
+
+Zero is never signed, including negative zero and amounts that round to zero, so `-0.004` displays as `£0.00`.
+
+### Dates and time zones
+
+Calendar dates always display the day you pass, whatever the user's time zone. The provider's `timeZone` is not applied to them.
 
 ### Invalid values
 
-An invalid money value is a programming error, so `Typography` throws a `RangeError` that names it instead of displaying a misleading figure:
+An invalid currency value throws a `RangeError` naming the problem, rather than displaying a misleading figure:
 
 - `currency` must be a well-formed three-letter code, such as `GBP`. Codes are
   not checked against ISO 4217, so an unknown well-formed code is displayed as
@@ -38,19 +51,17 @@ An invalid money value is a programming error, so `Typography` throws a `RangeEr
 - `value` must be a finite number. `NaN` and `Infinity` are rejected.
 - An invalid `locale` is rejected by `BreezeProvider` before any value is formatted, so it is never reported as a currency error.
 
-Validate or convert untrusted amounts before rendering them. A calendar-invalid date, such as `2026-02-30`, is displayed unchanged.
-
-No separate formatting components are exported.
-
-## Accessibility
-
-Choose the `element` for document semantics; the visual role does not force a heading level. Do not use colour alone to communicate direction or status.
+Validate or convert untrusted amounts before rendering them. A date that does not exist, such as `2026-02-30`, is displayed as written.
 
 ## Loading
 
-Set `loading` to preserve the text's place while its value is unavailable.
+Set `loading` while the value is not yet available. A placeholder keeps the text's place.
 
 <Canvas of={Stories.Loading} />
+
+## Accessibility
+
+Each role renders a default element: `heading` renders an `h2`, `title` an `h3`, `body` a `p` and the other roles a `span`. Set `element` to match your page structure, for example `element="h1"` for the page heading. Do not use colour alone to show direction or status.
 
 ## API
 

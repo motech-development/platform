@@ -8,13 +8,13 @@ import * as Stories from './Icon.stories';
 
 # Icon
 
-`Icon` exposes curated artwork under names that describe its meaning in a Breeze interface.
+`Icon` displays an icon from the Breeze icon set. Set `name` to choose the icon; names describe what the icon means, such as `incoming` or `document`, rather than what it looks like.
 
 <Canvas of={Stories.Gallery} />
 
 ## Sizes
 
-`size` selects a square from a closed scale that follows the design's icon sizes. It defaults to `sm`.
+Set `size` to choose one of the following square sizes. It defaults to `sm`.
 
 | Size  | Pixels | Typical use                                                 |
 | ----- | ------ | ----------------------------------------------------------- |
@@ -32,7 +32,7 @@ import * as Stories from './Icon.stories';
 
 ## Accessible names
 
-Icons are decorative by default. Supply `label` only when the icon conveys meaning without adjacent text.
+Icons are decorative by default and hidden from assistive technology. Pass `label` only when the icon carries meaning that no nearby text provides; screen readers then announce the label.
 
 <Canvas of={Stories.Named} />
 

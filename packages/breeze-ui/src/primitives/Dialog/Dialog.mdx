@@ -5,11 +5,11 @@ import * as Stories from './Dialog.stories';
 
 # Dialog
 
-Use `Dialog` for a focused task that needs a centred modal surface and temporarily takes priority over the surrounding page. It remains part of Breeze's public component inventory. Render it inside `BreezeProvider`.
+`Dialog` opens a centred modal window for a focused task that takes priority over the rest of the page. Render it inside `BreezeProvider`.
 
-## Basic usage
+## Basic dialog
 
-`trigger` supplies the label for the button Breeze renders. `title` supplies the surface's visible heading and accessible name; `children` supplies its content. Breeze also renders an icon close button whose accessible name comes from the provider's messages.
+`trigger` sets the label of the button that opens the dialog. `title` sets the dialog's visible heading and accessible name, and `children` its content. The dialog also includes a close button.
 
 ```tsx
 <Dialog title="Delivery details" trigger="View delivery details">
@@ -19,11 +19,11 @@ Use `Dialog` for a focused task that needs a centred modal surface and temporari
 
 <Canvas of={Stories.Default} />
 
-## Open state
+## Controlled
 
-By default, the component manages its own open state. Set `defaultOpen` to start open, and optionally use `onOpenChange` to observe changes.
+By default, the dialog manages its own open state. Set `defaultOpen` to start it open, and use `onOpenChange` to respond to changes.
 
-To control the surface from application state, supply both `open` and `onOpenChange`. `open` and `defaultOpen` are mutually exclusive.
+To control the dialog from your application state, pass both `open` and `onOpenChange`. `open` and `defaultOpen` cannot be combined.
 
 ```tsx
 <Dialog
@@ -38,13 +38,14 @@ To control the surface from application state, supply both `open` and `onOpenCha
 
 ## Dismissal
 
-`dismissible` defaults to `true`, allowing Escape and interaction outside the surface to dismiss it. Set it to `false` when those interactions should leave the surface open. The close button remains available.
+By default, pressing Escape or clicking outside the dialog closes it. Set `dismissible={false}` to keep it open in those cases; the close button still works.
 
-## Accessibility and motion
+## Accessibility
 
-Breeze manages focus on opening and restores it on closing. Modal surfaces contain keyboard focus while open. The provider's portal host keeps the surface's locale, direction and scoped styles intact.
-
-Enter and exit motion respects reduced-motion preferences. A closing surface immediately leaves the active stack while its exit animation completes.
+- Focus moves into the dialog when it opens, stays inside it while open, and is restored when it closes.
+- The close button's accessible name comes from the provider's messages.
+- The dialog keeps the provider's locale and text direction.
+- Opening and closing animations respect the reduced-motion preference.
 
 ## API
 

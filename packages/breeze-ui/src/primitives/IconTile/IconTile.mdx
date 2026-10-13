@@ -8,19 +8,19 @@ import * as Stories from './IconTile.stories';
 
 # IconTile
 
-`IconTile` decorates state panels, rows and other content with a fixed-size icon wash.
+`IconTile` shows an icon on a soft coloured background. Use it to illustrate empty states, list rows and similar content. Set `name` to choose the icon and `tone` to choose the colour; `tone` defaults to `brand`.
 
 <Canvas of={Stories.Treatments} />
 
 ## Direction markers
 
-Use the compact circular form for direction markers: `positive` for money in and `strong` for money out. `strong` shares the `neutral` wash with full-strength ink.
+For a money-in or money-out marker, use the small circular tile with `shape="circle"` and `size="sm"`. Use `tone="positive"` for money in and `tone="strong"` for money out. `strong` has the same background as `neutral`, with a darker icon.
 
 <Canvas of={Stories.Direction} />
 
 ## Accessibility
 
-Artwork is decorative by default. Supply `label` only when no adjacent text names its meaning; never rely on the tile colour alone.
+The icon is decorative by default and hidden from assistive technology. Pass `label` only when no nearby text describes what it means. Do not rely on the tile colour alone to convey meaning.
 
 ## API
 
