@@ -24,7 +24,7 @@ interface PopoverTextTriggerProps {
 }
 
 interface PopoverInitialsTriggerProps {
-  /** Adds an attention dot to the initials trigger; describe it in `trigger`. */
+  /** Adds an attention dot to the initials trigger, described to assistive technology as unread items. */
   triggerIndicator?: boolean;
   /** Shows these initials in a circular trigger; `trigger` becomes its accessible name. */
   triggerInitials: string;

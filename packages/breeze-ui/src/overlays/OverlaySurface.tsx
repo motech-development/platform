@@ -5,6 +5,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useId,
   useLayoutEffect,
   useMemo,
   useRef,
@@ -201,6 +202,9 @@ function OverlayTrigger({
   onPress: () => void;
   triggerRef: RefObject<HTMLButtonElement | null>;
 }>) {
+  const { getMessageLocale, messages } = useBreezeContext();
+  const indicatorId = useId();
+
   if (!initials) {
     return (
       <Button
@@ -216,20 +220,32 @@ function OverlayTrigger({
   }
 
   return (
-    <AriaButton
-      aria-controls={controls}
-      aria-expanded={expanded}
-      aria-haspopup="dialog"
-      aria-label={label}
-      className={variants.base.avatar}
-      onPress={onPress}
-      ref={triggerRef}
-    >
-      {initials}
+    <>
+      <AriaButton
+        aria-controls={controls}
+        aria-describedby={indicator ? indicatorId : undefined}
+        aria-expanded={expanded}
+        aria-haspopup="dialog"
+        aria-label={label}
+        className={variants.base.avatar}
+        onPress={onPress}
+        ref={triggerRef}
+      >
+        {initials}
+        {indicator ? (
+          <span aria-hidden="true" className={variants.base.avatarIndicator} />
+        ) : null}
+      </AriaButton>
       {indicator ? (
-        <span aria-hidden="true" className={variants.base.avatarIndicator} />
+        <span
+          className="breeze:sr-only"
+          id={indicatorId}
+          lang={getMessageLocale('popoverTriggerUnread')}
+        >
+          {messages.popoverTriggerUnread}
+        </span>
       ) : null}
-    </AriaButton>
+    </>
   );
 }
 

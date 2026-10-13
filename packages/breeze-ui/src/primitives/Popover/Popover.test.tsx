@@ -557,6 +557,10 @@ describe('Popover', () => {
 
     expect(trigger).toHaveTextContent(/^MG$/);
     expect(trigger.querySelector('[aria-hidden="true"]')).toBeInTheDocument();
+    expect(trigger).toHaveAccessibleDescription('Unread items');
+    expect(
+      document.getElementById(trigger.getAttribute('aria-describedby')!),
+    ).toHaveAttribute('lang', 'en-GB');
     expect(trigger).toHaveAttribute('aria-expanded', 'false');
 
     await userEvent.click(trigger);
@@ -577,12 +581,12 @@ describe('Popover', () => {
         Notifications
       </Popover>,
     );
+    const trigger = screen.getByRole('button', { name: 'Account' });
 
     expect(
-      screen
-        .getByRole('button', { name: 'Account' })
-        .querySelector('[aria-hidden="true"]'),
+      trigger.querySelector('[aria-hidden="true"]'),
     ).not.toBeInTheDocument();
+    expect(trigger).not.toHaveAttribute('aria-describedby');
   });
 
   it('requires a BreezeProvider', () => {

@@ -277,6 +277,8 @@ export function BreezeProvider({
           messages?.fileDropZoneTypeRejected ?? enGB.fileDropZoneTypeRejected,
         loading: messages?.loading ?? enGB.loading,
         noItemsToDisplay: messages?.noItemsToDisplay ?? enGB.noItemsToDisplay,
+        popoverTriggerUnread:
+          messages?.popoverTriggerUnread ?? enGB.popoverTriggerUnread,
         primaryNavigation:
           messages?.primaryNavigation ?? enGB.primaryNavigation,
         required: messages?.required ?? enGB.required,

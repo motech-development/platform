@@ -49,6 +49,7 @@ const enGB = {
     '{fileName}: File type is not accepted. Accepted types: {types}.',
   loading: 'Loading',
   noItemsToDisplay: 'No items to display.',
+  popoverTriggerUnread: 'Unread items',
   primaryNavigation: 'Primary navigation',
   required: 'Required',
   selectDate: 'Select a date',

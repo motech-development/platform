@@ -50,7 +50,7 @@ To control the surface from application state, supply both `open` and `onOpenCha
 
 Set `variant` to `panel` for content that names its own purpose, such as an account panel of notifications and settings. A panel shows no title or close button; `title` still names it for assistive technology. Its content runs edge to edge with no padding, and it fits that content from a minimum of 336px, or spans the viewport less 12px on each side on narrow screens. A panel closes with Escape or a press outside it, so it cannot set `dismissible` to `false`.
 
-Set `triggerInitials` to open the popover from a circular button showing a person's initials. `trigger` then supplies only the button's accessible name, so describe what it opens. Set `triggerIndicator` to add an attention dot, such as for unread notifications, and say so in `trigger`, for example "Account and notifications, 2 unread".
+Set `triggerInitials` to open the popover from a circular button showing a person's initials. `trigger` then supplies only the button's accessible name, so describe what it opens. Set `triggerIndicator` to add an attention dot, such as for unread notifications. Breeze describes the dot to assistive technology with the provider's unread-items message; the dot itself is decorative. Applications that know the count can include it in `trigger`, for example "Account and notifications, 2 unread".
 
 ```tsx
 <Popover
