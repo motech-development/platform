@@ -8,98 +8,119 @@ import * as Stories from './RowList.stories';
 
 # RowList
 
-`RowList` displays data as actionable rows with aligned leading, metadata and
-trailing regions. It uses grid-list semantics and has no column headers.
+`RowList` displays data as a list of rows that people can select, such as
+transactions or documents. Each row has a leading label, optional metadata and
+a trailing value, aligned in columns across the list. The list has no column
+headers.
 
 <Canvas of={Stories.Default} />
 
-## Describe each row
+## Row content
 
-Pass application values through `items` and return a closed
-`RowListItemDescriptor` from `getItem`. Each descriptor has a stable `id` and a
-visible `label`. It may also include a `description`, `icon`, `badge`, or
-`disabled` state. `metadata` accepts text or an ISO calendar date. `value`
-accepts text or a currency amount, formatted with the provider locale. A
-currency `value` is passed to `Typography`, so a non-finite amount or a
-malformed currency code throws a `RangeError` when the row displays its value.
+Pass your data as `items` and a `getItem` function that returns a
+`RowListItemDescriptor` for each item:
 
-Use the optional `section` object to group rows under structural section
-headers. Keep each section ID stable when rows are appended or merged. Keep row
-IDs unique and stable so the focused row remains mounted as data changes.
+- `id` and `label` are required. Keep each `id` unique and stable, so the
+  focused row stays in place when the data changes.
+- `description`, `icon`, `badge` and `disabled` are optional.
+- `metadata` takes text or an ISO calendar date.
+- `value` takes text or a currency amount, formatted in the provider's locale.
+  A currency `value` is formatted by `Typography`, so a non-finite amount or a
+  malformed currency code throws a `RangeError` when the row is displayed.
+- `metadataAmount` adds a second, muted currency column, such as VAT, between
+  the metadata and the value. It is formatted like a currency `value`, without
+  `tone`.
 
-`metadataAmount` adds a second, muted currency cell, such as VAT, between the
-metadata and the value. It formats like a currency `value` without a tone.
-Each metadata column and the value column is reserved only when at least one
-row in the list uses it; otherwise the leading region extends into that space.
+A metadata or value column takes up space only when at least one row in the
+list uses it; otherwise the label extends into that space.
 
-## Summarise a section
+## Sections
 
-Set the section's optional `summary` to end its header with trailing content,
-read from the first row in each section. A currency summary takes the same
-fields as a currency `value`, shown at the header's 12px size, plus a `label`
-that is visually hidden and read before the amount, such as “Confirmed daily
-total”. Breeze does not add the amounts up; pass the total with its `tone` and
-`sign`. A text summary shows a muted note instead, such as “Not in the balance
-yet” for a section that has no total.
+Give rows a `section` object to group them under section headers. Keep each
+section `id` stable when rows are added or merged.
+
+Set the section's optional `summary` to show content at the end of its header.
+The summary is read from the first row in each section:
+
+- A currency summary takes the same fields as a currency `value`, shown at the
+  header's 12px size, plus a `label` that screen readers announce before the
+  amount, such as “Confirmed daily total”. The list does not add up the amounts
+  for you; pass the total with its `tone` and `sign`.
+- A text summary shows a muted note instead, such as “Not in the balance yet”
+  for a section without a total.
 
 <Canvas of={Stories.Money} />
 
-## Phone layout
+## Money in and out
 
-Below Breeze's medium breakpoint the value stays at the end of the row, the
-metadata columns are hidden, and a row's badge moves under its description so
-the label keeps the full width. Keep anything essential in the label,
-description or value.
+Currency values use the compact `amount` role from `Typography`, in the
+default text colour. For money in, set `tone: 'positive'` and `sign: 'always'`
+to show an explicit `+`; negative amounts use a true minus sign. `sign` works as
+it does in `Typography`.
 
-<Canvas of={Stories.Phone} />
-
-## Show money in and out
-
-Currency values use the compact `amount` role in the default ink tone. Set
-`tone: 'positive'` on money in and `sign: 'always'` to show an explicit `+` or
-true minus; `sign` follows `Typography`. Set the row's `direction` to `in` or
-`out` to give its icon tile the positive or strong wash, and pair it with the
-`incoming` or `outgoing` icon. Without `direction` the tile is neutral. Colour
-is never the only signal: the sign and icon also carry the direction.
+Set a row's `direction` to `in` or `out` to colour its icon tile for money in
+or out, and pair it with the `incoming` or `outgoing` icon. Without
+`direction`, the tile is neutral. Colour is never the only signal: the sign and
+icon also show the direction.
 
 <Canvas of={Stories.Activity} />
 
-## Activate rows
+## Phone layout
 
-`onAction` receives the activated row's application item from `items`, as
-`Select`, `ComboBox` and `ToggleGroup` do. React Aria supplies the
-grid-list keyboard interaction; use the arrow keys to move between rows and
-Enter or Space to activate the focused row.
+Below the `md` breakpoint, the value stays at the end of the row, the metadata
+columns are hidden, and a row's badge moves under its description so the label
+keeps the full width. Keep anything essential in the label, description or
+value.
+
+<Canvas of={Stories.Phone} />
+
+## Selecting rows
+
+`onAction` is called with the selected row's item from `items`, as it is in
+`Select`, `ComboBox` and `ToggleGroup`.
 
 <Canvas of={Stories.Merging} />
 
-## Loading and empty results
+## Loading
 
-Set the top-level `loading` flag while fetching initial data or refreshing. An
-empty grid shows three quiet skeleton rows and one loading announcement. A
-populated grid keeps its rows and focus while loading, with the announcement
-outside the grid.
+Set `loading` while fetching the first page of data or refreshing it:
+
+- An empty list shows three placeholder rows, and screen readers hear a single
+  loading announcement.
+- A list that already has rows keeps them, along with the focused row, while
+  loading.
 
 <Canvas of={Stories.InitialLoading} />
 
 <Canvas of={Stories.RetainedLoading} />
 
-Completed empty results display the provider-localized “No items to display.”
-message inside the structural grid row and cell. The single persistent polite
-status announces the same message.
-
-<Canvas of={Stories.Empty} />
-
-`RowListItemDescriptor.loading` only replaces a row's optional metadata and
-value with quiet placeholders; its label, description, icon, badge, and action
-remain. The Loading example shows this state alongside a separately busy named
-pagination button.
+To show that a single row is still loading, set `loading` in its
+`RowListItemDescriptor`. Its metadata and value are replaced with placeholders,
+while its label, description, icon, badge and action stay available. This
+example also shows a busy Load more button.
 
 <Canvas of={Stories.Loading} />
 
-Pass a named `loadMore` action when another page is available. Its button keeps
-its label while busy, and its status shares the single live loading message
-without re-announcing existing rows.
+### Loading more rows
+
+Pass `loadMore` with a `label`, `onAction` and optional `loading` when another
+page of data is available. The button keeps its label while busy, and screen
+readers hear the same loading announcement as the list, without the existing
+rows being read again.
+
+## Empty list
+
+When loading finishes with no rows, the list shows the provider's “No items to
+display.” message, and screen readers announce it.
+
+<Canvas of={Stories.Empty} />
+
+## Accessibility
+
+Give the list an `aria-label`, which is required. The list is a single Tab
+stop: use the arrow keys to move between rows, and Enter or Space to select the
+focused row. Screen readers announce loading and empty states once, through a
+single status message.
 
 ## API
 

@@ -8,60 +8,56 @@ import * as Stories from './ComboBox.stories';
 
 # ComboBox
 
-`ComboBox` combines text entry with a popover listbox. Suggestions filter while
-the user types, and the same closed descriptor contract is used for every item.
+`ComboBox` is a text field with a list of suggestions that filters as people type. Use it when there are too many options to scan in a select, or when people may enter their own value.
 
 <Canvas of={Stories.Default} />
 
-## Descriptor content
+## Items
 
-Pass `items` and a `getItem` mapping function. The mapping returns only
-`ItemDescriptor` data: `id`, `label`, optional `description`, `icon`, `badge` and
-`disabled`. It cannot return JSX, classes, styles or slot props. A content gap is
-a deliberate Breeze library change, not an application markup escape hatch.
+Pass your data as `items`, and use `getItem` to return an `ItemDescriptor` for each one. It has an `id` and a `label`, plus an optional `description`, `icon`, `badge` and `disabled` flag. Items are rendered from these fields only.
 
 <Canvas of={Stories.Description} />
 
 ## Filtering and free text
 
-Typing filters suggestions by their descriptor labels. Set `allowsCustomValue`
-when the field should also accept text that is not one of the suggestions; the
-semantic callback then receives either an item, the entered string or `null`.
+Typing filters the suggestions by their labels. Set `allowsCustomValue` to also accept text that does not match a suggestion; `onChange` then receives the selected item, the entered text or `null`.
 
-When a filter matches no suggestion, or `items` is empty, the listbox stays
-open with a localized message that repeats the filter text. Free-text fields
-close the suggestions instead, because the entered text is already a valid
-value.
+When nothing matches, or `items` is empty, the list stays open with a message that repeats the entered text. With `allowsCustomValue`, the list closes instead, because the entered text is already a valid value.
 
 <Canvas of={Stories.NoMatches} />
 
 <Canvas of={Stories.FreeText} />
 
-## States
+## Validation
 
-`required`, `disabled` and `readOnly` map to the field's accessible semantics. A
-non-empty `error` marks the field invalid; there is no separate `invalid` prop.
-`loading` preserves the input shape and prevents interaction until the value is
-available.
+Set `error` to a non-empty message to show it and mark the field invalid. Set `required` to mark the field as required.
 
 <Canvas of={Stories.Error} />
 
+## Read only and disabled
+
+Set `readOnly` to show a value that cannot be changed, or `disabled` to prevent interaction.
+
 <Canvas of={Stories.ReadOnly} />
+
+## Loading
+
+Set `loading` while the value is unavailable. The field keeps its shape and cannot be used until loading ends.
 
 <Canvas of={Stories.Loading} />
 
 ## Controlled values
 
-Provide both `value` and `onChange` for controlled usage. The callback receives a
-selected item, custom text or `null`, never a DOM event. Use `defaultValue` and
-an optional `onChange` for uncontrolled usage; the two forms cannot be mixed.
+Pass `value` and `onChange` to control the field. `onChange` receives the selected item, custom text or `null`.
+
+For an uncontrolled field, use `defaultValue` with an optional `onChange`. Controlled and uncontrolled props cannot be combined.
 
 <Canvas of={Stories.Controlled} />
 
 ## Accessibility
 
-The visible label names the input, while descriptions and errors are announced
-with the field. Keyboard navigation and focus management are built in.
+- The visible label names the input, and its description and error are announced with it.
+- Use the arrow keys to move through the suggestions, Enter to choose one and Escape to close the list.
 
 ## API
 

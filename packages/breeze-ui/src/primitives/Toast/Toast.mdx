@@ -5,11 +5,15 @@ import * as Stories from './Toast.stories';
 
 # Toast
 
-`Toast` is a presentational positive confirmation card. It announces a completed action with `role="status"` and never moves focus. A `Toast` rendered directly stays mounted until its owner removes it; `useToast` supplies the provider-owned queue that expires each visible confirmation after 2.6 seconds.
+A toast is a short confirmation that an action has completed, such as “Changes saved”. Screen readers announce it, and it never moves focus.
+
+In most cases, show toasts with the `useToast` hook, which displays each message for 2.6 seconds. A `Toast` you render yourself stays on screen until you remove it.
 
 <Canvas of={Stories.Default} />
 
-Use `useToast` below `BreezeProvider` to enqueue a translated message:
+## Showing a toast
+
+Call `useToast` in a component below `BreezeProvider`. It returns a function that shows a message; pass text already translated into the user's language.
 
 ```tsx
 import { Button, useToast } from '@motech-development/breeze-ui';
@@ -23,17 +27,19 @@ function SaveAction() {
 }
 ```
 
-The provider renders up to three confirmations at once and queues additional messages in FIFO order. Set `toastLimit` on `BreezeProvider` when the application needs a different visible limit.
+Up to three toasts are shown at once. Further messages wait and appear in the order they were sent, as earlier ones expire. Set `toastLimit` on `BreezeProvider` to change how many are shown at once.
 
 <Canvas of={Stories.Enqueued} />
 
-The card stays 288px wide on desktop and mobile, aligned to the content gutter below the top bar. Provider-enqueued confirmations have no action, dismiss or undo control.
+## Layout
+
+A toast is 288px wide on both desktop and mobile, and appears below the top bar, aligned with the page content. Toasts shown with `useToast` have no action, dismiss or undo button.
 
 <Canvas of={Stories.Mobile} />
 
 ## Accessibility
 
-`Toast` is a non-interactive status. It has no tab stop and handles no keyboard events: Tab and Shift+Tab continue normal document movement while skipping the card, Escape does not dismiss it, and provider-enqueued confirmations do not move focus.
+Screen readers announce each toast as a status message without interrupting the user. A toast cannot be focused or dismissed: Tab and Shift+Tab skip it, Escape does not close it, and focus stays where it was.
 
 ## API
 

@@ -5,33 +5,39 @@ import * as Stories from './Select.stories';
 
 # Select
 
-`Select` is a fixed-choice field. Its visible control opens a popover listbox
-and participates in browser forms and autofill.
+`Select` lets people choose one option from a fixed list, shown in a popover
+when they press the field. It works with browser forms and autofill.
 
 <Canvas of={Stories.Default} />
 
-## Descriptor content
+## Options
 
-Pass `items` and a `getItem` mapping function. The mapping returns the closed
-`ItemDescriptor` data contract: `id`, `label`, optional `description`, `icon`,
-`badge` and `disabled`. It cannot return JSX, classes, styles or slot props.
-If an item needs content outside that contract, extend Breeze deliberately rather
-than reopening a markup escape hatch.
+Pass your data as `items` and a `getItem` function that describes each item.
+`getItem` returns an `ItemDescriptor`:
+
+- `id` and `label` are required.
+- `description`, `icon`, `badge` and `disabled` are optional.
+
+Options show only this content; you cannot pass custom JSX, class names or
+styles.
 
 <Canvas of={Stories.Description} />
 
-The trigger shows the selected item's label and, when the descriptor has one,
-its badge at the end of the control. The badge is part of the announced value,
-as it is for the option.
+## Selected badge
+
+When the selected item has a badge, the field shows it after the label. Screen
+readers announce the badge as part of the value, as they do for the option.
 
 <Canvas of={Stories.SelectedBadge} />
 
 ## States
 
-`required`, `disabled` and `readOnly` map to the field's accessible semantics. A
-non-empty `error` marks the field invalid; there is no separate `invalid` prop.
-`loading` preserves the control shape and prevents interaction until the value
-is available.
+`required`, `disabled` and `readOnly` behave as they do on a native form
+control. Pass a non-empty `error` to mark the field invalid and show the
+message; there is no separate `invalid` prop.
+
+Set `loading` while the value is not yet available. The field keeps its shape
+and cannot be changed until loading ends.
 
 <Canvas of={Stories.Error} />
 
@@ -41,18 +47,21 @@ is available.
 
 <Canvas of={Stories.Loading} />
 
-## Controlled values
+## Controlled
 
-Provide both `value` and `onChange` for controlled usage. The callback receives
-the selected item or `null`, never a DOM event. Use `defaultValue` and an
-optional `onChange` for uncontrolled usage; the two forms cannot be mixed.
+To control the value, pass both `value` and `onChange`. `onChange` receives the
+selected item from `items`, or `null`, not a DOM event. For an uncontrolled
+field, pass `defaultValue` and optionally `onChange`. Controlled and
+uncontrolled props cannot be combined.
 
 <Canvas of={Stories.Controlled} />
 
 ## Accessibility
 
-The visible label names the control, while descriptions and errors are announced
-with the field. Keyboard navigation and focus management are built in.
+The visible label names the field, and screen readers announce the description
+and any error with it. The list can be opened and an option chosen entirely
+with the keyboard, and focus moves between the field and the list
+automatically.
 
 ## API
 

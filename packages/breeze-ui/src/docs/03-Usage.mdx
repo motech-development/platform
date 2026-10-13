@@ -42,7 +42,7 @@ export function SaveAction() {
 
 ## Appearance
 
-Components follow the operating system colour scheme by default. Add `AppearanceControl` anywhere below the provider to let a person choose Light, Auto or Dark:
+Components follow the operating system colour scheme by default. Add `AppearanceControl` anywhere below the provider to let people choose Light, Auto or Dark:
 
 ```tsx
 import {
@@ -68,8 +68,8 @@ export function Root() {
 }
 ```
 
-The application owns persistence. Breeze reports changes and accepts an initial or controlled value, but never reads or writes browser storage.
+Breeze UI does not save the choice in browser storage. To remember it between visits, store the value passed to `onAppearanceChange` and pass it back as `appearance` (or `defaultAppearance`).
 
 ## Customisation
 
-Component appearance is set through the props documented on each component page. `className`, `style` and theme overrides are not supported.
+Change a component's appearance through the props documented on its page. `className`, `style` and theme overrides are not supported.

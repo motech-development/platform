@@ -8,37 +8,26 @@ import * as Stories from './FileDropZone.stories';
 
 # FileDropZone
 
-`FileDropZone` accepts files through drag and drop or the **Choose files**
-button. The button opens a native file picker, so keyboard users can browse for
-files without dragging. `label` is shown as a field label above the drop area
-and names it.
+`FileDropZone` lets people add files by dragging them onto the drop area or by using the **Choose files** button. `label` is shown above the drop area and names it.
 
 <Canvas of={Stories.Default} />
 
 ## Compact
 
-Set `compact` to lay the drop area out as one row at the height of an
-`AttachmentRow`, so a single attachment keeps its position whether or not a file
-is attached. Its secondary line stays on one line and truncates with an
-ellipsis.
+Set `compact` to show the drop area as a single row, the same height as an `AttachmentRow`. A single attachment then keeps its position whether or not a file is attached. The secondary text stays on one line and is truncated with an ellipsis.
 
 <Canvas of={Stories.Compact} />
 
 ## Take photo
 
-Set `camera` to offer **Take photo** before **Choose files**. It opens a native
-file input with `accept="image/*"` and `capture="environment"`, so phones open
-the rear camera and other devices fall back to an image picker. Cameras deliver
-JPEG photos, so the action appears only when `accept` is omitted or allows JPEG
-through `image/*`, `image/jpeg`, `.jpg`, `.jpeg` or `*/*`. Captured photos pass
-the same type, size and count checks as chosen files and reach `onFilesAdded`
-the same way. For JPEG files, `.jpg` and `.jpeg` accept either extension, and
-an untyped file named `.jpg` or `.jpeg` counts as `image/jpeg`.
+Set `camera` to add a **Take photo** button before **Choose files**. On phones it opens the rear camera; on other devices it opens an image picker.
 
-On coarse pointers and below Breeze's `md` breakpoint, Take photo is filled in
-the brand colour. Below `md` it also fills the stacked layout's action row, the
-stacked layout hides its drag-and-drop line, and the compact layout reduces both
-actions to icons that keep their accessible names.
+Cameras produce JPEG photos, so **Take photo** appears only when `accept` is omitted or allows JPEG through `image/*`, `image/jpeg`, `.jpg`, `.jpeg` or `*/*`. Photos go through the same type, size and count checks as chosen files and are passed to `onFilesAdded` in the same way.
+
+On touch devices and narrow screens (below 901px), **Take photo** is filled in the brand colour. On narrow screens:
+
+- in the default layout, **Take photo** fills the action row and the drag-and-drop instruction is hidden;
+- in `compact` mode, both buttons show only their icons and keep their accessible names.
 
 <Canvas of={Stories.TakePhoto} />
 
@@ -48,24 +37,24 @@ actions to icons that keep their accessible names.
 
 ## File limits
 
-Pass `accept` as a comma-separated list of file extensions and MIME types, such
-as `.pdf,image/*`. Dropped files are checked against the same rules. Set
-`maxSize` in bytes and `maxFiles` for the total attachment limit. When existing
-files are already attached, provide their number as `currentFileCount`.
+- `accept` takes a comma-separated list of file extensions and MIME types, such as `.pdf,image/*`. Dropped files are checked against the same list. `.jpg` and `.jpeg` each accept either extension, and an untyped file named `.jpg` or `.jpeg` is treated as `image/jpeg`.
+- `maxSize` sets the largest file size, in bytes.
+- `maxFiles` sets the total number of attachments allowed. When files are already attached, pass their number as `currentFileCount`.
 
-The component shows each rejection reason in visible text and announces the
-same message through a polite live region. Supported files are passed to
-`onFilesAdded` as a readonly array. The application owns the attachment state,
-upload, and storage work.
-
-Picker text, instructions, and feedback use the BreezeProvider `messages`
-override boundary. Translations retain the placeholders documented in the
-BreezeProvider locale section, and each message announces with its matching
-language.
+Accepted files are passed to `onFilesAdded` as a read-only array. Uploading and storing them is up to your application. Rejected files show their reason as visible text.
 
 <Canvas of={Stories.WithExistingFiles} />
 
 <Canvas of={Stories.ChooseAFile} />
+
+## Localisation
+
+The button text, instructions and feedback can be translated through the `messages` prop of `BreezeProvider`. Keep the placeholders listed in the BreezeProvider locale section. Each message is announced in its own language.
+
+## Accessibility
+
+- **Choose files** opens the native file picker, so keyboard users can add files without dragging.
+- Each rejection reason is also announced through a polite live region.
 
 ## API
 

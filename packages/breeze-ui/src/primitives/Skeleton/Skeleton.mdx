@@ -8,17 +8,17 @@ import * as Stories from './Skeleton.stories';
 
 # Skeleton
 
-`Skeleton` represents content while it loads. Unlike layout primitives, its block and inline dimensions deliberately accept arbitrary CSS lengths so it can match the content it replaces.
+`Skeleton` is a placeholder shown in place of content while it loads. Set `shape` to `text` (default), `rectangle` or `circle`, and `inlineSize` (width) and `blockSize` (height) to match the content it replaces. Both accept any CSS length, such as `120` or `'60%'`.
 
 <Canvas of={Stories.Shapes} />
 
 ## Backgrounds
 
-Skeletons use the sunken fill, as the design does. Place them on surface or canvas backgrounds: in the dark appearance the sunken and raised fills are the same colour, so a skeleton on a raised background disappears.
+Place skeletons on the page background or a standard surface. Avoid raised surfaces: in dark mode, a skeleton has the same colour as a raised surface and is not visible on it.
 
 ## Accessibility
 
-Supply `label` when the skeleton owns the loading announcement. Omit it when a parent component already announces loading; the skeleton is then hidden from assistive technology.
+Pass `label` when the skeleton is the only indication that content is loading; screen readers announce it. Omit `label` when a parent component already announces loading, so the announcement is not repeated. The skeleton is then hidden from assistive technology.
 
 ## API
 

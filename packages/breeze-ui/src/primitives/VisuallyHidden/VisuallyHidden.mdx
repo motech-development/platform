@@ -8,11 +8,13 @@ import * as Stories from './VisuallyHidden.stories';
 
 # VisuallyHidden
 
-Use `VisuallyHidden` when essential wording would duplicate an adjacent visual cue, such as the name of an icon-only control.
+`VisuallyHidden` hides its content visually while keeping it available to screen readers. Use it for text that sighted users get from a visual cue instead, such as the name of an icon-only control.
 
 <Canvas of={Stories.IconLabel} />
 
-Do not use it to hide focusable content or information sighted users also need.
+## Accessibility
+
+Do not use it to hide focusable content, such as links or buttons, or information that sighted users also need.
 
 ## API
 

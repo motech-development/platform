@@ -8,7 +8,7 @@ import * as Stories from './BreezeProvider.stories';
 
 # BreezeProvider
 
-`BreezeProvider` provides the locale, appearance and styles that Breeze UI components require. Render it once, above every Breeze UI component. Components rendered without a provider throw an error.
+`BreezeProvider` supplies the locale, appearance and messages that Breeze UI components need. Render it once, at the root of your application, above every Breeze UI component. A component rendered outside a provider throws an error.
 
 ```tsx
 <BreezeProvider locale="en-GB">
@@ -20,11 +20,24 @@ import * as Stories from './BreezeProvider.stories';
 
 ## Locale
 
-`locale` takes a BCP 47 language tag. It sets the `lang` attribute and the text direction of the provider's root element.
+`locale` takes a BCP 47 language tag, such as `en-GB` or `fr-FR`. It sets the language and text direction of everything inside the provider, and the locale used to format numbers, amounts and dates.
 
-Only English (`en-GB`) messages are bundled. Supply partial `messages` to translate Breeze's loading and required announcements, the DatePicker placeholder and Today action, the ComboBox no-match message, appearance control, overlay close button, Popover unread indicator, FileDropZone instructions and feedback, and attachment labels and actions into the provider locale. Without an override, Breeze's own text uses English and is marked `lang="en-GB"`, independently of the surrounding content's language.
+### Translating messages
 
-Built-in interaction labels are available in English only. `locale` still sets the provider language and direction and formats locale-aware values; use `messages` for the Breeze-owned strings listed above.
+Breeze includes English (`en-GB`) text only. To translate it, pass a partial `messages` object; any key you leave out stays in English and is marked as English for screen readers, whatever the page language. Messages cover:
+
+- loading and required-field announcements
+- the `DatePicker` placeholder, Today and clear actions
+- the `ComboBox` no-match message and the `RowList` empty message
+- `AppearanceControl`
+- the close button on overlays
+- the `Popover` unread indicator
+- `FileDropZone` instructions and feedback
+- `DocumentViewer` controls and messages
+- attachment labels and actions
+- the `SkipLink` text and the `ApplicationShell` navigation label
+
+Other built-in interaction labels are available in English only.
 
 ```tsx
 <BreezeProvider
@@ -38,13 +51,12 @@ Built-in interaction labels are available in English only. `locale` still sets t
 
 <Canvas of={Stories.Locale} />
 
-Keep `{query}` in `comboBoxNoMatches`; it is replaced with the filter text.
+Some messages contain placeholders that are replaced with values. Keep them in your translations:
 
-FileDropZone message strings use flat keys. Keep their placeholders when
-providing translations: `{types}` for accepted types, `{size}` for the size
-limit, `{count}` for multiple added files, `{current}` and `{max}` for the
-attachment count, `{fileName}` for a rejected file, and `{fileNames}` for files
-rejected by the total count limit. For example:
+- `{query}` in `comboBoxNoMatches` is the text the person typed.
+- In the `FileDropZone` messages, `{types}` is the accepted file types, `{size}` the size limit, `{count}` the number of files added, `{current}` and `{max}` the attachment count and limit, `{fileName}` a rejected file, and `{fileNames}` the files rejected for exceeding the total limit.
+
+For example:
 
 ```tsx
 <BreezeProvider
@@ -66,7 +78,9 @@ rejected by the total count limit. For example:
 
 ## Time zone
 
-`timeZone` takes an IANA time-zone name, such as `Europe/London`, reserved for formatting times of day. **No component formats a time of day yet, so today it has no visible effect**; it is validated and provided now so the API does not change when one does. Without it, times of day will use the runtime's time zone. The provider throws a `RangeError` for a name the runtime does not recognise.
+`timeZone` takes an IANA time-zone name, such as `Europe/London`, used to format times of day. Without it, the browser's time zone is used. The provider throws a `RangeError` for a name the browser does not recognise.
+
+**No component formats a time of day yet, so `timeZone` currently has no visible effect.**
 
 ```tsx
 <BreezeProvider locale="en-GB" timeZone="Europe/London">
@@ -74,13 +88,13 @@ rejected by the total count limit. For example:
 </BreezeProvider>
 ```
 
-`timeZone` is intentionally not applied to calendar dates. A calendar date, such as `Typography`'s `format="date"`, names a day rather than an instant, so Breeze formats it in UTC and the displayed day never shifts. Applying a western zone to a UTC-midnight date would display the previous day.
+`timeZone` does not affect calendar dates, such as `Typography` with `format="date"`. A calendar date names a day rather than a moment in time, so it always displays the day you pass.
 
 ## Appearance
 
-Appearance defaults to `automatic`, which follows the operating system and keeps following it when the preference changes. The provider resolves the choice to `light` or `dark`, then applies that value and the matching `color-scheme` to the document element.
+Appearance can be `light`, `dark` or `automatic`. The default, `automatic`, follows the operating system's colour scheme, including when it changes while the page is open.
 
-Use `defaultAppearance` when Breeze should hold the current choice in memory:
+To let the provider manage the current choice, set `defaultAppearance`. Use `onAppearanceChange` to save the choice, for example when someone changes it with `AppearanceControl`:
 
 ```tsx
 <BreezeProvider
@@ -92,7 +106,7 @@ Use `defaultAppearance` when Breeze should hold the current choice in memory:
 </BreezeProvider>
 ```
 
-Use `appearance` with `onAppearanceChange` when application state controls it. `appearance` and `defaultAppearance` are mutually exclusive.
+To control appearance from your own state, pass both `appearance` and `onAppearanceChange`. `appearance` and `defaultAppearance` cannot be combined.
 
 ```tsx
 <BreezeProvider
@@ -104,11 +118,13 @@ Use `appearance` with `onAppearanceChange` when application state controls it. `
 </BreezeProvider>
 ```
 
-The provider never reads or writes durable browser storage. The application decides whether and where to persist the reported choice. If a persisted explicit choice must apply before the application starts, stamp its resolved value on the document element before loading the stylesheet; the stylesheet's media-query default already handles automatic dark mode before script runs.
+The provider does not save the choice. Store it wherever suits your application, such as local storage or a user profile, and pass it back on the next visit.
+
+To apply a saved `light` or `dark` choice before your application's JavaScript runs, and so avoid a flash of the wrong colour scheme, set `data-theme="light"` or `data-theme="dark"` on the `<html>` element before the stylesheet loads. You do not need to do this for `automatic`: the stylesheet already follows the operating system before any script runs.
 
 ## Overlay portal
 
-`Dialog`, `Drawer` and `Popover` render into a dedicated portal host owned by the provider. By default, the host is appended to `document.body`. Set `portalContainer` to an existing light DOM `HTMLElement` in the current runtime document when overlays need to render in another container, such as an embedded application or a test fixture.
+`Dialog`, `Drawer` and `Popover` render outside your component tree, in a container the provider adds to `document.body`. To render them somewhere else, such as inside an embedded application, set `portalContainer` to an existing `HTMLElement`.
 
 ```tsx
 <BreezeProvider locale="en-GB" portalContainer={overlayContainer}>
@@ -116,13 +132,13 @@ The provider never reads or writes durable browser storage. The application deci
 </BreezeProvider>
 ```
 
-The provider creates and removes its own host inside that container. The host carries the Breeze root marker, locale and text direction so overlays retain scoped styling and language outside the provider's normal content tree.
+The provider adds its own element inside that container and removes it when it unmounts. Overlays keep the provider's styles, locale and text direction wherever they render.
 
-`portalContainer` and every overlay trigger must belong to the current runtime `Document` and its light DOM. Cross-document and shadow-root portals are unsupported.
+`portalContainer` and every overlay trigger must be in the current document. Containers in another document, such as an iframe, or inside a shadow root are not supported.
 
 ## Client-side navigation
 
-Set `router` when the application has a same-document router. `Link` sends qualifying same-origin link activations to `router.navigate`, together with the link's `transitionTypes`. The router owns the route update and can opt into browser view transitions; see <a href="./?path=/docs/guides-04-motion--docs" target="_top">Motion</a>.
+Set `router` when your application uses a client-side router. A `Link` to a same-origin page then calls `router.navigate` with the destination and the link's `transitionTypes`, instead of loading a new page. Your router performs the navigation and can use browser view transitions; see <a href="./?path=/docs/guides-04-motion--docs" target="_top">Motion</a>.
 
 ```tsx
 <BreezeProvider locale="en-GB" router={router}>
@@ -130,11 +146,11 @@ Set `router` when the application has a same-document router. `Link` sends quali
 </BreezeProvider>
 ```
 
-The `transitionTypes` option defaults to an empty list. A `navigate` function that accepts only `href` can ignore the second argument. External destinations, downloads, alternate targets, modified clicks and fragment links retain native anchor behavior.
+`transitionTypes` defaults to an empty list, so a `navigate` function that takes only the destination works unchanged. External links, downloads, links with another `target`, clicks with a modifier key and links containing a `#` fragment use normal browser navigation. See `Link` for details.
 
 ## Confirmations
 
-Use `useToast` below the provider to announce a completed action. The provider owns the status region, displays up to three messages at once and queues additional messages in FIFO order. Each message remains visible for 2.6 seconds after it becomes visible.
+Call `useToast` in a component below the provider to confirm a completed action. Up to three messages are shown at once; further messages wait and appear in the order they were sent. Each message stays on screen for 2.6 seconds.
 
 ```tsx
 import { useToast } from '@motech-development/breeze-ui';
@@ -146,7 +162,7 @@ function SaveAction() {
 }
 ```
 
-Set `toastLimit` when the application needs a different number of visible confirmations. Provider-enqueued confirmations stay 288px wide at every supported viewport, have no action or dismissal control, and expire after 2.6 seconds once visible.
+Set `toastLimit` to change how many messages are shown at once. Toasts are 288px wide at every screen size and have no action or dismiss button. See `Toast` for details.
 
 ## API
 

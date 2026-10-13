@@ -8,23 +8,21 @@ import * as Stories from './FormActions.stories';
 
 # FormActions
 
-`FormActions` arranges application-owned action controls with consistent spacing
-and wrapping. It does not handle submission or change child control behavior.
+`FormActions` lays out a form's buttons in a row with consistent spacing, wrapping them when space runs out. It only handles layout; submission and button behaviour stay with the buttons and form you provide.
 
-## Action placement
+## Basic actions
 
-Actions align to the end by default. Set `align` to `start` when the surrounding
-form calls for a leading action row.
+Actions align to the end of the row by default. Use `Stack` to space the fields and the action row; this example uses `Stack gap={4}`.
 
-Compose vertical spacing between fields and actions with `Stack`; this example
-uses `Stack gap={4}` around the field and action row.
+The example uses a secondary **Cancel** button and a **Save** button that submits the form.
 
 <Canvas of={Stories.Default} />
 
-<Canvas of={Stories.StartAligned} />
+## Start alignment
 
-The example keeps Cancel as a secondary button and Save as the form's native
-submit button. Both actions report visible feedback.
+Set `align="start"` to place the actions at the start of the row.
+
+<Canvas of={Stories.StartAligned} />
 
 ## API
 

@@ -8,34 +8,30 @@ import * as Stories from './Calendar.stories';
 
 # Calendar
 
-`Calendar` renders a locale-aware calendar grid. The month heading sits at the
-start of the header with the previous and next month controls together at the
-end. Weeks begin on Monday, weekday columns use the provider locale's narrow
-names, and each month uses six rows. Leading and trailing dates remain visible
-in muted text. Selected dates use a brand fill; today uses a brand outline unless
-it is selected.
+`Calendar` shows a month grid for picking a single date. To pick a date from a form field, use `DatePicker`.
 
 <Canvas of={Stories.Default} />
 
-## States
+The header shows the month with previous and next month buttons. Weeks start on Monday, and each month shows six rows, with dates from the neighbouring months in muted text. Weekday names use the provider locale. The selected date has a brand fill, and today has a brand outline unless it is selected.
 
-Use `disabled` to prevent date changes.
+## Disabled
+
+Set `disabled` to prevent the date from being changed.
 
 <Canvas of={Stories.Disabled} />
 
 ## Controlled values
 
-Provide `value` and `onChange` for controlled usage. The callback receives an
-ISO `YYYY-MM-DD` string, never a DOM event. Use `defaultValue` and an optional
-`onChange` for uncontrolled usage; the two forms cannot be mixed.
+Pass `value` and `onChange` to control the selected date. `onChange` receives an ISO `YYYY-MM-DD` string.
+
+For an uncontrolled calendar, use `defaultValue` with an optional `onChange`. Controlled and uncontrolled props cannot be combined.
 
 ## Accessibility
 
-The `label` names the calendar. React Aria provides keyboard navigation,
-selection semantics and localized weekday and date names. Each date's accessible
-name includes its full weekday, so the narrow column headings are not its only
-cue. The selection fill keeps at least 3:1 contrast with the background in both
-appearances, so the selected date needs no additional outline.
+- `label` names the calendar.
+- Use the arrow keys to move between dates and Enter or Space to select one.
+- Each date is announced with its full weekday and date name in the provider locale.
+- The selected date's fill has at least 3:1 contrast with the background in both light and dark appearances.
 
 ## API
 

@@ -8,16 +8,17 @@ import * as Stories from './Toggle.stories';
 
 # Toggle
 
-`Toggle` represents an on/off choice as a button. Its pressed state is exposed
-with `aria-pressed`. Use a `Checkbox` when the choice belongs in a form.
+`Toggle` is a button that switches something on or off, such as a filter.
+Use a `Checkbox` instead when the choice belongs in a form.
 
 <Canvas of={Stories.Default} />
 
 ## Pressed state
 
-Use `defaultPressed` for an uncontrolled toggle, or `pressed` and `onChange` when
-the application owns the state. The callback receives the next pressed value.
-Choose one of these state approaches for each toggle.
+For an uncontrolled toggle, set `defaultPressed` to choose its starting state.
+To control it from your own state, pass both `pressed` and `onChange`.
+`onChange` receives the new pressed value. Controlled and uncontrolled props
+cannot be combined.
 
 <Canvas of={Stories.Pressed} />
 
@@ -25,26 +26,30 @@ Choose one of these state approaches for each toggle.
 
 ## Loading
 
-Set `loading` while saving a choice. A skeleton replaces the visible label while
-the button keeps its name and width. Activation resumes when loading clears.
+Set `loading` while saving a choice. A placeholder replaces the visible label,
+and the button keeps its name and width. It cannot be pressed until loading
+ends.
 
 <Canvas of={Stories.Loading} />
 
-## Sizes and disabled state
+## Sizes
 
 `size` accepts `sm`, `md` (default) or `lg`, with minimum heights of 34, 38 and
-52px. Touch targets are at least 44px. Disabled toggles cannot be
-activated.
+52px. On touch devices, every size has a target of at least 44px.
 
 <Canvas of={Stories.Sizes} />
+
+## Disabled
+
+Set `disabled` to prevent the toggle from being pressed.
 
 <Canvas of={Stories.Disabled} />
 
 ## Accessibility
 
-The visible label names the button. `aria-label`, `aria-labelledby` and
-`aria-describedby` support alternate and supplemental names. The button exposes
-its pressed state and supports keyboard activation.
+The visible label names the button, and screen readers announce whether it is
+pressed. Use `aria-label` or `aria-labelledby` to give it a different name, and
+`aria-describedby` to add a description. Press Space or Enter to switch it.
 
 ## API
 

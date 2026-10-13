@@ -5,114 +5,126 @@ import * as Stories from './Menu.stories';
 
 # Menu
 
-`Menu` keeps related actions together under a labelled button. Use it for
-secondary actions, such as account settings, that should stay out of the main
-page until needed.
+A menu shows a list of actions when someone presses its button. Use it for
+secondary actions, such as account settings, that should stay out of the way
+until needed.
 
-When the visible trigger label is shared by several controls, set
-`triggerAriaLabel` to give each button a distinct accessible name while keeping
-the visible label concise.
+## Basic menu
+
+Pass `trigger` as the button's visible label, your data as `items`, and a
+`getItem` function that describes each item. `onAction` is called with the
+selected item from `items`, as it is in `Select`, `ComboBox` and `ToggleGroup`.
 
 <Canvas of={Stories.Default} />
 
+When several buttons on a page share the same visible label, set
+`triggerAriaLabel` to give each one a distinct name for screen readers while
+keeping the visible label short.
+
+## Item content
+
+`getItem` returns a `MenuItemDescriptor` for each item:
+
+- `id` and `label` are required. Each `id` must be unique within the menu.
+- `description`, `icon` or `initials`, `badge`, `disabled`, `section` and
+  `tone` are optional.
+
+Keep labels concise. Use a description for a short explanation, and icons when
+they help people scan the choices.
+
+When any item has an icon or initials, every label lines up: items without
+either keep the space empty, and in a menu with initials, icons are centred in
+the tile's width. In a menu with neither, labels start at the edge.
+
 ## Icon-only trigger
 
-Omit `trigger` and set `triggerIcon` and `triggerAriaLabel` together for a
-compact icon-only trigger, such as a More actions button. `triggerAriaLabel`
-is then required, because it is the trigger's only name.
+For a compact button such as More actions, omit `trigger` and set `triggerIcon`
+and `triggerAriaLabel`. `triggerAriaLabel` is required here, because it is the
+button's only name.
 
 <Canvas of={Stories.IconOnlyTrigger} />
 
-## Loading the menu
+## Sections
 
-Use `loading` when the trigger should wait before opening. It shows a loading
-bar while keeping its size and accessible label; an icon-only trigger replaces
-its icon with a skeleton, as `IconButton` does. Actions in an already-open menu
-remain available.
+Give items a `section` to group them. Items that share a section `id` appear
+together, where the first of them appears in `items`, with dividers between
+sections. A section `label` is shown as a header and names the group for screen
+readers. Without a label, the items are separated by dividers only.
 
-<Canvas of={Stories.Loading} />
+Set `initials` instead of `icon` to show a short code, such as a company's
+initials, in a tile before the label. The tile is decorative, so the label must
+still identify the item.
 
-## Define actions
-
-Pass your application values in `items`. Use `getItem` to provide each value's
-`MenuItemDescriptor`: `id` and `label` are required, while `description`,
-`icon` or `initials`, `badge`, `disabled`, `section` and `tone` are optional. Give each item a unique `id` within the
-menu. Keep labels concise; use descriptions for a short explanation and icons
-when they help people scan the choices. When any item has an icon or initials,
-every label lines up: items without either keep that space, and in a menu with
-initials, icons centre in the tile's width. A menu without either starts its
-labels at the edge.
+<Canvas of={Stories.Sections} />
 
 ## Destructive actions
 
 Set `tone: 'danger'` on an action that removes or discards something, such as
 Remove, to show it in the danger colour. Place it last, in its own `section`,
-so a divider separates it from the other actions. The action runs when
-selected; confirm its result in the page, as with any other action.
+so a divider separates it from the other actions.
+
+The action runs as soon as it is selected, like any other. If it needs
+confirming, or its result needs showing, do that in the page or a dialog.
 
 <Canvas of={Stories.DestructiveAction} />
 
-## Group actions into sections
+## Width
 
-Give items a `section` to group them. Items sharing a section `id` are shown
-together where the first of them appears, and dividers separate each section
-from its neighbours. A section `label` shows as a header and names the group
-for assistive technology; omit it to separate the items with dividers alone,
-without a header or a group.
+The open menu fits its items and is never narrower than its button. `width`
+sets its minimum width:
 
-Set `initials` instead of `icon` to show a short code, such as a company's
-initials, in a brand tile before the label. The tile is decorative, so the label
-must still identify the item.
-
-<Canvas of={Stories.Sections} />
-
-## Menu width
-
-The open menu fits its items and is never narrower than its trigger. `width`
-sets its minimum width: `md`, the default, is 256px and suits a list of names
-such as a company switcher; `sm` is 208px and suits a short list of actions,
-such as the file actions in `AttachmentRow`.
+- `md` (default) is 256px and suits a list of names, such as a company switcher.
+- `sm` is 208px and suits a short list of actions, such as the file actions in
+  `AttachmentRow`.
 
 <Canvas of={Stories.NarrowWidth} />
 
 ## Placement
 
-The menu opens below its trigger with their start edges aligned. Set
-`placement` to `bottom end` to align their end edges instead, for a trigger at
-the end of a row. Start and end follow the provider's text direction, and the
-menu can adjust its position to fit the available space.
+The menu opens below its button with their start edges aligned. Set
+`placement="bottom end"` to align their end edges instead, for a button at the
+end of a row. Start and end follow the provider's text direction, and the menu
+moves if needed to fit on screen.
 
-## Panels that are not menus
+## Loading
 
-A menu contains only actions, optionally grouped into labelled sections. Do not
-use `Menu` for a panel that also shows information people read but cannot act
-on, places controls inside a row or header, or offers a toggle group. Assistive
-technology presents a menu as its menu items alone, so plain-text rows are
-skipped, and the menu's arrow keys cannot reach a button placed inside an item
-or a section header.
+Set `loading` while the menu is not ready to open. The button shows a loading
+bar and keeps its size and accessible name; an icon-only button replaces its
+icon with a placeholder, as `IconButton` does. Actions in a menu that is
+already open remain available.
 
-An account panel that lists notifications, gives one of them a Download action,
-offers Mark all as read and an `AppearanceControl`, and then links to settings
-is such a panel. Build it as a `Popover` with application content instead.
+<Canvas of={Stories.Loading} />
 
-## Respond to a selection
+## Controlled open state
 
-`onAction` receives the selected application item from `items`, as
-`Select`, `ComboBox` and `ToggleGroup` do. The menu closes when an action is
-selected. Show that action's progress, confirmation or errors in
-the page or dialog that follows.
+The menu closes when an action is selected. Show the action's progress,
+confirmation or errors in the page or dialog that follows.
 
-Use `defaultOpen` when the menu manages its own visibility. To control
-visibility, provide `open` and `onOpenChange` together.
+By default, the menu manages whether it is open; set `defaultOpen` to start
+open. To control it from your own state, pass both `open` and `onOpenChange`.
 
 <Canvas of={Stories.Controlled} />
 
-## Keyboard use
+## When to use a popover instead
 
-Open the menu with the trigger button, Enter, Space or ArrowDown. Use the arrow
-keys to move through enabled actions; type a label to jump to a matching action.
-Enter or Space selects the focused action. Escape closes the menu and returns
-focus to its trigger.
+A menu can contain only actions, optionally grouped into sections. Use a
+`Popover` instead for a panel that also shows information, places controls
+inside a row or header, or includes a toggle group. Screen readers present a
+menu as its actions alone, so plain text is skipped, and the arrow keys cannot
+reach a button placed inside an item or header.
+
+For example, an account panel that lists notifications with a Download action,
+offers Mark all as read and an `AppearanceControl`, and links to settings
+should be a `Popover`.
+
+## Accessibility
+
+- Open the menu by pressing its button, or with Enter, Space or ArrowDown when
+  the button has focus.
+- Use the arrow keys to move between enabled actions, or type the start of a
+  label to jump to it.
+- Enter or Space selects the focused action.
+- Escape closes the menu and returns focus to its button.
 
 ## API
 

@@ -5,16 +5,13 @@ import * as Stories from './Chip.stories';
 
 # Chip
 
-`Chip` is a compact pill-shaped filter. It stays independently selectable when
-shown beside other chips, and exposes its state as `aria-pressed`.
+`Chip` is a compact, pill-shaped toggle for filtering content. Each chip is turned on and off independently, even in a row with other chips.
 
 <Canvas of={Stories.Default} />
 
 ## Pressed state
 
-Use `defaultPressed` for an uncontrolled chip, or `pressed` and `onChange` when
-the application owns the state. The callback receives the next pressed value.
-Choose one of these state approaches for each chip.
+Use `defaultPressed` for an uncontrolled chip, or `pressed` and `onChange` to control it. `onChange` receives the new pressed value. Use only one of these approaches for each chip.
 
 <Canvas of={Stories.Pressed} />
 
@@ -22,23 +19,21 @@ Choose one of these state approaches for each chip.
 
 ## Loading
 
-Set `loading` while saving a choice. A skeleton replaces the visible label while
-the chip keeps its name and width. Activation resumes when loading clears.
+Set `loading` while a choice is being saved. A placeholder replaces the visible label, and the chip keeps its name and width. It can be activated again once loading ends.
 
 <Canvas of={Stories.Loading} />
 
-## Disabled and touch targets
+## Disabled
 
-Set `disabled` to prevent activation. Chips have a 34px minimum height and
-expand to a 44px minimum touch target.
+Set `disabled` to prevent activation.
 
 <Canvas of={Stories.Disabled} />
 
 ## Accessibility
 
-The visible label names the button. `aria-label`, `aria-labelledby` and
-`aria-describedby` support alternate and supplemental names. The button exposes
-its pressed state and supports keyboard activation.
+- The chip is a button named by its visible label. Use `aria-label`, `aria-labelledby` or `aria-describedby` to provide an alternative or additional description.
+- Its state is announced as pressed or not pressed, and it can be toggled with the keyboard.
+- Chips are at least 34px tall and have a minimum 44px touch target.
 
 ## API
 
