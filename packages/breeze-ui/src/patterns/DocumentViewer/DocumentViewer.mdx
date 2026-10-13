@@ -43,7 +43,7 @@ yarn add pdfjs-dist@^6.2.108
 
 PDF.js and its worker are loaded only when a PDF is opened, so they add nothing to your initial bundle. Together they are roughly 635 KiB gzipped.
 
-PDF.js downloads each file in a single request rather than in byte ranges, so short-lived presigned URLs keep working while the document is open.
+The viewer fetches each PDF in a single request and makes no later byte-range requests, so a presigned URL only needs to be valid when the document is opened.
 
 ### Worker
 
@@ -94,7 +94,8 @@ Give the `AttachmentRow` and the viewer the same unique `transitionName` to anim
 ## Accessibility
 
 - `title` names the viewer.
-- While the viewer is open, Tab and Shift+Tab cycle through its controls, and page scrolling is locked.
+- The viewer is non-modal. The page or sheet beneath it stays open and interactive, and remains available to assistive technology.
+- While the viewer is open, Tab and Shift+Tab keep focus within its controls, and page scrolling is locked.
 - Escape and the Close button close the viewer.
 - Opened from a sheet, the viewer covers the screen while the sheet stays open behind it. Closing the viewer returns focus to the sheet, and closing the sheet also closes the viewer.
 

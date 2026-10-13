@@ -79,7 +79,7 @@ A popover opened inside a `Drawer` appears above it, and the drawer stays intera
 
 ## Accessibility
 
-Opening the popover moves focus into it, and closing it returns focus to the button. Focus is not trapped, so people can Tab out of the popover to the rest of the page. The popover keeps the provider's locale and text direction even though it renders outside your component tree.
+Opening the popover moves focus into it, and closing it returns focus to the button. Focus is not trapped, so people can Tab out of the popover to the rest of the page. The popover's DOM is rendered in a portal, but it stays in your React tree and keeps the provider's locale and text direction.
 
 The open and close animations respect the user's reduced-motion setting. As soon as a popover starts to close, the content beneath it becomes interactive again, without waiting for the animation to finish.
 

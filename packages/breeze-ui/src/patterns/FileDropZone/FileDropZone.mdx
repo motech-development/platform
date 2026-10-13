@@ -20,7 +20,7 @@ Set `compact` to show the drop area as a single row, the same height as an `Atta
 
 ## Take photo
 
-Set `camera` to add a **Take photo** button before **Choose files**. On phones it opens the rear camera; on other devices it opens an image picker.
+Set `camera` to add a **Take photo** button before **Choose files**. On phones it requests the rear camera, although the browser or device may use its own default; on other devices it opens an image picker.
 
 Cameras produce JPEG photos, so **Take photo** appears only when `accept` is omitted or allows JPEG through `image/*`, `image/jpeg`, `.jpg`, `.jpeg` or `*/*`. Photos go through the same type, size and count checks as chosen files and are passed to `onFilesAdded` in the same way.
 

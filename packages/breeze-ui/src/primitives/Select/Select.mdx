@@ -32,9 +32,10 @@ readers announce the badge as part of the value, as they do for the option.
 
 ## States
 
-`required`, `disabled` and `readOnly` behave as they do on a native form
-control. Pass a non-empty `error` to mark the field invalid and show the
-message; there is no separate `invalid` prop.
+`required` and `disabled` behave as they do on a native form control. Set
+`readOnly` to prevent the choice from changing; the field stays focusable and
+its value is still submitted with the form. Pass a non-empty `error` to mark
+the field invalid and show the message; there is no separate `invalid` prop.
 
 Set `loading` while the value is not yet available. The field keeps its shape
 and cannot be changed until loading ends.

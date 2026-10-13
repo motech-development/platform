@@ -47,7 +47,9 @@ function TransactionRow({ transaction }) {
 }
 ```
 
-Each `name` must be a valid CSS identifier and unique among the visible participants before and after the update. In development, Breeze UI logs a console error for duplicate names.
+Each `name` must start with a letter (A–Z or a–z) or an underscore, followed by letters, digits, underscores or hyphens. These names are reserved, in any letter case: `auto`, `default`, `inherit`, `initial`, `none`, `revert`, `revert-layer`, `unset`, `root`, `match-element`, `breeze-botnav`, `breeze-navmark`, `breeze-topbar` and `breeze-topnav`. An invalid or reserved name throws a `TypeError`.
+
+Each `name` must also be unique among the visible participants before and after the update. In development, Breeze UI logs a console error for duplicate names.
 
 While a dialog, drawer, menu or popover is open on top of the page, participants beneath it do not animate. A participant inside an overlay animates only when that overlay is the topmost one. A menu or popover stops counting as soon as it starts closing, so a navigation started from a menu item still animates the page; a closing dialog or drawer blocks transitions until its exit animation finishes.
 

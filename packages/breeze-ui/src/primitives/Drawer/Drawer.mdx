@@ -86,7 +86,7 @@ See the `Foundations/Overlay stack` stories for more combinations.
 
 ## Accessibility
 
-Opening the drawer moves focus into it, and focus stays inside while it is open. Closing it returns focus to the trigger. The drawer keeps the provider's locale and text direction even though it renders outside your component tree.
+Opening the drawer moves focus into it, and focus stays inside while it is open. Closing it returns focus to the trigger. The drawer's DOM is rendered in a portal, but it stays in your React tree and keeps the provider's locale and text direction.
 
 The open and close animations respect the user's reduced-motion setting. As soon as a drawer starts to close, the content beneath it becomes interactive again, without waiting for the animation to finish.
 
