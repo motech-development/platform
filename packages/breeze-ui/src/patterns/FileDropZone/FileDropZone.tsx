@@ -133,6 +133,38 @@ function getAcceptedTypes(accept: string) {
     .filter(Boolean);
 }
 
+const jpegExtensions = ['.jpeg', '.jpg'];
+
+function matchesExtension(
+  fileName: string,
+  mimeType: string,
+  extension: string,
+) {
+  // Either JPEG extension offers the camera, which may name its photo with the other.
+  if (mimeType === 'image/jpeg' && jpegExtensions.includes(extension)) {
+    return jpegExtensions.some((jpegExtension) =>
+      fileName.endsWith(jpegExtension),
+    );
+  }
+
+  return fileName.endsWith(extension);
+}
+
+// The picker offers both JPEG extensions, as validation accepts either.
+function getPickerAccept(
+  accept: string | undefined,
+  acceptedTypes: readonly string[],
+) {
+  if (!acceptedTypes.some((type) => jpegExtensions.includes(type))) {
+    return accept;
+  }
+
+  return [
+    accept,
+    ...jpegExtensions.filter((extension) => !acceptedTypes.includes(extension)),
+  ].join(',');
+}
+
 function acceptsFile(file: File, acceptedTypes: readonly string[]) {
   if (acceptedTypes.length === 0) return true;
 
@@ -141,7 +173,9 @@ function acceptsFile(file: File, acceptedTypes: readonly string[]) {
 
   return acceptedTypes.some((acceptedType) => {
     if (acceptedType === '*/*') return true;
-    if (acceptedType.startsWith('.')) return fileName.endsWith(acceptedType);
+    if (acceptedType.startsWith('.')) {
+      return matchesExtension(fileName, mimeType, acceptedType);
+    }
     if (acceptedType.endsWith('/*')) {
       return mimeType.startsWith(acceptedType.slice(0, -1));
     }
@@ -201,6 +235,98 @@ function interpolateMessage(
   });
 }
 
+interface FileDropZoneActionsProps {
+  accept: string | undefined;
+  acceptedTypes: readonly string[];
+  camera: boolean;
+  layout: FileDropZoneLayout;
+  onFilesChosen: (files: FileList | readonly File[]) => void;
+}
+
+function FileDropZoneActions({
+  accept,
+  acceptedTypes,
+  camera,
+  layout,
+  onFilesChosen,
+}: Readonly<FileDropZoneActionsProps>) {
+  const { getMessageLocale, messages } = useBreezeContext();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const showCamera =
+    camera &&
+    (acceptedTypes.length === 0 ||
+      acceptedTypes.some((acceptedType) => cameraPhotoTypes.has(acceptedType)));
+
+  function handlePickerChange(event: ChangeEvent<HTMLInputElement>) {
+    const input = event.currentTarget;
+    onFilesChosen(input.files ?? []);
+    input.value = '';
+  }
+
+  return (
+    <>
+      <div
+        className={[
+          variants.base.actions,
+          variants.variant.actions[layout],
+        ].join(' ')}
+      >
+        {showCamera ? (
+          <span
+            className={[variants.base.action, variants.base.camera].join(' ')}
+            lang={getMessageLocale('fileDropZoneTakePhoto')}
+          >
+            <Button
+              icon="camera"
+              onAction={() => cameraInputRef.current?.click()}
+              size="sm"
+              variant="secondary"
+            >
+              {messages.fileDropZoneTakePhoto}
+            </Button>
+          </span>
+        ) : null}
+        <span
+          className={variants.base.action}
+          lang={getMessageLocale('fileDropZoneChooseFiles')}
+        >
+          <Button
+            icon={layout === 'compact' ? 'upload' : undefined}
+            onAction={() => inputRef.current?.click()}
+            size="sm"
+            variant="secondary"
+          >
+            {messages.fileDropZoneChooseFiles}
+          </Button>
+        </span>
+      </div>
+      <input
+        accept={getPickerAccept(accept, acceptedTypes)}
+        aria-hidden="true"
+        className={variants.base.input}
+        multiple
+        onChange={handlePickerChange}
+        ref={inputRef}
+        tabIndex={-1}
+        type="file"
+      />
+      {showCamera ? (
+        <input
+          accept="image/*"
+          aria-hidden="true"
+          capture="environment"
+          className={variants.base.input}
+          onChange={handlePickerChange}
+          ref={cameraInputRef}
+          tabIndex={-1}
+          type="file"
+        />
+      ) : null}
+    </>
+  );
+}
+
 /** Props for a file chooser that accepts files by drop or picker. */
 export interface FileDropZoneProps {
   /** Allowed file extensions and MIME types, in the native `accept` format. */
@@ -237,8 +363,6 @@ export function FileDropZone({
   onFilesAdded,
 }: Readonly<FileDropZoneProps>) {
   const { getMessageLocale, messages } = useBreezeContext();
-  const inputRef = useRef<HTMLInputElement>(null);
-  const cameraInputRef = useRef<HTMLInputElement>(null);
   const announcementSequence = useRef(0);
   const labelId = useId();
   const instructionsId = useId();
@@ -264,10 +388,6 @@ export function FileDropZone({
 
   const acceptedTypes = getAcceptedTypes(accept ?? '');
   const layout = compact ? 'compact' : 'stacked';
-  const showCamera =
-    camera &&
-    (acceptedTypes.length === 0 ||
-      acceptedTypes.some((acceptedType) => cameraPhotoTypes.has(acceptedType)));
   const instructionKey = isDragging
     ? 'fileDropZoneReleaseInstructions'
     : 'fileDropZoneDropInstructions';
@@ -386,12 +506,6 @@ export function FileDropZone({
     }
   }
 
-  function handlePickerChange(event: ChangeEvent<HTMLInputElement>) {
-    const input = event.currentTarget;
-    addFiles(input.files ?? []);
-    input.value = '';
-  }
-
   function handleDrop(event: DragEvent<HTMLElement>) {
     if (!isFileDrag(event.dataTransfer)) {
       setIsDragging(false);
@@ -493,63 +607,13 @@ export function FileDropZone({
             </p>
           ) : null}
         </div>
-        <div
-          className={[
-            variants.base.actions,
-            variants.variant.actions[layout],
-          ].join(' ')}
-        >
-          {showCamera ? (
-            <span
-              className={[variants.base.action, variants.base.camera].join(' ')}
-              lang={getMessageLocale('fileDropZoneTakePhoto')}
-            >
-              <Button
-                icon="camera"
-                onAction={() => cameraInputRef.current?.click()}
-                size="sm"
-                variant="secondary"
-              >
-                {messages.fileDropZoneTakePhoto}
-              </Button>
-            </span>
-          ) : null}
-          <span
-            className={variants.base.action}
-            lang={getMessageLocale('fileDropZoneChooseFiles')}
-          >
-            <Button
-              icon={compact ? 'upload' : undefined}
-              onAction={() => inputRef.current?.click()}
-              size="sm"
-              variant="secondary"
-            >
-              {messages.fileDropZoneChooseFiles}
-            </Button>
-          </span>
-        </div>
-        <input
+        <FileDropZoneActions
           accept={accept}
-          aria-hidden="true"
-          className={variants.base.input}
-          multiple
-          onChange={handlePickerChange}
-          ref={inputRef}
-          tabIndex={-1}
-          type="file"
+          acceptedTypes={acceptedTypes}
+          camera={camera}
+          layout={layout}
+          onFilesChosen={(files) => addFiles(files)}
         />
-        {showCamera ? (
-          <input
-            accept="image/*"
-            aria-hidden="true"
-            capture="environment"
-            className={variants.base.input}
-            onChange={handlePickerChange}
-            ref={cameraInputRef}
-            tabIndex={-1}
-            type="file"
-          />
-        ) : null}
       </section>
       <output
         aria-atomic="true"

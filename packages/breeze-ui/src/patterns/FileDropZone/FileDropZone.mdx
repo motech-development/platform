@@ -32,7 +32,7 @@ the rear camera and other devices fall back to an image picker. Cameras deliver
 JPEG photos, so the action appears only when `accept` is omitted or allows JPEG
 through `image/*`, `image/jpeg`, `.jpg`, `.jpeg` or `*/*`. Captured photos pass
 the same type, size and count checks as chosen files and reach `onFilesAdded`
-the same way.
+the same way. For JPEG files, `.jpg` and `.jpeg` accept either extension.
 
 On coarse pointers and below Breeze's `md` breakpoint, Take photo is filled in
 the brand colour. Below `md` it also fills the stacked layout's action row, the
