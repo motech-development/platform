@@ -428,6 +428,76 @@ describe('FileDropZone', () => {
     );
   });
 
+  it.each([
+    ['.jpg', 'photo.jpeg'],
+    ['.jpeg', 'image.jpg'],
+  ])(
+    'accepts a captured JPEG for accept %s when it is named %s',
+    async (accept, fileName) => {
+      const user = userEvent.setup();
+      const onFilesAdded = vi.fn<(files: readonly File[]) => void>();
+      const { container } = renderBreeze(
+        <FileDropZone
+          accept={accept}
+          camera
+          label="Invoice or receipt"
+          onFilesAdded={onFilesAdded}
+        />,
+      );
+      const cameraInput = container.querySelector<HTMLInputElement>(
+        'input[capture="environment"]',
+      );
+      const photo = new File(['jpeg'], fileName, { type: 'image/jpeg' });
+
+      await user.upload(cameraInput!, photo);
+
+      expect(onFilesAdded).toHaveBeenCalledExactlyOnceWith([photo]);
+    },
+  );
+
+  it('matches the other JPEG extension only for JPEG files', () => {
+    const onFilesAdded = vi.fn<(files: readonly File[]) => void>();
+
+    renderBreeze(
+      <FileDropZone
+        accept=".jpg"
+        label="Invoice or receipt"
+        onFilesAdded={onFilesAdded}
+      />,
+    );
+
+    fireEvent.drop(screen.getByRole('region', { name: 'Invoice or receipt' }), {
+      dataTransfer: {
+        files: [new File(['text'], 'notes.jpeg', { type: 'text/plain' })],
+        types: ['Files'],
+      },
+    });
+
+    expect(onFilesAdded).not.toHaveBeenCalled();
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'No files were added. notes.jpeg: File type is not accepted.',
+    );
+  });
+
+  it.each([
+    ['.jpg', '.jpg,.jpeg'],
+    ['.pdf,.jpeg', '.pdf,.jpeg,.jpg'],
+    ['.pdf,image/*', '.pdf,image/*'],
+  ])('lets the picker accept %s offer %s', (accept, pickerAccept) => {
+    const { container } = renderBreeze(
+      <FileDropZone
+        accept={accept}
+        label="Invoice or receipt"
+        onFilesAdded={vi.fn()}
+      />,
+    );
+
+    expect(container.querySelector('input[multiple]')).toHaveAttribute(
+      'accept',
+      pickerAccept,
+    );
+  });
+
   it('labels Take photo from provider messages in their language', () => {
     render(
       <BreezeProvider
