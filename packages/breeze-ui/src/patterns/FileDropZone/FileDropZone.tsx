@@ -135,23 +135,15 @@ function getAcceptedTypes(accept: string) {
 
 const jpegExtensions = ['.jpeg', '.jpg'];
 
-function matchesExtension(
-  fileName: string,
-  mimeType: string,
-  extension: string,
-) {
-  // Either JPEG extension offers the camera, which may name its photo with the other.
-  // Some platforms leave the type empty, so only an explicit non-JPEG type opts out.
-  if (
-    (mimeType === '' || mimeType === 'image/jpeg') &&
-    jpegExtensions.includes(extension)
-  ) {
-    return jpegExtensions.some((jpegExtension) =>
-      fileName.endsWith(jpegExtension),
-    );
-  }
+function isJpegName(fileName: string) {
+  return jpegExtensions.some((extension) => fileName.endsWith(extension));
+}
 
-  return fileName.endsWith(extension);
+// Some platforms leave a captured photo's type empty, so its name stands in.
+function getFileType(file: File, fileName: string) {
+  const mimeType = file.type.toLowerCase().split(';')[0];
+
+  return mimeType === '' && isJpegName(fileName) ? 'image/jpeg' : mimeType;
 }
 
 // The picker offers both JPEG extensions, as validation accepts either.
@@ -173,13 +165,15 @@ function acceptsFile(file: File, acceptedTypes: readonly string[]) {
   if (acceptedTypes.length === 0) return true;
 
   const fileName = file.name.toLowerCase();
-  const mimeType = file.type.toLowerCase().split(';')[0];
+  const mimeType = getFileType(file, fileName);
 
   return acceptedTypes.some((acceptedType) => {
     if (acceptedType === '*/*') return true;
-    if (acceptedType.startsWith('.')) {
-      return matchesExtension(fileName, mimeType, acceptedType);
+    // Either JPEG extension offers the camera, which may name its photo with the other.
+    if (mimeType === 'image/jpeg' && jpegExtensions.includes(acceptedType)) {
+      return isJpegName(fileName);
     }
+    if (acceptedType.startsWith('.')) return fileName.endsWith(acceptedType);
     if (acceptedType.endsWith('/*')) {
       return mimeType.startsWith(acceptedType.slice(0, -1));
     }

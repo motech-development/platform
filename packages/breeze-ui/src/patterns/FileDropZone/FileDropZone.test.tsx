@@ -458,6 +458,8 @@ describe('FileDropZone', () => {
   it.each([
     ['.jpg', 'photo.jpeg'],
     ['.jpeg', 'image.jpg'],
+    ['image/jpeg', 'photo.jpg'],
+    ['image/*', 'photo.jpg'],
   ])(
     'accepts an untyped JPEG for accept %s when it is named %s',
     (accept, fileName) => {
