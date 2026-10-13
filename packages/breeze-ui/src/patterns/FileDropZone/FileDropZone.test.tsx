@@ -455,6 +455,32 @@ describe('FileDropZone', () => {
     },
   );
 
+  it.each([
+    ['.jpg', 'photo.jpeg'],
+    ['.jpeg', 'image.jpg'],
+  ])(
+    'accepts an untyped JPEG for accept %s when it is named %s',
+    (accept, fileName) => {
+      const onFilesAdded = vi.fn<(files: readonly File[]) => void>();
+      const photo = new File(['jpeg'], fileName);
+
+      renderBreeze(
+        <FileDropZone
+          accept={accept}
+          label="Invoice or receipt"
+          onFilesAdded={onFilesAdded}
+        />,
+      );
+
+      fireEvent.drop(
+        screen.getByRole('region', { name: 'Invoice or receipt' }),
+        { dataTransfer: { files: [photo], types: ['Files'] } },
+      );
+
+      expect(onFilesAdded).toHaveBeenCalledExactlyOnceWith([photo]);
+    },
+  );
+
   it('matches the other JPEG extension only for JPEG files', () => {
     const onFilesAdded = vi.fn<(files: readonly File[]) => void>();
 

@@ -141,7 +141,11 @@ function matchesExtension(
   extension: string,
 ) {
   // Either JPEG extension offers the camera, which may name its photo with the other.
-  if (mimeType === 'image/jpeg' && jpegExtensions.includes(extension)) {
+  // Some platforms leave the type empty, so only an explicit non-JPEG type opts out.
+  if (
+    (mimeType === '' || mimeType === 'image/jpeg') &&
+    jpegExtensions.includes(extension)
+  ) {
     return jpegExtensions.some((jpegExtension) =>
       fileName.endsWith(jpegExtension),
     );
