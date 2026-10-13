@@ -37,6 +37,8 @@ const variants = {
     icon: 'breeze:block-breeze-4 breeze:inline-breeze-4 breeze:shrink-0',
     initials:
       'breeze:flex breeze:block-breeze-6 breeze:inline-breeze-6 breeze:shrink-0 breeze:items-center breeze:justify-center breeze:rounded-breeze-sm breeze:bg-breeze-brand-soft breeze:text-breeze-2xs breeze:font-bold breeze:text-breeze-brand-text',
+    initialsSlot:
+      'breeze:flex breeze:inline-breeze-6 breeze:shrink-0 breeze:justify-center',
     item: 'breeze:flex breeze:min-inline-0 breeze:min-block-breeze-md breeze:any-pointer-coarse:min-block-breeze-tap breeze:items-center breeze:gap-breeze-2 breeze:px-[14px] breeze:py-[10px] breeze:font-breeze-sans breeze:text-breeze-sm breeze:text-start breeze:outline-offset-[-2px] breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-50 breeze:data-[focused]:bg-breeze-raised breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[hovered]:bg-breeze-raised',
     menu: 'breeze:min-inline-0 breeze:outline-none',
     // Shrink-wraps its items, as the prototype's menus do, instead of the shared 320px popover width.
@@ -196,22 +198,40 @@ function groupEntries<T>(entries: MenuEntry<T>[]): MenuBlock<T>[] {
   return blocks;
 }
 
+type LeadingSlot = 'icon' | 'initials' | undefined;
+
+// Rows share one indent: the initials tile's when any row has one, else the icon's.
+function getLeadingSlot<T>(entries: MenuEntry<T>[]): LeadingSlot {
+  if (entries.some(({ descriptor }) => descriptor.initials !== undefined)) {
+    return 'initials';
+  }
+
+  return entries.some(({ descriptor }) => descriptor.icon) ? 'icon' : undefined;
+}
+
 interface MenuItemContentProps {
   descriptionId: string;
   descriptor: MenuItemDescriptor;
-  reserveIcon: boolean;
+  leadingSlot: LeadingSlot;
 }
 
 function MenuItemContent({
   descriptionId,
   descriptor,
-  reserveIcon,
+  leadingSlot,
 }: Readonly<MenuItemContentProps>) {
   return (
     <>
       {descriptor.initials === undefined ? (
-        reserveIcon && (
-          <span aria-hidden="true" className={variants.base.icon}>
+        leadingSlot && (
+          <span
+            aria-hidden="true"
+            className={
+              leadingSlot === 'initials'
+                ? variants.base.initialsSlot
+                : variants.base.icon
+            }
+          >
             {descriptor.icon && <Icon name={descriptor.icon} size="sm" />}
           </span>
         )
@@ -258,7 +278,7 @@ function getItemKey(descriptor: MenuItemDescriptor) {
 
 function renderMenuItem<T>(
   { descriptionId, descriptor }: MenuEntry<T>,
-  reserveIcon: boolean,
+  leadingSlot: LeadingSlot,
 ) {
   return (
     <AriaMenuItem
@@ -276,15 +296,15 @@ function renderMenuItem<T>(
       <MenuItemContent
         descriptionId={descriptionId}
         descriptor={descriptor}
-        reserveIcon={reserveIcon}
+        leadingSlot={leadingSlot}
       />
     </AriaMenuItem>
   );
 }
 
-function renderMenuBlock<T>(block: MenuBlock<T>, reserveIcon: boolean) {
+function renderMenuBlock<T>(block: MenuBlock<T>, leadingSlot: LeadingSlot) {
   const renderItem = (entry: MenuEntry<T>) =>
-    renderMenuItem(entry, reserveIcon);
+    renderMenuItem(entry, leadingSlot);
 
   if (block.kind === 'item') {
     return {
@@ -384,8 +404,7 @@ export function Menu<T>({
     [getItem, items, menuId],
   );
   const blocks = useMemo(() => groupEntries(entries), [entries]);
-  // Labels align with iconned neighbours; a menu without icons starts at the edge.
-  const reserveIcon = entries.some(({ descriptor }) => descriptor.icon);
+  const leadingSlot = getLeadingSlot(entries);
   const handleOpenChange = useCallback(
     (nextOpen: boolean) => {
       if (loading && nextOpen) return;
@@ -493,7 +512,7 @@ export function Menu<T>({
             >
               {blocks.flatMap((block, index) => {
                 const previous = blocks[index - 1];
-                const { content, key } = renderMenuBlock(block, reserveIcon);
+                const { content, key } = renderMenuBlock(block, leadingSlot);
 
                 if (
                   !previous ||

@@ -500,6 +500,59 @@ describe('Menu', () => {
     ).toHaveTextContent('Download');
   });
 
+  it('indents a plain item to the initials tile beside initials items', () => {
+    renderBreeze(
+      <Menu
+        defaultOpen
+        getItem={(item) => item}
+        items={
+          [
+            { id: 'harbour', initials: 'HP', label: 'Harbour & Pine Ltd' },
+            { id: 'manage', label: 'Manage companies' },
+          ] satisfies MenuItemDescriptor[]
+        }
+        trigger="Harbour & Pine Ltd"
+      />,
+    );
+
+    const slot = screen.getByRole('menuitem', {
+      name: 'Manage companies',
+    }).firstElementChild;
+
+    expect(slot).toHaveAttribute('aria-hidden', 'true');
+    expect(slot).toBeEmptyDOMElement();
+    expect(slot).toHaveClass('breeze:inline-breeze-6');
+    expect(
+      within(
+        screen.getByRole('menuitem', { name: 'Harbour & Pine Ltd' }),
+      ).getByText('HP'),
+    ).toHaveClass('breeze:inline-breeze-6');
+  });
+
+  it('centres an icon in the initials tile width beside initials items', () => {
+    renderBreeze(
+      <Menu
+        defaultOpen
+        getItem={(item) => item}
+        items={
+          [
+            { id: 'harbour', initials: 'HP', label: 'Harbour & Pine Ltd' },
+            { icon: 'settings', id: 'manage', label: 'Manage companies' },
+          ] satisfies MenuItemDescriptor[]
+        }
+        trigger="Harbour & Pine Ltd"
+      />,
+    );
+
+    const slot = screen.getByRole('menuitem', {
+      name: 'Manage companies',
+    }).firstElementChild;
+
+    expect(slot).toHaveAttribute('aria-hidden', 'true');
+    expect(slot?.querySelector('svg')).not.toBeNull();
+    expect(slot).toHaveClass('breeze:inline-breeze-6', 'breeze:justify-center');
+  });
+
   it('falls back to visible badge text when its accessible label is blank', () => {
     renderBreeze(
       <Menu

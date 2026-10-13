@@ -114,6 +114,14 @@ export const Sections: Story = {
     await expect(selected.getBoundingClientRect().height).toBeCloseTo(44, 0);
     await expect(other.getBoundingClientRect().height).toBeCloseTo(44, 0);
     await expect(manage.getBoundingClientRect().height).toBeCloseTo(38.57, 1);
+    // Every row shares the initials tile's indent.
+    await expect(
+      within(manage).getByText('Manage companies').getBoundingClientRect().left,
+    ).toBeCloseTo(
+      within(other).getByText('Wold Farm Joinery Ltd').getBoundingClientRect()
+        .left,
+      1,
+    );
   },
   render: () => (
     <Menu
