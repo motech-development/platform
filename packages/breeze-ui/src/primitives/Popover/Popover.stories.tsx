@@ -207,6 +207,13 @@ export const AccountPanel: Story = {
       ).not.toBeInTheDocument();
     });
     await expect(trigger).toHaveFocus();
+    // Leave the story showing the panel it documents.
+    await userEvent.click(trigger);
+    await waitFor(async () => {
+      await expect(
+        page.getByRole('dialog', { name: 'Account and notifications' }),
+      ).toBeVisible();
+    });
   },
   render: () => <AccountPanelExample />,
 };
