@@ -120,7 +120,9 @@ function NavigationLink({
         routeAnchorClick(event, router, ['nav'])
       }
     >
-      {item.icon ? <Icon name={item.icon} size="xl" /> : null}
+      {item.icon ? (
+        <Icon name={item.icon} size={placement === 'top' ? 'sm' : 'xl'} />
+      ) : null}
       <span className={variants.base.navLabel}>{item.label}</span>
       {current && placement === 'top' ? (
         <span

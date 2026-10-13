@@ -219,6 +219,9 @@ export const Default: Story = {
         await expect(view.getComputedStyle(current).color).not.toBe(
           view.getComputedStyle(other).color,
         );
+        await expect(
+          other.querySelector('svg')?.getBoundingClientRect().width,
+        ).toBe(width < 901 ? 21 : 16);
 
         if (width < 901) {
           await expect(navigation.getBoundingClientRect().bottom).toBe(height);
