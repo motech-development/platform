@@ -1,0 +1,25 @@
+import{n as e}from"./rolldown-runtime-DaJ6WEGw.js";import{t}from"./jsx-runtime-cM__dR4X.js";import{i as n}from"./react-XnqUzw--.js";import{c as r,n as i,r as a,s as o}from"./blocks-CDPbzUb0.js";import{t as s}from"./mdx-react-shim-y1jXGhTh.js";import{Default as c,PanelAction as l,RouterNavigation as u,n as d,t as f}from"./Link.stories-DGFizb2U.js";function p(e){let t={code:`code`,h1:`h1`,h2:`h2`,p:`p`,pre:`pre`,strong:`strong`,...n(),...e.components};return(0,h.jsxs)(h.Fragment,{children:[(0,h.jsx)(o,{of:f,summary:`Navigates to a resource with native anchor behavior and optional router support.`}),`
+`,(0,h.jsx)(t.h1,{id:`link`,children:`Link`}),`
+`,(0,h.jsxs)(t.p,{children:[(0,h.jsx)(t.code,{children:`Link`}),` renders a native anchor as a standalone 13px text action without an underline, such as View all money in a panel header. Its `,(0,h.jsx)(t.code,{children:`href`}),` remains the destination, so browser navigation, keyboard access and open-in-new-tab behavior continue to work. Use a quiet `,(0,h.jsx)(t.code,{children:`Button`}),` for an action that does not navigate.`]}),`
+`,(0,h.jsx)(t.p,{children:`Without a configured router, activating the link uses the browser's native navigation. With a router, Breeze intercepts only qualifying same-document navigations.`}),`
+`,(0,h.jsx)(a,{of:c}),`
+`,(0,h.jsx)(a,{of:l}),`
+`,(0,h.jsx)(t.h2,{id:`router-navigation`,children:`Router navigation`}),`
+`,(0,h.jsxs)(t.p,{children:[`Pass a same-document router to `,(0,h.jsx)(t.code,{children:`BreezeProvider`}),` when links should update application state without loading another document. `,(0,h.jsx)(t.code,{children:`Link`}),` sends the destination and its optional `,(0,h.jsx)(t.code,{children:`transitionTypes`}),` to the router. The router decides whether and when to use a browser view transition; see `,(0,h.jsx)(`a`,{href:`./?path=/docs/guides-04-motion--docs`,target:`_top`,children:`Motion`}),`.`]}),`
+`,(0,h.jsx)(t.pre,{children:(0,h.jsx)(t.code,{className:`language-tsx`,children:`<BreezeProvider locale="en-GB" router={router}>
+  <Link href="/accounts/transactions" transitionTypes={['nav', 'list']}>
+    Transactions
+  </Link>
+</BreezeProvider>
+`})}),`
+`,(0,h.jsx)(a,{of:u}),`
+`,(0,h.jsxs)(t.p,{children:[(0,h.jsx)(t.code,{children:`transitionTypes`}),` defaults to an empty list. Breeze passes the option to `,(0,h.jsx)(t.code,{children:`router.navigate(href, { transitionTypes })`}),`; an existing one-argument `,(0,h.jsx)(t.code,{children:`navigate(href)`}),` adapter can ignore the extra argument.`]}),`
+`,(0,h.jsxs)(t.p,{children:[`The router receives the destination the browser would navigate to, as a root-relative path with its query string, rather than the raw `,(0,h.jsx)(t.code,{children:`href`}),`. A relative `,(0,h.jsx)(t.code,{children:`href`}),` such as `,(0,h.jsx)(t.code,{children:`accounts`}),`, `,(0,h.jsx)(t.code,{children:`../reports`}),` or `,(0,h.jsx)(t.code,{children:`?page=2`}),` is resolved against the current document first, so `,(0,h.jsx)(t.code,{children:`/accounts/transactions/`}),` with `,(0,h.jsx)(t.code,{children:`href="?page=2"`}),` routes to `,(0,h.jsx)(t.code,{children:`/accounts/transactions/?page=2`}),`.`]}),`
+`,(0,h.jsxs)(t.p,{children:[`Because the path is root-relative, it already includes any base path the application is served under. `,(0,h.jsxs)(t.strong,{children:[`An adapter for a router that prepends its own `,(0,h.jsx)(t.code,{children:`basename`}),` must strip that base before navigating`]}),`, or the base will appear twice.`]}),`
+`,(0,h.jsx)(t.h2,{id:`native-anchor-behavior`,children:`Native anchor behavior`}),`
+`,(0,h.jsx)(t.p,{children:`The router handles only an unmodified primary click on a same-origin HTTP or HTTPS link with no fragment, download, or alternate browsing target. External links, downloads, alternate targets, modified clicks and fragment links keep the browser's native behavior.`}),`
+`,(0,h.jsxs)(t.p,{children:[`Use `,(0,h.jsx)(t.code,{children:`variant="subtle"`}),` for a lower-emphasis link. The default variant uses the Breeze brand text colour.`]}),`
+`,(0,h.jsx)(t.h2,{id:`accessibility`,children:`Accessibility`}),`
+`,(0,h.jsxs)(t.p,{children:[`Links are distinguished by colour alone, so place them apart from running text rather than inside a sentence. They receive a 44px minimum height on touch devices and below the `,(0,h.jsx)(t.code,{children:`md`}),` breakpoint. The link's visible content is its accessible name by default. Use `,(0,h.jsx)(t.code,{children:`aria-label`}),` or `,(0,h.jsx)(t.code,{children:`aria-labelledby`}),` when that content does not describe the destination, and `,(0,h.jsx)(t.code,{children:`aria-current`}),` when the link represents the current page or location.`]}),`
+`,(0,h.jsx)(t.h2,{id:`api`,children:`API`}),`
+`,(0,h.jsx)(i,{})]})}function m(e={}){let{wrapper:t}={...n(),...e.components};return t?(0,h.jsx)(t,{...e,children:(0,h.jsx)(p,{...e})}):p(e)}var h;e((()=>{h=t(),s(),r(),d()}))();export{m as default};
