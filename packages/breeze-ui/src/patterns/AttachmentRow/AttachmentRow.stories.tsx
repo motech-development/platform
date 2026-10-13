@@ -157,9 +157,55 @@ export const UploadFailed: Story = {
   },
 };
 
+function getPaintedBackground(element: Element) {
+  let ancestor = element.parentElement;
+
+  while (ancestor) {
+    const { backgroundColor } = getComputedStyle(ancestor);
+
+    if (backgroundColor !== 'rgba(0, 0, 0, 0)') return backgroundColor;
+
+    ancestor = ancestor.parentElement;
+  }
+
+  return undefined;
+}
+
+async function assertSkeletonsStandOut(canvasElement: HTMLElement) {
+  const skeletons = Array.from(canvasElement.querySelectorAll('progress'));
+
+  await expect(skeletons).toHaveLength(3);
+  await expect(
+    skeletons.filter(
+      (skeleton) =>
+        getComputedStyle(skeleton).backgroundColor ===
+        getPaintedBackground(skeleton),
+    ),
+  ).toEqual([]);
+}
+
 /** Shows the row shape while attachment details are unavailable. */
 export const Loading: Story = {
   args: {
     loading: true,
+  },
+  play: async ({ canvasElement }) => {
+    await assertSkeletonsStandOut(canvasElement);
+  },
+};
+
+/** The loading placeholders stay visible against the row in the dark appearance. */
+export const LoadingDark: Story = {
+  args: {
+    loading: true,
+  },
+  globals: {
+    appearance: 'dark',
+  },
+  play: async ({ canvasElement }) => {
+    await expect(
+      canvasElement.ownerDocument.documentElement.dataset.theme,
+    ).toBe('dark');
+    await assertSkeletonsStandOut(canvasElement);
   },
 };

@@ -26,7 +26,7 @@ const variants = {
     loadingContent:
       'breeze:flex breeze:min-inline-0 breeze:flex-1 breeze:flex-col breeze:gap-breeze-2',
     photoPlaceholder: 'breeze:text-breeze-ink-3',
-    row: 'breeze:box-border breeze:flex breeze:flex-wrap breeze:min-block-breeze-row breeze:min-inline-0 breeze:items-center breeze:gap-breeze-3 breeze:rounded-breeze-panel breeze:border breeze:border-solid breeze:border-breeze-line breeze:bg-breeze-raised breeze:ps-breeze-3 breeze:pe-breeze-3',
+    row: 'breeze:box-border breeze:flex breeze:flex-wrap breeze:min-block-breeze-row breeze:min-inline-0 breeze:items-center breeze:gap-breeze-3 breeze:rounded-breeze-panel breeze:border breeze:border-solid breeze:border-breeze-line breeze:ps-breeze-3 breeze:pe-breeze-3',
     thumbnail:
       'breeze:flex breeze:block-breeze-tap breeze:inline-breeze-md breeze:shrink-0 breeze:overflow-hidden breeze:rounded-breeze-sm breeze:border breeze:border-solid breeze:border-breeze-line-strong',
     thumbnailImage:
@@ -42,6 +42,11 @@ const variants = {
       photo:
         'breeze:items-center breeze:justify-center breeze:bg-linear-160 breeze:from-breeze-sunken breeze:to-breeze-raised',
     },
+    row: {
+      content: 'breeze:bg-breeze-raised',
+      // Dark sunken skeletons vanish on raised; the prototype only shows them on surface.
+      loading: 'breeze:bg-breeze-surface',
+    },
   },
 } as const satisfies {
   base: Record<string, string>;
@@ -50,6 +55,7 @@ const variants = {
   state: Record<string, never>;
   variant: {
     fileType: Record<AttachmentRowFileType, string>;
+    row: Record<'content' | 'loading', string>;
   };
 };
 
@@ -237,7 +243,9 @@ function AttachmentRowSkeleton({
   loadingLabel,
 }: Readonly<{ loadingLabel: string }>) {
   return (
-    <div className={variants.base.row}>
+    <div
+      className={[variants.base.row, variants.variant.row.loading].join(' ')}
+    >
       <span aria-hidden="true" className={variants.base.thumbnail}>
         <Skeleton blockSize={44} inlineSize={38} shape="rectangle" />
       </span>
@@ -294,7 +302,7 @@ export function AttachmentRow(props: Readonly<AttachmentRowProps>) {
 
   return (
     <div
-      className={variants.base.row}
+      className={[variants.base.row, variants.variant.row.content].join(' ')}
       ref={normalizedTransitionName ? transitionRef : undefined}
     >
       {fileType === 'document' ? (

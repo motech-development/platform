@@ -51,6 +51,8 @@ file details so the file information remains readable.
 The `status` text stays visible and updates are announced politely regardless
 of the file type or thumbnail. While the file details are unavailable, set
 `loading` to show the row-shaped loading placeholder and labelled progress bar.
+The placeholder row sits on the surface fill rather than the raised fill, so its
+skeletons stay visible in the dark appearance.
 
 <Canvas of={Stories.UploadFailed} />
 
