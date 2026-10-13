@@ -1,6 +1,7 @@
 import {
   createElement,
   type ReactNode,
+  type RefObject,
   useCallback,
   useContext,
   useEffect,
@@ -180,6 +181,55 @@ function OverlayBody({
         children
       )}
     </>
+  );
+}
+
+function OverlayTrigger({
+  controls,
+  expanded,
+  indicator,
+  initials,
+  label,
+  onPress,
+  triggerRef,
+}: Readonly<{
+  controls: string | undefined;
+  expanded: boolean;
+  indicator: boolean;
+  initials: string | undefined;
+  label: string;
+  onPress: () => void;
+  triggerRef: RefObject<HTMLButtonElement | null>;
+}>) {
+  if (!initials) {
+    return (
+      <Button
+        aria-controls={controls}
+        aria-expanded={expanded}
+        aria-haspopup="dialog"
+        onAction={onPress}
+        ref={triggerRef}
+      >
+        {label}
+      </Button>
+    );
+  }
+
+  return (
+    <AriaButton
+      aria-controls={controls}
+      aria-expanded={expanded}
+      aria-haspopup="dialog"
+      aria-label={label}
+      className={variants.base.avatar}
+      onPress={onPress}
+      ref={triggerRef}
+    >
+      {initials}
+      {indicator ? (
+        <span aria-hidden="true" className={variants.base.avatarIndicator} />
+      ) : null}
+    </AriaButton>
   );
 }
 
@@ -558,35 +608,16 @@ function OverlaySurface({
 
   return (
     <>
-      {trigger && triggerInitials ? (
-        <AriaButton
-          aria-controls={open ? layer.id : undefined}
-          aria-expanded={open}
-          aria-haspopup="dialog"
-          aria-label={trigger}
-          className={variants.base.avatar}
+      {trigger ? (
+        <OverlayTrigger
+          controls={open ? layer.id : undefined}
+          expanded={open}
+          indicator={triggerIndicator}
+          initials={triggerInitials}
+          label={trigger}
           onPress={() => changeOpen(nonModal ? !open : true)}
-          ref={triggerRef}
-        >
-          {triggerInitials}
-          {triggerIndicator ? (
-            <span
-              aria-hidden="true"
-              className={variants.base.avatarIndicator}
-            />
-          ) : null}
-        </AriaButton>
-      ) : null}
-      {trigger && !triggerInitials ? (
-        <Button
-          aria-controls={open ? layer.id : undefined}
-          aria-expanded={open}
-          aria-haspopup="dialog"
-          onAction={() => changeOpen(nonModal ? !open : true)}
-          ref={triggerRef}
-        >
-          {trigger}
-        </Button>
+          triggerRef={triggerRef}
+        />
       ) : null}
       {host &&
         portalReady &&
