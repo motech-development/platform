@@ -44,7 +44,7 @@ Unlike other fields, `DatePicker` is required by default, and a required date ca
 
 Set `required={false}` to make the date optional. The calendar then shows a clear button beside **Today**, which empties the field, closes the calendar and reports `null`. The clear button is unavailable while the field is empty.
 
-With an optional date, `onChange` must accept `null`, and an uncontrolled field can start from `defaultValue={null}`. TypeScript rejects both on a required date.
+With an optional date, `onChange` must accept `null`, and an uncontrolled field can start from `defaultValue={null}`. On a required date, `onChange` only ever receives a date string, and TypeScript rejects `defaultValue={null}`. A controlled required field can still pass `value={null}` until a date is chosen.
 
 <Canvas of={Stories.Optional} />
 

@@ -55,6 +55,7 @@ Some messages contain placeholders that are replaced with values. Keep them in y
 
 - `{query}` in `comboBoxNoMatches` is the text the person typed.
 - In the `FileDropZone` messages, `{types}` is the accepted file types, `{size}` the size limit, `{count}` the number of files added, `{current}` and `{max}` the attachment count and limit, `{fileName}` a rejected file, and `{fileNames}` the files rejected for exceeding the total limit.
+- In the `DocumentViewer` messages, `{current}` and `{total}` in `documentViewerPage` are the current page and the page count, and `{zoom}` in `documentViewerZoom` is the zoom level as a percentage.
 
 For example:
 
@@ -124,7 +125,7 @@ To apply a saved `light` or `dark` choice before your application's JavaScript r
 
 ## Overlay portal
 
-`Dialog`, `Drawer` and `Popover` render outside your component tree, in a container the provider adds to `document.body`. To render them somewhere else, such as inside an embedded application, set `portalContainer` to an existing `HTMLElement`.
+`Dialog`, `Drawer` and `Popover` stay in your React tree, so context, error boundaries and events work as usual. Only their DOM is rendered in a portal, outside the provider's DOM, in a container the provider adds to `document.body`. To render them somewhere else, such as inside an embedded application, set `portalContainer` to an existing `HTMLElement`.
 
 ```tsx
 <BreezeProvider locale="en-GB" portalContainer={overlayContainer}>

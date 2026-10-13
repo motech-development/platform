@@ -21,7 +21,7 @@ Pass your data as `items`, and use `getItem` to return a `StatStripItemDescripto
 - `value` and `currency`: the amount and its ISO 4217 currency code;
 - `badge` (optional): a badge after the label showing the figure's scope, such as the VAT scheme. It accepts `children`, `variant` and `aria-label`.
 
-Amounts are formatted as currency for the provider locale, with a minus sign for negative amounts. A non-finite `value` or an invalid currency code throws a `RangeError`.
+Amounts are formatted as currency for the provider locale, with a minus sign for negative amounts. A non-finite `value` or a malformed currency code, one that is not three letters, throws a `RangeError`. Codes are not checked against ISO 4217, so an unknown well-formed code is displayed as written. If you need to limit the currencies shown, validate the codes before passing them in.
 
 ## Loading
 

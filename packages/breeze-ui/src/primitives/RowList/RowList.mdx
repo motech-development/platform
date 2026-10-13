@@ -8,7 +8,7 @@ import * as Stories from './RowList.stories';
 
 # RowList
 
-`RowList` displays data as a list of rows that people can select, such as
+`RowList` displays data as a list of rows that people can act on, such as
 transactions or documents. Each row has a leading label, optional metadata and
 a trailing value, aligned in columns across the list. The list has no column
 headers.
@@ -74,10 +74,10 @@ value.
 
 <Canvas of={Stories.Phone} />
 
-## Selecting rows
+## Row actions
 
-`onAction` is called with the selected row's item from `items`, as it is in
-`Select`, `ComboBox` and `ToggleGroup`.
+Each row is an action, not a selection: the list keeps no selection state.
+Activating a row calls `onAction` with that row's item from `items`.
 
 <Canvas of={Stories.Merging} />
 
@@ -118,9 +118,9 @@ display.” message, and screen readers announce it.
 ## Accessibility
 
 Give the list an `aria-label`, which is required. The list is a single Tab
-stop: use the arrow keys to move between rows, and Enter or Space to select the
-focused row. Screen readers announce loading and empty states once, through a
-single status message.
+stop: use the arrow keys to move between rows, and Enter or Space to activate
+the focused row. Screen readers announce loading and empty states once,
+through a single status message.
 
 ## API
 
