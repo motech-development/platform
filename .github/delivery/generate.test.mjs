@@ -1086,6 +1086,39 @@ test('client delivery receives public API configuration through explicit job out
   }
 });
 
+test('production deployment uses the public domain variable for infrastructure and its URL', async () => {
+  const generated = await generateWorkflows({
+    write: false,
+  });
+  const production = generated['deploy-to-production.yml'];
+
+  for (const unit of [
+    'core-infrastructure',
+    'core-communications',
+    'accounts-infrastructure',
+    'accounts-client',
+  ]) {
+    assert.match(
+      workflowJob(production, unit),
+      /^      PROD_DOMAIN: \$\{\{ vars\.PROD_DOMAIN \}\}$/m,
+      unit,
+    );
+  }
+
+  assert.match(
+    workflowJob(production, 'accounts-client'),
+    /^      url: https:\/\/accounts\.\$\{\{ vars\.PROD_DOMAIN \}\}$/m,
+  );
+
+  for (const filename of [
+    'deploy-to-develop.yml',
+    'deploy-to-environment.yml',
+    'deploy-to-production.yml',
+  ]) {
+    assert.doesNotMatch(generated[filename], /secrets\.PROD_DOMAIN/, filename);
+  }
+});
+
 test('API delivery records success only after exporting client configuration', async () => {
   const generated = await generateWorkflows({ write: false });
 
@@ -1953,6 +1986,11 @@ test('scheduled production test jobs overlap dependency and browser cache setup'
   );
 
   const accountsTests = workflowJob(workflow, 'accounts-tests');
+
+  assert.match(
+    accountsTests,
+    /^      BASE_URL: https:\/\/accounts\.\$\{\{ vars\.PROD_DOMAIN \}\}$/m,
+  );
   const testSetupGroup = accountsTests.match(
     /^      - parallel:\n([\s\S]*?)(?=^      - name: Install Playwright browsers)/m,
   )?.[1];
