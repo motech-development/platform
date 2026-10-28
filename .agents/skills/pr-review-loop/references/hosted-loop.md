@@ -5,14 +5,16 @@ scope and existing commit, push, and bot-interaction authorization. Do not ask
 again for authorized actions. Do not merge, buy reviews, bypass checks, or change
 review/analysis policy to make the completion conditions appear satisfied.
 
-Hosted remediation is a complete-batch gate. For the recorded head, wait for all
-expected exact-head reviewers to deliver a terminal feedback result, plus Sonar
-analysis and relevant CI, before editing or publishing by default. A terminal
-CodeRabbit review may request changes or comment without approving; its
-`APPROVED` state is a later completion gate that can depend on thread cleanup.
-A pending reviewer or quality gate is not a partial batch that can be fixed
-opportunistically. The user may request a narrower operation, but record it as an
-exception and retain the missing coverage.
+Hosted remediation is a complete-batch gate. Before editing or publishing by
+default, collect terminal feedback from each expected reviewer, plus Sonar
+analysis and relevant CI. Codex coverage may carry forward from an earlier
+reviewed revision only under the rules below; CodeRabbit feedback and final
+approval must apply to the current head. A terminal CodeRabbit review may request
+changes or comment without approving; its `APPROVED` state is a later completion
+gate that can depend on thread cleanup. A pending reviewer without valid carried
+coverage, or a pending quality gate, leaves the batch incomplete. The user may
+request a narrower operation, but record it as an exception and retain missing
+coverage.
 
 The main skill's credit-consent exception also applies here: once CodeRabbit is
 skipped for this loop, do not submit more reviews or wait for its approval. Keep
@@ -24,24 +26,54 @@ bypass repository checks or authorize automatic overage charges.
 
 Record the PR's current head, expected workflows/checks, actual bot identities,
 and Sonar project/PR analysis before waiting. Refresh those expectations if the
-change affects workflow selection. Every result must apply to the current head:
+change affects workflow selection. Apply the following revision rules to the
+evidence. Read the PR's reactions alongside its comments and reviews; a PR
+reaction has no commit association on its own.
 
 - **Task scope:** the cumulative implementation maps to the original outcome and
   explicit user amendments in the scope record. No unresolved scope drift remains;
   reviewer approval and green checks cannot substitute for this check.
 - **Codex:** completed native review coverage through the final source snapshot,
   with no unresolved actionable findings. Also collect and assess the completed
-  hosted Codex review when the repository uses it. No comment is not proof that
-  a hosted review ran; verify the review is associated with the exact current
-  head commit. A local review is not a replacement for a pending hosted review.
+  hosted Codex review when the repository uses it. Confirm that all expected
+  Codex review components (for example, code and security reviews when enabled)
+  complete, then assess their findings and dispositions under the existing
+  rules. Record the verified bot identity, summary or review IDs, each
+  component's status, reviewed revision, findings state, and any later review
+  status or findings. A Codex 👍 on the PR description corroborates completion
+  only when its actor is verified as the Codex integration bot. GitHub attaches
+  it to the PR rather than a commit: record its actor, reaction ID, target, and
+  time, and never infer a reviewed SHA from it. Ignore reactions from unverified
+  or unrelated actors. A trusted completed summary or review with a reviewed
+  revision remains valid without any reaction; a reaction without that completed
+  result and revision is insufficient.
+
+  A completed hosted review at revision `A` normally must match the current head.
+  It can cover a later head `B` only when the entire `A..B` delta has been
+  inspected and documented as narrow and non-material, such as a documentation
+  clarification; each local review required by the loop covers the new delta at
+  `B` and is clear (native Codex at Luna High and CodeRabbit CLI unless the
+  credit-consent exception is recorded); and no newer hosted Codex state,
+  finding, or thread indicates pending, failed, reopened, or actionable review
+  work. Changes to runtime behavior, public interfaces, dependencies,
+  configuration, security, or workflow selection are material and require a
+  completed hosted result for the current head. Do not treat the old summary SHA
+  by itself as a missing-review signal or start another hosted wait/waiver loop
+  for a documented non-material delta. A missing or incomplete hosted result, a
+  reaction without corroborating completion evidence, an unassessed delta, a
+  material change, or superseding actionable/pending/failed status leaves hosted
+  Codex coverage incomplete. Local review cannot replace a pending hosted review
+  for a material delta.
+
   For accepted Codex findings, use 👍 without an acknowledgement. For each
   conclusively rejected finding, use 👎 and the authorized single
   evidence-backed rebuttal; confirm it is posted before resolving an eligible
   thread. Keep a demonstrated defect open when its fix conflicts with an
   explicit exclusion. Hosted Codex review relies on the repository's automatic trigger;
-  never post a manual `@codex review` comment. If the exact-head review is still
-  missing at the bounded deadline, record the missing coverage and report the
-  hosted gate as incomplete.
+  never post a manual `@codex review` comment. When a current-head hosted review
+  is required but missing at the bounded deadline, record the missing coverage
+  and report the hosted gate as incomplete.
+
 - **CodeRabbit (unless the credit-consent skip is recorded):** completed CLI
   coverage and a GitHub review with state
   `APPROVED` from the verified CodeRabbit account for the current head commit.
@@ -82,15 +114,17 @@ waiting forever or counting a skipped review as approval.
 
 ## Run the outer loop
 
-1. Record the current head, expected exact-head hosted reviewers, Sonar project,
-   branch-protection required checks, optional statuses, and a finite hosted wait
-   deadline. If this is a published head, wait for the complete batch before
-   editing. The initial local implementation exception still requires a concrete
-   delta before local review.
+1. Record the current head, expected hosted reviewers, Sonar project,
+   branch-protection required checks, and optional statuses. First assess whether
+   any hosted feedback is still required under the revision rules above; record a
+   finite wait deadline only for pending hosted review or analysis. If this is a
+   published head, wait for the complete batch before editing. The initial local
+   implementation exception still requires a concrete delta before local review.
 2. Fetch the complete batch: full review bodies and collapsed CodeRabbit sections,
-   hosted Codex evidence, CI failure details, Sonar PR issues and hotspots, and
-   late-registered checks. Deduplicate findings by behavior theme against the
-   durable ledger. Do not triage or fix from a partial reviewer batch.
+   hosted Codex summaries and PR-description reactions, CI failure details, Sonar
+   PR issues and hotspots, and late-registered checks. Deduplicate findings by
+   behavior theme against the durable ledger. Do not triage or fix from a partial
+   reviewer batch.
 3. Triage the complete batch against the recorded contract and scope. For a valid
    in-scope finding, record its trace and delegate the bounded fix. Validate the
    combined changes, then freeze the new delta and run the entire local loop in
@@ -103,12 +137,13 @@ waiting forever or counting a skipped review as approval.
    threads, then perform eligible authorized reactions and resolutions before
    waiting for the subsequent CodeRabbit approval. The complete feedback batch
    has already been triaged; this approval is a later completion gate that may
-   depend on the cleanup just performed. Do not request duplicate reviews for
-   a revision already queued, running, or reviewed. Wait within the recorded
-   finite deadline for the repository's automatic hosted Codex review. Never post
-   a manual `@codex review` comment or another message to trigger it. If the
-   expected exact-head review is missing when the deadline expires, record its
-   missing coverage and report the hosted gate as incomplete.
+   depend on the cleanup just performed. Apply the carry-forward rules above
+   before deciding whether current-head hosted Codex review is required. If it
+   is required, do not request a duplicate review for a revision already queued,
+   running, or reviewed. Wait within the recorded finite deadline for the
+   automatic hosted result. Never post a manual `@codex review` comment or another
+   message to trigger it. If required hosted coverage is missing when the
+   deadline expires, record the gap and report the hosted gate as incomplete.
 5. Wait for the newly published head's complete hosted batch using the bounded
    procedure below. If there are no source changes, retain local coverage and wait
    for outstanding approval or analysis; do not rerun unchanged local reviews.
@@ -130,15 +165,17 @@ waiting forever or counting a skipped review as approval.
 
 ## Bounded hosted-review wait
 
-Set and record a finite deadline before waiting for automatic bot reviews or
-analysis. The default is a one-hour observation window per exact-head hosted
-batch; a user-authorized workflow may record a different finite deadline. The
-window must include late check registration and the expected bot completion
-signals. At expiry, inspect the current head and status once, then pause rather
-than polling indefinitely. Ask for an explicit extension or waiver if the
-reviewer never reports. A waiver is recorded as missing hosted coverage and the
-loop ends with an incomplete report; it is never described as approval or clean
-evidence.
+After applying the completion-evidence rules above, set and record a finite
+deadline before waiting for each outstanding automatic bot review or analysis.
+Do not start a wait for hosted Codex coverage already satisfied by a completed
+result or valid carry-forward. The default is a one-hour observation window per
+published head with an outstanding required hosted result; a user-authorized
+workflow may record a different finite deadline. The window must include late
+check registration and expected completion signals. At expiry, inspect the
+current head and status once, then pause rather than polling indefinitely. Ask
+for an explicit extension or waiver only if a required result remains missing. A
+waiver is recorded as missing hosted coverage and the loop ends with an incomplete
+report; it is never described as approval or clean evidence.
 
 Healthy progress inside the window may use the measured timer below. A reported
 service cooldown has its own deadline and does not silently extend this batch

@@ -38,23 +38,25 @@ clean while required cleanup is unauthorised.
 
 ### Fixed batch order
 
-Treat each hosted remediation batch as one unit. For a published head, collect the
-complete exact-head hosted feedback batch first, meaning every expected reviewer
-has delivered a terminal result for that head, plus Sonar and relevant CI; an
-approval is a later completion gate. Then triage the complete batch, accept only
-traceable findings, make the bounded changes, validate them, freeze the resulting
-delta, and run the local Codex and CodeRabbit reviews concurrently, then publish
-only after both local gates are complete and clear. A source-neutral CI retry is
-handled in the hosted phase and does not reopen local semantic review. For an
-initial local change without a remote feedback batch, review the concrete
-user-requested implementation delta when no prior local coverage exists, even if
-the hosted batch has no findings. Local review is a validation gate, never
-reconnaissance, and must not start before a concrete delta exists.
+Treat each hosted remediation batch as one unit. For a published head, collect a
+terminal result from every expected hosted reviewer, applying the Codex
+coverage rules in [hosted-loop.md](references/hosted-loop.md), plus Sonar and
+relevant CI; an approval is a later completion gate. Then triage the complete
+batch, accept only traceable findings, make the bounded changes, validate them,
+freeze the resulting delta, and run the local Codex and CodeRabbit reviews
+concurrently, then publish only after both local gates are complete and clear.
+A source-neutral CI retry is handled in the hosted phase and does not reopen
+local semantic review. For an initial local change without a remote feedback
+batch, review the concrete user-requested implementation delta when no prior
+local coverage exists, even if the hosted batch has no findings. Local review is
+a validation gate, never reconnaissance, and must not start before a concrete
+delta exists.
 
 Do not fix or publish from a partial hosted batch unless the user explicitly
-requests that narrower operation. A pending exact-head reviewer or quality gate
-is evidence that the batch is incomplete. Thread cleanup for a remote, validated
-fix happens before waiting for the next CodeRabbit approval, as described in
+requests that narrower operation. A pending reviewer without valid carried
+coverage under [hosted-loop.md](references/hosted-loop.md), or a pending quality
+gate, is evidence that the batch is incomplete. Thread cleanup for a remote,
+validated fix happens before waiting for the next CodeRabbit approval, as described in
 [thread-resolution.md](references/thread-resolution.md), and does not replace
 the complete hosted batch.
 
@@ -89,8 +91,10 @@ the recorded contract is not actionable; explain the missing trace and keep the
 existing behavior. Other text replies require separate explicit authorization.
 Do not manually ask an automatic reviewer to review when the repository already
 triggers it. Hosted Codex review must come from the repository's automatic
-trigger; if it is missing for the exact head, report the missing coverage and
-leave the hosted gate incomplete without posting a manual review request.
+trigger; when current-head hosted review is required under
+[hosted-loop.md](references/hosted-loop.md) and remains missing at the deadline,
+report the missing coverage and leave the gate incomplete without posting a
+manual review request.
 
 ### Scope, contract, and design record
 
@@ -192,9 +196,12 @@ remains blocked.
   received their permitted reactions and been resolved first. Any still-valid,
   actionable, disputed, or out-of-scope bot thread remains unresolved and blocks
   a clean full-loop result; `isOutdated` alone never qualifies it for cleanup.
-  Missing, stale, pending, or skipped evidence is not success except for that
-  explicit CodeRabbit exception. An explicit hosted-review waiver is recorded as
-  missing coverage and ends with an incomplete report; it is not approval.
+  For hosted Codex only, an earlier completed result remains valid when the
+  carry-forward rules in [hosted-loop.md](references/hosted-loop.md) establish
+  coverage. Other missing, stale, pending, or skipped evidence is not success
+  except for the explicit CodeRabbit credit-consent exception. An explicit
+  hosted-review waiver is recorded as missing coverage and ends with an
+  incomplete report; it is not approval.
 - Retain narrower inspection, one-batch, or local-review requests. Continue an
   active full loop through the fixed batch order until the outcome is verified
   or a concrete stop condition is reached; there is no default publication cap.
