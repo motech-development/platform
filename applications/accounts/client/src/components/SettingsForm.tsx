@@ -11,28 +11,11 @@ import { FieldArray, Form, Formik } from 'formik';
 import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 import { array, boolean, object, string } from 'yup';
-import { VatScheme } from '../graphql/graphql';
+import type { SettingsInput } from '../graphql/graphql';
 import { useVatSettings, useYearEnd } from '../hooks/schema';
 import { VatSettingsFields, YearEndFields } from './CommonFields';
 
-export type FormSchema = {
-  categories: {
-    name: string;
-    protect: boolean;
-    vatRate: number;
-  }[];
-  id: string;
-  vat: {
-    charge: number;
-    pay: number;
-    registration?: string | null;
-    scheme: VatScheme;
-  };
-  yearEnd: {
-    day: number;
-    month: number;
-  };
-};
+export type FormSchema = SettingsInput;
 
 export interface ISettingsFormProps {
   backTo: string;

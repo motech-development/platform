@@ -3,6 +3,7 @@ import { init, wrapHandler } from '@sentry/aws-serverless';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import type { Handler } from 'aws-lambda';
 import { DateTime } from 'luxon';
+import type { InferType } from 'yup';
 import { array, number, object, string } from 'yup';
 import slug from '../shared/slug';
 import Status from '../shared/status';
@@ -34,42 +35,22 @@ const schema = object({
   owner: string().required(),
 }).required();
 
-interface ITransaction {
-  amount: number;
-  attachment?: string;
-  category: string;
-  date: string;
-  description: string;
-  id: string;
-  name: string;
-  vat: number;
-}
+type ITransaction = InferType<typeof schema>['items'][number];
 
-interface ITransactionWithAttachment extends ITransaction {
+type ITransactionWithAttachment = ITransaction & {
   attachment: string;
-}
+};
 
 const hasAttachment = (
   item: ITransaction,
 ): item is ITransactionWithAttachment => !!item.attachment;
 
-export interface IEvent {
-  companyId: string;
-  currency: string;
-  items: {
-    amount: number;
-    attachment?: string;
-    category: string;
+export type IEvent = Omit<InferType<typeof schema>, 'items'> & {
+  items: (ITransaction & {
     companyId: string;
-    date: string;
-    description: string;
-    id: string;
-    name: string;
     status: Status;
-    vat: number;
-  }[];
-  owner: string;
-}
+  })[];
+};
 
 export const handler: Handler<IEvent, IOutput> = wrapHandler(async (event) => {
   const result = await schema.validate(event, {

@@ -15,6 +15,9 @@ const config: CodegenConfig = {
     },
   },
   documents: ['src/**/*.tsx'],
+  hooks: {
+    afterAllFileWrite: ['prettier --write'],
+  },
   generates: {
     './src/graphql/': {
       config: {

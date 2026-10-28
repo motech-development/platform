@@ -1,13 +1,14 @@
 import gql from 'graphql-tag';
+import type {
+  TransactionBeaconMutation,
+  TransactionBeaconMutationVariables,
+} from '../generated/graphql';
 import createAppSyncClient from './appsync-client';
 
-interface IUpdateBalance {
-  balance?: number;
-  vat?: {
-    owed: number;
-    paid: number;
-  };
-}
+type IUpdateBalance = {
+  balance?: NonNullable<TransactionBeaconMutationVariables['input']['balance']>;
+  vat?: NonNullable<TransactionBeaconMutationVariables['input']['vat']>;
+};
 
 export const mutation = gql`
   mutation TransactionBeacon(
@@ -28,13 +29,18 @@ export const mutation = gql`
 `;
 
 async function updateBalance(id: string, owner: string, input: IUpdateBalance) {
-  return createAppSyncClient().mutate({
+  const variables: TransactionBeaconMutationVariables = {
+    id,
+    input,
+    owner,
+  };
+
+  return createAppSyncClient().mutate<
+    TransactionBeaconMutation,
+    TransactionBeaconMutationVariables
+  >({
     mutation,
-    variables: {
-      id,
-      input,
-      owner,
-    },
+    variables,
   });
 }
 

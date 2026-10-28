@@ -5,6 +5,7 @@ import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import type { Handler } from 'aws-lambda';
 import { DateTime } from 'luxon';
 import { v4 as uuid } from 'uuid';
+import type { InferType } from 'yup';
 import { object, string } from 'yup';
 
 init({
@@ -24,12 +25,7 @@ const schema = object({
   owner: string().required(),
 }).required();
 
-export interface IEvent {
-  companyId: string;
-  downloadUrl: string;
-  key: string;
-  owner: string;
-}
+export type IEvent = InferType<typeof schema>;
 
 export const handler: Handler<IEvent> = wrapHandler(async (event) => {
   const { TABLE } = process.env;

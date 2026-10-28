@@ -1,3 +1,4 @@
 .esbuild
 .serverless
 coverage
+src/generated

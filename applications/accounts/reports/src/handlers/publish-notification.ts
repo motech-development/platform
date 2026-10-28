@@ -3,6 +3,7 @@ import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import type { Handler } from 'aws-lambda';
 import { AwsClient } from 'aws4fetch';
 import { stringify } from 'qs';
+import type { InferType } from 'yup';
 import { number, object, string } from 'yup';
 
 init({
@@ -23,15 +24,7 @@ const schema = object({
   }).required(),
 }).required();
 
-export interface IEvent {
-  owner: string;
-  payload: {
-    createdAt: string;
-    downloadUrl: string;
-    id: string;
-    ttl: number;
-  };
-}
+export type IEvent = InferType<typeof schema>;
 
 export const handler: Handler<IEvent> = wrapHandler(async (event) => {
   const {

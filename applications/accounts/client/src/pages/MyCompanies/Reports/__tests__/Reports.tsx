@@ -62,6 +62,14 @@ describe('Reports', () => {
                     id: 'report-2',
                     ttl: 1618205610,
                   },
+                  null,
+                  {
+                    __typename: 'Report',
+                    createdAt: null,
+                    downloadUrl: null,
+                    id: null,
+                    ttl: null,
+                  },
                 ],
               },
             },
@@ -350,7 +358,7 @@ describe('Reports', () => {
               getReports: {
                 __typename: 'Reports',
                 id: 'company-id',
-                items: [],
+                items: null,
               },
             },
           },

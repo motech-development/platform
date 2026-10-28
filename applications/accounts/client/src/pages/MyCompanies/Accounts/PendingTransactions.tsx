@@ -38,15 +38,8 @@ interface IDataRow {
   viewLabel: string;
 }
 
-interface IDataRowComponent {
-  amount: number;
-  attachment?: string | null;
-  date: string;
-  description: string;
-  id: string;
-  name: string;
-  scheduled: boolean;
-}
+type IDataRowComponent =
+  GetTransactionsQuery['getTransactions']['items'][number];
 
 function row({
   companyId,
