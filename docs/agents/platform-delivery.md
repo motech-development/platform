@@ -29,6 +29,12 @@ The normative implementation specification is [GitHub issue #1492](https://githu
 - Do not modify Playwright tests or configuration as part of delivery optimization.
 - Do not change Auth0 dependencies or `applications/id` without explicit authorization.
 
+## Production domain configuration
+
+Before running workflows generated with this configuration, set the repository Actions variable `PROD_DOMAIN` to the public base domain (for example, `motechdevelopment.co.uk`, without a scheme or subdomain). Production deployment jobs use this variable both as the Serverless `PROD_DOMAIN` input and for the Accounts environment URL. Scheduled production browser tests also use it for their Accounts base URL.
+
+After this revision is merged and active workflow runs using the old definition have completed, remove the repository secret also named `PROD_DOMAIN`. Generated workflows no longer read that secret. Until it is removed, GitHub may suppress the environment URL because it matches a masked secret.
+
 ## Authoritative files
 
 After implementation, expect:

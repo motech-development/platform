@@ -246,8 +246,8 @@ jobs:
   #     AUTH0_SES_ACCESS_SECRET_KEY: ${{ secrets.AUTH0_SES_ACCESS_SECRET_KEY }}
   #     AUTH0_SES_REGION: ${{ secrets.AUTH0_SES_REGION }}
   #     PREFIX: id-develop
-  #     PROD_DOMAIN: ${{ secrets.PROD_DOMAIN }}
-  #     PUBLIC_URL: https://id-develop.${{ secrets.PROD_DOMAIN }}
+  #     PROD_DOMAIN: ${{ vars.PROD_DOMAIN }}
+  #     PUBLIC_URL: https://id-develop.${{ vars.PROD_DOMAIN }}
   #     REACT_APP_GA: ${{ secrets.GA_ID_DEV }}
   #     REACT_APP_SENTRY_DSN: ${{ secrets.SENTRY_DSN_ID_CLIENT }}
   #     SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}

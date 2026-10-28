@@ -80,8 +80,8 @@ jobs:
   #     AUTH0_SES_ACCESS_SECRET_KEY: ${{ secrets.AUTH0_SES_ACCESS_SECRET_KEY }}
   #     AUTH0_SES_REGION: ${{ secrets.AUTH0_SES_REGION }}
   #     PREFIX: id
-  #     PROD_DOMAIN: ${{ secrets.PROD_DOMAIN }}
-  #     PUBLIC_URL: https://id.${{ secrets.PROD_DOMAIN }}
+  #     PROD_DOMAIN: ${{ vars.PROD_DOMAIN }}
+  #     PUBLIC_URL: https://id.${{ vars.PROD_DOMAIN }}
   #     REACT_APP_GA: ${{ secrets.GA_ID_PROD }}
   #     REACT_APP_SENTRY_DSN: ${{ secrets.SENTRY_DSN_ID_CLIENT }}
   #     SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
@@ -200,7 +200,7 @@ jobs:
     needs: unit-test
 
     env:
-      PROD_DOMAIN: ${{ secrets.PROD_DOMAIN }}
+      PROD_DOMAIN: ${{ vars.PROD_DOMAIN }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN_CORE_BACKEND }}
       STAGE: production
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -406,7 +406,7 @@ jobs:
     needs: deploy-infrastructure
 
     env:
-      PROD_DOMAIN: ${{ secrets.PROD_DOMAIN }}
+      PROD_DOMAIN: ${{ vars.PROD_DOMAIN }}
       STAGE: production
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
@@ -469,7 +469,7 @@ jobs:
       - deploy-accounts-infrastructure
 
     env:
-      PROD_DOMAIN: ${{ secrets.PROD_DOMAIN }}
+      PROD_DOMAIN: ${{ vars.PROD_DOMAIN }}
       REACT_APP_AUTH0_AUDIENCE: ${{ secrets.ACCOUNTS_APP_AUDIENCE }}
       REACT_APP_AUTH0_CLIENT_ID: ${{ secrets.ACCOUNTS_APP_CLIENT_ID_PROD }}
       REACT_APP_AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN_PROD }}
@@ -481,7 +481,7 @@ jobs:
 
     environment:
       name: Accounts
-      url: https://accounts.motechdevelopment.co.uk # TODO: Find a way to do this using env var or output
+      url: https://accounts.${{ vars.PROD_DOMAIN }}
 
     permissions:
       id-token: write
