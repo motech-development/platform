@@ -4,6 +4,7 @@ import { init, wrapHandler } from '@sentry/aws-serverless';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import type { Handler } from 'aws-lambda';
 import { v4 as uuid } from 'uuid';
+import type { InferType } from 'yup';
 import { array, object, string } from 'yup';
 import archive from '../shared/archive';
 
@@ -27,15 +28,9 @@ const schema = object({
   owner: string().required(),
 }).required();
 
-export interface IEvent {
-  attachments: {
-    key: string;
-    path: string;
-  }[];
-  companyId: string;
-  csv: string;
-  owner: string;
-}
+export type IEvent = Omit<InferType<typeof schema>, 'attachments'> & {
+  attachments: NonNullable<InferType<typeof schema>['attachments']>;
+};
 
 export const handler: Handler<IEvent> = wrapHandler(async (event) => {
   logger.info('Start lambda function');

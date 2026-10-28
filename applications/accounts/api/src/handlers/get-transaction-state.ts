@@ -1,12 +1,10 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, GetCommand } from '@aws-sdk/lib-dynamodb';
 import type { AppSyncResolverHandler } from 'aws-lambda';
+import type { QueryGetTransactionStateArgs } from '../generated/graphql';
 import transactionCompanyId from '../shared/transaction-company-id';
 
-export interface ITransactionStateArguments {
-  companyId: string;
-  transactionId: string;
-}
+export type ITransactionStateArguments = QueryGetTransactionStateArgs;
 
 const documentClient = DynamoDBDocumentClient.from(new DynamoDBClient({}));
 

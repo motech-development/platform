@@ -3,13 +3,15 @@
   "version": "0.0.0-development",
   "description": "Motech Development accounts API",
   "scripts": {
+    "codegen.graphql": "graphql-codegen --config codegen.ts",
+    "codegen.graphql.check": "graphql-codegen --config codegen.ts --check",
     "formatting": "prettier . --check",
     "deploy": "serverless deploy --verbose",
     "lint": "eslint './src/**/*.ts'",
     "teardown": "serverless remove --verbose",
     "test": "vitest --no-file-parallelism",
     "test-ci": "vitest run --coverage --no-file-parallelism",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "yarn codegen.graphql.check && tsc --noEmit"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "3.1033.0",
@@ -26,6 +28,9 @@
     "luxon": "3.5.0"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "5.0.5",
+    "@graphql-codegen/typescript": "4.1.3",
+    "@graphql-codegen/typescript-operations": "4.4.1",
     "@motech-development/eslint-config-motech-base": "workspace:*",
     "@motech-development/prettier-motech-config": "workspace:*",
     "@motech-development/semantic-release": "workspace:*",

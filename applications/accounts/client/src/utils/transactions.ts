@@ -1,9 +1,7 @@
-import { Reference } from '@apollo/client';
+import type { Reference } from '@apollo/client';
+import type { Transaction } from '../graphql/graphql';
 
-interface ITransaction {
-  description: string;
-  name: string;
-}
+type ITransaction = Pick<Transaction, 'description' | 'name'>;
 
 type TProperty = keyof ITransaction;
 

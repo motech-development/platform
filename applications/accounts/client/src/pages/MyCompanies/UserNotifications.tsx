@@ -11,6 +11,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { gql } from '../../graphql';
+import type { GetNotificationsQuery } from '../../graphql/graphql';
 
 export const GET_NOTIFICATIONS = gql(/* GraphQL */ `
   query GetNotifications($id: ID!, $count: Int) {
@@ -39,22 +40,9 @@ export const ON_NOTIFICATION = gql(/* GraphQL */ `
   }
 `);
 
-interface IGetNotificationsInput {
-  count: number;
-  id: string;
-}
-
-interface IGetNotificationsOutput {
-  getNotifications?: {
-    id: string;
-    items: {
-      createdAt: string;
-      id: string;
-      message: string;
-      read: boolean;
-    }[];
-  };
-}
+type INotification = NonNullable<
+  NonNullable<GetNotificationsQuery['getNotifications']['items']>[number]
+>;
 
 export const MARK_AS_READ = gql(/* GraphQL */ `
   mutation MarkAsRead($id: ID!, $input: MarkNotificationsInput!) {
@@ -82,14 +70,8 @@ interface IDataRow {
   t: (label: string) => string;
 }
 
-interface IDataRowComponent {
-  createdAt: string;
-  message: string;
-  read: boolean;
-}
-
 function row({ t }: IDataRow) {
-  function Row({ createdAt, message, read }: IDataRowComponent) {
+  function Row({ createdAt, message, read }: INotification) {
     return (
       <>
         <TableCell>{!read && <Icon icon={faCircle} />}</TableCell>
@@ -115,15 +97,12 @@ export interface IUserNotificationsProps {
 
 function UserNotifications({ id }: IUserNotificationsProps) {
   const { t } = useTranslation('user-notifications');
-  const { data } = useQuery<IGetNotificationsOutput, IGetNotificationsInput>(
-    GET_NOTIFICATIONS,
-    {
-      variables: {
-        count: 5,
-        id,
-      },
+  const { data } = useQuery(GET_NOTIFICATIONS, {
+    variables: {
+      count: 5,
+      id,
     },
-  );
+  });
   const [markAsRead] = useMutation(MARK_AS_READ);
 
   useSubscription(ON_NOTIFICATION, {
@@ -137,7 +116,11 @@ function UserNotifications({ id }: IUserNotificationsProps) {
     return null;
   }
 
-  const unreadItems = data.getNotifications.items.filter(({ read }) => !read);
+  const items =
+    data.getNotifications.items?.filter(
+      (item): item is INotification => item !== null,
+    ) ?? [];
+  const unreadItems = items.filter(({ read }) => !read);
   const unread = unreadItems.length;
   const alert = unread > 0;
 
@@ -160,7 +143,7 @@ function UserNotifications({ id }: IUserNotificationsProps) {
     <Notifications
       alert={alert}
       cols={2}
-      items={data.getNotifications.items}
+      items={items}
       label={t('notifications', {
         number: unread,
       })}
