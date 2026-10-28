@@ -2,7 +2,7 @@ import gql from 'graphql-tag';
 import type {
   TransactionChangeBeaconMutation,
   TransactionChangeBeaconMutationVariables,
-} from '../generated/graphql';
+} from '../graphql/graphql';
 import createAppSyncClient from './appsync-client';
 
 export const mutation = gql`

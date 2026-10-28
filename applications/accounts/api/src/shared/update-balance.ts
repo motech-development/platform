@@ -2,7 +2,7 @@ import gql from 'graphql-tag';
 import type {
   TransactionBeaconMutation,
   TransactionBeaconMutationVariables,
-} from '../generated/graphql';
+} from '../graphql/graphql';
 import createAppSyncClient from './appsync-client';
 
 type IUpdateBalance = {

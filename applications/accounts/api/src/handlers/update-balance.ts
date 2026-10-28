@@ -7,7 +7,7 @@ import type {
   DynamoDBStreamHandler,
   StreamRecord,
 } from 'aws-lambda';
-import type { Balance, Transaction } from '../generated/graphql';
+import type { Balance, Transaction } from '../graphql/graphql';
 import publishTransactionChange from '../shared/publish-transaction-change';
 import transactionCompanyId from '../shared/transaction-company-id';
 import updateBalance from '../shared/update-balance';

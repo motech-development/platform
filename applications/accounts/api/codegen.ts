@@ -16,9 +16,12 @@ const config: CodegenConfig = {
       AWSURL: 'string',
     },
   },
-  documents: ['src/**/*.ts', '!src/generated/**'],
+  documents: ['src/**/*.ts', '!src/graphql/**'],
+  hooks: {
+    afterAllFileWrite: ['prettier --write'],
+  },
   generates: {
-    './src/generated/graphql.ts': {
+    './src/graphql/graphql.ts': {
       plugins: ['typescript', 'typescript-operations'],
     },
   },
