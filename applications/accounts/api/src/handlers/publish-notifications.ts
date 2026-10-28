@@ -11,7 +11,7 @@ import type {
   Notification,
   NotificationBeaconMutation,
   NotificationBeaconMutationVariables,
-} from '../generated/graphql';
+} from '../graphql/graphql';
 import { isStreamInsertRecord } from '../shared/utils';
 
 init({

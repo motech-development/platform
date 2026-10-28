@@ -1,26 +1,39 @@
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
-export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
-export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
-export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
+export type Exact<T extends { [key: string]: unknown }> = {
+  [K in keyof T]: T[K];
+};
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
+  [SubKey in K]?: Maybe<T[SubKey]>;
+};
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
+  [SubKey in K]: Maybe<T[SubKey]>;
+};
+export type MakeEmpty<
+  T extends { [key: string]: unknown },
+  K extends keyof T,
+> = { [_ in K]?: never };
+export type Incremental<T> =
+  | T
+  | {
+      [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never;
+    };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: string; output: string; }
-  String: { input: string; output: string; }
-  Boolean: { input: boolean; output: boolean; }
-  Int: { input: number; output: number; }
-  Float: { input: number; output: number; }
-  AWSDate: { input: string; output: string; }
-  AWSDateTime: { input: string; output: string; }
-  AWSEmail: { input: string; output: string; }
-  AWSIPAddress: { input: string; output: string; }
-  AWSJSON: { input: string; output: string; }
-  AWSPhone: { input: string; output: string; }
-  AWSTime: { input: string; output: string; }
-  AWSTimestamp: { input: number; output: number; }
-  AWSURL: { input: string; output: string; }
+  ID: { input: string; output: string };
+  String: { input: string; output: string };
+  Boolean: { input: boolean; output: boolean };
+  Int: { input: number; output: number };
+  Float: { input: number; output: number };
+  AWSDate: { input: string; output: string };
+  AWSDateTime: { input: string; output: string };
+  AWSEmail: { input: string; output: string };
+  AWSIPAddress: { input: string; output: string };
+  AWSJSON: { input: string; output: string };
+  AWSPhone: { input: string; output: string };
+  AWSTime: { input: string; output: string };
+  AWSTimestamp: { input: number; output: number };
+  AWSURL: { input: string; output: string };
 };
 
 export type Address = {
@@ -194,65 +207,53 @@ export type Mutation = {
   updateTransaction: Transaction;
 };
 
-
 export type MutationAddTransactionArgs = {
   input: TransactionInput;
 };
-
 
 export type MutationCreateClientArgs = {
   input: ClientInput;
 };
 
-
 export type MutationCreateCompanyArgs = {
   input: CreateCompanyInput;
 };
-
 
 export type MutationCreateReportArgs = {
   input: ReportInput;
 };
 
-
 export type MutationDeleteClientArgs = {
   id: Scalars['ID']['input'];
 };
 
-
 export type MutationDeleteCompanyArgs = {
   id: Scalars['ID']['input'];
 };
-
 
 export type MutationDeleteFileArgs = {
   id: Scalars['ID']['input'];
   path: Scalars['String']['input'];
 };
 
-
 export type MutationDeleteTransactionArgs = {
   id: Scalars['ID']['input'];
 };
-
 
 export type MutationMarkAsReadArgs = {
   id: Scalars['ID']['input'];
   input: MarkNotificationsInput;
 };
 
-
 export type MutationNotificationBeaconArgs = {
   id: Scalars['ID']['input'];
   input: NotificationInput;
 };
 
-
 export type MutationRequestUploadArgs = {
   id: Scalars['ID']['input'];
   input: StorageUploadInput;
 };
-
 
 export type MutationTransactionBeaconArgs = {
   id: Scalars['ID']['input'];
@@ -260,28 +261,23 @@ export type MutationTransactionBeaconArgs = {
   owner: Scalars['String']['input'];
 };
 
-
 export type MutationTransactionChangeBeaconArgs = {
   id: Scalars['ID']['input'];
   owner: Scalars['String']['input'];
   transactionId: Scalars['ID']['input'];
 };
 
-
 export type MutationUpdateClientArgs = {
   input: ClientInput;
 };
-
 
 export type MutationUpdateCompanyArgs = {
   input: CompanyInput;
 };
 
-
 export type MutationUpdateSettingsArgs = {
   input: SettingsInput;
 };
-
 
 export type MutationUpdateTransactionArgs = {
   input: TransactionInput;
@@ -329,16 +325,13 @@ export type Query = {
   requestDownload: StorageDownload;
 };
 
-
 export type QueryGetBalanceArgs = {
   id: Scalars['ID']['input'];
 };
 
-
 export type QueryGetClientArgs = {
   id: Scalars['ID']['input'];
 };
-
 
 export type QueryGetClientsArgs = {
   count?: InputMaybe<Scalars['Int']['input']>;
@@ -346,18 +339,15 @@ export type QueryGetClientsArgs = {
   nextToken?: InputMaybe<Scalars['String']['input']>;
 };
 
-
 export type QueryGetCompaniesArgs = {
   count?: InputMaybe<Scalars['Int']['input']>;
   id: Scalars['ID']['input'];
   nextToken?: InputMaybe<Scalars['String']['input']>;
 };
 
-
 export type QueryGetCompanyArgs = {
   id: Scalars['ID']['input'];
 };
-
 
 export type QueryGetNotificationsArgs = {
   count?: InputMaybe<Scalars['Int']['input']>;
@@ -365,29 +355,24 @@ export type QueryGetNotificationsArgs = {
   nextToken?: InputMaybe<Scalars['String']['input']>;
 };
 
-
 export type QueryGetReportsArgs = {
   count?: InputMaybe<Scalars['Int']['input']>;
   id: Scalars['ID']['input'];
   nextToken?: InputMaybe<Scalars['String']['input']>;
 };
 
-
 export type QueryGetSettingsArgs = {
   id: Scalars['ID']['input'];
 };
-
 
 export type QueryGetTransactionArgs = {
   id: Scalars['ID']['input'];
 };
 
-
 export type QueryGetTransactionStateArgs = {
   companyId: Scalars['ID']['input'];
   transactionId: Scalars['ID']['input'];
 };
-
 
 export type QueryGetTransactionsArgs = {
   count?: InputMaybe<Scalars['Int']['input']>;
@@ -396,11 +381,9 @@ export type QueryGetTransactionsArgs = {
   status: TransactionStatus;
 };
 
-
 export type QueryGetTypeaheadArgs = {
   id: Scalars['ID']['input'];
 };
-
 
 export type QueryRequestDownloadArgs = {
   id: Scalars['ID']['input'];
@@ -495,17 +478,14 @@ export type Subscription = {
   onTransactionChange?: Maybe<TransactionChange>;
 };
 
-
 export type SubscriptionOnNotificationArgs = {
   owner: Scalars['String']['input'];
 };
-
 
 export type SubscriptionOnTransactionArgs = {
   id: Scalars['ID']['input'];
   owner: Scalars['String']['input'];
 };
-
 
 export type SubscriptionOnTransactionChangeArgs = {
   id: Scalars['ID']['input'];
@@ -569,9 +549,7 @@ export type TransactionInput = {
   vat: Scalars['Float']['input'];
 };
 
-export type TransactionStatus =
-  | 'confirmed'
-  | 'pending';
+export type TransactionStatus = 'confirmed' | 'pending';
 
 export type Transactions = {
   __typename?: 'Transactions';
@@ -589,10 +567,7 @@ export type Typeahead = {
   suppliers: Array<Scalars['String']['output']>;
 };
 
-export type VatScheme =
-  | 'flatRate'
-  | 'none'
-  | 'standard';
+export type VatScheme = 'flatRate' | 'none' | 'standard';
 
 export type VatSettings = {
   __typename?: 'VatSettings';
@@ -614,8 +589,18 @@ export type NotificationBeaconMutationVariables = Exact<{
   input: NotificationInput;
 }>;
 
-
-export type NotificationBeaconMutation = { __typename?: 'Mutation', notificationBeacon: { __typename?: 'Notification', createdAt: string, id: string, message: string, owner: string, payload?: string | null, read: boolean } };
+export type NotificationBeaconMutation = {
+  __typename?: 'Mutation';
+  notificationBeacon: {
+    __typename?: 'Notification';
+    createdAt: string;
+    id: string;
+    message: string;
+    owner: string;
+    payload?: string | null;
+    read: boolean;
+  };
+};
 
 export type TransactionChangeBeaconMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -623,8 +608,15 @@ export type TransactionChangeBeaconMutationVariables = Exact<{
   transactionId: Scalars['ID']['input'];
 }>;
 
-
-export type TransactionChangeBeaconMutation = { __typename?: 'Mutation', transactionChangeBeacon: { __typename?: 'TransactionChange', id: string, owner: string, transactionId: string } };
+export type TransactionChangeBeaconMutation = {
+  __typename?: 'Mutation';
+  transactionChangeBeacon: {
+    __typename?: 'TransactionChange';
+    id: string;
+    owner: string;
+    transactionId: string;
+  };
+};
 
 export type TransactionBeaconMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -632,5 +624,13 @@ export type TransactionBeaconMutationVariables = Exact<{
   input: TransactionBeaconInput;
 }>;
 
-
-export type TransactionBeaconMutation = { __typename?: 'Mutation', transactionBeacon: { __typename?: 'Balance', balance: number, id: string, owner: string, vat: { __typename?: 'BalanceVat', owed: number, paid: number } } };
+export type TransactionBeaconMutation = {
+  __typename?: 'Mutation';
+  transactionBeacon: {
+    __typename?: 'Balance';
+    balance: number;
+    id: string;
+    owner: string;
+    vat: { __typename?: 'BalanceVat'; owed: number; paid: number };
+  };
+};

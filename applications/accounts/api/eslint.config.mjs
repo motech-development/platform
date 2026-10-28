@@ -3,7 +3,7 @@ import { defineConfig } from 'eslint/config';
 
 export default defineConfig([
   {
-    ignores: ['src/generated/**'],
+    ignores: ['src/graphql/**'],
   },
   config,
 ]);
