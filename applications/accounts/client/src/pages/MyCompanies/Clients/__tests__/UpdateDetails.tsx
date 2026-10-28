@@ -1,8 +1,6 @@
 import { ApolloCache, InMemoryCache } from '@apollo/client';
 import { MockedProvider, MockedResponse } from '@apollo/client/testing';
-import { waitForApollo } from '@motech-development/appsync-apollo';
 import {
-  act,
   fireEvent,
   render,
   RenderResult,
@@ -29,7 +27,7 @@ describe('UpdateDetails', () => {
 
   describe('when data is returned', () => {
     describe('success', () => {
-      beforeEach(async () => {
+      beforeEach(() => {
         mocks = [
           {
             request: {
@@ -77,6 +75,7 @@ describe('UpdateDetails', () => {
             },
           },
           {
+            delay: 30,
             request: {
               query: UPDATE_CLIENT,
               variables: {
@@ -121,20 +120,16 @@ describe('UpdateDetails', () => {
           },
         ];
 
-        await act(async () => {
-          component = render(
-            <TestProvider
-              path="/clients/:companyId/update-details/:clientId"
-              history={history}
-            >
-              <MockedProvider mocks={mocks}>
-                <UpdateDetails />
-              </MockedProvider>
-            </TestProvider>,
-          );
-
-          await Promise.resolve();
-        });
+        component = render(
+          <TestProvider
+            path="/clients/:companyId/update-details/:clientId"
+            history={history}
+          >
+            <MockedProvider mocks={mocks}>
+              <UpdateDetails />
+            </MockedProvider>
+          </TestProvider>,
+        );
       });
 
       it('should redirect you back to clients page on complete', async () => {
@@ -142,13 +137,9 @@ describe('UpdateDetails', () => {
 
         await findByText('New client');
 
-        await act(async () => {
-          const [button] = await findAllByRole('button');
+        const [button] = await findAllByRole('button');
 
-          fireEvent.click(button);
-
-          await waitForApollo(0);
-        });
+        fireEvent.click(button);
 
         await expect(
           findByTestId('/my-companies/clients/company-id'),
@@ -160,13 +151,9 @@ describe('UpdateDetails', () => {
 
         await findByText('New client');
 
-        await act(async () => {
-          const [button] = await findAllByRole('button');
+        const [button] = await findAllByRole('button');
 
-          fireEvent.click(button);
-
-          await waitForApollo(0);
-        });
+        fireEvent.click(button);
 
         await waitFor(() =>
           expect(add).toHaveBeenCalledWith({
@@ -193,19 +180,15 @@ describe('UpdateDetails', () => {
 
         await findByText('New client');
 
-        await act(async () => {
-          const [, button] = await findAllByRole('button');
+        const [, button] = await findAllByRole('button');
 
-          fireEvent.click(button);
-        });
+        fireEvent.click(button);
 
         await findByRole('dialog');
 
-        await act(async () => {
-          const [, , cancelButton] = await findAllByRole('button');
+        const [, , cancelButton] = await findAllByRole('button');
 
-          fireEvent.click(cancelButton);
-        });
+        fireEvent.click(cancelButton);
 
         await waitFor(() =>
           expect(queryByRole('dialog')).not.toBeInTheDocument(),
@@ -218,32 +201,24 @@ describe('UpdateDetails', () => {
 
         await findByText('New client');
 
-        await act(async () => {
-          const [, button] = await findAllByRole('button');
+        const [, button] = await findAllByRole('button');
 
-          fireEvent.click(button);
+        fireEvent.click(button);
+
+        const input = await findByLabelText('confirm-delete');
+
+        fireEvent.change(input, {
+          target: {
+            focus: () => {},
+            value: 'New client',
+          },
         });
 
-        await act(async () => {
-          const input = await findByLabelText('confirm-delete');
+        const [, , , deleteButton] = await findAllByRole('button');
 
-          fireEvent.change(input, {
-            target: {
-              focus: () => {},
-              value: 'New client',
-            },
-          });
-        });
+        await waitFor(() => expect(deleteButton).not.toBeDisabled());
 
-        await act(async () => {
-          const [, , , deleteButton] = await findAllByRole('button');
-
-          await waitFor(() => expect(deleteButton).not.toBeDisabled());
-
-          fireEvent.click(deleteButton);
-
-          await waitForApollo(0);
-        });
+        fireEvent.click(deleteButton);
 
         await expect(
           findByTestId('/my-companies/clients/company-id'),
@@ -255,32 +230,24 @@ describe('UpdateDetails', () => {
 
         await findByText('New client');
 
-        await act(async () => {
-          const [, button] = await findAllByRole('button');
+        const [, button] = await findAllByRole('button');
 
-          fireEvent.click(button);
+        fireEvent.click(button);
+
+        const input = await findByLabelText('confirm-delete');
+
+        fireEvent.change(input, {
+          target: {
+            focus: () => {},
+            value: 'New client',
+          },
         });
 
-        await act(async () => {
-          const input = await findByLabelText('confirm-delete');
+        const [, , , deleteButton] = await findAllByRole('button');
 
-          fireEvent.change(input, {
-            target: {
-              focus: () => {},
-              value: 'New client',
-            },
-          });
-        });
+        await waitFor(() => expect(deleteButton).not.toBeDisabled());
 
-        await act(async () => {
-          const [, , , deleteButton] = await findAllByRole('button');
-
-          await waitFor(() => expect(deleteButton).not.toBeDisabled());
-
-          fireEvent.click(deleteButton);
-
-          await waitForApollo(0);
-        });
+        fireEvent.click(deleteButton);
 
         await waitFor(() =>
           expect(add).toHaveBeenCalledWith({
@@ -292,7 +259,7 @@ describe('UpdateDetails', () => {
     });
 
     describe('failure', () => {
-      beforeEach(async () => {
+      beforeEach(() => {
         mocks = [
           {
             error: new Error(),
@@ -333,20 +300,16 @@ describe('UpdateDetails', () => {
           },
         ];
 
-        await act(async () => {
-          component = render(
-            <TestProvider
-              path="/clients/:companyId/update-details/:clientId"
-              history={history}
-            >
-              <MockedProvider mocks={mocks} addTypename={false}>
-                <UpdateDetails />
-              </MockedProvider>
-            </TestProvider>,
-          );
-
-          await Promise.resolve();
-        });
+        component = render(
+          <TestProvider
+            path="/clients/:companyId/update-details/:clientId"
+            history={history}
+          >
+            <MockedProvider mocks={mocks} addTypename={false}>
+              <UpdateDetails />
+            </MockedProvider>
+          </TestProvider>,
+        );
       });
 
       it('should display an error toast when deleting a client', async () => {
@@ -354,32 +317,24 @@ describe('UpdateDetails', () => {
 
         await findByText('New client');
 
-        await act(async () => {
-          const [, button] = await findAllByRole('button');
+        const [, button] = await findAllByRole('button');
 
-          fireEvent.click(button);
+        fireEvent.click(button);
+
+        const input = await findByLabelText('confirm-delete');
+
+        fireEvent.change(input, {
+          target: {
+            focus: () => {},
+            value: 'New client',
+          },
         });
 
-        await act(async () => {
-          const input = await findByLabelText('confirm-delete');
+        const [, , , deleteButton] = await findAllByRole('button');
 
-          fireEvent.change(input, {
-            target: {
-              focus: () => {},
-              value: 'New client',
-            },
-          });
-        });
+        await waitFor(() => expect(deleteButton).not.toBeDisabled());
 
-        await act(async () => {
-          const [, , , deleteButton] = await findAllByRole('button');
-
-          await waitFor(() => expect(deleteButton).not.toBeDisabled());
-
-          fireEvent.click(deleteButton);
-
-          await waitForApollo(0);
-        });
+        fireEvent.click(deleteButton);
 
         await waitFor(() =>
           expect(add).toHaveBeenCalledWith({
@@ -392,7 +347,7 @@ describe('UpdateDetails', () => {
   });
 
   describe('when data is not returned', () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       mocks = [
         {
           request: {
@@ -465,20 +420,16 @@ describe('UpdateDetails', () => {
         },
       ];
 
-      await act(async () => {
-        component = render(
-          <TestProvider
-            path="/clients/:companyId/update-details/:clientId"
-            history={history}
-          >
-            <MockedProvider mocks={mocks}>
-              <UpdateDetails />
-            </MockedProvider>
-          </TestProvider>,
-        );
-
-        await Promise.resolve();
-      });
+      component = render(
+        <TestProvider
+          path="/clients/:companyId/update-details/:clientId"
+          history={history}
+        >
+          <MockedProvider mocks={mocks}>
+            <UpdateDetails />
+          </MockedProvider>
+        </TestProvider>,
+      );
     });
 
     it('should display a warning toast when updating a client', async () => {
@@ -486,13 +437,9 @@ describe('UpdateDetails', () => {
 
       await findByText('New client');
 
-      await act(async () => {
-        const [button] = await findAllByRole('button');
+      const [button] = await findAllByRole('button');
 
-        fireEvent.click(button);
-
-        await waitForApollo(0);
-      });
+      fireEvent.click(button);
 
       await waitFor(() =>
         expect(add).toHaveBeenCalledWith({
@@ -507,13 +454,9 @@ describe('UpdateDetails', () => {
 
       await findByText('New client');
 
-      await act(async () => {
-        const [button] = await findAllByRole('button');
+      const [button] = await findAllByRole('button');
 
-        fireEvent.click(button);
-
-        await waitForApollo(0);
-      });
+      fireEvent.click(button);
 
       await expect(
         findByTestId('/my-companies/clients/company-id'),
@@ -525,32 +468,24 @@ describe('UpdateDetails', () => {
 
       await findByText('New client');
 
-      await act(async () => {
-        const [, button] = await findAllByRole('button');
+      const [, button] = await findAllByRole('button');
 
-        fireEvent.click(button);
+      fireEvent.click(button);
+
+      const input = await findByLabelText('confirm-delete');
+
+      fireEvent.change(input, {
+        target: {
+          focus: () => {},
+          value: 'New client',
+        },
       });
 
-      await act(async () => {
-        const input = await findByLabelText('confirm-delete');
+      const [, , , deleteButton] = await findAllByRole('button');
 
-        fireEvent.change(input, {
-          target: {
-            focus: () => {},
-            value: 'New client',
-          },
-        });
-      });
+      await waitFor(() => expect(deleteButton).not.toBeDisabled());
 
-      await act(async () => {
-        const [, , , deleteButton] = await findAllByRole('button');
-
-        await waitFor(() => expect(deleteButton).not.toBeDisabled());
-
-        fireEvent.click(deleteButton);
-
-        await waitForApollo(0);
-      });
+      fireEvent.click(deleteButton);
 
       await waitFor(() =>
         expect(add).toHaveBeenCalledWith({
@@ -566,29 +501,21 @@ describe('UpdateDetails', () => {
 
       await findByText('New client');
 
-      await act(async () => {
-        const [, button] = await findAllByRole('button');
+      const [, button] = await findAllByRole('button');
 
-        fireEvent.click(button);
+      fireEvent.click(button);
+
+      const input = await findByLabelText('confirm-delete');
+
+      fireEvent.change(input, {
+        target: { focus: () => {}, value: 'New client' },
       });
 
-      await act(async () => {
-        const input = await findByLabelText('confirm-delete');
+      const [, , , deleteButton] = await findAllByRole('button');
 
-        fireEvent.change(input, {
-          target: { focus: () => {}, value: 'New client' },
-        });
-      });
+      await waitFor(() => expect(deleteButton).not.toBeDisabled());
 
-      await act(async () => {
-        const [, , , deleteButton] = await findAllByRole('button');
-
-        await waitFor(() => expect(deleteButton).not.toBeDisabled());
-
-        fireEvent.click(deleteButton);
-
-        await waitForApollo(0);
-      });
+      fireEvent.click(deleteButton);
 
       await expect(
         findByTestId('/my-companies/clients/company-id'),
