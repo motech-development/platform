@@ -71,7 +71,7 @@ interface IDataRow {
 }
 
 function row({ t }: IDataRow) {
-  function Row({ createdAt, message, read }: INotification) {
+  function Row({ createdAt, message, read }: Readonly<INotification>) {
     return (
       <>
         <TableCell>{!read && <Icon icon={faCircle} />}</TableCell>

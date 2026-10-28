@@ -22,9 +22,11 @@ init({
   tracesSampleRate: 1,
 });
 
-type IRecord = Pick<Notification, 'createdAt' | 'id' | 'message' | 'owner'> & {
+type IRecord = Pick<
+  Notification,
+  'createdAt' | 'id' | 'message' | 'owner' | 'payload'
+> & {
   __typename: 'Notification';
-  payload?: Notification['payload'];
 };
 
 const isNotificationRecord = (value: unknown): value is IRecord => {
