@@ -33,7 +33,7 @@ The normative implementation specification is [GitHub issue #1492](https://githu
 
 Before running workflows generated with this configuration, set the repository Actions variable `PROD_DOMAIN` to the public base domain (for example, `motechdevelopment.co.uk`, without a scheme or subdomain). Production deployment jobs use this variable both as the Serverless `PROD_DOMAIN` input and for the Accounts environment URL. Scheduled production browser tests also use it for their Accounts base URL.
 
-After this revision is merged and active workflow runs using the old definition have completed, remove the repository secret also named `PROD_DOMAIN`. Generated workflows no longer read that secret. Until it is removed, GitHub may suppress the environment URL because it matches a masked secret.
+After this revision is merged and active workflow runs using the old definition have completed, remove the repository secret also named `PROD_DOMAIN`. Generated workflows no longer read that secret. Until it is removed, GitHub may suppress the environment URL because it matches a masked secret. After retiring the secret, dispatch a fresh Release workflow from `main` with `boundary` set to a successfully released main commit if another Release run is needed; rerunning an older Release can invoke its original workflow definition and still require the secret ([GitHub rerun behavior](https://docs.github.com/en/actions/reference/workflows-and-actions/reusing-workflow-configurations#behavior-of-reusable-workflows-when-re-running-jobs)).
 
 ## Authoritative files
 
