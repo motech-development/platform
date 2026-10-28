@@ -95,14 +95,15 @@ rebuttal and CodeRabbit rejection explanation.
   update until the writers are coordinated and retain the proposed targeted edit.
   A fresh read alone does not eliminate the race. See GitHub's
   [conditional-request limitations](https://docs.github.com/en/rest/using-the-rest-api/best-practices-for-using-the-rest-api#use-conditional-requests).
-- Verify the remote head, then wait for that revision's pipelines and hosted
-  reviews using [hosted-loop.md](hosted-loop.md). Use measured workflow
-  durations and a sleeping process for routine waiting, rather than repeated
-  model turns. Verify each hosted review against the exact head commit. Collect
-  the completed hosted feedback batch before changing code. If the expected
-  automatic hosted Codex review is missing at the bounded deadline, do not post
-  a trigger comment; record its missing coverage and report the hosted gate as
-  incomplete.
+- Verify the remote head, then wait for its pipelines and hosted reviews using
+  [hosted-loop.md](hosted-loop.md). Use measured workflow durations and a
+  sleeping process for routine waiting, rather than repeated model turns.
+  Verify review revision coverage using that reference: CodeRabbit approval and
+  other hosted results must cover the current head, while completed Codex
+  coverage may carry forward only under its documented non-material-delta rule.
+  If a current-head hosted Codex review is required but missing at the bounded
+  deadline, do not post a trigger comment; record the gap and report the hosted
+  gate as incomplete.
 - If new valid findings or in-scope pipeline failures remain, return to the fix
   step with those findings and the latest head. Keep prior dispositions and
   review coverage. Complete the entire inner local loop again before the next
@@ -112,8 +113,10 @@ rebuttal and CodeRabbit rejection explanation.
   approved the latest PR head or the credit-consent skip is recorded, Sonar's
   current PR analysis has zero open issues and zero unreviewed hotspots, a
   passing quality gate, the required pipelines pass, all bot review threads are
-  resolved, and the final changes still satisfy the recorded task scope. Apart
-  from that explicit CodeRabbit exception, missing, skipped, stale, or pending
+  resolved, and the final changes still satisfy the recorded task scope. For
+  hosted Codex only, an earlier completed result remains valid under the
+  carry-forward rules in [hosted-loop.md](hosted-loop.md). Apart from that rule
+  and the explicit CodeRabbit exception, missing, skipped, stale, or pending
   evidence is not success. A user-authorized hosted-review waiver remains missing
   coverage and must be reported as incomplete. Stop on cancellation,
   or a concrete issue that cannot be resolved within the existing authorization.
