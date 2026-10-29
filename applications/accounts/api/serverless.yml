@@ -48,7 +48,7 @@ appSync:
   additionalAuthentications:
     - type: AWS_IAM
   logging:
-    loggingRoleArn: !GetAtt AppSyncLoggingServiceRole.Arn
+    roleArn: !GetAtt AppSyncLoggingServiceRole.Arn
     level: ERROR
   xrayEnabled: true
   resolvers:
@@ -442,6 +442,10 @@ resources:
                 - Effect: Allow
                   Action:
                     - logs:CreateLogGroup
+                  Resource: !Sub arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${self:service}-${self:provider.stage}-GetTransactionState
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
                     - logs:CreateLogStream
                     - logs:PutLogEvents
                   Resource: !Sub arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${self:service}-${self:provider.stage}-GetTransactionState:*
@@ -499,17 +503,25 @@ resources:
                   - appsync.amazonaws.com
               Action:
                 - sts:AssumeRole
-        Policies:
-          - PolicyName: ${self:custom.prefix}-appsync-logging-service-role-policy
-            PolicyDocument:
-              Version: '2012-10-17'
-              Statement:
-                - Effect: Allow
-                  Action:
-                    - logs:CreateLogGroup
-                    - logs:CreateLogStream
-                    - logs:PutLogEvents
-                  Resource: '*'
+    AppSyncLoggingServicePolicy:
+      Type: AWS::IAM::Policy
+      Properties:
+        PolicyName: ${self:custom.prefix}-appsync-logging-service-role-policy
+        Roles:
+          - !Ref AppSyncLoggingServiceRole
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - logs:CreateLogGroup
+              Resource: !Sub arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:${GraphQlApiLogGroup}
+            - Effect: Allow
+              Action:
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource: !Sub arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:${GraphQlApiLogGroup}:*
     AppSyncDynamoDbServiceRole:
       Type: AWS::IAM::Role
       Properties:
