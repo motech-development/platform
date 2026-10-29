@@ -101,6 +101,7 @@ describe('UserNotifications', () => {
                 __typename: 'Notifications',
                 id: 'user-id',
                 items: [
+                  null,
                   {
                     __typename: 'Notification',
                     createdAt: '2020-07-01T00:00:00.000Z',
@@ -186,6 +187,67 @@ describe('UserNotifications', () => {
           findByText('messages.Notification_1'),
         ).resolves.toBeInTheDocument(),
       );
+    });
+
+    it('should display the empty state when the notification list is null', async () => {
+      component.unmount();
+
+      component = render(
+        <TestProvider>
+          <MockedProvider
+            cache={
+              new InMemoryCache({
+                addTypename: true,
+                typePolicies,
+              })
+            }
+            mocks={[
+              {
+                request: {
+                  query: GET_NOTIFICATIONS,
+                  variables: {
+                    count: 5,
+                    id: 'user-id',
+                  },
+                },
+                result: {
+                  data: {
+                    getNotifications: {
+                      __typename: 'Notifications',
+                      id: 'user-id',
+                      items: null,
+                    },
+                  },
+                },
+              },
+              {
+                request: {
+                  query: ON_NOTIFICATION,
+                  variables: {
+                    owner: 'user-id',
+                  },
+                },
+                result: {
+                  data: {
+                    onNotification: null,
+                  },
+                },
+              },
+            ]}
+          >
+            <UserNotifications id="user-id" />
+          </MockedProvider>
+        </TestProvider>,
+      );
+
+      const { findByRole, findByText } = component;
+      const button = await findByRole('button');
+
+      fireEvent.click(button);
+
+      await expect(
+        findByText('no-new-notifications'),
+      ).resolves.toBeInTheDocument();
     });
 
     it('should not mark any messages as read', async () => {

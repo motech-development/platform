@@ -12,6 +12,8 @@ describe('publish-notifications', () => {
   let env: NodeJS.ProcessEnv;
 
   beforeEach(() => {
+    vi.mocked(AWSAppSyncClient.prototype.mutate).mockClear();
+
     context = ctx();
 
     context.done();
@@ -106,6 +108,70 @@ describe('publish-notifications', () => {
           },
         },
       });
+    });
+
+    it('should publish a notification when its nullable payload is omitted', async () => {
+      const image = event.Records[0]?.dynamodb?.NewImage;
+
+      if (!image) throw new Error('Missing notification image');
+
+      delete image.payload;
+
+      await handler(event, context, callback);
+
+      expect(AWSAppSyncClient.prototype.mutate).toHaveBeenCalledWith({
+        mutation,
+        variables: {
+          id: 'owner-id',
+          input: {
+            createdAt: 'today',
+            id: 'notification-id',
+            message: 'Notification message',
+            owner: 'owner-id',
+            payload: undefined,
+            read: false,
+          },
+        },
+      });
+    });
+
+    it('should publish a notification when its nullable payload is null', async () => {
+      const image = event.Records[0]?.dynamodb?.NewImage;
+
+      if (!image) throw new Error('Missing notification image');
+
+      image.payload = {
+        NULL: true,
+      };
+
+      await handler(event, context, callback);
+
+      expect(AWSAppSyncClient.prototype.mutate).toHaveBeenCalledWith({
+        mutation,
+        variables: {
+          id: 'owner-id',
+          input: {
+            createdAt: 'today',
+            id: 'notification-id',
+            message: 'Notification message',
+            owner: 'owner-id',
+            payload: null,
+            read: false,
+          },
+        },
+      });
+    });
+
+    it('should skip notifications with a malformed required field', async () => {
+      const image = event.Records[0]?.dynamodb?.NewImage;
+
+      if (!image) throw new Error('Missing notification image');
+
+      delete image.message;
+
+      await handler(event, context, callback);
+
+      expect(AWSAppSyncClient.prototype.mutate).not.toHaveBeenCalled();
     });
 
     it('should swallow the error', async () => {

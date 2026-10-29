@@ -29,6 +29,14 @@ The normative implementation specification is [GitHub issue #1492](https://githu
 - Do not modify Playwright tests or configuration as part of delivery optimization.
 - Do not change Auth0 dependencies or `applications/id` without explicit authorization.
 
+## Production domain configuration
+
+Set the repository Actions variable `PROD_DOMAIN` to the public base domain (for example, `motechdevelopment.co.uk`, without a scheme or subdomain). Production deployment jobs use this variable both as the Serverless `PROD_DOMAIN` input and for the Accounts environment URL. Scheduled production browser tests also use it for their Accounts base URL.
+
+Migration completed on 29 October 2026. PR #1685 merged, production delivery succeeded, and scheduled production tests passed 52 tests across two shards against `https://accounts.motechdevelopment.co.uk`. After confirming no active workflow runs remained, the legacy repository secret `PROD_DOMAIN` was deleted; the public repository variable remains set to `motechdevelopment.co.uk`.
+
+After secret retirement, dispatch a fresh Release workflow from `main` with `boundary` set to a successfully released main commit if another Release run is needed. Rerunning an older Release can invoke its original workflow definition and still require the removed secret ([GitHub rerun behavior](https://docs.github.com/en/actions/reference/workflows-and-actions/reusing-workflow-configurations#behavior-of-reusable-workflows-when-re-running-jobs)).
+
 ## Authoritative files
 
 After implementation, expect:

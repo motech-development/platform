@@ -20,27 +20,23 @@ import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
 import { gql } from '../../../graphql';
+import type { GetReportsQuery } from '../../../graphql/graphql';
 import invariant from '../../../utils/invariant';
 
-interface IReport {
-  createdAt: string;
-  downloadUrl: string;
-  id: string;
-  ttl: number;
-}
+type IReport = NonNullable<
+  NonNullable<GetReportsQuery['getReports']['items']>[number]
+>;
 
-interface IGetReportsInput {
-  id: string;
-  count?: number;
-  nextToken?: string;
-}
+type IDownloadableReport = IReport & {
+  createdAt: NonNullable<IReport['createdAt']>;
+  downloadUrl: NonNullable<IReport['downloadUrl']>;
+  ttl: NonNullable<IReport['ttl']>;
+};
 
-interface IGetReportsOutput {
-  getReports?: {
-    id: string;
-    items: IReport[];
-  };
-}
+const isDownloadableReport = (
+  report: IReport | null,
+): report is IDownloadableReport =>
+  report?.createdAt != null && report.downloadUrl != null && report.ttl != null;
 
 interface IDataRow {
   download: (url: string) => Promise<Blob | undefined>;
@@ -48,7 +44,7 @@ interface IDataRow {
 }
 
 function row({ download, label }: IDataRow) {
-  function DataRow({ createdAt, downloadUrl, ttl }: Exclude<IReport, 'id'>) {
+  function DataRow({ createdAt, downloadUrl, ttl }: IDownloadableReport) {
     return (
       <>
         <TableCell>
@@ -128,14 +124,13 @@ function Reports() {
     },
     responseType: 'blob',
   });
-  const { data, error, loading } = useQuery<
-    IGetReportsOutput,
-    IGetReportsInput
-  >(GET_REPORTS, {
+  const { data, error, loading } = useQuery(GET_REPORTS, {
     variables: {
       id: companyId,
     },
   });
+
+  const reports = data?.getReports.items?.filter(isDownloadableReport) ?? [];
 
   useSubscription(ON_NOTIFICATION, {
     skip: !user?.sub,
@@ -162,7 +157,7 @@ function Reports() {
           <Row>
             <Col>
               <DataTable
-                items={data.getReports.items}
+                items={reports}
                 header={
                   <>
                     <TableCell as="th">{t('reports.table.created')}</TableCell>

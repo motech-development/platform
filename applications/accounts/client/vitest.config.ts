@@ -39,7 +39,6 @@ export default defineConfig({
     include: ['src/**/__tests__/**/*.{ts,tsx}'],
     mockReset: true,
     setupFiles: ['./src/setupTests.ts'],
-    // TODO: Improve tests so that the timeout can be reduced.
-    testTimeout: 30000,
+    testTimeout: 5000,
   },
 });

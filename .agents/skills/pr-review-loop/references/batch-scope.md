@@ -20,10 +20,13 @@ Read when establishing or resuming a feedback batch, before deciding findings or
   message or use the supported inline mechanism. Keep other text replies,
   pushes, commits, and PR metadata as separate authorization fields. Record any
   narrowing when present.
-- Read new inline comments, review summaries, relevant discussion replies, and
-  Sonar issues. Paginate and retain comment/issue IDs and reviewed commit IDs so
-  later passes fetch changes rather than reprocessing the whole conversation.
-  A passing Sonar gate can still contain open issues; inspect the actual findings.
+- Read new inline comments, review summaries, relevant discussion replies,
+  PR-description reactions, and Sonar issues. For Codex, record reaction actor,
+  ID, target, and time, then assess it with the completion evidence under
+  [hosted-loop.md](hosted-loop.md); a PR reaction is not commit-bound. Paginate
+  and retain comment/issue IDs and reviewed commit IDs so later passes fetch
+  changes rather than reprocessing the whole conversation. A passing Sonar gate
+  can still contain open issues; inspect the actual findings.
 - For CodeRabbit, read the full main review body, including collapsed sections
   containing out-of-diff comments and nitpicks. These findings may not have
   separate inline threads. Assess them by the same evidence and scope rules;
@@ -115,7 +118,9 @@ publication: user-set limit (none unless explicit), published count,
              remaining if limited, design reassessment decisions
 finding: id/theme/trace/revision/disposition/evidence/fix/validation/thread
 review: client/run/baseline/frozen files/reviewType/status/coverage
-hosted: exact head/review IDs/Sonar issues/hotspots/checks/wait deadline
+hosted: current head; Codex review revision/status/findings IDs and any PR
+        reaction actor/ID/time (PR-scoped, not SHA-bound); documented carry-forward
+        assessment; Sonar issues/hotspots/checks/wait deadline
 ```
 
 Do not treat a passing summary, an outdated flag, or a new comment ID as a new

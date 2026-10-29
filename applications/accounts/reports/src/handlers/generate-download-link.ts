@@ -2,6 +2,7 @@ import { createSignedUrl } from '@motech-development/s3-file-operations';
 import { init, wrapHandler } from '@sentry/aws-serverless';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import type { Handler } from 'aws-lambda';
+import type { InferType } from 'yup';
 import { object, string } from 'yup';
 
 init({
@@ -18,11 +19,7 @@ const schema = object({
   owner: string().required(),
 }).required();
 
-export interface IEvent {
-  companyId: string;
-  key: string;
-  owner: string;
-}
+export type IEvent = InferType<typeof schema>;
 
 export const handler: Handler<IEvent> = wrapHandler(async (event) => {
   const { BUCKET } = process.env;

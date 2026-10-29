@@ -3,6 +3,7 @@ import { QueryCommand } from '@aws-sdk/lib-dynamodb';
 import { init, wrapHandler } from '@sentry/aws-serverless';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import type { Handler } from 'aws-lambda';
+import type { InferType } from 'yup';
 import { number, object, string } from 'yup';
 import padNumber from '../shared/padNumber';
 import Status from '../shared/status';
@@ -29,17 +30,7 @@ const schema = object({
   }).required(),
 }).required();
 
-export interface IEvent {
-  companyId: string;
-  currency: string;
-  owner: string;
-  status: Status;
-  year: number;
-  yearEnd: {
-    day: number;
-    month: number;
-  };
-}
+export type IEvent = InferType<typeof schema>;
 
 export const handler: Handler<IEvent> = wrapHandler(async (event) => {
   const { TABLE } = process.env;

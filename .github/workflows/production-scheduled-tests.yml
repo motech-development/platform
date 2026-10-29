@@ -44,7 +44,7 @@ jobs:
           - 2
 
     env:
-      BASE_URL: https://accounts.motechdevelopment.co.uk
+      BASE_URL: https://accounts.${{ vars.PROD_DOMAIN }}
       E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
       E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
 

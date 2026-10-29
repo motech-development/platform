@@ -53,10 +53,7 @@ export const createFile = async (
   await client.send(command);
 };
 
-interface ICreateSignedUrlOpts {
-  ContentType?: string;
-  Metadata?: Record<string, string>;
-}
+type ICreateSignedUrlOpts = Pick<PutObjectRequest, 'ContentType' | 'Metadata'>;
 
 type TOperation = 'getObject' | 'putObject';
 

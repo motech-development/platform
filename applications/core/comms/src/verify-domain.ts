@@ -18,23 +18,13 @@ init({
   tracesSampleRate: 1,
 });
 
-interface IEvent {
-  DMARC: string;
-  Domain: string;
-  Region: string;
-  SPF: string;
-  TTL: number;
-}
-
-const schema = object<IEvent>()
-  .shape({
-    DMARC: string().required(),
-    Domain: string().required(),
-    Region: string().required(),
-    SPF: string().required(),
-    TTL: number().required(),
-  })
-  .required();
+const schema = object({
+  DMARC: string().required(),
+  Domain: string().required(),
+  Region: string().required(),
+  SPF: string().required(),
+  TTL: number().required(),
+}).required();
 
 export const handler: CloudFormationCustomResourceHandler = wrapHandler(
   async (event, context) => {

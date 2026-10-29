@@ -1,4 +1,8 @@
 import gql from 'graphql-tag';
+import type {
+  TransactionChangeBeaconMutation,
+  TransactionChangeBeaconMutationVariables,
+} from '../graphql/graphql';
 import createAppSyncClient from './appsync-client';
 
 export const mutation = gql`
@@ -24,7 +28,10 @@ const publishTransactionChange = async (
   owner: string,
   transactionId: string,
 ): ReturnType<ReturnType<typeof createAppSyncClient>['mutate']> =>
-  createAppSyncClient().mutate({
+  createAppSyncClient().mutate<
+    TransactionChangeBeaconMutation,
+    TransactionChangeBeaconMutationVariables
+  >({
     mutation,
     variables: {
       id,

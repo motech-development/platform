@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import { AttributeValue as DdbAttributeValue } from '@aws-sdk/client-dynamodb';
 import { fromNodeProviderChain } from '@aws-sdk/credential-providers';
 import { unmarshall } from '@aws-sdk/util-dynamodb';
@@ -8,6 +7,11 @@ import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import { AWSAppSyncClient } from 'aws-appsync';
 import type { DynamoDBStreamHandler } from 'aws-lambda';
 import gql from 'graphql-tag';
+import type {
+  Notification,
+  NotificationBeaconMutation,
+  NotificationBeaconMutationVariables,
+} from '../graphql/graphql';
 import { isStreamInsertRecord } from '../shared/utils';
 
 init({
@@ -18,15 +22,36 @@ init({
   tracesSampleRate: 1,
 });
 
-// TODO: Use generated types instead
-interface IRecord {
-  __typename: string;
-  createdAt: string;
-  id: string;
-  message: string;
-  owner: string;
-  payload: string;
-}
+type IRecord = Pick<
+  Notification,
+  'createdAt' | 'id' | 'message' | 'owner' | 'payload'
+> & {
+  __typename: 'Notification';
+};
+
+const isNotificationRecord = (value: unknown): value is IRecord => {
+  if (typeof value !== 'object' || value === null || !('__typename' in value)) {
+    return false;
+  }
+
+  const { __typename: typename } = value;
+
+  return (
+    typename === 'Notification' &&
+    'createdAt' in value &&
+    typeof value.createdAt === 'string' &&
+    'id' in value &&
+    typeof value.id === 'string' &&
+    'message' in value &&
+    typeof value.message === 'string' &&
+    'owner' in value &&
+    typeof value.owner === 'string' &&
+    (!('payload' in value) ||
+      value.payload === undefined ||
+      value.payload === null ||
+      typeof value.payload === 'string')
+  );
+};
 
 export const mutation = gql`
   mutation NotificationBeacon($id: ID!, $input: NotificationInput!) {
@@ -67,36 +92,35 @@ export const handler: DynamoDBStreamHandler = wrapHandler(async (event) => {
   const mutations = Records.filter(isStreamInsertRecord)
     .map(({ dynamodb }) => {
       const { NewImage } = dynamodb;
-      const { __typename, createdAt, id, message, owner, payload } = unmarshall(
-        NewImage as Record<string, DdbAttributeValue>,
-      ) as IRecord;
 
-      return {
-        __typename,
-        createdAt,
-        id,
-        message,
-        owner,
-        payload,
-      };
+      const item: unknown = unmarshall(
+        NewImage as Record<string, DdbAttributeValue>,
+      );
+
+      return item;
     })
-    .filter(({ __typename }) => __typename === 'Notification')
-    .map(({ createdAt, id, owner, payload, message }) =>
-      client.mutate({
-        mutation,
-        variables: {
-          id: owner,
-          input: {
-            createdAt,
-            id,
-            message,
-            owner,
-            payload,
-            read: false,
-          },
+    .filter(isNotificationRecord)
+    .map(({ createdAt, id, owner, payload, message }) => {
+      const variables: NotificationBeaconMutationVariables = {
+        id: owner,
+        input: {
+          createdAt,
+          id,
+          message,
+          owner,
+          payload,
+          read: false,
         },
-      }),
-    );
+      };
+
+      return client.mutate<
+        NotificationBeaconMutation,
+        NotificationBeaconMutationVariables
+      >({
+        mutation,
+        variables,
+      });
+    });
 
   try {
     await Promise.all(mutations);

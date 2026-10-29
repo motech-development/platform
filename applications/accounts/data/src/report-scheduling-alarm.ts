@@ -5,18 +5,13 @@ import {
   wrapHandler,
 } from '@sentry/aws-serverless';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
-import type { Handler } from 'aws-lambda';
+import type { CloudWatchAlarmEvent, Handler } from 'aws-lambda';
 
-interface ICloudWatchAlarmEvent {
-  alarmArn: string;
-  alarmData: {
-    alarmName: string;
-    state: {
-      reason: string;
-      value: string;
-    };
+type ICloudWatchAlarmEvent = Pick<CloudWatchAlarmEvent, 'alarmArn'> & {
+  alarmData: Pick<CloudWatchAlarmEvent['alarmData'], 'alarmName'> & {
+    state: Pick<CloudWatchAlarmEvent['alarmData']['state'], 'reason' | 'value'>;
   };
-}
+};
 
 init({
   dsn: process.env.SENTRY_DSN,

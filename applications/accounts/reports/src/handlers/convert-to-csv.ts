@@ -2,6 +2,7 @@ import { init, wrapHandler } from '@sentry/aws-serverless';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import type { Handler } from 'aws-lambda';
 import { json2csv } from 'json-2-csv';
+import type { InferType } from 'yup';
 import { array, object, string } from 'yup';
 
 init({
@@ -33,22 +34,15 @@ const schema = object({
   owner: string().required(),
 }).required();
 
-export interface IEvent {
-  attachments: {
-    key: string;
-    path: string;
-  }[];
-  companyId: string;
-  csv: {
-    Category: string;
-    Date: string;
-    Description: string;
-    In: string | null;
-    Name: string;
-    Out: string | null;
-  }[];
-  owner: string;
-}
+type ICsvRow = Omit<InferType<typeof schema>['csv'][number], 'In' | 'Out'> & {
+  In: Exclude<InferType<typeof schema>['csv'][number]['In'], undefined>;
+  Out: Exclude<InferType<typeof schema>['csv'][number]['Out'], undefined>;
+};
+
+export type IEvent = Omit<InferType<typeof schema>, 'attachments' | 'csv'> & {
+  attachments: NonNullable<InferType<typeof schema>['attachments']>;
+  csv: ICsvRow[];
+};
 
 export const handler: Handler<IEvent> = wrapHandler(async (event) => {
   const { attachments, companyId, csv, owner } = await schema.validate(event, {

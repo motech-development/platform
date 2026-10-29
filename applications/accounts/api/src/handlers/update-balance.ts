@@ -7,41 +7,50 @@ import type {
   DynamoDBStreamHandler,
   StreamRecord,
 } from 'aws-lambda';
+import type { Balance, Transaction } from '../graphql/graphql';
 import publishTransactionChange from '../shared/publish-transaction-change';
 import transactionCompanyId from '../shared/transaction-company-id';
 import updateBalance from '../shared/update-balance';
 
-export interface IBalance {
+export type IBalance = Pick<Balance, 'balance' | 'id' | 'owner' | 'vat'> & {
   __typename: 'Balance';
-  balance: number;
-  id: string;
-  owner: string;
-  vat: {
-    owed: number;
-    paid: number;
-  };
-}
+};
 
-interface ITransactionScope {
+type ITransactionScope = Pick<Transaction, 'companyId' | 'id'> & {
   __typename: 'Transaction';
-  id: string;
-  companyId: string;
   owner: string;
-}
+};
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
+const isBalanceRecord = (item: Record<string, unknown>): item is IBalance => {
+  const { __typename: typename, balance, id, owner, vat } = item;
+
+  return (
+    typename === 'Balance' &&
+    typeof id === 'string' &&
+    id.length > 0 &&
+    typeof owner === 'string' &&
+    owner.length > 0 &&
+    typeof balance === 'number' &&
+    Number.isFinite(balance) &&
+    typeof vat === 'object' &&
+    vat !== null &&
+    'owed' in vat &&
+    typeof vat.owed === 'number' &&
+    Number.isFinite(vat.owed) &&
+    'paid' in vat &&
+    typeof vat.paid === 'number' &&
+    Number.isFinite(vat.paid)
+  );
+};
 
 const publishBalance = async (
-  { id, owner, balance, vat }: IBalance,
+  item: Record<string, unknown>,
   dynamodb: DynamoDBRecord['dynamodb'],
 ) => {
-  if (
-    typeof id !== 'string' ||
-    id.length === 0 ||
-    typeof owner !== 'string' ||
-    owner.length === 0 ||
-    !Number.isFinite(balance) ||
-    !Number.isFinite(vat?.owed) ||
-    !Number.isFinite(vat?.paid)
-  ) {
+  if (!isBalanceRecord(item)) {
     logger.error('Skipping balance without a valid ID, owner, balance or VAT', {
       keys: dynamodb?.Keys,
       sequenceNumber: dynamodb?.SequenceNumber,
@@ -49,6 +58,8 @@ const publishBalance = async (
 
     return;
   }
+
+  const { id, owner, balance, vat } = item;
 
   await updateBalance(id, owner, {
     balance,
@@ -60,7 +71,7 @@ const publishBalance = async (
 };
 
 const hasTransactionScope = (
-  item: IBalance | ITransactionScope | undefined,
+  item: Record<string, unknown> | undefined,
 ): item is ITransactionScope => {
   if (!item) return false;
 
@@ -83,14 +94,17 @@ const hasTransactionScope = (
 const readImage = (image: StreamRecord['NewImage']) => {
   if (!image) return undefined;
 
-  const item = unmarshall(image as Record<string, AttributeValue>);
+  const item: unknown = unmarshall(image as Record<string, AttributeValue>);
+
+  if (!isRecord(item)) return undefined;
+
   const { __typename: typename } = item;
 
   if (typename === 'Transaction') {
     item.companyId = transactionCompanyId(item);
   }
 
-  return item as IBalance | ITransactionScope;
+  return item;
 };
 
 const publishRecord = async ({ eventName, dynamodb }: DynamoDBRecord) => {
@@ -127,8 +141,6 @@ const publishRecord = async ({ eventName, dynamodb }: DynamoDBRecord) => {
   }
 
   if (typename === 'Transaction') {
-    const { companyId, owner, id } = item;
-
     if (!hasTransactionScope(item)) {
       // Retrying an immutable malformed stream image cannot recover its scope.
       logger.error(
@@ -142,7 +154,7 @@ const publishRecord = async ({ eventName, dynamodb }: DynamoDBRecord) => {
       return;
     }
 
-    await publishTransactionChange(companyId, owner, id);
+    await publishTransactionChange(item.companyId, item.owner, item.id);
   }
 };
 
