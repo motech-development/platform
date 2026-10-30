@@ -85,11 +85,114 @@ resources:
               Cookies:
                 Forward: none
             ViewerProtocolPolicy: redirect-to-https
-          # TODO: Logging
-          # Logging:
-          #   IncludeCookies: 'false'
-          #   Bucket: ''
-          #   Prefix: ''
+
+    CloudFrontLogBucket:
+      Type: AWS::S3::Bucket
+      DeletionPolicy: Retain
+      UpdateReplacePolicy: Retain
+      Properties:
+        BucketEncryption:
+          ServerSideEncryptionConfiguration:
+            - ServerSideEncryptionByDefault:
+                SSEAlgorithm: AES256
+        LifecycleConfiguration:
+          Rules:
+            - ExpirationInDays: 14
+              Id: DeleteExpiredCloudFrontLogs
+              Status: Enabled
+        OwnershipControls:
+          Rules:
+            - ObjectOwnership: BucketOwnerEnforced
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: true
+          BlockPublicPolicy: true
+          IgnorePublicAcls: true
+          RestrictPublicBuckets: true
+
+    CloudFrontLogBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: !Ref CloudFrontLogBucket
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Sid: AllowCloudFrontLogDelivery
+              Effect: Allow
+              Action:
+                - s3:PutObject
+              Principal:
+                Service: delivery.logs.amazonaws.com
+              Resource:
+                - !Join
+                  - ''
+                  - - !GetAtt CloudFrontLogBucket.Arn
+                    - '/AWSLogs/'
+                    - !Ref AWS::AccountId
+                    - '/CloudFront/*'
+              Condition:
+                ArnEquals:
+                  aws:SourceArn: !GetAtt CloudFrontLogDeliverySource.Arn
+                StringEquals:
+                  aws:SourceAccount: !Ref AWS::AccountId
+                  s3:x-amz-acl: bucket-owner-full-control
+
+    CloudFrontLogDeliverySource:
+      Type: AWS::Logs::DeliverySource
+      Properties:
+        LogType: ACCESS_LOGS
+        Name: ${self:custom.prefix}-cloudfront-logs-source
+        ResourceArn: !Join
+          - ''
+          - - 'arn:'
+            - !Ref AWS::Partition
+            - ':cloudfront::'
+            - !Ref AWS::AccountId
+            - ':distribution/'
+            - !Ref CloudFrontDistribution
+
+    CloudFrontLogDeliveryDestination:
+      Type: AWS::Logs::DeliveryDestination
+      Properties:
+        DeliveryDestinationType: S3
+        DestinationResourceArn: !GetAtt CloudFrontLogBucket.Arn
+        Name: ${self:custom.prefix}-cloudfront-logs-destination
+        OutputFormat: json
+
+    CloudFrontLogDelivery:
+      Type: AWS::Logs::Delivery
+      DependsOn: CloudFrontLogBucketPolicy
+      Properties:
+        DeliveryDestinationArn: !GetAtt CloudFrontLogDeliveryDestination.Arn
+        DeliverySourceName: ${self:custom.prefix}-cloudfront-logs-source
+        RecordFields:
+          - date
+          - time
+          - timestamp(ms)
+          - x-edge-location
+          - cs-method
+          - cs(Host)
+          - cs-uri-stem
+          - sc-status
+          - sc-bytes
+          - cs-bytes
+          - time-taken
+          - time-to-first-byte
+          - origin-fbl
+          - origin-lbl
+          - x-edge-result-type
+          - x-edge-response-result-type
+          - x-edge-detailed-result-type
+          - x-edge-request-id
+          - x-host-header
+          - cs-protocol
+          - cs-protocol-version
+          - ssl-protocol
+          - ssl-cipher
+          - sc-content-type
+          - sc-content-len
+          - c-country
+          - asn
+          - cache-behavior-path-pattern
 
     DnsRecord:
       Type: AWS::Route53::RecordSet
