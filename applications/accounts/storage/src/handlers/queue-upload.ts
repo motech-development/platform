@@ -1,69 +1,10 @@
-import { SendMessageBatchCommand, SQSClient } from '@aws-sdk/client-sqs';
+import { SQSClient } from '@aws-sdk/client-sqs';
+import sendSqsBatchWithRetry from '@motech-development/sqs-batch-publisher';
 import { init, wrapHandler } from '@sentry/aws-serverless';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import type { S3Handler } from 'aws-lambda';
 
 const maxEntriesPerBatch = 10;
-const maxAttempts = 3;
-const baseDelayMs = 50;
-
-const delay = (ms: number) =>
-  new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
-
-const sendBatch = async (
-  client: SQSClient,
-  entries: NonNullable<
-    ConstructorParameters<typeof SendMessageBatchCommand>[0]['Entries']
-  >,
-  queueUrl: string,
-): Promise<void> => {
-  const sendFailedEntries = async (
-    pending: typeof entries,
-    attempt: number,
-  ): Promise<void> => {
-    if (pending.length === 0) return;
-
-    const { Failed = [] } = await client.send(
-      new SendMessageBatchCommand({
-        Entries: pending,
-        QueueUrl: queueUrl,
-      }),
-    );
-
-    if (Failed.length === 0) return;
-
-    const failures = new Map(Failed.map((failure) => [failure.Id, failure]));
-    const failedEntries = pending.filter((entry) => failures.has(entry.Id));
-
-    if (
-      failedEntries.length !== Failed.length ||
-      Failed.some((failure) => !failure.Id || !failures.has(failure.Id))
-    ) {
-      throw new Error('SQS returned an invalid batch failure response');
-    }
-
-    const senderFault = Failed.find((failure) => failure.SenderFault);
-
-    if (senderFault) {
-      throw new Error(
-        `SQS rejected entry ${senderFault.Id}: ${senderFault.Code ?? 'sender fault'}`,
-      );
-    }
-
-    if (attempt + 1 >= maxAttempts) {
-      throw new Error(
-        `SQS batch send failed after ${maxAttempts} attempts: ${Failed.map(({ Id, Code }) => `${Id}:${Code ?? 'unknown'}`).join(', ')}`,
-      );
-    }
-
-    await delay(baseDelayMs * 2 ** attempt);
-    await sendFailedEntries(failedEntries, attempt + 1);
-  };
-
-  return sendFailedEntries(entries, 0);
-};
 
 init({
   dsn: process.env.SENTRY_DSN,
@@ -116,5 +57,7 @@ export const handler: S3Handler = wrapHandler(async (event) => {
     batches.push(entries.slice(start, start + maxEntriesPerBatch));
   }
 
-  await Promise.all(batches.map((batch) => sendBatch(sqs, batch, QUEUE_URL)));
+  await Promise.all(
+    batches.map((batch) => sendSqsBatchWithRetry(sqs, QUEUE_URL, batch)),
+  );
 });

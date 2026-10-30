@@ -2,6 +2,7 @@ import {
   BatchWriteItemCommand,
   DescribeTableCommand,
   DynamoDBClient,
+  type KeySchemaElement,
   ScanCommand,
   type ScanCommandInput,
   type ScanCommandOutput,
@@ -30,6 +31,17 @@ function hasContinuationKey(
   key?: ScanCommandInput['ExclusiveStartKey'],
 ): key is NonNullable<ScanCommandInput['ExclusiveStartKey']> {
   return !!key && Object.keys(key).length > 0;
+}
+
+function hasExpectedKeySchema(keySchema?: KeySchemaElement[]) {
+  const attributeNames = (keySchema ?? []).map(
+    ({ AttributeName }) => AttributeName,
+  );
+
+  return (
+    attributeNames.length === EXPECTED_KEYS.length &&
+    EXPECTED_KEYS.every((expectedKey) => attributeNames.includes(expectedKey))
+  );
 }
 
 async function sleep(ms: number) {
@@ -281,11 +293,14 @@ async function waitForStreamState(
   }
 
   if (attempt + 1 >= MAX_WAIT_ATTEMPTS || Date.now() >= deadline) {
-    throw new Error(
-      streamEnabled === undefined
-        ? `Timed out waiting for table ${target} to become active`
-        : `Timed out waiting for target table stream to become ${streamEnabled ? 'enabled' : 'disabled'}`,
-    );
+    let timeoutMessage = `Timed out waiting for table ${target} to become active`;
+
+    if (streamEnabled !== undefined) {
+      const desiredState = streamEnabled ? 'enabled' : 'disabled';
+      timeoutMessage = `Timed out waiting for target table stream to become ${desiredState}`;
+    }
+
+    throw new Error(timeoutMessage);
   }
 
   await sleep(Math.min(2000, deadline - Date.now()));
@@ -360,17 +375,9 @@ async function validateTables(source: string, target: string) {
     getActiveTable(source),
     getActiveTable(target),
   ]);
-  const sourceKeys = (sourceTable.KeySchema ?? [])
-    .map(({ AttributeName }) => AttributeName)
-    .sort();
-  const targetKeys = (targetTable.KeySchema ?? [])
-    .map(({ AttributeName }) => AttributeName)
-    .sort();
-
   if (
-    sourceKeys.join(',') !== EXPECTED_KEYS.join(',') ||
-    targetKeys.join(',') !== EXPECTED_KEYS.join(',') ||
-    sourceKeys.join(',') !== targetKeys.join(',')
+    !hasExpectedKeySchema(sourceTable.KeySchema) ||
+    !hasExpectedKeySchema(targetTable.KeySchema)
   ) {
     throw new Error(
       `Source and target tables must use the ${EXPECTED_KEYS.join(' and ')} key schema`,

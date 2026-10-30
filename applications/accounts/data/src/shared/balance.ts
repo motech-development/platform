@@ -106,6 +106,70 @@ const getMarkerId = (eventSourceARN: string, eventID: string) =>
     .update(JSON.stringify([eventSourceARN, eventID]))
     .digest('hex');
 
+const markMissingBalanceEvent = async (
+  documentClient: DynamoDBClient,
+  tableName: string,
+  putMarker: {
+    ConditionExpression: string;
+    ExpressionAttributeNames: Record<string, string>;
+    Item: Record<string, unknown>;
+    TableName: string;
+  },
+  key: IBalanceUpdate['Key'],
+): Promise<boolean> => {
+  const { Item } = await documentClient.send(
+    new GetCommand({
+      ConsistentRead: true,
+      Key: key,
+      TableName: tableName,
+    }),
+  );
+
+  if (Item) return false;
+
+  await documentClient.send(
+    new TransactWriteCommand({
+      TransactItems: [
+        {
+          Put: putMarker,
+        },
+        {
+          ConditionCheck: {
+            ConditionExpression: 'attribute_not_exists(#id)',
+            ExpressionAttributeNames: {
+              '#id': 'id',
+            },
+            Key: key,
+            TableName: tableName,
+          },
+        },
+      ],
+    }),
+  );
+
+  return true;
+};
+
+const recoverProjectionFailure = async (
+  getMarker: () => Promise<boolean>,
+  documentClient: DynamoDBClient,
+  tableName: string,
+  putMarker: {
+    ConditionExpression: string;
+    ExpressionAttributeNames: Record<string, string>;
+    Item: Record<string, unknown>;
+    TableName: string;
+  },
+  key: IBalanceUpdate['Key'],
+  ignoreIfBalanceMissing: boolean,
+): Promise<boolean> => {
+  if (await getMarker()) return true;
+
+  if (!ignoreIfBalanceMissing) return false;
+
+  return markMissingBalanceEvent(documentClient, tableName, putMarker, key);
+};
+
 const applyOnce = async (
   documentClient: DynamoDBClient,
   tableName: string,
@@ -173,42 +237,17 @@ const applyOnce = async (
     );
   } catch (error) {
     try {
-      if (await getMarker()) {
+      if (
+        await recoverProjectionFailure(
+          getMarker,
+          documentClient,
+          tableName,
+          putMarker,
+          update.Key,
+          ignoreIfBalanceMissing,
+        )
+      ) {
         return undefined;
-      }
-
-      if (ignoreIfBalanceMissing) {
-        const { Item } = await documentClient.send(
-          new GetCommand({
-            ConsistentRead: true,
-            Key: update.Key,
-            TableName: tableName,
-          }),
-        );
-
-        if (!Item) {
-          await documentClient.send(
-            new TransactWriteCommand({
-              TransactItems: [
-                {
-                  Put: putMarker,
-                },
-                {
-                  ConditionCheck: {
-                    ConditionExpression: 'attribute_not_exists(#id)',
-                    ExpressionAttributeNames: {
-                      '#id': 'id',
-                    },
-                    Key: update.Key,
-                    TableName: tableName,
-                  },
-                },
-              ],
-            }),
-          );
-
-          return undefined;
-        }
       }
     } catch (recoveryError) {
       try {

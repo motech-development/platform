@@ -190,6 +190,7 @@ __metadata:
     "@motech-development/node-logger": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
+    "@motech-development/sqs-batch-publisher": "workspace:*"
     "@sentry/aws-serverless": "npm:10.48.0"
     "@sentry/profiling-node": "npm:10.48.0"
     "@smithy/types": "npm:4.14.1"
@@ -345,6 +346,7 @@ __metadata:
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/s3-file-operations": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
+    "@motech-development/sqs-batch-publisher": "workspace:*"
     "@sentry/aws-serverless": "npm:10.48.0"
     "@sentry/profiling-node": "npm:10.48.0"
     "@smithy/types": "npm:4.14.1"
@@ -7512,6 +7514,22 @@ __metadata:
     typescript: "npm:6.0.3"
     vite: "npm:8.1.5"
     vitest: "npm:4.1.9"
+  languageName: unknown
+  linkType: soft
+
+"@motech-development/sqs-batch-publisher@workspace:*, @motech-development/sqs-batch-publisher@workspace:packages/sqs-batch-publisher":
+  version: 0.0.0-use.local
+  resolution: "@motech-development/sqs-batch-publisher@workspace:packages/sqs-batch-publisher"
+  dependencies:
+    "@aws-sdk/client-sqs": "npm:3.1033.0"
+    "@motech-development/eslint-config-motech-base": "workspace:*"
+    "@motech-development/prettier-motech-config": "workspace:*"
+    "@motech-development/semantic-release": "workspace:*"
+    eslint: "npm:9.37.0"
+    prettier: "npm:3.2.5"
+    rimraf: "npm:6.0.1"
+    typescript: "npm:6.0.3"
+    vite: "npm:8.1.5"
   languageName: unknown
   linkType: soft
 

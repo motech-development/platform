@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "lib": ["es2017"],
+    "module": "ESNEXT",
+    "moduleResolution": "bundler",
+    "outDir": "lib",
+    "rootDir": "src",
+    "target": "ESNext"
+  },
+  "exclude": ["lib"],
+  "extends": "../../tsconfig.json",
+  "include": ["src"]
+}

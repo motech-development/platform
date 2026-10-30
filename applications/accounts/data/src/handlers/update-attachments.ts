@@ -159,9 +159,8 @@ const removeAttachmentAndNotify = async (
     }
 
     if (
-      !current ||
-      current.owner !== item.owner ||
-      current.attachment !== item.attachment
+      current?.owner !== item.owner ||
+      current?.attachment !== item.attachment
     ) {
       return;
     }

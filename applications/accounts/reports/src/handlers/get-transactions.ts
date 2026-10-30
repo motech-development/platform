@@ -1,4 +1,3 @@
-import { Readable } from 'node:stream';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import type { QueryCommandInput } from '@aws-sdk/lib-dynamodb';
 import { QueryCommand } from '@aws-sdk/lib-dynamodb';
@@ -9,7 +8,10 @@ import { v4 as uuid } from 'uuid';
 import type { InferType } from 'yup';
 import { number, object, string } from 'yup';
 import padNumber from '../shared/padNumber';
-import { writeReportPayloadStream } from '../shared/report-payload';
+import {
+  hasQueryContinuationKey,
+  writeReportQueryPages,
+} from '../shared/report-payload';
 import Status from '../shared/status';
 
 init({
@@ -21,11 +23,6 @@ init({
 });
 
 const client = new DynamoDBClient({});
-
-const hasContinuationKey = (
-  key?: QueryCommandInput['ExclusiveStartKey'],
-): key is NonNullable<QueryCommandInput['ExclusiveStartKey']> =>
-  !!key && Object.keys(key).length > 0;
 
 const schema = object({
   companyId: string().required(),
@@ -96,7 +93,9 @@ export const handler: Handler<IEvent, IOutput> = wrapHandler(async (event) => {
       KeyConditionExpression:
         '#typename = :typename AND #data BETWEEN :lower AND :upper',
       ScanIndexForward: false,
-      ...(hasContinuationKey(ExclusiveStartKey) ? { ExclusiveStartKey } : {}),
+      ...(hasQueryContinuationKey(ExclusiveStartKey)
+        ? { ExclusiveStartKey }
+        : {}),
       TableName: TABLE,
     });
 
@@ -107,7 +106,7 @@ export const handler: Handler<IEvent, IOutput> = wrapHandler(async (event) => {
 
   if (
     !firstPage.Items?.length &&
-    !hasContinuationKey(firstPage.LastEvaluatedKey)
+    !hasQueryContinuationKey(firstPage.LastEvaluatedKey)
   ) {
     return {
       complete: true,
@@ -115,129 +114,12 @@ export const handler: Handler<IEvent, IOutput> = wrapHandler(async (event) => {
   }
 
   const payloadKey = `${result.owner}/${result.companyId}/report-data/${uuid()}.json`;
-  let transactionCount = 0;
-  const abortController = new AbortController();
-  let producerError: Error | undefined;
-  let uploadError: Error | undefined;
-  let payloadStream: Readable;
-  let page = firstPage;
-  let itemIndex = 0;
-  let isFirstTransaction = true;
-  let isStarted = false;
-  let isEnded = false;
-  let isPumping = false;
-
-  let pump: () => Promise<void> = () => Promise.resolve();
-  const schedulePump = (): void => {
-    setImmediate(() => {
-      pump().catch(() => undefined);
-    });
-  };
-  pump = async (): Promise<void> => {
-    if (isPumping || payloadStream.destroyed || isEnded) {
-      return;
-    }
-
-    isPumping = true;
-
-    try {
-      if (!isStarted) {
-        isStarted = true;
-
-        if (!payloadStream.push('[')) {
-          return;
-        }
-      }
-
-      const items = page.Items ?? [];
-
-      if (itemIndex < items.length) {
-        const item = items[itemIndex];
-
-        if (!item) {
-          throw new Error('A report query returned an invalid item');
-        }
-
-        const serializedItem = JSON.stringify(item);
-
-        if (serializedItem === undefined) {
-          throw new Error('Unable to serialize a report transaction');
-        }
-
-        itemIndex += 1;
-        transactionCount += 1;
-        const chunk = `${isFirstTransaction ? '' : ','}${serializedItem}`;
-        isFirstTransaction = false;
-
-        if (payloadStream.push(chunk)) {
-          schedulePump();
-        }
-
-        return;
-      }
-
-      if (hasContinuationKey(page.LastEvaluatedKey)) {
-        page = await queryPage(page.LastEvaluatedKey, abortController.signal);
-        itemIndex = 0;
-        schedulePump();
-
-        return;
-      }
-
-      isEnded = true;
-      payloadStream.push(']');
-      payloadStream.push(null);
-    } catch (error) {
-      if (uploadError !== undefined) {
-        payloadStream.destroy();
-
-        return;
-      }
-
-      producerError =
-        error instanceof Error
-          ? error
-          : new Error('Failed to produce the report payload');
-      payloadStream.destroy(producerError);
-    } finally {
-      isPumping = false;
-    }
-  };
-
-  payloadStream = new Readable({
-    highWaterMark: 16 * 1024,
-    objectMode: false,
-    read: () => {
-      pump().catch(() => undefined);
-    },
-  });
-  const upload = writeReportPayloadStream(
+  const transactionCount = await writeReportQueryPages(
     REPORT_BUCKET,
     payloadKey,
-    payloadStream,
-  ).catch((error: unknown) => {
-    uploadError =
-      error instanceof Error ? error : new Error('Failed to upload report');
-    abortController.abort(uploadError);
-    payloadStream.destroy();
-
-    throw uploadError;
-  });
-
-  try {
-    await upload;
-  } catch (error) {
-    const uploadFailure =
-      error instanceof Error ? error : new Error('Failed to upload report');
-    abortController.abort(uploadFailure);
-    payloadStream.destroy();
-
-    if (producerError !== undefined) {
-      throw producerError;
-    }
-
-    throw uploadError ?? uploadFailure;
-  }
+    firstPage,
+    queryPage,
+  );
 
   if (transactionCount === 0) {
     return {

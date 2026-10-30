@@ -6,7 +6,9 @@ import { DateTime } from 'luxon';
 import type { InferType } from 'yup';
 import { array, number, object, string } from 'yup';
 import {
-  readReportPayload,
+  type IReportPayloadReference,
+  readReportPayloadEvent,
+  reportPayloadEventSchema,
   writeReportPayload,
 } from '../shared/report-payload';
 import slug from '../shared/slug';
@@ -19,12 +21,11 @@ init({
   tracesSampleRate: 1,
 });
 
-const eventSchema = object({
-  companyId: string().required(),
-  currency: string().required(),
-  owner: string().required(),
-  payloadKey: string().required(),
-}).required();
+const eventSchema = reportPayloadEventSchema
+  .shape({
+    currency: string().required(),
+  })
+  .required();
 
 const schema = object({
   companyId: string().required(),
@@ -56,24 +57,13 @@ const hasAttachment = (
 
 export type IEvent = InferType<typeof eventSchema>;
 
-export interface IOutput {
-  companyId: string;
-  owner: string;
-  payloadKey: string;
-}
+export type IOutput = IReportPayloadReference;
 
 export const handler: Handler<IEvent, IOutput> = wrapHandler(async (event) => {
-  const { REPORT_BUCKET } = process.env;
-
-  if (!REPORT_BUCKET) {
-    throw new Error('No report bucket set');
-  }
-
-  const input = await eventSchema.validate(event, {
-    abortEarly: true,
-    stripUnknown: true,
-  });
-  const payload = await readReportPayload(REPORT_BUCKET, input.payloadKey);
+  const { bucket, input, payload } = await readReportPayloadEvent(
+    event,
+    eventSchema,
+  );
   const result = await schema.validate(
     {
       companyId: input.companyId,
@@ -129,7 +119,7 @@ export const handler: Handler<IEvent, IOutput> = wrapHandler(async (event) => {
       };
     });
 
-  await writeReportPayload(REPORT_BUCKET, input.payloadKey, {
+  await writeReportPayload(bucket, input.payloadKey, {
     attachments,
     companyId: result.companyId,
     csv,

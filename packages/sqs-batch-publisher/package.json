@@ -1,0 +1,48 @@
+{
+  "name": "@motech-development/sqs-batch-publisher",
+  "version": "0.0.0-development",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/motech-development/platform.git"
+  },
+  "description": "Retries transient failures from AWS SQS batch sends",
+  "author": "Mo Gusbi <mo.gusbi@motechdevelopment.co.uk> (https://motechdevelopment.co.uk)",
+  "bugs": {
+    "url": "https://github.com/motech-development/platform/issues"
+  },
+  "license": "ISC",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "lib"
+  ],
+  "main": "lib/sqs-batch-publisher.cjs.js",
+  "module": "lib/sqs-batch-publisher.esm.js",
+  "types": "lib/sqs-batch-publisher.d.ts",
+  "scripts": {
+    "formatting": "prettier . --check",
+    "build": "run prebuild && vite build && tsc --project tsconfig.build.json --emitDeclarationOnly",
+    "lint": "eslint './src/**/*.ts'",
+    "package": "run build",
+    "prebuild": "rimraf ./lib",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@aws-sdk/client-sqs": "3.1033.0"
+  },
+  "devDependencies": {
+    "@motech-development/eslint-config-motech-base": "workspace:*",
+    "@motech-development/prettier-motech-config": "workspace:*",
+    "@motech-development/semantic-release": "workspace:*",
+    "eslint": "9.37.0",
+    "prettier": "3.2.5",
+    "rimraf": "6.0.1",
+    "typescript": "6.0.3",
+    "vite": "8.1.5"
+  },
+  "lint-staged": {
+    "*": "prettier --ignore-unknown --write",
+    "src/**/*.{ts,tsx}": "eslint --fix"
+  }
+}

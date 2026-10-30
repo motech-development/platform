@@ -173,6 +173,22 @@ export const moveFile = async (
   await deleteFile(from, key, client);
 };
 
+const formatDeleteFailure = ({
+  Code,
+  Key,
+  Message,
+}: {
+  Code?: string;
+  Key?: string;
+  Message?: string;
+}): string => {
+  const key = Key ?? 'unknown key';
+  const code = Code ?? 'unknown error';
+  const message = Message ? ` (${Message})` : '';
+
+  return `${key}: ${code}${message}`;
+};
+
 export const removeFolder = async (
   bucket: string,
   key: string,
@@ -208,10 +224,7 @@ export const removeFolder = async (
     const errors = deleteResults.flatMap(({ Errors }) => Errors ?? []);
 
     if (errors.length) {
-      const failures = errors.map(
-        ({ Code, Key, Message }) =>
-          `${Key ?? 'unknown key'}: ${Code ?? 'unknown error'}${Message ? ` (${Message})` : ''}`,
-      );
+      const failures = errors.map(formatDeleteFailure);
 
       throw new Error(`Failed to delete S3 objects: ${failures.join('; ')}`);
     }

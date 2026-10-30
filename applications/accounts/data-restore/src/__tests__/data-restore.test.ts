@@ -4,6 +4,7 @@ import {
   DescribeTableCommand,
   type DescribeTableCommandInput,
   DynamoDBClient,
+  type KeySchemaElement,
   ScanCommand,
   type ScanCommandInput,
   type ScanCommandOutput,
@@ -55,6 +56,7 @@ describe('data-restore', () => {
   let streamTransitionDescribeCount: number;
   let scanPages: Record<string, unknown[]>;
   let sourceAndTargetShareTableArn: boolean;
+  let keySchema: KeySchemaElement[];
 
   beforeEach(() => {
     context = ctx({
@@ -79,6 +81,16 @@ describe('data-restore', () => {
     streamTransitionDescribeCount = 0;
     scanPages = {};
     sourceAndTargetShareTableArn = false;
+    keySchema = [
+      {
+        AttributeName: 'id',
+        KeyType: 'HASH',
+      },
+      {
+        AttributeName: '__typename',
+        KeyType: 'RANGE',
+      },
+    ];
 
     ddb
       .on(DescribeTableCommand)
@@ -102,16 +114,7 @@ describe('data-restore', () => {
 
         return {
           Table: {
-            KeySchema: [
-              {
-                AttributeName: 'id',
-                KeyType: 'HASH',
-              },
-              {
-                AttributeName: '__typename',
-                KeyType: 'RANGE',
-              },
-            ],
+            KeySchema: keySchema,
             TableArn:
               isTarget || sourceAndTargetShareTableArn
                 ? TARGET_ARN
@@ -200,6 +203,46 @@ describe('data-restore', () => {
     expect(ddb).toHaveReceivedCommandTimes(ScanCommand, 0);
     expect(ddb).toHaveReceivedCommandTimes(UpdateTableCommand, 0);
   });
+
+  const invalidKeySchemas: KeySchemaElement[][] = [
+    [
+      {
+        AttributeName: 'id',
+        KeyType: 'HASH',
+      },
+      {
+        AttributeName: 'id',
+        KeyType: 'RANGE',
+      },
+    ],
+    [
+      {
+        KeyType: 'HASH',
+      } as unknown as KeySchemaElement,
+      {
+        AttributeName: 'id',
+        KeyType: 'RANGE',
+      },
+    ],
+  ];
+
+  it.each(invalidKeySchemas.map((invalidSchema) => ({ invalidSchema })))(
+    'rejects invalid key attribute names',
+    async ({ invalidSchema }) => {
+      keySchema = invalidSchema;
+
+      await expect(handler(null, context, callback)).rejects.toThrow(
+        'Source and target tables must use the __typename and id key schema',
+      );
+
+      expect(lambda).toHaveReceivedCommandTimes(
+        ListEventSourceMappingsCommand,
+        0,
+      );
+      expect(ddb).toHaveReceivedCommandTimes(ScanCommand, 0);
+      expect(ddb).toHaveReceivedCommandTimes(UpdateTableCommand, 0);
+    },
+  );
 
   it('does not disable streams when the Lambda is too close to its timeout', async () => {
     context = ctx({
