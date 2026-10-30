@@ -125,7 +125,24 @@ const markMissingBalanceEvent = async (
     }),
   );
 
-  if (Item) return false;
+  if (Item) {
+    return false;
+  }
+
+  const { Item: company } = await documentClient.send(
+    new GetCommand({
+      ConsistentRead: true,
+      Key: {
+        __typename: 'Company',
+        id: key.id,
+      },
+      TableName: tableName,
+    }),
+  );
+
+  if (company) {
+    return false;
+  }
 
   await documentClient.send(
     new TransactWriteCommand({
@@ -140,6 +157,19 @@ const markMissingBalanceEvent = async (
               '#id': 'id',
             },
             Key: key,
+            TableName: tableName,
+          },
+        },
+        {
+          ConditionCheck: {
+            ConditionExpression: 'attribute_not_exists(#id)',
+            ExpressionAttributeNames: {
+              '#id': 'id',
+            },
+            Key: {
+              __typename: 'Company',
+              id: key.id,
+            },
             TableName: tableName,
           },
         },
@@ -161,11 +191,8 @@ const recoverProjectionFailure = async (
     TableName: string;
   },
   key: IBalanceUpdate['Key'],
-  ignoreIfBalanceMissing: boolean,
 ): Promise<boolean> => {
   if (await getMarker()) return true;
-
-  if (!ignoreIfBalanceMissing) return false;
 
   return markMissingBalanceEvent(documentClient, tableName, putMarker, key);
 };
@@ -176,7 +203,6 @@ const applyOnce = async (
   identity: IStreamIdentity,
   eventName: TProjectionEvent,
   update: IBalanceUpdate,
-  ignoreIfBalanceMissing = false,
 ): Promise<TransactWriteCommandOutput | undefined> => {
   const { eventID, eventSourceARN } = identity;
 
@@ -244,7 +270,6 @@ const applyOnce = async (
           tableName,
           putMarker,
           update.Key,
-          ignoreIfBalanceMissing,
         )
       ) {
         return undefined;
@@ -300,7 +325,6 @@ export const remove = (
     identity,
     'REMOVE',
     commonRemovalUpdate(tableName, record),
-    true,
   );
 
 export const update = (
@@ -337,7 +361,6 @@ export const update = (
       identity,
       'MODIFY',
       commonRemovalUpdate(tableName, oldRecord),
-      true,
     );
   }
 

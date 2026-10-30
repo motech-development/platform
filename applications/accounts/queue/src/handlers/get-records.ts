@@ -17,10 +17,30 @@ interface IItem {
   id: string;
 }
 
+interface IReceiptIndexItem {
+  __typename: string;
+  owner: string;
+}
+
 const documentClient = new DynamoDBClient({});
+const receiptIndexPrefix = 'TransactionCreationReceiptIndex:';
 
 const isItem = (item: Record<string, NativeAttributeValue>): item is IItem =>
   !!item.id;
+
+const isReceiptIndexItem = (
+  item: Record<string, NativeAttributeValue>,
+  owner: string,
+): item is IReceiptIndexItem => {
+  const { __typename: typeName } = item;
+
+  return (
+    typeof typeName === 'string' &&
+    typeName.startsWith(receiptIndexPrefix) &&
+    typeof item.owner === 'string' &&
+    item.owner === owner
+  );
+};
 
 const hasContinuationKey = (
   key?: Record<string, NativeAttributeValue>,
@@ -38,7 +58,8 @@ export interface IOutput extends IEvent {
   items: string[];
 }
 
-const PAGE_SIZE = 25;
+export const PAGE_SIZE = 100;
+const maxStateOutputBytes = 192 * 1024;
 
 export const handler: Handler<IEvent, IOutput> = wrapHandler(async (event) => {
   const { TABLE, TYPENAME } = process.env;
@@ -52,40 +73,82 @@ export const handler: Handler<IEvent, IOutput> = wrapHandler(async (event) => {
   }
 
   const { id, owner } = event;
-
-  const command = new QueryCommand({
-    ExpressionAttributeNames: {
-      '#data': 'data',
-      '#owner': 'owner',
-      '#typename': '__typename',
-    },
-    ExpressionAttributeValues: {
-      ':data': `${owner}:${id}`,
-      ':owner': owner,
-      ':typename': TYPENAME,
-    },
-    FilterExpression: '#owner = :owner',
-    IndexName: '__typename-data-index',
-    KeyConditionExpression:
-      '#typename = :typename AND begins_with(#data, :data)',
-    Limit: PAGE_SIZE,
-    ProjectionExpression: 'id',
-    ...(hasContinuationKey(event.lastEvaluatedKey)
+  const getPage = async (pageSize: number): Promise<IOutput> => {
+    const continuationKey = hasContinuationKey(event.lastEvaluatedKey)
       ? { ExclusiveStartKey: event.lastEvaluatedKey }
-      : {}),
-    TableName: TABLE,
-  });
+      : {};
+    const command =
+      TYPENAME === 'TransactionCreationReceipt'
+        ? new QueryCommand({
+            ConsistentRead: true,
+            ExpressionAttributeNames: {
+              '#id': 'id',
+              '#owner': 'owner',
+              '#typename': '__typename',
+            },
+            ExpressionAttributeValues: {
+              ':id': id,
+              ':owner': owner,
+              ':typename': receiptIndexPrefix,
+            },
+            FilterExpression: '#owner = :owner',
+            KeyConditionExpression:
+              '#id = :id AND begins_with(#typename, :typename)',
+            Limit: pageSize,
+            ProjectionExpression: '#typename, #owner',
+            ...continuationKey,
+            TableName: TABLE,
+          })
+        : new QueryCommand({
+            ExpressionAttributeNames: {
+              '#data': 'data',
+              '#owner': 'owner',
+              '#typename': '__typename',
+            },
+            ExpressionAttributeValues: {
+              ':data': `${owner}:${id}`,
+              ':owner': owner,
+              ':typename': TYPENAME,
+            },
+            FilterExpression: '#owner = :owner',
+            IndexName: '__typename-data-index',
+            KeyConditionExpression:
+              '#typename = :typename AND begins_with(#data, :data)',
+            Limit: pageSize,
+            ProjectionExpression: 'id',
+            ...continuationKey,
+            TableName: TABLE,
+          });
 
-  const { Items, LastEvaluatedKey } = await documentClient.send(command);
+    const { Items, LastEvaluatedKey } = await documentClient.send(command);
+    const items =
+      TYPENAME === 'TransactionCreationReceipt'
+        ? (Items ?? [])
+            .filter((item) => isReceiptIndexItem(item, owner))
+            .map(({ __typename: typeName }) =>
+              typeName.slice(receiptIndexPrefix.length),
+            )
+        : (Items ?? []).filter(isItem).map((item) => item.id);
+    const hasMoreRecords = hasContinuationKey(LastEvaluatedKey);
+    const result: IOutput = {
+      complete: !hasMoreRecords,
+      id,
+      items,
+      ...(hasMoreRecords ? { lastEvaluatedKey: LastEvaluatedKey } : {}),
+      owner,
+    };
+    const serializedResult = JSON.stringify(result);
 
-  const items = (Items ?? []).filter(isItem).map((item) => item.id);
-  const hasMoreRecords = hasContinuationKey(LastEvaluatedKey);
+    if (Buffer.byteLength(serializedResult) <= maxStateOutputBytes) {
+      return result;
+    }
 
-  return {
-    complete: !hasMoreRecords,
-    id,
-    items,
-    ...(hasMoreRecords ? { lastEvaluatedKey: LastEvaluatedKey } : {}),
-    owner,
+    if (pageSize === 1) {
+      throw new Error('Company deletion page exceeds the workflow state limit');
+    }
+
+    return getPage(Math.max(1, Math.floor(pageSize / 2)));
   };
+
+  return getPage(PAGE_SIZE);
 });

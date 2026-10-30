@@ -32,6 +32,16 @@ const input: TransactionInput = {
   vat: 20,
 };
 
+const uuidPattern =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+const hasUuidId = (value: unknown): boolean =>
+  typeof value === 'object' &&
+  value !== null &&
+  'id' in value &&
+  typeof value.id === 'string' &&
+  uuidPattern.test(value.id);
+
 type AddTransactionEvent = AppSyncResolverEvent<MutationAddTransactionArgs>;
 
 const invoke = (
@@ -112,22 +122,30 @@ describe('add-transaction', () => {
     expect(serverlessConfig).not.toContain('dynamodb:TransactWriteItems');
   });
 
-  it('creates the transaction and permanent owner-scoped receipt atomically', async () => {
-    await expect(invoke()).resolves.toMatchObject({
+  it('creates the transaction, receipt, and company lookup record atomically', async () => {
+    const result = await invoke();
+
+    expect(result).toMatchObject({
       __typename: 'Transaction',
       companyId: 'company-id',
       data: 'owner-id:company-id:confirmed:2026-10-30T00:00:00.000Z',
-      id: input.id,
       owner: 'owner-id',
     });
+    expect(hasUuidId(result)).toBe(true);
 
     const command = ddb.commandCalls(TransactWriteCommand)[0].args[0];
     const { TransactItems } = command.input;
+    const transaction = TransactItems?.[1].Put?.Item as
+      | Record<string, unknown>
+      | undefined;
     const receipt = TransactItems?.[2].Put?.Item as
       | Record<string, unknown>
       | undefined;
+    const receiptIndex = TransactItems?.[3].Put?.Item as
+      | Record<string, unknown>
+      | undefined;
 
-    expect(TransactItems).toHaveLength(3);
+    expect(TransactItems).toHaveLength(4);
     expect(TransactItems?.[0].ConditionCheck).toMatchObject({
       ConditionExpression: '#owner = :owner',
       Key: {
@@ -140,10 +158,11 @@ describe('add-transaction', () => {
       ConditionExpression: 'attribute_not_exists(#id)',
       Item: {
         __typename: 'Transaction',
-        id: input.id,
         owner: 'owner-id',
       },
     });
+    expect(transaction?.id).toEqual(expect.stringMatching(uuidPattern));
+    expect(transaction?.id).not.toBe(input.id);
     expect(receipt).toMatchObject({
       __typename: 'TransactionCreationReceipt',
       commandId: input.id,
@@ -151,7 +170,33 @@ describe('add-transaction', () => {
     });
     expect(typeof receipt?.payloadHash).toBe('string');
     expect(receipt?.transaction).toMatchObject({
-      id: input.id,
+      id: transaction?.id,
+    });
+    expect(TransactItems?.[3].Put?.ConditionExpression).toBe(
+      'attribute_not_exists(#id)',
+    );
+    expect(receiptIndex).toMatchObject({
+      id: 'company-id',
+      owner: 'owner-id',
+    });
+    const { __typename: receiptIndexType } = receiptIndex ?? {};
+
+    expect(typeof receiptIndexType).toBe('string');
+    expect(receiptIndexType).toMatch(
+      /^TransactionCreationReceiptIndex:transaction-creation:/,
+    );
+  });
+
+  it('preserves valid UUID command IDs as transaction IDs', async () => {
+    const commandId = '51f1905d-9847-4373-96f8-a530d07a3c23';
+
+    await expect(
+      invoke({
+        ...input,
+        id: commandId,
+      }),
+    ).resolves.toMatchObject({
+      id: commandId,
     });
   });
 
@@ -168,11 +213,12 @@ describe('add-transaction', () => {
       .map(({ args }) => args[0].input.TransactItems?.[1].Put?.Item);
 
     expect(commands).toHaveLength(2);
-    expect(commands[0]?.id).toBe(input.id);
-    expect(commands[1]?.id).toBe('another-command-id');
+    expect(commands[0]?.id).toEqual(expect.stringMatching(uuidPattern));
+    expect(commands[1]?.id).toEqual(expect.stringMatching(uuidPattern));
+    expect(commands[0]?.id).not.toBe(commands[1]?.id);
   });
 
-  it('returns the original transaction when a committed response is lost', async () => {
+  it('returns the stored transaction instead of recreating it after deletion', async () => {
     let receipt: unknown;
     let writes = 0;
 
@@ -190,13 +236,16 @@ describe('add-transaction', () => {
         return Promise.reject(
           cancelledTransaction([
             {
-              Code: 'ConditionalCheckFailed',
+              Code: 'None',
+            },
+            {
+              Code: 'None',
             },
             {
               Code: 'ConditionalCheckFailed',
             },
             {
-              Code: 'ConditionalCheckFailed',
+              Code: 'None',
             },
           ]),
         );
@@ -210,7 +259,29 @@ describe('add-transaction', () => {
     const firstResult = await invoke();
     const retryResult = await invoke();
 
+    expect(firstResult).toHaveProperty(
+      'id',
+      expect.stringMatching(uuidPattern),
+    );
     expect(retryResult).toEqual(firstResult);
+    const attemptedTransactionIds = ddb
+      .commandCalls(TransactWriteCommand)
+      .map(
+        ({ args }) => args[0].input.TransactItems?.[1].Put?.Item?.id as unknown,
+      );
+
+    expect(attemptedTransactionIds).toEqual([
+      firstResult && 'id' in firstResult ? firstResult.id : undefined,
+      expect.any(String),
+    ]);
+    expect(hasUuidId({ id: attemptedTransactionIds[0] })).toBe(true);
+    expect(hasUuidId({ id: attemptedTransactionIds[1] })).toBe(true);
+    expect(attemptedTransactionIds[1]).not.toBe(attemptedTransactionIds[0]);
+    expect(receipt).toMatchObject({
+      transaction: {
+        id: attemptedTransactionIds[0],
+      },
+    });
     expect(ddb).toReceiveCommandTimes(TransactWriteCommand, 2);
     expect(ddb).toReceiveCommandTimes(GetCommand, 1);
   });
@@ -234,6 +305,9 @@ describe('add-transaction', () => {
           cancelledTransaction([
             {
               Code: 'None',
+            },
+            {
+              Code: 'TransactionConflict',
             },
             {
               Code: 'TransactionConflict',
@@ -271,13 +345,14 @@ describe('add-transaction', () => {
           {
             Code: 'TransactionConflict',
           },
+          {
+            Code: 'TransactionConflict',
+          },
         ]),
       )
       .resolvesOnce({});
 
-    await expect(invoke()).resolves.toMatchObject({
-      id: input.id,
-    });
+    expect(hasUuidId(await invoke())).toBe(true);
 
     expect(ddb).toReceiveCommandTimes(TransactWriteCommand, 2);
     expect(ddb).toReceiveCommandTimes(GetCommand, 1);
@@ -302,6 +377,9 @@ describe('add-transaction', () => {
           cancelledTransaction([
             {
               Code: 'None',
+            },
+            {
+              Code: 'ConditionalCheckFailed',
             },
             {
               Code: 'ConditionalCheckFailed',
@@ -339,9 +417,7 @@ describe('add-transaction', () => {
 
     await expect(invoke()).rejects.toThrow('DynamoDB unavailable');
 
-    await expect(invoke()).resolves.toMatchObject({
-      id: input.id,
-    });
+    expect(hasUuidId(await invoke())).toBe(true);
 
     expect(ddb).toReceiveCommandTimes(TransactWriteCommand, 2);
   });
@@ -360,11 +436,14 @@ describe('add-transaction', () => {
     });
   });
 
-  it('rejects transaction creation for a company not owned by the caller', async () => {
+  it('rejects transaction creation after its company and receipt are deleted', async () => {
     ddb.on(TransactWriteCommand).rejects(
       cancelledTransaction([
         {
           Code: 'ConditionalCheckFailed',
+        },
+        {
+          Code: 'None',
         },
         {
           Code: 'None',
@@ -396,6 +475,76 @@ describe('add-transaction', () => {
     const command = ddb.commandCalls(TransactWriteCommand)[0].args[0];
 
     expect(command.input.TransactItems).toHaveLength(2);
+  });
+
+  it('maps transaction cancellations for legacy empty IDs', async () => {
+    ddb.on(TransactWriteCommand).rejects(
+      cancelledTransaction([
+        {
+          Code: 'ConditionalCheckFailed',
+        },
+        {
+          Code: 'None',
+        },
+      ]),
+    );
+
+    await expect(invoke({ ...input, id: '' })).resolves.toEqual({
+      errorMessage: 'Unauthorized',
+      errorType: 'UnauthorizedException',
+    });
+
+    expect(ddb).toReceiveCommandTimes(GetCommand, 0);
+  });
+
+  it('maps transaction item conflicts for legacy empty IDs', async () => {
+    ddb.on(TransactWriteCommand).rejects(
+      cancelledTransaction([
+        {
+          Code: 'None',
+        },
+        {
+          Code: 'ConditionalCheckFailed',
+        },
+      ]),
+    );
+
+    await expect(invoke({ ...input, id: '' })).resolves.toEqual({
+      errorMessage: 'Transaction ID is already in use',
+      errorType: 'ConflictException',
+    });
+
+    expect(ddb).toReceiveCommandTimes(GetCommand, 0);
+  });
+
+  it('retries transient transaction cancellations for legacy empty IDs', async () => {
+    ddb
+      .on(TransactWriteCommand)
+      .rejectsOnce(
+        cancelledTransaction([
+          {
+            Code: 'None',
+          },
+          {
+            Code: 'TransactionConflict',
+          },
+        ]),
+      )
+      .resolvesOnce({});
+
+    expect(hasUuidId(await invoke({ ...input, id: '' }))).toBe(true);
+
+    expect(ddb).toReceiveCommandTimes(TransactWriteCommand, 2);
+    expect(ddb).toReceiveCommandTimes(GetCommand, 0);
+  });
+
+  it('propagates non-cancellation failures for legacy empty IDs without receipt reads', async () => {
+    const error = new Error('DynamoDB unavailable');
+    ddb.on(TransactWriteCommand).rejects(error);
+
+    await expect(invoke({ ...input, id: '' })).rejects.toBe(error);
+
+    expect(ddb).toReceiveCommandTimes(GetCommand, 0);
   });
 
   it('rejects an invalid identity before accessing DynamoDB', async () => {

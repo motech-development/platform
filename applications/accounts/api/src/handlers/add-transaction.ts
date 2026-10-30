@@ -27,6 +27,8 @@ interface ITransactionCreationReceipt {
 
 const documentClient = DynamoDBDocumentClient.from(new DynamoDBClient({}));
 const maxTransactionConflictAttempts = 3;
+const transactionCreationReceiptIndexPrefix =
+  'TransactionCreationReceiptIndex:';
 
 const payloadFor = ({
   amount,
@@ -58,6 +60,14 @@ const payloadHashFor = (input: TransactionInput): string =>
   createHash('sha256')
     .update(JSON.stringify(payloadFor(input)))
     .digest('hex');
+
+const isValidUuid = (value: string): boolean =>
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+    value,
+  );
+
+const transactionIdFor = (commandId: string): string =>
+  isValidUuid(commandId) ? commandId : randomUUID();
 
 const transactionFor = (
   input: TransactionInput,
@@ -119,52 +129,72 @@ const transactionItemsFor = (
   owner: string,
   companyId: string,
   receipt: ITransactionCreationReceipt | undefined,
-) => [
-  {
-    ConditionCheck: {
-      ConditionExpression: '#owner = :owner',
-      ExpressionAttributeNames: {
-        '#owner': 'owner',
-      },
-      ExpressionAttributeValues: {
-        ':owner': owner,
-      },
-      Key: {
-        __typename: 'Company',
-        id: companyId,
-      },
-      TableName: tableName,
-    },
-  },
-  {
-    Put: {
-      ConditionExpression: 'attribute_not_exists(#id)',
-      ExpressionAttributeNames: {
-        '#id': 'id',
-      },
-      Item: transaction,
-      TableName: tableName,
-    },
-  },
-  ...(receipt
-    ? [
-        {
-          Put: {
-            ConditionExpression: 'attribute_not_exists(#id)',
-            ExpressionAttributeNames: {
-              '#id': 'id',
-            },
-            Item: {
-              __typename: 'TransactionCreationReceipt',
-              id: receiptIdFor(owner, receipt.commandId),
-              ...receipt,
-            },
-            TableName: tableName,
-          },
+) => {
+  const receiptId = receipt
+    ? receiptIdFor(owner, receipt.commandId)
+    : undefined;
+
+  return [
+    {
+      ConditionCheck: {
+        ConditionExpression: '#owner = :owner',
+        ExpressionAttributeNames: {
+          '#owner': 'owner',
         },
-      ]
-    : []),
-];
+        ExpressionAttributeValues: {
+          ':owner': owner,
+        },
+        Key: {
+          __typename: 'Company',
+          id: companyId,
+        },
+        TableName: tableName,
+      },
+    },
+    {
+      Put: {
+        ConditionExpression: 'attribute_not_exists(#id)',
+        ExpressionAttributeNames: {
+          '#id': 'id',
+        },
+        Item: transaction,
+        TableName: tableName,
+      },
+    },
+    ...(receipt && receiptId
+      ? [
+          {
+            Put: {
+              ConditionExpression: 'attribute_not_exists(#id)',
+              ExpressionAttributeNames: {
+                '#id': 'id',
+              },
+              Item: {
+                __typename: 'TransactionCreationReceipt',
+                id: receiptId,
+                ...receipt,
+              },
+              TableName: tableName,
+            },
+          },
+          {
+            Put: {
+              ConditionExpression: 'attribute_not_exists(#id)',
+              ExpressionAttributeNames: {
+                '#id': 'id',
+              },
+              Item: {
+                __typename: `${transactionCreationReceiptIndexPrefix}${receiptId}`,
+                id: companyId,
+                owner,
+              },
+              TableName: tableName,
+            },
+          },
+        ]
+      : []),
+  ];
+};
 
 const readReceiptAfterFailure = async (
   receipt: ITransactionCreationReceipt,
@@ -267,18 +297,16 @@ const resolveTransactionFailure = async (
   attempt: number,
   retry: () => Promise<TTransaction | IErrorResult>,
 ): Promise<TTransaction | IErrorResult> => {
-  if (!receipt) {
-    throw error;
-  }
+  if (receipt) {
+    const existingReceipt = await readReceiptAfterFailure(
+      receipt,
+      tableName,
+      error,
+    );
 
-  const existingReceipt = await readReceiptAfterFailure(
-    receipt,
-    tableName,
-    error,
-  );
-
-  if (existingReceipt) {
-    return existingReceiptResult(existingReceipt, receipt);
+    if (existingReceipt) {
+      return existingReceiptResult(existingReceipt, receipt);
+    }
   }
 
   if (!isTransactionCancelled(error)) {
@@ -352,7 +380,7 @@ export const handler: AppSyncResolverHandler<
   }
 
   const owner = identity.sub;
-  const transactionId = input.id || randomUUID();
+  const transactionId = transactionIdFor(input.id);
   const transaction = transactionFor(input, owner, transactionId);
   const receipt = receiptFor(input, owner, payloadHashFor(input), transaction);
 

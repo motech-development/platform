@@ -61,11 +61,13 @@ export const handler: Handler<IEvent, IOutput> = wrapHandler(async (event) => {
     owner,
   };
 
-  await writeReportPayload(bucket, input.payloadKey, convertedPayload);
+  const payloadKey = `${input.payloadKey}.csv.json`;
+
+  await writeReportPayload(bucket, payloadKey, convertedPayload);
 
   return {
     companyId: input.companyId,
     owner: input.owner,
-    payloadKey: input.payloadKey,
+    payloadKey,
   };
 });

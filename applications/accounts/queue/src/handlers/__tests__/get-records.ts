@@ -102,10 +102,113 @@ describe('get-records', () => {
           IndexName: '__typename-data-index',
           KeyConditionExpression:
             '#typename = :typename AND begins_with(#data, :data)',
-          Limit: 25,
+          Limit: 100,
           ProjectionExpression: 'id',
           TableName: 'app-table',
         });
+      });
+
+      it('should strongly query company receipt index records from the table', async () => {
+        process.env.TYPENAME = 'TransactionCreationReceipt';
+        ddb.on(QueryCommand).resolves({
+          Items: [
+            {
+              __typename:
+                'TransactionCreationReceiptIndex:transaction-creation:receipt-id',
+              id: 'company-id',
+              owner: 'owner-id',
+            },
+          ],
+        });
+
+        await expect(handler(event, context, callback)).resolves.toMatchObject({
+          complete: true,
+          id: 'company-id',
+          items: ['transaction-creation:receipt-id'],
+          owner: 'owner-id',
+        });
+
+        expect(ddb).toReceiveCommandWith(QueryCommand, {
+          ConsistentRead: true,
+          ExpressionAttributeNames: {
+            '#id': 'id',
+            '#owner': 'owner',
+            '#typename': '__typename',
+          },
+          ExpressionAttributeValues: {
+            ':id': 'company-id',
+            ':owner': 'owner-id',
+            ':typename': 'TransactionCreationReceiptIndex:',
+          },
+          FilterExpression: '#owner = :owner',
+          KeyConditionExpression:
+            '#id = :id AND begins_with(#typename, :typename)',
+          Limit: 100,
+          ProjectionExpression: '#typename, #owner',
+          TableName: 'app-table',
+        });
+        expect(
+          ddb.commandCalls(QueryCommand)[0].args[0].input,
+        ).not.toHaveProperty('IndexName');
+      });
+
+      it('ignores receipt lookup records owned by another user', async () => {
+        process.env.TYPENAME = 'TransactionCreationReceipt';
+        ddb.on(QueryCommand).resolves({
+          Items: [
+            {
+              __typename:
+                'TransactionCreationReceiptIndex:transaction-creation:other-receipt',
+              id: 'company-id',
+              owner: 'other-owner',
+            },
+          ],
+        });
+
+        await expect(handler(event, context, callback)).resolves.toMatchObject({
+          complete: true,
+          items: [],
+        });
+      });
+
+      it('reduces an oversized page and preserves the matching continuation key', async () => {
+        const oversizedId = '\\'.repeat(2048);
+        const continuationKey = (id: string) => ({
+          __typename: 'Client',
+          data: 'owner-id:company-id:next',
+          id,
+        });
+
+        ddb
+          .on(QueryCommand)
+          .resolvesOnce({
+            Items: Array.from({ length: 100 }, () => ({ id: oversizedId })),
+            LastEvaluatedKey: continuationKey('after-100'),
+          })
+          .resolvesOnce({
+            Items: Array.from({ length: 50 }, () => ({ id: oversizedId })),
+            LastEvaluatedKey: continuationKey('after-50'),
+          })
+          .resolvesOnce({
+            Items: Array.from({ length: 25 }, () => ({ id: oversizedId })),
+            LastEvaluatedKey: continuationKey('after-25'),
+          });
+
+        const result = await handler(event, context, callback);
+        const queryLimits = ddb
+          .commandCalls(QueryCommand)
+          .map(({ args }) => args[0].input.Limit);
+
+        expect(queryLimits).toEqual([100, 50, 25]);
+        if (!result) {
+          throw new Error('Expected a deletion page result');
+        }
+
+        expect(result.items).toHaveLength(25);
+        expect(result.lastEvaluatedKey).toEqual(continuationKey('after-25'));
+        expect(Buffer.byteLength(JSON.stringify(result))).toBeLessThan(
+          192 * 1024,
+        );
       });
 
       it('should return the first page and its continuation key', async () => {

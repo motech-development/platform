@@ -173,7 +173,13 @@ describe('balance projection', () => {
     const error = new Error('Balance update rejected');
 
     ddb.on(TransactWriteCommand).rejectsOnce(error);
-    ddb.on(GetCommand).resolves({});
+    ddb
+      .on(GetCommand)
+      .callsFake((input: GetCommandInput) =>
+        input.Key?.__typename === 'Company'
+          ? { Item: { __typename: 'Company', id: record.companyId } }
+          : {},
+      );
 
     await expect(
       insert(documentClient, 'accounts', identity, record),
@@ -211,5 +217,83 @@ describe('balance projection', () => {
       __typename: 'Balance',
       id: record.companyId,
     });
+    expect(TransactItems).toHaveLength(3);
+    expect(TransactItems?.[2]?.ConditionCheck).toMatchObject({
+      ConditionExpression: 'attribute_not_exists(#id)',
+      Key: {
+        __typename: 'Company',
+        id: record.companyId,
+      },
+    });
+  });
+
+  it.each(['insert', 'pending-to-confirmed', 'confirmed-update'])(
+    'records a %s after the company is deleted',
+    async (scenario) => {
+      const error = new Error('Balance item does not exist');
+      let calls = 0;
+
+      ddb.on(TransactWriteCommand).callsFake(() => {
+        calls += 1;
+
+        if (calls === 1) {
+          throw error;
+        }
+
+        return {};
+      });
+      ddb.on(GetCommand).resolves({});
+
+      const updated = { ...record, amount: 125 };
+
+      if (scenario === 'insert') {
+        await insert(documentClient, 'accounts', identity, record);
+      } else if (scenario === 'pending-to-confirmed') {
+        await update(
+          documentClient,
+          'accounts',
+          identity,
+          { ...record, status: TransactionStatus.Pending },
+          record,
+        );
+      } else {
+        await update(documentClient, 'accounts', identity, record, updated);
+      }
+
+      const { TransactItems } =
+        ddb.commandCalls(TransactWriteCommand)[1].args[0].input;
+
+      expect(TransactItems).toHaveLength(3);
+      expect(TransactItems?.[0]?.Put?.Item?.__typename).toBe(
+        'BalanceProjectionEvent',
+      );
+      expect(
+        TransactItems?.slice(1).map(
+          ({ ConditionCheck }) => ConditionCheck?.Key,
+        ),
+      ).toEqual([
+        { __typename: 'Balance', id: record.companyId },
+        { __typename: 'Company', id: record.companyId },
+      ]);
+    },
+  );
+
+  it('retries a missing balance while the company still exists', async () => {
+    const error = new Error('Balance item does not exist');
+
+    ddb.on(TransactWriteCommand).rejects(error);
+    ddb
+      .on(GetCommand)
+      .callsFake((input: GetCommandInput) =>
+        input.Key?.__typename === 'Company'
+          ? { Item: { __typename: 'Company', id: record.companyId } }
+          : {},
+      );
+
+    await expect(
+      insert(documentClient, 'accounts', identity, record),
+    ).rejects.toBe(error);
+
+    expect(ddb.commandCalls(TransactWriteCommand)).toHaveLength(1);
   });
 });

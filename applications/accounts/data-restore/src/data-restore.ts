@@ -1,4 +1,5 @@
 import {
+  type AttributeDefinition,
   BatchWriteItemCommand,
   DescribeTableCommand,
   DynamoDBClient,
@@ -42,6 +43,43 @@ function hasExpectedKeySchema(keySchema?: KeySchemaElement[]) {
     attributeNames.length === EXPECTED_KEYS.length &&
     EXPECTED_KEYS.every((expectedKey) => attributeNames.includes(expectedKey))
   );
+}
+
+function haveMatchingKeyRoles(
+  sourceKeySchema?: KeySchemaElement[],
+  targetKeySchema?: KeySchemaElement[],
+) {
+  return EXPECTED_KEYS.every((attributeName) => {
+    const sourceKey = sourceKeySchema?.find(
+      (key) => key.AttributeName === attributeName,
+    );
+    const targetKey = targetKeySchema?.find(
+      (key) => key.AttributeName === attributeName,
+    );
+
+    return sourceKey?.KeyType === targetKey?.KeyType;
+  });
+}
+
+function haveMatchingKeyAttributeTypes(
+  keySchema?: KeySchemaElement[],
+  sourceDefinitions?: AttributeDefinition[],
+  targetDefinitions?: AttributeDefinition[],
+) {
+  return EXPECTED_KEYS.every((attributeName) => {
+    if (!keySchema?.some((key) => key.AttributeName === attributeName)) {
+      return false;
+    }
+
+    const sourceType = sourceDefinitions?.find(
+      (definition) => definition.AttributeName === attributeName,
+    )?.AttributeType;
+    const targetType = targetDefinitions?.find(
+      (definition) => definition.AttributeName === attributeName,
+    )?.AttributeType;
+
+    return !!sourceType && sourceType === targetType;
+  });
 }
 
 async function sleep(ms: number) {
@@ -167,7 +205,7 @@ async function writeBatch(
   );
 }
 
-async function writePages(
+async function writePage(
   scanTableName: string,
   writeTableName: string,
   toRequests: (
@@ -175,11 +213,9 @@ async function writePages(
   ) => WriteRequest[],
   context: Context,
   streamRecoveryRequired: boolean,
-  exclusiveStartKey?: ScanCommandInput['ExclusiveStartKey'],
-  page = 0,
+  exclusiveStartKey: ScanCommandInput['ExclusiveStartKey'],
+  page: number,
 ) {
-  assertTimeForRestore(context, streamRecoveryRequired);
-
   const { Items, LastEvaluatedKey } = await client.send(
     new ScanCommand({
       ConsistentRead: true,
@@ -203,16 +239,43 @@ async function writePages(
     `Processed ${requests.length} ${writeTableName} write(s) from ${scanTableName} scan page ${page + 1}`,
   );
 
-  if (hasContinuationKey(LastEvaluatedKey)) {
-    await writePages(
+  return LastEvaluatedKey;
+}
+
+async function writePages(
+  scanTableName: string,
+  writeTableName: string,
+  toRequests: (
+    items: NonNullable<ScanCommandOutput['Items']>,
+  ) => WriteRequest[],
+  context: Context,
+  streamRecoveryRequired: boolean,
+  exclusiveStartKey?: ScanCommandInput['ExclusiveStartKey'],
+) {
+  let nextKey = exclusiveStartKey;
+  let page = 0;
+
+  while (true) {
+    assertTimeForRestore(context, streamRecoveryRequired);
+
+    // The next scan key depends on this page, and its writes must finish first.
+    // eslint-disable-next-line no-await-in-loop
+    const lastEvaluatedKey = await writePage(
       scanTableName,
       writeTableName,
       toRequests,
       context,
       streamRecoveryRequired,
-      LastEvaluatedKey,
-      page + 1,
+      nextKey,
+      page,
     );
+
+    if (!hasContinuationKey(lastEvaluatedKey)) {
+      return;
+    }
+
+    nextKey = lastEvaluatedKey;
+    page += 1;
   }
 }
 
@@ -377,10 +440,16 @@ async function validateTables(source: string, target: string) {
   ]);
   if (
     !hasExpectedKeySchema(sourceTable.KeySchema) ||
-    !hasExpectedKeySchema(targetTable.KeySchema)
+    !hasExpectedKeySchema(targetTable.KeySchema) ||
+    !haveMatchingKeyRoles(sourceTable.KeySchema, targetTable.KeySchema) ||
+    !haveMatchingKeyAttributeTypes(
+      sourceTable.KeySchema,
+      sourceTable.AttributeDefinitions,
+      targetTable.AttributeDefinitions,
+    )
   ) {
     throw new Error(
-      `Source and target tables must use the ${EXPECTED_KEYS.join(' and ')} key schema`,
+      `Source and target tables must use matching ${EXPECTED_KEYS.join(' and ')} key schemas and attribute types`,
     );
   }
 

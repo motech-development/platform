@@ -119,7 +119,9 @@ export const handler: Handler<IEvent, IOutput> = wrapHandler(async (event) => {
       };
     });
 
-  await writeReportPayload(bucket, input.payloadKey, {
+  const payloadKey = `${input.payloadKey}.transformed.json`;
+
+  await writeReportPayload(bucket, payloadKey, {
     attachments,
     companyId: result.companyId,
     csv,
@@ -129,6 +131,6 @@ export const handler: Handler<IEvent, IOutput> = wrapHandler(async (event) => {
   return {
     companyId: result.companyId,
     owner: result.owner,
-    payloadKey: input.payloadKey,
+    payloadKey,
   };
 });

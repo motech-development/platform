@@ -1,4 +1,5 @@
 import {
+  type AttributeDefinition,
   BatchWriteItemCommand,
   type BatchWriteItemCommandInput,
   DescribeTableCommand,
@@ -57,6 +58,18 @@ describe('data-restore', () => {
   let scanPages: Record<string, unknown[]>;
   let sourceAndTargetShareTableArn: boolean;
   let keySchema: KeySchemaElement[];
+  let targetKeySchema: KeySchemaElement[] | undefined;
+  let targetAttributeDefinitions: AttributeDefinition[] | undefined;
+  const attributeDefinitions: AttributeDefinition[] = [
+    {
+      AttributeName: 'id',
+      AttributeType: 'S',
+    },
+    {
+      AttributeName: '__typename',
+      AttributeType: 'S',
+    },
+  ];
 
   beforeEach(() => {
     context = ctx({
@@ -91,6 +104,8 @@ describe('data-restore', () => {
         KeyType: 'RANGE',
       },
     ];
+    targetKeySchema = undefined;
+    targetAttributeDefinitions = undefined;
 
     ddb
       .on(DescribeTableCommand)
@@ -114,7 +129,11 @@ describe('data-restore', () => {
 
         return {
           Table: {
-            KeySchema: keySchema,
+            AttributeDefinitions: isTarget
+              ? targetAttributeDefinitions ?? attributeDefinitions
+              : attributeDefinitions,
+            KeySchema:
+              isTarget && targetKeySchema ? targetKeySchema : keySchema,
             TableArn:
               isTarget || sourceAndTargetShareTableArn
                 ? TARGET_ARN
@@ -232,7 +251,7 @@ describe('data-restore', () => {
       keySchema = invalidSchema;
 
       await expect(handler(null, context, callback)).rejects.toThrow(
-        'Source and target tables must use the __typename and id key schema',
+        'Source and target tables must use matching __typename and id key schemas and attribute types',
       );
 
       expect(lambda).toHaveReceivedCommandTimes(
@@ -243,6 +262,46 @@ describe('data-restore', () => {
       expect(ddb).toHaveReceivedCommandTimes(UpdateTableCommand, 0);
     },
   );
+
+  it('rejects mismatched key attribute types before clearing the target', async () => {
+    targetAttributeDefinitions = [
+      {
+        AttributeName: 'id',
+        AttributeType: 'N',
+      },
+      {
+        AttributeName: '__typename',
+        AttributeType: 'S',
+      },
+    ];
+
+    await expect(handler(null, context, callback)).rejects.toThrow(
+      'Source and target tables must use matching __typename and id key schemas and attribute types',
+    );
+
+    expect(ddb).toHaveReceivedCommandTimes(ScanCommand, 0);
+    expect(ddb).toHaveReceivedCommandTimes(UpdateTableCommand, 0);
+  });
+
+  it('rejects mismatched key roles before clearing the target', async () => {
+    targetKeySchema = [
+      {
+        AttributeName: 'id',
+        KeyType: 'RANGE',
+      },
+      {
+        AttributeName: '__typename',
+        KeyType: 'HASH',
+      },
+    ];
+
+    await expect(handler(null, context, callback)).rejects.toThrow(
+      'Source and target tables must use matching __typename and id key schemas and attribute types',
+    );
+
+    expect(ddb).toHaveReceivedCommandTimes(ScanCommand, 0);
+    expect(ddb).toHaveReceivedCommandTimes(UpdateTableCommand, 0);
+  });
 
   it('does not disable streams when the Lambda is too close to its timeout', async () => {
     context = ctx({

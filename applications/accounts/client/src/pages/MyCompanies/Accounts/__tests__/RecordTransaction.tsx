@@ -14,6 +14,7 @@ import { gql } from '../../../../graphql';
 import {
   AddTransactionMutation,
   Balance,
+  MutationAddTransactionArgs,
   Transactions,
   TransactionStatus,
   Typeahead,
@@ -32,6 +33,7 @@ import RecordTransaction, {
 import { REQUEST_UPLOAD } from '../shared/UploadAttachment';
 
 const transactionCommandId = '123e4567-e89b-42d3-a456-426614174000';
+const updatedTransactionCommandId = '00000000-0000-4000-8000-000000000002';
 
 const GET_TYPEAHEAD = gql(/* GraphQL */ `
   query GetTypeahead($id: ID!) {
@@ -51,6 +53,7 @@ vi.mock('pdfjs-dist/build/pdf.worker.min.mjs?url', () => ({
 describe('RecordTransaction', () => {
   let history: string[];
   let mocks: MockedResponse[];
+  let randomUUIDCalls: number;
   let upload: File;
 
   beforeAll(() => {
@@ -58,10 +61,17 @@ describe('RecordTransaction', () => {
   });
 
   beforeEach(() => {
+    randomUUIDCalls = 0;
     const testCrypto = Object.create(globalThis.crypto) as Crypto & {
       randomUUID: () => string;
     };
-    testCrypto.randomUUID = () => transactionCommandId;
+    testCrypto.randomUUID = () => {
+      randomUUIDCalls += 1;
+
+      return randomUUIDCalls === 1
+        ? transactionCommandId
+        : `00000000-0000-4000-8000-${String(randomUUIDCalls).padStart(12, '0')}`;
+    };
     vi.stubGlobal('crypto', testCrypto);
     history = ['/accounts/company-id/record-transaction'];
 
@@ -415,7 +425,7 @@ describe('RecordTransaction', () => {
           );
         });
 
-        it('should reuse the command ID when retrying after a network error', async () => {
+        it('reuses the command ID on retry and creates a new one after editing', async () => {
           const addTransactionMock = mocks.find(
             ({ request }) => request.query === ADD_TRANSACTION,
           );
@@ -424,7 +434,27 @@ describe('RecordTransaction', () => {
             throw new Error('Missing add transaction mock');
           }
 
-          const { request, result } = addTransactionMock;
+          const { request, result } = addTransactionMock as MockedResponse<
+            AddTransactionMutation,
+            MutationAddTransactionArgs
+          >;
+          const { variables } = request;
+
+          if (!variables) {
+            throw new Error('Missing add transaction variables');
+          }
+
+          const updatedRequest = {
+            ...request,
+            variables: {
+              ...variables,
+              input: {
+                ...variables.input,
+                description: 'Updated description',
+                id: updatedTransactionCommandId,
+              },
+            },
+          };
 
           mocks = [
             ...mocks.filter(
@@ -436,9 +466,10 @@ describe('RecordTransaction', () => {
               request,
             },
             {
+              error: new Error('Network error'),
               request,
-              result,
             },
+            { request: updatedRequest, result },
           ];
 
           cleanup();
@@ -539,10 +570,37 @@ describe('RecordTransaction', () => {
 
           await waitFor(() =>
             expect(add).toHaveBeenCalledWith({
+              colour: 'danger',
+              message: 'record-transaction.retry',
+            }),
+          );
+
+          await act(async () => {
+            fireEvent.change(description, {
+              target: {
+                focus: () => {},
+                value: 'Updated description',
+              },
+            });
+
+            await Promise.resolve();
+          });
+
+          await waitFor(() => expect(button).not.toBeDisabled());
+
+          await act(async () => {
+            fireEvent.click(button);
+
+            await waitForApollo(0);
+          });
+
+          await waitFor(() =>
+            expect(add).toHaveBeenCalledWith({
               colour: 'success',
               message: 'record-transaction.success',
             }),
           );
+          expect(randomUUIDCalls).toBe(2);
         });
 
         it('should display an success toast if upload is successful', async () => {

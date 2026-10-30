@@ -4,7 +4,8 @@ import { BatchWriteCommand } from '@aws-sdk/lib-dynamodb';
 import { init, wrapHandler } from '@sentry/aws-serverless';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import type { Handler } from 'aws-lambda';
-import type { IOutput as IGetRecordsOutput } from './get-records';
+import chunk from '../shared/chunk';
+import { type IOutput as IGetRecordsOutput, PAGE_SIZE } from './get-records';
 
 init({
   dsn: process.env.SENTRY_DSN,
@@ -20,6 +21,8 @@ export type IEvent = IGetRecordsOutput;
 
 const MAX_RETRIES = 4;
 const INITIAL_RETRY_DELAY_MS = 25;
+const MAX_WRITE_BATCH_SIZE = 25;
+const receiptIndexPrefix = 'TransactionCreationReceiptIndex:';
 
 const wait = (milliseconds: number): Promise<void> =>
   new Promise((resolve) => {
@@ -39,8 +42,8 @@ export const handler: Handler<IEvent> = wrapHandler(async (event) => {
 
   const { items } = event;
 
-  if (items.length > 25) {
-    throw new Error('Cannot delete more than 25 records in one batch');
+  if (items.length > PAGE_SIZE) {
+    throw new Error(`Cannot delete more than ${PAGE_SIZE} records in one page`);
   }
 
   const initialItems = items.map((id) => ({
@@ -98,7 +101,28 @@ export const handler: Handler<IEvent> = wrapHandler(async (event) => {
     await writeBatch(unprocessed[TABLE] ?? [], retry + 1);
   };
 
-  await writeBatch(initialItems);
+  const writeBatches = async (
+    requests: NonNullable<BatchWriteCommandInput['RequestItems']>[string],
+  ) =>
+    chunk(requests, MAX_WRITE_BATCH_SIZE).reduce<Promise<void>>(
+      (previousBatch, batch) => previousBatch.then(() => writeBatch(batch)),
+      Promise.resolve(),
+    );
+
+  await writeBatches(initialItems);
+
+  if (TYPENAME === 'TransactionCreationReceipt') {
+    const receiptIndexItems = items.map((receiptId) => ({
+      DeleteRequest: {
+        Key: {
+          __typename: `${receiptIndexPrefix}${receiptId}`,
+          id: event.id,
+        },
+      },
+    }));
+
+    await writeBatches(receiptIndexItems);
+  }
 
   return {
     ...event,

@@ -101,6 +101,114 @@ describe('delete-records', () => {
       });
     });
 
+    it('should delete creation receipts by their table typename', async () => {
+      process.env.TYPENAME = 'TransactionCreationReceipt';
+      event.items = ['transaction-creation:receipt-id'];
+
+      await handler(event, context, callback);
+
+      const requests = ddb
+        .commandCalls(BatchWriteCommand)
+        .map(({ args }) => args[0].input.RequestItems?.['app-table'] ?? []);
+
+      expect(requests).toEqual([
+        [
+          {
+            DeleteRequest: {
+              Key: {
+                __typename: 'TransactionCreationReceipt',
+                id: 'transaction-creation:receipt-id',
+              },
+            },
+          },
+        ],
+        [
+          {
+            DeleteRequest: {
+              Key: {
+                __typename:
+                  'TransactionCreationReceiptIndex:transaction-creation:receipt-id',
+                id: 'company-id',
+              },
+            },
+          },
+        ],
+      ]);
+    });
+
+    it('does not delete receipt index records when a receipt batch fails', async () => {
+      process.env.TYPENAME = 'TransactionCreationReceipt';
+      event.items = Array.from(
+        { length: 26 },
+        (_, index) => `transaction-creation:receipt-${index}`,
+      );
+      ddb
+        .on(BatchWriteCommand)
+        .resolvesOnce({})
+        .rejectsOnce(new Error('receipt batch failed'));
+
+      await expect(handler(event, context, callback)).rejects.toThrow(
+        'receipt batch failed',
+      );
+
+      const requests = ddb
+        .commandCalls(BatchWriteCommand)
+        .map(({ args }) => args[0].input.RequestItems?.['app-table'] ?? []);
+
+      expect(requests).toHaveLength(2);
+      expect(
+        requests.flat().every(({ DeleteRequest }) => {
+          const { __typename: typeName } = DeleteRequest?.Key ?? {};
+
+          return typeName === 'TransactionCreationReceipt';
+        }),
+      ).toBe(true);
+    });
+
+    it('restarts receipt cleanup before deleting company lookup records', async () => {
+      process.env.TYPENAME = 'TransactionCreationReceipt';
+      event.items = Array.from(
+        { length: 26 },
+        (_, index) => `transaction-creation:receipt-${index}`,
+      );
+      ddb
+        .on(BatchWriteCommand)
+        .resolvesOnce({})
+        .rejectsOnce(new Error('receipt batch failed'))
+        .resolves({});
+
+      await expect(handler(event, context, callback)).rejects.toThrow(
+        'receipt batch failed',
+      );
+      await handler(event, context, callback);
+
+      const requests = ddb
+        .commandCalls(BatchWriteCommand)
+        .map(({ args }) => args[0].input.RequestItems?.['app-table'] ?? []);
+      const typeNames: unknown[][] = requests.map((batch) =>
+        batch.map(({ DeleteRequest }) => {
+          const { __typename: typeName } = DeleteRequest?.Key ?? {};
+
+          return typeName as unknown;
+        }),
+      );
+
+      expect(
+        typeNames
+          .slice(0, 4)
+          .flat()
+          .every((typeName) => typeName === 'TransactionCreationReceipt'),
+      ).toBe(true);
+      expect(typeNames.slice(4).flat()).toEqual([
+        ...Array.from(
+          { length: 25 },
+          (_, index) =>
+            `TransactionCreationReceiptIndex:transaction-creation:receipt-${index}`,
+        ),
+        'TransactionCreationReceiptIndex:transaction-creation:receipt-25',
+      ]);
+    });
+
     it('should preserve a continuation key until the page has been deleted', async () => {
       event.complete = false;
       event.lastEvaluatedKey = {
@@ -112,6 +220,74 @@ describe('delete-records', () => {
       await expect(handler(event, context, callback)).resolves.toEqual({
         ...event,
         complete: false,
+      });
+    });
+
+    it('should split a page across sequential batches of at most 25 deletes', async () => {
+      event.items = Array.from({ length: 51 }, (_, index) => `client-${index}`);
+
+      await handler(event, context, callback);
+
+      const requests = ddb
+        .commandCalls(BatchWriteCommand)
+        .map(({ args }) => args[0].input.RequestItems?.['app-table'] ?? []);
+
+      expect(requests.map((batch) => batch.length)).toEqual([25, 25, 1]);
+      expect(requests[0]?.[0]).toEqual({
+        DeleteRequest: {
+          Key: {
+            __typename: 'Client',
+            id: 'client-0',
+          },
+        },
+      });
+      expect(requests[1]?.[0]).toEqual({
+        DeleteRequest: {
+          Key: {
+            __typename: 'Client',
+            id: 'client-25',
+          },
+        },
+      });
+      expect(requests[2]?.[0]).toEqual({
+        DeleteRequest: {
+          Key: {
+            __typename: 'Client',
+            id: 'client-50',
+          },
+        },
+      });
+    });
+
+    it('should not advance the page when a later batch fails', async () => {
+      event.complete = false;
+      event.lastEvaluatedKey = {
+        __typename: 'Client',
+        data: 'owner-id:company-id:next',
+        id: 'last-id',
+      };
+      event.items = Array.from({ length: 51 }, (_, index) => `client-${index}`);
+      ddb
+        .on(BatchWriteCommand)
+        .resolvesOnce({})
+        .rejectsOnce(new Error('second batch failed'));
+
+      await expect(handler(event, context, callback)).rejects.toThrow(
+        'second batch failed',
+      );
+
+      const requests = ddb
+        .commandCalls(BatchWriteCommand)
+        .map(({ args }) => args[0].input.RequestItems?.['app-table'] ?? []);
+
+      expect(requests.map((batch) => batch.length)).toEqual([25, 25]);
+      expect(requests[1]?.[0]).toEqual({
+        DeleteRequest: {
+          Key: {
+            __typename: 'Client',
+            id: 'client-25',
+          },
+        },
       });
     });
 
@@ -173,10 +349,13 @@ describe('delete-records', () => {
     });
 
     it('should reject a batch larger than the DynamoDB limit', async () => {
-      event.items = Array.from({ length: 26 }, (_, index) => `client-${index}`);
+      event.items = Array.from(
+        { length: 101 },
+        (_, index) => `client-${index}`,
+      );
 
       await expect(handler(event, context, callback)).rejects.toThrow(
-        'Cannot delete more than 25 records in one batch',
+        'Cannot delete more than 100 records in one page',
       );
 
       expect(ddb).toReceiveCommandTimes(BatchWriteCommand, 0);

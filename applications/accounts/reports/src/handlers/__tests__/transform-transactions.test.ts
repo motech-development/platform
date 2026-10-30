@@ -227,11 +227,13 @@ describe('transform-transactions', () => {
     await expect(handler(event, context, callback)).resolves.toEqual({
       companyId: 'COMPANY-ID',
       owner: 'OWNER-ID',
-      payloadKey: 'payload-key',
+      payloadKey: 'payload-key.transformed.json',
     });
 
     expect(
-      parsePayload(reportStorage.objects.get('payload-key') ?? ''),
+      parsePayload(
+        reportStorage.objects.get('payload-key.transformed.json') ?? '',
+      ),
     ).toEqual({
       attachments: [
         {
@@ -359,7 +361,42 @@ describe('transform-transactions', () => {
     await handler(event, context, callback);
 
     expect(
-      reportStorage.objects.get('payload-key')?.match(/"key":/g),
+      reportStorage.objects
+        .get('payload-key.transformed.json')
+        ?.match(/"key":/g),
     ).toHaveLength(4);
+  });
+
+  it('preserves the input payload so a successful write can be replayed', async () => {
+    const writeError = new Error('response lost after write');
+    let failAfterWrite = true;
+    reportStorage.uploader.mockImplementation(
+      (_bucket: string, key: string, body: Readable) => ({
+        done: async () => {
+          reportStorage.objects.set(key, await collectStream(body));
+
+          if (failAfterWrite) {
+            failAfterWrite = false;
+            throw writeError;
+          }
+        },
+      }),
+    );
+
+    await expect(handler(event, context, callback)).rejects.toBe(writeError);
+    await expect(handler(event, context, callback)).resolves.toEqual({
+      companyId: 'COMPANY-ID',
+      owner: 'OWNER-ID',
+      payloadKey: 'payload-key.transformed.json',
+    });
+
+    expect(
+      parsePayload(reportStorage.objects.get('payload-key') ?? ''),
+    ).toHaveLength(12);
+    expect(
+      parsePayload(
+        reportStorage.objects.get('payload-key.transformed.json') ?? '',
+      ),
+    ).toHaveProperty('csv');
   });
 });

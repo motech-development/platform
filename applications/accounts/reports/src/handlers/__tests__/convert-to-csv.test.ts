@@ -133,11 +133,11 @@ describe('convert-to-csv', () => {
     await expect(handler(event, context, callback)).resolves.toEqual({
       companyId: 'COMPANY-ID',
       owner: 'OWNER-ID',
-      payloadKey: 'payload-key',
+      payloadKey: 'payload-key.csv.json',
     });
 
     expect(
-      parsePayload(reportStorage.objects.get('payload-key') ?? ''),
+      parsePayload(reportStorage.objects.get('payload-key.csv.json') ?? ''),
     ).toEqual({
       attachments: [
         {
@@ -162,11 +162,11 @@ describe('convert-to-csv', () => {
     await expect(handler(event, context, callback)).resolves.toEqual({
       companyId: 'COMPANY-ID',
       owner: 'OWNER-ID',
-      payloadKey: 'payload-key',
+      payloadKey: 'payload-key.csv.json',
     });
 
     expect(
-      parsePayload(reportStorage.objects.get('payload-key') ?? ''),
+      parsePayload(reportStorage.objects.get('payload-key.csv.json') ?? ''),
     ).toMatchObject({ attachments: [] });
   });
 
@@ -204,5 +204,36 @@ describe('convert-to-csv', () => {
         checkSchemaDifferences: true,
       },
     );
+  });
+
+  it('preserves the input payload so a successful write can be replayed', async () => {
+    const writeError = new Error('response lost after write');
+    let failAfterWrite = true;
+    reportStorage.uploader.mockImplementation(
+      (_bucket: string, key: string, body: Readable) => ({
+        done: async () => {
+          reportStorage.objects.set(key, await collectStream(body));
+
+          if (failAfterWrite) {
+            failAfterWrite = false;
+            throw writeError;
+          }
+        },
+      }),
+    );
+
+    await expect(handler(event, context, callback)).rejects.toBe(writeError);
+    await expect(handler(event, context, callback)).resolves.toEqual({
+      companyId: 'COMPANY-ID',
+      owner: 'OWNER-ID',
+      payloadKey: 'payload-key.csv.json',
+    });
+
+    expect(
+      parsePayload(reportStorage.objects.get('payload-key') ?? ''),
+    ).toEqual(payload);
+    expect(
+      parsePayload(reportStorage.objects.get('payload-key.csv.json') ?? ''),
+    ).toMatchObject({ csv: 'MOCKED-CSV-DATA' });
   });
 });
