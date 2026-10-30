@@ -18,6 +18,15 @@ custom:
   subDomain: accounts.${self:custom.domainName}
 
 resources:
+  Rules:
+    CloudFrontLoggingRegion:
+      Assertions:
+        - Assert:
+            Fn::Equals:
+              - Ref: AWS::Region
+              - us-east-1
+          AssertDescription: CloudFront standard logging v2 requires us-east-1.
+
   Resources:
     Bucket:
       Type: AWS::S3::Bucket
