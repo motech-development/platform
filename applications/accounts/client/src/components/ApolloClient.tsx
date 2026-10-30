@@ -1,8 +1,8 @@
 /* eslint-disable no-underscore-dangle */
 import {
+  type ApolloCache,
   type FieldFunctionOptions,
   gql,
-  InMemoryCache,
   Reference,
   StoreObject,
 } from '@apollo/client';
@@ -58,8 +58,8 @@ function parseNotificationPayload(payload: string | null): unknown {
   return null;
 }
 
-function updateReportsCache(
-  cache: InMemoryCache,
+function updateReportsCache<TSerialized>(
+  cache: ApolloCache<TSerialized>,
   reportData: Report,
   existingReports: unknown,
   readField: FieldFunctionOptions['readField'],
@@ -105,8 +105,8 @@ function updateReportsCache(
   }
 }
 
-function updateNotificationsCache(
-  cache: InMemoryCache,
+function updateNotificationsCache<TSerialized>(
+  cache: ApolloCache<TSerialized>,
   notificationData: { id: string },
   existingNotifications: unknown,
   readField: FieldFunctionOptions['readField'],
@@ -169,8 +169,8 @@ const notificationReadFragment = gql`
   }
 `;
 
-export function writeNotificationToCache(
-  cache: InMemoryCache,
+export function writeNotificationToCache<TSerialized>(
+  cache: ApolloCache<TSerialized>,
   notificationData: NonNullable<OnNotificationSubscription['onNotification']>,
 ): boolean {
   const cacheId = cache.identify({
@@ -196,6 +196,77 @@ export function writeNotificationToCache(
   });
 
   return read;
+}
+
+export function processNotification<TSerialized>(
+  cache: ApolloCache<TSerialized>,
+  notificationData: NonNullable<OnNotificationSubscription['onNotification']>,
+): NonNullable<OnNotificationSubscription['onNotification']> {
+  try {
+    const parsedPayload = parseNotificationPayload(
+      notificationData.payload ?? null,
+    );
+
+    if (
+      parsedPayload &&
+      typeof parsedPayload === 'object' &&
+      'id' in parsedPayload &&
+      'downloadUrl' in parsedPayload
+    ) {
+      const reportData = parsedPayload as Report;
+
+      cache.writeFragment({
+        data: {
+          ...reportData,
+          __typename: 'Report',
+        },
+        fragment: gql`
+          fragment NewReport on Report {
+            id
+            createdAt
+            downloadUrl
+            ttl
+          }
+        `,
+      });
+
+      cache.modify({
+        fields: {
+          getReports(existingReports: unknown, { readField }) {
+            updateReportsCache(cache, reportData, existingReports, readField);
+
+            return existingReports;
+          },
+        },
+      });
+    }
+  } catch (error) {
+    // If payload processing fails, ignore the report update.
+    // eslint-disable-next-line no-console
+    console.warn('Failed to parse notification payload:', error);
+  }
+
+  const read = writeNotificationToCache(cache, notificationData);
+
+  cache.modify({
+    fields: {
+      getNotifications(existingNotifications: unknown, { readField }) {
+        updateNotificationsCache(
+          cache,
+          notificationData,
+          existingNotifications,
+          readField,
+        );
+
+        return existingNotifications;
+      },
+    },
+  });
+
+  return {
+    ...notificationData,
+    read,
+  };
 }
 
 export const typePolicies: StrictTypedTypePolicies = {
@@ -329,81 +400,7 @@ export const typePolicies: StrictTypedTypePolicies = {
             return existing;
           }
 
-          // Parse the payload to extract report data
-          try {
-            const parsedPayload = parseNotificationPayload(
-              notificationData.payload ?? null,
-            );
-
-            // If this is a report notification, update the getReports cache
-            if (
-              parsedPayload &&
-              typeof parsedPayload === 'object' &&
-              'id' in parsedPayload &&
-              'downloadUrl' in parsedPayload
-            ) {
-              const reportData = parsedPayload as Report;
-
-              // Write the report to the cache first
-              cache.writeFragment({
-                data: {
-                  ...reportData,
-                  __typename: 'Report',
-                },
-                fragment: gql`
-                  fragment NewReport on Report {
-                    id
-                    createdAt
-                    downloadUrl
-                    ttl
-                  }
-                `,
-              });
-
-              // Update all getReports queries in the cache
-              cache.modify({
-                fields: {
-                  getReports(existingReports: unknown, { readField: rf }) {
-                    updateReportsCache(cache, reportData, existingReports, rf);
-
-                    return existingReports;
-                  },
-                },
-              });
-            }
-          } catch (error) {
-            // If payload parsing fails, ignore the notification
-            // eslint-disable-next-line no-console
-            console.warn('Failed to parse notification payload:', error);
-          }
-
-          // Also handle notifications for getNotifications queries
-          // Write the notification to the cache first
-          const read = writeNotificationToCache(cache, notificationData);
-
-          // Update all getNotifications queries in the cache
-          cache.modify({
-            fields: {
-              getNotifications(
-                existingNotifications: unknown,
-                { readField: rf },
-              ) {
-                updateNotificationsCache(
-                  cache,
-                  notificationData,
-                  existingNotifications,
-                  rf,
-                );
-
-                return existingNotifications;
-              },
-            },
-          });
-
-          return {
-            ...notificationData,
-            read,
-          };
+          return processNotification(cache, notificationData);
         },
       },
     },

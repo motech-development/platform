@@ -10,6 +10,7 @@ import {
 } from '@motech-development/breeze-ui';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
+import { processNotification } from '../../components/ApolloClient';
 import { gql } from '../../graphql';
 import type { GetNotificationsQuery } from '../../graphql/graphql';
 
@@ -106,6 +107,13 @@ function UserNotifications({ id }: IUserNotificationsProps) {
   const [markAsRead] = useMutation(MARK_AS_READ);
 
   useSubscription(ON_NOTIFICATION, {
+    onData: ({ client, data: result }) => {
+      const notification = result.data?.onNotification;
+
+      if (notification) {
+        processNotification(client.cache, notification);
+      }
+    },
     skip: !id,
     variables: {
       owner: id,
