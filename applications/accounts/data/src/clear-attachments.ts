@@ -2,7 +2,7 @@ import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import logger from '@motech-development/node-logger';
 import { init, wrapHandler } from '@sentry/aws-serverless';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
-import type { SQSHandler } from 'aws-lambda';
+import type { SQSBatchResponse, SQSHandler } from 'aws-lambda';
 import updateAttachments from './handlers/update-attachments';
 
 init({
@@ -26,18 +26,29 @@ export const handler: SQSHandler = wrapHandler(async (event) => {
     throw new Error('No source bucket set');
   }
 
-  const { Records } = event;
+  const batchItemFailures = await Promise.all(
+    event.Records.map(async (record) => {
+      try {
+        await updateAttachments(documentClient, TABLE, BUCKET, record);
 
-  try {
-    const updates = await updateAttachments(
-      documentClient,
-      TABLE,
-      BUCKET,
-      Records,
-    );
+        return undefined;
+      } catch (error) {
+        logger.error('Failed to clear attachment message', {
+          error,
+          messageId: record.messageId,
+        });
 
-    await Promise.all(updates);
-  } catch (e) {
-    logger.error('An error occurred', e);
-  }
+        return {
+          itemIdentifier: record.messageId,
+        };
+      }
+    }),
+  );
+
+  return {
+    batchItemFailures: batchItemFailures.filter(
+      (failure): failure is SQSBatchResponse['batchItemFailures'][number] =>
+        failure !== undefined,
+    ),
+  };
 });

@@ -1,5 +1,5 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { UpdateCommandOutput } from '@aws-sdk/lib-dynamodb';
+import { TransactWriteCommandOutput } from '@aws-sdk/lib-dynamodb';
 import type { DynamoDBRecord } from 'aws-lambda';
 import { insert } from '../shared/balance';
 import { ITransaction, TransactionStatus } from '../shared/transaction';
@@ -9,7 +9,7 @@ const insertTransactions = (
   documentClient: DynamoDBClient,
   tableName: string,
   records: DynamoDBRecord[],
-): Promise<UpdateCommandOutput>[] => {
+): Promise<TransactWriteCommandOutput | undefined>[] => {
   const unmarshalledRecords = unmarshallNewRecords<ITransaction>(
     records,
     'Transaction',
@@ -17,7 +17,9 @@ const insertTransactions = (
 
   return unmarshalledRecords
     .filter(({ NewImage }) => NewImage.status === TransactionStatus.Confirmed)
-    .map(({ NewImage }) => insert(documentClient, tableName, NewImage));
+    .map(({ NewImage, eventID, eventSourceARN }) =>
+      insert(documentClient, tableName, { eventID, eventSourceARN }, NewImage),
+    );
 };
 
 export default insertTransactions;

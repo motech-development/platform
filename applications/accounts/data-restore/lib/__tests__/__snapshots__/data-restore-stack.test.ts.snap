@@ -20,7 +20,7 @@ exports[`DataRestoreStack > should synthesize as expected 1`] = `
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "2560f01868f38eee901a7c0b3d4664d84dcc063eae1e596dc000f01c87567fc0.zip",
+          "S3Key": "2fde52ce8efda3e4de31e3d93eb82d4aad682ab3f20193b2e337e98acc492fca.zip",
         },
         "Environment": {
           "Variables": {
@@ -143,6 +143,11 @@ exports[`DataRestoreStack > should synthesize as expected 1`] = `
                   "Ref": "AWS::NoValue",
                 },
               ],
+            },
+            {
+              "Action": "lambda:ListEventSourceMappings",
+              "Effect": "Allow",
+              "Resource": "*",
             },
           ],
           "Version": "2012-10-17",

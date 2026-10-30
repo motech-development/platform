@@ -5,9 +5,11 @@ import type { Handler } from 'aws-lambda';
 import { DateTime } from 'luxon';
 import type { InferType } from 'yup';
 import { array, number, object, string } from 'yup';
+import {
+  readReportPayload,
+  writeReportPayload,
+} from '../shared/report-payload';
 import slug from '../shared/slug';
-import Status from '../shared/status';
-import { IEvent as IOutput } from './convert-to-csv';
 
 init({
   dsn: process.env.SENTRY_DSN,
@@ -16,6 +18,13 @@ init({
   profileSessionSampleRate: 1,
   tracesSampleRate: 1,
 });
+
+const eventSchema = object({
+  companyId: string().required(),
+  currency: string().required(),
+  owner: string().required(),
+  payloadKey: string().required(),
+}).required();
 
 const schema = object({
   companyId: string().required(),
@@ -45,18 +54,38 @@ const hasAttachment = (
   item: ITransaction,
 ): item is ITransactionWithAttachment => !!item.attachment;
 
-export type IEvent = Omit<InferType<typeof schema>, 'items'> & {
-  items: (ITransaction & {
-    companyId: string;
-    status: Status;
-  })[];
-};
+export type IEvent = InferType<typeof eventSchema>;
+
+export interface IOutput {
+  companyId: string;
+  owner: string;
+  payloadKey: string;
+}
 
 export const handler: Handler<IEvent, IOutput> = wrapHandler(async (event) => {
-  const result = await schema.validate(event, {
+  const { REPORT_BUCKET } = process.env;
+
+  if (!REPORT_BUCKET) {
+    throw new Error('No report bucket set');
+  }
+
+  const input = await eventSchema.validate(event, {
     abortEarly: true,
     stripUnknown: true,
   });
+  const payload = await readReportPayload(REPORT_BUCKET, input.payloadKey);
+  const result = await schema.validate(
+    {
+      companyId: input.companyId,
+      currency: input.currency,
+      items: payload,
+      owner: input.owner,
+    },
+    {
+      abortEarly: true,
+      stripUnknown: true,
+    },
+  );
   const sorted = [...result.items].sort((a, b) => {
     const d1 = DateTime.fromISO(a.date);
     const d2 = DateTime.fromISO(b.date);
@@ -100,10 +129,16 @@ export const handler: Handler<IEvent, IOutput> = wrapHandler(async (event) => {
       };
     });
 
-  return {
+  await writeReportPayload(REPORT_BUCKET, input.payloadKey, {
     attachments,
     companyId: result.companyId,
     csv,
     owner: result.owner,
+  });
+
+  return {
+    companyId: result.companyId,
+    owner: result.owner,
+    payloadKey: input.payloadKey,
   };
 });

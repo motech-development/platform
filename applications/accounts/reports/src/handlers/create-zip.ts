@@ -7,6 +7,7 @@ import { v4 as uuid } from 'uuid';
 import type { InferType } from 'yup';
 import { array, object, string } from 'yup';
 import archive from '../shared/archive';
+import { readReportPayload } from '../shared/report-payload';
 
 init({
   dsn: process.env.SENTRY_DSN,
@@ -15,6 +16,12 @@ init({
   profileSessionSampleRate: 1,
   tracesSampleRate: 1,
 });
+
+const eventSchema = object({
+  companyId: string().required(),
+  owner: string().required(),
+  payloadKey: string().required(),
+}).required();
 
 const schema = object({
   attachments: array(
@@ -28,14 +35,12 @@ const schema = object({
   owner: string().required(),
 }).required();
 
-export type IEvent = Omit<InferType<typeof schema>, 'attachments'> & {
-  attachments: NonNullable<InferType<typeof schema>['attachments']>;
-};
+export type IEvent = InferType<typeof eventSchema>;
 
 export const handler: Handler<IEvent> = wrapHandler(async (event) => {
   logger.info('Start lambda function');
 
-  const { DESTINATION_BUCKET, ORIGIN_BUCKET } = process.env;
+  const { DESTINATION_BUCKET, ORIGIN_BUCKET, REPORT_BUCKET } = process.env;
 
   if (!DESTINATION_BUCKET) {
     throw new Error('No destination bucket set');
@@ -45,10 +50,26 @@ export const handler: Handler<IEvent> = wrapHandler(async (event) => {
     throw new Error('No origin bucket set');
   }
 
-  const { attachments, companyId, csv, owner } = await schema.validate(event, {
+  if (!REPORT_BUCKET) {
+    throw new Error('No report bucket set');
+  }
+
+  const input = await eventSchema.validate(event, {
     abortEarly: true,
     stripUnknown: true,
   });
+  const payload = await readReportPayload(REPORT_BUCKET, input.payloadKey);
+  const { attachments, companyId, csv, owner } = await schema.validate(
+    payload,
+    {
+      abortEarly: true,
+      stripUnknown: true,
+    },
+  );
+
+  if (companyId !== input.companyId || owner !== input.owner) {
+    throw new Error('Report payload does not match the workflow input');
+  }
 
   const key = join(owner, companyId, `${uuid()}.zip`);
 

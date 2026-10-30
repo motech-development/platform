@@ -1,5 +1,5 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { UpdateCommand } from '@aws-sdk/lib-dynamodb';
+import { TransactWriteCommand } from '@aws-sdk/lib-dynamodb';
 import type { DynamoDBRecord } from 'aws-lambda';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import removeTransactions from '../remove-transactions';
@@ -9,6 +9,39 @@ describe('remove-transactions', () => {
   let documentClient: DynamoDBClient;
   let tableName: string;
   let records: DynamoDBRecord[];
+
+  interface IExpectedBalanceUpdate {
+    ExpressionAttributeNames: Record<string, string>;
+    ExpressionAttributeValues: Record<string, unknown>;
+    Key: { __typename: string; id: string };
+    TableName: string;
+    UpdateExpression: string;
+  }
+
+  const matchesExpected = (actual: unknown, expected: unknown): boolean => {
+    if (
+      actual === null ||
+      expected === null ||
+      typeof actual !== 'object' ||
+      typeof expected !== 'object'
+    ) {
+      return actual === expected;
+    }
+
+    return Object.entries(expected).every(([key, value]) =>
+      matchesExpected((actual as Record<string, unknown>)[key], value),
+    );
+  };
+
+  const expectBalanceUpdate = (expected: IExpectedBalanceUpdate) => {
+    const updates = ddb
+      .commandCalls(TransactWriteCommand)
+      .map(({ args: [command] }) => command.input.TransactItems?.[1]?.Update);
+
+    expect(updates.some((update) => matchesExpected(update, expected))).toBe(
+      true,
+    );
+  };
 
   beforeAll(() => {
     vi.setSystemTime(new Date('2020-06-06T19:45:00+00:00'));
@@ -227,6 +260,13 @@ describe('remove-transactions', () => {
         },
       },
     ];
+
+    records = records.map((record, index) => ({
+      ...record,
+      eventID: `event-${index}`,
+      eventSourceARN:
+        'arn:aws:dynamodb:eu-west-1:123456789012:table/test/stream/2020-06-06T19:45:00.000',
+    }));
   });
 
   afterAll(() => {
@@ -236,7 +276,9 @@ describe('remove-transactions', () => {
   it('should return update with the correct params', async () => {
     await Promise.all(removeTransactions(documentClient, tableName, records));
 
-    expect(ddb).toReceiveCommandWith(UpdateCommand, {
+    expect(ddb.commandCalls(TransactWriteCommand)).toHaveLength(3);
+
+    expectBalanceUpdate({
       ExpressionAttributeNames: {
         '#balance': 'balance',
         '#itemProperty': '2019-12-15T00:00:00.000Z',
@@ -259,7 +301,7 @@ describe('remove-transactions', () => {
         'SET #updatedAt = :updatedAt, #balance = #balance - :balance, #vat.#vatProperty = #vat.#vatProperty - :vat, #items.#itemProperty = #items.#itemProperty - :balance',
     });
 
-    expect(ddb).toReceiveCommandWith(UpdateCommand, {
+    expectBalanceUpdate({
       ExpressionAttributeNames: {
         '#balance': 'balance',
         '#itemProperty': '2019-12-15T00:00:00.000Z',
@@ -282,7 +324,7 @@ describe('remove-transactions', () => {
         'SET #updatedAt = :updatedAt, #balance = #balance - :balance, #vat.#vatProperty = #vat.#vatProperty - :vat, #items.#itemProperty = #items.#itemProperty - :balance',
     });
 
-    expect(ddb).toReceiveCommandWith(UpdateCommand, {
+    expectBalanceUpdate({
       ExpressionAttributeNames: {
         '#balance': 'balance',
         '#itemProperty': '2019-12-15T00:00:00.000Z',
@@ -309,6 +351,6 @@ describe('remove-transactions', () => {
   it('should call update the correct number of times', async () => {
     await Promise.all(removeTransactions(documentClient, tableName, records));
 
-    expect(ddb).toReceiveCommandTimes(UpdateCommand, 3);
+    expect(ddb).toReceiveCommandTimes(TransactWriteCommand, 3);
   });
 });

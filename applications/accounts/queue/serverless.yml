@@ -165,7 +165,15 @@ stepFunctions:
                   GetClients:
                     Type: Task
                     Resource: !GetAtt GetClientsLambdaFunction.Arn
-                    Next: IsDeleteClientsComplete
+                    Next: HasClientsToDelete
+
+                  HasClientsToDelete:
+                    Type: Choice
+                    Choices:
+                      - Variable: $.items[0]
+                        IsPresent: true
+                        Next: DeleteClients
+                    Default: IsDeleteClientsComplete
 
                   DeleteClients:
                     Type: Task
@@ -177,7 +185,7 @@ stepFunctions:
                     Choices:
                       - Variable: $.complete
                         BooleanEquals: false
-                        Next: DeleteClients
+                        Next: GetClients
                     Default: DeleteClientsComplete
 
                   DeleteClientsComplete:
@@ -189,7 +197,15 @@ stepFunctions:
                   GetReports:
                     Type: Task
                     Resource: !GetAtt GetReportsLambdaFunction.Arn
-                    Next: IsDeleteReportsComplete
+                    Next: HasReportsToDelete
+
+                  HasReportsToDelete:
+                    Type: Choice
+                    Choices:
+                      - Variable: $.items[0]
+                        IsPresent: true
+                        Next: DeleteReports
+                    Default: IsDeleteReportsComplete
 
                   DeleteReports:
                     Type: Task
@@ -201,7 +217,7 @@ stepFunctions:
                     Choices:
                       - Variable: $.complete
                         BooleanEquals: false
-                        Next: DeleteReports
+                        Next: GetReports
                     Default: DeleteReportsComplete
 
                   DeleteReportsComplete:
@@ -213,7 +229,15 @@ stepFunctions:
                   GetTransactions:
                     Type: Task
                     Resource: !GetAtt GetTransactionsLambdaFunction.Arn
-                    Next: IsDeleteTransactionsComplete
+                    Next: HasTransactionsToDelete
+
+                  HasTransactionsToDelete:
+                    Type: Choice
+                    Choices:
+                      - Variable: $.items[0]
+                        IsPresent: true
+                        Next: DeleteTransactions
+                    Default: IsDeleteTransactionsComplete
 
                   DeleteTransactions:
                     Type: Task
@@ -225,7 +249,7 @@ stepFunctions:
                     Choices:
                       - Variable: $.complete
                         BooleanEquals: false
-                        Next: DeleteTransactions
+                        Next: GetTransactions
                     Default: DeleteTransactionsComplete
 
                   DeleteTransactionsComplete:

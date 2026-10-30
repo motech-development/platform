@@ -152,6 +152,52 @@ function updateNotificationsCache(
   }
 }
 
+const notificationFragment = gql`
+  fragment NewNotification on Notification {
+    id
+    createdAt
+    message
+    owner
+    payload
+    read
+  }
+`;
+
+const notificationReadFragment = gql`
+  fragment ExistingNotificationRead on Notification {
+    read
+  }
+`;
+
+export function writeNotificationToCache(
+  cache: InMemoryCache,
+  notificationData: NonNullable<OnNotificationSubscription['onNotification']>,
+): boolean {
+  const cacheId = cache.identify({
+    __typename: 'Notification',
+    id: notificationData.id,
+  });
+  const existingNotification = cacheId
+    ? cache.readFragment<Pick<typeof notificationData, 'read'>>({
+        fragment: notificationReadFragment,
+        id: cacheId,
+      })
+    : null;
+  const read = existingNotification?.read ?? false;
+
+  cache.writeFragment({
+    data: {
+      ...notificationData,
+      __typename: 'Notification',
+      // A replay carries the original unread value; retain a local read update.
+      read,
+    },
+    fragment: notificationFragment,
+  });
+
+  return read;
+}
+
 export const typePolicies: StrictTypedTypePolicies = {
   Mutation: {
     fields: {
@@ -212,6 +258,21 @@ export const typePolicies: StrictTypedTypePolicies = {
       },
     },
   },
+  Notification: {
+    fields: {
+      read: {
+        // Subscription payloads normalize before their field merge can inspect cached state.
+        merge: (
+          existing: boolean | undefined,
+          incoming: boolean | undefined,
+        ) => {
+          if (existing === true) return true;
+
+          return incoming ?? existing;
+        },
+      },
+    },
+  },
   Query: {
     fields: {
       getNotifications: {
@@ -248,7 +309,7 @@ export const typePolicies: StrictTypedTypePolicies = {
           const message = readField<string>('message', notificationRef);
           const owner = readField<string>('owner', notificationRef);
           const payload = readField<string>('payload', notificationRef);
-          const read = readField<boolean>('read', notificationRef);
+          const incomingRead = readField<boolean>('read', notificationRef);
 
           if (!id || !createdAt || !message || !owner) {
             return existing; // Can't process without required fields
@@ -260,7 +321,7 @@ export const typePolicies: StrictTypedTypePolicies = {
             message,
             owner,
             payload,
-            read: read ?? false,
+            read: incomingRead ?? false,
           };
 
           // If we already have this notification, don't process it again
@@ -318,23 +379,7 @@ export const typePolicies: StrictTypedTypePolicies = {
 
           // Also handle notifications for getNotifications queries
           // Write the notification to the cache first
-          cache.writeFragment({
-            data: {
-              ...notificationData,
-              __typename: 'Notification',
-              read: false, // New notifications should always be unread
-            },
-            fragment: gql`
-              fragment NewNotification on Notification {
-                id
-                createdAt
-                message
-                owner
-                payload
-                read
-              }
-            `,
-          });
+          const read = writeNotificationToCache(cache, notificationData);
 
           // Update all getNotifications queries in the cache
           cache.modify({
@@ -355,7 +400,10 @@ export const typePolicies: StrictTypedTypePolicies = {
             },
           });
 
-          return notificationData;
+          return {
+            ...notificationData,
+            read,
+          };
         },
       },
     },

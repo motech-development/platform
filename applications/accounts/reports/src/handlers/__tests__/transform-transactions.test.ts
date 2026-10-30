@@ -1,14 +1,49 @@
+import { Readable } from 'node:stream';
 import type { Context } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import type { Mock } from 'vitest';
 import Status from '../../shared/status';
-import { IEvent as IOutput } from '../convert-to-csv';
 import { handler, IEvent } from '../transform-transactions';
+
+const reportStorage = vi.hoisted(() => ({
+  downloadFileStream: vi.fn(),
+  objects: new Map<string, string>(),
+  uploader: vi.fn(),
+}));
+
+vi.mock('@motech-development/s3-file-operations', async (importOriginal) => {
+  const actual =
+    await importOriginal<
+      typeof import('@motech-development/s3-file-operations')
+    >();
+
+  return {
+    ...actual,
+    downloadFileStream: reportStorage.downloadFileStream,
+    uploader: reportStorage.uploader,
+  };
+});
+
+const collectStream = (stream: Readable): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const chunks: string[] = [];
+
+    stream.setEncoding('utf8');
+    stream.on('data', (chunk: string) => chunks.push(chunk));
+    stream.once('error', reject);
+    stream.once('end', () => {
+      resolve(chunks.join(''));
+    });
+  });
+
+const parsePayload = (serialized: string): unknown =>
+  JSON.parse(serialized) as unknown;
 
 describe('transform-transactions', () => {
   let callback: Mock;
   let context: Context;
   let event: IEvent;
+  let env: NodeJS.ProcessEnv;
 
   beforeEach(() => {
     callback = vi.fn();
@@ -17,154 +52,187 @@ describe('transform-transactions', () => {
 
     context.done();
 
+    env = {
+      ...process.env,
+    };
+    process.env.REPORT_BUCKET = 'REPORT-BUCKET';
+
+    const items = [
+      {
+        amount: -10,
+        category: 'Bills',
+        companyId: 'COMPANY-ID',
+        date: '2021-04-05T09:44:30Z',
+        description: 'Last day of year',
+        id: '42bddc61-cc9b-426b-88ca-1788ae73bfa7',
+        name: 'Microsoft',
+        status: Status.Confirmed,
+        vat: 1.67,
+      },
+      {
+        amount: -2,
+        attachment: 'COMPANY-ID/8215eaf2-0a7b-4096-80eb-eae21ad88eae.jpg',
+        category: 'Bills',
+        companyId: 'COMPANY-ID',
+        date: '2020-10-12T15:52:36Z',
+        description: 'Cloud services',
+        id: 'd45b5afd-ede7-4add-b53b-1bbcb05b1bfe',
+        name: 'AWS',
+        status: Status.Confirmed,
+        vat: 0.33,
+      },
+      {
+        amount: -1,
+        category: 'Equipment',
+        companyId: 'COMPANY-ID',
+        date: '2020-10-07T09:34:58Z',
+        description: 'Office 365',
+        id: '8aedc78e-acfe-4573-98cc-dc1150ad7652',
+        name: 'Microsoft',
+        status: Status.Confirmed,
+        vat: 0.17,
+      },
+      {
+        amount: -20,
+        category: 'Bills',
+        companyId: 'COMPANY-ID',
+        date: '2020-10-11T19:41:31.705Z',
+        description: 'Cloud services',
+        id: '15ccfff6-1118-4b79-a6b8-1f8cce83677b',
+        name: 'AWS',
+        status: Status.Confirmed,
+        vat: 3.33,
+      },
+      {
+        amount: -200,
+        attachment: 'COMPANY-ID/a921a6f1-b250-4d22-9d19-65adb8d454f4.png',
+        category: 'Equipment',
+        companyId: 'COMPANY-ID',
+        date: '2020-07-16T19:49:42Z',
+        description:
+          'Public and employers liability insurance + professional indemnity insurance',
+        id: '4a473186-2747-4cb5-868e-14f50db7a1e1',
+        name: 'QDOS',
+        status: Status.Confirmed,
+        vat: 0,
+      },
+      {
+        amount: -20,
+        category: 'Equipment',
+        companyId: 'COMPANY-ID',
+        date: '2020-07-16T09:53:36Z',
+        description: 'Back support',
+        id: 'f3195df0-ebe2-46dd-b1dd-5cca964f4dd5',
+        name: 'Amazon',
+        status: Status.Confirmed,
+        vat: 3.33,
+      },
+      {
+        amount: -1,
+        category: 'Equipment',
+        companyId: 'COMPANY-ID',
+        date: '2020-07-15T15:22:04Z',
+        description: 'Office 365',
+        id: '77acd630-7f18-48b7-8289-648c57c9fb13',
+        name: 'Microsoft',
+        status: Status.Confirmed,
+        vat: 0.17,
+      },
+      {
+        amount: -20,
+        attachment: 'COMPANY-ID/033502c5-c41f-48af-8d23-2a29206b151c.pdf',
+        category: 'Equipment',
+        companyId: 'COMPANY-ID',
+        date: '2020-07-12T15:44:56Z',
+        description: 'Back support',
+        id: '28313b9f-72e9-47ab-b499-b4702d0a5451',
+        name: 'Amazon',
+        status: Status.Confirmed,
+        vat: 3.33,
+      },
+      {
+        amount: -20,
+        attachment: 'COMPANY-ID/781ee046-1975-448d-9181-62a6ad7484ab.pdf',
+        category: 'Equipment',
+        companyId: 'COMPANY-ID',
+        date: '2020-07-12T15:44:56Z',
+        description: 'Back support',
+        id: '90298d73-94cc-4bde-a2ac-7f0195353bb1',
+        name: 'Amazon',
+        status: Status.Confirmed,
+        vat: 3.33,
+      },
+      {
+        amount: 5000,
+        category: 'Sales',
+        companyId: 'COMPANY-ID',
+        date: '2020-07-01T15:00:49Z',
+        description: 'Invoice #2',
+        id: 'fde394b6-47c6-4c4e-a9ee-a63225dd186b',
+        name: 'Test Client',
+        status: Status.Confirmed,
+        vat: 825,
+      },
+      {
+        amount: -20,
+        category: 'Bills',
+        companyId: 'COMPANY-ID',
+        date: '2020-04-06T09:45:38Z',
+        description: 'First day of year',
+        id: 'dcefe2dc-0318-45db-86ff-4819535e523c',
+        name: 'Google',
+        status: Status.Confirmed,
+        vat: 3.33,
+      },
+      {
+        amount: -1,
+        category: 'Equipment',
+        companyId: 'COMPANY-ID',
+        date: '2020-06-30T22:04:51Z',
+        description: 'Cloud services',
+        id: 'b8bb3d14-40ca-4add-9bfc-1765a0cee35c',
+        name: 'AWS',
+        status: Status.Confirmed,
+        vat: 0.17,
+      },
+    ];
+
+    reportStorage.objects.clear();
+    reportStorage.objects.set('payload-key', JSON.stringify(items));
+    reportStorage.downloadFileStream.mockImplementation(
+      (_bucket: string, key: string) =>
+        Readable.from([reportStorage.objects.get(key) ?? '']),
+    );
+    reportStorage.uploader.mockImplementation(
+      (_bucket: string, key: string, body: Readable) => ({
+        done: async () => {
+          reportStorage.objects.set(key, await collectStream(body));
+        },
+      }),
+    );
+
     event = {
       companyId: 'COMPANY-ID',
       currency: '£',
-      items: [
-        {
-          amount: -10,
-          category: 'Bills',
-          companyId: 'COMPANY-ID',
-          date: '2021-04-05T09:44:30Z',
-          description: 'Last day of year',
-          id: '42bddc61-cc9b-426b-88ca-1788ae73bfa7',
-          name: 'Microsoft',
-          status: Status.Confirmed,
-          vat: 1.67,
-        },
-        {
-          amount: -2,
-          attachment: 'COMPANY-ID/8215eaf2-0a7b-4096-80eb-eae21ad88eae.jpg',
-          category: 'Bills',
-          companyId: 'COMPANY-ID',
-          date: '2020-10-12T15:52:36Z',
-          description: 'Cloud services',
-          id: 'd45b5afd-ede7-4add-b53b-1bbcb05b1bfe',
-          name: 'AWS',
-          status: Status.Confirmed,
-          vat: 0.33,
-        },
-        {
-          amount: -1,
-          category: 'Equipment',
-          companyId: 'COMPANY-ID',
-          date: '2020-10-07T09:34:58Z',
-          description: 'Office 365',
-          id: '8aedc78e-acfe-4573-98cc-dc1150ad7652',
-          name: 'Microsoft',
-          status: Status.Confirmed,
-          vat: 0.17,
-        },
-        {
-          amount: -20,
-          category: 'Bills',
-          companyId: 'COMPANY-ID',
-          date: '2020-10-11T19:41:31.705Z',
-          description: 'Cloud services',
-          id: '15ccfff6-1118-4b79-a6b8-1f8cce83677b',
-          name: 'AWS',
-          status: Status.Confirmed,
-          vat: 3.33,
-        },
-        {
-          amount: -200,
-          attachment: 'COMPANY-ID/a921a6f1-b250-4d22-9d19-65adb8d454f4.png',
-          category: 'Equipment',
-          companyId: 'COMPANY-ID',
-          date: '2020-07-16T19:49:42Z',
-          description:
-            'Public and employers liability insurance + professional indemnity insurance',
-          id: '4a473186-2747-4cb5-868e-14f50db7a1e1',
-          name: 'QDOS',
-          status: Status.Confirmed,
-          vat: 0,
-        },
-        {
-          amount: -20,
-          category: 'Equipment',
-          companyId: 'COMPANY-ID',
-          date: '2020-07-16T09:53:36Z',
-          description: 'Back support',
-          id: 'f3195df0-ebe2-46dd-b1dd-5cca964f4dd5',
-          name: 'Amazon',
-          status: Status.Confirmed,
-          vat: 3.33,
-        },
-        {
-          amount: -1,
-          category: 'Equipment',
-          companyId: 'COMPANY-ID',
-          date: '2020-07-15T15:22:04Z',
-          description: 'Office 365',
-          id: '77acd630-7f18-48b7-8289-648c57c9fb13',
-          name: 'Microsoft',
-          status: Status.Confirmed,
-          vat: 0.17,
-        },
-        {
-          amount: -20,
-          attachment: 'COMPANY-ID/033502c5-c41f-48af-8d23-2a29206b151c.pdf',
-          category: 'Equipment',
-          companyId: 'COMPANY-ID',
-          date: '2020-07-12T15:44:56Z',
-          description: 'Back support',
-          id: '28313b9f-72e9-47ab-b499-b4702d0a5451',
-          name: 'Amazon',
-          status: Status.Confirmed,
-          vat: 3.33,
-        },
-        {
-          amount: -20,
-          attachment: 'COMPANY-ID/781ee046-1975-448d-9181-62a6ad7484ab.pdf',
-          category: 'Equipment',
-          companyId: 'COMPANY-ID',
-          date: '2020-07-12T15:44:56Z',
-          description: 'Back support',
-          id: '90298d73-94cc-4bde-a2ac-7f0195353bb1',
-          name: 'Amazon',
-          status: Status.Confirmed,
-          vat: 3.33,
-        },
-        {
-          amount: 5000,
-          category: 'Sales',
-          companyId: 'COMPANY-ID',
-          date: '2020-07-01T15:00:49Z',
-          description: 'Invoice #2',
-          id: 'fde394b6-47c6-4c4e-a9ee-a63225dd186b',
-          name: 'Test Client',
-          status: Status.Confirmed,
-          vat: 825,
-        },
-        {
-          amount: -20,
-          category: 'Bills',
-          companyId: 'COMPANY-ID',
-          date: '2020-04-06T09:45:38Z',
-          description: 'First day of year',
-          id: 'dcefe2dc-0318-45db-86ff-4819535e523c',
-          name: 'Google',
-          status: Status.Confirmed,
-          vat: 3.33,
-        },
-        {
-          amount: -1,
-          category: 'Equipment',
-          companyId: 'COMPANY-ID',
-          date: '2020-06-30T22:04:51Z',
-          description: 'Cloud services',
-          id: 'b8bb3d14-40ca-4add-9bfc-1765a0cee35c',
-          name: 'AWS',
-          status: Status.Confirmed,
-          vat: 0.17,
-        },
-      ],
       owner: 'OWNER-ID',
+      payloadKey: 'payload-key',
     };
+  });
+
+  afterEach(() => {
+    process.env = env;
   });
 
   it('should generate the correct output', async () => {
     await expect(handler(event, context, callback)).resolves.toEqual({
+      companyId: 'COMPANY-ID',
+      owner: 'OWNER-ID',
+      payloadKey: 'payload-key',
+    });
+
+    expect(
+      parsePayload(reportStorage.objects.get('payload-key') ?? ''),
+    ).toEqual({
       attachments: [
         {
           key: 'OWNER-ID/COMPANY-ID/781ee046-1975-448d-9181-62a6ad7484ab.pdf',
@@ -288,12 +356,10 @@ describe('transform-transactions', () => {
   });
 
   it('should export the correct number of attachments', async () => {
-    const { attachments } = (await handler(
-      event,
-      context,
-      callback,
-    )) as IOutput;
+    await handler(event, context, callback);
 
-    expect(attachments).toHaveLength(4);
+    expect(
+      reportStorage.objects.get('payload-key')?.match(/"key":/g),
+    ).toHaveLength(4);
   });
 });

@@ -44,6 +44,7 @@ describe('queue-upload', () => {
     } as S3Event;
 
     sqs = mockClient(SQSClient);
+    sqs.on(SendMessageBatchCommand).resolves({});
   });
 
   it('should throw an error when no queue url is set', async () => {
@@ -96,7 +97,7 @@ describe('queue-upload', () => {
       expect(sqs).toReceiveCommandWith(SendMessageBatchCommand, {
         Entries: [
           {
-            Id: 'file-1',
+            Id: 'message-0',
             MessageAttributes: {
               from: {
                 DataType: 'String',
@@ -114,7 +115,7 @@ describe('queue-upload', () => {
             MessageBody: 'Upload path/to/file-1.pdf',
           },
           {
-            Id: 'file-2',
+            Id: 'message-1',
             MessageAttributes: {
               from: {
                 DataType: 'String',
@@ -134,6 +135,103 @@ describe('queue-upload', () => {
         ],
         QueueUrl: 'https://sqs-queue',
       });
+    });
+
+    it('chunks more than ten records into bounded batches with unique IDs', async () => {
+      event = {
+        Records: Array.from({ length: 11 }, (_, index) => ({
+          s3: {
+            bucket: {
+              name: 'upload-bucket',
+            },
+            object: {
+              key: `path/to/file-${index}.pdf`,
+            },
+          },
+        })),
+      } as unknown as S3Event;
+
+      await handler(event, context, callback);
+
+      const calls = sqs.commandCalls(SendMessageBatchCommand);
+
+      expect(calls).toHaveLength(2);
+      expect(calls.map(({ args }) => args[0].input.Entries?.length)).toEqual([
+        10, 1,
+      ]);
+      expect(calls[0]?.args[0].input.Entries?.map(({ Id }) => Id)).toEqual(
+        Array.from({ length: 10 }, (_, index) => `message-${index}`),
+      );
+      expect(calls[1]?.args[0].input.Entries?.map(({ Id }) => Id)).toEqual([
+        'message-10',
+      ]);
+    });
+
+    it('retries only transiently failed entries', async () => {
+      sqs
+        .on(SendMessageBatchCommand)
+        .resolvesOnce({
+          Failed: [
+            {
+              Code: 'ServiceUnavailable',
+              Id: 'message-1',
+              Message: 'temporary failure',
+              SenderFault: false,
+            },
+          ],
+        })
+        .resolvesOnce({});
+
+      await handler(event, context, callback);
+
+      const calls = sqs.commandCalls(SendMessageBatchCommand);
+
+      expect(calls).toHaveLength(2);
+      expect(calls[0]?.args[0].input.Entries?.map(({ Id }) => Id)).toEqual([
+        'message-0',
+        'message-1',
+      ]);
+      expect(calls[1]?.args[0].input.Entries?.map(({ Id }) => Id)).toEqual([
+        'message-1',
+      ]);
+    });
+
+    it('fails immediately for sender faults', async () => {
+      sqs.on(SendMessageBatchCommand).resolvesOnce({
+        Failed: [
+          {
+            Code: 'InvalidParameterValue',
+            Id: 'message-0',
+            Message: 'invalid entry',
+            SenderFault: true,
+          },
+        ],
+      });
+
+      await expect(handler(event, context, callback)).rejects.toThrow(
+        'SQS rejected entry message-0',
+      );
+
+      expect(sqs).toReceiveCommandTimes(SendMessageBatchCommand, 1);
+    });
+
+    it('fails after the bounded retry attempts are exhausted', async () => {
+      sqs.on(SendMessageBatchCommand).resolves({
+        Failed: [
+          {
+            Code: 'ServiceUnavailable',
+            Id: 'message-0',
+            Message: 'temporary failure',
+            SenderFault: false,
+          },
+        ],
+      });
+
+      await expect(handler(event, context, callback)).rejects.toThrow(
+        'SQS batch send failed after 3 attempts',
+      );
+
+      expect(sqs).toReceiveCommandTimes(SendMessageBatchCommand, 3);
     });
   });
 });

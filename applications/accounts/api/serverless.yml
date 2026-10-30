@@ -171,7 +171,7 @@ appSync:
       request: mapping-templates/settings/getSettings/Query.getSettings.req.vtl
       response: mapping-templates/settings/getSettings/Query.getSettings.res.vtl
     Mutation.addTransaction:
-      dataSource: Data
+      dataSource: TransactionCreator
       kind: UNIT
       request: mapping-templates/transaction/addTransaction/Mutation.addTransaction.req.vtl
       response: mapping-templates/transaction/addTransaction/Mutation.addTransaction.res.vtl
@@ -343,6 +343,10 @@ appSync:
       type: AWS_LAMBDA
       config:
         functionName: GetTransactionState
+    TransactionCreator:
+      type: AWS_LAMBDA
+      config:
+        functionName: AddTransaction
     Reports:
       type: HTTP
       config:
@@ -384,6 +388,12 @@ appSync:
     stage: ${self:provider.stage}
 
 functions:
+  AddTransaction:
+    handler: src/handlers/add-transaction.handler
+    role: AddTransactionRole
+    environment:
+      TABLE: !ImportValue ${self:provider.stage}-AccountsApplicationTable
+
   GetTransactionState:
     handler: src/handlers/get-transaction-state.handler
     role: GetTransactionStateRole
@@ -396,6 +406,7 @@ functions:
     events:
       - stream:
           type: dynamodb
+          functionResponseType: ReportBatchItemFailures
           arn: !ImportValue ${self:provider.stage}-AccountsApplicationTableStreamArn
           startingPosition: LATEST
     environment:
@@ -418,6 +429,47 @@ functions:
 
 resources:
   Resources:
+    AddTransactionRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.prefix}-add-transaction-role-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - dynamodb:GetItem
+                  Resource: !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
+                - Effect: Allow
+                  Action:
+                    - dynamodb:ConditionCheckItem
+                    - dynamodb:PutItem
+                  Resource: !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
+                  Condition:
+                    ForAnyValue:StringEquals:
+                      dynamodb:EnclosingOperation:
+                        - TransactWriteItems
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                  Resource: !Sub arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${self:service}-${self:provider.stage}-AddTransaction
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                  Resource: !Sub arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${self:service}-${self:provider.stage}-AddTransaction:*
+
     GetTransactionStateRole:
       Type: AWS::IAM::Role
       Properties:

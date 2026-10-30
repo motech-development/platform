@@ -1,10 +1,9 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { QueryCommand } from '@aws-sdk/lib-dynamodb';
-import { NativeAttributeValue } from '@aws-sdk/util-dynamodb';
+import type { NativeAttributeValue } from '@aws-sdk/util-dynamodb';
 import { init, wrapHandler } from '@sentry/aws-serverless';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import type { Handler } from 'aws-lambda';
-import chunk from '../shared/chunk';
 
 init({
   dsn: process.env.SENTRY_DSN,
@@ -23,12 +22,25 @@ const documentClient = new DynamoDBClient({});
 const isItem = (item: Record<string, NativeAttributeValue>): item is IItem =>
   !!item.id;
 
+const hasContinuationKey = (
+  key?: Record<string, NativeAttributeValue>,
+): key is Record<string, NativeAttributeValue> =>
+  !!key && Object.keys(key).length > 0;
+
 export interface IEvent {
   id: string;
+  lastEvaluatedKey?: Record<string, NativeAttributeValue>;
   owner: string;
 }
 
-export const handler: Handler<IEvent> = wrapHandler(async (event) => {
+export interface IOutput extends IEvent {
+  complete: boolean;
+  items: string[];
+}
+
+const PAGE_SIZE = 25;
+
+export const handler: Handler<IEvent, IOutput> = wrapHandler(async (event) => {
   const { TABLE, TYPENAME } = process.env;
 
   if (!TABLE) {
@@ -56,27 +68,24 @@ export const handler: Handler<IEvent> = wrapHandler(async (event) => {
     IndexName: '__typename-data-index',
     KeyConditionExpression:
       '#typename = :typename AND begins_with(#data, :data)',
+    Limit: PAGE_SIZE,
     ProjectionExpression: 'id',
+    ...(hasContinuationKey(event.lastEvaluatedKey)
+      ? { ExclusiveStartKey: event.lastEvaluatedKey }
+      : {}),
     TableName: TABLE,
   });
 
-  const { Items } = await documentClient.send(command);
+  const { Items, LastEvaluatedKey } = await documentClient.send(command);
 
-  if (Items && Items.length > 0) {
-    const items = chunk(
-      Items.filter(isItem).map((item) => item.id),
-      25,
-    );
-
-    return {
-      complete: false,
-      count: items.length,
-      current: 0,
-      items,
-    };
-  }
+  const items = (Items ?? []).filter(isItem).map((item) => item.id);
+  const hasMoreRecords = hasContinuationKey(LastEvaluatedKey);
 
   return {
-    complete: true,
+    complete: !hasMoreRecords,
+    id,
+    items,
+    ...(hasMoreRecords ? { lastEvaluatedKey: LastEvaluatedKey } : {}),
+    owner,
   };
 });

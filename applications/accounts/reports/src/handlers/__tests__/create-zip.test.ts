@@ -6,27 +6,29 @@ import ctx from 'aws-lambda-mock-context';
 import type { Mock } from 'vitest';
 import { handler, IEvent } from '../create-zip';
 
-vi.mock('@motech-development/s3-file-operations', () => ({
-  downloadFileStream: vi.fn().mockImplementation(() => {
-    const readable = new Readable();
-
-    readable.push('hello');
-
-    readable.push('world');
-
-    readable.push(null);
-
-    return Promise.resolve(readable);
-  }),
+const reportStorage = vi.hoisted(() => ({
+  downloadFileStream: vi.fn(),
+  objects: new Map<string, string>(),
   uploader: vi.fn(() => ({
     done: vi.fn(),
   })),
+}));
+
+vi.mock('@motech-development/s3-file-operations', () => ({
+  downloadFileStream: reportStorage.downloadFileStream,
+  uploader: reportStorage.uploader,
 }));
 
 describe('create-zip', () => {
   let callback: Mock;
   let context: Context;
   let event: IEvent;
+  let reportPayload: {
+    attachments: { key: string; path: string }[];
+    companyId: string;
+    csv: string;
+    owner: string;
+  };
 
   beforeEach(() => {
     callback = vi.fn();
@@ -35,7 +37,7 @@ describe('create-zip', () => {
 
     context.done();
 
-    event = {
+    reportPayload = {
       attachments: [
         {
           key: 'OWNER-ID/COMPANY-ID/path/to/invice.pdf',
@@ -53,6 +55,30 @@ describe('create-zip', () => {
         02/01/2021,Bills,BT,Broadband,£0.00,£30.00
       `,
       owner: 'OWNER-ID',
+    };
+    reportStorage.objects.clear();
+    reportStorage.objects.set('payload-key', JSON.stringify(reportPayload));
+    reportStorage.downloadFileStream.mockImplementation(
+      (_bucket: string, key: string) => {
+        if (key === 'payload-key') {
+          return Promise.resolve(
+            Readable.from([reportStorage.objects.get(key) ?? '']),
+          );
+        }
+
+        const readable = new Readable();
+
+        readable.push('hello');
+        readable.push('world');
+        readable.push(null);
+
+        return Promise.resolve(readable);
+      },
+    );
+    event = {
+      companyId: 'COMPANY-ID',
+      owner: 'OWNER-ID',
+      payloadKey: 'payload-key',
     };
   });
 
@@ -94,6 +120,7 @@ describe('create-zip', () => {
 
       process.env.DESTINATION_BUCKET = 'DESTINATION-BUCKET';
       process.env.ORIGIN_BUCKET = 'ORIGIN-BUCKET';
+      process.env.REPORT_BUCKET = 'REPORT-BUCKET';
     });
 
     afterEach(() => {
@@ -126,7 +153,8 @@ describe('create-zip', () => {
     });
 
     it('should return the correct data when no attachments are set', async () => {
-      event.attachments = [];
+      reportPayload.attachments = [];
+      reportStorage.objects.set('payload-key', JSON.stringify(reportPayload));
 
       await expect(handler(event, context, callback)).resolves.toEqual({
         companyId: 'COMPANY-ID',

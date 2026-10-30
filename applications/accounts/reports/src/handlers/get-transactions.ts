@@ -1,11 +1,15 @@
+import { Readable } from 'node:stream';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import type { QueryCommandInput } from '@aws-sdk/lib-dynamodb';
 import { QueryCommand } from '@aws-sdk/lib-dynamodb';
 import { init, wrapHandler } from '@sentry/aws-serverless';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import type { Handler } from 'aws-lambda';
+import { v4 as uuid } from 'uuid';
 import type { InferType } from 'yup';
 import { number, object, string } from 'yup';
 import padNumber from '../shared/padNumber';
+import { writeReportPayloadStream } from '../shared/report-payload';
 import Status from '../shared/status';
 
 init({
@@ -17,6 +21,11 @@ init({
 });
 
 const client = new DynamoDBClient({});
+
+const hasContinuationKey = (
+  key?: QueryCommandInput['ExclusiveStartKey'],
+): key is NonNullable<QueryCommandInput['ExclusiveStartKey']> =>
+  !!key && Object.keys(key).length > 0;
 
 const schema = object({
   companyId: string().required(),
@@ -32,11 +41,27 @@ const schema = object({
 
 export type IEvent = InferType<typeof schema>;
 
-export const handler: Handler<IEvent> = wrapHandler(async (event) => {
-  const { TABLE } = process.env;
+export type IOutput =
+  | {
+      complete: true;
+    }
+  | {
+      complete: false;
+      companyId: string;
+      currency: string;
+      owner: string;
+      payloadKey: string;
+    };
+
+export const handler: Handler<IEvent, IOutput> = wrapHandler(async (event) => {
+  const { REPORT_BUCKET, TABLE } = process.env;
 
   if (!TABLE) {
     throw new Error('No table set');
+  }
+
+  if (!REPORT_BUCKET) {
+    throw new Error('No report bucket set');
   }
 
   const result = await schema.validate(event, {
@@ -44,44 +69,187 @@ export const handler: Handler<IEvent> = wrapHandler(async (event) => {
     stripUnknown: true,
   });
   const data = `${result.owner}:${result.companyId}:${result.status}`;
-  const command = new QueryCommand({
-    ExpressionAttributeNames: {
-      '#data': 'data',
-      '#owner': 'owner',
-      '#typename': '__typename',
-    },
-    ExpressionAttributeValues: {
-      ':lower': `${data}:${result.year}-${padNumber(
-        result.yearEnd.month + 1,
-        2,
-      )}-${padNumber(result.yearEnd.day + 1, 2)}T00:00:00Z`,
-      ':owner': result.owner,
-      ':typename': 'Transaction',
-      ':upper': `${data}:${result.year + 1}-${padNumber(
-        result.yearEnd.month + 1,
-        2,
-      )}-${padNumber(result.yearEnd.day, 2)}T23:59:59Z`,
-    },
-    FilterExpression: '#owner = :owner',
-    IndexName: '__typename-data-index',
-    KeyConditionExpression:
-      '#typename = :typename AND #data BETWEEN :lower AND :upper',
-    ScanIndexForward: false,
-    TableName: TABLE,
-  });
-  const transactions = await client.send(command);
+  const queryPage = async (
+    ExclusiveStartKey?: QueryCommandInput['ExclusiveStartKey'],
+    abortSignal?: AbortSignal,
+  ) => {
+    const command = new QueryCommand({
+      ExpressionAttributeNames: {
+        '#data': 'data',
+        '#owner': 'owner',
+        '#typename': '__typename',
+      },
+      ExpressionAttributeValues: {
+        ':lower': `${data}:${result.year}-${padNumber(
+          result.yearEnd.month + 1,
+          2,
+        )}-${padNumber(result.yearEnd.day + 1, 2)}T00:00:00Z`,
+        ':owner': result.owner,
+        ':typename': 'Transaction',
+        ':upper': `${data}:${result.year + 1}-${padNumber(
+          result.yearEnd.month + 1,
+          2,
+        )}-${padNumber(result.yearEnd.day, 2)}T23:59:59Z`,
+      },
+      FilterExpression: '#owner = :owner',
+      IndexName: '__typename-data-index',
+      KeyConditionExpression:
+        '#typename = :typename AND #data BETWEEN :lower AND :upper',
+      ScanIndexForward: false,
+      ...(hasContinuationKey(ExclusiveStartKey) ? { ExclusiveStartKey } : {}),
+      TableName: TABLE,
+    });
 
-  if (transactions.Items && transactions.Items.length > 0) {
+    return client.send(command, abortSignal ? { abortSignal } : undefined);
+  };
+
+  const firstPage = await queryPage();
+
+  if (
+    !firstPage.Items?.length &&
+    !hasContinuationKey(firstPage.LastEvaluatedKey)
+  ) {
     return {
-      companyId: result.companyId,
-      complete: false,
-      currency: result.currency,
-      items: transactions.Items,
-      owner: result.owner,
+      complete: true,
+    };
+  }
+
+  const payloadKey = `${result.owner}/${result.companyId}/report-data/${uuid()}.json`;
+  let transactionCount = 0;
+  const abortController = new AbortController();
+  let producerError: Error | undefined;
+  let uploadError: Error | undefined;
+  let payloadStream: Readable;
+  let page = firstPage;
+  let itemIndex = 0;
+  let isFirstTransaction = true;
+  let isStarted = false;
+  let isEnded = false;
+  let isPumping = false;
+
+  let pump: () => Promise<void> = () => Promise.resolve();
+  const schedulePump = (): void => {
+    setImmediate(() => {
+      pump().catch(() => undefined);
+    });
+  };
+  pump = async (): Promise<void> => {
+    if (isPumping || payloadStream.destroyed || isEnded) {
+      return;
+    }
+
+    isPumping = true;
+
+    try {
+      if (!isStarted) {
+        isStarted = true;
+
+        if (!payloadStream.push('[')) {
+          return;
+        }
+      }
+
+      const items = page.Items ?? [];
+
+      if (itemIndex < items.length) {
+        const item = items[itemIndex];
+
+        if (!item) {
+          throw new Error('A report query returned an invalid item');
+        }
+
+        const serializedItem = JSON.stringify(item);
+
+        if (serializedItem === undefined) {
+          throw new Error('Unable to serialize a report transaction');
+        }
+
+        itemIndex += 1;
+        transactionCount += 1;
+        const chunk = `${isFirstTransaction ? '' : ','}${serializedItem}`;
+        isFirstTransaction = false;
+
+        if (payloadStream.push(chunk)) {
+          schedulePump();
+        }
+
+        return;
+      }
+
+      if (hasContinuationKey(page.LastEvaluatedKey)) {
+        page = await queryPage(page.LastEvaluatedKey, abortController.signal);
+        itemIndex = 0;
+        schedulePump();
+
+        return;
+      }
+
+      isEnded = true;
+      payloadStream.push(']');
+      payloadStream.push(null);
+    } catch (error) {
+      if (uploadError !== undefined) {
+        payloadStream.destroy();
+
+        return;
+      }
+
+      producerError =
+        error instanceof Error
+          ? error
+          : new Error('Failed to produce the report payload');
+      payloadStream.destroy(producerError);
+    } finally {
+      isPumping = false;
+    }
+  };
+
+  payloadStream = new Readable({
+    highWaterMark: 16 * 1024,
+    objectMode: false,
+    read: () => {
+      pump().catch(() => undefined);
+    },
+  });
+  const upload = writeReportPayloadStream(
+    REPORT_BUCKET,
+    payloadKey,
+    payloadStream,
+  ).catch((error: unknown) => {
+    uploadError =
+      error instanceof Error ? error : new Error('Failed to upload report');
+    abortController.abort(uploadError);
+    payloadStream.destroy();
+
+    throw uploadError;
+  });
+
+  try {
+    await upload;
+  } catch (error) {
+    const uploadFailure =
+      error instanceof Error ? error : new Error('Failed to upload report');
+    abortController.abort(uploadFailure);
+    payloadStream.destroy();
+
+    if (producerError !== undefined) {
+      throw producerError;
+    }
+
+    throw uploadError ?? uploadFailure;
+  }
+
+  if (transactionCount === 0) {
+    return {
+      complete: true,
     };
   }
 
   return {
-    complete: true,
+    companyId: result.companyId,
+    complete: false,
+    currency: result.currency,
+    owner: result.owner,
+    payloadKey,
   };
 });

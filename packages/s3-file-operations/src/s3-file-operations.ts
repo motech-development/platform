@@ -2,6 +2,7 @@ import { createWriteStream, existsSync, ReadStream } from 'node:fs';
 import { mkdir } from 'node:fs/promises';
 import { basename, join } from 'node:path';
 import { Readable } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
 import {
   CopyObjectCommand,
   DeleteObjectCommand,
@@ -125,18 +126,17 @@ export const downloadFile = async (
   client = s3,
 ): Promise<string> => {
   const filePath = join(to, basename(key));
-  const fileStream = createWriteStream(filePath);
-
   const stream = await downloadFileStream(bucket, key, client);
 
-  return new Promise<string>((resolve, reject) => {
-    stream
-      .on('end', () => {
-        resolve(filePath);
-      })
-      .on('error', reject)
-      .pipe(fileStream);
-  });
+  try {
+    await pipeline(stream, createWriteStream(filePath));
+  } catch (error) {
+    stream.destroy();
+
+    throw error;
+  }
+
+  return filePath;
 };
 
 export const getFileData = async (
@@ -170,7 +170,7 @@ export const moveFile = async (
 
   await client.send(command);
 
-  await deleteFile(from, key);
+  await deleteFile(from, key, client);
 };
 
 export const removeFolder = async (
@@ -180,33 +180,56 @@ export const removeFolder = async (
 ): Promise<void> => {
   const decodedKey = decodeURIComponent(key);
 
-  const command = new ListObjectsV2Command({
-    Bucket: bucket,
-    Prefix: decodedKey,
-  });
-
-  const listedObjects = await client.send(command);
-
-  if (listedObjects.Contents && listedObjects.Contents.length > 0) {
-    const Objects = listedObjects.Contents.filter((item) => !!item.Key).map(
-      ({ Key }) => ({
-        Key,
-      }),
-    );
-
-    const deleteObjectsCommand = new DeleteObjectsCommand({
+  const removePage = async (continuationToken?: string): Promise<void> => {
+    const command = new ListObjectsV2Command({
       Bucket: bucket,
-      Delete: {
-        Objects,
-      },
+      Prefix: decodedKey,
+      ...(continuationToken ? { ContinuationToken: continuationToken } : {}),
     });
 
-    await client.send(deleteObjectsCommand);
+    const listedObjects = await client.send(command);
+    const objects = (listedObjects.Contents ?? [])
+      .filter((item) => !!item.Key)
+      .map(({ Key }) => ({ Key }));
 
-    if (listedObjects.IsTruncated) {
-      await removeFolder(bucket, key);
+    const batchCount = Math.ceil(objects.length / 1000);
+    const deleteResults = await Promise.all(
+      Array.from({ length: batchCount }, (_, index) => {
+        const deleteObjectsCommand = new DeleteObjectsCommand({
+          Bucket: bucket,
+          Delete: {
+            Objects: objects.slice(index * 1000, (index + 1) * 1000),
+          },
+        });
+
+        return client.send(deleteObjectsCommand);
+      }),
+    );
+    const errors = deleteResults.flatMap(({ Errors }) => Errors ?? []);
+
+    if (errors.length) {
+      const failures = errors.map(
+        ({ Code, Key, Message }) =>
+          `${Key ?? 'unknown key'}: ${Code ?? 'unknown error'}${Message ? ` (${Message})` : ''}`,
+      );
+
+      throw new Error(`Failed to delete S3 objects: ${failures.join('; ')}`);
     }
-  }
+
+    if (!listedObjects.IsTruncated) {
+      return;
+    }
+
+    if (!listedObjects.NextContinuationToken) {
+      throw new Error(
+        'S3 object listing was truncated without a continuation token',
+      );
+    }
+
+    await removePage(listedObjects.NextContinuationToken);
+  };
+
+  await removePage();
 };
 
 export const uploader = (

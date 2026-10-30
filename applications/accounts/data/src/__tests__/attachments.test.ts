@@ -20,6 +20,7 @@ describe('attachments', () => {
     callback = vi.fn();
 
     sqs = mockClient(SQSClient);
+    sqs.on(SendMessageBatchCommand).resolves({});
 
     event = {
       Records: [
@@ -304,8 +305,8 @@ describe('attachments', () => {
         sqs.on(SendMessageBatchCommand).rejectsOnce(error);
       });
 
-      it('should swallow the error', async () => {
-        await handler(event, context, callback);
+      it('should throw the error to retry the stream batch', async () => {
+        await expect(handler(event, context, callback)).rejects.toBe(error);
 
         expect(logger.error).toHaveBeenCalledWith('An error occurred', error);
       });

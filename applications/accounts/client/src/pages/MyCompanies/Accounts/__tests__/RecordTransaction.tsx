@@ -3,6 +3,7 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { waitForApollo } from '@motech-development/appsync-apollo';
 import {
   act,
+  cleanup,
   fireEvent,
   render,
   screen,
@@ -30,6 +31,8 @@ import RecordTransaction, {
 } from '../RecordTransaction';
 import { REQUEST_UPLOAD } from '../shared/UploadAttachment';
 
+const transactionCommandId = '123e4567-e89b-42d3-a456-426614174000';
+
 const GET_TYPEAHEAD = gql(/* GraphQL */ `
   query GetTypeahead($id: ID!) {
     getTypeahead(id: $id) {
@@ -55,6 +58,11 @@ describe('RecordTransaction', () => {
   });
 
   beforeEach(() => {
+    const testCrypto = Object.create(globalThis.crypto) as Crypto & {
+      randomUUID: () => string;
+    };
+    testCrypto.randomUUID = () => transactionCommandId;
+    vi.stubGlobal('crypto', testCrypto);
     history = ['/accounts/company-id/record-transaction'];
 
     upload = new File(['dummy content'], 'invoice.PDF', {
@@ -70,6 +78,8 @@ describe('RecordTransaction', () => {
 
   afterAll(() => {
     vi.useRealTimers();
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
   });
 
   describe('purchase', () => {
@@ -173,7 +183,7 @@ describe('RecordTransaction', () => {
                     companyId: 'company-id',
                     date: '2020-05-07T10:58:17.000Z',
                     description: 'Laptop',
-                    id: '',
+                    id: transactionCommandId,
                     name: 'Apple',
                     refund: false,
                     scheduled: false,
@@ -390,6 +400,136 @@ describe('RecordTransaction', () => {
           const [, , , button] = await screen.findAllByRole('button');
 
           await waitFor(() => expect(button).not.toBeDisabled());
+
+          await act(async () => {
+            fireEvent.click(button);
+
+            await waitForApollo(0);
+          });
+
+          await waitFor(() =>
+            expect(add).toHaveBeenCalledWith({
+              colour: 'success',
+              message: 'record-transaction.success',
+            }),
+          );
+        });
+
+        it('should reuse the command ID when retrying after a network error', async () => {
+          const addTransactionMock = mocks.find(
+            ({ request }) => request.query === ADD_TRANSACTION,
+          );
+
+          if (!addTransactionMock) {
+            throw new Error('Missing add transaction mock');
+          }
+
+          const { request, result } = addTransactionMock;
+
+          mocks = [
+            ...mocks.filter(
+              ({ request: mockRequest }) =>
+                mockRequest.query !== ADD_TRANSACTION,
+            ),
+            {
+              error: new Error('Network error'),
+              request,
+            },
+            {
+              request,
+              result,
+            },
+          ];
+
+          cleanup();
+
+          render(
+            <TestProvider
+              path="/accounts/:companyId/record-transaction"
+              history={history}
+            >
+              <MockedProvider mocks={mocks}>
+                <RecordTransaction />
+              </MockedProvider>
+            </TestProvider>,
+          );
+
+          const transactionType = await screen.findByLabelText(
+            'transaction-form.transaction-details.transaction.options.purchase',
+          );
+
+          fireEvent.click(transactionType);
+
+          const supplier = await screen.findByLabelText(
+            'transaction-form.transaction-details.name.label',
+          );
+          const description = await screen.findByLabelText(
+            'transaction-form.transaction-details.description.label',
+          );
+          const status = await screen.findByLabelText(
+            'transaction-form.transaction-amount.status.options.confirmed',
+          );
+          const category = await screen.findByLabelText(
+            'transaction-form.transaction-amount.category.label',
+          );
+          const amount = await screen.findByLabelText(
+            'transaction-form.transaction-amount.amount.label',
+          );
+          const fileUpload = await screen.findByLabelText(
+            'transaction-form.upload.upload.label',
+          );
+
+          await act(async () => {
+            fireEvent.change(supplier, {
+              target: {
+                focus: () => {},
+                value: 'Apple',
+              },
+            });
+            fireEvent.change(description, {
+              target: {
+                focus: () => {},
+                value: 'Laptop',
+              },
+            });
+            fireEvent.click(status);
+            fireEvent.change(category, {
+              target: {
+                value: 0,
+              },
+            });
+            fireEvent.change(amount, {
+              target: {
+                focus: () => {},
+                value: '999.99',
+              },
+            });
+            fireEvent.change(fileUpload, {
+              target: {
+                files: [upload],
+              },
+            });
+
+            await Promise.resolve();
+          });
+
+          const [, , , button] = await screen.findAllByRole('button');
+
+          await waitFor(() => expect(button).not.toBeDisabled());
+
+          await act(async () => {
+            fireEvent.click(button);
+
+            await waitForApollo(0);
+          });
+
+          await waitFor(() =>
+            expect(add).toHaveBeenCalledWith({
+              colour: 'danger',
+              message: 'record-transaction.retry',
+            }),
+          );
+          expect(button).toBeInTheDocument();
 
           await act(async () => {
             fireEvent.click(button);
@@ -659,7 +799,7 @@ describe('RecordTransaction', () => {
                     companyId: 'company-id',
                     date: '2020-05-07T10:58:17.000Z',
                     description: 'Laptop',
-                    id: '',
+                    id: transactionCommandId,
                     name: 'Apple',
                     refund: false,
                     scheduled: false,
@@ -1031,7 +1171,7 @@ describe('RecordTransaction', () => {
                   companyId: 'company-id',
                   date: '2020-05-07T10:58:17.000Z',
                   description: 'Laptop',
-                  id: '',
+                  id: transactionCommandId,
                   name: 'Apple',
                   refund: true,
                   scheduled: false,
@@ -1339,7 +1479,7 @@ describe('RecordTransaction', () => {
                   companyId: 'company-id',
                   date: '2020-05-07T10:58:17.000Z',
                   description: 'Invoice #1',
-                  id: '',
+                  id: transactionCommandId,
                   name: 'Motech Development',
                   refund: false,
                   scheduled: true,
@@ -1650,7 +1790,7 @@ describe('RecordTransaction', () => {
                   companyId: 'company-id',
                   date: '2020-05-07T10:58:17.000Z',
                   description: 'Invoice #1',
-                  id: '',
+                  id: transactionCommandId,
                   name: 'Motech Development',
                   refund: true,
                   scheduled: true,

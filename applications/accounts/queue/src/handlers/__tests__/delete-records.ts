@@ -20,14 +20,13 @@ describe('delete-records', () => {
     callback = vi.fn();
 
     ddb = mockClient(DynamoDBClient);
+    ddb.on(BatchWriteCommand).resolves({});
 
     event = {
-      count: 2,
-      current: 0,
-      items: [
-        ['client-id-1', 'client-id-2'],
-        ['client-id-3', 'client-id-4'],
-      ],
+      complete: true,
+      id: 'company-id',
+      items: ['client-id-1', 'client-id-2'],
+      owner: 'owner-id',
     };
   });
 
@@ -75,7 +74,7 @@ describe('delete-records', () => {
       process.env = env;
     });
 
-    it('should call batchWrite with the correct params', async () => {
+    it('should call batchWrite with no more than 25 delete requests', async () => {
       await handler(event, context, callback);
 
       expect(ddb).toReceiveCommandWith(BatchWriteCommand, {
@@ -102,22 +101,85 @@ describe('delete-records', () => {
       });
     });
 
-    it('should not complete', async () => {
+    it('should preserve a continuation key until the page has been deleted', async () => {
+      event.complete = false;
+      event.lastEvaluatedKey = {
+        __typename: 'Client',
+        data: 'owner-id:company-id:next',
+        id: 'last-id',
+      };
+
       await expect(handler(event, context, callback)).resolves.toEqual({
         ...event,
         complete: false,
-        current: 1,
       });
     });
 
-    it('should complete', async () => {
-      event.current = 1;
+    it('should retry only unprocessed items with bounded backoff', async () => {
+      const unprocessedItems = {
+        'app-table': [
+          {
+            DeleteRequest: {
+              Key: {
+                __typename: 'Client',
+                id: 'client-id-1',
+              },
+            },
+          },
+        ],
+      };
+      ddb
+        .on(BatchWriteCommand)
+        .resolvesOnce({
+          UnprocessedItems: unprocessedItems,
+        })
+        .resolves({
+          UnprocessedItems: {},
+        });
 
       await expect(handler(event, context, callback)).resolves.toEqual({
         ...event,
         complete: true,
-        current: 2,
       });
+
+      expect(ddb).toReceiveCommandTimes(BatchWriteCommand, 2);
+      expect(ddb.commandCalls(BatchWriteCommand)[1].args[0].input).toEqual({
+        RequestItems: unprocessedItems,
+      });
+    });
+
+    it('should fail when unprocessed items remain after the retry limit', async () => {
+      const unprocessedItems = {
+        'app-table': [
+          {
+            DeleteRequest: {
+              Key: {
+                __typename: 'Client',
+                id: 'client-id-1',
+              },
+            },
+          },
+        ],
+      };
+      ddb.on(BatchWriteCommand).resolves({
+        UnprocessedItems: unprocessedItems,
+      });
+
+      await expect(handler(event, context, callback)).rejects.toThrow(
+        'BatchWrite still has unprocessed items after 5 attempts',
+      );
+
+      expect(ddb).toReceiveCommandTimes(BatchWriteCommand, 5);
+    });
+
+    it('should reject a batch larger than the DynamoDB limit', async () => {
+      event.items = Array.from({ length: 26 }, (_, index) => `client-${index}`);
+
+      await expect(handler(event, context, callback)).rejects.toThrow(
+        'Cannot delete more than 25 records in one batch',
+      );
+
+      expect(ddb).toReceiveCommandTimes(BatchWriteCommand, 0);
     });
   });
 });

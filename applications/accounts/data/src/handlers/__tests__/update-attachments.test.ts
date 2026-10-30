@@ -1,5 +1,11 @@
+import { createHash } from 'node:crypto';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { QueryCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
+import {
+  GetCommand,
+  QueryCommand,
+  TransactWriteCommand,
+} from '@aws-sdk/lib-dynamodb';
+import logger from '@motech-development/node-logger';
 import type { SQSRecord } from 'aws-lambda';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import updateAttachments from '../update-attachments';
@@ -8,111 +14,70 @@ describe('update-attachments', () => {
   let bucket: string;
   let ddb: AwsClientStub<DynamoDBClient>;
   let documentClient: DynamoDBClient;
+  let record: SQSRecord;
   let tableName: string;
-  let records: SQSRecord[];
 
   beforeAll(() => {
     vi.setSystemTime(new Date('2020-06-06T19:45:00+00:00'));
   });
 
   beforeEach(() => {
+    vi.mocked(logger.error).mockClear();
     ddb = mockClient(DynamoDBClient);
-
     documentClient = new DynamoDBClient({});
-
-    ddb
-      .on(QueryCommand)
-      .resolvesOnce({
-        Items: [
-          {
-            __typename: 'Something',
-            id: 'id-1',
-            owner: 'owner',
-          },
-        ],
-      })
-      .resolvesOnce({
-        Items: [],
-      });
-
     tableName = 'test';
-
     bucket = 'upload-bucket';
-
-    records = [
-      {
-        messageAttributes: {
-          key: {
-            stringValue: 'path/to/file-1.pdf',
-          },
-          metadata: {
-            stringValue: JSON.stringify({
-              id: 'id-1',
-              owner: 'owner',
-              typename: 'Something',
-            }),
-          },
-          source: {
-            stringValue: 'upload-bucket',
-          },
+    record = {
+      messageAttributes: {
+        key: {
+          dataType: 'String',
+          stringValue: 'owner/company-id/file-1.pdf',
+        },
+        metadata: {
+          dataType: 'String',
+          stringValue: JSON.stringify({
+            id: 'record-id',
+            typename: 'Something',
+          }),
+        },
+        source: {
+          dataType: 'String',
+          stringValue: bucket,
         },
       },
-      {
-        messageAttributes: {
-          key: {
-            stringValue: 'path/to/file-1a.pdf',
-          },
-          metadata: {
-            stringValue: JSON.stringify({
-              id: 'id-1a',
-              owner: 'owner',
-              typename: 'Something',
-            }),
-          },
-          source: {
-            stringValue: 'upload-bucket',
-          },
-        },
-      },
-      {
-        messageAttributes: {
-          key: {
-            stringValue: 'path/to/file-2.pdf',
-          },
-          metadata: {
-            stringValue: JSON.stringify({
-              id: 'id-2',
-              owner: 'owner',
-              typename: 'Something',
-            }),
-          },
-          source: {
-            stringValue: 'another-bucket',
-          },
-        },
-      },
-      {
-        messageAttributes: {
-          key: {
-            stringValue: 'path/to/file-3.pdf',
-          },
-          source: {
-            stringValue: 'another-bucket',
-          },
-        },
-      },
-    ] as unknown as SQSRecord[];
+      messageId: 'sqs-message-id',
+    } as unknown as SQSRecord;
   });
 
   afterAll(() => {
     vi.useRealTimers();
   });
 
-  it('should query with the correct params', async () => {
-    await Promise.all(
-      await updateAttachments(documentClient, tableName, bucket, records),
-    );
+  it('queries every page, including empty pages with a continuation key', async () => {
+    ddb
+      .on(QueryCommand)
+      .resolvesOnce({
+        Items: [],
+        LastEvaluatedKey: {
+          __typename: 'Something',
+          data: 'owner:company-id',
+          id: 'cursor',
+        },
+      })
+      .resolvesOnce({
+        Items: [
+          {
+            __typename: 'Something',
+            attachment: 'company-id/file-1.pdf',
+            id: 'record-id',
+            owner: 'owner',
+          },
+        ],
+      });
 
+    await updateAttachments(documentClient, tableName, bucket, record);
+
+    expect(ddb).toReceiveCommandTimes(QueryCommand, 2);
     expect(ddb).toReceiveCommandWith(QueryCommand, {
       ExpressionAttributeNames: {
         '#attachment': 'attachment',
@@ -121,73 +86,212 @@ describe('update-attachments', () => {
         '#typename': '__typename',
       },
       ExpressionAttributeValues: {
-        ':attachment': 'to/file-1.pdf',
-        ':data': 'path:to',
-        ':owner': 'path',
+        ':attachment': 'company-id/file-1.pdf',
+        ':data': 'owner:company-id',
+        ':owner': 'owner',
         ':typename': 'Something',
       },
       FilterExpression: '#owner = :owner AND #attachment = :attachment',
       IndexName: '__typename-data-index',
       KeyConditionExpression:
         '#typename = :typename AND begins_with(#data, :data)',
-      ProjectionExpression: 'id, #owner, #typename',
-      TableName: 'test',
+      ProjectionExpression: '#attachment, id, #owner, #typename',
+      TableName: tableName,
+    });
+    expect(ddb).toReceiveCommandWith(QueryCommand, {
+      ExclusiveStartKey: {
+        __typename: 'Something',
+        data: 'owner:company-id',
+        id: 'cursor',
+      },
     });
   });
 
-  it('should return update with the correct params', async () => {
-    await Promise.all(
-      await updateAttachments(documentClient, tableName, bucket, records),
-    );
+  it('treats an empty continuation key as the end of pagination', async () => {
+    ddb.on(QueryCommand).resolves({
+      Items: [],
+      LastEvaluatedKey: {},
+    });
 
-    expect(ddb).toReceiveCommandWith(UpdateCommand, {
-      ExpressionAttributeNames: {
-        '#attachment': 'attachment',
+    await updateAttachments(documentClient, tableName, bucket, record);
+
+    expect(ddb).toReceiveCommandTimes(QueryCommand, 1);
+    expect(ddb).not.toReceiveCommand(TransactWriteCommand);
+  });
+
+  it('atomically removes the matching attachment and writes one deterministic notification', async () => {
+    ddb.on(QueryCommand).resolves({
+      Items: [
+        {
+          __typename: 'Something',
+          attachment: 'company-id/file-1.pdf',
+          id: 'record-id',
+          owner: 'owner',
+        },
+      ],
+    });
+
+    await updateAttachments(documentClient, tableName, bucket, record);
+
+    const expectedId = createHash('sha256')
+      .update(JSON.stringify(['sqs-message-id', 'Something', 'record-id']))
+      .digest('hex');
+
+    expect(ddb).toReceiveCommandWith(TransactWriteCommand, {
+      TransactItems: [
+        {
+          Update: {
+            ConditionExpression:
+              '#owner = :owner AND #attachment = :attachment',
+            ExpressionAttributeNames: {
+              '#attachment': 'attachment',
+              '#owner': 'owner',
+            },
+            ExpressionAttributeValues: {
+              ':attachment': 'company-id/file-1.pdf',
+              ':owner': 'owner',
+            },
+            Key: {
+              __typename: 'Something',
+              id: 'record-id',
+            },
+            TableName: tableName,
+            UpdateExpression: 'REMOVE #attachment',
+          },
+        },
+        {
+          Put: {
+            ConditionExpression: 'attribute_not_exists(#id)',
+            ExpressionAttributeNames: {
+              '#id': 'id',
+            },
+            Item: {
+              __typename: 'Notification',
+              createdAt: '2020-06-06T19:45:00.000Z',
+              data: 'owner:Notification:2020-06-06T19:45:00.000Z',
+              id: expectedId,
+              message: 'VIRUS_SCAN_FAIL',
+              owner: 'owner',
+              read: false,
+            },
+            TableName: tableName,
+          },
+        },
+      ],
+    });
+  });
+
+  it('does not remove a replacement attachment returned by a stale index result', async () => {
+    ddb.on(QueryCommand).resolves({
+      Items: [
+        {
+          __typename: 'Something',
+          attachment: 'company-id/file-1.pdf',
+          id: 'record-id',
+          owner: 'owner',
+        },
+      ],
+    });
+    ddb.on(TransactWriteCommand).rejectsOnce(
+      Object.assign(new Error('condition failed'), {
+        name: 'TransactionCanceledException',
+      }),
+    );
+    ddb.on(GetCommand).resolves({
+      Item: {
+        __typename: 'Something',
+        attachment: 'company-id/replacement.pdf',
+        id: 'record-id',
+        owner: 'owner',
       },
+    });
+
+    await expect(
+      updateAttachments(documentClient, tableName, bucket, record),
+    ).resolves.toBeUndefined();
+
+    expect(ddb).toReceiveCommandWith(GetCommand, {
+      ConsistentRead: true,
       Key: {
         __typename: 'Something',
-        id: 'id-1',
+        id: 'record-id',
       },
-      TableName: 'test',
-      UpdateExpression: 'REMOVE #attachment',
+      TableName: tableName,
     });
   });
 
-  it('should create notification', async () => {
-    await Promise.all(
-      await updateAttachments(documentClient, tableName, bucket, records),
-    );
-
-    expect(ddb).toReceiveCommandWith(UpdateCommand, {
-      ExpressionAttributeNames: {
-        '#createdAt': 'createdAt',
-        '#data': 'data',
-        '#message': 'message',
-        '#owner': 'owner',
-        '#read': 'read',
-      },
-      ExpressionAttributeValues: {
-        ':createdAt': '2020-06-06T19:45:00.000Z',
-        ':data': 'owner:Notification:2020-06-06T19:45:00.000Z',
-        ':message': 'VIRUS_SCAN_FAIL',
-        ':owner': 'owner',
-        ':read': false,
-      },
-      Key: {
-        __typename: 'Notification',
-        id: 'test-uuid',
-      },
-      TableName: 'test',
-      UpdateExpression:
-        'SET #createdAt = :createdAt, #data = :data, #message = :message, #owner = :owner, #read = :read',
+  it('treats an ambiguous transaction as complete when its attachment is already gone', async () => {
+    ddb.on(QueryCommand).resolves({
+      Items: [
+        {
+          __typename: 'Something',
+          attachment: 'company-id/file-1.pdf',
+          id: 'record-id',
+          owner: 'owner',
+        },
+      ],
     });
+    ddb.on(TransactWriteCommand).rejectsOnce(new Error('response timed out'));
+    ddb.on(GetCommand).resolves({
+      Item: {
+        __typename: 'Something',
+        id: 'record-id',
+        owner: 'owner',
+      },
+    });
+
+    await expect(
+      updateAttachments(documentClient, tableName, bucket, record),
+    ).resolves.toBeUndefined();
   });
 
-  it('should call update the correct number of times', async () => {
-    await Promise.all(
-      await updateAttachments(documentClient, tableName, bucket, records),
-    );
+  it('rethrows transaction failures while the original attachment is still present', async () => {
+    const error = new Error('temporarily unavailable');
+    ddb.on(QueryCommand).resolves({
+      Items: [
+        {
+          __typename: 'Something',
+          attachment: 'company-id/file-1.pdf',
+          id: 'record-id',
+          owner: 'owner',
+        },
+      ],
+    });
+    ddb.on(TransactWriteCommand).rejectsOnce(error);
+    ddb.on(GetCommand).resolves({
+      Item: {
+        __typename: 'Something',
+        attachment: 'company-id/file-1.pdf',
+        id: 'record-id',
+        owner: 'owner',
+      },
+    });
 
-    expect(ddb).toReceiveCommandTimes(UpdateCommand, 2);
+    await expect(
+      updateAttachments(documentClient, tableName, bucket, record),
+    ).rejects.toBe(error);
+  });
+
+  it('logs and skips malformed or irrelevant messages', async () => {
+    const malformed = {
+      ...record,
+      messageAttributes: undefined,
+    } as unknown as SQSRecord;
+    const wrongBucket = {
+      ...record,
+      messageAttributes: {
+        ...record.messageAttributes,
+        source: {
+          dataType: 'String',
+          stringValue: 'another-bucket',
+        },
+      },
+    };
+
+    await updateAttachments(documentClient, tableName, bucket, malformed);
+    await updateAttachments(documentClient, tableName, bucket, wrongBucket);
+
+    expect(ddb).not.toReceiveCommand(QueryCommand);
+    expect(logger.error).toHaveBeenCalledTimes(2);
   });
 });

@@ -30,5 +30,7 @@ export const handler: DynamoDBStreamHandler = wrapHandler(async (event) => {
     await deleteAttachments(sqs, ATTACHMENT_QUEUE, removals);
   } catch (e) {
     logger.error('An error occurred', e);
+
+    throw e;
   }
 });
