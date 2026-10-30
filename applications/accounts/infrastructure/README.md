@@ -1,27 +1,36 @@
-# Accounts frontend access logs
+# Accounts infrastructure
 
-The production CloudFront distribution sends standard logging v2 access logs to
-a dedicated S3 bucket using CloudWatch Logs delivery resources. The records are
-JSON and include the request path, response status, timing, and CloudFront edge
-result fields. They omit cookies, query strings, referrers, viewer IP addresses,
-and user-agent values. Cookie logging remains disabled.
+This workspace defines AWS infrastructure used by the Accounts web client. It
+uses Serverless Framework and CloudFormation; the resource definitions are in
+[`serverless.yml`](./serverless.yml), and workspace commands are in
+[`package.json`](./package.json).
 
-The bucket uses S3-managed encryption, blocks public access, and expires objects
-after 14 days. Its bucket policy permits the log delivery service to write only
-to `AWSLogs/<account-id>/CloudFront/`, conditioned on this account and this
-distribution's delivery source. The bucket is retained when the stack is removed
-or the bucket is replaced. Stack teardown removes log delivery and its policy;
-the retained bucket continues its 14-day lifecycle and must be deleted manually
-after its remaining objects expire.
+The workspace provisions the static client hosting and delivery resources,
+including its storage, CDN, and DNS integration. CloudFront access logging is
+also configured here. The separate [`@accounts/client`](../client/) workspace
+builds and publishes the web assets. API and other application services are
+owned by their respective workspaces.
 
-CloudFront standard logging v2 uses the CloudWatch Logs API in `us-east-1`.
-Before deploying, ensure the deployment principal can manage CloudWatch Logs
-deliveries, use `cloudfront:AllowVendedLogDeliveryForResource` on the
-distribution, and read/update the destination bucket policy. AWS documents the
-[logging setup](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/standard-logging.html),
-[S3 delivery permissions and encryption](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AWS-logs-infrastructure-V2-S3.html),
-and [bucket ownership controls](https://docs.aws.amazon.com/AmazonS3/latest/userguide/about-object-ownership.html).
+## Local setup and checks
 
-After deployment, verify that logging is enabled in the CloudFront console and
-that objects arrive in the bucket. Delivery can take several hours to become
-reliable; deployment and template packaging alone do not verify log delivery.
+From the repository root, select the repository's Node.js version and install
+dependencies with Yarn:
+
+```sh
+nvm use
+yarn install
+```
+
+For local checks, use the reserved `.invalid` domain and `local` stage. These
+commands format-check the workspace, print the resolved configuration, or
+create a local Serverless package without deploying resources:
+
+```sh
+yarn workspace @accounts/infrastructure formatting
+PROD_DOMAIN=example.invalid yarn workspace @accounts/infrastructure exec serverless print --stage local
+PROD_DOMAIN=example.invalid yarn workspace @accounts/infrastructure exec serverless package --stage local
+```
+
+Deployment and maintenance follow the
+[repository contributor guidance](../../../AGENTS.md) and authorized internal
+procedures.
