@@ -1,4 +1,5 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import type { GetCommandInput } from '@aws-sdk/lib-dynamodb';
 import { GetCommand, TransactWriteCommand } from '@aws-sdk/lib-dynamodb';
 import logger from '@motech-development/node-logger';
 import type { Context, DynamoDBStreamEvent } from 'aws-lambda';
@@ -319,7 +320,13 @@ describe('transactions', () => {
 
         ddb.on(TransactWriteCommand).rejectsOnce(error);
 
-        ddb.on(GetCommand).resolves({});
+        ddb
+          .on(GetCommand)
+          .callsFake((input: GetCommandInput) =>
+            input.Key?.__typename === 'Company'
+              ? { Item: { __typename: 'Company', id: 'company-id' } }
+              : {},
+          );
       });
 
       it('should propagate the error for Lambda to retry', async () => {
