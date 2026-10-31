@@ -303,12 +303,31 @@ describe('transactions', () => {
         expect(ddb).toReceiveCommandTimes(TransactWriteCommand, 3);
 
         expect(
-          ddb
-            .commandCalls(TransactWriteCommand)
-            .map(({ args: [command] }) =>
-              String(command.input.TransactItems?.[0]?.Put?.Item?.eventName),
-            ),
-        ).toEqual(['INSERT', 'MODIFY', 'REMOVE']);
+          ddb.commandCalls(TransactWriteCommand).map(({ args: [command] }) => {
+            const marker = command.input.TransactItems?.[0]?.Put?.Item;
+
+            return {
+              eventID:
+                typeof marker?.eventID === 'string'
+                  ? marker.eventID
+                  : undefined,
+              eventName:
+                typeof marker?.eventName === 'string'
+                  ? marker.eventName
+                  : undefined,
+              eventSourceARN:
+                typeof marker?.eventSourceARN === 'string'
+                  ? marker.eventSourceARN
+                  : undefined,
+            };
+          }),
+        ).toEqual(
+          event.Records.map(({ eventID, eventName, eventSourceARN }) => ({
+            eventID,
+            eventName,
+            eventSourceARN,
+          })),
+        );
       });
     });
 
