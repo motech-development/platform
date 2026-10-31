@@ -18,6 +18,7 @@ import {
 import { saveAs } from 'file-saver';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
+import { processNotification } from '../../../components/ApolloClient';
 import Connected from '../../../components/Connected';
 import { gql } from '../../../graphql';
 import type { GetReportsQuery } from '../../../graphql/graphql';
@@ -133,6 +134,13 @@ function Reports() {
   const reports = data?.getReports.items?.filter(isDownloadableReport) ?? [];
 
   useSubscription(ON_NOTIFICATION, {
+    onData: ({ client, data: result }) => {
+      const notification = result.data?.onNotification;
+
+      if (notification) {
+        processNotification(client.cache, notification);
+      }
+    },
     skip: !user?.sub,
     variables: {
       owner: user!.sub!,

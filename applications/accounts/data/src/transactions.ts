@@ -2,7 +2,7 @@ import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import logger from '@motech-development/node-logger';
 import { init, wrapHandler } from '@sentry/aws-serverless';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
-import type { DynamoDBStreamHandler } from 'aws-lambda';
+import type { DynamoDBRecord, DynamoDBStreamHandler } from 'aws-lambda';
 import insertTransactions from './handlers/insert-transactions';
 import removeTransactions from './handlers/remove-transactions';
 import updateTransactions from './handlers/update-transactions';
@@ -18,16 +18,34 @@ init({
 
 const documentClient = new DynamoDBClient({});
 
+const processRecord = (tableName: string, record: DynamoDBRecord) => {
+  if (record.eventName === 'INSERT') {
+    return Promise.all(insertTransactions(documentClient, tableName, [record]));
+  }
+
+  if (record.eventName === 'MODIFY') {
+    return Promise.all(updateTransactions(documentClient, tableName, [record]));
+  }
+
+  if (record.eventName === 'REMOVE') {
+    return Promise.all(removeTransactions(documentClient, tableName, [record]));
+  }
+
+  return Promise.resolve([]);
+};
+
 export const handler: DynamoDBStreamHandler = wrapHandler(async (event) => {
-  const { TABLE, inserts, removals, updates } = extractStream(event);
+  const { TABLE } = extractStream(event);
 
   try {
-    await Promise.all([
-      ...insertTransactions(documentClient, TABLE, inserts),
-      ...updateTransactions(documentClient, TABLE, updates),
-      ...removeTransactions(documentClient, TABLE, removals),
-    ]);
+    await event.Records.reduce(
+      (previous, record) =>
+        previous.then(() => processRecord(TABLE, record)).then(() => undefined),
+      Promise.resolve(),
+    );
   } catch (e) {
     logger.error('An error occurred', e);
+
+    throw e;
   }
 });

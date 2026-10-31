@@ -18,6 +18,7 @@
     "@aws-sdk/lib-dynamodb": "3.1033.0",
     "@aws-sdk/util-dynamodb": "3.996.2",
     "@motech-development/node-logger": "workspace:*",
+    "@motech-development/sqs-batch-publisher": "workspace:*",
     "@sentry/aws-serverless": "10.48.0",
     "@sentry/profiling-node": "10.48.0",
     "decimal.js": "10.5.0",

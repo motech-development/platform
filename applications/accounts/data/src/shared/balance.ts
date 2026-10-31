@@ -1,5 +1,10 @@
+import { createHash } from 'node:crypto';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { UpdateCommand, UpdateCommandOutput } from '@aws-sdk/lib-dynamodb';
+import {
+  GetCommand,
+  TransactWriteCommand,
+  TransactWriteCommandOutput,
+} from '@aws-sdk/lib-dynamodb';
 import { Decimal } from 'decimal.js';
 import aggregatedDay from './aggregated-day';
 import { ITransaction, TransactionStatus } from './transaction';
@@ -55,52 +60,308 @@ const commonUpdate = (tableName: string, record: ITransaction) => {
   };
 };
 
+const commonRemovalUpdate = (tableName: string, record: ITransaction) => {
+  const common = commonUpdate(tableName, record);
+
+  return {
+    ...common,
+    ConditionExpression: 'attribute_exists(#id)',
+    ExpressionAttributeNames: {
+      ...common.ExpressionAttributeNames,
+      '#id': 'id',
+    },
+    UpdateExpression:
+      'SET #updatedAt = :updatedAt, #balance = #balance - :balance, #vat.#vatProperty = #vat.#vatProperty - :vat, #items.#itemProperty = #items.#itemProperty - :balance',
+  };
+};
+
+interface IStreamIdentity {
+  eventID?: string;
+  eventSourceARN?: string;
+}
+
+interface IBalanceUpdate {
+  ConditionExpression?: string;
+  ExpressionAttributeNames: Record<string, string>;
+  ExpressionAttributeValues: Record<string, unknown>;
+  Key: { __typename: string; id: string };
+  TableName: string;
+  UpdateExpression: string;
+}
+
+type TProjectionEvent = 'INSERT' | 'MODIFY' | 'REMOVE';
+
+const markerType = 'BalanceProjectionEvent';
+
+class BalanceProjectionRecoveryError extends Error {
+  constructor(readonly failures: unknown[]) {
+    super('Failed to confirm balance projection recovery');
+
+    this.name = 'BalanceProjectionRecoveryError';
+  }
+}
+
+const getMarkerId = (eventSourceARN: string, eventID: string) =>
+  createHash('sha256')
+    .update(JSON.stringify([eventSourceARN, eventID]))
+    .digest('hex');
+
+const markMissingBalanceEvent = async (
+  documentClient: DynamoDBClient,
+  tableName: string,
+  putMarker: {
+    ConditionExpression: string;
+    ExpressionAttributeNames: Record<string, string>;
+    Item: Record<string, unknown>;
+    TableName: string;
+  },
+  key: IBalanceUpdate['Key'],
+): Promise<boolean> => {
+  const { Item } = await documentClient.send(
+    new GetCommand({
+      ConsistentRead: true,
+      Key: key,
+      TableName: tableName,
+    }),
+  );
+
+  if (Item) {
+    return false;
+  }
+
+  const { Item: company } = await documentClient.send(
+    new GetCommand({
+      ConsistentRead: true,
+      Key: {
+        __typename: 'Company',
+        id: key.id,
+      },
+      TableName: tableName,
+    }),
+  );
+
+  if (company) {
+    return false;
+  }
+
+  await documentClient.send(
+    new TransactWriteCommand({
+      TransactItems: [
+        {
+          Put: putMarker,
+        },
+        {
+          ConditionCheck: {
+            ConditionExpression: 'attribute_not_exists(#id)',
+            ExpressionAttributeNames: {
+              '#id': 'id',
+            },
+            Key: key,
+            TableName: tableName,
+          },
+        },
+        {
+          ConditionCheck: {
+            ConditionExpression: 'attribute_not_exists(#id)',
+            ExpressionAttributeNames: {
+              '#id': 'id',
+            },
+            Key: {
+              __typename: 'Company',
+              id: key.id,
+            },
+            TableName: tableName,
+          },
+        },
+      ],
+    }),
+  );
+
+  return true;
+};
+
+const recoverProjectionFailure = async (
+  getMarker: () => Promise<boolean>,
+  documentClient: DynamoDBClient,
+  tableName: string,
+  putMarker: {
+    ConditionExpression: string;
+    ExpressionAttributeNames: Record<string, string>;
+    Item: Record<string, unknown>;
+    TableName: string;
+  },
+  key: IBalanceUpdate['Key'],
+): Promise<boolean> => {
+  if (await getMarker()) return true;
+
+  return markMissingBalanceEvent(documentClient, tableName, putMarker, key);
+};
+
+const applyOnce = async (
+  documentClient: DynamoDBClient,
+  tableName: string,
+  identity: IStreamIdentity,
+  eventName: TProjectionEvent,
+  update: IBalanceUpdate,
+): Promise<TransactWriteCommandOutput | undefined> => {
+  const { eventID, eventSourceARN } = identity;
+
+  if (!eventID || !eventSourceARN) {
+    throw new Error('Missing DynamoDB stream event identity');
+  }
+
+  const id = getMarkerId(eventSourceARN, eventID);
+
+  const marker = {
+    __typename: markerType,
+    eventID,
+    eventName,
+    eventSourceARN,
+    id,
+  };
+
+  const putMarker = {
+    ConditionExpression: 'attribute_not_exists(#id)',
+    ExpressionAttributeNames: {
+      '#id': 'id',
+    },
+    Item: marker,
+    TableName: tableName,
+  };
+
+  const getMarker = async () => {
+    const { Item } = await documentClient.send(
+      new GetCommand({
+        ConsistentRead: true,
+        Key: {
+          __typename: markerType,
+          id,
+        },
+        TableName: tableName,
+      }),
+    );
+
+    return (
+      Item?.eventID === eventID &&
+      Item?.eventName === eventName &&
+      Item?.eventSourceARN === eventSourceARN
+    );
+  };
+
+  try {
+    return await documentClient.send(
+      new TransactWriteCommand({
+        TransactItems: [
+          {
+            Put: putMarker,
+          },
+          {
+            Update: update,
+          },
+        ],
+      }),
+    );
+  } catch (error) {
+    try {
+      if (
+        await recoverProjectionFailure(
+          getMarker,
+          documentClient,
+          tableName,
+          putMarker,
+          update.Key,
+        )
+      ) {
+        return undefined;
+      }
+    } catch (recoveryError) {
+      try {
+        if (await getMarker()) {
+          return undefined;
+        }
+      } catch (markerReadError) {
+        throw new BalanceProjectionRecoveryError([
+          error,
+          recoveryError,
+          markerReadError,
+        ]);
+      }
+
+      throw new BalanceProjectionRecoveryError([error, recoveryError]);
+    }
+
+    throw error;
+  }
+};
+
 export const insert = (
   documentClient: DynamoDBClient,
   tableName: string,
+  identity: IStreamIdentity,
   record: ITransaction,
-): Promise<UpdateCommandOutput> => {
-  const command = new UpdateCommand({
-    ...commonUpdate(tableName, record),
-    UpdateExpression:
-      'SET #updatedAt = :updatedAt ADD #balance :balance, #vat.#vatProperty :vat, #items.#itemProperty :balance',
-  });
+): Promise<TransactWriteCommandOutput | undefined> => {
+  const common = commonUpdate(tableName, record);
 
-  return documentClient.send(command);
+  return applyOnce(documentClient, tableName, identity, 'INSERT', {
+    ...common,
+    ExpressionAttributeValues: {
+      ...common.ExpressionAttributeValues,
+      ':zero': 0,
+    },
+    UpdateExpression:
+      'SET #updatedAt = :updatedAt, #vat.#vatProperty = if_not_exists(#vat.#vatProperty, :zero) + :vat, #items.#itemProperty = if_not_exists(#items.#itemProperty, :zero) + :balance ADD #balance :balance',
+  });
 };
 
 export const remove = (
   documentClient: DynamoDBClient,
   tableName: string,
+  identity: IStreamIdentity,
   record: ITransaction,
-): Promise<UpdateCommandOutput> => {
-  const command = new UpdateCommand({
-    ...commonUpdate(tableName, record),
-    UpdateExpression:
-      'SET #updatedAt = :updatedAt, #balance = #balance - :balance, #vat.#vatProperty = #vat.#vatProperty - :vat, #items.#itemProperty = #items.#itemProperty - :balance',
-  });
-
-  return documentClient.send(command);
-};
+): Promise<TransactWriteCommandOutput | undefined> =>
+  applyOnce(
+    documentClient,
+    tableName,
+    identity,
+    'REMOVE',
+    commonRemovalUpdate(tableName, record),
+  );
 
 export const update = (
   documentClient: DynamoDBClient,
   tableName: string,
+  identity: IStreamIdentity,
   oldRecord: ITransaction,
   newRecord: ITransaction,
-): Promise<UpdateCommandOutput> => {
+): Promise<TransactWriteCommandOutput | undefined> => {
   if (
     oldRecord.status === TransactionStatus.Pending &&
     newRecord.status === TransactionStatus.Confirmed
   ) {
-    return insert(documentClient, tableName, newRecord);
+    const common = commonUpdate(tableName, newRecord);
+
+    return applyOnce(documentClient, tableName, identity, 'MODIFY', {
+      ...common,
+      ExpressionAttributeValues: {
+        ...common.ExpressionAttributeValues,
+        ':zero': 0,
+      },
+      UpdateExpression:
+        'SET #updatedAt = :updatedAt, #vat.#vatProperty = if_not_exists(#vat.#vatProperty, :zero) + :vat, #items.#itemProperty = if_not_exists(#items.#itemProperty, :zero) + :balance ADD #balance :balance',
+    });
   }
 
   if (
     oldRecord.status === TransactionStatus.Confirmed &&
     newRecord.status === TransactionStatus.Pending
   ) {
-    return remove(documentClient, tableName, oldRecord);
+    return applyOnce(
+      documentClient,
+      tableName,
+      identity,
+      'MODIFY',
+      commonRemovalUpdate(tableName, oldRecord),
+    );
   }
 
   const now = new Date();
@@ -118,23 +379,27 @@ export const update = (
     );
   }
 
+  setExpressions.push(
+    isSameVatProperty
+      ? '#vat.#vatProperty = if_not_exists(#vat.#vatProperty, :zero) + :vat'
+      : '#vat.#vatPropertyNew = if_not_exists(#vat.#vatPropertyNew, :zero) + :vatNew',
+  );
+
   if (!isSameDate) {
     setExpressions.push(
       '#items.#itemPropertyOld = #items.#itemPropertyOld - :itemPropertyOld',
     );
   }
 
-  const addExpressions = [
-    '#balance :balance',
-    isSameVatProperty
-      ? '#vat.#vatProperty :vat'
-      : '#vat.#vatPropertyNew :vatNew',
+  setExpressions.push(
     isSameDate
-      ? '#items.#itemProperty :balance'
-      : '#items.#itemPropertyNew :itemPropertyNew',
-  ];
+      ? '#items.#itemProperty = if_not_exists(#items.#itemProperty, :zero) + :balance'
+      : '#items.#itemPropertyNew = if_not_exists(#items.#itemPropertyNew, :zero) + :itemPropertyNew',
+  );
 
-  const command = new UpdateCommand({
+  const common = commonUpdate(tableName, newRecord);
+
+  const updateInput = {
     ExpressionAttributeNames: {
       '#balance': 'balance',
       ...(isSameDate
@@ -161,13 +426,14 @@ export const update = (
       ':balance': new Decimal(newRecord.amount)
         .minus(oldRecord.amount)
         .toNumber(),
+      ':updatedAt': now.toISOString(),
+      ':zero': 0,
       ...(isSameDate
         ? {}
         : {
             ':itemPropertyNew': newRecord.amount,
             ':itemPropertyOld': oldRecord.amount,
           }),
-      ':updatedAt': now.toISOString(),
       ...(isSameVatProperty
         ? {
             ':vat': new Decimal(newVat.value).minus(oldVat.value).toNumber(),
@@ -177,13 +443,10 @@ export const update = (
             ':vatOld': oldVat.value,
           }),
     },
-    Key: {
-      __typename: 'Balance',
-      id: newRecord.companyId,
-    },
-    TableName: tableName,
-    UpdateExpression: `SET ${setExpressions.join(', ')} ADD ${addExpressions.join(', ')}`,
-  });
+    Key: common.Key,
+    TableName: common.TableName,
+    UpdateExpression: `SET ${setExpressions.join(', ')} ADD #balance :balance`,
+  };
 
-  return documentClient.send(command);
+  return applyOnce(documentClient, tableName, identity, 'MODIFY', updateInput);
 };

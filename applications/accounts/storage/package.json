@@ -15,6 +15,7 @@
     "@aws-sdk/client-sqs": "3.1033.0",
     "@motech-development/api-gateway-handler": "workspace:*",
     "@motech-development/s3-file-operations": "workspace:*",
+    "@motech-development/sqs-batch-publisher": "workspace:*",
     "@sentry/aws-serverless": "10.48.0",
     "@sentry/profiling-node": "10.48.0",
     "uuid": "9.0.1",

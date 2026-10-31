@@ -1,5 +1,6 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { UpdateCommand } from '@aws-sdk/lib-dynamodb';
+import type { GetCommandInput } from '@aws-sdk/lib-dynamodb';
+import { GetCommand, TransactWriteCommand } from '@aws-sdk/lib-dynamodb';
 import logger from '@motech-development/node-logger';
 import type { Context, DynamoDBStreamEvent } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
@@ -251,6 +252,13 @@ describe('transactions', () => {
         },
       ],
     };
+
+    event.Records = event.Records.map((record, index) => ({
+      ...record,
+      eventID: `event-${index}`,
+      eventSourceARN:
+        'arn:aws:dynamodb:eu-west-1:123456789012:table/app-table/stream/2020-06-06T19:45:00.000',
+    }));
   });
 
   it('should throw an error if no table is set', async () => {
@@ -286,13 +294,40 @@ describe('transactions', () => {
 
         await handler(event, context, callback);
 
-        expect(ddb).toReceiveCommandTimes(UpdateCommand, 0);
+        expect(ddb).toReceiveCommandTimes(TransactWriteCommand, 0);
       });
 
       it('should update the correct number of records', async () => {
         await handler(event, context, callback);
 
-        expect(ddb).toReceiveCommandTimes(UpdateCommand, 3);
+        expect(ddb).toReceiveCommandTimes(TransactWriteCommand, 3);
+
+        expect(
+          ddb.commandCalls(TransactWriteCommand).map(({ args: [command] }) => {
+            const marker = command.input.TransactItems?.[0]?.Put?.Item;
+
+            return {
+              eventID:
+                typeof marker?.eventID === 'string'
+                  ? marker.eventID
+                  : undefined,
+              eventName:
+                typeof marker?.eventName === 'string'
+                  ? marker.eventName
+                  : undefined,
+              eventSourceARN:
+                typeof marker?.eventSourceARN === 'string'
+                  ? marker.eventSourceARN
+                  : undefined,
+            };
+          }),
+        ).toEqual(
+          event.Records.map(({ eventID, eventName, eventSourceARN }) => ({
+            eventID,
+            eventName,
+            eventSourceARN,
+          })),
+        );
       });
     });
 
@@ -302,11 +337,19 @@ describe('transactions', () => {
       beforeEach(() => {
         error = new Error('Something has gone wrong');
 
-        ddb.on(UpdateCommand).rejectsOnce(error);
+        ddb.on(TransactWriteCommand).rejectsOnce(error);
+
+        ddb
+          .on(GetCommand)
+          .callsFake((input: GetCommandInput) =>
+            input.Key?.__typename === 'Company'
+              ? { Item: { __typename: 'Company', id: 'company-id' } }
+              : {},
+          );
       });
 
-      it('should swallow the error', async () => {
-        await handler(event, context, callback);
+      it('should propagate the error for Lambda to retry', async () => {
+        await expect(handler(event, context, callback)).rejects.toBe(error);
 
         expect(logger.error).toHaveBeenCalledWith('An error occurred', error);
       });

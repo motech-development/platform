@@ -4,9 +4,14 @@ import { init, wrapHandler } from '@sentry/aws-serverless';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import type { Handler } from 'aws-lambda';
 import { v4 as uuid } from 'uuid';
-import type { InferType } from 'yup';
-import { array, object, string } from 'yup';
+import { string } from 'yup';
 import archive from '../shared/archive';
+import {
+  type IReportPayloadReference,
+  readReportPayloadEvent,
+  reportPayloadEventSchema,
+  reportPayloadMetadataSchema,
+} from '../shared/report-payload';
 
 init({
   dsn: process.env.SENTRY_DSN,
@@ -16,21 +21,13 @@ init({
   tracesSampleRate: 1,
 });
 
-const schema = object({
-  attachments: array(
-    object({
-      key: string().required(),
-      path: string().required(),
-    }).required(),
-  ),
-  companyId: string().required(),
-  csv: string().required(),
-  owner: string().required(),
-}).required();
+const schema = reportPayloadMetadataSchema
+  .shape({
+    csv: string().required(),
+  })
+  .required();
 
-export type IEvent = Omit<InferType<typeof schema>, 'attachments'> & {
-  attachments: NonNullable<InferType<typeof schema>['attachments']>;
-};
+export type IEvent = IReportPayloadReference;
 
 export const handler: Handler<IEvent> = wrapHandler(async (event) => {
   logger.info('Start lambda function');
@@ -45,10 +42,21 @@ export const handler: Handler<IEvent> = wrapHandler(async (event) => {
     throw new Error('No origin bucket set');
   }
 
-  const { attachments, companyId, csv, owner } = await schema.validate(event, {
-    abortEarly: true,
-    stripUnknown: true,
-  });
+  const { input, payload } = await readReportPayloadEvent(
+    event,
+    reportPayloadEventSchema,
+  );
+  const { attachments, companyId, csv, owner } = await schema.validate(
+    payload,
+    {
+      abortEarly: true,
+      stripUnknown: true,
+    },
+  );
+
+  if (companyId !== input.companyId || owner !== input.owner) {
+    throw new Error('Report payload does not match the workflow input');
+  }
 
   const key = join(owner, companyId, `${uuid()}.zip`);
 

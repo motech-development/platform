@@ -47,14 +47,17 @@ functions:
   ConvertToCsv:
     handler: src/handlers/convert-to-csv.handler
     environment:
+      REPORT_BUCKET: !Ref ReportBucket
       SENTRY_DSN: ${env:SENTRY_DSN}
     role: LambdaFunctionRole
+    timeout: 300
 
   CreateZip:
     handler: src/handlers/create-zip.handler
     environment:
       DESTINATION_BUCKET: !Ref ReportBucket
       ORIGIN_BUCKET: !ImportValue ${self:provider.stage}-StorageDownloadBucket
+      REPORT_BUCKET: !Ref ReportBucket
       SENTRY_DSN: ${env:SENTRY_DSN}
     role: LambdaFunctionRole
     timeout: 300
@@ -69,9 +72,11 @@ functions:
   GetTransactionsReport:
     handler: src/handlers/get-transactions.handler
     environment:
+      REPORT_BUCKET: !Ref ReportBucket
       TABLE: !ImportValue ${self:provider.stage}-AccountsApplicationTable
       SENTRY_DSN: ${env:SENTRY_DSN}
     role: LambdaFunctionRole
+    timeout: 300
 
   PublishNotificationReport:
     handler: src/handlers/publish-notification.handler
@@ -84,8 +89,10 @@ functions:
   TransformTransactions:
     handler: src/handlers/transform-transactions.handler
     environment:
+      REPORT_BUCKET: !Ref ReportBucket
       SENTRY_DSN: ${env:SENTRY_DSN}
     role: LambdaFunctionRole
+    timeout: 300
 
 stepFunctions:
   validate: true

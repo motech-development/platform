@@ -53,6 +53,7 @@ functions:
     events:
       - sqs:
           arn: !ImportValue ${self:provider.stage}-AntiVirusFailureQueueArn
+          functionResponseType: ReportBatchItemFailures
     role: DataLambdaFunctionRole
     environment:
       BUCKET: !ImportValue ${self:provider.stage}-StorageUploadBucket
@@ -516,6 +517,7 @@ resources:
                     - dynamodb:ListStreams
                     - dynamodb:PutItem
                     - dynamodb:Query
+                    - dynamodb:ConditionCheckItem
                     - dynamodb:UpdateItem
                   Resource:
                     - !GetAtt ApplicationTable.Arn

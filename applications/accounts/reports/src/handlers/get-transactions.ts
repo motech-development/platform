@@ -1,11 +1,17 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import type { QueryCommandInput } from '@aws-sdk/lib-dynamodb';
 import { QueryCommand } from '@aws-sdk/lib-dynamodb';
 import { init, wrapHandler } from '@sentry/aws-serverless';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import type { Handler } from 'aws-lambda';
+import { v4 as uuid } from 'uuid';
 import type { InferType } from 'yup';
 import { number, object, string } from 'yup';
 import padNumber from '../shared/padNumber';
+import {
+  hasQueryContinuationKey,
+  writeReportQueryPages,
+} from '../shared/report-payload';
 import Status from '../shared/status';
 
 init({
@@ -32,11 +38,27 @@ const schema = object({
 
 export type IEvent = InferType<typeof schema>;
 
-export const handler: Handler<IEvent> = wrapHandler(async (event) => {
-  const { TABLE } = process.env;
+export type IOutput =
+  | {
+      complete: true;
+    }
+  | {
+      complete: false;
+      companyId: string;
+      currency: string;
+      owner: string;
+      payloadKey: string;
+    };
+
+export const handler: Handler<IEvent, IOutput> = wrapHandler(async (event) => {
+  const { REPORT_BUCKET, TABLE } = process.env;
 
   if (!TABLE) {
     throw new Error('No table set');
+  }
+
+  if (!REPORT_BUCKET) {
+    throw new Error('No report bucket set');
   }
 
   const result = await schema.validate(event, {
@@ -44,44 +66,72 @@ export const handler: Handler<IEvent> = wrapHandler(async (event) => {
     stripUnknown: true,
   });
   const data = `${result.owner}:${result.companyId}:${result.status}`;
-  const command = new QueryCommand({
-    ExpressionAttributeNames: {
-      '#data': 'data',
-      '#owner': 'owner',
-      '#typename': '__typename',
-    },
-    ExpressionAttributeValues: {
-      ':lower': `${data}:${result.year}-${padNumber(
-        result.yearEnd.month + 1,
-        2,
-      )}-${padNumber(result.yearEnd.day + 1, 2)}T00:00:00Z`,
-      ':owner': result.owner,
-      ':typename': 'Transaction',
-      ':upper': `${data}:${result.year + 1}-${padNumber(
-        result.yearEnd.month + 1,
-        2,
-      )}-${padNumber(result.yearEnd.day, 2)}T23:59:59Z`,
-    },
-    FilterExpression: '#owner = :owner',
-    IndexName: '__typename-data-index',
-    KeyConditionExpression:
-      '#typename = :typename AND #data BETWEEN :lower AND :upper',
-    ScanIndexForward: false,
-    TableName: TABLE,
-  });
-  const transactions = await client.send(command);
+  const queryPage = async (
+    ExclusiveStartKey?: QueryCommandInput['ExclusiveStartKey'],
+    abortSignal?: AbortSignal,
+  ) => {
+    const command = new QueryCommand({
+      ExpressionAttributeNames: {
+        '#data': 'data',
+        '#owner': 'owner',
+        '#typename': '__typename',
+      },
+      ExpressionAttributeValues: {
+        ':lower': `${data}:${result.year}-${padNumber(
+          result.yearEnd.month + 1,
+          2,
+        )}-${padNumber(result.yearEnd.day + 1, 2)}T00:00:00Z`,
+        ':owner': result.owner,
+        ':typename': 'Transaction',
+        ':upper': `${data}:${result.year + 1}-${padNumber(
+          result.yearEnd.month + 1,
+          2,
+        )}-${padNumber(result.yearEnd.day, 2)}T23:59:59Z`,
+      },
+      FilterExpression: '#owner = :owner',
+      IndexName: '__typename-data-index',
+      KeyConditionExpression:
+        '#typename = :typename AND #data BETWEEN :lower AND :upper',
+      ScanIndexForward: false,
+      ...(hasQueryContinuationKey(ExclusiveStartKey)
+        ? { ExclusiveStartKey }
+        : {}),
+      TableName: TABLE,
+    });
 
-  if (transactions.Items && transactions.Items.length > 0) {
+    return client.send(command, abortSignal ? { abortSignal } : undefined);
+  };
+
+  const firstPage = await queryPage();
+
+  if (
+    !firstPage.Items?.length &&
+    !hasQueryContinuationKey(firstPage.LastEvaluatedKey)
+  ) {
     return {
-      companyId: result.companyId,
-      complete: false,
-      currency: result.currency,
-      items: transactions.Items,
-      owner: result.owner,
+      complete: true,
+    };
+  }
+
+  const payloadKey = `${result.owner}/${result.companyId}/report-data/${uuid()}.json`;
+  const transactionCount = await writeReportQueryPages(
+    REPORT_BUCKET,
+    payloadKey,
+    firstPage,
+    queryPage,
+  );
+
+  if (transactionCount === 0) {
+    return {
+      complete: true,
     };
   }
 
   return {
-    complete: true,
+    companyId: result.companyId,
+    complete: false,
+    currency: result.currency,
+    owner: result.owner,
+    payloadKey,
   };
 });

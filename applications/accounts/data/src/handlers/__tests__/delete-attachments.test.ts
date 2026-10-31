@@ -12,6 +12,7 @@ describe('delete-attachments', () => {
     client = new SQSClient({});
     queueUrl = 'https://queue-url';
     sqs = mockClient(SQSClient);
+    sqs.on(SendMessageBatchCommand).resolves({});
   });
 
   it('should not call sendMessageBatch if there are no attachments to process', async () => {
@@ -225,7 +226,7 @@ describe('delete-attachments', () => {
       Entries: [
         {
           DelaySeconds: 300,
-          Id: '1',
+          Id: 'message-0',
           MessageAttributes: {
             key: {
               DataType: 'String',
@@ -236,7 +237,7 @@ describe('delete-attachments', () => {
         },
         {
           DelaySeconds: 300,
-          Id: '2',
+          Id: 'message-1',
           MessageAttributes: {
             key: {
               DataType: 'String',
@@ -248,5 +249,144 @@ describe('delete-attachments', () => {
       ],
       QueueUrl: 'https://queue-url',
     });
+  });
+
+  it('chunks messages into batches of at most ten with unique entry IDs', async () => {
+    const records = Array.from({ length: 11 }, (_, index) => ({
+      dynamodb: {
+        OldImage: {
+          __typename: { S: 'Transaction' },
+          attachment: { S: `company/${index}.pdf` },
+          id: { S: `${index}` },
+          owner: { S: 'owner' },
+        },
+      },
+    })) as unknown as DynamoDBRecord[];
+
+    await deleteAttachments(client, queueUrl, records);
+
+    const calls = sqs.commandCalls(SendMessageBatchCommand);
+
+    expect(calls).toHaveLength(2);
+    expect(calls.map(({ args }) => args[0].input.Entries?.length)).toEqual([
+      10, 1,
+    ]);
+    expect(calls[0]?.args[0].input.Entries?.map(({ Id }) => Id)).toEqual(
+      Array.from({ length: 10 }, (_, index) => `message-${index}`),
+    );
+    expect(calls[1]?.args[0].input.Entries?.map(({ Id }) => Id)).toEqual([
+      'message-10',
+    ]);
+  });
+
+  it('retries only transiently failed entries', async () => {
+    const records = [
+      {
+        dynamodb: {
+          OldImage: {
+            __typename: { S: 'Transaction' },
+            attachment: { S: 'company/one.pdf' },
+            id: { S: 'one' },
+            owner: { S: 'owner' },
+          },
+        },
+      },
+      {
+        dynamodb: {
+          OldImage: {
+            __typename: { S: 'Transaction' },
+            attachment: { S: 'company/two.pdf' },
+            id: { S: 'two' },
+            owner: { S: 'owner' },
+          },
+        },
+      },
+    ] as unknown as DynamoDBRecord[];
+    sqs
+      .on(SendMessageBatchCommand)
+      .resolvesOnce({
+        Failed: [
+          {
+            Code: 'ServiceUnavailable',
+            Id: 'message-1',
+            Message: 'temporary failure',
+            SenderFault: false,
+          },
+        ],
+      })
+      .resolvesOnce({});
+
+    await deleteAttachments(client, queueUrl, records);
+
+    const calls = sqs.commandCalls(SendMessageBatchCommand);
+
+    expect(calls).toHaveLength(2);
+    expect(calls[0]?.args[0].input.Entries?.map(({ Id }) => Id)).toEqual([
+      'message-0',
+      'message-1',
+    ]);
+    expect(calls[1]?.args[0].input.Entries?.map(({ Id }) => Id)).toEqual([
+      'message-1',
+    ]);
+  });
+
+  it('fails immediately for sender faults', async () => {
+    sqs.on(SendMessageBatchCommand).resolvesOnce({
+      Failed: [
+        {
+          Code: 'InvalidParameterValue',
+          Id: 'message-0',
+          Message: 'invalid entry',
+          SenderFault: true,
+        },
+      ],
+    });
+
+    await expect(
+      deleteAttachments(client, queueUrl, [
+        {
+          dynamodb: {
+            OldImage: {
+              __typename: { S: 'Transaction' },
+              attachment: { S: 'company/one.pdf' },
+              id: { S: 'one' },
+              owner: { S: 'owner' },
+            },
+          },
+        },
+      ]),
+    ).rejects.toThrow('SQS rejected entry message-0');
+
+    expect(sqs).toReceiveCommandTimes(SendMessageBatchCommand, 1);
+  });
+
+  it('fails after the bounded retry attempts are exhausted', async () => {
+    sqs.on(SendMessageBatchCommand).resolves({
+      Failed: [
+        {
+          Code: 'ServiceUnavailable',
+          Id: 'message-0',
+          Message: 'temporary failure',
+          SenderFault: false,
+        },
+      ],
+    });
+
+    await expect(
+      deleteAttachments(client, queueUrl, [
+        {
+          dynamodb: {
+            OldImage: {
+              __typename: { S: 'Transaction' },
+              attachment: { S: 'company/one.pdf' },
+              id: { S: 'one' },
+              owner: { S: 'owner' },
+            },
+          },
+        },
+      ]),
+    ).rejects.toThrow('SQS batch send failed after 3 attempts');
+
+    expect(sqs).toReceiveCommandTimes(SendMessageBatchCommand, 3);
   });
 });

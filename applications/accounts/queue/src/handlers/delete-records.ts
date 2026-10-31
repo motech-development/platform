@@ -1,8 +1,11 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import type { BatchWriteCommandInput } from '@aws-sdk/lib-dynamodb';
 import { BatchWriteCommand } from '@aws-sdk/lib-dynamodb';
 import { init, wrapHandler } from '@sentry/aws-serverless';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import type { Handler } from 'aws-lambda';
+import chunk from '../shared/chunk';
+import { type IOutput as IGetRecordsOutput, PAGE_SIZE } from './get-records';
 
 init({
   dsn: process.env.SENTRY_DSN,
@@ -14,11 +17,17 @@ init({
 
 const documentClient = new DynamoDBClient({});
 
-export interface IEvent {
-  count: number;
-  current: number;
-  items: string[][];
-}
+export type IEvent = IGetRecordsOutput;
+
+const MAX_RETRIES = 4;
+const INITIAL_RETRY_DELAY_MS = 25;
+const MAX_WRITE_BATCH_SIZE = 25;
+const receiptIndexPrefix = 'TransactionCreationReceiptIndex:';
+
+const wait = (milliseconds: number): Promise<void> =>
+  new Promise((resolve) => {
+    setTimeout(resolve, milliseconds);
+  });
 
 export const handler: Handler<IEvent> = wrapHandler(async (event) => {
   const { TABLE, TYPENAME } = process.env;
@@ -31,28 +40,92 @@ export const handler: Handler<IEvent> = wrapHandler(async (event) => {
     throw new Error('No typename set');
   }
 
-  const { count, current, items } = event;
+  const { items } = event;
 
-  const command = new BatchWriteCommand({
-    RequestItems: {
-      [TABLE]: [
-        ...items[current].map((id) => ({
-          DeleteRequest: {
-            Key: {
-              __typename: TYPENAME,
-              id,
-            },
-          },
-        })),
-      ],
+  if (items.length > PAGE_SIZE) {
+    throw new Error(`Cannot delete more than ${PAGE_SIZE} records in one page`);
+  }
+
+  const initialItems = items.map((id) => ({
+    DeleteRequest: {
+      Key: {
+        __typename: TYPENAME,
+        id,
+      },
     },
-  });
+  }));
 
-  await documentClient.send(command);
+  const writeBatch = async (
+    pendingItems: NonNullable<BatchWriteCommandInput['RequestItems']>[string],
+    retry = 0,
+  ): Promise<void> => {
+    if (pendingItems.length === 0) {
+      return;
+    }
+
+    const command = new BatchWriteCommand({
+      RequestItems: {
+        [TABLE]: pendingItems,
+      },
+    });
+
+    const response = (await documentClient.send(command)) ?? {};
+    const { UnprocessedItems } = response;
+    const unprocessed = UnprocessedItems ?? {};
+    const hasUnprocessedItems = Object.values(unprocessed).some(
+      (requests) => requests.length > 0,
+    );
+
+    if (!hasUnprocessedItems) {
+      return;
+    }
+
+    const unexpectedTable = Object.entries(unprocessed).find(
+      ([tableName, requests]) => tableName !== TABLE && requests.length > 0,
+    );
+
+    if (unexpectedTable) {
+      throw new Error(
+        `BatchWrite returned unprocessed items for unexpected table ${unexpectedTable[0]}`,
+      );
+    }
+
+    if (retry >= MAX_RETRIES) {
+      throw new Error(
+        `BatchWrite still has unprocessed items after ${MAX_RETRIES + 1} attempts`,
+      );
+    }
+
+    await wait(INITIAL_RETRY_DELAY_MS * 2 ** retry);
+
+    await writeBatch(unprocessed[TABLE] ?? [], retry + 1);
+  };
+
+  const writeBatches = async (
+    requests: NonNullable<BatchWriteCommandInput['RequestItems']>[string],
+  ) =>
+    chunk(requests, MAX_WRITE_BATCH_SIZE).reduce<Promise<void>>(
+      (previousBatch, batch) => previousBatch.then(() => writeBatch(batch)),
+      Promise.resolve(),
+    );
+
+  await writeBatches(initialItems);
+
+  if (TYPENAME === 'TransactionCreationReceipt') {
+    const receiptIndexItems = items.map((receiptId) => ({
+      DeleteRequest: {
+        Key: {
+          __typename: `${receiptIndexPrefix}${receiptId}`,
+          id: event.id,
+        },
+      },
+    }));
+
+    await writeBatches(receiptIndexItems);
+  }
 
   return {
     ...event,
-    complete: current === count - 1,
-    current: current + 1,
+    complete: !event.lastEvaluatedKey,
   };
 });

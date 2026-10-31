@@ -1,8 +1,10 @@
-import { basename, extname } from 'node:path';
-import { SendMessageBatchCommand, SQSClient } from '@aws-sdk/client-sqs';
+import { SQSClient } from '@aws-sdk/client-sqs';
+import sendSqsBatchWithRetry from '@motech-development/sqs-batch-publisher';
 import { init, wrapHandler } from '@sentry/aws-serverless';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import type { S3Handler } from 'aws-lambda';
+
+const maxEntriesPerBatch = 10;
 
 init({
   dsn: process.env.SENTRY_DSN,
@@ -25,14 +27,12 @@ export const handler: S3Handler = wrapHandler(async (event) => {
     throw new Error('No destination bucket set');
   }
 
-  const entries = event.Records.map((record) => {
+  const entries = event.Records.map((record, index) => {
     const bucket = record.s3.bucket.name;
     const file = record.s3.object.key;
-    const ext = extname(file);
-    const id = basename(file, ext);
 
     return {
-      Id: id,
+      Id: `message-${index}`,
       MessageAttributes: {
         from: {
           DataType: 'String',
@@ -51,10 +51,13 @@ export const handler: S3Handler = wrapHandler(async (event) => {
     };
   });
 
-  const command = new SendMessageBatchCommand({
-    Entries: entries,
-    QueueUrl: QUEUE_URL,
-  });
+  const batches = [];
 
-  await sqs.send(command);
+  for (let start = 0; start < entries.length; start += maxEntriesPerBatch) {
+    batches.push(entries.slice(start, start + maxEntriesPerBatch));
+  }
+
+  await Promise.all(
+    batches.map((batch) => sendSqsBatchWithRetry(sqs, QUEUE_URL, batch)),
+  );
 });

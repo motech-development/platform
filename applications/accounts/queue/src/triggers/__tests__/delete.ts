@@ -1,3 +1,5 @@
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import { SFNClient, StartExecutionCommand } from '@aws-sdk/client-sfn';
 import type { Context, SQSEvent } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
@@ -149,6 +151,36 @@ describe('delete', () => {
         }),
         stateMachineArn: 'state-machice-arn',
       });
+    });
+
+    it('should include paginated company receipt cleanup in the state machine', async () => {
+      const serverlessConfig = await readFile(
+        join(process.cwd(), 'serverless.yml'),
+        'utf8',
+      );
+      const stateMachine = serverlessConfig.split('stepFunctions:')[1];
+
+      expect(serverlessConfig).toMatch(
+        /GetTransactionCreationReceipts:\s+handler: src\/handlers\/get-records\.handler[\s\S]*?TYPENAME: TransactionCreationReceipt/,
+      );
+      expect(serverlessConfig).toMatch(
+        /DeleteTransactionCreationReceipts:\s+handler: src\/handlers\/delete-records\.handler[\s\S]*?TYPENAME: TransactionCreationReceipt/,
+      );
+      expect(stateMachine).toMatch(
+        /- StartAt: GetTransactionCreationReceipts[\s\S]*?GetTransactionCreationReceipts:\s+Type: Task[\s\S]*?Next: HasTransactionCreationReceiptsToDelete[\s\S]*?DeleteTransactionCreationReceipts:\s+Type: Task[\s\S]*?Next: IsDeleteTransactionCreationReceiptsComplete[\s\S]*?IsDeleteTransactionCreationReceiptsComplete:[\s\S]*?Next: GetTransactionCreationReceipts/,
+      );
+      expect(stateMachine).toMatch(
+        /DeleteClientsComplete:\s+Type: Pass\s+Result:\s+\{\}\s+End: true/,
+      );
+      expect(stateMachine).toMatch(
+        /DeleteReportsComplete:\s+Type: Pass\s+Result:\s+\{\}\s+End: true/,
+      );
+      expect(stateMachine).toMatch(
+        /DeleteTransactionsComplete:\s+Type: Pass\s+Result:\s+\{\}\s+End: true/,
+      );
+      expect(stateMachine).toMatch(
+        /DeleteTransactionCreationReceiptsComplete:\s+Type: Pass\s+Result:\s+\{\}\s+End: true/,
+      );
     });
   });
 });

@@ -238,9 +238,9 @@ describe('Reports', () => {
 
       await waitFor(() => expect(title).toHaveTextContent('reports.title'));
 
-      const buttons = await screen.findAllByRole('button');
-
-      await waitFor(() => expect(buttons).toHaveLength(3));
+      await waitFor(() =>
+        expect(screen.getAllByRole('button')).toHaveLength(3),
+      );
     });
   });
 

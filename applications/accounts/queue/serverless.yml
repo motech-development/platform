@@ -104,6 +104,20 @@ functions:
       SENTRY_DSN: ${env:SENTRY_DSN}
       TYPENAME: Transaction
 
+  DeleteTransactionCreationReceipts:
+    handler: src/handlers/delete-records.handler
+    role: LambdaFunctionRole
+    environment:
+      SENTRY_DSN: ${env:SENTRY_DSN}
+      TYPENAME: TransactionCreationReceipt
+
+  GetTransactionCreationReceipts:
+    handler: src/handlers/get-records.handler
+    role: LambdaFunctionRole
+    environment:
+      SENTRY_DSN: ${env:SENTRY_DSN}
+      TYPENAME: TransactionCreationReceipt
+
   DeleteReports:
     handler: src/handlers/delete-records.handler
     role: LambdaFunctionRole
@@ -165,7 +179,15 @@ stepFunctions:
                   GetClients:
                     Type: Task
                     Resource: !GetAtt GetClientsLambdaFunction.Arn
-                    Next: IsDeleteClientsComplete
+                    Next: HasClientsToDelete
+
+                  HasClientsToDelete:
+                    Type: Choice
+                    Choices:
+                      - Variable: $.items[0]
+                        IsPresent: true
+                        Next: DeleteClients
+                    Default: IsDeleteClientsComplete
 
                   DeleteClients:
                     Type: Task
@@ -177,11 +199,12 @@ stepFunctions:
                     Choices:
                       - Variable: $.complete
                         BooleanEquals: false
-                        Next: DeleteClients
+                        Next: GetClients
                     Default: DeleteClientsComplete
 
                   DeleteClientsComplete:
                     Type: Pass
+                    Result: {}
                     End: true
 
               - StartAt: GetReports
@@ -189,7 +212,15 @@ stepFunctions:
                   GetReports:
                     Type: Task
                     Resource: !GetAtt GetReportsLambdaFunction.Arn
-                    Next: IsDeleteReportsComplete
+                    Next: HasReportsToDelete
+
+                  HasReportsToDelete:
+                    Type: Choice
+                    Choices:
+                      - Variable: $.items[0]
+                        IsPresent: true
+                        Next: DeleteReports
+                    Default: IsDeleteReportsComplete
 
                   DeleteReports:
                     Type: Task
@@ -201,11 +232,12 @@ stepFunctions:
                     Choices:
                       - Variable: $.complete
                         BooleanEquals: false
-                        Next: DeleteReports
+                        Next: GetReports
                     Default: DeleteReportsComplete
 
                   DeleteReportsComplete:
                     Type: Pass
+                    Result: {}
                     End: true
 
               - StartAt: GetTransactions
@@ -213,7 +245,15 @@ stepFunctions:
                   GetTransactions:
                     Type: Task
                     Resource: !GetAtt GetTransactionsLambdaFunction.Arn
-                    Next: IsDeleteTransactionsComplete
+                    Next: HasTransactionsToDelete
+
+                  HasTransactionsToDelete:
+                    Type: Choice
+                    Choices:
+                      - Variable: $.items[0]
+                        IsPresent: true
+                        Next: DeleteTransactions
+                    Default: IsDeleteTransactionsComplete
 
                   DeleteTransactions:
                     Type: Task
@@ -225,11 +265,45 @@ stepFunctions:
                     Choices:
                       - Variable: $.complete
                         BooleanEquals: false
-                        Next: DeleteTransactions
+                        Next: GetTransactions
                     Default: DeleteTransactionsComplete
 
                   DeleteTransactionsComplete:
                     Type: Pass
+                    Result: {}
+                    End: true
+
+              - StartAt: GetTransactionCreationReceipts
+                States:
+                  GetTransactionCreationReceipts:
+                    Type: Task
+                    Resource: !GetAtt GetTransactionCreationReceiptsLambdaFunction.Arn
+                    Next: HasTransactionCreationReceiptsToDelete
+
+                  HasTransactionCreationReceiptsToDelete:
+                    Type: Choice
+                    Choices:
+                      - Variable: $.items[0]
+                        IsPresent: true
+                        Next: DeleteTransactionCreationReceipts
+                    Default: IsDeleteTransactionCreationReceiptsComplete
+
+                  DeleteTransactionCreationReceipts:
+                    Type: Task
+                    Resource: !GetAtt DeleteTransactionCreationReceiptsLambdaFunction.Arn
+                    Next: IsDeleteTransactionCreationReceiptsComplete
+
+                  IsDeleteTransactionCreationReceiptsComplete:
+                    Type: Choice
+                    Choices:
+                      - Variable: $.complete
+                        BooleanEquals: false
+                        Next: GetTransactionCreationReceipts
+                    Default: DeleteTransactionCreationReceiptsComplete
+
+                  DeleteTransactionCreationReceiptsComplete:
+                    Type: Pass
+                    Result: {}
                     End: true
 
           Final state:

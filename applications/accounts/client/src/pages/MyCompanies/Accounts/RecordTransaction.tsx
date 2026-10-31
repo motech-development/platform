@@ -6,7 +6,7 @@ import {
   useQuery,
 } from '@apollo/client';
 import { PageTitle, useToast } from '@motech-development/breeze-ui';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import Connected from '../../../components/Connected';
@@ -182,6 +182,10 @@ function RecordTransaction() {
   invariant(companyId);
 
   const [attachment, setAttachment] = useState('');
+  const creationCommand = useRef<{
+    fingerprint: string;
+    id: string;
+  } | null>(null);
   const { t } = useTranslation('accounts');
   const { add } = useToast();
   const backTo = (id: string, status?: string) => {
@@ -199,39 +203,53 @@ function RecordTransaction() {
       id: companyId,
     },
   });
-  const [mutation, { error: addError, loading: addLoading }] = useMutation(
-    ADD_TRANSACTION,
-    {
-      onCompleted: ({ addTransaction }) => {
-        if (addTransaction) {
-          add({
-            colour: 'success',
-            message: t('record-transaction.success'),
-          });
+  const [mutation, { loading: addLoading }] = useMutation(ADD_TRANSACTION, {
+    onCompleted: ({ addTransaction }) => {
+      if (addTransaction) {
+        add({
+          colour: 'success',
+          message: t('record-transaction.success'),
+        });
 
-          navigate(backTo(addTransaction.companyId, addTransaction.status));
-        } else {
-          add({
-            colour: 'danger',
-            message: t('record-transaction.retry'),
-          });
+        navigate(backTo(addTransaction.companyId, addTransaction.status));
+      } else {
+        add({
+          colour: 'danger',
+          message: t('record-transaction.retry'),
+        });
 
-          navigate(backTo(companyId));
-        }
-      },
+        navigate(backTo(companyId));
+      }
     },
-  );
+  });
   const save = (input: FormSchema) => {
+    const fingerprint = JSON.stringify(input);
+
+    if (creationCommand.current?.fingerprint !== fingerprint) {
+      creationCommand.current = {
+        fingerprint,
+        id: crypto.randomUUID(),
+      };
+    }
+
     mutation({
       update,
       variables: {
-        input,
+        input: {
+          ...input,
+          id: creationCommand.current.id,
+        },
       },
-    }).catch(() => {});
+    }).catch(() => {
+      add({
+        colour: 'danger',
+        message: t('record-transaction.retry'),
+      });
+    });
   };
 
   return (
-    <Connected error={error || addError} loading={loading}>
+    <Connected error={error} loading={loading}>
       {data?.getClients && data?.getSettings && (
         <>
           <PageTitle
