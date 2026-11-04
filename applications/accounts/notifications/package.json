@@ -16,7 +16,7 @@
     "@aws-sdk/lib-dynamodb": "3.1033.0",
     "@motech-development/api-gateway-handler": "workspace:*",
     "luxon": "3.5.0",
-    "uuid": "9.0.1",
+    "uuid": "11.1.1",
     "yup": "1.4.0"
   },
   "devDependencies": {

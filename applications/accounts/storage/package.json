@@ -17,7 +17,7 @@
     "@motech-development/s3-file-operations": "workspace:*",
     "@sentry/aws-serverless": "10.48.0",
     "@sentry/profiling-node": "10.48.0",
-    "uuid": "9.0.1",
+    "uuid": "11.1.1",
     "yup": "1.4.0"
   },
   "devDependencies": {
