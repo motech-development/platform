@@ -22,7 +22,7 @@
     "@sentry/profiling-node": "10.48.0",
     "decimal.js": "10.5.0",
     "luxon": "3.5.0",
-    "uuid": "9.0.1"
+    "uuid": "11.1.1"
   },
   "devDependencies": {
     "@motech-development/eslint-config-motech-base": "workspace:*",
