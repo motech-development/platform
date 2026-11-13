@@ -398,6 +398,7 @@ functions:
           type: dynamodb
           arn: !ImportValue ${self:provider.stage}-AccountsApplicationTableStreamArn
           startingPosition: LATEST
+          maximumRetryAttempts: 4
     environment:
       SENTRY_DSN: ${env:SENTRY_DSN}
       ENDPOINT: ${appsync:url}

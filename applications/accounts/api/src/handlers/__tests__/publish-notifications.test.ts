@@ -174,12 +174,14 @@ describe('publish-notifications', () => {
       expect(AWSAppSyncClient.prototype.mutate).not.toHaveBeenCalled();
     });
 
-    it('should swallow the error', async () => {
+    it('should log and throw the error', async () => {
       (AWSAppSyncClient.prototype.mutate as Mock).mockRejectedValueOnce(
         new Error('Something has gone wrong'),
       );
 
-      await handler(event, context, callback);
+      await expect(handler(event, context, callback)).rejects.toThrow(
+        'Something has gone wrong',
+      );
 
       expect(logger.error).toHaveBeenCalledWith('Something has gone wrong');
     });

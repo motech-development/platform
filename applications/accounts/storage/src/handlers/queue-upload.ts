@@ -56,5 +56,9 @@ export const handler: S3Handler = wrapHandler(async (event) => {
     QueueUrl: QUEUE_URL,
   });
 
-  await sqs.send(command);
+  const { Failed } = await sqs.send(command);
+
+  if (Failed && Failed.length > 0) {
+    throw new Error(`Failed to queue ${Failed.length} uploads for scanning`);
+  }
 });
