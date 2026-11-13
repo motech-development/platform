@@ -1,9 +1,11 @@
 import {
+  AttributeValue,
   BatchWriteItemCommand,
   DynamoDBClient,
   ScanCommand,
   StreamViewType,
   UpdateTableCommand,
+  WriteRequest,
 } from '@aws-sdk/client-dynamodb';
 import { marshall, unmarshall } from '@aws-sdk/util-dynamodb';
 import logger from '@motech-development/node-logger';
@@ -22,12 +24,50 @@ function chunkArray<T>(array: T[], chunkSize: number) {
   );
 }
 
-async function clear(target: string) {
+async function sleep(ms: number) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, process.env.NODE_ENV === 'test' ? 0 : ms);
+  });
+}
+
+async function write(
+  target: string,
+  requests: WriteRequest[],
+  attempt = 1,
+): Promise<void> {
+  const command = new BatchWriteItemCommand({
+    RequestItems: {
+      [target]: requests,
+    },
+  });
+
+  const { UnprocessedItems } = await client.send(command);
+
+  const unprocessed = UnprocessedItems?.[target] ?? [];
+
+  if (unprocessed.length === 0) {
+    return;
+  }
+
+  if (attempt === 5) {
+    throw new Error(`Unable to write ${unprocessed.length} items to ${target}`);
+  }
+
+  await sleep(2 ** attempt * 100);
+
+  await write(target, unprocessed, attempt + 1);
+}
+
+async function clear(
+  target: string,
+  exclusiveStartKey?: Record<string, AttributeValue>,
+) {
   const scan = new ScanCommand({
+    ExclusiveStartKey: exclusiveStartKey,
     TableName: target,
   });
 
-  const { Items } = await client.send(scan);
+  const { Items, LastEvaluatedKey } = await client.send(scan);
 
   logger.info(`Found ${Items?.length ?? 0} items to clear`);
 
@@ -35,35 +75,41 @@ async function clear(target: string) {
     const batches = chunkArray(Items, 25);
 
     await Promise.all(
-      batches.map((batch) => {
-        const write = new BatchWriteItemCommand({
-          RequestItems: {
-            [target]: batch.map((item) => ({
-              DeleteRequest: {
-                Key: {
-                  // eslint-disable-next-line no-underscore-dangle
-                  __typename: item.__typename,
-                  id: item.id,
-                },
+      batches.map((batch) =>
+        write(
+          target,
+          batch.map((item) => ({
+            DeleteRequest: {
+              Key: {
+                // eslint-disable-next-line no-underscore-dangle
+                __typename: item.__typename,
+                id: item.id,
               },
-            })),
-          },
-        });
-
-        return client.send(write);
-      }),
+            },
+          })),
+        ),
+      ),
     );
 
     logger.info('All data cleared');
   }
+
+  if (LastEvaluatedKey) {
+    await clear(target, LastEvaluatedKey);
+  }
 }
 
-async function restore(source: string, target: string) {
+async function restore(
+  source: string,
+  target: string,
+  exclusiveStartKey?: Record<string, AttributeValue>,
+) {
   const scan = new ScanCommand({
+    ExclusiveStartKey: exclusiveStartKey,
     TableName: source,
   });
 
-  const { Items } = await client.send(scan);
+  const { Items, LastEvaluatedKey } = await client.send(scan);
 
   logger.info(`Found ${Items?.length ?? 0} items to restore`);
 
@@ -77,17 +123,14 @@ async function restore(source: string, target: string) {
     await Promise.all(
       batches.map(async (batch, index) => {
         try {
-          const write = new BatchWriteItemCommand({
-            RequestItems: {
-              [target]: batch.map((item) => ({
-                PutRequest: {
-                  Item: marshall(item),
-                },
-              })),
-            },
-          });
-
-          await client.send(write);
+          await write(
+            target,
+            batch.map((item) => ({
+              PutRequest: {
+                Item: marshall(item),
+              },
+            })),
+          );
 
           logger.info(
             `Batch ${index + 1} of ${batches.length} processed successfully`,
@@ -106,13 +149,13 @@ async function restore(source: string, target: string) {
     );
   }
 
-  logger.info('All data restored');
-}
+  if (LastEvaluatedKey) {
+    await restore(source, target, LastEvaluatedKey);
 
-async function sleep(ms: number) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, process.env.NODE_ENV === 'test' ? 0 : ms);
-  });
+    return;
+  }
+
+  logger.info('All data restored');
 }
 
 function streams(target: string) {
@@ -162,21 +205,23 @@ export const handler: Handler = async () => {
 
   const { disable, enable } = streams(TARGET);
 
-  try {
-    await disable();
+  await disable();
 
+  try {
     await clear(TARGET);
 
     await restore(SOURCE, TARGET);
-
-    await sleep(120000);
-
-    await enable();
   } catch (e) {
     if (e instanceof Error) {
       logger.error(e.message);
     }
+
+    throw e;
   } finally {
+    await sleep(120000);
+
+    await enable();
+
     logger.info('Process complete');
   }
 };

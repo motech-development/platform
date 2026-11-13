@@ -166,9 +166,17 @@ describe('data-restore', () => {
 
         ddb.on(ScanCommand).rejects(error);
 
-        await handler(null, context, callback);
+        await expect(handler(null, context, callback)).rejects.toThrow(error);
 
         expect(logger.error).toHaveBeenCalledWith(error.message);
+
+        expect(ddb).toReceiveCommandWith(UpdateTableCommand, {
+          StreamSpecification: {
+            StreamEnabled: true,
+            StreamViewType: 'NEW_AND_OLD_IMAGES',
+          },
+          TableName: 'target-table',
+        });
       });
 
       it('should log an error if restore has en error', async () => {
@@ -214,12 +222,120 @@ describe('data-restore', () => {
           })
           .resolves({});
 
-        await handler(null, context, callback);
+        await expect(handler(null, context, callback)).rejects.toThrow(error);
 
         expect(logger.error).toHaveBeenCalledWith(
           'Error processing batch 1 of 1',
           error,
         );
+      });
+
+      it('should clear and restore every page of the tables', async () => {
+        const item = {
+          __typename: {
+            S: 'Transaction',
+          },
+          id: {
+            S: '1',
+          },
+        };
+
+        ddb
+          .on(ScanCommand)
+          .resolvesOnce({
+            Items: [item],
+            LastEvaluatedKey: item,
+          })
+          .resolvesOnce({
+            Items: [item],
+          })
+          .resolvesOnce({
+            Items: [item],
+            LastEvaluatedKey: item,
+          })
+          .resolvesOnce({
+            Items: [item],
+          })
+          .on(BatchWriteItemCommand)
+          .resolves({});
+
+        await handler(null, context, callback);
+
+        expect(ddb).toReceiveCommandWith(ScanCommand, {
+          ExclusiveStartKey: item,
+          TableName: 'target-table',
+        });
+
+        expect(ddb).toReceiveCommandWith(ScanCommand, {
+          ExclusiveStartKey: item,
+          TableName: 'source-table',
+        });
+
+        expect(ddb).toReceiveCommandTimes(BatchWriteItemCommand, 4);
+      });
+
+      describe('when items are left unprocessed', () => {
+        const request = {
+          DeleteRequest: {
+            Key: {
+              __typename: {
+                S: 'Transaction',
+              },
+              id: {
+                S: '1',
+              },
+            },
+          },
+        };
+
+        beforeEach(() => {
+          ddb
+            .on(ScanCommand, {
+              TableName: 'target-table',
+            })
+            .resolves({
+              Items: [request.DeleteRequest.Key],
+            })
+            .on(ScanCommand, {
+              TableName: 'source-table',
+            })
+            .resolves({
+              Items: [],
+            });
+        });
+
+        it('should retry the unprocessed items', async () => {
+          ddb
+            .on(BatchWriteItemCommand)
+            .resolvesOnce({
+              UnprocessedItems: {
+                'target-table': [request],
+              },
+            })
+            .resolves({});
+
+          await handler(null, context, callback);
+
+          expect(ddb).toReceiveNthCommandWith(BatchWriteItemCommand, 2, {
+            RequestItems: {
+              'target-table': [request],
+            },
+          });
+        });
+
+        it('should throw if items remain unprocessed after retrying', async () => {
+          ddb.on(BatchWriteItemCommand).resolves({
+            UnprocessedItems: {
+              'target-table': [request],
+            },
+          });
+
+          await expect(handler(null, context, callback)).rejects.toThrow(
+            'Unable to write 1 items to target-table',
+          );
+
+          expect(ddb).toReceiveCommandTimes(BatchWriteItemCommand, 5);
+        });
       });
     });
   });
