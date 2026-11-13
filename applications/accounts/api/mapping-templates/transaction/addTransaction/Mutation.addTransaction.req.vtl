@@ -1,4 +1,7 @@
-#set($id = $util.autoId())
+#set($id = $ctx.args.input.remove("id"))
+#if($util.isNullOrEmpty($id))
+  #set($id = $util.autoId())
+#end
 #set($companyId = $ctx.args.input.companyId)
 #set($date = $ctx.args.input.date)
 #set($status = $ctx.args.input.status)
@@ -26,6 +29,7 @@
     #end
   },
   "condition": {
-    "expression": "attribute_not_exists(id)"
+    "expression": "attribute_not_exists(id)",
+    "equalsIgnore": ["createdAt"]
   }
 }

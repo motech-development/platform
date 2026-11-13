@@ -3,6 +3,7 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { waitForApollo } from '@motech-development/appsync-apollo';
 import {
   act,
+  cleanup,
   fireEvent,
   render,
   screen,
@@ -46,6 +47,8 @@ vi.mock('pdfjs-dist/build/pdf.worker.min.mjs?url', () => ({
 }));
 
 describe('RecordTransaction', () => {
+  const transactionId = '00000000-0000-4000-8000-000000000000';
+
   let history: string[];
   let mocks: MockedResponse[];
   let upload: File;
@@ -66,6 +69,15 @@ describe('RecordTransaction', () => {
         body: 'success',
       }),
     );
+
+    vi.stubGlobal('crypto', {
+      ...crypto,
+      randomUUID: vi.fn().mockReturnValue(transactionId),
+    });
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
   });
 
   afterAll(() => {
@@ -173,7 +185,7 @@ describe('RecordTransaction', () => {
                     companyId: 'company-id',
                     date: '2020-05-07T10:58:17.000Z',
                     description: 'Laptop',
-                    id: '',
+                    id: transactionId,
                     name: 'Apple',
                     refund: false,
                     scheduled: false,
@@ -659,7 +671,7 @@ describe('RecordTransaction', () => {
                     companyId: 'company-id',
                     date: '2020-05-07T10:58:17.000Z',
                     description: 'Laptop',
-                    id: '',
+                    id: transactionId,
                     name: 'Apple',
                     refund: false,
                     scheduled: false,
@@ -1031,7 +1043,7 @@ describe('RecordTransaction', () => {
                   companyId: 'company-id',
                   date: '2020-05-07T10:58:17.000Z',
                   description: 'Laptop',
-                  id: '',
+                  id: transactionId,
                   name: 'Apple',
                   refund: true,
                   scheduled: false,
@@ -1339,7 +1351,7 @@ describe('RecordTransaction', () => {
                   companyId: 'company-id',
                   date: '2020-05-07T10:58:17.000Z',
                   description: 'Invoice #1',
-                  id: '',
+                  id: transactionId,
                   name: 'Motech Development',
                   refund: false,
                   scheduled: true,
@@ -1544,6 +1556,126 @@ describe('RecordTransaction', () => {
           }),
         );
       });
+
+      describe('when saving fails', () => {
+        beforeEach(async () => {
+          cleanup();
+
+          vi.mocked(crypto.randomUUID)
+            .mockReturnValueOnce(transactionId)
+            .mockReturnValue('11111111-1111-4111-8111-111111111111');
+
+          const [, , addTransaction] = mocks;
+
+          await act(async () => {
+            render(
+              <TestProvider
+                path="/accounts/:companyId/record-transaction"
+                history={history}
+              >
+                <MockedProvider
+                  mocks={[
+                    {
+                      error: new Error('Network error'),
+                      request: addTransaction.request,
+                    },
+                    ...mocks,
+                  ]}
+                >
+                  <RecordTransaction />
+                </MockedProvider>
+              </TestProvider>,
+            );
+
+            await waitForApollo(0);
+          });
+        });
+
+        it('should keep the form and resend the same transaction', async () => {
+          const transactionType = await screen.findByLabelText(
+            'transaction-form.transaction-details.transaction.options.sale',
+          );
+
+          fireEvent.click(transactionType);
+
+          const supplier = await screen.findByLabelText(
+            'transaction-form.transaction-details.name.label',
+          );
+          const description = await screen.findByLabelText(
+            'transaction-form.transaction-details.description.label',
+          );
+          const status = await screen.findByLabelText(
+            'transaction-form.transaction-amount.status.options.pending',
+          );
+
+          act(() => {
+            fireEvent.change(supplier, {
+              target: {
+                focus: () => {},
+                value: 'Motech Development',
+              },
+            });
+
+            fireEvent.change(description, {
+              target: {
+                focus: () => {},
+                value: 'Invoice #1',
+              },
+            });
+
+            fireEvent.click(status);
+          });
+
+          const schedule = await screen.findByLabelText(
+            'transaction-form.transaction-amount.schedule.options.yes',
+          );
+          const amount = await screen.findByLabelText(
+            'transaction-form.transaction-amount.amount.label',
+          );
+
+          act(() => {
+            fireEvent.click(schedule);
+
+            fireEvent.change(amount, {
+              target: {
+                focus: () => {},
+                value: '999.99',
+              },
+            });
+          });
+
+          const [, , button] = await screen.findAllByRole('button');
+
+          await waitFor(() => expect(button).not.toBeDisabled());
+
+          await act(async () => {
+            fireEvent.click(button);
+
+            await waitForApollo(0);
+          });
+
+          await waitFor(() =>
+            expect(add).toHaveBeenCalledWith({
+              colour: 'danger',
+              message: 'record-transaction.retry',
+            }),
+          );
+
+          await waitFor(() => expect(button).not.toBeDisabled());
+
+          await act(async () => {
+            fireEvent.click(button);
+
+            await waitForApollo(0);
+          });
+
+          await expect(
+            screen.findByTestId(
+              '/my-companies/accounts/company-id/pending-transactions',
+            ),
+          ).resolves.toBeInTheDocument();
+        });
+      });
     });
 
     describe('is a refund', () => {
@@ -1650,7 +1782,7 @@ describe('RecordTransaction', () => {
                   companyId: 'company-id',
                   date: '2020-05-07T10:58:17.000Z',
                   description: 'Invoice #1',
-                  id: '',
+                  id: transactionId,
                   name: 'Motech Development',
                   refund: true,
                   scheduled: true,

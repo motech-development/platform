@@ -182,6 +182,7 @@ function RecordTransaction() {
   invariant(companyId);
 
   const [attachment, setAttachment] = useState('');
+  const [transactionId] = useState(() => crypto.randomUUID());
   const { t } = useTranslation('accounts');
   const { add } = useToast();
   const backTo = (id: string, status?: string) => {
@@ -199,39 +200,44 @@ function RecordTransaction() {
       id: companyId,
     },
   });
-  const [mutation, { error: addError, loading: addLoading }] = useMutation(
-    ADD_TRANSACTION,
-    {
-      onCompleted: ({ addTransaction }) => {
-        if (addTransaction) {
-          add({
-            colour: 'success',
-            message: t('record-transaction.success'),
-          });
+  const [mutation, { loading: addLoading }] = useMutation(ADD_TRANSACTION, {
+    onCompleted: ({ addTransaction }) => {
+      if (addTransaction) {
+        add({
+          colour: 'success',
+          message: t('record-transaction.success'),
+        });
 
-          navigate(backTo(addTransaction.companyId, addTransaction.status));
-        } else {
-          add({
-            colour: 'danger',
-            message: t('record-transaction.retry'),
-          });
+        navigate(backTo(addTransaction.companyId, addTransaction.status));
+      } else {
+        add({
+          colour: 'danger',
+          message: t('record-transaction.retry'),
+        });
 
-          navigate(backTo(companyId));
-        }
-      },
+        navigate(backTo(companyId));
+      }
     },
-  );
+  });
   const save = (input: FormSchema) => {
     mutation({
       update,
       variables: {
-        input,
+        input: {
+          ...input,
+          id: transactionId,
+        },
       },
-    }).catch(() => {});
+    }).catch(() => {
+      add({
+        colour: 'danger',
+        message: t('record-transaction.retry'),
+      });
+    });
   };
 
   return (
-    <Connected error={error || addError} loading={loading}>
+    <Connected error={error} loading={loading}>
       {data?.getClients && data?.getSettings && (
         <>
           <PageTitle
