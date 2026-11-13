@@ -186,10 +186,19 @@ resources:
             Projection:
               ProjectionType: ALL
 
+    AntiVirusFailureDeadLetterQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        MessageRetentionPeriod: 1209600
+        QueueName: ${self:custom.prefix}-failure-dlq
+
     AntiVirusFailureQueue:
       Type: AWS::SQS::Queue
       Properties:
         QueueName: ${self:custom.prefix}-failure-queue
+        RedrivePolicy:
+          deadLetterTargetArn: !GetAtt AntiVirusFailureDeadLetterQueue.Arn
+          maxReceiveCount: 5
 
     AntiVirusQueue:
       Type: AWS::SQS::Queue
