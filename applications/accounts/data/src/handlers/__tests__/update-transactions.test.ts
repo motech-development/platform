@@ -1,5 +1,8 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { UpdateCommand } from '@aws-sdk/lib-dynamodb';
+import {
+  TransactWriteCommand,
+  TransactWriteCommandInput,
+} from '@aws-sdk/lib-dynamodb';
 import { marshall } from '@aws-sdk/util-dynamodb';
 import type { AttributeValue, DynamoDBRecord } from 'aws-lambda';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
@@ -388,147 +391,193 @@ describe('update-transactions', () => {
   });
 
   it('should return update with the correct params', async () => {
-    await Promise.all(updateTransactions(documentClient, tableName, records));
+    await Promise.all(
+      updateTransactions(documentClient, tableName, records).map((write) =>
+        write(),
+      ),
+    );
 
-    expect(ddb).toReceiveCommandWith(UpdateCommand, {
-      ExpressionAttributeNames: {
-        '#balance': 'balance',
-        '#itemProperty': '2019-12-15T00:00:00.000Z',
-        '#items': 'items',
-        '#updatedAt': 'updatedAt',
-        '#vat': 'vat',
-        '#vatProperty': 'paid',
-      },
-      ExpressionAttributeValues: {
-        ':balance': -100.25,
-        ':updatedAt': '2020-06-06T19:45:00.000Z',
-        ':vat': -1.2,
-      },
-      Key: {
-        __typename: 'Balance',
-        id: 'company-id',
-      },
-      TableName: 'test',
-      UpdateExpression:
-        'SET #updatedAt = :updatedAt ADD #balance :balance, #vat.#vatProperty :vat, #items.#itemProperty :balance',
+    expect(ddb).toReceiveCommandWith(TransactWriteCommand, {
+      TransactItems: expect.arrayContaining([
+        {
+          Update: {
+            ConditionExpression: 'attribute_exists(id)',
+            ExpressionAttributeNames: {
+              '#balance': 'balance',
+              '#itemProperty': '2019-12-15T00:00:00.000Z',
+              '#items': 'items',
+              '#updatedAt': 'updatedAt',
+              '#vat': 'vat',
+              '#vatProperty': 'paid',
+            },
+            ExpressionAttributeValues: {
+              ':balance': -100.25,
+              ':updatedAt': '2020-06-06T19:45:00.000Z',
+              ':vat': -1.2,
+            },
+            Key: {
+              __typename: 'Balance',
+              id: 'company-id',
+            },
+            TableName: 'test',
+            UpdateExpression:
+              'SET #updatedAt = :updatedAt ADD #balance :balance, #vat.#vatProperty :vat, #items.#itemProperty :balance',
+          },
+        },
+      ]) as TransactWriteCommandInput['TransactItems'],
     });
 
-    expect(ddb).toReceiveCommandWith(UpdateCommand, {
-      ExpressionAttributeNames: {
-        '#balance': 'balance',
-        '#itemPropertyNew': '2019-12-15T00:00:00.000Z',
-        '#itemPropertyOld': '2019-12-14T00:00:00.000Z',
-        '#items': 'items',
-        '#updatedAt': 'updatedAt',
-        '#vat': 'vat',
-        '#vatProperty': 'owed',
-      },
-      ExpressionAttributeValues: {
-        ':balance': -100.25,
-        ':itemPropertyNew': 100.25,
-        ':itemPropertyOld': 200.5,
-        ':updatedAt': '2020-06-06T19:45:00.000Z',
-        ':vat': -1.2,
-      },
-      Key: {
-        __typename: 'Balance',
-        id: 'company-id',
-      },
-      TableName: 'test',
-      UpdateExpression:
-        'SET #updatedAt = :updatedAt, #items.#itemPropertyOld = #items.#itemPropertyOld - :itemPropertyOld ADD #balance :balance, #vat.#vatProperty :vat, #items.#itemPropertyNew :itemPropertyNew',
+    expect(ddb).toReceiveCommandWith(TransactWriteCommand, {
+      TransactItems: expect.arrayContaining([
+        {
+          Update: {
+            ConditionExpression: 'attribute_exists(id)',
+            ExpressionAttributeNames: {
+              '#balance': 'balance',
+              '#itemPropertyNew': '2019-12-15T00:00:00.000Z',
+              '#itemPropertyOld': '2019-12-14T00:00:00.000Z',
+              '#items': 'items',
+              '#updatedAt': 'updatedAt',
+              '#vat': 'vat',
+              '#vatProperty': 'owed',
+            },
+            ExpressionAttributeValues: {
+              ':balance': -100.25,
+              ':itemPropertyNew': 100.25,
+              ':itemPropertyOld': 200.5,
+              ':updatedAt': '2020-06-06T19:45:00.000Z',
+              ':vat': -1.2,
+            },
+            Key: {
+              __typename: 'Balance',
+              id: 'company-id',
+            },
+            TableName: 'test',
+            UpdateExpression:
+              'SET #updatedAt = :updatedAt, #items.#itemPropertyOld = #items.#itemPropertyOld - :itemPropertyOld ADD #balance :balance, #vat.#vatProperty :vat, #items.#itemPropertyNew :itemPropertyNew',
+          },
+        },
+      ]) as TransactWriteCommandInput['TransactItems'],
     });
 
-    expect(ddb).toReceiveCommandWith(UpdateCommand, {
-      ExpressionAttributeNames: {
-        '#balance': 'balance',
-        '#itemProperty': '2019-12-14T00:00:00.000Z',
-        '#items': 'items',
-        '#updatedAt': 'updatedAt',
-        '#vat': 'vat',
-        '#vatProperty': 'owed',
-      },
-      ExpressionAttributeValues: {
-        ':balance': 200.5,
-        ':updatedAt': '2020-06-06T19:45:00.000Z',
-        ':vat': 2.4,
-      },
-      Key: {
-        __typename: 'Balance',
-        id: 'company-id',
-      },
-      TableName: 'test',
-      UpdateExpression:
-        'SET #updatedAt = :updatedAt, #balance = #balance - :balance, #vat.#vatProperty = #vat.#vatProperty - :vat, #items.#itemProperty = #items.#itemProperty - :balance',
+    expect(ddb).toReceiveCommandWith(TransactWriteCommand, {
+      TransactItems: expect.arrayContaining([
+        {
+          Update: {
+            ConditionExpression: 'attribute_exists(id)',
+            ExpressionAttributeNames: {
+              '#balance': 'balance',
+              '#itemProperty': '2019-12-14T00:00:00.000Z',
+              '#items': 'items',
+              '#updatedAt': 'updatedAt',
+              '#vat': 'vat',
+              '#vatProperty': 'owed',
+            },
+            ExpressionAttributeValues: {
+              ':balance': 200.5,
+              ':updatedAt': '2020-06-06T19:45:00.000Z',
+              ':vat': 2.4,
+            },
+            Key: {
+              __typename: 'Balance',
+              id: 'company-id',
+            },
+            TableName: 'test',
+            UpdateExpression:
+              'SET #updatedAt = :updatedAt, #balance = #balance - :balance, #vat.#vatProperty = #vat.#vatProperty - :vat, #items.#itemProperty = #items.#itemProperty - :balance',
+          },
+        },
+      ]) as TransactWriteCommandInput['TransactItems'],
     });
 
-    expect(ddb).toReceiveCommandWith(UpdateCommand, {
-      ExpressionAttributeNames: {
-        '#balance': 'balance',
-        '#itemProperty': '2019-12-15T00:00:00.000Z',
-        '#items': 'items',
-        '#updatedAt': 'updatedAt',
-        '#vat': 'vat',
-        '#vatProperty': 'owed',
-      },
-      ExpressionAttributeValues: {
-        ':balance': 100.25,
-        ':updatedAt': '2020-06-06T19:45:00.000Z',
-        ':vat': 1.2,
-      },
-      Key: {
-        __typename: 'Balance',
-        id: 'company-id',
-      },
-      TableName: 'test',
-      UpdateExpression:
-        'SET #updatedAt = :updatedAt ADD #balance :balance, #vat.#vatProperty :vat, #items.#itemProperty :balance',
+    expect(ddb).toReceiveCommandWith(TransactWriteCommand, {
+      TransactItems: expect.arrayContaining([
+        {
+          Update: {
+            ConditionExpression: 'attribute_exists(id)',
+            ExpressionAttributeNames: {
+              '#balance': 'balance',
+              '#itemProperty': '2019-12-15T00:00:00.000Z',
+              '#items': 'items',
+              '#updatedAt': 'updatedAt',
+              '#vat': 'vat',
+              '#vatProperty': 'owed',
+            },
+            ExpressionAttributeValues: {
+              ':balance': 100.25,
+              ':updatedAt': '2020-06-06T19:45:00.000Z',
+              ':vat': 1.2,
+            },
+            Key: {
+              __typename: 'Balance',
+              id: 'company-id',
+            },
+            TableName: 'test',
+            UpdateExpression:
+              'SET #updatedAt = :updatedAt ADD #balance :balance, #vat.#vatProperty :vat, #items.#itemProperty :balance',
+          },
+        },
+      ]) as TransactWriteCommandInput['TransactItems'],
     });
 
-    expect(ddb).toReceiveCommandWith(UpdateCommand, {
-      ExpressionAttributeNames: {
-        '#balance': 'balance',
-        '#itemProperty': '2019-12-14T00:00:00.000Z',
-        '#items': 'items',
-        '#updatedAt': 'updatedAt',
-        '#vat': 'vat',
-        '#vatProperty': 'owed',
-      },
-      ExpressionAttributeValues: {
-        ':balance': 200.5,
-        ':updatedAt': '2020-06-06T19:45:00.000Z',
-        ':vat': 200.5,
-      },
-      Key: {
-        __typename: 'Balance',
-        id: 'company-id',
-      },
-      TableName: 'test',
-      UpdateExpression:
-        'SET #updatedAt = :updatedAt, #balance = #balance - :balance, #vat.#vatProperty = #vat.#vatProperty - :vat, #items.#itemProperty = #items.#itemProperty - :balance',
+    expect(ddb).toReceiveCommandWith(TransactWriteCommand, {
+      TransactItems: expect.arrayContaining([
+        {
+          Update: {
+            ConditionExpression: 'attribute_exists(id)',
+            ExpressionAttributeNames: {
+              '#balance': 'balance',
+              '#itemProperty': '2019-12-14T00:00:00.000Z',
+              '#items': 'items',
+              '#updatedAt': 'updatedAt',
+              '#vat': 'vat',
+              '#vatProperty': 'owed',
+            },
+            ExpressionAttributeValues: {
+              ':balance': 200.5,
+              ':updatedAt': '2020-06-06T19:45:00.000Z',
+              ':vat': 200.5,
+            },
+            Key: {
+              __typename: 'Balance',
+              id: 'company-id',
+            },
+            TableName: 'test',
+            UpdateExpression:
+              'SET #updatedAt = :updatedAt, #balance = #balance - :balance, #vat.#vatProperty = #vat.#vatProperty - :vat, #items.#itemProperty = #items.#itemProperty - :balance',
+          },
+        },
+      ]) as TransactWriteCommandInput['TransactItems'],
     });
 
-    expect(ddb).toReceiveCommandWith(UpdateCommand, {
-      ExpressionAttributeNames: {
-        '#balance': 'balance',
-        '#itemProperty': '2019-12-15T00:00:00.000Z',
-        '#items': 'items',
-        '#updatedAt': 'updatedAt',
-        '#vat': 'vat',
-        '#vatProperty': 'owed',
-      },
-      ExpressionAttributeValues: {
-        ':balance': 100.25,
-        ':updatedAt': '2020-06-06T19:45:00.000Z',
-        ':vat': 100.25,
-      },
-      Key: {
-        __typename: 'Balance',
-        id: 'company-id',
-      },
-      TableName: 'test',
-      UpdateExpression:
-        'SET #updatedAt = :updatedAt ADD #balance :balance, #vat.#vatProperty :vat, #items.#itemProperty :balance',
+    expect(ddb).toReceiveCommandWith(TransactWriteCommand, {
+      TransactItems: expect.arrayContaining([
+        {
+          Update: {
+            ConditionExpression: 'attribute_exists(id)',
+            ExpressionAttributeNames: {
+              '#balance': 'balance',
+              '#itemProperty': '2019-12-15T00:00:00.000Z',
+              '#items': 'items',
+              '#updatedAt': 'updatedAt',
+              '#vat': 'vat',
+              '#vatProperty': 'owed',
+            },
+            ExpressionAttributeValues: {
+              ':balance': 100.25,
+              ':updatedAt': '2020-06-06T19:45:00.000Z',
+              ':vat': 100.25,
+            },
+            Key: {
+              __typename: 'Balance',
+              id: 'company-id',
+            },
+            TableName: 'test',
+            UpdateExpression:
+              'SET #updatedAt = :updatedAt ADD #balance :balance, #vat.#vatProperty :vat, #items.#itemProperty :balance',
+          },
+        },
+      ]) as TransactWriteCommandInput['TransactItems'],
     });
   });
 
@@ -573,48 +622,55 @@ describe('update-transactions', () => {
                   >,
                 },
               },
-            ]),
+            ]).map((write) => write()),
           );
 
-          expect(ddb).toReceiveCommandTimes(UpdateCommand, 1);
-          expect(ddb).toReceiveCommandWith(UpdateCommand, {
-            ExpressionAttributeNames: {
-              '#balance': 'balance',
-              '#items': 'items',
-              ...(date === oldDate
-                ? {
-                    '#itemProperty': date,
-                  }
-                : {
-                    '#itemPropertyNew': date,
-                    '#itemPropertyOld': oldDate,
-                  }),
-              '#updatedAt': 'updatedAt',
-              '#vat': 'vat',
-              '#vatPropertyNew': newBucket,
-              '#vatPropertyOld': oldBucket,
-            },
-            ExpressionAttributeValues: {
-              ':balance': -100.25,
-              ...(date === oldDate
-                ? {}
-                : {
-                    ':itemPropertyNew': -200.5,
-                    ':itemPropertyOld': -100.25,
-                  }),
-              ':updatedAt': '2020-06-06T19:45:00.000Z',
-              ':vatNew': newVat,
-              ':vatOld': oldVat,
-            },
-            Key: {
-              __typename: 'Balance',
-              id: 'company-id',
-            },
-            TableName: tableName,
-            UpdateExpression:
-              date === oldDate
-                ? 'SET #updatedAt = :updatedAt, #vat.#vatPropertyOld = #vat.#vatPropertyOld - :vatOld ADD #balance :balance, #vat.#vatPropertyNew :vatNew, #items.#itemProperty :balance'
-                : 'SET #updatedAt = :updatedAt, #vat.#vatPropertyOld = #vat.#vatPropertyOld - :vatOld, #items.#itemPropertyOld = #items.#itemPropertyOld - :itemPropertyOld ADD #balance :balance, #vat.#vatPropertyNew :vatNew, #items.#itemPropertyNew :itemPropertyNew',
+          expect(ddb).toReceiveCommandTimes(TransactWriteCommand, 1);
+          expect(ddb).toReceiveCommandWith(TransactWriteCommand, {
+            TransactItems: expect.arrayContaining([
+              {
+                Update: {
+                  ConditionExpression: 'attribute_exists(id)',
+                  ExpressionAttributeNames: {
+                    '#balance': 'balance',
+                    '#items': 'items',
+                    ...(date === oldDate
+                      ? {
+                          '#itemProperty': date,
+                        }
+                      : {
+                          '#itemPropertyNew': date,
+                          '#itemPropertyOld': oldDate,
+                        }),
+                    '#updatedAt': 'updatedAt',
+                    '#vat': 'vat',
+                    '#vatPropertyNew': newBucket,
+                    '#vatPropertyOld': oldBucket,
+                  },
+                  ExpressionAttributeValues: {
+                    ':balance': -100.25,
+                    ...(date === oldDate
+                      ? {}
+                      : {
+                          ':itemPropertyNew': -200.5,
+                          ':itemPropertyOld': -100.25,
+                        }),
+                    ':updatedAt': '2020-06-06T19:45:00.000Z',
+                    ':vatNew': newVat,
+                    ':vatOld': oldVat,
+                  },
+                  Key: {
+                    __typename: 'Balance',
+                    id: 'company-id',
+                  },
+                  TableName: tableName,
+                  UpdateExpression:
+                    date === oldDate
+                      ? 'SET #updatedAt = :updatedAt, #vat.#vatPropertyOld = #vat.#vatPropertyOld - :vatOld ADD #balance :balance, #vat.#vatPropertyNew :vatNew, #items.#itemProperty :balance'
+                      : 'SET #updatedAt = :updatedAt, #vat.#vatPropertyOld = #vat.#vatPropertyOld - :vatOld, #items.#itemPropertyOld = #items.#itemPropertyOld - :itemPropertyOld ADD #balance :balance, #vat.#vatPropertyNew :vatNew, #items.#itemPropertyNew :itemPropertyNew',
+                },
+              },
+            ]) as TransactWriteCommandInput['TransactItems'],
           });
         },
       );
@@ -622,8 +678,12 @@ describe('update-transactions', () => {
   );
 
   it('should call update the correct number of times', async () => {
-    await Promise.all(updateTransactions(documentClient, tableName, records));
+    await Promise.all(
+      updateTransactions(documentClient, tableName, records).map((write) =>
+        write(),
+      ),
+    );
 
-    expect(ddb).toReceiveCommandTimes(UpdateCommand, 6);
+    expect(ddb).toReceiveCommandTimes(TransactWriteCommand, 6);
   });
 });

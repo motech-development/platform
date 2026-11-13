@@ -140,8 +140,8 @@ describe('clear-attachments', () => {
         ddb.on(UpdateCommand).rejectsOnce(error);
       });
 
-      it('should swallow the error', async () => {
-        await handler(event, context, callback);
+      it('should log and throw the error', async () => {
+        await expect(handler(event, context, callback)).rejects.toThrow(error);
 
         expect(logger.error).toHaveBeenCalledWith('An error occurred', error);
       });

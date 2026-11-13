@@ -44,6 +44,7 @@ functions:
           type: dynamodb
           arn: !GetAtt ApplicationTable.StreamArn
           startingPosition: LATEST
+          maximumRetryAttempts: 4
     environment:
       ATTACHMENT_QUEUE: !ImportValue ${self:provider.stage}-DeleteFileQueueUrl
       SENTRY_DSN: ${env:SENTRY_DSN}
@@ -95,6 +96,7 @@ functions:
           type: dynamodb
           arn: !GetAtt ApplicationTable.StreamArn
           startingPosition: LATEST
+          maximumRetryAttempts: 4
     environment:
       SENTRY_DSN: ${env:SENTRY_DSN}
       TABLE: !Ref ApplicationTable

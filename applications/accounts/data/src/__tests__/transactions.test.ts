@@ -1,5 +1,5 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { UpdateCommand } from '@aws-sdk/lib-dynamodb';
+import { TransactWriteCommand } from '@aws-sdk/lib-dynamodb';
 import logger from '@motech-development/node-logger';
 import type { Context, DynamoDBStreamEvent } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
@@ -286,13 +286,13 @@ describe('transactions', () => {
 
         await handler(event, context, callback);
 
-        expect(ddb).toReceiveCommandTimes(UpdateCommand, 0);
+        expect(ddb).toReceiveCommandTimes(TransactWriteCommand, 0);
       });
 
       it('should update the correct number of records', async () => {
         await handler(event, context, callback);
 
-        expect(ddb).toReceiveCommandTimes(UpdateCommand, 3);
+        expect(ddb).toReceiveCommandTimes(TransactWriteCommand, 3);
       });
     });
 
@@ -302,13 +302,19 @@ describe('transactions', () => {
       beforeEach(() => {
         error = new Error('Something has gone wrong');
 
-        ddb.on(UpdateCommand).rejectsOnce(error);
+        ddb.on(TransactWriteCommand).rejectsOnce(error);
       });
 
-      it('should swallow the error', async () => {
-        await handler(event, context, callback);
+      it('should log and throw the error', async () => {
+        await expect(handler(event, context, callback)).rejects.toThrow(error);
 
         expect(logger.error).toHaveBeenCalledWith('An error occurred', error);
+      });
+
+      it('should not start the remaining updates', async () => {
+        await expect(handler(event, context, callback)).rejects.toThrow(error);
+
+        expect(ddb).toReceiveCommandTimes(TransactWriteCommand, 1);
       });
     });
   });

@@ -21,13 +21,21 @@ const documentClient = new DynamoDBClient({});
 export const handler: DynamoDBStreamHandler = wrapHandler(async (event) => {
   const { TABLE, inserts, removals, updates } = extractStream(event);
 
+  const writes = [
+    ...insertTransactions(documentClient, TABLE, inserts),
+    ...updateTransactions(documentClient, TABLE, updates),
+    ...removeTransactions(documentClient, TABLE, removals),
+  ];
+
   try {
-    await Promise.all([
-      ...insertTransactions(documentClient, TABLE, inserts),
-      ...updateTransactions(documentClient, TABLE, updates),
-      ...removeTransactions(documentClient, TABLE, removals),
-    ]);
+    // Concurrent transactions on one balance cancel each other, so apply them in turn.
+    await writes.reduce(
+      (previous, write) => previous.then(write),
+      Promise.resolve(),
+    );
   } catch (e) {
     logger.error('An error occurred', e);
+
+    throw e;
   }
 });

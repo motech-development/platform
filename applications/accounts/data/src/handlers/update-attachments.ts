@@ -2,6 +2,7 @@ import { join } from 'node:path';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import {
   QueryCommand,
+  QueryCommandInput,
   UpdateCommand,
   UpdateCommandOutput,
 } from '@aws-sdk/lib-dynamodb';
@@ -49,6 +50,26 @@ const hasObjectAttributes = (
 ): attribute is IFilteredData =>
   !!attribute.__typename || !!attribute.id || !!attribute.owner;
 
+const queryPages = async (
+  documentClient: DynamoDBClient,
+  input: QueryCommandInput,
+): Promise<Record<string, NativeAttributeValue>[]> => {
+  const command = new QueryCommand(input);
+
+  const { Items = [], LastEvaluatedKey } = await documentClient.send(command);
+
+  if (!LastEvaluatedKey) {
+    return Items;
+  }
+
+  const next = await queryPages(documentClient, {
+    ...input,
+    ExclusiveStartKey: LastEvaluatedKey,
+  });
+
+  return [...Items, ...next];
+};
+
 const updateAttachments = async (
   documentClient: DynamoDBClient,
   tableName: string,
@@ -76,7 +97,7 @@ const updateAttachments = async (
       const [owner, id, name] = decodeURIComponent(key.stringValue).split('/');
       const attachment = join(id, name);
       const { typename } = JSON.parse(metadata.stringValue) as IMetadata;
-      const command = new QueryCommand({
+      const input: QueryCommandInput = {
         ExpressionAttributeNames: {
           '#attachment': 'attachment',
           '#data': 'data',
@@ -95,21 +116,14 @@ const updateAttachments = async (
           '#typename = :typename AND begins_with(#data, :data)',
         ProjectionExpression: 'id, #owner, #typename',
         TableName: tableName,
-      });
+      };
 
-      return documentClient.send(command);
+      return queryPages(documentClient, input);
     });
 
   const results = await Promise.all(query);
 
-  const filtered = results
-    .filter(({ Items }) => Items && Items.length > 0)
-    .map(({ Items }) => Items as Record<string, NativeAttributeValue>)
-    .reduce(
-      (acc: Record<string, NativeAttributeValue>[], items) => acc.concat(items),
-      [],
-    )
-    .filter(hasObjectAttributes);
+  const filtered = results.flat().filter(hasObjectAttributes);
 
   const update = filtered.map(({ __typename, id }) => {
     const command = new UpdateCommand({

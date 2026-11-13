@@ -39,5 +39,7 @@ export const handler: SQSHandler = wrapHandler(async (event) => {
     await Promise.all(updates);
   } catch (e) {
     logger.error('An error occurred', e);
+
+    throw e;
   }
 });

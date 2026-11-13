@@ -2,15 +2,18 @@ import { NativeAttributeValue, unmarshall } from '@aws-sdk/util-dynamodb';
 import type { DynamoDBRecord, StreamRecord } from 'aws-lambda';
 
 interface IUnmarshallAllRecords<T> {
+  eventID: string;
   NewImage: T;
   OldImage: T;
 }
 
 interface IUnmarshallNewRecords<T> {
+  eventID: string;
   NewImage: T;
 }
 
 interface IUnmarshallOldRecords<T> {
+  eventID: string;
   OldImage: T;
 }
 
@@ -21,7 +24,10 @@ interface IRecord {
 const getRecords = (records: DynamoDBRecord[]) =>
   records
     .filter((record) => record.dynamodb !== undefined)
-    .map((record) => record.dynamodb as StreamRecord);
+    .map(({ dynamodb, eventID }) => ({
+      ...(dynamodb as StreamRecord),
+      eventID: eventID as string,
+    }));
 
 export const unmarshallAllRecords = <T extends IRecord>(
   records: DynamoDBRecord[],
@@ -34,7 +40,7 @@ export const unmarshallAllRecords = <T extends IRecord>(
       return NewImage !== undefined && OldImage !== undefined;
     })
     .map((record) => {
-      const { NewImage, OldImage } = record;
+      const { eventID, NewImage, OldImage } = record;
 
       return {
         NewImage: unmarshall(
@@ -43,6 +49,7 @@ export const unmarshallAllRecords = <T extends IRecord>(
         OldImage: unmarshall(
           OldImage as Record<string, NativeAttributeValue>,
         ) as T,
+        eventID,
       };
     })
     .filter(
@@ -61,12 +68,13 @@ export const unmarshallNewRecords = <T extends IRecord>(
       return NewImage !== undefined;
     })
     .map((record) => {
-      const { NewImage } = record;
+      const { eventID, NewImage } = record;
 
       return {
         NewImage: unmarshall(
           NewImage as Record<string, NativeAttributeValue>,
         ) as T,
+        eventID,
       };
     })
     .filter(({ NewImage }) => NewImage.__typename === typename);
@@ -82,12 +90,13 @@ export const unmarshallOldRecords = <T extends IRecord>(
       return OldImage !== undefined;
     })
     .map((record) => {
-      const { OldImage } = record;
+      const { eventID, OldImage } = record;
 
       return {
         OldImage: unmarshall(
           OldImage as Record<string, NativeAttributeValue>,
         ) as T,
+        eventID,
       };
     })
     .filter(({ OldImage }) => OldImage.__typename === typename);
