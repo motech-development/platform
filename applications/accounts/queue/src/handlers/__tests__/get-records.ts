@@ -103,6 +103,7 @@ describe('get-records', () => {
           IndexName: '__typename-data-index',
           KeyConditionExpression:
             '#typename = :typename AND begins_with(#data, :data)',
+          Limit: 25,
           ProjectionExpression: 'id',
           TableName: 'app-table',
         });
@@ -115,7 +116,9 @@ describe('get-records', () => {
           complete: false,
           count: items.length,
           current: 0,
+          id: 'company-id',
           items,
+          owner: 'owner-id',
         });
       });
     });
