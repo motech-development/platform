@@ -170,7 +170,7 @@ stepFunctions:
                   DeleteClients:
                     Type: Task
                     Resource: !GetAtt DeleteClientsLambdaFunction.Arn
-                    Next: IsDeleteClientsComplete
+                    Next: GetClients
 
                   IsDeleteClientsComplete:
                     Type: Choice
@@ -194,7 +194,7 @@ stepFunctions:
                   DeleteReports:
                     Type: Task
                     Resource: !GetAtt DeleteReportsLambdaFunction.Arn
-                    Next: IsDeleteReportsComplete
+                    Next: GetReports
 
                   IsDeleteReportsComplete:
                     Type: Choice
@@ -218,7 +218,7 @@ stepFunctions:
                   DeleteTransactions:
                     Type: Task
                     Resource: !GetAtt DeleteTransactionsLambdaFunction.Arn
-                    Next: IsDeleteTransactionsComplete
+                    Next: GetTransactions
 
                   IsDeleteTransactionsComplete:
                     Type: Choice
