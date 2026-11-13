@@ -76,6 +76,7 @@ describe('update-transactions', () => {
             },
           },
         },
+        eventID: 'event-1',
       },
       {
         awsRegion: 'eu-west-1',
@@ -127,6 +128,7 @@ describe('update-transactions', () => {
             },
           },
         },
+        eventID: 'event-2',
       },
       {
         awsRegion: 'eu-west-1',
@@ -178,6 +180,7 @@ describe('update-transactions', () => {
             },
           },
         },
+        eventID: 'event-3',
       },
       {
         awsRegion: 'eu-west-1',
@@ -229,6 +232,7 @@ describe('update-transactions', () => {
             },
           },
         },
+        eventID: 'event-4',
       },
       {
         awsRegion: 'eu-west-1',
@@ -280,6 +284,7 @@ describe('update-transactions', () => {
             },
           },
         },
+        eventID: 'event-5',
       },
       {
         awsRegion: 'eu-west-1',
@@ -331,6 +336,7 @@ describe('update-transactions', () => {
             },
           },
         },
+        eventID: 'event-6',
       },
       {
         awsRegion: 'eu-west-1',
@@ -382,6 +388,7 @@ describe('update-transactions', () => {
             },
           },
         },
+        eventID: 'event-7',
       },
     ];
   });
@@ -685,5 +692,29 @@ describe('update-transactions', () => {
     );
 
     expect(ddb).toReceiveCommandTimes(TransactWriteCommand, 6);
+  });
+
+  it('should record the stream event with the balance update', async () => {
+    await Promise.all(
+      updateTransactions(documentClient, tableName, records).map((write) =>
+        write(),
+      ),
+    );
+
+    expect(ddb).toReceiveCommandWith(TransactWriteCommand, {
+      TransactItems: expect.arrayContaining([
+        {
+          Put: {
+            ConditionExpression: 'attribute_not_exists(id)',
+            Item: {
+              __typename: 'BalanceEvent',
+              id: 'event-1',
+              ttl: 1592077500,
+            },
+            TableName: 'test',
+          },
+        },
+      ]) as TransactWriteCommandInput['TransactItems'],
+    });
   });
 });
