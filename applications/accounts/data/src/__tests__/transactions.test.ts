@@ -1,5 +1,8 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { TransactWriteCommand } from '@aws-sdk/lib-dynamodb';
+import {
+  TransactWriteCommand,
+  TransactWriteCommandInput,
+} from '@aws-sdk/lib-dynamodb';
 import logger from '@motech-development/node-logger';
 import type { Context, DynamoDBStreamEvent } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
@@ -97,6 +100,7 @@ describe('transactions', () => {
               },
             },
           },
+          eventID: 'event-1',
           eventName: 'INSERT' as const,
         },
         {
@@ -172,6 +176,7 @@ describe('transactions', () => {
               },
             },
           },
+          eventID: 'event-2',
           eventName: 'MODIFY' as const,
         },
         {
@@ -247,6 +252,7 @@ describe('transactions', () => {
               },
             },
           },
+          eventID: 'event-3',
           eventName: 'REMOVE' as const,
         },
       ],
@@ -293,6 +299,24 @@ describe('transactions', () => {
         await handler(event, context, callback);
 
         expect(ddb).toReceiveCommandTimes(TransactWriteCommand, 3);
+
+        ['event-1', 'event-2', 'event-3'].forEach((id) => {
+          expect(ddb).toReceiveCommandWith(TransactWriteCommand, {
+            TransactItems: expect.arrayContaining([
+              {
+                Put: {
+                  ConditionExpression: 'attribute_not_exists(id)',
+                  Item: {
+                    __typename: 'BalanceEvent',
+                    id,
+                    ttl: expect.any(Number) as number,
+                  },
+                  TableName: 'app-table',
+                },
+              },
+            ]) as TransactWriteCommandInput['TransactItems'],
+          });
+        });
       });
     });
 
