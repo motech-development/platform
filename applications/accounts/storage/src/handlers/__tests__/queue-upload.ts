@@ -84,6 +84,8 @@ describe('queue-upload', () => {
 
       process.env.QUEUE_URL = 'https://sqs-queue';
       process.env.DOWNLOAD_BUCKET = 'download-bucket';
+
+      sqs.on(SendMessageBatchCommand).resolves({});
     });
 
     afterEach(() => {
@@ -134,6 +136,22 @@ describe('queue-upload', () => {
         ],
         QueueUrl: 'https://sqs-queue',
       });
+    });
+
+    it('should throw if any upload could not be queued', async () => {
+      sqs.on(SendMessageBatchCommand).resolves({
+        Failed: [
+          {
+            Code: 'InternalError',
+            Id: 'file-1',
+            SenderFault: false,
+          },
+        ],
+      });
+
+      await expect(handler(event, context, callback)).rejects.toThrow(
+        'Failed to queue 1 uploads for scanning',
+      );
     });
   });
 });

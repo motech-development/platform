@@ -130,5 +130,7 @@ export const handler: DynamoDBStreamHandler = wrapHandler(async (event) => {
     } else {
       logger.error('Unhandled exception', e);
     }
+
+    throw e;
   }
 });
