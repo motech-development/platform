@@ -278,6 +278,10 @@ describe('attachments', () => {
     });
 
     describe('when there are no errors thrown by SQS', () => {
+      beforeEach(() => {
+        sqs.on(SendMessageBatchCommand).resolves({});
+      });
+
       it('should do nothing if there is nothing to process', async () => {
         event = {
           Records: [],
@@ -304,8 +308,8 @@ describe('attachments', () => {
         sqs.on(SendMessageBatchCommand).rejectsOnce(error);
       });
 
-      it('should swallow the error', async () => {
-        await handler(event, context, callback);
+      it('should log and throw the error', async () => {
+        await expect(handler(event, context, callback)).rejects.toThrow(error);
 
         expect(logger.error).toHaveBeenCalledWith('An error occurred', error);
       });

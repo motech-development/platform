@@ -1,5 +1,4 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { UpdateCommandOutput } from '@aws-sdk/lib-dynamodb';
 import type { DynamoDBRecord } from 'aws-lambda';
 import { remove } from '../shared/balance';
 import { ITransaction, TransactionStatus } from '../shared/transaction';
@@ -9,7 +8,7 @@ const removeTransactions = (
   documentClient: DynamoDBClient,
   tableName: string,
   records: DynamoDBRecord[],
-): Promise<UpdateCommandOutput>[] => {
+): (() => Promise<void>)[] => {
   const unmarshalledRecords = unmarshallOldRecords<ITransaction>(
     records,
     'Transaction',
@@ -17,7 +16,11 @@ const removeTransactions = (
 
   return unmarshalledRecords
     .filter(({ OldImage }) => OldImage.status === TransactionStatus.Confirmed)
-    .map(({ OldImage }) => remove(documentClient, tableName, OldImage));
+    .map(
+      ({ eventID, OldImage }) =>
+        () =>
+          remove(documentClient, tableName, OldImage, eventID),
+    );
 };
 
 export default removeTransactions;

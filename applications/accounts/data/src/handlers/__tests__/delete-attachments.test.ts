@@ -1,5 +1,6 @@
 import { SendMessageBatchCommand, SQSClient } from '@aws-sdk/client-sqs';
-import type { DynamoDBRecord } from 'aws-lambda';
+import { marshall } from '@aws-sdk/util-dynamodb';
+import type { AttributeValue, DynamoDBRecord } from 'aws-lambda';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import deleteAttachments from '../delete-attachments';
 
@@ -12,6 +13,8 @@ describe('delete-attachments', () => {
     client = new SQSClient({});
     queueUrl = 'https://queue-url';
     sqs = mockClient(SQSClient);
+
+    sqs.on(SendMessageBatchCommand).resolves({});
   });
 
   it('should not call sendMessageBatch if there are no attachments to process', async () => {
@@ -248,5 +251,32 @@ describe('delete-attachments', () => {
       ],
       QueueUrl: 'https://queue-url',
     });
+  });
+
+  it('should throw if any deletion could not be queued', async () => {
+    sqs.on(SendMessageBatchCommand).resolves({
+      Failed: [
+        {
+          Code: 'InternalError',
+          Id: '1',
+          SenderFault: false,
+        },
+      ],
+    });
+
+    await expect(
+      deleteAttachments(client, queueUrl, [
+        {
+          dynamodb: {
+            OldImage: marshall({
+              __typename: 'Transaction',
+              attachment: 'path/to/file-1.pdf',
+              id: '1',
+              owner: 'owner',
+            }) as Record<string, AttributeValue>,
+          },
+        },
+      ]),
+    ).rejects.toThrow('Failed to queue 1 attachment deletions');
   });
 });

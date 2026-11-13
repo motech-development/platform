@@ -190,4 +190,38 @@ describe('update-attachments', () => {
 
     expect(ddb).toReceiveCommandTimes(UpdateCommand, 2);
   });
+
+  it('should find a transaction on a later page', async () => {
+    ddb.reset();
+
+    ddb
+      .on(QueryCommand)
+      .resolvesOnce({
+        Items: [],
+        LastEvaluatedKey: {
+          id: 'id-0',
+        },
+      })
+      .resolvesOnce({
+        Items: [
+          {
+            __typename: 'Something',
+            id: 'id-1',
+            owner: 'owner',
+          },
+        ],
+      });
+
+    await Promise.all(
+      await updateAttachments(documentClient, tableName, bucket, [records[0]]),
+    );
+
+    expect(ddb).toReceiveNthCommandWith(QueryCommand, 2, {
+      ExclusiveStartKey: {
+        id: 'id-0',
+      },
+    });
+
+    expect(ddb).toReceiveCommandTimes(UpdateCommand, 2);
+  });
 });
