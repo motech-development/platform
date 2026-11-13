@@ -1,6 +1,6 @@
-import { existsSync } from 'node:fs';
+import { createWriteStream, existsSync } from 'node:fs';
 import { mkdir } from 'node:fs/promises';
-import { Readable } from 'node:stream';
+import { Readable, Writable } from 'node:stream';
 import {
   CopyObjectCommand,
   CreateMultipartUploadCommand,
@@ -226,6 +226,35 @@ describe('s3-file-operations', () => {
         downloadFile('upload-bucket', 'file.txt', 'download-bucket'),
       ).rejects.toThrow('Unable to stream file');
     });
+
+    it('should resolve once the file has been written', async () => {
+      let written = false;
+
+      (createWriteStream as Mock).mockReturnValueOnce(
+        new Writable({
+          final(callback) {
+            setTimeout(() => {
+              written = true;
+
+              callback();
+            }, 10);
+          },
+          write(_chunk, _encoding, callback) {
+            callback();
+          },
+        }),
+      );
+
+      s3.on(GetObjectCommand).resolves({
+        Body: sdkStreamMixin(Readable.from(['file contents'])),
+      });
+
+      await expect(
+        downloadFile('upload-bucket', 'file.txt', '/tmp'),
+      ).resolves.toBe('/tmp/file.txt');
+
+      expect(written).toBe(true);
+    });
   });
 
   describe('getFileData', () => {
@@ -268,13 +297,28 @@ describe('s3-file-operations', () => {
         Key: 'test.pdf',
       });
     });
+
+    it('should delete the original with the client it was given', async () => {
+      const client = new S3Client({});
+      const injected = mockClient(client);
+
+      await moveFile(from, to, key, client);
+
+      expect(injected).toHaveReceivedCommandWith(DeleteObjectCommand, {
+        Bucket: 'upload-bucket',
+        Key: 'test.pdf',
+      });
+    });
   });
 
   describe('removeFolder', () => {
     beforeEach(() => {
-      s3.on(ListObjectsV2Command).resolves({
-        Contents: [],
-      });
+      s3.on(ListObjectsV2Command)
+        .resolves({
+          Contents: [],
+        })
+        .on(DeleteObjectsCommand)
+        .resolves({});
     });
 
     it('should call listObjectsV2 with the correct params', async () => {
@@ -338,6 +382,61 @@ describe('s3-file-operations', () => {
       await removeFolder('bucket', '/test');
 
       expect(s3).toReceiveCommandTimes(DeleteObjectsCommand, 2);
+    });
+
+    it('should keep using the client it was given if listObjects is truncated', async () => {
+      const client = new S3Client({});
+      const injected = mockClient(client);
+
+      injected
+        .on(ListObjectsV2Command)
+        .resolvesOnce({
+          Contents: [
+            {
+              Key: '/test/test-1.pdf',
+            },
+          ],
+          IsTruncated: true,
+        })
+        .resolvesOnce({
+          Contents: [
+            {
+              Key: '/test/test-2.pdf',
+            },
+          ],
+          IsTruncated: false,
+        })
+        .on(DeleteObjectsCommand)
+        .resolves({});
+
+      await removeFolder('bucket', '/test', client);
+
+      expect(injected).toReceiveCommandTimes(DeleteObjectsCommand, 2);
+    });
+
+    it('should throw if any object could not be deleted', async () => {
+      s3.on(ListObjectsV2Command)
+        .resolves({
+          Contents: [
+            {
+              Key: '/test/test-1.pdf',
+            },
+          ],
+          IsTruncated: false,
+        })
+        .on(DeleteObjectsCommand)
+        .resolves({
+          Errors: [
+            {
+              Code: 'AccessDenied',
+              Key: '/test/test-1.pdf',
+            },
+          ],
+        });
+
+      await expect(removeFolder('bucket', '/test')).rejects.toThrow(
+        'Unable to delete 1 objects',
+      );
     });
   });
 

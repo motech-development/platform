@@ -2,6 +2,7 @@ import { createWriteStream, existsSync, ReadStream } from 'node:fs';
 import { mkdir } from 'node:fs/promises';
 import { basename, join } from 'node:path';
 import { Readable } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
 import {
   CopyObjectCommand,
   DeleteObjectCommand,
@@ -129,14 +130,9 @@ export const downloadFile = async (
 
   const stream = await downloadFileStream(bucket, key, client);
 
-  return new Promise<string>((resolve, reject) => {
-    stream
-      .on('end', () => {
-        resolve(filePath);
-      })
-      .on('error', reject)
-      .pipe(fileStream);
-  });
+  await pipeline(stream, fileStream);
+
+  return filePath;
 };
 
 export const getFileData = async (
@@ -170,7 +166,7 @@ export const moveFile = async (
 
   await client.send(command);
 
-  await deleteFile(from, key);
+  await deleteFile(from, key, client);
 };
 
 export const removeFolder = async (
@@ -201,10 +197,14 @@ export const removeFolder = async (
       },
     });
 
-    await client.send(deleteObjectsCommand);
+    const { Errors } = await client.send(deleteObjectsCommand);
+
+    if (Errors && Errors.length > 0) {
+      throw new Error(`Unable to delete ${Errors.length} objects`);
+    }
 
     if (listedObjects.IsTruncated) {
-      await removeFolder(bucket, key);
+      await removeFolder(bucket, key, client);
     }
   }
 };
