@@ -28,7 +28,6 @@ export const handler: DynamoDBStreamHandler = wrapHandler(async (event) => {
   ];
 
   try {
-    // Concurrent transactions on one balance cancel each other, so apply them in turn.
     await writes.reduce(
       (previous, write) => previous.then(write),
       Promise.resolve(),

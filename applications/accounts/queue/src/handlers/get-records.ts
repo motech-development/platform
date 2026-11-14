@@ -56,7 +56,6 @@ export const handler: Handler<IEvent> = wrapHandler(async (event) => {
     IndexName: '__typename-data-index',
     KeyConditionExpression:
       '#typename = :typename AND begins_with(#data, :data)',
-    // One batch per pass; the workflow queries again until nothing is left.
     Limit: 25,
     ProjectionExpression: 'id',
     TableName: TABLE,

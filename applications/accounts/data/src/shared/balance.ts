@@ -49,7 +49,6 @@ const applyOnce = async (
   try {
     await documentClient.send(command);
   } catch (e) {
-    // The event was already applied, or the company's balance has been deleted.
     if (
       e instanceof TransactionCanceledException &&
       e.CancellationReasons?.some(
