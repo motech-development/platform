@@ -71,17 +71,50 @@ aws lambda invoke --function-name data-restore \
 
 The response must not contain `FunctionError`. If it does, check the function's logs, fix the cause and run `restore` again. Do not continue to `resume` until `restore` has succeeded. `resume` permanently skips everything written while the consumers were paused.
 
-Record the time you start `resume`; you need it in step 6.
-
 ## 4. Resume the consumers
 
+Releasing too early is dangerous. If a mapping has not yet read past the restore's records when its record age goes back to `-1`, it processes them, and the restore's deletes reach the attachments consumer. Releasing is therefore gated on each mapping's event source mapping metrics, not on a fixed wait.
+
+The function's `IteratorAge` metric cannot be used for this. Lambda only emits it when it sends records to the function, so records discarded by age produce no data points at all.
+
+Turn on the event count metrics for every mapping while they are still paused:
+
 ```sh
+STREAM_ARN=$(aws dynamodb describe-table --table-name "$TARGET" --query Table.LatestStreamArn --output text)
+MAPPINGS=$(aws lambda list-event-source-mappings --event-source-arn "$STREAM_ARN" --query 'EventSourceMappings[].UUID' --output text)
+for UUID in $MAPPINGS; do
+  aws lambda update-event-source-mapping --uuid "$UUID" --metrics-config Metrics=EventCount
+done
+```
+
+Then resume them, recording the start time:
+
+```sh
+RESUMED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 aws lambda invoke --function-name data-restore \
   --cli-binary-format raw-in-base64-out --cli-read-timeout 0 \
   --payload '{"action":"resume"}' resume.json
 ```
 
-Wait at least five minutes so every mapping can read past the restore's records before you release them.
+Watch every mapping's metrics from that time, repeating the command until the gate below is met:
+
+```sh
+for UUID in $MAPPINGS; do
+  for METRIC in PolledEventCount InvokedEventCount; do
+    echo "$UUID $METRIC"
+    aws cloudwatch get-metric-statistics --namespace AWS/Lambda --metric-name "$METRIC" \
+      --dimensions Name=EventSourceMappingUUID,Value="$UUID" \
+      --start-time "$RESUMED_AT" --end-time "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+      --period 60 --statistics Sum \
+      --query 'sort_by(Datapoints, &Timestamp)[].[Timestamp, Sum]' --output text
+  done
+done
+```
+
+Release only when, for every mapping:
+
+- `PolledEventCount` has counted the restore's records, and its latest three one-minute data points are `0`. Lambda reports `0` for an empty poll, so this means the mapping has read to the end of the stream. A missing data point is not a `0`; metrics can arrive a few minutes late, so keep waiting.
+- `InvokedEventCount` has no non-zero data point. Nobody is using the application, so any invocation means a record reached a consumer. Do not release; investigate first.
 
 ## 5. Release the consumers (mandatory)
 
@@ -93,11 +126,18 @@ aws lambda invoke --function-name data-restore \
   --payload '{"action":"release"}' release.json
 ```
 
+Turn the event count metrics off again, so the mappings match their templates:
+
+```sh
+for UUID in $MAPPINGS; do
+  aws lambda update-event-source-mapping --uuid "$UUID" --metrics-config '{"Metrics":[]}'
+done
+```
+
 Then check every mapping:
 
 ```sh
-aws lambda list-event-source-mappings \
-  --event-source-arn "$(aws dynamodb describe-table --table-name "$TARGET" --query Table.LatestStreamArn --output text)" \
+aws lambda list-event-source-mappings --event-source-arn "$STREAM_ARN" \
   --query 'EventSourceMappings[].[FunctionArn,State,MaximumRecordAgeInSeconds,DestinationConfig.OnFailure.Destination]' \
   --output table
 ```
@@ -110,7 +150,7 @@ Lambda delivers each batch it discards in step 4 to that mapping's on-failure de
 
 For every failure destination:
 
-- Delete the objects written from the start of `resume` onwards.
+- Delete the objects written from `$RESUMED_AT` onwards.
 - Delete the matching messages from the dead-letter queue the bucket feeds, for example `accounts-<stage>-schedule-synchronisation-dlq`.
 
 Never replay these failures. They are the restore's own changes; replaying them would re-apply its deletes, for example removing attachments, and double-count balances.
