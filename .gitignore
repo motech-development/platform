@@ -182,3 +182,4 @@ lib
 .webpack
 .serverless
 .playwright-mcp
+.claude/worktrees
