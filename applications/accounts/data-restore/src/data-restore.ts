@@ -200,7 +200,11 @@ async function consumers(target: string) {
     EventSourceArn: Table.LatestStreamArn,
   });
 
-  const { EventSourceMappings = [] } = await lambda.send(list);
+  const { EventSourceMappings = [], NextMarker } = await lambda.send(list);
+
+  if (NextMarker) {
+    throw new Error(`Too many event source mappings found for ${target}`);
+  }
 
   if (EventSourceMappings.length === 0) {
     throw new Error(`No event source mappings found for ${target}`);
