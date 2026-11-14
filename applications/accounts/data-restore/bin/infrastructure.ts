@@ -15,6 +15,10 @@ if (!source || !target) {
   );
 }
 
+if (source === target) {
+  throw new Error('The source and target tables must be different');
+}
+
 new DataRestoreStack(
   app,
   'DataRestoreStack',
