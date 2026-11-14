@@ -147,6 +147,15 @@ test('cached and uncached binaries produce equivalent deployable packages', asyn
     ) as {
       Resources: {
         CleanupAttachmentsLambdaFunction: { Properties: { Timeout: number } };
+        LambdaFunctionRole: {
+          Properties: {
+            Policies: Array<{
+              PolicyDocument: {
+                Statement: Array<{ Action: string[]; Resource: unknown[] }>;
+              };
+            }>;
+          };
+        };
         MoveFileLambdaFunction: { Properties: { Timeout: number } };
       };
     };
@@ -154,6 +163,51 @@ test('cached and uncached binaries produce equivalent deployable packages', asyn
     expect(template.Resources.MoveFileLambdaFunction.Properties.Timeout).toBe(
       900,
     );
+
+    expect(
+      template.Resources.LambdaFunctionRole.Properties.Policies.flatMap(
+        ({ PolicyDocument }) => PolicyDocument.Statement,
+      ).filter(({ Action }) =>
+        Action.some((action) => action.startsWith('s3:')),
+      ),
+    ).toEqual([
+      {
+        Action: ['s3:DeleteObject', 's3:GetObject', 's3:GetObjectTagging'],
+        Effect: 'Allow',
+        Resource: ['arn:aws:s3:::accounts-package-test-uploads/*'],
+      },
+      {
+        Action: [
+          's3:AbortMultipartUpload',
+          's3:DeleteObject',
+          's3:GetObject',
+          's3:PutObject',
+          's3:PutObjectTagging',
+        ],
+        Effect: 'Allow',
+        Resource: ['arn:aws:s3:::accounts-package-test-downloads/*'],
+      },
+      {
+        Action: ['s3:GetObject', 's3:PutObject'],
+        Effect: 'Allow',
+        Resource: [
+          {
+            'Fn::Join': [
+              '',
+              [{ 'Fn::GetAtt': ['DefinitionsBucket', 'Arn'] }, '/*'],
+            ],
+          },
+        ],
+      },
+      {
+        Action: ['s3:ListBucket'],
+        Effect: 'Allow',
+        Resource: [
+          'arn:aws:s3:::accounts-package-test-downloads',
+          'arn:aws:s3:::accounts-package-test-uploads',
+        ],
+      },
+    ]);
 
     expect(
       template.Resources.CleanupAttachmentsLambdaFunction.Properties.Timeout,

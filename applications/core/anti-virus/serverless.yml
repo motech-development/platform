@@ -231,16 +231,27 @@ resources:
                   Action:
                     - s3:DeleteObject
                     - s3:GetObject
-                    - S3:GetObjectTagging
-                    - s3:PutObject
-                    - S3:PutObjectTagging
+                    - s3:GetObjectTagging
                   Resource:
-                    - 'arn:aws:s3:::*'
+                    - arn:aws:s3:::accounts-${self:provider.stage}-uploads/*
                 - Effect: Allow
                   Action:
                     - s3:AbortMultipartUpload
+                    - s3:DeleteObject
+                    - s3:GetObject
+                    - s3:PutObject
+                    - s3:PutObjectTagging
                   Resource:
                     - arn:aws:s3:::accounts-${self:provider.stage}-downloads/*
+                - Effect: Allow
+                  Action:
+                    - s3:GetObject
+                    - s3:PutObject
+                  Resource:
+                    - !Join
+                      - ''
+                      - - !GetAtt DefinitionsBucket.Arn
+                        - '/*'
                 - Effect: Allow
                   Action:
                     - s3:ListBucket
