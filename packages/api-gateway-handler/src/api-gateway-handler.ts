@@ -29,7 +29,11 @@ const apiGatewayHandler =
 
       console.error(e);
 
-      onError?.(e);
+      try {
+        onError?.(e);
+      } catch (reportingError) {
+        console.error(reportingError);
+      }
 
       return response(
         {
