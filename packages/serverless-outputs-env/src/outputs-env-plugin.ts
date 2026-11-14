@@ -13,7 +13,7 @@ interface IOutput {
 
 interface IDescribeStacksResponse {
   Stacks: {
-    Outputs: IOutput[];
+    Outputs?: IOutput[];
   }[];
 }
 
@@ -128,7 +128,7 @@ class OutputsEnvPlugin {
 
     const stack = Stacks.pop();
 
-    return stack?.Outputs.reduce(
+    return stack?.Outputs?.reduce(
       (obj, item) => ({
         ...obj,
         [item.OutputKey]: item.OutputValue,
@@ -171,17 +171,19 @@ class OutputsEnvPlugin {
   private async process() {
     try {
       this.validateConfig();
-
-      const output = await this.getOutput();
-
-      await this.writeOutput(output);
     } catch (e) {
       if (e instanceof AssertionError) {
         this.serverless.cli.log(`Cannot process Stack Output: ${e.message}!`);
-      } else {
-        this.serverless.cli.log('Unknown error encountered.');
+
+        return;
       }
+
+      throw e;
     }
+
+    const output = await this.getOutput();
+
+    await this.writeOutput(output);
   }
 }
 
