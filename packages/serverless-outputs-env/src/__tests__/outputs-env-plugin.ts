@@ -249,4 +249,55 @@ describe('OutputsEnvPlugin', () => {
       expect(writeFile).toHaveBeenCalledTimes(2);
     });
   });
+
+  describe('when processing fails', () => {
+    let request: ReturnType<IServerlessInstance['getProvider']>['request'];
+
+    beforeEach(() => {
+      request = serverless.getProvider!('aws').request;
+
+      outputsEnvPlugin = new OutputsEnvPlugin(
+        serverless as IServerlessInstance,
+        options,
+      );
+    });
+
+    it('should fail when the stack cannot be described', async () => {
+      vi.mocked(request).mockRejectedValueOnce(new Error('Stack not found'));
+
+      await expect(
+        outputsEnvPlugin.hooks['after:deploy:deploy'](),
+      ).rejects.toThrow('Stack not found');
+    });
+
+    it('should fail when no stack is returned', async () => {
+      vi.mocked(request).mockResolvedValueOnce({
+        Stacks: [],
+      });
+
+      await expect(
+        outputsEnvPlugin.hooks['after:deploy:deploy'](),
+      ).rejects.toThrow('No output found.');
+    });
+
+    it('should fail when the stack has no outputs', async () => {
+      vi.mocked(request).mockResolvedValueOnce({
+        Stacks: [{}],
+      });
+
+      await expect(
+        outputsEnvPlugin.hooks['after:deploy:deploy'](),
+      ).rejects.toThrow('No output found.');
+    });
+
+    it('should fail when a file cannot be written', async () => {
+      vi.mocked(writeFile).mockImplementationOnce((_, __, callback) =>
+        callback(new Error('ENOENT')),
+      );
+
+      await expect(
+        outputsEnvPlugin.hooks['after:deploy:deploy'](),
+      ).rejects.toThrow('ENOENT');
+    });
+  });
 });
