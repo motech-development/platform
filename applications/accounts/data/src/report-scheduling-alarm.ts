@@ -50,23 +50,20 @@ export const handler: Handler<ICloudWatchAlarmEvent> = wrapHandler(
     const queue = alarmName.slice(0, -alarmSuffix.length);
     const failureBoundary = queue.slice(queuePrefix.length, -dlqSuffix.length);
 
-    captureException(
-      new Error(`Scheduled Transaction ${failureBoundary} failure`),
-      {
-        contexts: {
-          scheduling: {
-            alarmArn: event.alarmArn,
-            environment,
-            queue,
-            reason: state.reason,
-          },
-        },
-        tags: {
-          failureBoundary,
+    captureException(new Error(`Accounts ${failureBoundary} failure`), {
+      contexts: {
+        scheduling: {
+          alarmArn: event.alarmArn,
+          environment,
           queue,
+          reason: state.reason,
         },
       },
-    );
+      tags: {
+        failureBoundary,
+        queue,
+      },
+    });
 
     if (!(await flush(2000))) {
       throw new Error('Unable to flush the scheduling incident to Sentry');

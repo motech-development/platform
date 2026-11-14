@@ -1,6 +1,8 @@
 import { AttributeValue } from '@aws-sdk/client-dynamodb';
 import { unmarshall } from '@aws-sdk/util-dynamodb';
 import logger from '@motech-development/node-logger';
+import { captureException, init, wrapHandler } from '@sentry/aws-serverless';
+import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import type {
   DynamoDBBatchResponse,
   DynamoDBRecord,
@@ -11,6 +13,14 @@ import type { Balance, Transaction } from '../graphql/graphql';
 import publishTransactionChange from '../shared/publish-transaction-change';
 import transactionCompanyId from '../shared/transaction-company-id';
 import updateBalance from '../shared/update-balance';
+
+init({
+  dsn: process.env.SENTRY_DSN,
+  integrations: [nodeProfilingIntegration()],
+  profileLifecycle: 'trace',
+  profileSessionSampleRate: 1,
+  tracesSampleRate: 1,
+});
 
 export type IBalance = Pick<Balance, 'balance' | 'id' | 'owner' | 'vat'> & {
   __typename: 'Balance';
@@ -158,7 +168,7 @@ const publishRecord = async ({ eventName, dynamodb }: DynamoDBRecord) => {
   }
 };
 
-export const handler: DynamoDBStreamHandler = async (event) => {
+export const handler: DynamoDBStreamHandler = wrapHandler(async (event) => {
   const { AWS_REGION, ENDPOINT } = process.env;
 
   if (!AWS_REGION) {
@@ -190,6 +200,8 @@ export const handler: DynamoDBStreamHandler = async (event) => {
 
         if (!sequenceNumber) throw error;
 
+        captureException(error);
+
         // Stop here: Lambda retries from this checkpoint, including later records.
         return {
           batchItemFailures: [
@@ -204,4 +216,4 @@ export const handler: DynamoDBStreamHandler = async (event) => {
       batchItemFailures: [],
     }),
   );
-};
+});

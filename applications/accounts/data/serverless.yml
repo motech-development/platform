@@ -109,7 +109,9 @@ functions:
           type: dynamodb
           arn: !GetAtt ApplicationTable.StreamArn
           startingPosition: LATEST
+          maximumRetryAttempts: 4
     environment:
+      SENTRY_DSN: ${env:SENTRY_DSN}
       TABLE: !Ref ApplicationTable
 
 resources:
@@ -232,6 +234,74 @@ resources:
               Resource: !GetAtt ScheduleSynchronisationDeadLetterQueue.Arn
         Queues:
           - !Ref ScheduleSynchronisationDeadLetterQueue
+
+    StreamProcessingDeadLetterQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        MessageRetentionPeriod: 1209600
+        QueueName: ${self:custom.prefix}-stream-processing-dlq
+
+    StreamProcessingFailureBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketEncryption:
+          ServerSideEncryptionConfiguration:
+            - ServerSideEncryptionByDefault:
+                SSEAlgorithm: AES256
+        BucketName: !Join
+          - '-'
+          - - ${self:custom.prefix}
+            - stream-processing-failures
+            - !Ref AWS::AccountId
+        LifecycleConfiguration:
+          Rules:
+            - ExpirationInDays: 7
+              Id: DeleteExpiredFailures
+              Status: Enabled
+        NotificationConfiguration:
+          EventBridgeConfiguration:
+            EventBridgeEnabled: true
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: true
+          BlockPublicPolicy: true
+          IgnorePublicAcls: true
+          RestrictPublicBuckets: true
+
+    StreamProcessingFailureRule:
+      Type: AWS::Events::Rule
+      Properties:
+        EventPattern:
+          source:
+            - aws.s3
+          detail-type:
+            - Object Created
+          detail:
+            bucket:
+              name:
+                - !Ref StreamProcessingFailureBucket
+        State: ENABLED
+        Targets:
+          - Arn: !GetAtt StreamProcessingDeadLetterQueue.Arn
+            Id: StreamProcessingDeadLetterQueue
+
+    StreamProcessingDeadLetterQueuePolicy:
+      Type: AWS::SQS::QueuePolicy
+      Properties:
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Action:
+                - sqs:SendMessage
+              Condition:
+                ArnEquals:
+                  aws:SourceArn: !GetAtt StreamProcessingFailureRule.Arn
+              Effect: Allow
+              Principal:
+                Service:
+                  - events.amazonaws.com
+              Resource: !GetAtt StreamProcessingDeadLetterQueue.Arn
+        Queues:
+          - !Ref StreamProcessingDeadLetterQueue
 
     SchedulerDeliveryDeadLetterQueue:
       Type: AWS::SQS::Queue
@@ -475,6 +545,25 @@ resources:
         Threshold: 1
         TreatMissingData: notBreaching
 
+    StreamProcessingDeadLetterQueueAlarm:
+      Type: AWS::CloudWatch::Alarm
+      Properties:
+        AlarmActions:
+          - !GetAtt ReportSchedulingAlarmLambdaFunction.Arn
+        AlarmName: ${self:custom.prefix}-stream-processing-dlq-messages-visible
+        ComparisonOperator: GreaterThanOrEqualToThreshold
+        DatapointsToAlarm: 1
+        Dimensions:
+          - Name: QueueName
+            Value: !GetAtt StreamProcessingDeadLetterQueue.QueueName
+        EvaluationPeriods: 1
+        MetricName: ApproximateNumberOfMessagesVisible
+        Namespace: AWS/SQS
+        Period: 60
+        Statistic: Maximum
+        Threshold: 1
+        TreatMissingData: notBreaching
+
     SchedulingAlarmLambdaPermission:
       Type: AWS::Lambda::Permission
       Properties:
@@ -543,12 +632,38 @@ resources:
                     - !ImportValue ${self:provider.stage}-AntiVirusFailureQueueArn
                 - Effect: Allow
                   Action:
+                    - s3:ListBucket
+                  Resource:
+                    - !GetAtt StreamProcessingFailureBucket.Arn
+                - Effect: Allow
+                  Action:
+                    - s3:PutObject
+                  Resource:
+                    - !Join
+                      - ''
+                      - - !GetAtt StreamProcessingFailureBucket.Arn
+                        - '/*'
+                - Effect: Allow
+                  Action:
                     - logs:CreateLogGroup
                     - logs:CreateLogStream
                     - logs:PutLogEvents
                     - logs:DescribeLogStreams
                   Resource:
                     - 'arn:aws:logs:*:*:*'
+
+  extensions:
+    AttachmentsEventSourceMappingDynamodbApplicationTable:
+      Properties:
+        DestinationConfig:
+          OnFailure:
+            Destination: !GetAtt StreamProcessingFailureBucket.Arn
+
+    TransactionsEventSourceMappingDynamodbApplicationTable:
+      Properties:
+        DestinationConfig:
+          OnFailure:
+            Destination: !GetAtt StreamProcessingFailureBucket.Arn
 
   Outputs:
     AccountsApplicationTable:

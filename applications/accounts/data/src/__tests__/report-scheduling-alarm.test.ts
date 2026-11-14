@@ -70,7 +70,7 @@ describe('report-scheduling-alarm', () => {
 
     expect(captureException).toHaveBeenCalledWith(
       expect.objectContaining({
-        message: 'Scheduled Transaction schedule-synchronisation failure',
+        message: 'Accounts schedule-synchronisation failure',
       }),
       {
         contexts: {
@@ -98,33 +98,34 @@ describe('report-scheduling-alarm', () => {
     );
   });
 
-  it.each(['scheduler-delivery', 'publication-processing'])(
-    'reports the %s boundary independently',
-    async (failureBoundary) => {
-      const alarmName = `accounts-test-${failureBoundary}-dlq-messages-visible`;
+  it.each([
+    'scheduler-delivery',
+    'publication-processing',
+    'stream-processing',
+  ])('reports the %s boundary independently', async (failureBoundary) => {
+    const alarmName = `accounts-test-${failureBoundary}-dlq-messages-visible`;
 
-      await handler(
-        {
-          ...alarmEvent,
-          alarmArn: `arn:aws:cloudwatch:eu-west-1:123456789012:alarm:${alarmName}`,
-          alarmData: {
-            ...alarmEvent.alarmData,
-            alarmName,
-          },
+    await handler(
+      {
+        ...alarmEvent,
+        alarmArn: `arn:aws:cloudwatch:eu-west-1:123456789012:alarm:${alarmName}`,
+        alarmData: {
+          ...alarmEvent.alarmData,
+          alarmName,
         },
-        context,
-        callback,
-      );
+      },
+      context,
+      callback,
+    );
 
-      expect(captureException).toHaveBeenCalledWith(
-        expect.any(Error),
-        expect.objectContaining({
-          tags: {
-            failureBoundary,
-            queue: `accounts-test-${failureBoundary}-dlq`,
-          },
-        }),
-      );
-    },
-  );
+    expect(captureException).toHaveBeenCalledWith(
+      expect.any(Error),
+      expect.objectContaining({
+        tags: {
+          failureBoundary,
+          queue: `accounts-test-${failureBoundary}-dlq`,
+        },
+      }),
+    );
+  });
 });

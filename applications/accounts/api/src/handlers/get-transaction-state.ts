@@ -1,8 +1,18 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, GetCommand } from '@aws-sdk/lib-dynamodb';
+import { captureException, init, wrapHandler } from '@sentry/aws-serverless';
+import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import type { AppSyncResolverHandler } from 'aws-lambda';
 import type { QueryGetTransactionStateArgs } from '../graphql/graphql';
 import transactionCompanyId from '../shared/transaction-company-id';
+
+init({
+  dsn: process.env.SENTRY_DSN,
+  integrations: [nodeProfilingIntegration()],
+  profileLifecycle: 'trace',
+  profileSessionSampleRate: 1,
+  tracesSampleRate: 1,
+});
 
 export type ITransactionStateArguments = QueryGetTransactionStateArgs;
 
@@ -11,67 +21,71 @@ const documentClient = DynamoDBDocumentClient.from(new DynamoDBClient({}));
 export const handler: AppSyncResolverHandler<
   ITransactionStateArguments,
   Record<string, unknown> | null
-> = async ({ arguments: { companyId, transactionId }, identity }) => {
-  if (
-    !identity ||
-    !('sub' in identity) ||
-    typeof identity.sub !== 'string' ||
-    !identity.sub
-  ) {
-    return {
-      errorMessage: 'Unauthorized',
-      errorType: 'UnauthorizedException',
-    };
-  }
-
-  const { TABLE } = process.env;
-
-  if (!TABLE)
-    return {
-      errorMessage: 'Transaction state is unavailable',
-      errorType: 'ConfigurationError',
-    };
-
-  try {
-    const command = new GetCommand({
-      ConsistentRead: true,
-      Key: {
-        __typename: 'Transaction',
-        id: transactionId,
-      },
-      TableName: TABLE,
-    });
-
-    const { Item } = await documentClient.send(command);
-
-    // Deleted, moved and inaccessible transactions have the same nullable result.
-    if (Item?.owner !== identity.sub) {
-      return null;
-    }
-
-    const currentCompanyId = transactionCompanyId(Item);
-
-    if (currentCompanyId !== companyId) {
-      return null;
-    }
-
-    return {
-      ...Item,
-      companyId: currentCompanyId,
-    };
-  } catch (error) {
+> = wrapHandler(
+  async ({ arguments: { companyId, transactionId }, identity }) => {
     if (
-      error instanceof Error &&
-      /^(ResourceNotFoundException|ValidationException|AccessDeniedException|UnrecognizedClientException)$/.test(
-        error.name,
-      )
+      !identity ||
+      !('sub' in identity) ||
+      typeof identity.sub !== 'string' ||
+      !identity.sub
     ) {
+      return {
+        errorMessage: 'Unauthorized',
+        errorType: 'UnauthorizedException',
+      };
+    }
+
+    const { TABLE } = process.env;
+
+    if (!TABLE)
       return {
         errorMessage: 'Transaction state is unavailable',
         errorType: 'ConfigurationError',
       };
-    }
 
-    throw error;
-  }
-};
+    try {
+      const command = new GetCommand({
+        ConsistentRead: true,
+        Key: {
+          __typename: 'Transaction',
+          id: transactionId,
+        },
+        TableName: TABLE,
+      });
+
+      const { Item } = await documentClient.send(command);
+
+      // Deleted, moved and inaccessible transactions have the same nullable result.
+      if (Item?.owner !== identity.sub) {
+        return null;
+      }
+
+      const currentCompanyId = transactionCompanyId(Item);
+
+      if (currentCompanyId !== companyId) {
+        return null;
+      }
+
+      return {
+        ...Item,
+        companyId: currentCompanyId,
+      };
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        /^(ResourceNotFoundException|ValidationException|AccessDeniedException|UnrecognizedClientException)$/.test(
+          error.name,
+        )
+      ) {
+        captureException(error);
+
+        return {
+          errorMessage: 'Transaction state is unavailable',
+          errorType: 'ConfigurationError',
+        };
+      }
+
+      throw error;
+    }
+  },
+);
