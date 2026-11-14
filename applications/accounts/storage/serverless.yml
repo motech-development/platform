@@ -191,10 +191,19 @@ resources:
                 - '*'
               MaxAge: 3000
 
+    DeleteFileDeadLetterQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        MessageRetentionPeriod: 1209600
+        QueueName: ${self:custom.prefix}-delete-file-dlq
+
     DeleteFileQueue:
       Type: AWS::SQS::Queue
       Properties:
         QueueName: ${self:custom.prefix}-delete-file-queue
+        RedrivePolicy:
+          deadLetterTargetArn: !GetAtt DeleteFileDeadLetterQueue.Arn
+          maxReceiveCount: 5
 
   Outputs:
     StorageUploadApiEndpoint:

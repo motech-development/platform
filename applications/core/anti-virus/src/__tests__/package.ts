@@ -146,6 +146,10 @@ test('cached and uncached binaries produce equivalent deployable packages', asyn
       ),
     ) as {
       Resources: {
+        AntiVirusDeadLetterQueue: {
+          Properties: { MessageRetentionPeriod: number };
+        };
+        AntiVirusQueue: { Properties: { RedrivePolicy: unknown } };
         CleanupAttachmentsLambdaFunction: { Properties: { Timeout: number } };
         LambdaFunctionRole: {
           Properties: {
@@ -163,6 +167,18 @@ test('cached and uncached binaries produce equivalent deployable packages', asyn
     expect(template.Resources.MoveFileLambdaFunction.Properties.Timeout).toBe(
       900,
     );
+
+    expect(template.Resources.AntiVirusQueue.Properties.RedrivePolicy).toEqual({
+      deadLetterTargetArn: {
+        'Fn::GetAtt': ['AntiVirusDeadLetterQueue', 'Arn'],
+      },
+      maxReceiveCount: 5,
+    });
+
+    expect(
+      template.Resources.AntiVirusDeadLetterQueue.Properties
+        .MessageRetentionPeriod,
+    ).toBe(1209600);
 
     expect(
       template.Resources.LambdaFunctionRole.Properties.Policies.flatMap(

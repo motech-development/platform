@@ -200,10 +200,19 @@ resources:
           deadLetterTargetArn: !GetAtt AntiVirusFailureDeadLetterQueue.Arn
           maxReceiveCount: 5
 
+    AntiVirusDeadLetterQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        MessageRetentionPeriod: 1209600
+        QueueName: ${self:custom.prefix}-dlq
+
     AntiVirusQueue:
       Type: AWS::SQS::Queue
       Properties:
         QueueName: ${self:custom.prefix}-queue
+        RedrivePolicy:
+          deadLetterTargetArn: !GetAtt AntiVirusDeadLetterQueue.Arn
+          maxReceiveCount: 5
 
     DefinitionsBucket:
       Type: AWS::S3::Bucket
