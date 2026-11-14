@@ -7,8 +7,18 @@ import {
   allocateStagedFile,
   createSignedUrl,
 } from '@motech-development/s3-file-operations';
+import { captureException, init, wrapHandler } from '@sentry/aws-serverless';
+import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import { v4 as uuid } from 'uuid';
-import { object, string } from 'yup';
+import { type InferType, object, string } from 'yup';
+
+init({
+  dsn: process.env.SENTRY_DSN,
+  integrations: [nodeProfilingIntegration()],
+  profileLifecycle: 'trace',
+  profileSessionSampleRate: 1,
+  tracesSampleRate: 1,
+});
 
 const whitelist = ['gif', 'jpeg', 'jpg', 'pdf', 'png'];
 const schema = object()
@@ -26,20 +36,31 @@ const schema = object()
   })
   .required();
 
-export const handler = apiGatewayHandler(async (event) => {
-  const { UPLOAD_BUCKET, DOWNLOAD_BUCKET, QUARANTINE_RETENTION_DAYS } =
-    process.env;
+export const handler = wrapHandler(
+  apiGatewayHandler(async (event) => {
+    const { UPLOAD_BUCKET, DOWNLOAD_BUCKET, QUARANTINE_RETENTION_DAYS } =
+      process.env;
 
-  const bucket = paramCheck(UPLOAD_BUCKET, 'No bucket set', 400);
-  const body = paramCheck(event.body, 'No body found', 400);
-  const bodyParams = JSON.parse(body) as unknown;
+    const bucket = paramCheck(UPLOAD_BUCKET, 'No bucket set', 400);
+    const body = paramCheck(event.body, 'No body found', 400);
+    let request: InferType<typeof schema>;
 
-  try {
-    const result = await schema.validate(bodyParams, {
-      stripUnknown: true,
-    });
+    try {
+      request = await schema.validate(JSON.parse(body), {
+        stripUnknown: true,
+      });
+    } catch {
+      return response(
+        {
+          message: 'Invalid request',
+          statusCode: 400,
+        },
+        400,
+      );
+    }
+
     const id = uuid();
-    const { companyId, contentType, extension, metadata, owner } = result;
+    const { companyId, contentType, extension, metadata, owner } = request;
     const expirationInSeconds = 30;
     const key = `${owner}/${companyId}/${id}.${extension}`;
     const destination = paramCheck(
@@ -86,13 +107,5 @@ export const handler = apiGatewayHandler(async (event) => {
       },
       200,
     );
-  } catch {
-    return response(
-      {
-        message: 'Invalid request',
-        statusCode: 400,
-      },
-      400,
-    );
-  }
-});
+  }, captureException),
+);
