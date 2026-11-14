@@ -1,5 +1,6 @@
-import { Duration, Stack, StackProps } from 'aws-cdk-lib';
+import { ArnFormat, Duration, Stack, StackProps } from 'aws-cdk-lib';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';
+import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Construct } from 'constructs';
@@ -62,12 +63,36 @@ export class DataRestoreStack extends Stack {
         TARGET: target.tableName,
       },
       functionName: 'data-restore',
-      runtime: Runtime.NODEJS_20_X,
+      runtime: Runtime.NODEJS_24_X,
       timeout: Duration.minutes(15),
     });
 
     source.grantReadData(handler);
 
-    target.grantFullAccess(handler);
+    target.grantReadWriteData(handler);
+
+    handler.addToRolePolicy(
+      new PolicyStatement({
+        actions: ['lambda:ListEventSourceMappings'],
+        resources: ['*'],
+      }),
+    );
+
+    handler.addToRolePolicy(
+      new PolicyStatement({
+        actions: [
+          'lambda:GetEventSourceMapping',
+          'lambda:UpdateEventSourceMapping',
+        ],
+        resources: [
+          this.formatArn({
+            arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+            resource: 'event-source-mapping',
+            resourceName: '*',
+            service: 'lambda',
+          }),
+        ],
+      }),
+    );
   }
 }
