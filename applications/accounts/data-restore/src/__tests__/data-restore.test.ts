@@ -377,6 +377,30 @@ describe('data-restore', () => {
         expect(ddb).not.toHaveReceivedCommand(ScanCommand);
       });
 
+      it('should throw without pausing or clearing if the consumers span more than one page', async () => {
+        lambda.on(ListEventSourceMappingsCommand).resolves({
+          EventSourceMappings: [
+            {
+              State: 'Enabled',
+              UUID: 'enabled-mapping',
+            },
+          ],
+          NextMarker: 'next-page',
+        });
+
+        await expect(
+          handler({ action: 'restore' }, context, callback),
+        ).rejects.toThrow(
+          'Too many event source mappings found for target-table',
+        );
+
+        expect(lambda).not.toHaveReceivedCommand(
+          UpdateEventSourceMappingCommand,
+        );
+
+        expect(ddb).not.toHaveReceivedCommand(ScanCommand);
+      });
+
       describe('when restoring', () => {
         beforeEach(() => {
           ddb
