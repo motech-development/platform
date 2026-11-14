@@ -1,7 +1,30 @@
 import { DynamoDBDocumentClient, GetCommand } from '@aws-sdk/lib-dynamodb';
+import { captureException } from '@sentry/aws-serverless';
 import type { AppSyncResolverEvent, Context } from 'aws-lambda';
 import { mockClient } from 'aws-sdk-client-mock';
 import { handler, ITransactionStateArguments } from '../get-transaction-state';
+
+vi.mock('@sentry/aws-serverless', async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import('@sentry/aws-serverless')>();
+
+  return {
+    ...actual,
+    captureException: vi.fn(),
+    init: vi.fn(),
+    wrapHandler: (wrappedHandler: unknown) => wrappedHandler,
+  };
+});
+
+vi.mock('@sentry/profiling-node', async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import('@sentry/profiling-node')>();
+
+  return {
+    ...actual,
+    nodeProfilingIntegration: vi.fn(),
+  };
+});
 
 const transaction = {
   __typename: 'Transaction',
@@ -45,6 +68,7 @@ describe('get-transaction-state', () => {
 
   beforeEach(() => {
     ddb.reset();
+    vi.mocked(captureException).mockClear();
     vi.stubEnv('TABLE', 'accounts-test-application');
     ddb.on(GetCommand).resolves({
       Item: transaction,
@@ -209,17 +233,18 @@ describe('get-transaction-state', () => {
     'ValidationException',
     'AccessDeniedException',
     'UnrecognizedClientException',
-  ])('classifies permanent DynamoDB %s failures', async (name) => {
-    ddb.on(GetCommand).rejects(
-      Object.assign(new Error('Permanent failure'), {
-        name,
-      }),
-    );
+  ])('classifies and reports permanent DynamoDB %s failures', async (name) => {
+    const error = Object.assign(new Error('Permanent failure'), {
+      name,
+    });
+    ddb.on(GetCommand).rejects(error);
 
     await expect(invoke()).resolves.toEqual({
       errorMessage: 'Transaction state is unavailable',
       errorType: 'ConfigurationError',
     });
+
+    expect(captureException).toHaveBeenCalledExactlyOnceWith(error);
   });
 
   it.each([

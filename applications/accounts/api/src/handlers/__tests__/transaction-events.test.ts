@@ -1,10 +1,33 @@
 import { marshall } from '@aws-sdk/util-dynamodb';
 import logger from '@motech-development/node-logger';
+import { captureException } from '@sentry/aws-serverless';
 import { AWSAppSyncClient } from 'aws-appsync';
 import type { Context, DynamoDBRecord, StreamRecord } from 'aws-lambda';
 import { mutation } from '../../shared/publish-transaction-change';
 import { mutation as balanceMutation } from '../../shared/update-balance';
 import { handler } from '../update-balance';
+
+vi.mock('@sentry/aws-serverless', async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import('@sentry/aws-serverless')>();
+
+  return {
+    ...actual,
+    captureException: vi.fn(),
+    init: vi.fn(),
+    wrapHandler: (wrappedHandler: unknown) => wrappedHandler,
+  };
+});
+
+vi.mock('@sentry/profiling-node', async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import('@sentry/profiling-node')>();
+
+  return {
+    ...actual,
+    nodeProfilingIntegration: vi.fn(),
+  };
+});
 
 const transaction = {
   __typename: 'Transaction',
@@ -60,6 +83,7 @@ describe('transaction stream events', () => {
       data: {},
     });
     vi.mocked(logger.error).mockClear();
+    vi.mocked(captureException).mockClear();
   });
 
   afterEach(() => {
@@ -359,6 +383,23 @@ describe('transaction stream events', () => {
     expect(mutate).toHaveBeenCalledTimes(3);
 
     expect(mutate.mock.calls[0]).toEqual(mutate.mock.calls[1]);
+  });
+
+  it('reports a failed record to Sentry while retrying from its checkpoint', async () => {
+    const error = new Error('AppSync unavailable');
+    mutate.mockRejectedValueOnce(error);
+
+    await expect(
+      invoke([record('INSERT', undefined, transaction, '100')]),
+    ).resolves.toEqual({
+      batchItemFailures: [
+        {
+          itemIdentifier: '100',
+        },
+      ],
+    });
+
+    expect(captureException).toHaveBeenCalledExactlyOnceWith(error);
   });
 
   it('keeps the existing balance event payload', async () => {

@@ -1,0 +1,13 @@
+---
+status: accepted
+---
+
+# Retain Exhausted Stream Batches for Balance and Attachment Processing
+
+The `Attachments` and `Transactions` consumers of the application table stream will share one stream-processing failure store instead of discarding a batch after its fifth failed attempt. Each consumer's event source mapping sends the complete failed invocation to an encrypted S3 bucket, and an S3 object-created event is sent through EventBridge to the stream-processing dead-letter queue, whose alarm invokes the existing Sentry-reporting Lambda. S3 is used rather than an SQS destination because an SQS destination receives only shard and sequence metadata, which cannot be recovered once DynamoDB Streams' 24-hour retention has passed. This follows the schedule-synchronisation failure store in ADR 0001 but is kept separate from it so that each dead-letter queue continues to identify one failure boundary and one recovery procedure.
+
+A lost `Transactions` batch leaves a company Balance permanently wrong, and a lost `Attachments` batch leaves a deleted Transaction's file in storage. The other stream consumers do not use the store. `PublishNotifications` and `UpdateBalance` only publish live AppSync beacons through a resolver without a data source; the Notification, Balance and Transaction items they announce are already stored, so a missed beacon is recovered by the next read. `Typeahead` maintains derived suggestions, where a missed record costs one suggestion. These consumers retry a failed batch up to four times and report failures to Sentry.
+
+Failed invocations are retained for 7 days, matching the lifetime of the `BalanceEvent` markers that make balance updates apply once. A retained batch includes records that succeeded before the failure, so replaying a batch while their markers exist skips them; after 7 days a replay would apply them again, so the store does not keep batches beyond that window.
+
+Recovery is manual after the underlying fault is understood. Within the 7-day window, the records of a retained invocation are replayed through the consumer named by its `requestContext.functionArn`; replayed attachment deletions are harmless if a file is already gone. Batches produced by a data restore, whose event source mappings drop the restore's own records when resumed, must be discarded and never replayed.

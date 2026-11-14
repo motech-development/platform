@@ -388,6 +388,7 @@ functions:
     handler: src/handlers/get-transaction-state.handler
     role: GetTransactionStateRole
     environment:
+      SENTRY_DSN: ${env:SENTRY_DSN}
       TABLE: !ImportValue ${self:provider.stage}-AccountsApplicationTable
 
   PublishNotifications:
@@ -414,8 +415,10 @@ functions:
           functionResponseType: ReportBatchItemFailures
           arn: !ImportValue ${self:provider.stage}-AccountsApplicationTableStreamArn
           startingPosition: LATEST
+          maximumRetryAttempts: 4
     environment:
       ENDPOINT: ${appsync:url}
+      SENTRY_DSN: ${env:SENTRY_DSN}
 
 resources:
   Resources:
