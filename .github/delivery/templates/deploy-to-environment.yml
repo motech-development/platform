@@ -483,6 +483,7 @@ jobs:
       - accounts-data
 
     env:
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: pr-${{ github.event.pull_request.number }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 

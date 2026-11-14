@@ -238,6 +238,8 @@ __metadata:
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
+    "@sentry/aws-serverless": "npm:10.48.0"
+    "@sentry/profiling-node": "npm:10.48.0"
     "@smithy/types": "npm:4.14.1"
     "@types/aws-lambda": "npm:8.10.147"
     "@types/luxon": "npm:3.4.2"

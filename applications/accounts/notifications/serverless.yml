@@ -8,6 +8,8 @@ provider:
   stackName: ${self:custom.prefix}-notifications
   deploymentBucket:
     name: ${self:service}-deployment-bucket
+  environment:
+    SENTRY_ENVIRONMENT: ${self:provider.stage}
 
 package:
   individually: true
@@ -28,6 +30,7 @@ custom:
   esbuild:
     bundle: true
     external:
+      - '@sentry/profiling-node'
       - yup
     platform: node
     sourcemap: true
@@ -43,6 +46,7 @@ functions:
           path: api/v1/notifications
           method: post
     environment:
+      SENTRY_DSN: ${env:SENTRY_DSN}
       TABLE: !ImportValue ${self:provider.stage}-AccountsApplicationTable
 
 resources:
