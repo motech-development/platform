@@ -290,6 +290,17 @@ describe('OutputsEnvPlugin', () => {
       ).rejects.toThrow('No output found.');
     });
 
+    it('should fail when the stack has an empty outputs list', async () => {
+      vi.mocked(request).mockResolvedValueOnce({
+        Stacks: [{ Outputs: [] }],
+      });
+
+      await expect(
+        outputsEnvPlugin.hooks['after:deploy:deploy'](),
+      ).rejects.toThrow('No output found.');
+      expect(writeFile).not.toHaveBeenCalled();
+    });
+
     it('should fail when a file cannot be written', async () => {
       vi.mocked(writeFile).mockImplementationOnce((_, __, callback) =>
         callback(new Error('ENOENT')),

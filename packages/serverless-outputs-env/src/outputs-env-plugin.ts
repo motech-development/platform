@@ -126,9 +126,13 @@ class OutputsEnvPlugin {
       },
     );
 
-    const stack = Stacks.pop();
+    const outputs = Stacks.pop()?.Outputs;
 
-    return stack?.Outputs?.reduce(
+    if (!outputs?.length) {
+      return undefined;
+    }
+
+    return outputs.reduce(
       (obj, item) => ({
         ...obj,
         [item.OutputKey]: item.OutputValue,
