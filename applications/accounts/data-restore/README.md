@@ -25,6 +25,7 @@ The restore runs in a single Lambda invocation, so it must finish within the 15-
 ## Before you start
 
 - Make sure nobody uses the application in the stage being restored. Any write made between `restore` and `resume` is lost, and consumers never see it.
+- Scheduled transactions also write to the table without anyone using the application. When a schedule comes due, it sends a message to the publication queue, and the `PublishTransactions` function confirms the transaction. Step 3 pauses that function's queue mapping so due messages wait in the queue, which keeps them for four days. Step 5 resumes it after `release`.
 - Freeze deployments of `accounts-data` and `accounts-api` to that stage until `release` has been checked. A deployment can re-enable a paused mapping or reset its settings.
 - Configure AWS credentials for the stage's account and region (the services deploy to `eu-west-1` by default). The account and region must be CDK bootstrapped.
 - Run `yarn install` from the repository root.
@@ -35,6 +36,7 @@ The commands below use these shell variables:
 STAGE=<stage>
 TARGET=accounts-$STAGE-application
 SOURCE=accounts-$STAGE-application-recovery
+PUBLICATION_MAPPING=$(aws lambda list-event-source-mappings --function-name "accounts-data-$STAGE-PublishTransactions" --query 'EventSourceMappings[0].UUID' --output text)
 ```
 
 ## 1. Create the source table
@@ -62,6 +64,17 @@ yarn cdk deploy -c source="$SOURCE" -c target="$TARGET"
 Synthesis fails if either table name is missing.
 
 ## 3. Restore
+
+Pause scheduled-transaction publication first:
+
+```sh
+aws lambda update-event-source-mapping --uuid "$PUBLICATION_MAPPING" --no-enabled
+aws lambda get-event-source-mapping --uuid "$PUBLICATION_MAPPING" --query State --output text
+```
+
+Repeat the second command until it prints `Disabled`, then wait one more minute so any publication already running can finish. The function times out after 30 seconds.
+
+Then run the restore:
 
 ```sh
 aws lambda invoke --function-name data-restore \
@@ -134,15 +147,22 @@ for UUID in $MAPPINGS; do
 done
 ```
 
+Resume scheduled-transaction publication, so the messages that came due during the restore are applied to the restored data:
+
+```sh
+aws lambda update-event-source-mapping --uuid "$PUBLICATION_MAPPING" --enabled
+```
+
 Then check every mapping:
 
 ```sh
 aws lambda list-event-source-mappings --event-source-arn "$STREAM_ARN" \
   --query 'EventSourceMappings[].[FunctionArn,State,MaximumRecordAgeInSeconds,DestinationConfig.OnFailure.Destination]' \
   --output table
+aws lambda get-event-source-mapping --uuid "$PUBLICATION_MAPPING" --query State --output text
 ```
 
-Every row must show `Enabled` and `-1`. Do not lift the deployment freeze until it does.
+Every stream mapping row must show `Enabled` and `-1`, and the publication mapping must print `Enabled`. Do not lift the deployment freeze until they do.
 
 ## 6. Clear the stream failure stores
 
