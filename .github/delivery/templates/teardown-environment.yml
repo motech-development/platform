@@ -216,6 +216,7 @@ jobs:
       - accounts-reports
 
     env:
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: ${{ github.event.inputs.stage || format('pr-{0}', github.event.pull_request.number) }}
 
     permissions:

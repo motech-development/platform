@@ -859,6 +859,7 @@ jobs:
       DEPLOYMENT_ENVIRONMENT: develop
       DEPLOYMENT_REF: ${{ fromJSON(inputs.release-plan).desiredTags['@accounts/notifications'] }}
       DEPLOYMENT_TASK: deploy:accounts-notifications
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN_ACCOUNTS_BACKEND }}
       STAGE: develop
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
