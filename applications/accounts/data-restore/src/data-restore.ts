@@ -1,17 +1,28 @@
 import {
   AttributeValue,
   BatchWriteItemCommand,
+  DescribeTableCommand,
   DynamoDBClient,
   ScanCommand,
-  StreamViewType,
-  UpdateTableCommand,
   WriteRequest,
 } from '@aws-sdk/client-dynamodb';
+import {
+  EventSourceMappingConfiguration,
+  GetEventSourceMappingCommand,
+  LambdaClient,
+  ListEventSourceMappingsCommand,
+  UpdateEventSourceMappingCommand,
+  UpdateEventSourceMappingCommandInput,
+} from '@aws-sdk/client-lambda';
 import { marshall, unmarshall } from '@aws-sdk/util-dynamodb';
 import logger from '@motech-development/node-logger';
 import type { Handler } from 'aws-lambda';
 
 const client = new DynamoDBClient({});
+
+const lambda = new LambdaClient({});
+
+const maximumRecordAge = 60;
 
 function chunkArray<T>(array: T[], chunkSize: number) {
   return array.reduce(
@@ -158,54 +169,149 @@ async function restore(
   logger.info('All data restored');
 }
 
-function streams(target: string) {
-  async function disable() {
-    logger.info('Disabling target table streams');
+async function settle(uuid: string, state: string): Promise<void> {
+  const get = new GetEventSourceMappingCommand({
+    UUID: uuid,
+  });
 
-    const update = new UpdateTableCommand({
-      StreamSpecification: {
-        StreamEnabled: false,
-      },
-      TableName: target,
-    });
+  const { State } = await lambda.send(get);
 
-    await client.send(update);
-
-    logger.info('Target table streams disabled');
+  if (State === state) {
+    return;
   }
 
-  async function enable() {
-    logger.info('Re-enabling target table streams');
+  await sleep(5000);
 
-    const update = new UpdateTableCommand({
-      StreamSpecification: {
-        StreamEnabled: true,
-        StreamViewType: StreamViewType.NEW_AND_OLD_IMAGES,
+  await settle(uuid, state);
+}
+
+async function consumers(target: string) {
+  const describe = new DescribeTableCommand({
+    TableName: target,
+  });
+
+  const { Table } = await client.send(describe);
+
+  if (!Table?.LatestStreamArn) {
+    throw new Error(`${target} has no stream`);
+  }
+
+  const list = new ListEventSourceMappingsCommand({
+    EventSourceArn: Table.LatestStreamArn,
+  });
+
+  const { EventSourceMappings = [] } = await lambda.send(list);
+
+  if (EventSourceMappings.length === 0) {
+    throw new Error(`No event source mappings found for ${target}`);
+  }
+
+  async function update(
+    mappings: EventSourceMappingConfiguration[],
+    changes: Pick<
+      UpdateEventSourceMappingCommandInput,
+      'Enabled' | 'MaximumRecordAgeInSeconds'
+    >,
+    state: string,
+  ) {
+    await Promise.all(
+      mappings.map(async ({ UUID }) => {
+        const command = new UpdateEventSourceMappingCommand({
+          ...changes,
+          UUID,
+        });
+
+        await lambda.send(command);
+
+        await settle(UUID as string, state);
+      }),
+    );
+  }
+
+  async function pause() {
+    logger.info('Pausing target table consumers');
+
+    await update(
+      EventSourceMappings.filter(({ State }) => State !== 'Disabled'),
+      {
+        Enabled: false,
       },
-      TableName: target,
-    });
+      'Disabled',
+    );
 
-    await client.send(update);
+    logger.info('Target table consumers paused');
+  }
 
-    logger.info('Target table streams re-enabled');
+  async function resume() {
+    logger.info('Resuming target table consumers');
+
+    await sleep(maximumRecordAge * 2 * 1000);
+
+    await update(
+      EventSourceMappings,
+      {
+        Enabled: true,
+        MaximumRecordAgeInSeconds: maximumRecordAge,
+      },
+      'Enabled',
+    );
+
+    logger.info('Target table consumers resumed');
+  }
+
+  async function release() {
+    if (EventSourceMappings.some(({ State }) => State !== 'Enabled')) {
+      throw new Error('Resume target table consumers before releasing them');
+    }
+
+    logger.info('Releasing target table consumers');
+
+    await update(
+      EventSourceMappings,
+      {
+        MaximumRecordAgeInSeconds: -1,
+      },
+      'Enabled',
+    );
+
+    logger.info('Target table consumers released');
   }
 
   return {
-    disable,
-    enable,
+    pause,
+    release,
+    resume,
   };
 }
 
-export const handler: Handler = async () => {
+export const handler: Handler<{ action?: string } | null> = async (event) => {
   const { SOURCE, TARGET } = process.env;
 
   if (!SOURCE || !TARGET) {
     throw new Error('Missing source or target table');
   }
 
-  const { disable, enable } = streams(TARGET);
+  const action = event?.action;
 
-  await disable();
+  if (action !== 'restore' && action !== 'resume' && action !== 'release') {
+    throw new Error(`Unknown action: ${action}`);
+  }
+
+  const { pause, release, resume } = await consumers(TARGET);
+
+  if (action === 'resume') {
+    await resume();
+
+    return;
+  }
+
+  if (action === 'release') {
+    await release();
+
+    return;
+  }
+
+  await pause();
 
   try {
     await clear(TARGET);
@@ -217,11 +323,7 @@ export const handler: Handler = async () => {
     }
 
     throw e;
-  } finally {
-    await sleep(120000);
-
-    await enable();
-
-    logger.info('Process complete');
   }
+
+  logger.info('Process complete');
 };
