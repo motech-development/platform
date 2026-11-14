@@ -12,7 +12,7 @@ type Handler = (
 ) => Promise<APIGatewayProxyResult>;
 
 const apiGatewayHandler =
-  (handler: Handler, onError?: (error: unknown) => void) =>
+  (handler: Handler, onError?: (error: unknown) => void | Promise<void>) =>
   async (
     event: APIGatewayProxyEvent,
     context: Context,
@@ -30,7 +30,7 @@ const apiGatewayHandler =
       console.error(e);
 
       try {
-        onError?.(e);
+        await onError?.(e);
       } catch (reportingError) {
         console.error(reportingError);
       }

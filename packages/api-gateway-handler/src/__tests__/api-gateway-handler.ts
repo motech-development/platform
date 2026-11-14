@@ -117,4 +117,24 @@ describe('api-gateway-handler', () => {
 
     expect(consoleError).toHaveBeenCalledWith(reportingError);
   });
+
+  it('should return a 500 response when async reporting fails', async () => {
+    const reportingError = new Error('Reporting failed');
+    const handler = () => {
+      throw new Error('Unexpected failure');
+    };
+    const onError = () => Promise.reject(reportingError);
+
+    await expect(
+      proxyHandler(handler, onError)(event, context),
+    ).resolves.toEqual({
+      body: JSON.stringify({
+        message: 'Unhandled exception.',
+        statusCode: 500,
+      }),
+      statusCode: 500,
+    });
+
+    expect(consoleError).toHaveBeenCalledWith(reportingError);
+  });
 });
