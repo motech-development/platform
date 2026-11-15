@@ -1,4 +1,0 @@
-interface:
-  display_name: 'PR Review Loop'
-  short_description: 'Loop until Codex, CodeRabbit, Sonar, and CI are clear'
-  default_prompt: 'Use $pr-review-loop from a trusted copy to complete the in-scope review loop, continuing through productive review rounds without a default publication cap and rebutting conclusively rejected Codex findings with evidence, while honoring explicit user budgets and separate push authorization.'
