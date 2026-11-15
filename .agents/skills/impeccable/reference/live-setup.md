@@ -42,6 +42,8 @@ On every boot the project is scanned for HTML files under common page roots (`pu
 
 ## CSP detection (first-time only)
 
+Keep all allowances below development-only, including manual middleware and meta-tag edits. Do not change a deployed production site's CSP to load the localhost helper; see [live.md](live.md) for production inspection alternatives.
+
 If `config.cspChecked === true`, skip this whole section; the user was already asked once.
 
 ```bash
@@ -66,7 +68,7 @@ Output `{ shape, signals }`; the shape names the _patch mechanism_, so one templ
 >
 > It's guarded by `NODE_ENV === "development"` so the extra entry only appears in dev and never reaches production. You can remove it any time by reverting this file. Apply? [y/n]
 
-On "no": skip the patch, note that live will not work until the allowance is added manually, and still write `cspChecked: true` (the question has been asked). On "yes": apply the shape's patch below, then write `cspChecked: true`.
+On "no": skip the patch, note that live will not work until the allowance is added manually, and still write `cspChecked: true` (the question has been asked). On "yes": apply the shape's patch below, then write `cspChecked: true`. The helper's port is not known until the first successful boot, so the allowance names 8400, the helper's first choice; if that boot then reports a different `serverPort` (another project's helper held 8400), add that port to the same allowance before picking.
 
 ### append-arrays
 
