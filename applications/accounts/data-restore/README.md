@@ -109,6 +109,8 @@ aws lambda invoke --function-name data-restore \
   --payload '{"action":"resume"}' resume.json
 ```
 
+The response must not contain `FunctionError`. If it does, check the function's logs, fix the cause and run `resume` again.
+
 Watch every mapping's metrics from that time, repeating the command until the gate below is met:
 
 ```sh
@@ -137,7 +139,10 @@ Do not skip this step. Until it runs, every consumer silently discards any recor
 aws lambda invoke --function-name data-restore \
   --cli-binary-format raw-in-base64-out --cli-read-timeout 0 \
   --payload '{"action":"release"}' release.json
+RELEASED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 ```
+
+The response must not contain `FunctionError`. If it does, check the function's logs, fix the cause and run `release` again.
 
 Turn the event count metrics off again, so the mappings match their templates:
 
@@ -147,31 +152,33 @@ for UUID in $MAPPINGS; do
 done
 ```
 
-Resume scheduled-transaction publication, so the messages that came due during the restore are applied to the restored data:
-
-```sh
-aws lambda update-event-source-mapping --uuid "$PUBLICATION_MAPPING" --enabled
-```
-
-Then check every mapping:
+Then check every stream mapping:
 
 ```sh
 aws lambda list-event-source-mappings --event-source-arn "$STREAM_ARN" \
   --query 'EventSourceMappings[].[FunctionArn,State,MaximumRecordAgeInSeconds,DestinationConfig.OnFailure.Destination]' \
   --output table
+```
+
+Every row must show `Enabled` and `-1`. Do not continue until they do.
+
+Resume scheduled-transaction publication, so the messages that came due during the restore are applied to the restored data:
+
+```sh
+aws lambda update-event-source-mapping --uuid "$PUBLICATION_MAPPING" --enabled
 aws lambda get-event-source-mapping --uuid "$PUBLICATION_MAPPING" --query State --output text
 ```
 
-Every stream mapping row must show `Enabled` and `-1`, and the publication mapping must print `Enabled`. Do not lift the deployment freeze until they do.
+Repeat the second command until it prints `Enabled`. Do not lift the deployment freeze until it does.
 
 ## 6. Clear the stream failure stores
 
-Lambda delivers each batch it discards in step 4 to that mapping's on-failure destination. These are listed in the last column of the check above, for example `accounts-<stage>-schedule-sync-failures-<account id>`. Each failure bucket feeds a dead-letter queue whose alarm reports to Sentry, so expect those alarms after a restore.
+Lambda delivers each batch it discards in step 4 to that mapping's on-failure destination. These are listed in the last column of the stream mapping check in step 5, for example `accounts-<stage>-schedule-sync-failures-<account id>`. Each failure bucket feeds a dead-letter queue whose alarm reports to Sentry, so expect those alarms after a restore.
 
 For every failure destination:
 
-- Delete the objects written from `$RESUMED_AT` onwards.
-- Delete the matching messages from the dead-letter queue the bucket feeds, for example `accounts-<stage>-schedule-synchronisation-dlq`.
+- Delete only the objects written between `$RESUMED_AT` and `$RELEASED_AT`. Nothing else writes to the table in that window, so every failure in it is a restore record. Keep any later object: it is a genuine failure from after `release`, so investigate it as usual.
+- Delete the dead-letter messages for those objects only, from the queue the bucket feeds, for example `accounts-<stage>-schedule-synchronisation-dlq`. Each message is the bucket's object-created event and names the object's key.
 
 Never replay these failures. They are the restore's own changes; replaying them would re-apply its deletes, for example removing attachments, and double-count balances.
 
