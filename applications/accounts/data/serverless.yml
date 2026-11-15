@@ -255,7 +255,7 @@ resources:
             - !Ref AWS::AccountId
         LifecycleConfiguration:
           Rules:
-            - ExpirationInDays: 7
+            - ExpirationInDays: 14
               Id: DeleteExpiredFailures
               Status: Enabled
         NotificationConfiguration:
