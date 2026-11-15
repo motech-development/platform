@@ -54,6 +54,7 @@ functions:
     events:
       - sqs:
           arn: !ImportValue ${self:provider.stage}-AntiVirusFailureQueueArn
+          functionResponseType: ReportBatchItemFailures
     role: DataLambdaFunctionRole
     environment:
       BUCKET: !ImportValue ${self:provider.stage}-StorageUploadBucket

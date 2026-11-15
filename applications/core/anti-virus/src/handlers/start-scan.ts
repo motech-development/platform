@@ -1,5 +1,5 @@
 import { SFNClient, StartExecutionCommand } from '@aws-sdk/client-sfn';
-import { init, wrapHandler } from '@sentry/aws-serverless';
+import { captureException, init, wrapHandler } from '@sentry/aws-serverless';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import type { SQSHandler } from 'aws-lambda';
 
@@ -20,20 +20,33 @@ export const handler: SQSHandler = wrapHandler(async (event) => {
     throw new Error('No state machine set');
   }
 
-  const executions = event.Records.map((record) => {
-    const { messageAttributes } = record;
-    const { from, key, to } = messageAttributes;
-    const command = new StartExecutionCommand({
-      input: JSON.stringify({
-        from: from.stringValue,
-        key: key.stringValue,
-        to: to.stringValue,
-      }),
-      stateMachineArn: STATE_MACHINE_ARN,
-    });
+  const results = await Promise.allSettled(
+    event.Records.map(async ({ messageAttributes }) => {
+      const { from, key, to } = messageAttributes;
+      const command = new StartExecutionCommand({
+        input: JSON.stringify({
+          from: from.stringValue,
+          key: key.stringValue,
+          to: to.stringValue,
+        }),
+        stateMachineArn: STATE_MACHINE_ARN,
+      });
 
-    return stepFunctions.send(command);
-  });
+      await stepFunctions.send(command);
+    }),
+  );
 
-  await Promise.all(executions);
+  return {
+    batchItemFailures: results.flatMap((result, index) => {
+      if (result.status === 'fulfilled') return [];
+
+      captureException(result.reason);
+
+      return [
+        {
+          itemIdentifier: event.Records[index].messageId,
+        },
+      ];
+    }),
+  };
 });

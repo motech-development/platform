@@ -1,5 +1,5 @@
 import { SFNClient, StartExecutionCommand } from '@aws-sdk/client-sfn';
-import { init, wrapHandler } from '@sentry/aws-serverless';
+import { captureException, init, wrapHandler } from '@sentry/aws-serverless';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import type { Handler, SQSEvent } from 'aws-lambda';
 
@@ -20,10 +20,8 @@ export const handler: Handler<SQSEvent> = wrapHandler(async (event) => {
     throw new Error('No state machine set');
   }
 
-  await Promise.all(
-    event.Records.map((record) => {
-      const { messageAttributes } = record;
-
+  const results = await Promise.allSettled(
+    event.Records.map(async ({ messageAttributes }) => {
       if (
         messageAttributes.id?.stringValue &&
         messageAttributes.owner?.stringValue
@@ -36,10 +34,22 @@ export const handler: Handler<SQSEvent> = wrapHandler(async (event) => {
           stateMachineArn: STATE_MACHINE_ARN,
         });
 
-        return stepFunctions.send(command);
+        await stepFunctions.send(command);
       }
-
-      return Promise.resolve();
     }),
   );
+
+  return {
+    batchItemFailures: results.flatMap((result, index) => {
+      if (result.status === 'fulfilled') return [];
+
+      captureException(result.reason);
+
+      return [
+        {
+          itemIdentifier: event.Records[index].messageId,
+        },
+      ];
+    }),
+  };
 });
