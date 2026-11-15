@@ -1,11 +1,17 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { QueryCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import logger from '@motech-development/node-logger';
+import { captureException } from '@sentry/aws-serverless';
 import type { Context, SQSEvent } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import type { Mock } from 'vitest';
 import { handler } from '../clear-attachments';
+
+vi.mock('@sentry/aws-serverless', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@sentry/aws-serverless')>()),
+  captureException: vi.fn(),
+}));
 
 describe('clear-attachments', () => {
   let callback: Mock;
@@ -48,6 +54,7 @@ describe('clear-attachments', () => {
               stringValue: 'upload-bucket',
             },
           },
+          messageId: 'message-1',
         },
         {
           messageAttributes: {
@@ -64,6 +71,7 @@ describe('clear-attachments', () => {
               stringValue: 'another-bucket',
             },
           },
+          messageId: 'message-2',
         },
         {
           messageAttributes: {
@@ -74,6 +82,7 @@ describe('clear-attachments', () => {
               stringValue: 'another-bucket',
             },
           },
+          messageId: 'message-3',
         },
       ],
     } as unknown as SQSEvent;
@@ -140,10 +149,37 @@ describe('clear-attachments', () => {
         ddb.on(UpdateCommand).rejectsOnce(error);
       });
 
-      it('should log and throw the error', async () => {
-        await expect(handler(event, context, callback)).rejects.toThrow(error);
+      it('should log, capture and report the failed record', async () => {
+        await expect(handler(event, context, callback)).resolves.toEqual({
+          batchItemFailures: [
+            {
+              itemIdentifier: 'message-1',
+            },
+          ],
+        });
 
         expect(logger.error).toHaveBeenCalledWith('An error occurred', error);
+        expect(captureException).toHaveBeenCalledWith(error);
+      });
+    });
+
+    describe('when a record cannot be processed', () => {
+      beforeEach(() => {
+        event.Records[1].messageAttributes.metadata.stringValue = 'invalid';
+        event.Records[1].messageAttributes.source.stringValue = 'upload-bucket';
+      });
+
+      it('should report the failed record without failing the others', async () => {
+        await expect(handler(event, context, callback)).resolves.toEqual({
+          batchItemFailures: [
+            {
+              itemIdentifier: 'message-2',
+            },
+          ],
+        });
+
+        expect(ddb).toReceiveCommandTimes(UpdateCommand, 2);
+        expect(captureException).toHaveBeenCalledWith(expect.any(SyntaxError));
       });
     });
   });

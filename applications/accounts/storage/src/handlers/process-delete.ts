@@ -1,5 +1,5 @@
 import { deleteStagedFile } from '@motech-development/s3-file-operations';
-import { init, wrapHandler } from '@sentry/aws-serverless';
+import { captureException, init, wrapHandler } from '@sentry/aws-serverless';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import type { SQSHandler } from 'aws-lambda';
 
@@ -20,16 +20,27 @@ export const handler: SQSHandler = wrapHandler(async (event) => {
 
   if (!UPLOAD_BUCKET) throw new Error('No upload bucket set');
 
-  const deletions = event.Records.map((record) => {
-    const { messageAttributes } = record;
-    const { key } = messageAttributes;
+  const results = await Promise.allSettled(
+    event.Records.map(async ({ messageAttributes }) => {
+      const { key } = messageAttributes;
 
-    if (key && key.stringValue) {
-      return deleteStagedFile(UPLOAD_BUCKET, DOWNLOAD_BUCKET, key.stringValue);
-    }
+      if (key && key.stringValue) {
+        await deleteStagedFile(UPLOAD_BUCKET, DOWNLOAD_BUCKET, key.stringValue);
+      }
+    }),
+  );
 
-    return Promise.resolve();
-  });
+  return {
+    batchItemFailures: results.flatMap((result, index) => {
+      if (result.status === 'fulfilled') return [];
 
-  await Promise.all(deletions);
+      captureException(result.reason);
+
+      return [
+        {
+          itemIdentifier: event.Records[index].messageId,
+        },
+      ];
+    }),
+  };
 });

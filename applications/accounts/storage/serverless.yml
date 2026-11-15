@@ -48,6 +48,7 @@ functions:
     events:
       - sqs:
           arn: !GetAtt DeleteFileQueue.Arn
+          functionResponseType: ReportBatchItemFailures
     role: LambdaFunctionRole
     environment:
       SENTRY_DSN: ${env:SENTRY_DSN}

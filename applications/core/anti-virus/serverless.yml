@@ -87,6 +87,7 @@ functions:
     events:
       - sqs:
           arn: !GetAtt AntiVirusQueue.Arn
+          functionResponseType: ReportBatchItemFailures
     environment:
       SENTRY_DSN: ${env:SENTRY_DSN}
       STATE_MACHINE_ARN: !Ref ScanUploadStateMachine

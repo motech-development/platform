@@ -1,10 +1,15 @@
 import { deleteStagedFile } from '@motech-development/s3-file-operations';
+import { captureException } from '@sentry/aws-serverless';
 import type { Context, SQSEvent } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import type { Mock } from 'vitest';
 import { handler } from '../process-delete';
 
 vi.mock('@motech-development/s3-file-operations');
+vi.mock('@sentry/aws-serverless', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@sentry/aws-serverless')>()),
+  captureException: vi.fn(),
+}));
 
 describe('process-delete', () => {
   let callback: Mock;
@@ -27,6 +32,7 @@ describe('process-delete', () => {
               stringValue: 'file-1.png',
             },
           },
+          messageId: 'message-1',
         },
         {
           messageAttributes: {
@@ -34,6 +40,7 @@ describe('process-delete', () => {
               stringValue: 'file-2.png',
             },
           },
+          messageId: 'message-2',
         },
         {
           messageAttributes: {
@@ -41,6 +48,7 @@ describe('process-delete', () => {
               stringValue: 'file-2.png',
             },
           },
+          messageId: 'message-3',
         },
       ],
     } as unknown as SQSEvent;
@@ -69,13 +77,24 @@ describe('process-delete', () => {
     });
 
     it('leaves failed cleanup available for queue retry', async () => {
-      vi.mocked(deleteStagedFile).mockRejectedValueOnce(
-        new Error('Cancellation failed'),
-      );
+      const error = new Error('Cancellation failed');
 
-      await expect(handler(event, context, callback)).rejects.toThrow(
-        'Cancellation failed',
+      vi.mocked(deleteStagedFile).mockRejectedValueOnce(error);
+
+      await expect(handler(event, context, callback)).resolves.toEqual({
+        batchItemFailures: [
+          {
+            itemIdentifier: 'message-1',
+          },
+        ],
+      });
+
+      expect(deleteStagedFile).toHaveBeenCalledWith(
+        'upload-bucket',
+        'download-bucket',
+        'file-2.png',
       );
+      expect(captureException).toHaveBeenCalledWith(error);
     });
 
     it('should delete the correct number files', async () => {

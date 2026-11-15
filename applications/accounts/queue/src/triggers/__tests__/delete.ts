@@ -1,9 +1,15 @@
 import { SFNClient, StartExecutionCommand } from '@aws-sdk/client-sfn';
+import { captureException } from '@sentry/aws-serverless';
 import type { Context, SQSEvent } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import type { Mock } from 'vitest';
 import { handler } from '../delete';
+
+vi.mock('@sentry/aws-serverless', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@sentry/aws-serverless')>()),
+  captureException: vi.fn(),
+}));
 
 describe('delete', () => {
   let callback: Mock;
@@ -48,7 +54,7 @@ describe('delete', () => {
               stringValue: 'owner-id',
             },
           },
-          messageId: '',
+          messageId: 'message-1',
           receiptHandle: '',
         },
         {
@@ -79,7 +85,7 @@ describe('delete', () => {
               stringValue: 'owner-id',
             },
           },
-          messageId: '',
+          messageId: 'message-2',
           receiptHandle: '',
         },
         {
@@ -103,7 +109,7 @@ describe('delete', () => {
               stringValue: 'company-2-id',
             },
           },
-          messageId: '',
+          messageId: 'message-3',
           receiptHandle: '',
         },
       ],
@@ -149,6 +155,23 @@ describe('delete', () => {
         }),
         stateMachineArn: 'state-machice-arn',
       });
+    });
+
+    it('should report a failed execution without failing the others', async () => {
+      const error = new Error('Execution failed');
+
+      sfn.on(StartExecutionCommand).rejectsOnce(error).resolves({});
+
+      await expect(handler(event, context, callback)).resolves.toEqual({
+        batchItemFailures: [
+          {
+            itemIdentifier: 'message-1',
+          },
+        ],
+      });
+
+      expect(sfn).toReceiveCommandTimes(StartExecutionCommand, 2);
+      expect(captureException).toHaveBeenCalledWith(error);
     });
   });
 });

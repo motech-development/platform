@@ -1,9 +1,15 @@
 import { SFNClient, StartExecutionCommand } from '@aws-sdk/client-sfn';
+import { captureException } from '@sentry/aws-serverless';
 import type { Context, SQSEvent } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
 import type { Mock } from 'vitest';
 import { handler } from '../start-scan';
+
+vi.mock('@sentry/aws-serverless', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@sentry/aws-serverless')>()),
+  captureException: vi.fn(),
+}));
 
 describe('start-scan', () => {
   let callback: Mock;
@@ -35,6 +41,7 @@ describe('start-scan', () => {
               stringValue: 'download-bucket',
             },
           },
+          messageId: 'message-1',
         },
         {
           messageAttributes: {
@@ -51,6 +58,7 @@ describe('start-scan', () => {
               stringValue: 'download-bucket',
             },
           },
+          messageId: 'message-2',
         },
       ],
     } as unknown as SQSEvent;
@@ -105,6 +113,23 @@ describe('start-scan', () => {
         }),
         stateMachineArn: 'state-machine-arn',
       });
+    });
+
+    it('should report a failed execution without failing the others', async () => {
+      const error = new Error('Execution failed');
+
+      sfn.on(StartExecutionCommand).rejectsOnce(error).resolves({});
+
+      await expect(handler(event, context, callback)).resolves.toEqual({
+        batchItemFailures: [
+          {
+            itemIdentifier: 'message-1',
+          },
+        ],
+      });
+
+      expect(sfn).toReceiveCommandTimes(StartExecutionCommand, 2);
+      expect(captureException).toHaveBeenCalledWith(error);
     });
   });
 });
