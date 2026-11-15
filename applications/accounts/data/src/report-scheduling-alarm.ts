@@ -5,10 +5,17 @@ import {
   wrapHandler,
 } from '@sentry/aws-serverless';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
-import type { CloudWatchAlarmEvent, Handler } from 'aws-lambda';
+import type {
+  CloudWatchAlarmEvent,
+  CloudWatchAlarmMetric,
+  Handler,
+} from 'aws-lambda';
 
 type ICloudWatchAlarmEvent = Pick<CloudWatchAlarmEvent, 'alarmArn'> & {
   alarmData: Pick<CloudWatchAlarmEvent['alarmData'], 'alarmName'> & {
+    configuration: {
+      metrics: Pick<CloudWatchAlarmMetric, 'metricStat'>[];
+    };
     state: Pick<CloudWatchAlarmEvent['alarmData']['state'], 'reason' | 'value'>;
   };
 };
@@ -21,8 +28,20 @@ init({
   tracesSampleRate: 1,
 });
 
-const alarmSuffix = '-messages-visible';
-const dlqSuffix = '-dlq';
+const alarmSignals = [
+  {
+    dimension: 'QueueName',
+    suffix: '-dlq-messages-visible',
+    tag: 'queue',
+    title: 'failure',
+  },
+  {
+    dimension: 'FunctionName',
+    suffix: '-iterator-age',
+    tag: 'function',
+    title: 'stream lag',
+  },
+];
 
 const requiredEnvironment = (): string => {
   const environment = process.env.SENTRY_ENVIRONMENT;
@@ -37,31 +56,40 @@ const requiredEnvironment = (): string => {
 export const handler: Handler<ICloudWatchAlarmEvent> = wrapHandler(
   async (event) => {
     const environment = requiredEnvironment();
-    const queuePrefix = `accounts-${environment}-`;
-    const { alarmName, state } = event.alarmData;
+    const alarmPrefix = `accounts-${environment}-`;
+    const { alarmName, configuration, state } = event.alarmData;
 
-    if (
-      !alarmName.startsWith(queuePrefix) ||
-      !alarmName.endsWith(`${dlqSuffix}${alarmSuffix}`)
-    ) {
+    const signal = alarmSignals.find(({ suffix }) =>
+      alarmName.endsWith(suffix),
+    );
+
+    const failureBoundary =
+      signal && alarmName.startsWith(alarmPrefix)
+        ? alarmName.slice(alarmPrefix.length, -signal.suffix.length)
+        : '';
+
+    if (!signal || !failureBoundary) {
       throw new Error(`Unrecognised scheduling alarm: ${alarmName}`);
     }
 
-    const queue = alarmName.slice(0, -alarmSuffix.length);
-    const failureBoundary = queue.slice(queuePrefix.length, -dlqSuffix.length);
+    const [{ metricStat }] = configuration.metrics;
 
-    captureException(new Error(`Accounts ${failureBoundary} failure`), {
+    const resource = {
+      [signal.tag]: metricStat.metric.dimensions?.[signal.dimension],
+    };
+
+    captureException(new Error(`Accounts ${failureBoundary} ${signal.title}`), {
       contexts: {
         scheduling: {
           alarmArn: event.alarmArn,
           environment,
-          queue,
+          ...resource,
           reason: state.reason,
         },
       },
       tags: {
         failureBoundary,
-        queue,
+        ...resource,
       },
     });
 

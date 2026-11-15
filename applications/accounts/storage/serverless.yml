@@ -197,6 +197,31 @@ resources:
         MessageRetentionPeriod: 1209600
         QueueName: ${self:custom.prefix}-delete-file-dlq
 
+    DeleteFileDeadLetterQueueAlarm:
+      Type: AWS::CloudWatch::Alarm
+      Properties:
+        AlarmActions:
+          - !Join
+            - ''
+            - - 'arn:aws:lambda:'
+              - !Ref AWS::Region
+              - ':'
+              - !Ref AWS::AccountId
+              - ':function:accounts-data-${self:provider.stage}-ReportSchedulingAlarm'
+        AlarmName: accounts-${self:provider.stage}-delete-file-dlq-messages-visible
+        ComparisonOperator: GreaterThanOrEqualToThreshold
+        DatapointsToAlarm: 1
+        Dimensions:
+          - Name: QueueName
+            Value: !GetAtt DeleteFileDeadLetterQueue.QueueName
+        EvaluationPeriods: 1
+        MetricName: ApproximateNumberOfMessagesVisible
+        Namespace: AWS/SQS
+        Period: 60
+        Statistic: Maximum
+        Threshold: 1
+        TreatMissingData: notBreaching
+
     DeleteFileQueue:
       Type: AWS::SQS::Queue
       Properties:

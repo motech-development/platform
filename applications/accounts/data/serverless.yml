@@ -564,6 +564,82 @@ resources:
         Threshold: 1
         TreatMissingData: notBreaching
 
+    AttachmentsIteratorAgeAlarm:
+      Type: AWS::CloudWatch::Alarm
+      Properties:
+        AlarmActions:
+          - !GetAtt ReportSchedulingAlarmLambdaFunction.Arn
+        AlarmName: ${self:custom.prefix}-attachments-iterator-age
+        ComparisonOperator: GreaterThanOrEqualToThreshold
+        DatapointsToAlarm: 1
+        Dimensions:
+          - Name: FunctionName
+            Value: !Ref AttachmentsLambdaFunction
+        EvaluationPeriods: 1
+        MetricName: IteratorAge
+        Namespace: AWS/Lambda
+        Period: 60
+        Statistic: Maximum
+        Threshold: 900000
+        TreatMissingData: notBreaching
+
+    ScheduleTransactionsIteratorAgeAlarm:
+      Type: AWS::CloudWatch::Alarm
+      Properties:
+        AlarmActions:
+          - !GetAtt ReportSchedulingAlarmLambdaFunction.Arn
+        AlarmName: ${self:custom.prefix}-schedule-transactions-iterator-age
+        ComparisonOperator: GreaterThanOrEqualToThreshold
+        DatapointsToAlarm: 1
+        Dimensions:
+          - Name: FunctionName
+            Value: !Ref ScheduleTransactionsLambdaFunction
+        EvaluationPeriods: 1
+        MetricName: IteratorAge
+        Namespace: AWS/Lambda
+        Period: 60
+        Statistic: Maximum
+        Threshold: 900000
+        TreatMissingData: notBreaching
+
+    TransactionsIteratorAgeAlarm:
+      Type: AWS::CloudWatch::Alarm
+      Properties:
+        AlarmActions:
+          - !GetAtt ReportSchedulingAlarmLambdaFunction.Arn
+        AlarmName: ${self:custom.prefix}-transactions-iterator-age
+        ComparisonOperator: GreaterThanOrEqualToThreshold
+        DatapointsToAlarm: 1
+        Dimensions:
+          - Name: FunctionName
+            Value: !Ref TransactionsLambdaFunction
+        EvaluationPeriods: 1
+        MetricName: IteratorAge
+        Namespace: AWS/Lambda
+        Period: 60
+        Statistic: Maximum
+        Threshold: 900000
+        TreatMissingData: notBreaching
+
+    TypeaheadIteratorAgeAlarm:
+      Type: AWS::CloudWatch::Alarm
+      Properties:
+        AlarmActions:
+          - !GetAtt ReportSchedulingAlarmLambdaFunction.Arn
+        AlarmName: ${self:custom.prefix}-typeahead-iterator-age
+        ComparisonOperator: GreaterThanOrEqualToThreshold
+        DatapointsToAlarm: 1
+        Dimensions:
+          - Name: FunctionName
+            Value: !Ref TypeaheadLambdaFunction
+        EvaluationPeriods: 1
+        MetricName: IteratorAge
+        Namespace: AWS/Lambda
+        Period: 60
+        Statistic: Maximum
+        Threshold: 900000
+        TreatMissingData: notBreaching
+
     SchedulingAlarmLambdaPermission:
       Type: AWS::Lambda::Permission
       Properties:
@@ -579,7 +655,7 @@ resources:
             - !Ref AWS::AccountId
             - ':alarm:'
             - ${self:custom.prefix}
-            - '-*-dlq-messages-visible'
+            - '-*'
 
     DataLambdaFunctionRole:
       Type: AWS::IAM::Role
