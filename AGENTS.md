@@ -11,8 +11,6 @@ Repository-specific guidance for agents working in this monorepo.
 - Prepare the authorized, reviewable result before requesting any still-needed approval. Do not ask again for actions already authorized within the task scope.
 - Keep changes within the requested outcome. Updating affected consumers is in scope when required to preserve consistency; report unrelated issues instead of fixing them.
 - Keep changes surgical and inspect the final diff for unintended edits.
-- The main chat is always the orchestrator: investigate the task, assign implementation to `implementer`, request the named `standards_reviewer` and `spec_reviewer` reviews when applicable, then review, integrate, verify, and report the result. Assign implementation fixes and their tests to `implementer`; keep subagent ownership bounded to the assigned task, with no recursive delegation, commits, or review loops.
-- If role selection is unavailable when spawning an agent, explicitly set the required model and reasoning effort: `gpt-6-luna` with `max` for implementation and `high` for standards or specification review. Use a no-history or limited-history fork when overriding model settings, and report unavailable capabilities instead of silently substituting another role or workflow.
 
 ## Implementation
 
