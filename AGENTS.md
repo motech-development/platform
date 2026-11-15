@@ -73,9 +73,13 @@ For code changes, consult the shared guidance and only the affected app or packa
 
 Issues and PRDs are tracked in GitHub Issues for `motech-development/platform`. See `docs/agents/issue-tracker.md`.
 
+### Triage labels
+
+The default triage label vocabulary is used unchanged. See `docs/agents/triage-labels.md`.
+
 ### Domain docs
 
-Domain documentation uses a multi-context layout indexed by `CONTEXT-MAP.md`. See `docs/agents/domain.md`.
+Domain documentation uses a multi-context layout indexed by `GLOSSARY-MAP.md`. See `docs/agents/domain.md`.
 
 ### Platform delivery
 
