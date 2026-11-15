@@ -192,6 +192,31 @@ resources:
         MessageRetentionPeriod: 1209600
         QueueName: ${self:custom.prefix}-failure-dlq
 
+    AntiVirusFailureDeadLetterQueueAlarm:
+      Type: AWS::CloudWatch::Alarm
+      Properties:
+        AlarmActions:
+          - !Join
+            - ''
+            - - 'arn:aws:lambda:'
+              - !Ref AWS::Region
+              - ':'
+              - !Ref AWS::AccountId
+              - ':function:accounts-data-${self:provider.stage}-ReportSchedulingAlarm'
+        AlarmName: accounts-${self:provider.stage}-anti-virus-failure-dlq-messages-visible
+        ComparisonOperator: GreaterThanOrEqualToThreshold
+        DatapointsToAlarm: 1
+        Dimensions:
+          - Name: QueueName
+            Value: !GetAtt AntiVirusFailureDeadLetterQueue.QueueName
+        EvaluationPeriods: 1
+        MetricName: ApproximateNumberOfMessagesVisible
+        Namespace: AWS/SQS
+        Period: 60
+        Statistic: Maximum
+        Threshold: 1
+        TreatMissingData: notBreaching
+
     AntiVirusFailureQueue:
       Type: AWS::SQS::Queue
       Properties:
@@ -205,6 +230,31 @@ resources:
       Properties:
         MessageRetentionPeriod: 1209600
         QueueName: ${self:custom.prefix}-dlq
+
+    AntiVirusDeadLetterQueueAlarm:
+      Type: AWS::CloudWatch::Alarm
+      Properties:
+        AlarmActions:
+          - !Join
+            - ''
+            - - 'arn:aws:lambda:'
+              - !Ref AWS::Region
+              - ':'
+              - !Ref AWS::AccountId
+              - ':function:accounts-data-${self:provider.stage}-ReportSchedulingAlarm'
+        AlarmName: accounts-${self:provider.stage}-anti-virus-dlq-messages-visible
+        ComparisonOperator: GreaterThanOrEqualToThreshold
+        DatapointsToAlarm: 1
+        Dimensions:
+          - Name: QueueName
+            Value: !GetAtt AntiVirusDeadLetterQueue.QueueName
+        EvaluationPeriods: 1
+        MetricName: ApproximateNumberOfMessagesVisible
+        Namespace: AWS/SQS
+        Period: 60
+        Statistic: Maximum
+        Threshold: 1
+        TreatMissingData: notBreaching
 
     AntiVirusQueue:
       Type: AWS::SQS::Queue

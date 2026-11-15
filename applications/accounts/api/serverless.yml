@@ -633,6 +633,54 @@ resources:
                     - logs:DescribeLogStreams
                   Resource:
                     - arn:aws:logs:*:*:*
+    PublishNotificationsIteratorAgeAlarm:
+      Type: AWS::CloudWatch::Alarm
+      Properties:
+        AlarmActions:
+          - !Join
+            - ''
+            - - 'arn:aws:lambda:'
+              - !Ref AWS::Region
+              - ':'
+              - !Ref AWS::AccountId
+              - ':function:accounts-data-${self:provider.stage}-ReportSchedulingAlarm'
+        AlarmName: ${self:custom.prefix}-publish-notifications-iterator-age
+        ComparisonOperator: GreaterThanOrEqualToThreshold
+        DatapointsToAlarm: 1
+        Dimensions:
+          - Name: FunctionName
+            Value: !Ref PublishNotificationsLambdaFunction
+        EvaluationPeriods: 1
+        MetricName: IteratorAge
+        Namespace: AWS/Lambda
+        Period: 60
+        Statistic: Maximum
+        Threshold: 900000
+        TreatMissingData: notBreaching
+    UpdateBalanceIteratorAgeAlarm:
+      Type: AWS::CloudWatch::Alarm
+      Properties:
+        AlarmActions:
+          - !Join
+            - ''
+            - - 'arn:aws:lambda:'
+              - !Ref AWS::Region
+              - ':'
+              - !Ref AWS::AccountId
+              - ':function:accounts-data-${self:provider.stage}-ReportSchedulingAlarm'
+        AlarmName: ${self:custom.prefix}-update-balance-iterator-age
+        ComparisonOperator: GreaterThanOrEqualToThreshold
+        DatapointsToAlarm: 1
+        Dimensions:
+          - Name: FunctionName
+            Value: !Ref UpdateBalanceLambdaFunction
+        EvaluationPeriods: 1
+        MetricName: IteratorAge
+        Namespace: AWS/Lambda
+        Period: 60
+        Statistic: Maximum
+        Threshold: 900000
+        TreatMissingData: notBreaching
   Outputs:
     AccountsApiUrl:
       Description: Accounts API URL

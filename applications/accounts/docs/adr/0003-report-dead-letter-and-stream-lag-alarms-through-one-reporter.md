@@ -1,0 +1,13 @@
+---
+status: accepted
+---
+
+# Report Dead-Letter and Stream Lag Alarms Through One Reporter
+
+Every dead-letter queue that serves Accounts, including the two in `core/anti-virus`, and every consumer of the application table stream has a CloudWatch alarm whose action is the `ReportSchedulingAlarm` Lambda in `accounts-data`, which ADR 0001 introduced. Alarms are named `accounts-{stage}-{boundary}-dlq-messages-visible` or `accounts-{stage}-{boundary}-iterator-age`, whatever their queue or stack is called, so one invoke permission for `accounts-{stage}-*` covers them and the reporter can reject every other name. The reporter takes the failure boundary from the alarm name and the queue or function from the alarm's metric dimensions, because several queue names, such as `accounts-{stage}-dlq`, carry no boundary of their own.
+
+`core-anti-virus` and `accounts-storage` deploy before `accounts-data`, so they cannot import an export from it. Every stack other than `accounts-data` therefore builds the reporter's ARN from its function name, `accounts-data-{stage}-ReportSchedulingAlarm`. Nothing checks that name across stacks: renaming the function or the `accounts-data` service silently stops those alarms from reaching Sentry. The invoke permission stays in `accounts-data`, because a permission cannot be added to a function that does not exist yet. On a new stage the earlier stacks create their alarms before the function exists; an alarm that fires in that window fails its action and does not report until it returns to OK and fires again.
+
+The application table stream keeps its six consumers, above AWS's guidance of two readers per shard; instead of consolidating them, their lag is made visible. Each consumer alarms when its maximum `IteratorAge` reaches 15 minutes in any one-minute period, with missing data treated as not breaching. The slowest ordinary delays are a batch retried to exhaustion against a 60-second timeout and a large deletion processed one record at a time; 15 minutes is well beyond them and leaves most of the stream's 24-hour retention to react. One data point is enough because `IteratorAge` already measures how long the consumer has been behind, and requiring consecutive points would miss stalls on sparse traffic.
+
+`IteratorAge` exists only when Lambda invokes the function. A paused event source mapping, or one left reading a stream that no longer receives records, never raises the lag alarm, and neither do records discarded by age. These alarms cannot detect those states.
