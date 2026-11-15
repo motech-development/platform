@@ -109,7 +109,7 @@ aws lambda invoke --function-name data-restore \
   --payload '{"action":"resume"}' resume.json
 ```
 
-The response must not contain `FunctionError`. If it does, check the function's logs, fix the cause and run `resume` again.
+The response must not contain `FunctionError`. If it does, check the function's logs, fix the cause and run only the `aws lambda invoke` command again. Keep the first `RESUMED_AT`: a failed `resume` may already have enabled some mappings.
 
 Watch every mapping's metrics from that time, repeating the command until the gate below is met:
 
