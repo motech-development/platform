@@ -4,6 +4,7 @@ provider:
   region: ${opt:region, 'eu-west-1'}
   runtime: nodejs24.x
   stage: ${opt:stage, 'local'}
+  logRetentionInDays: 30
   stackName: ${self:custom.prefix}-api
   deploymentBucket:
     name: ${self:service}-deployment-bucket
