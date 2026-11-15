@@ -51,12 +51,12 @@ Task clarity takes priority over novelty. Product-specific identity or voice may
 ## Evidence on Hand
 
 - [`README.md`](README.md) identifies this repository as the Motech Development applications monorepo and inventories its applications and reusable packages.
-- [`CONTEXT-MAP.md`](CONTEXT-MAP.md) records the distinct Accounts, Breeze UI, and Platform Delivery contexts.
-- [`applications/accounts/CONTEXT.md`](applications/accounts/CONTEXT.md) defines the current Accounts domain scope and language.
+- [`GLOSSARY-MAP.md`](GLOSSARY-MAP.md) records the distinct Accounts, Breeze UI, and Platform Delivery contexts.
+- [`applications/accounts/GLOSSARY.md`](applications/accounts/GLOSSARY.md) defines the current Accounts domain scope and language.
 - `applications/accounts/client` and `applications/accounts/web` contain the current and replacement Accounts product implementations, product copy, tests, and executable user journeys.
 - `applications/id/client` contains the shared login, sign-up, password recovery, and password reset experience.
 - `packages/breeze-ui` contains the shared accessible UI primitives and interaction patterns used by Motech Development applications.
-- `.github/CONTEXT.md` and the delivery catalog document how independently deliverable parts of the platform are validated and delivered.
+- `.github/GLOSSARY.md` and the delivery catalog document how independently deliverable parts of the platform are validated and delivered.
 
 No portfolio-wide testimonials, customer case studies, press claims, pricing claims, or performance benchmarks are established in this repository. Future product work must not fabricate them.
 

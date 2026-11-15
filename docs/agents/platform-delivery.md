@@ -6,8 +6,8 @@ The delivery catalog and generator described here are outputs of the agreed spec
 
 ## Supporting context
 
-- Use [`CONTEXT-MAP.md`](../../CONTEXT-MAP.md) when locating an affected domain boundary.
-- Use [Platform Delivery context](../../.github/CONTEXT.md) for delivery behaviour and terminology.
+- Use [`GLOSSARY-MAP.md`](../../GLOSSARY-MAP.md) when locating an affected domain boundary.
+- Use [Platform Delivery context](../../.github/GLOSSARY.md) for delivery behaviour and terminology.
 - Consult relevant [ADRs](../../.github/docs/adr/) when changing a recorded delivery decision.
 - Reuse applicable `AGENTS.md` guidance already loaded; do not reread it for each step.
 
