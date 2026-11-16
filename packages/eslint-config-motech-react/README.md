@@ -10,6 +10,8 @@
 
 > Reusable ESLint config
 
+See [docs/architecture.md](docs/architecture.md) for what the config composes and why.
+
 # Installation
 
 1. Install `@motech-development/eslint-config-motech-react` as a development dependency.

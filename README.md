@@ -11,6 +11,8 @@
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/motech-development/platform)
 
+Read [Architecture](docs/architecture.md) for how the applications and packages fit together. Every workspace has a README with its own setup and scripts.
+
 ## Applications
 
 A diverse set of applications built by Motech Development

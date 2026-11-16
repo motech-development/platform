@@ -1,34 +1,36 @@
 # Accounts web
 
-A blank starting point for rebuilding Accounts. The app is a static HTML placeholder built and served by Vite; no application framework or UI library has been selected.
+> Placeholder for the Accounts rebuild
 
-The previous screens, authentication, data clients, routing, PWA, application tests, and assets were intentionally removed in the reset. The earlier migration specification is historical context, not a claim that the placeholder provides those capabilities. The legacy Accounts client remains in `../client`.
+A static HTML placeholder, built and served by Vite, that will become the replacement for [`@accounts/client`](../client/). It is hosted on AWS Amplify and is outside the Deployment Catalog. See [docs/architecture.md](docs/architecture.md) for how it works and how hosting is managed.
 
-## Local development
+## Getting started
 
 From the repository root:
 
 ```sh
-yarn install --immutable
+nvm use
+yarn install
 yarn workspace @accounts/web start
 ```
 
-Open http://localhost:8080. Edit `index.html` to change the placeholder.
+Open http://localhost:8080 and edit `index.html`.
 
-```sh
-yarn workspace @accounts/web build
-yarn workspace @accounts/web serve
-yarn workspace @accounts/web exec vitest run infrastructure
-yarn workspace @accounts/web typecheck
-yarn workspace @accounts/web lint
-```
+## Scripts
 
-## Hosting
+Run as `yarn workspace @accounts/web <script>`.
 
-`infrastructure/` retains the shared `accounts-web-hosting` Amplify app, Develop and production branches, Develop domain, and exact-commit deployment and preview teardown commands. The app's GitHub connection remains externally managed. No Auth0, AppSync, or Sentry configuration is needed to build or deploy the placeholder.
-
-The root `amplify.yml` builds this workspace and publishes `dist/`. The SPA rewrite serves `index.html`.
-
-CI/CD has been restored to commit `1c2b0a711657c61423d7a83fd613d12603b9b05a`, before the Accounts web rewrite. This workspace is private so the root release command excludes it, and it is outside the Deployment Catalog: automated Release, Develop, production, preview deployment, and preview teardown do not manage it. Existing Amplify resources are retained. The legacy client uses its original deployment and browser validation pipelines.
-
-Reconciliation, deployment, and teardown commands change AWS or remote Git state; local build and tests do not deploy anything.
+| Script       | Purpose                                                                             |
+| ------------ | ----------------------------------------------------------------------------------- |
+| `start`      | Vite dev server on port 8080.                                                       |
+| `build`      | Production build to `dist/`.                                                        |
+| `serve`      | Serves the production build on port 8080.                                           |
+| `test`       | Vitest in watch mode.                                                               |
+| `test-ci`    | One Vitest run with coverage.                                                       |
+| `lint`       | ESLint.                                                                             |
+| `typecheck`  | TypeScript.                                                                         |
+| `formatting` | Prettier check.                                                                     |
+| `cdk`        | Runs the CDK CLI.                                                                   |
+| `reconcile`  | Deploys the `accounts-web-hosting` stack. Changes AWS.                              |
+| `deploy`     | Deploys a commit to an Amplify branch (`--stage`, `--commit`). Changes AWS and Git. |
+| `teardown`   | Removes a Preview Environment branch (`--stage pr-<number>`). Changes AWS and Git.  |

@@ -1,36 +1,27 @@
 # Accounts infrastructure
 
-This workspace defines AWS infrastructure used by the Accounts web client. It
-uses Serverless Framework and CloudFormation; the resource definitions are in
-[`serverless.yml`](./serverless.yml), and workspace commands are in
-[`package.json`](./package.json).
+> Hosting for the Accounts web client
 
-The workspace provisions the static client hosting and delivery resources,
-including its storage, CDN, and DNS integration. CloudFront access logging is
-also configured here. The separate [`@accounts/client`](../client/) workspace
-builds and publishes the web assets. API and other application services are
-owned by their respective workspaces.
+The S3 bucket, CloudFront distribution, access logging and DNS record that serve [`@accounts/client`](../client/) in production. It has no application code; everything is in `serverless.yml`. See [docs/architecture.md](docs/architecture.md) for how it works.
 
-## Local setup and checks
+## Getting started
 
-From the repository root, select the repository's Node.js version and install
-dependencies with Yarn:
+From the repository root:
 
 ```sh
 nvm use
 yarn install
-```
-
-For local checks, use the reserved `.invalid` domain and `local` stage. These
-commands format-check the workspace, print the resolved configuration, or
-create a local Serverless package without deploying resources:
-
-```sh
-yarn workspace @accounts/infrastructure formatting
 PROD_DOMAIN=example.invalid yarn workspace @accounts/infrastructure exec serverless print --stage local
-PROD_DOMAIN=example.invalid yarn workspace @accounts/infrastructure exec serverless package --stage local
 ```
 
-Deployment and maintenance follow the
-[repository contributor guidance](../../../AGENTS.md) and authorized internal
-procedures.
+`PROD_DOMAIN` is required; the reserved `.invalid` domain is fine for local checks, which deploy nothing.
+
+## Scripts
+
+Run as `yarn workspace @accounts/infrastructure <script>`.
+
+| Script       | Purpose                                 |
+| ------------ | --------------------------------------- |
+| `formatting` | Prettier check.                         |
+| `deploy`     | `serverless deploy` (used by delivery). |
+| `teardown`   | `serverless remove` (used by delivery). |
