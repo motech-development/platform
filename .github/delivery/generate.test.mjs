@@ -336,11 +336,18 @@ test('repository catalog represents the active delivery inventory only', async (
       'accounts-reports',
       'accounts-api',
       'accounts-client',
+      'id-infrastructure',
+      'id-tenant',
     ],
   );
-  assert.equal(
-    catalog.units.some(({ workspace }) => workspace.startsWith('@id/')),
-    false,
+  assert.deepEqual(
+    catalog.units
+      .filter(({ workspace }) => workspace.startsWith('@id/'))
+      .map(({ id, targets }) => [id, targets]),
+    [
+      ['id-infrastructure', ['develop', 'production']],
+      ['id-tenant', ['develop', 'production']],
+    ],
   );
   assert.equal(
     catalog.units.some(
@@ -1119,6 +1126,101 @@ test('production deployment uses the public domain variable for infrastructure a
   }
 });
 
+test('ID tenant delivery publishes client assets before the Auth0 page in one audited attempt', async () => {
+  const [generated, clientManifest] = await Promise.all([
+    generateWorkflows({ write: false }),
+    readFile('applications/id/client/package.json', 'utf8').then(JSON.parse),
+  ]);
+
+  assert.match(clientManifest.scripts.deploy, / --no-delete-contents /);
+
+  for (const filename of [
+    'deploy-to-develop.yml',
+    'deploy-to-production.yml',
+  ]) {
+    const tenant = workflowJob(generated[filename], 'id-tenant');
+    const [jobSettings, steps] = tenant.split('\n    steps:\n');
+
+    for (const id of ['id-infrastructure', 'id-tenant']) {
+      assert.match(
+        workflowJob(generated[filename], id),
+        /- name: Checkout code\n(?: {8}.+\n)*? {10}persist-credentials: false\n/,
+        `${filename}:${id}`,
+      );
+    }
+
+    assert.match(
+      jobSettings,
+      /needs:\n      - setup\n      - id-infrastructure\n/,
+      filename,
+    );
+    assert.match(
+      steps,
+      /name: Build ID client\n[\s\S]*name: Create GitHub Deployment[\s\S]*name: Deploy ID client\n[\s\S]*name: Deploy Auth0 tenant\n[\s\S]*name: Record successful Deployment[\s\S]*name: Record failed Deployment/,
+      filename,
+    );
+    assert.doesNotMatch(jobSettings, /secrets\./, filename);
+    assert.match(
+      steps.slice(steps.indexOf('name: Deploy Auth0 tenant')),
+      /AUTH0_CLIENT_SECRET: \$\{\{ secrets\.AUTH0_CLIENT_SECRET_(DEV|PROD) \}\}/,
+      filename,
+    );
+    assert.equal(
+      steps
+        .slice(0, steps.indexOf('name: Deploy Auth0 tenant'))
+        .includes('AUTH0_'),
+      false,
+      filename,
+    );
+  }
+
+  for (const filename of [
+    'deploy-to-environment.yml',
+    'teardown-environment.yml',
+  ]) {
+    assert.doesNotMatch(generated[filename], /^  id-[a-z-]+:$/m, filename);
+  }
+});
+
+test('released ID client or email changes select the tenant delivery', async () => {
+  const [catalog, manifests] = await Promise.all([
+    loadCatalog(),
+    loadWorkspaceManifests(),
+  ]);
+  const boundary = 'main-commit-2';
+  const releases = catalog.units.map(({ workspace }) => ({
+    tag: `${workspace}@1.0.0`,
+    commit: 'main-commit-1',
+    historyPosition: 1,
+    published: true,
+    reachable: true,
+  }));
+
+  for (const workspace of ['@id/client', '@id/emails']) {
+    const plan = createReleasePlan(catalog, manifests, {
+      boundary,
+      boundaryAccepted: true,
+      target: 'production',
+      releases: [
+        ...releases,
+        ...[workspace, '@id/tenant'].map((released) => ({
+          tag: `${released}@1.1.0`,
+          commit: boundary,
+          historyPosition: 0,
+          published: true,
+          reachable: true,
+        })),
+      ],
+    });
+
+    assert.deepEqual(
+      plan.units.map(({ id, tag }) => [id, tag]),
+      [['id-tenant', '@id/tenant@1.1.0']],
+      workspace,
+    );
+  }
+});
+
 test('API delivery records success only after exporting client configuration', async () => {
   const generated = await generateWorkflows({ write: false });
 
@@ -1564,6 +1666,8 @@ test('generator emits deterministic static workflow graphs with one job per Depl
     'accounts-reports': 'Deploy accounts reports',
     'accounts-api': 'Deploy accounts API',
     'accounts-client': 'Deploy accounts client',
+    'id-infrastructure': 'Deploy ID infrastructure',
+    'id-tenant': 'Deploy ID tenant',
   };
   assert.match(workflowJob(production, 'setup'), /^    name: Setup$/m);
   for (const [id, name] of Object.entries(productionJobNames)) {

@@ -1,6 +1,6 @@
 # Deployment Catalog
 
-`catalog.json` is the source of truth for delivery topology. It records only stable Deployment Unit identifiers, owning workspaces and their paths, supported targets, direct delivery dependencies that cannot be inferred from workspace manifests, expected CloudFormation stacks, and justified exceptions. Identity/Auth0 and accounts data restore are deliberately outside this catalog.
+`catalog.json` is the source of truth for delivery topology. It records only stable Deployment Unit identifiers, owning workspaces and their paths, supported targets, direct delivery dependencies that cannot be inferred from workspace manifests, expected CloudFormation stacks, and justified exceptions. Accounts data restore is deliberately outside this catalog.
 
 The generator reads every workspace manifest to infer ordinary `workspace:` relationships. Do not copy those relationships into `dependsOn`; validation rejects that duplication. Use `dependsOn` only for runtime infrastructure relationships established by imports, exports, or existing delivery ordering.
 
@@ -19,6 +19,8 @@ The generator emits a standard job for an ordinary Deployment Unit from its cata
 ## Dependency and output transfer
 
 Quality and publication jobs use `.github/actions/setup-dependencies/action.yml`. Generated Deployment Unit jobs inline the equivalent dependency fragment so checking out an older Release tag cannot hide the action definition. The exact installed-dependency cache has no fallback key and includes the resolved platform, Node runtime, Yarn configuration and release, lockfile, plugins, and every workspace manifest. An exact miss restores Yarn archives before running an immutable install. Deployment Unit jobs then build only the transitive workspace packages selected from their owning manifest; generated package outputs and stage-specific Serverless directories are never cached.
+
+The ID tenant unit builds the ID client and email templates, uploads the client without deleting previously published assets, and then imports the Auth0 tenant in one audited delivery attempt. The hosted login page and its content-hashed assets therefore come from the same build, and the live page keeps working until Auth0 serves its replacement. Its `@id/client` and `@id/emails` workspace dependencies make their Releases select the tenant delivery. ID delivery targets Develop and production only because previews would share one Auth0 tenant.
 
 The accounts API exposes its public URL and AWS region as job outputs. Client jobs recreate `.env.production` from those outputs instead of using a cache as a workflow hand-off. Historical delivery performance measurements, including evidence collected with retired timing instrumentation, live in `performance.md`.
 
