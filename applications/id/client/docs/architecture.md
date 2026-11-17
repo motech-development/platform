@@ -44,11 +44,11 @@ Auth0 errors are shown as toasts. `getErrorMessage` shows Auth0's own descriptio
 
 ### Environment
 
-Read at build time through Vite's `process.env` define: `REACT_APP_SENTRY_DSN` and `REACT_APP_GA` (both required; the app throws without them), `STAGE` (Sentry environment), `PORT`, `PUBLIC_URL`. `SENTRY_AUTH_TOKEN` lets the build upload source maps.
+Read at build time through Vite's `process.env` define: `REACT_APP_SENTRY_DSN` and `REACT_APP_GA` (both required; the app throws without them), `STAGE` (Sentry environment), `PORT`, `PUBLIC_URL`. Only `REACT_APP_*` variables, `STAGE` and `NODE_ENV` are built into the bundle, so never give a secret a `REACT_APP_` name. `SENTRY_AUTH_TOKEN` lets the build upload source maps; it is read from `process.env`, so export it in the shell or CI environment that runs the build rather than setting it in `.env.local`.
 
 ## Infrastructure
 
-The workspace creates no AWS resources (`manageResources: false`). `deploy` uses `serverless-finch` to upload `build/` to the bucket named after the `id` subdomain (override with `PREFIX`), with long cache headers for CSS and JS and no-store for HTML, then runs `react-snap` to pre-render `/login` and `/lo/reset`. Deploy input: `PROD_DOMAIN`.
+The workspace creates no AWS resources (`manageResources: false`). `deploy` uses `serverless-finch` to empty the bucket named after the `id` subdomain (override with `PREFIX`) and upload `build/` to it, with long cache headers for CSS and JS and no-store for HTML. It then runs `react-snap` to pre-render `/login` and `/lo/reset`. Deploy input: `PROD_DOMAIN`.
 
 ## Failure handling and observability
 
@@ -66,4 +66,4 @@ yarn workspace @id/client vitest run src/pages/__tests__/Login.tsx
 
 - The route paths must match the HTML paths `@id/tenant` uploads (`build/login/index.html`, `build/lo/reset/index.html`), which exist only after `react-snap` pre-renders them.
 - `build` does not pre-render. Run `build`, then `react-snap` (run by `deploy` after upload), before deploying `@id/tenant`.
-- Automated delivery for the ID workspaces is currently disabled and they are outside the Deployment Catalog.
+- Releases deploy this workspace through the `id-tenant` Deployment Unit, which builds, uploads and pre-renders it before importing the tenant. Emptying the bucket means the live login page can fail to load its scripts until that import finishes.

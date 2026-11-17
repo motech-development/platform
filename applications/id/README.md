@@ -10,7 +10,7 @@ Everything in this folder is sensitive. Do not change Auth0 code, configuration 
 
 | Workspace                                   | What it is                                           |
 | ------------------------------------------- | ---------------------------------------------------- |
-| [`@id/tenant`](tenant/)                     | Auth0 tenant configuration, rules and hooks.         |
+| [`@id/tenant`](tenant/)                     | Auth0 tenant configuration and Actions.              |
 | [`@id/client`](client/)                     | The custom universal login page.                     |
 | [`@id/emails`](emails/)                     | Transactional email templates.                       |
 | [`@id/infrastructure`](infrastructure/)     | Hosting for the login page.                          |
@@ -28,4 +28,4 @@ yarn package
 yarn workspace @id/client start
 ```
 
-Automated delivery for these workspaces is currently disabled, and they are outside the Deployment Catalog.
+Releases deploy these workspaces to Develop and production through the `id-infrastructure` and `id-tenant` Deployment Units; see [ID](../../docs/architecture.md#id).

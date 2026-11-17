@@ -38,4 +38,4 @@ No tests. Check the resolved configuration with `PROD_DOMAIN=example.invalid yar
 
 - Deploy after `@core/infrastructure` and before `@id/client`, whose `deploy` uploads into this bucket.
 - The bucket name is the subdomain, so `@id/client/serverless.yml` must resolve the same `PREFIX` and `PROD_DOMAIN`.
-- Automated delivery for the ID workspaces is currently disabled and they are outside the Deployment Catalog. Changes to `applications/id` need explicit authorization; see [`AGENTS.md`](../../../../AGENTS.md).
+- Releases deploy this stack to Develop and production through the `id-infrastructure` Deployment Unit, after `core-infrastructure`. Changes to `applications/id` need explicit authorization; see [`AGENTS.md`](../../../../AGENTS.md).

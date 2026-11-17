@@ -59,14 +59,14 @@ A bookkeeping application for recording a company's transactions. Its domain lan
 
 Identity for all products, built on Auth0. These workspaces are sensitive: see `AGENTS.md` before changing anything here.
 
-| Workspace            | Purpose                                                                       |
-| -------------------- | ----------------------------------------------------------------------------- |
-| `@id/tenant`         | The Auth0 tenant configuration and rules, deployed with the Auth0 Deploy CLI. |
-| `@id/client`         | The custom universal login page (log in, sign up, password reset).            |
-| `@id/emails`         | Pug sources for the tenant's transactional email templates.                   |
-| `@id/infrastructure` | S3 and CloudFront hosting for the login page.                                 |
+| Workspace            | Purpose                                                                         |
+| -------------------- | ------------------------------------------------------------------------------- |
+| `@id/tenant`         | The Auth0 tenant configuration and Actions, deployed with the Auth0 Deploy CLI. |
+| `@id/client`         | The custom universal login page (log in, sign up, password reset).              |
+| `@id/emails`         | Pug sources for the tenant's transactional email templates.                     |
+| `@id/infrastructure` | S3 and CloudFront hosting for the login page.                                   |
 
-Automated delivery for the ID workspaces is currently disabled, and they are outside the Deployment Catalog.
+ID deploys to Develop and production, never to Preview Environments, which would all share one Auth0 tenant. Two Deployment Units do this: `id-infrastructure` deploys the hosting stack, and `id-tenant` builds the client and emails, uploads the client and imports the Auth0 tenant. The upload empties the bucket first, so sign-in can fail briefly until the import finishes.
 
 ## How Accounts works
 
@@ -174,6 +174,8 @@ flowchart LR
   storage --> api
   api --> client[accounts-client]
   accInfra --> client
+  coreInfra --> idInfra[id-infrastructure]
+  idInfra --> tenant[id-tenant]
 ```
 
 To find every relationship:

@@ -6,57 +6,57 @@
 
 ## Layout
 
-| Path                    | Contents                                                 |
-| ----------------------- | -------------------------------------------------------- |
-| `tenant.yaml`           | Exported tenant configuration in Deploy CLI YAML format. |
-| `config.json`           | Non-secret Deploy CLI settings used in CI.               |
-| `src/rules/`            | Rule scripts, with tests in `__tests__/`.                |
-| `src/hooks/`            | Hook scripts, with tests in `__tests__/`.                |
-| `src/utils/loadRule.js` | Test helper that runs a rule as Auth0 would.             |
+| Path           | Contents                                                 |
+| -------------- | -------------------------------------------------------- |
+| `tenant.yaml`  | Exported tenant configuration in Deploy CLI YAML format. |
+| `config.json`  | Non-secret Deploy CLI settings used in CI.               |
+| `src/actions/` | Action code, with tests in `__tests__/`.                 |
 
 ## Configuration structure
 
-`tenant.yaml` has a top-level key per Deploy CLI resource type. Secret and environment-specific values are not stored in it; they are `##KEYWORD##` placeholders the Deploy CLI replaces at deploy time from its keyword mappings.
+`tenant.yaml` has a top-level key per Deploy CLI resource type. Secret and environment-specific values are not stored in it; they are `##KEYWORD##` placeholders the Deploy CLI replaces at deploy time from environment variables of the same name.
 
-| Section                                            | What it holds                                                                                   |
-| -------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| `rules`                                            | The two rules below, by script path, stage and order.                                           |
-| `hooks`                                            | The pre-user-registration hook below.                                                           |
-| `pages`                                            | Custom `login` and `password_reset` pages, read from `../client/build/`.                        |
-| `resourceServers`                                  | The Accounts API.                                                                               |
-| `clients`                                          | The Accounts app, a test application for the API, the default app and the Deploy CLI extension. |
-| `databases`, `connections`                         | The `Username-Password-Authentication` database and the Google social connection.               |
-| `tenant`                                           | Tenant settings such as name and locales.                                                       |
-| `emailProvider`, `emailTemplates`                  | Amazon SES provider and the four templates, with bodies read from `../emails/build/`.           |
-| `clientGrants`, `guardian*`, `branding`, `prompts` | Grants, MFA factors (all disabled), branding and prompts.                                       |
-| Remaining keys                                     | Empty (`roles`, `actions`, `organizations`, and so on).                                         |
+| Section                                            | What it holds                                                                                                                  |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `actions`, `triggers`                              | The three Actions below and their bindings to `post-login` and `pre-user-registration`.                                        |
+| `pages`                                            | Custom `login` and `password_reset` pages, read from `../client/build/`.                                                       |
+| `resourceServers`                                  | The Accounts API.                                                                                                              |
+| `clients`                                          | The Accounts app, a test application for the API, the default app, the Deploy CLI extension and `Login Actions`.               |
+| `databases`, `connections`                         | The `Username-Password-Authentication` database and the Google social connection.                                              |
+| `tenant`                                           | Tenant settings such as name and locales.                                                                                      |
+| `emailProvider`, `emailTemplates`                  | Amazon SES provider and the four templates, with bodies read from `../emails/build/`.                                          |
+| `clientGrants`, `guardian*`, `branding`, `prompts` | Grants (including `update:users` on the Management API for `Login Actions`), MFA factors (all disabled), branding and prompts. |
+| Remaining keys                                     | Empty (`roles`, `organizations`, and so on).                                                                                   |
 
-`config.json` sets `AUTH0_ALLOW_DELETE: false` and excludes no rules. It applies only when passed to `deploy` with `-c config.json`; the `deploy` script does not pass it.
+`config.json` sets `AUTH0_ALLOW_DELETE: false` and excludes `rules`, `rulesConfigs` and `hooks`, so a deploy never re-saves the tenants' legacy Rules and Hook. They are disabled in both tenants. CI passes it with `deploy -c config.json`.
 
-## Rules and hooks
+## Actions
 
-Both rules run at `login_success`, in order, inside Auth0's rule sandbox (globals `auth0`, `UnauthorizedError`, `require`). Each creates a Management API client from `auth0.domain` and `auth0.accessToken`.
+All three Actions run on Node 22.
 
-| Order | Rule                                                     | Behaviour                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| ----- | -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1     | Force email verification (`force-email-verification.js`) | If the email is not verified: resends the verification email and stores `user_metadata.emailVerificationSentDate`, unless it was sent within the last 24 hours, then rejects the login with `UnauthorizedError('Please verify your email before logging in.')`. If verified: removes `emailVerificationSentDate` from metadata when present and continues. Management API failures are logged and do not change the outcome. |
-| 2     | Set name (`set-name.js`)                                 | If `user_metadata` has both `given_name` and `family_name` (set at sign-up), moves them to the root profile, sets `name` to "given family", removes them from metadata and updates the user. An update failure fails the login with that error. Otherwise passes the user through.                                                                                                                                           |
+| Action                           | Trigger                 | Behaviour                                                                                                                                                                                                                                                                                                                                               |
+| -------------------------------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Force email verification         | `post-login` (first)    | If the email is verified, removes `user_metadata.emailVerificationSentDate` when present and continues. Otherwise it resends the verification email and records the time, unless one was sent in the last 24 hours, then denies the login with "Please verify your email before logging in." A failed resend is logged and does not change the outcome. |
+| Set name                         | `post-login` (second)   | If `user_metadata` has both `given_name` and `family_name` (set at sign-up), copies them to the root profile with `name` set to "given family", then removes them from metadata. A failed update fails the login.                                                                                                                                       |
+| Set email verification sent date | `pre-user-registration` | Sets `user_metadata.emailVerificationSentDate` to now, so the first login does not immediately resend the verification email Auth0 sends at sign-up.                                                                                                                                                                                                    |
 
-| Hook                                  | Trigger                 | Behaviour                                                                                                                                            |
-| ------------------------------------- | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `set-email-verification-sent-date.js` | `pre-user-registration` | Sets `user_metadata.emailVerificationSentDate` to now, so the first login does not immediately resend the verification email Auth0 sends at sign-up. |
+Actions cannot change root profile fields or send verification emails themselves, so Force email verification and Set name call the Management API. They authenticate as the `Login Actions` application, whose credentials reach them as Action secrets from the `AUTH0_ACTIONS_CLIENT_ID` and `AUTH0_ACTIONS_CLIENT_SECRET` keywords. That application is granted only `update:users`.
 
 ## Testing
 
-Vitest. `src/setupTests.js` stubs the `auth0` `ManagementClient` methods the rules use. Rules are plain functions, not modules, so `loadRule` reads the file, instruments it for coverage and evaluates it in a `vm` context with stub `auth0`, `UnauthorizedError` and a `require` that drops the `@version` suffix. Hooks are CommonJS and are required directly. Run one file with:
+Vitest. Actions are CommonJS modules exporting their trigger handler, so tests require them directly, pass stub `event` and `api` objects, and stub the `auth0` `ManagementClient` with `vi.spyOn`. Run one file with:
 
 ```sh
-yarn workspace @id/tenant vitest run src/rules/__tests__/set-name.js
+yarn workspace @id/tenant vitest run src/actions/__tests__/set-name.js
 ```
+
+## Delivery
+
+Releases deploy the tenant to Develop and production through the `id-tenant` Deployment Unit, after `id-infrastructure`. The job builds `@id/emails` and `@id/client`, deploys the client (which empties the bucket, uploads and pre-renders the pages), then runs `deploy -c config.json` with the keyword values from GitHub secrets. Sign-in can fail briefly between the upload and the import. `@id/tenant` depends on `@id/client` and `@id/emails`, so a release of either also redeploys the tenant. Preview Environments never deploy it, because they would all share one Auth0 tenant.
 
 ## Making changes
 
-- Build `@id/emails` and `@id/client` (including `react-snap` pre-rendering) before deploying, because `tenant.yaml` reads their output by relative path.
+- Build `@id/emails` and `@id/client` (including `react-snap` pre-rendering) before deploying by hand, because `tenant.yaml` reads their output by relative path.
 - After `import`, review the exported `tenant.yaml` and replace any secret or environment-specific value with a keyword placeholder before committing.
-- Rules pin `auth0@3.0.1` inside Auth0; the workspace's `auth0` dependency is only for tests.
-- Automated delivery for the ID workspaces is currently disabled and they are outside the Deployment Catalog.
+- An Action's `auth0` dependency is pinned in `tenant.yaml`; keep it in step with the workspace's `auth0` dependency, which the tests use.
+- A new keyword needs a GitHub secret for each environment and an entry in both tenant deploy jobs. Those jobs are generated from the Deployment Catalog, so change the generator, not the workflow files.

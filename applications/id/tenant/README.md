@@ -2,7 +2,7 @@
 
 > Auth0 tenant configuration as code
 
-The Auth0 tenant for all Motech Development products, managed with the [Auth0 Deploy CLI](https://auth0.com/docs/deploy-monitor/deploy-cli-tool) (`a0deploy`), plus the rule and hook code it deploys. See [docs/architecture.md](docs/architecture.md) for how it works.
+The Auth0 tenant for all Motech Development products, managed with the [Auth0 Deploy CLI](https://auth0.com/docs/deploy-monitor/deploy-cli-tool) (`a0deploy`), plus the Auth0 Action code it deploys. See [docs/architecture.md](docs/architecture.md) for how it works.
 
 Auth0 configuration is sensitive. Do not change it, or Auth0 dependencies, without explicit authorization; see [`AGENTS.md`](../../../AGENTS.md).
 
