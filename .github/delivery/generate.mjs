@@ -1048,6 +1048,9 @@ function injectTeardownGuard(job, unit) {
     );
 }
 
+// Regions that hold catalogued stacks; Serverless defaults decide where each deploys.
+const cloudFormationRegions = ['eu-west-1', 'us-east-1'];
+
 function environmentReconciliationSteps() {
   return `      - name: Configure AWS credentials for reconciliation
         uses: aws-actions/configure-aws-credentials@517a711dbcd0e402f90c77e7e2f81e849156e31d # v6.2.2
@@ -1059,10 +1062,12 @@ function environmentReconciliationSteps() {
           - name: Read expected cloud stacks
             shell: bash
             run: |
-              aws cloudformation describe-stacks \\
-                --query 'Stacks[].StackName' \\
-                --output json \\
-                > "$RUNNER_TEMP/existing-stacks.json"
+              for region in ${cloudFormationRegions.join(' ')}; do
+                aws cloudformation describe-stacks \\
+                  --region "$region" \\
+                  --query 'Stacks[].StackName' \\
+                  --output json
+              done | jq -s 'add' > "$RUNNER_TEMP/existing-stacks.json"
 
           - name: Read GitHub Deployments as Environment State
             env:
