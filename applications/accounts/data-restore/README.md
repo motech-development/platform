@@ -18,11 +18,11 @@ The `data-restore` function takes one action per invocation:
 | `resume`  | Waits two minutes, then enables every mapping with a maximum record age of 60 seconds. Lambda resumes each mapping from its last checkpoint and discards the restore's records because they are older than 60 seconds.                   |
 | `release` | Sets every mapping's maximum record age back to the default (`-1`, no limit). It refuses to run unless every mapping is `Enabled`.                                                                                                       |
 
-A mapping that reports `Disabled` can still deliver records: in a rehearsal, every consumer received records written after all six mappings reported `Disabled`, for at least 1.3 seconds. So `restore` does not trust the state. After pausing, it writes a canary item (`__typename` `DataRestoreCanary`) to the target table, waits five minutes, and reads each consumer function's `Invocations` metric from the start of the canary's minute. If any consumer was invoked, it refuses to clear the table. The clear step deletes the canary.
+A mapping that reports `Disabled` can still deliver records. In the `pr-1705` preview, consumers were invoked for records written up to 30 seconds after all six mappings reported `Disabled`, but not for records written 45 seconds or more after. So `restore` does not trust the state. After pausing, it waits one minute, writes a canary item (`__typename` `DataRestoreCanary`) to the target table and waits five more minutes. That covers the canary's delivery, the longest consumer timeout (60 seconds) and the delay before Lambda publishes an invocation in its `Invocations` metric (up to 65 seconds in the preview). It then reads each consumer function's `Invocations` metric from the start of the canary's minute. If any consumer was invoked, or CloudWatch does not return a complete count for every consumer, it refuses to clear the table. The clear step deletes the canary.
 
 The table's stream is never touched, so its ARN and the `<stage>-AccountsApplicationTableStreamArn` export stay valid.
 
-The restore runs in a single Lambda invocation, so it must finish within the 15-minute timeout, five minutes of which are the quiet check. This assumes the application table is small enough to clear and copy in that time. If it times out, the consumers stay paused and `restore` can be run again from the start.
+The restore runs in a single Lambda invocation, so it must finish within the 15-minute timeout, six minutes of which are the quiet check. This assumes the application table is small enough to clear and copy in that time. If it times out, the consumers stay paused and `restore` can be run again from the start.
 
 ## Before you start
 
@@ -84,7 +84,7 @@ aws lambda invoke --function-name data-restore \
   --payload '{"action":"restore"}' restore.json
 ```
 
-It takes at least five minutes. The response must not contain `FunctionError`. If the error says the consumers were invoked after pausing, run `restore` again: the consumers stay paused, and it repeats the check with a new canary. For any other error, check the function's logs, fix the cause and run `restore` again. Do not continue to `resume` until `restore` has succeeded. `resume` permanently skips everything written while the consumers were paused.
+It takes at least six minutes. The response must not contain `FunctionError`. If the error says the consumers were invoked after pausing, or that it could not read every consumer invocation count, run `restore` again: the consumers stay paused, and it repeats the check with a new canary. For any other error, check the function's logs, fix the cause and run `restore` again. Do not continue to `resume` until `restore` has succeeded. `resume` permanently skips everything written while the consumers were paused.
 
 ## 4. Resume the consumers
 
