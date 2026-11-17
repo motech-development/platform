@@ -353,6 +353,28 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
+      - name: Create GitHub Deployment
+        id: deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          deployment_id="$(
+            jq -n \
+              --arg ref "$DEPLOYMENT_REF" \
+              --arg environment "$DEPLOYMENT_ENVIRONMENT" \
+              --arg task "$DEPLOYMENT_TASK" \
+              '{
+                ref: $ref,
+                environment: $environment,
+                task: $task,
+                auto_merge: false,
+                required_contexts: []
+              }' \
+              | gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" --input - --jq .id
+          )"
+          echo "id=$deployment_id" >> "$GITHUB_OUTPUT"
+
       - name: Set Node version
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -450,28 +472,6 @@ jobs:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
 
-      - name: Create GitHub Deployment
-        id: deployment
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: bash
-        run: |
-          deployment_id="$(
-            jq -n \
-              --arg ref "$DEPLOYMENT_REF" \
-              --arg environment "$DEPLOYMENT_ENVIRONMENT" \
-              --arg task "$DEPLOYMENT_TASK" \
-              '{
-                ref: $ref,
-                environment: $environment,
-                task: $task,
-                auto_merge: false,
-                required_contexts: []
-              }' \
-              | gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" --input - --jq .id
-          )"
-          echo "id=$deployment_id" >> "$GITHUB_OUTPUT"
-
       - name: Create in-progress Deployment status
         env:
           GH_TOKEN: ${{ github.token }}
@@ -561,6 +561,28 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
+      - name: Create GitHub Deployment
+        id: deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          deployment_id="$(
+            jq -n \
+              --arg ref "$DEPLOYMENT_REF" \
+              --arg environment "$DEPLOYMENT_ENVIRONMENT" \
+              --arg task "$DEPLOYMENT_TASK" \
+              '{
+                ref: $ref,
+                environment: $environment,
+                task: $task,
+                auto_merge: false,
+                required_contexts: []
+              }' \
+              | gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" --input - --jq .id
+          )"
+          echo "id=$deployment_id" >> "$GITHUB_OUTPUT"
+
       - name: Set Node version
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -605,28 +627,6 @@ jobs:
         with:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
-
-      - name: Create GitHub Deployment
-        id: deployment
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: bash
-        run: |
-          deployment_id="$(
-            jq -n \
-              --arg ref "$DEPLOYMENT_REF" \
-              --arg environment "$DEPLOYMENT_ENVIRONMENT" \
-              --arg task "$DEPLOYMENT_TASK" \
-              '{
-                ref: $ref,
-                environment: $environment,
-                task: $task,
-                auto_merge: false,
-                required_contexts: []
-              }' \
-              | gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" --input - --jq .id
-          )"
-          echo "id=$deployment_id" >> "$GITHUB_OUTPUT"
 
       - name: Create in-progress Deployment status
         env:
@@ -703,6 +703,28 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
+      - name: Create GitHub Deployment
+        id: deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          deployment_id="$(
+            jq -n \
+              --arg ref "$DEPLOYMENT_REF" \
+              --arg environment "$DEPLOYMENT_ENVIRONMENT" \
+              --arg task "$DEPLOYMENT_TASK" \
+              '{
+                ref: $ref,
+                environment: $environment,
+                task: $task,
+                auto_merge: false,
+                required_contexts: []
+              }' \
+              | gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" --input - --jq .id
+          )"
+          echo "id=$deployment_id" >> "$GITHUB_OUTPUT"
+
       - name: Set Node version
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -747,28 +769,6 @@ jobs:
         with:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
-
-      - name: Create GitHub Deployment
-        id: deployment
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: bash
-        run: |
-          deployment_id="$(
-            jq -n \
-              --arg ref "$DEPLOYMENT_REF" \
-              --arg environment "$DEPLOYMENT_ENVIRONMENT" \
-              --arg task "$DEPLOYMENT_TASK" \
-              '{
-                ref: $ref,
-                environment: $environment,
-                task: $task,
-                auto_merge: false,
-                required_contexts: []
-              }' \
-              | gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" --input - --jq .id
-          )"
-          echo "id=$deployment_id" >> "$GITHUB_OUTPUT"
 
       - name: Create in-progress Deployment status
         env:
@@ -846,6 +846,28 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
+      - name: Create GitHub Deployment
+        id: deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          deployment_id="$(
+            jq -n \
+              --arg ref "$DEPLOYMENT_REF" \
+              --arg environment "$DEPLOYMENT_ENVIRONMENT" \
+              --arg task "$DEPLOYMENT_TASK" \
+              '{
+                ref: $ref,
+                environment: $environment,
+                task: $task,
+                auto_merge: false,
+                required_contexts: []
+              }' \
+              | gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" --input - --jq .id
+          )"
+          echo "id=$deployment_id" >> "$GITHUB_OUTPUT"
+
       - name: Set Node version
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -890,28 +912,6 @@ jobs:
         with:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
-
-      - name: Create GitHub Deployment
-        id: deployment
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: bash
-        run: |
-          deployment_id="$(
-            jq -n \
-              --arg ref "$DEPLOYMENT_REF" \
-              --arg environment "$DEPLOYMENT_ENVIRONMENT" \
-              --arg task "$DEPLOYMENT_TASK" \
-              '{
-                ref: $ref,
-                environment: $environment,
-                task: $task,
-                auto_merge: false,
-                required_contexts: []
-              }' \
-              | gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" --input - --jq .id
-          )"
-          echo "id=$deployment_id" >> "$GITHUB_OUTPUT"
 
       - name: Create in-progress Deployment status
         env:
@@ -988,6 +988,28 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
+      - name: Create GitHub Deployment
+        id: deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          deployment_id="$(
+            jq -n \
+              --arg ref "$DEPLOYMENT_REF" \
+              --arg environment "$DEPLOYMENT_ENVIRONMENT" \
+              --arg task "$DEPLOYMENT_TASK" \
+              '{
+                ref: $ref,
+                environment: $environment,
+                task: $task,
+                auto_merge: false,
+                required_contexts: []
+              }' \
+              | gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" --input - --jq .id
+          )"
+          echo "id=$deployment_id" >> "$GITHUB_OUTPUT"
+
       - name: Set Node version
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -1032,28 +1054,6 @@ jobs:
         with:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
-
-      - name: Create GitHub Deployment
-        id: deployment
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: bash
-        run: |
-          deployment_id="$(
-            jq -n \
-              --arg ref "$DEPLOYMENT_REF" \
-              --arg environment "$DEPLOYMENT_ENVIRONMENT" \
-              --arg task "$DEPLOYMENT_TASK" \
-              '{
-                ref: $ref,
-                environment: $environment,
-                task: $task,
-                auto_merge: false,
-                required_contexts: []
-              }' \
-              | gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" --input - --jq .id
-          )"
-          echo "id=$deployment_id" >> "$GITHUB_OUTPUT"
 
       - name: Create in-progress Deployment status
         env:
@@ -1132,6 +1132,28 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
+      - name: Create GitHub Deployment
+        id: deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          deployment_id="$(
+            jq -n \
+              --arg ref "$DEPLOYMENT_REF" \
+              --arg environment "$DEPLOYMENT_ENVIRONMENT" \
+              --arg task "$DEPLOYMENT_TASK" \
+              '{
+                ref: $ref,
+                environment: $environment,
+                task: $task,
+                auto_merge: false,
+                required_contexts: []
+              }' \
+              | gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" --input - --jq .id
+          )"
+          echo "id=$deployment_id" >> "$GITHUB_OUTPUT"
+
       - name: Set Node version
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -1176,28 +1198,6 @@ jobs:
         with:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
-
-      - name: Create GitHub Deployment
-        id: deployment
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: bash
-        run: |
-          deployment_id="$(
-            jq -n \
-              --arg ref "$DEPLOYMENT_REF" \
-              --arg environment "$DEPLOYMENT_ENVIRONMENT" \
-              --arg task "$DEPLOYMENT_TASK" \
-              '{
-                ref: $ref,
-                environment: $environment,
-                task: $task,
-                auto_merge: false,
-                required_contexts: []
-              }' \
-              | gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" --input - --jq .id
-          )"
-          echo "id=$deployment_id" >> "$GITHUB_OUTPUT"
 
       - name: Create in-progress Deployment status
         env:
@@ -1283,6 +1283,28 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
+      - name: Create GitHub Deployment
+        id: deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          deployment_id="$(
+            jq -n \
+              --arg ref "$DEPLOYMENT_REF" \
+              --arg environment "$DEPLOYMENT_ENVIRONMENT" \
+              --arg task "$DEPLOYMENT_TASK" \
+              '{
+                ref: $ref,
+                environment: $environment,
+                task: $task,
+                auto_merge: false,
+                required_contexts: []
+              }' \
+              | gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" --input - --jq .id
+          )"
+          echo "id=$deployment_id" >> "$GITHUB_OUTPUT"
+
       - name: Set Node version
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -1327,28 +1349,6 @@ jobs:
         with:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::633331859210:role/github-actions
-
-      - name: Create GitHub Deployment
-        id: deployment
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: bash
-        run: |
-          deployment_id="$(
-            jq -n \
-              --arg ref "$DEPLOYMENT_REF" \
-              --arg environment "$DEPLOYMENT_ENVIRONMENT" \
-              --arg task "$DEPLOYMENT_TASK" \
-              '{
-                ref: $ref,
-                environment: $environment,
-                task: $task,
-                auto_merge: false,
-                required_contexts: []
-              }' \
-              | gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" --input - --jq .id
-          )"
-          echo "id=$deployment_id" >> "$GITHUB_OUTPUT"
 
       - name: Create in-progress Deployment status
         env:
