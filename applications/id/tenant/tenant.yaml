@@ -275,23 +275,6 @@ actions:
     supported_triggers:
       - id: post-login
         version: v3
-  - name: Set name
-    code: ./src/actions/set-name.js
-    runtime: node22
-    dependencies:
-      - name: auth0
-        version: 7.7.0
-    secrets:
-      - name: CLIENT_ID
-        value: '##AUTH0_ACTIONS_CLIENT_ID##'
-      - name: CLIENT_SECRET
-        value: '##AUTH0_ACTIONS_CLIENT_SECRET##'
-      - name: DOMAIN
-        value: '##AUTH0_DOMAIN##'
-    deployed: true
-    supported_triggers:
-      - id: post-login
-        version: v3
   - name: Set email verification sent date
     code: ./src/actions/set-email-verification-sent-date.js
     runtime: node22
@@ -305,8 +288,6 @@ triggers:
   post-login:
     - action_name: Force email verification
       display_name: Force email verification
-    - action_name: Set name
-      display_name: Set name
   pre-user-registration:
     - action_name: Set email verification sent date
       display_name: Set email verification sent date
