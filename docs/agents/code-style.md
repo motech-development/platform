@@ -429,7 +429,7 @@ guidance before changing infrastructure or deployment configuration.
 - Structure the runtime as named operations such as `clear`, `restore`, and `streams`, with the exported handler showing their sequence. Use parameters for the table each operation targets rather than repeatedly rediscovering configuration inside every helper.
 - Keep AWS request construction adjacent to each `client.send` call. Use the low-level DynamoDB command types consistently with explicit marshalling/unmarshalling; do not mix document-client object shapes into low-level requests.
 - Use local helpers for batching and the paired stream operations. Keep progress messages attached to the phase or batch they describe, and preserve operational sequencing and error behavior as functional concerns rather than changing them during a style cleanup.
-- Test runtime operations through mocked SDK commands and keep stack synthesis checks under `lib/__tests__`. Review the synthesized template when resource wiring changes; a snapshot update should reflect an intentional infrastructure change.
+- Test runtime operations through mocked SDK commands and keep stack synthesis checks under `lib/__tests__`. Assert the wiring the stack owns with `aws-cdk-lib/assertions` matchers rather than a full-template snapshot, which breaks on every bundle hash or CDK default change.
 
 ### `applications/accounts/infrastructure`
 

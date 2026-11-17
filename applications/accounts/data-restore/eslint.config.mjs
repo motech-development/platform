@@ -9,4 +9,14 @@ export default defineConfig([
       'no-new': 'off',
     },
   },
+  {
+    files: ['lib/__tests__/**/*.ts'],
+    rules: {
+      // CDK Template matchers assert by throwing.
+      'vitest/expect-expect': [
+        'error',
+        { assertFunctionNames: ['expect', 'template.*'] },
+      ],
+    },
+  },
 ]);
