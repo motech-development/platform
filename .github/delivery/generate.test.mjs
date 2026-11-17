@@ -450,6 +450,54 @@ test('documentation-only pull requests remain not applicable without Preview Sta
   );
 });
 
+test('documentation-only pull requests deploy nothing without Preview State or a usable validation record', () => {
+  const environment = 'pr-1706';
+  const input = {
+    lifecycle: 'synchronize',
+    head: 'preview-head-2',
+    runtimeAffected: false,
+    changedWorkspaces: [],
+    existingStacks: [],
+    environment,
+    stage: environment,
+  };
+  const notApplicable = {
+    target: 'preview',
+    units: [],
+    validationRequired: false,
+  };
+
+  assert.deepEqual(
+    createPreviewPlan(planningCatalog, planningManifests, {
+      ...input,
+      deployments: [],
+      history: {},
+    }),
+    notApplicable,
+  );
+  assert.deepEqual(
+    createPreviewPlan(planningCatalog, planningManifests, {
+      ...input,
+      deployments: [
+        {
+          environment,
+          task: 'validate:playwright',
+          ref: 'rebased-head',
+          statuses: [{ state: 'success' }],
+        },
+      ],
+      history: {
+        'rebased-head': {
+          related: false,
+          runtimeAffected: true,
+          changedWorkspaces: [],
+        },
+      },
+    }),
+    notApplicable,
+  );
+});
+
 test('Preview Plan reconciles an independently stale unit and its delivery dependants', () => {
   assert.deepEqual(
     createPreviewPlan(

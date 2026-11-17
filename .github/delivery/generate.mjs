@@ -426,7 +426,9 @@ export function createPreviewPlan(catalog, workspaceManifests, input) {
       existingStacks.has(stack.replaceAll('{stage}', input.stage)),
     ),
   );
+  // With nothing deployed, the head's own impact against the base is authoritative.
   const validationProvesNonRuntime =
+    !input.runtimeAffected ||
     validationRef === input.head ||
     (validationHistory?.related === true &&
       validationHistory.runtimeAffected === false);
