@@ -73,7 +73,7 @@ export class DataRestoreStack extends Stack {
 
     handler.addToRolePolicy(
       new PolicyStatement({
-        actions: ['lambda:ListEventSourceMappings'],
+        actions: ['cloudwatch:GetMetricData', 'lambda:ListEventSourceMappings'],
         resources: ['*'],
       }),
     );

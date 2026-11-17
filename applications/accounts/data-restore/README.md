@@ -12,15 +12,17 @@ The table's stream consumers (the Lambda event source mappings in `accounts-data
 
 The `data-restore` function takes one action per invocation:
 
-| Action    | What it does                                                                                                                                                                                                           |
-| --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `restore` | Disables every event source mapping on the target table's stream and waits until they are all `Disabled`. Then it deletes every item in the target table and copies every item from the source table.                  |
-| `resume`  | Waits two minutes, then enables every mapping with a maximum record age of 60 seconds. Lambda resumes each mapping from its last checkpoint and discards the restore's records because they are older than 60 seconds. |
-| `release` | Sets every mapping's maximum record age back to the default (`-1`, no limit). It refuses to run unless every mapping is `Enabled`.                                                                                     |
+| Action    | What it does                                                                                                                                                                                                                             |
+| --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `restore` | Disables every event source mapping on the target table's stream and waits until they are all `Disabled`. Then it proves they are quiet (see below), deletes every item in the target table and copies every item from the source table. |
+| `resume`  | Waits two minutes, then enables every mapping with a maximum record age of 60 seconds. Lambda resumes each mapping from its last checkpoint and discards the restore's records because they are older than 60 seconds.                   |
+| `release` | Sets every mapping's maximum record age back to the default (`-1`, no limit). It refuses to run unless every mapping is `Enabled`.                                                                                                       |
+
+A mapping that reports `Disabled` can still deliver records: in a rehearsal, every consumer received records written after all six mappings reported `Disabled`, for at least 1.3 seconds. So `restore` does not trust the state. After pausing, it writes a canary item (`__typename` `DataRestoreCanary`) to the target table, waits five minutes, and reads each consumer function's `Invocations` metric from the start of the canary's minute. If any consumer was invoked, it refuses to clear the table. The clear step deletes the canary.
 
 The table's stream is never touched, so its ARN and the `<stage>-AccountsApplicationTableStreamArn` export stay valid.
 
-The restore runs in a single Lambda invocation, so it must finish within the 15-minute timeout. This assumes the application table is small enough to clear and copy in that time. If it times out, the consumers stay paused and `restore` can be run again from the start.
+The restore runs in a single Lambda invocation, so it must finish within the 15-minute timeout, five minutes of which are the quiet check. This assumes the application table is small enough to clear and copy in that time. If it times out, the consumers stay paused and `restore` can be run again from the start.
 
 ## Before you start
 
@@ -82,7 +84,7 @@ aws lambda invoke --function-name data-restore \
   --payload '{"action":"restore"}' restore.json
 ```
 
-The response must not contain `FunctionError`. If it does, check the function's logs, fix the cause and run `restore` again. Do not continue to `resume` until `restore` has succeeded. `resume` permanently skips everything written while the consumers were paused.
+It takes at least five minutes. The response must not contain `FunctionError`. If the error says the consumers were invoked after pausing, run `restore` again: the consumers stay paused, and it repeats the check with a new canary. For any other error, check the function's logs, fix the cause and run `restore` again. Do not continue to `resume` until `restore` has succeeded. `resume` permanently skips everything written while the consumers were paused.
 
 ## 4. Resume the consumers
 
@@ -95,7 +97,7 @@ Turn on the event count metrics for every mapping while they are still paused:
 ```sh
 STREAM_ARN=$(aws dynamodb describe-table --table-name "$TARGET" --query Table.LatestStreamArn --output text)
 MAPPINGS=$(aws lambda list-event-source-mappings --event-source-arn "$STREAM_ARN" --query 'EventSourceMappings[].UUID' --output text)
-for UUID in $MAPPINGS; do
+echo "$MAPPINGS" | tr '\t' '\n' | while read -r UUID; do
   aws lambda update-event-source-mapping --uuid "$UUID" --metrics-config Metrics=EventCount
 done
 ```
@@ -114,7 +116,7 @@ The response must not contain `FunctionError`. If it does, check the function's 
 Watch every mapping's metrics from that time, repeating the command until the gate below is met:
 
 ```sh
-for UUID in $MAPPINGS; do
+echo "$MAPPINGS" | tr '\t' '\n' | while read -r UUID; do
   for METRIC in PolledEventCount InvokedEventCount; do
     echo "$UUID $METRIC"
     aws cloudwatch get-metric-statistics --namespace AWS/Lambda --metric-name "$METRIC" \
@@ -147,7 +149,7 @@ The response must not contain `FunctionError`. If it does, check the function's 
 Turn the event count metrics off again, so the mappings match their templates:
 
 ```sh
-for UUID in $MAPPINGS; do
+echo "$MAPPINGS" | tr '\t' '\n' | while read -r UUID; do
   aws lambda update-event-source-mapping --uuid "$UUID" --metrics-config '{"Metrics":[]}'
 done
 ```

@@ -149,6 +149,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@accounts/data-restore@workspace:applications/accounts/data-restore"
   dependencies:
+    "@aws-sdk/client-cloudwatch": "npm:3.1037.0"
     "@aws-sdk/client-dynamodb": "npm:3.1033.0"
     "@aws-sdk/client-lambda": "npm:3.1033.0"
     "@aws-sdk/util-dynamodb": "npm:3.996.2"
@@ -990,7 +991,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-cloudwatch@npm:^3.975.0":
+"@aws-sdk/client-cloudwatch@npm:3.1037.0, @aws-sdk/client-cloudwatch@npm:^3.975.0":
   version: 3.1037.0
   resolution: "@aws-sdk/client-cloudwatch@npm:3.1037.0"
   dependencies:
