@@ -107,7 +107,7 @@ Registration happens only in production builds. Icons and splash screens in `pub
 
 ### Environment variables
 
-Read from the environment or a git-ignored `.env.local`. Never commit values.
+Read from the environment or a git-ignored `.env.local`. Never commit values. Only `REACT_APP_*` variables, `STAGE` and `NODE_ENV` are built into the client bundle, so never give a secret a `REACT_APP_` name.
 
 | Variable                    | Required | Purpose                                 |
 | --------------------------- | -------- | --------------------------------------- |
