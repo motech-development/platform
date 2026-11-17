@@ -14,15 +14,22 @@ function SignUp({ client, handleError, setView }: ISignUpProps) {
   const { t } = useTranslation('sign-up');
   const [loading, setLoading] = useState(false);
   const { add } = useToast();
-  const signUp = ({ password, userMetadata, username: email }: FormSchema) => {
+  const signUp = ({
+    family_name: familyName,
+    given_name: givenName,
+    password,
+    username: email,
+  }: FormSchema) => {
     setLoading(true);
 
     client.signup(
       {
         connection: 'Username-Password-Authentication',
         email,
+        family_name: familyName,
+        given_name: givenName,
+        name: `${givenName} ${familyName}`,
         password,
-        userMetadata,
       },
       (e) => {
         handleError(e);

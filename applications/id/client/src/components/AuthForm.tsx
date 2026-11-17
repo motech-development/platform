@@ -6,11 +6,9 @@ import { object, string } from 'yup';
 import FormFooter from './FormFooter';
 
 const formSchema = {
+  family_name: '',
+  given_name: '',
   password: '',
-  userMetadata: {
-    family_name: '',
-    given_name: '',
-  },
   username: '',
 };
 
@@ -40,12 +38,8 @@ function AuthForm({
     .shape({
       ...(name
         ? {
-            userMetadata: object()
-              .shape({
-                family_name: string().required(t('family-name.required')),
-                given_name: string().required(t('given-name.required')),
-              })
-              .required(),
+            family_name: string().required(t('family-name.required')),
+            given_name: string().required(t('given-name.required')),
           }
         : {}),
       password: string().required(t('password.required')),
@@ -69,13 +63,13 @@ function AuthForm({
               <>
                 <TextBox
                   type="text"
-                  name="userMetadata.given_name"
+                  name="given_name"
                   label={t('given-name.label')}
                 />
 
                 <TextBox
                   type="text"
-                  name="userMetadata.family_name"
+                  name="family_name"
                   label={t('family-name.label')}
                 />
               </>

@@ -194,11 +194,10 @@ describe('Login', () => {
           {
             connection: 'Username-Password-Authentication',
             email: 'test@example.com',
+            family_name: 'User',
+            given_name: 'Test',
+            name: 'Test User',
             password: 'Password',
-            userMetadata: {
-              family_name: 'User',
-              given_name: 'Test',
-            },
           },
           expect.any(Function),
         );
