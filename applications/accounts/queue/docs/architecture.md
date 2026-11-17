@@ -95,7 +95,7 @@ IAM, in plain terms:
 
 - The trigger uses `ReportBatchItemFailures`, so only failed records return to the queue. After 5 receives they move to the DLQ and the alarm fires.
 - Once an execution has started, the message is acknowledged. Step failures inside the state machine are not retried (no `Retry` or `Catch`) and do not reach the DLQ; check Step Functions execution history and Sentry.
-- `delete-records` ignores `UnprocessedItems` from `BatchWriteItem`. Any unprocessed IDs are found again by the next `Get*` call, because the loop always re-queries.
+- `delete-records` ignores `UnprocessedItems` from `BatchWriteItem`. The loop re-queries, so the next `Get*` call usually finds unprocessed IDs again, but it reads one eventually consistent page, so it cannot guarantee that every unprocessed item is deleted.
 - `delete-record` throws if the item does not exist (conditional check), which fails that branch and the execution.
 
 ## Testing
