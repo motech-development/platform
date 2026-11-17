@@ -1827,6 +1827,92 @@ test('environment-state reads run concurrently and join before planning', async 
   }
 });
 
+function stackReadScript(workflow) {
+  const script = workflowJob(workflow, 'setup').match(
+    /- name: Read expected cloud stacks\n            shell: bash\n            run: \|\n((?: {14}.*\n)+)/,
+  )?.[1];
+  assert.ok(script, 'expected stack read script');
+  return script.replaceAll(/^ {14}/gm, '');
+}
+
+test('long-lived reconciliation reads stacks from every region a catalogued unit deploys to', async () => {
+  const [catalog, generated] = await Promise.all([
+    loadCatalog(),
+    generateWorkflows({ write: false }),
+  ]);
+
+  for (const filename of [
+    'deploy-to-develop.yml',
+    'deploy-to-production.yml',
+  ]) {
+    const regions = stackReadScript(generated[filename])
+      .match(/^for region in ([a-z0-9 -]+); do$/m)?.[1]
+      .split(' ');
+    assert.ok(regions, filename);
+
+    for (const unit of catalog.units.filter(
+      ({ expectedStacks }) => expectedStacks.length > 0,
+    )) {
+      const serverless = await readFile(
+        join(unit.path, 'serverless.yml'),
+        'utf8',
+      );
+      const region = serverless.match(
+        /^  region: \$\{opt:region, '([a-z0-9-]+)'\}$/m,
+      )?.[1];
+      assert.ok(
+        regions.includes(region),
+        `${filename}: ${unit.id} deploys to ${region}`,
+      );
+    }
+  }
+});
+
+test('stack read merges every region and fails before planning when a region cannot be read', async () => {
+  const generated = await generateWorkflows({ write: false });
+  const script = stackReadScript(generated['deploy-to-production.yml']);
+  const directory = await mkdtemp(join(tmpdir(), 'stack-read-'));
+  const read = (environment = {}) =>
+    execFileAsync(
+      'bash',
+      ['--noprofile', '--norc', '-eo', 'pipefail', '-c', script],
+      {
+        env: {
+          ...process.env,
+          ...environment,
+          PATH: `${directory}:${process.env.PATH}`,
+          RUNNER_TEMP: directory,
+        },
+      },
+    );
+
+  try {
+    await writeFile(
+      join(directory, 'aws'),
+      [
+        '#!/usr/bin/env bash',
+        'while [[ $# -gt 0 ]]; do [[ $1 == --region ]] && region=$2; shift; done',
+        'if [[ $region == "$FAIL_REGION" ]]; then echo denied >&2; exit 254; fi',
+        `printf '["%s-stack"]\\n' "$region"`,
+        '',
+      ].join('\n'),
+      { mode: 0o755 },
+    );
+
+    await read();
+    assert.deepEqual(
+      JSON.parse(
+        await readFile(join(directory, 'existing-stacks.json'), 'utf8'),
+      ),
+      ['eu-west-1-stack', 'us-east-1-stack'],
+    );
+
+    await assert.rejects(read({ FAIL_REGION: 'us-east-1' }));
+  } finally {
+    await rm(directory, { force: true, recursive: true });
+  }
+});
+
 test('generated teardown checks for missing resources and blocks dependencies after genuine failures', async () => {
   const generated = await generateWorkflows({ write: false });
   const teardown = generated['teardown-environment.yml'];
