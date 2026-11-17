@@ -11,14 +11,14 @@
       "Content-Type": "application/json"
     },
     "body": {
-      "companyId": "$ctx.args.id",
-      "contentType": "$ctx.args.input.contentType",
-      "extension": "$ctx.args.input.extension",
+      "companyId": $util.toJson($ctx.args.id),
+      "contentType": $util.toJson($ctx.args.input.contentType),
+      "extension": $util.toJson($ctx.args.input.extension),
       "metadata": {
         "id": $id,
-        "typename": "$ctx.args.input.metadata.typename"
+        "typename": $util.toJson($ctx.args.input.metadata.typename)
       },
-      "owner": "$owner"
+      "owner": $util.toJson($owner)
     }
   }
 }

@@ -48,6 +48,17 @@ export const handler = wrapHandler(
     const { owner, path } = request;
     const expirationInSeconds = 30;
     const key = join(owner, path);
+
+    if (!key.startsWith(`${owner}/`)) {
+      return response(
+        {
+          message: 'Invalid request',
+          statusCode: 400,
+        },
+        400,
+      );
+    }
+
     const url = await createSignedUrl(
       'getObject',
       bucket,

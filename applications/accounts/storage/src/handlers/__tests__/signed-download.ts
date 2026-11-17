@@ -97,6 +97,45 @@ describe('signed-download', () => {
       });
     });
 
+    it.each([
+      '../other-owner/file.png',
+      'path/../../other-owner/file.png',
+      '.',
+    ])(
+      'should return an error response if path %s resolves outside the owner',
+      async (path) => {
+        event.body = JSON.stringify({
+          owner: 'owner',
+          path,
+        });
+
+        await expect(handler(event, context, callback)).resolves.toEqual({
+          body: JSON.stringify({
+            message: 'Invalid request',
+            statusCode: 400,
+          }),
+          statusCode: 400,
+        });
+        expect(createSignedUrl).not.toHaveBeenCalled();
+      },
+    );
+
+    it('should allow a path that resolves inside the owner', async () => {
+      event.body = JSON.stringify({
+        owner: 'owner',
+        path: 'path/../to/download.png',
+      });
+
+      await handler(event, context, callback);
+
+      expect(createSignedUrl).toHaveBeenLastCalledWith(
+        'getObject',
+        'download-bucket',
+        'owner/to/download.png',
+        30,
+      );
+    });
+
     it('should report a 500 response if signing fails', async () => {
       const error = new Error('Signing failed');
 
