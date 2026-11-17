@@ -21,7 +21,7 @@
 | `actions`, `triggers`                              | The three Actions below and their bindings to `post-login` and `pre-user-registration`.                                        |
 | `pages`                                            | Custom `login` and `password_reset` pages, read from `../client/build/`.                                                       |
 | `resourceServers`                                  | The Accounts API.                                                                                                              |
-| `clients`                                          | The Accounts app, a test application for the API, the default app, the Deploy CLI extension and `Login Actions`.               |
+| `clients`                                          | The Accounts app, the default app, the Deploy CLI extension and `Login Actions`.                                               |
 | `databases`, `connections`                         | The `Username-Password-Authentication` database and the Google social connection.                                              |
 | `tenant`                                           | Tenant settings such as name and locales.                                                                                      |
 | `emailProvider`, `emailTemplates`                  | Amazon SES provider and the four templates, with bodies read from `../emails/build/`.                                          |
