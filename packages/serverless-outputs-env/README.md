@@ -10,7 +10,7 @@
 
 > A Serverless plugin to get Serverless outputs as environment variables
 
-After `serverless deploy`, writes selected CloudFormation stack outputs to `.env` files. Used by `@accounts/api` to configure the web client. See [docs/architecture.md](docs/architecture.md) for how it works.
+After `serverless deploy`, writes selected CloudFormation stack outputs to `.env` files, replacing their contents. Used by `@accounts/api` to configure the web client. See [docs/architecture.md](docs/architecture.md) for how it works.
 
 ## Installation
 
@@ -18,7 +18,13 @@ After `serverless deploy`, writes selected CloudFormation stack outputs to `.env
 yarn add -D @motech-development/serverless-outputs-env
 ```
 
+Set `provider.stackName`: without it the plugin looks up `<provider name>-<stage>` (for example `aws-dev`).
+
 ```yaml
+provider:
+  name: aws
+  stackName: my-service-${sls:stage}
+
 plugins:
   - '@motech-development/serverless-outputs-env'
 

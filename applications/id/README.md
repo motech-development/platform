@@ -19,7 +19,7 @@ Each workspace has a README to get started and a `docs/` folder with the detail.
 
 ## Getting started
 
-From the repository root:
+`@id/client` needs `REACT_APP_GA` and `REACT_APP_SENTRY_DSN` set before it starts; see its [README](client/README.md). Then, from the repository root:
 
 ```sh
 nvm use

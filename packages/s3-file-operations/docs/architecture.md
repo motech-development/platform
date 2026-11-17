@@ -15,7 +15,7 @@ Shared S3 helpers for Lambda handlers, plus a staged-file lifecycle that tracks 
 
 ## API reference: S3 helpers
 
-Every helper takes an optional `client: S3Client` as its last parameter, defaulting to a module-level `new S3Client({})`. Where noted, `key` is passed through `decodeURIComponent` first so keys from S3 event notifications can be used directly. AWS SDK errors propagate unchanged.
+Every helper takes an optional `client: S3Client` as its last parameter, defaulting to a module-level `new S3Client({})`. Where noted, `key` is passed through `decodeURIComponent` first to undo the URL encoding of keys from S3 event notifications; it does not turn `+` into a space, so keys containing spaces need that replacement first. AWS SDK errors propagate unchanged.
 
 | Export                                                             | Returns                            | Behaviour                                                                                                                                                                            |
 | ------------------------------------------------------------------ | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -82,7 +82,7 @@ Strongly consistent `GetItem`.
 
 ### `moveStagedFile(from, to, key): Promise<void>`
 
-Copies the object from `from` to `to` and deletes the source. Safe to retry and to run concurrently.
+Copies the object from `from` to `to` and deletes the source. Safe to retry and to run concurrently, provided a key is not reused after deletion while an earlier move of it can still run.
 
 1. Read the item.
 2. If `pending` with no `uploadId`, **register**: `HeadObject` the source (throws `Source has no ETag` if absent), `CreateMultipartUpload` in `to` copying the source's content headers and metadata plus `attachment-transfer: <token>`, then conditionally store `uploadId`, `token`, `sourceETag`, `empty` (condition: still `pending` and no `uploadId`). If that write fails, re-read: if the stored `uploadId` is ours, carry on; on a definite condition failure, abort our upload and continue with whatever is stored; on any other error, rethrow without aborting (the write may still have landed; S3 lifecycle cleans unregistered uploads).

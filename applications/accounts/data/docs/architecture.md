@@ -69,7 +69,7 @@ Parses the publication command (throws on invalid shape), reads the transaction 
 
 ### `ClearAttachments`
 
-Processes each anti-virus failure message independently. Ignores messages whose `source` is not the storage upload bucket (`BUCKET`) or that lack `key` or `metadata`. Splits the decoded key into `owner/companyId/file`, queries `__typename-data-index` for items of the metadata `typename` whose `data` begins with `<owner>:<companyId>` and whose `attachment` equals `<companyId>/<file>` (all pages), removes `attachment` from each match and writes a `VIRUS_SCAN_FAIL` notification for its owner. Failed messages are returned as batch item failures and captured in Sentry.
+Processes each anti-virus failure message independently. Ignores messages whose `source` is not the storage upload bucket (`BUCKET`) or whose `key` or `metadata` attribute has no value; a message missing one of the three attributes entirely fails and is returned as a batch item failure. Splits the decoded key into `owner/companyId/file`, queries `__typename-data-index` for items of the metadata `typename` whose `data` begins with `<owner>:<companyId>` and whose `attachment` equals `<companyId>/<file>` (all pages), removes `attachment` from each match and writes a `VIRUS_SCAN_FAIL` notification for its owner. Failed messages are returned as batch item failures and captured in Sentry.
 
 ### `ReportSchedulingAlarm`
 

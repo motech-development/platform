@@ -32,7 +32,7 @@ There are no IAM resources and no runtime components. Build input: `PROD_DOMAIN`
 
 ## Failure handling and observability
 
-None beyond CloudFormation. DNS validation of the certificate requires the validation records to be resolvable; a stuck certificate leaves the stack in progress.
+None beyond CloudFormation. DNS validation of the certificate requires the validation records to be resolvable, so on first deploy the domain's registrar must delegate to the new hosted zone's name servers; a stuck certificate leaves the stack in progress.
 
 ## Testing
 

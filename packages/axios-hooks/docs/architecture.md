@@ -17,7 +17,7 @@ React hooks that perform HTTP requests and expose `data`, `error` and `loading` 
 
 ### Shared options
 
-`IOptions<TData, TError>`:
+`IOptions<TData, TError>`: `headers` and `responseType` configure the request; `onCompleted` and `onError` are callbacks.
 
 | Option         | Type                                          | Notes                                         |
 | -------------- | --------------------------------------------- | --------------------------------------------- |

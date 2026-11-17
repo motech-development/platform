@@ -14,7 +14,7 @@ A Yarn 4 plugin that runs `yarn dedupe` after an install when duplicates are fou
 
 ## Installation
 
-Add it to `.yarnrc.yml`:
+This repository's setup in `.yarnrc.yml`:
 
 ```yaml
 plugins:

@@ -46,7 +46,7 @@ State machine `anti-virus-<stage>-scan-upload`:
 
 All handlers are wrapped with Sentry (`init` + `wrapHandler`, tracing and profiling at a sample rate of 1). Every function receives `ATTACHMENT_TABLE`, `BUCKET` (definitions bucket), `LD_LIBRARY_PATH`, `SENTRY_ENVIRONMENT` and its own `SENTRY_DSN`.
 
-Execution input is `{ from, key, to, managed? }`: `from` is the upload bucket, `to` the download bucket, `key` the S3 object key as delivered in the S3 event (URL-encoded, so the managed-lifecycle calls decode it). A file is _managed_ when the input says so or the object has metadata `attachment-lifecycle: v1` (set by `@accounts/storage` `signed-upload`).
+Execution input is `{ from, key, to, managed? }`: `from` is the upload bucket, `to` the download bucket, `key` the S3 object key as delivered in the S3 event (URL-encoded, so the managed-lifecycle calls decode it with `decodeURIComponent`, which leaves `+` as `+` rather than a space). A file is _managed_ when the input says so or the object has metadata `attachment-lifecycle: v1` (set by `@accounts/storage` `signed-upload`).
 
 | Function              | Trigger                                     | Behaviour                                                                                                                                                                                                                                                                                                                                                                                                                     | Extra env vars      |
 | --------------------- | ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
@@ -95,7 +95,7 @@ IAM in plain terms:
 
 - Sentry captures unhandled errors in every handler, plus each failed record in `StartScan`. `SENTRY_ENVIRONMENT` is the stage.
 - Scan queue and failure queue each redrive to a DLQ after 5 receives. The alarms `accounts-<stage>-anti-virus-dlq-messages-visible` and `accounts-<stage>-anti-virus-failure-dlq-messages-visible` fire on one visible message and invoke `accounts-data-<stage>-ReportSchedulingAlarm`, which reports to Sentry. The alarm names use the `accounts-<stage>-` prefix because that reporter only accepts names in that form.
-- A scan error does not leave the file in quarantine silently: it takes the failure branch, so the user is notified and the upload is removed.
+- A scan error takes the failure branch, which notifies the user and removes the upload if those steps succeed.
 - `MoveFile` retries all errors with the Step Functions defaults (up to 3 retries with backoff); a final failure fails the execution and the file stays in quarantine until lifecycle cleanup.
 - Log retention is 30 days.
 

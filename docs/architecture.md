@@ -53,7 +53,7 @@ A bookkeeping application for recording a company's transactions. Its domain lan
 | `@accounts/notifications`  | `accounts-<stage>-notifications`  | Records in-app notifications.                                                                    |
 | `@accounts/queue`          | `accounts-<stage>-queue`          | Cleans up a deleted company's remaining data.                                                    |
 | `@accounts/web`            | `accounts-web-hosting` (CDK)      | A placeholder for the Accounts rebuild on retained Amplify hosting. Outside automated delivery.  |
-| `@accounts/data-restore`   | `data-restore` (CDK)              | A hand-deployed runbook tool for rolling the application table back. Outside automated delivery. |
+| `@accounts/data-restore`   | `DataRestoreStack` (CDK)          | A hand-deployed runbook tool for rolling the application table back. Outside automated delivery. |
 
 ### ID
 
@@ -108,7 +108,7 @@ Most API resolvers read and write this table directly through VTL templates. Der
 | `UpdateBalance` (api)         | Balance changes                        | Publishes the new balance to the `onTransaction` subscription.                                 |
 | `PublishNotifications` (api)  | Notification inserts                   | Publishes the notification to the `onNotification` subscription.                               |
 
-Failed stream batches are retained in S3 and reported through dead-letter queues and alarms (see Accounts ADRs 0002 and 0003). `@accounts/data-restore` explains how these consumers are paused during a table restore.
+Failed stream batches from `Attachments`, `Transactions` and `ScheduleTransactions` are retained in S3 and reported through dead-letter queues and alarms (see Accounts ADRs 0002 and 0003). `Typeahead`, `UpdateBalance` and `PublishNotifications` have no on-failure destination, so their failed batches are dropped after retries. `@accounts/data-restore` explains how these consumers are paused during a table restore.
 
 ### Scheduled transactions
 
@@ -146,7 +146,7 @@ Deleting a transaction, or calling the `deleteFile` mutation, sends the file to 
 
 ### Reports
 
-The `createReport` mutation starts the reports service's `generate-report` Step Functions state machine over an IAM-signed HTTP call. The machine pages through the year's transactions, converts them to CSV, zips the CSV with the transactions' attachments, stores the archive in a report bucket that expires objects after a day, and creates a 24-hour download link. It then records the report in the application table and calls the notifications API, so the user receives an in-app notification through the `onNotification` subscription.
+The `createReport` mutation starts the reports service's `generate-report` Step Functions state machine over an IAM-signed HTTP call. The machine reads the year's transactions in a single query without a continuation key, so a year larger than one DynamoDB page is truncated. It converts them to CSV, zips the CSV with the transactions' attachments, stores the archive in a report bucket that expires objects after a day, and creates a 24-hour download link. It then records the report in the application table and calls the notifications API, so the user receives an in-app notification through the `onNotification` subscription.
 
 ### Deleting a company
 
