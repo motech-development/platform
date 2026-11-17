@@ -122,6 +122,8 @@ Read from the environment or a git-ignored `.env.local`. Never commit values. On
 | `PORT`, `PUBLIC_URL`        | No       | Dev server port and base path.          |
 | `SENTRY_AUTH_TOKEN`         | No       | Build-time source map upload.           |
 
+`SENTRY_AUTH_TOKEN` is read from `process.env`, not through `loadEnv`, so export it in the shell or CI environment that runs the build; setting it only in `.env.local` has no effect.
+
 ## Deployment
 
 Production only. The delivery workflow builds the client with the outputs of `@accounts/api` and runs `deploy`, which uses `serverless-finch` to upload `build/` to the `accounts.<PROD_DOMAIN>` bucket from `@accounts/infrastructure` (`manageResources: false`, so nothing is created). Cache headers: HTML and `service-worker.js` are `no-store`, `locales/**/*.json` `max-age=0`, `static/**/*.js` one year.

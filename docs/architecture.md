@@ -15,7 +15,7 @@ Everything is a Yarn 4 workspace (`applications/*/*` and `packages/*`). Applicat
 
 ## Technology
 
-- **Runtime**: Node.js (version in `.nvmrc`) on AWS Lambda, deployed in `eu-west-1` by default.
+- **Runtime**: Node.js (version in `.nvmrc`) on AWS Lambda. Each service sets its default region in its `serverless.yml`: most use `eu-west-1`, while the infrastructure stacks, the client hosting stacks and `@core/comms` use `us-east-1`.
 - **Infrastructure as code**: Serverless Framework v3 (the `osls` distribution) generating CloudFormation for most services; AWS CDK for `@accounts/web` and `@accounts/data-restore`.
 - **Data**: DynamoDB with streams, S3, SQS, Step Functions and EventBridge Scheduler.
 - **API**: AWS AppSync (GraphQL) with VTL resolvers and a few Lambda resolvers.

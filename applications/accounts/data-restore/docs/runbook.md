@@ -30,7 +30,7 @@ The restore runs in a single Lambda invocation, so it must finish within the 15-
 - Scheduled transactions also write to the table without anyone using the application. When a schedule comes due, it sends a message to the publication queue, and the `PublishTransactions` function confirms the transaction. Step 3 pauses that function's queue mapping so due messages wait in the queue, which keeps them for four days. Step 5 resumes it after `release`.
 - Freeze deployments of `accounts-data` and `accounts-api` to that stage until `release` has been checked. A deployment can re-enable a paused mapping or reset its settings.
 - Configure AWS credentials for the stage's account and region (the services deploy to `eu-west-1` by default). The account and region must be CDK bootstrapped.
-- Run `yarn install` from the repository root.
+- Run `yarn install` and then `yarn package` from the repository root. `yarn package` builds the shared packages the handler imports, which the deploy needs.
 
 The commands below use these shell variables:
 
