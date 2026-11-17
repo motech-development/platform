@@ -35,7 +35,7 @@ It generates a UUID, builds key `<owner>/<companyId>/<uuid>.<extension>`, regist
 
 ### `SignedDownload` — `POST /api/v1/signed-download` (IAM)
 
-Body `{ owner, path }` (both required). Returns `{ url }`, a 30-second presigned `getObject` URL for `<owner>/<path>` in the download bucket.
+Body `{ owner, path }` (both required). Returns `{ url }`, a 30-second presigned `getObject` URL for `<owner>/<path>` in the download bucket. A path that resolves outside `<owner>/` returns `{ message: 'Invalid request', statusCode: 400 }`.
 
 Both HTTP handlers use `apiGatewayHandler` from `@motech-development/api-gateway-handler`: a missing body or env var returns 400, an invalid body returns `{ message: 'Invalid request', statusCode: 400 }`, and unexpected errors are passed to Sentry's `captureException`.
 
