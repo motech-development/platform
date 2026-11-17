@@ -1,3 +1,4 @@
 {
-  "AUTH0_ALLOW_DELETE": false
+  "AUTH0_ALLOW_DELETE": false,
+  "AUTH0_EXCLUDED": ["rules", "rulesConfigs", "hooks"]
 }
