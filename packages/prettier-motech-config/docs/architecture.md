@@ -13,7 +13,7 @@ A single JSON Prettier config (`index.json`, the package `main`) shared by all w
 | `singleQuote`   | `true`                            | Single quotes in JS/TS             |
 | `trailingComma` | `all`                             | Same as Prettier 3 default         |
 
-Peer dependency: `prettier` ^3.2.5. `prettier-plugin-tailwindcss` is a dependency of this package, so consumers do not install it.
+Peer dependency: `prettier` ^3.2.5. `prettier-plugin-tailwindcss` is a dependency of this package, but the config names it as a string, so under Plug'n'Play or a strict `node_modules` layout consumers may need to install it themselves.
 
 ## Making changes
 

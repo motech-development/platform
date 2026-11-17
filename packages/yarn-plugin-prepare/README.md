@@ -14,7 +14,7 @@ A Yarn 4 plugin that runs `yarn prepare` after every install. This repository lo
 
 ## Installation
 
-Add it to `.yarnrc.yml`:
+This repository's setup in `.yarnrc.yml`:
 
 ```yaml
 plugins:

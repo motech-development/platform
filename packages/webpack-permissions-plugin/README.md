@@ -10,7 +10,7 @@
 
 > A Webpack plugin to set permissions for your output files and folders
 
-Sets the file mode of every file in chosen folders once a webpack 5 build finishes. Used by `@core/anti-virus`. See [docs/architecture.md](docs/architecture.md) for how it works.
+Sets the file mode of every file directly in chosen folders (not subfolders) once a webpack 5 build finishes. Used by `@core/anti-virus`. See [docs/architecture.md](docs/architecture.md) for how it works.
 
 ## Installation
 

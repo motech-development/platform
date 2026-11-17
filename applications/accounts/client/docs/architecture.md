@@ -101,7 +101,6 @@ Registration happens only in production builds. Icons and splash screens in `pub
 `vite.config.mts`:
 
 - outputs to `build/` with source maps; `base` is `PUBLIC_URL` (default `/`) and the port is `PORT` (default `3000`);
-- exposes all loaded env variables to the app as `process.env`;
 - runs ESLint and the TypeScript checker except in production builds;
 - copies `pdfjs-dist` CMaps and standard fonts for the document viewer;
 - uploads source maps with `@sentry/vite-plugin`, authenticated by `SENTRY_AUTH_TOKEN`.
@@ -143,7 +142,7 @@ yarn workspace @accounts/client exec vitest run src/components/__tests__/ApolloC
 
 Playwright (`playwright.config.ts`, tests in `e2e/`). A `setup` project logs in through Auth0 with `E2E_USERNAME` and `E2E_PASSWORD` and saves the session to `playwright/.auth/user.json`; the `chromium` project reuses it. `vat-registered.spec.ts` and `non-vat-registered.spec.ts` walk through companies, settings, clients, transactions, attachments (including a virus-scan check that writes the EICAR test string to a fixture file), reports and notifications, with axe accessibility checks from `e2e/fixtures.ts`.
 
-Set `BASE_URL` to test a deployed environment; otherwise Playwright serves the local production build on port 3000. Outside CI, `.env` and `.env.local` are loaded. In CI, tests retry twice, use one worker per shard and run in two shards, against Preview Environments in the delivery workflow and against production on a schedule.
+Set `BASE_URL` to test a deployed environment; otherwise Playwright runs `serve` (`vite preview`) on port 3000, so run `build` first. Outside CI, `.env` and `.env.local` are loaded. In CI, tests retry twice, use one worker per shard and run in two shards, against Preview Environments in the delivery workflow and against production on a schedule.
 
 ## Making changes
 

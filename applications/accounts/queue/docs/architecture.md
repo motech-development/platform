@@ -34,7 +34,7 @@ flowchart LR
   end
 ```
 
-The state machine `accounts-<stage>-delete-company-data` runs seven branches in parallel. Single-item types are deleted in one step. Collections loop: `Get*` returns up to 25 IDs; if it returns `complete: false`, `Delete*` deletes them and control returns to `Get*` until nothing is left.
+The state machine `accounts-<stage>-delete-company-data` runs seven branches in parallel. Single-item types are deleted in one step. Collections loop: `Get*` returns up to 25 IDs; if it returns `complete: false`, `Delete*` deletes them and control returns to `Get*` until it returns nothing. `Get*` reads one page of the eventually consistent `__typename-data-index` without following `LastEvaluatedKey`, so an empty result does not prove every item is gone.
 
 ## Message shape
 

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Runs the root `prepare` script (for example Git hook setup) after every install, since Yarn 4 does not run it automatically. See the [repository architecture](../../../docs/architecture.md).
+Runs `yarn prepare` from the directory the install ran in (in this repository, the root `prepare` script, for example Git hook setup) after every install, since Yarn 4 does not run it automatically. See the [repository architecture](../../../docs/architecture.md).
 
 ## API reference
 

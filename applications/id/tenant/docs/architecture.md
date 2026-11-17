@@ -31,7 +31,7 @@
 | `clientGrants`, `guardian*`, `branding`, `prompts` | Grants, MFA factors (all disabled), branding and prompts.                                       |
 | Remaining keys                                     | Empty (`roles`, `actions`, `organizations`, and so on).                                         |
 
-`config.json` sets `AUTH0_ALLOW_DELETE: false`, so a deploy never deletes tenant resources that are missing from `tenant.yaml`, and excludes no rules.
+`config.json` sets `AUTH0_ALLOW_DELETE: false` and excludes no rules. It applies only when passed to `deploy` with `-c config.json`; the `deploy` script does not pass it.
 
 ## Rules and hooks
 

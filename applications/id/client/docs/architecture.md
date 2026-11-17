@@ -48,7 +48,7 @@ Read at build time through Vite's `process.env` define: `REACT_APP_SENTRY_DSN` a
 
 ## Infrastructure
 
-The workspace creates no AWS resources (`manageResources: false`). `deploy` uses `serverless-finch` to upload `build/` to the bucket named after the `id` subdomain (override with `PREFIX`), with long cache headers for CSS and JS and no-store for HTML, then runs `react-snap` to pre-render `/login` and `/lo/reset`. Build input: `PROD_DOMAIN`.
+The workspace creates no AWS resources (`manageResources: false`). `deploy` uses `serverless-finch` to upload `build/` to the bucket named after the `id` subdomain (override with `PREFIX`), with long cache headers for CSS and JS and no-store for HTML, then runs `react-snap` to pre-render `/login` and `/lo/reset`. Deploy input: `PROD_DOMAIN`.
 
 ## Failure handling and observability
 
@@ -65,5 +65,5 @@ yarn workspace @id/client vitest run src/pages/__tests__/Login.tsx
 ## Making changes
 
 - The route paths must match the HTML paths `@id/tenant` uploads (`build/login/index.html`, `build/lo/reset/index.html`), which exist only after `react-snap` pre-renders them.
-- Build this workspace before deploying `@id/tenant`.
+- `build` does not pre-render. Run `build`, then `react-snap` (run by `deploy` after upload), before deploying `@id/tenant`.
 - Automated delivery for the ID workspaces is currently disabled and they are outside the Deployment Catalog.

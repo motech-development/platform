@@ -25,7 +25,7 @@ Accounts also relies on [`@core/anti-virus`](../core/anti-virus/) to scan upload
 
 ## Getting started
 
-From the repository root:
+The client needs settings for an environment you can access before it starts; set them up as its [README](client/README.md) describes. Then, from the repository root:
 
 ```sh
 nvm use
@@ -33,8 +33,6 @@ yarn install
 yarn package
 yarn workspace @accounts/client start
 ```
-
-The client needs settings for an environment you can access; see its [README](client/README.md).
 
 ## Domain
 

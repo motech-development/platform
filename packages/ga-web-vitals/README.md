@@ -10,7 +10,7 @@
 
 > Google Analytics Web Vitals reporter
 
-A single function that sends a Web Vitals metric to Google Analytics as a `Web Vitals` event through the global `ga` function. Used by `@accounts/client` and `@id/client`. See [docs/architecture.md](docs/architecture.md) for how it works.
+A single function that sends a Web Vitals metric to Google Analytics as a `Web Vitals` event through the global `ga` function. It targets Universal Analytics (`analytics.js`), which no longer processes data. Used by `@accounts/client` and `@id/client`. See [docs/architecture.md](docs/architecture.md) for how it works.
 
 ## Installation
 
@@ -20,7 +20,7 @@ yarn add @motech-development/ga-web-vitals
 
 ## Usage
 
-Load the Google Analytics `analytics.js` snippet so `ga` is defined, then:
+Install `web-vitals` and load the Google Analytics `analytics.js` snippet so `ga` is defined, then:
 
 ```ts
 import reporter from '@motech-development/ga-web-vitals';

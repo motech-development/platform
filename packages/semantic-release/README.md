@@ -10,7 +10,7 @@
 
 > Reusable Semantic Release config
 
-Shared semantic-release configs used by every workspace in this repository: `package` publishes to npm, `application` only bumps the version. See [docs/architecture.md](docs/architecture.md) for how it works.
+Shared semantic-release configs used by every workspace in this repository: `package` publishes to npm, `application` bumps the version and creates a GitHub release without publishing to npm. See [docs/architecture.md](docs/architecture.md) for how it works.
 
 ## Installation
 
