@@ -20,7 +20,7 @@ exports[`DataRestoreStack > should synthesize as expected 1`] = `
           "S3Bucket": {
             "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          "S3Key": "184095a0a1e6cae028c46711255c59dd0ec4122a3f5ba1898844f3abb9e6e0ae.zip",
+          "S3Key": "7582fe0c25bc85814eb6814d6956047527bcc7608e4ee7bff38dfbe89da1dae7.zip",
         },
         "Environment": {
           "Variables": {
@@ -206,7 +206,10 @@ exports[`DataRestoreStack > should synthesize as expected 1`] = `
               ],
             },
             {
-              "Action": "lambda:ListEventSourceMappings",
+              "Action": [
+                "cloudwatch:GetMetricData",
+                "lambda:ListEventSourceMappings",
+              ],
               "Effect": "Allow",
               "Resource": "*",
             },

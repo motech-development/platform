@@ -1,7 +1,12 @@
 import {
+  CloudWatchClient,
+  GetMetricDataCommand,
+} from '@aws-sdk/client-cloudwatch';
+import {
   BatchWriteItemCommand,
   DescribeTableCommand,
   DynamoDBClient,
+  PutItemCommand,
   ScanCommand,
   UpdateTableCommand,
 } from '@aws-sdk/client-dynamodb';
@@ -22,6 +27,7 @@ vi.mock('@motech-development/node-logger');
 
 describe('data-restore', () => {
   let callback: Mock;
+  let cloudwatch: AwsClientStub<CloudWatchClient>;
   let context: Context;
   let ddb: AwsClientStub<DynamoDBClient>;
   let lambda: AwsClientStub<LambdaClient>;
@@ -32,6 +38,8 @@ describe('data-restore', () => {
     context.done();
 
     callback = vi.fn();
+
+    cloudwatch = mockClient(CloudWatchClient);
 
     ddb = mockClient(DynamoDBClient);
 
@@ -54,6 +62,8 @@ describe('data-restore', () => {
 
       process.env.SOURCE = 'source-table';
 
+      cloudwatch.reset();
+
       ddb.reset();
 
       lambda.reset();
@@ -74,11 +84,23 @@ describe('data-restore', () => {
         process.env.SOURCE = 'source-table';
         process.env.TARGET = 'target-table';
 
-        ddb.on(DescribeTableCommand).resolves({
-          Table: {
-            LatestStreamArn: 'stream-arn',
-          },
+        cloudwatch.on(GetMetricDataCommand).resolves({
+          MetricDataResults: [
+            {
+              Values: [0],
+            },
+          ],
         });
+
+        ddb
+          .on(DescribeTableCommand)
+          .resolves({
+            Table: {
+              LatestStreamArn: 'stream-arn',
+            },
+          })
+          .on(PutItemCommand)
+          .resolves({});
 
         lambda
           .on(ListEventSourceMappingsCommand, {
@@ -87,10 +109,14 @@ describe('data-restore', () => {
           .resolves({
             EventSourceMappings: [
               {
+                FunctionArn:
+                  'arn:aws:lambda:eu-west-1:123456789012:function:enabled-consumer',
                 State: 'Enabled',
                 UUID: 'enabled-mapping',
               },
               {
+                FunctionArn:
+                  'arn:aws:lambda:eu-west-1:123456789012:function:disabled-consumer',
                 State: 'Disabled',
                 UUID: 'disabled-mapping',
               },
@@ -459,6 +485,69 @@ describe('data-restore', () => {
           const [write] = ddb.commandCalls(BatchWriteItemCommand);
 
           expect(disabled.calledBefore(write)).toBe(true);
+        });
+
+        it('should check every consumer stayed quiet after a canary write before clearing', async () => {
+          await handler({ action: 'restore' }, context, callback);
+
+          const [canary] = ddb.commandCalls(PutItemCommand);
+
+          expect(canary.args[0].input).toMatchObject({
+            Item: {
+              __typename: {
+                S: 'DataRestoreCanary',
+              },
+            },
+            TableName: 'target-table',
+          });
+
+          const [check] = cloudwatch.commandCalls(GetMetricDataCommand);
+
+          expect(
+            check.args[0].input.MetricDataQueries?.map(
+              ({ MetricStat }) => MetricStat?.Metric,
+            ),
+          ).toEqual(
+            ['enabled-consumer', 'disabled-consumer'].map((name) => ({
+              Dimensions: [
+                {
+                  Name: 'FunctionName',
+                  Value: name,
+                },
+              ],
+              MetricName: 'Invocations',
+              Namespace: 'AWS/Lambda',
+            })),
+          );
+
+          const [scan] = ddb.commandCalls(ScanCommand);
+
+          expect(canary.calledBefore(check)).toBe(true);
+
+          expect(check.calledBefore(scan)).toBe(true);
+        });
+
+        it('should refuse to clear if a consumer was invoked after pausing', async () => {
+          cloudwatch.on(GetMetricDataCommand).resolves({
+            MetricDataResults: [
+              {
+                Values: [0],
+              },
+              {
+                Values: [2, 1],
+              },
+            ],
+          });
+
+          await expect(
+            handler({ action: 'restore' }, context, callback),
+          ).rejects.toThrow(
+            'Target table consumers were invoked 3 times after pausing',
+          );
+
+          expect(ddb).not.toHaveReceivedCommand(ScanCommand);
+
+          expect(ddb).not.toHaveReceivedCommand(BatchWriteItemCommand);
         });
       });
 

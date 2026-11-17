@@ -1,8 +1,13 @@
 import {
+  CloudWatchClient,
+  GetMetricDataCommand,
+} from '@aws-sdk/client-cloudwatch';
+import {
   AttributeValue,
   BatchWriteItemCommand,
   DescribeTableCommand,
   DynamoDBClient,
+  PutItemCommand,
   ScanCommand,
   WriteRequest,
 } from '@aws-sdk/client-dynamodb';
@@ -20,9 +25,13 @@ import type { Handler } from 'aws-lambda';
 
 const client = new DynamoDBClient({});
 
+const cloudwatch = new CloudWatchClient({});
+
 const lambda = new LambdaClient({});
 
 const maximumRecordAge = 60;
+
+const quietPeriod = 5 * 60;
 
 function chunkArray<T>(array: T[], chunkSize: number) {
   return array.reduce(
@@ -244,6 +253,63 @@ async function consumers(target: string) {
     );
 
     logger.info('Target table consumers paused');
+
+    // A Disabled mapping can still deliver records, so prove quiet with a canary.
+    const start = new Date();
+
+    start.setUTCSeconds(0, 0);
+
+    await client.send(
+      new PutItemCommand({
+        Item: marshall({
+          __typename: 'DataRestoreCanary',
+          id: new Date().toISOString(),
+        }),
+        TableName: target,
+      }),
+    );
+
+    logger.info('Waiting for target table consumers to stay quiet');
+
+    await sleep(quietPeriod * 1000);
+
+    const { MetricDataResults = [] } = await cloudwatch.send(
+      new GetMetricDataCommand({
+        EndTime: new Date(),
+        MetricDataQueries: EventSourceMappings.map(
+          ({ FunctionArn }, index) => ({
+            Id: `consumer${index}`,
+            MetricStat: {
+              Metric: {
+                Dimensions: [
+                  {
+                    Name: 'FunctionName',
+                    Value: FunctionArn?.split(':')[6],
+                  },
+                ],
+                MetricName: 'Invocations',
+                Namespace: 'AWS/Lambda',
+              },
+              Period: 60,
+              Stat: 'Sum',
+            },
+          }),
+        ),
+        StartTime: start,
+      }),
+    );
+
+    const invocations = MetricDataResults.flatMap(
+      ({ Values = [] }) => Values,
+    ).reduce((total, value) => total + value, 0);
+
+    if (invocations > 0) {
+      throw new Error(
+        `Target table consumers were invoked ${invocations} times after pausing. Run restore again`,
+      );
+    }
+
+    logger.info('Target table consumers are quiet');
   }
 
   async function resume() {
