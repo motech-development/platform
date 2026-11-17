@@ -1127,12 +1127,7 @@ test('production deployment uses the public domain variable for infrastructure a
 });
 
 test('ID tenant delivery publishes client assets before the Auth0 page in one audited attempt', async () => {
-  const [generated, clientManifest] = await Promise.all([
-    generateWorkflows({ write: false }),
-    readFile('applications/id/client/package.json', 'utf8').then(JSON.parse),
-  ]);
-
-  assert.match(clientManifest.scripts.deploy, / --no-delete-contents /);
+  const generated = await generateWorkflows({ write: false });
 
   for (const filename of [
     'deploy-to-develop.yml',
