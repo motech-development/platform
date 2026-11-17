@@ -3087,7 +3087,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/core@npm:^7.14.0, @babel/core@npm:^7.18.5, @babel/core@npm:^7.23.9, @babel/core@npm:^7.24.4, @babel/core@npm:^7.28.0, @babel/core@npm:^7.29.7":
+"@babel/core@npm:^7.14.0, @babel/core@npm:^7.18.5, @babel/core@npm:^7.24.4, @babel/core@npm:^7.28.0, @babel/core@npm:^7.29.7":
   version: 7.29.7
   resolution: "@babel/core@npm:7.29.7"
   dependencies:
@@ -3344,7 +3344,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/parser@npm:^7.1.0, @babel/parser@npm:^7.14.0, @babel/parser@npm:^7.20.7, @babel/parser@npm:^7.23.9, @babel/parser@npm:^7.24.4, @babel/parser@npm:^7.29.3, @babel/parser@npm:^7.29.7":
+"@babel/parser@npm:^7.1.0, @babel/parser@npm:^7.14.0, @babel/parser@npm:^7.20.7, @babel/parser@npm:^7.24.4, @babel/parser@npm:^7.29.3, @babel/parser@npm:^7.29.7":
   version: 7.29.7
   resolution: "@babel/parser@npm:7.29.7"
   dependencies:
@@ -6830,7 +6830,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@id/client@workspace:applications/id/client":
+"@id/client@workspace:*, @id/client@workspace:applications/id/client":
   version: 0.0.0-use.local
   resolution: "@id/client@workspace:applications/id/client"
   dependencies:
@@ -6883,7 +6883,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@id/emails@workspace:applications/id/emails":
+"@id/emails@workspace:*, @id/emails@workspace:applications/id/emails":
   version: 0.0.0-use.local
   resolution: "@id/emails@workspace:applications/id/emails"
   dependencies:
@@ -6910,14 +6910,15 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@id/tenant@workspace:applications/id/tenant"
   dependencies:
+    "@id/client": "workspace:*"
+    "@id/emails": "workspace:*"
     "@motech-development/eslint-config-motech-base": "workspace:*"
     "@motech-development/prettier-motech-config": "workspace:*"
     "@motech-development/semantic-release": "workspace:*"
     "@vitest/coverage-v8": "npm:4.1.9"
-    auth0: "npm:3.7.2"
+    auth0: "npm:7.7.0"
     auth0-deploy-cli: "npm:7.24.3"
     eslint: "npm:9.37.0"
-    istanbul-lib-instrument: "npm:6.0.3"
     prettier: "npm:3.2.5"
     typescript: "npm:6.0.3"
     vitest: "npm:4.1.9"
@@ -6978,13 +6979,6 @@ __metadata:
   version: 1.1.0
   resolution: "@isaacs/string-locale-compare@npm:1.1.0"
   checksum: 10c0/d67226ff7ac544a495c77df38187e69e0e3a0783724777f86caadafb306e2155dc3b5787d5927916ddd7fb4a53561ac8f705448ac3235d18ea60da5854829fdf
-  languageName: node
-  linkType: hard
-
-"@istanbuljs/schema@npm:^0.1.3":
-  version: 0.1.3
-  resolution: "@istanbuljs/schema@npm:0.1.3"
-  checksum: 10c0/61c5286771676c9ca3eb2bd8a7310a9c063fb6e0e9712225c8471c582d157392c88f5353581c8c9adbe0dff98892317d2fdfc56c3499aa42e0194405206a963a
   languageName: node
   linkType: hard
 
@@ -14490,7 +14484,29 @@ __metadata:
   languageName: node
   linkType: hard
 
-"auth0@npm:3.7.2, auth0@npm:^3.0.0":
+"auth0-legacy@npm:auth0@^4.37.1":
+  version: 4.37.1
+  resolution: "auth0@npm:4.37.1"
+  dependencies:
+    jose: "npm:^4.13.2"
+    undici-types: "npm:^6.15.0"
+    uuid: "npm:11.1.1"
+  checksum: 10c0/6a857be2ce0c3a8000b43d006f10904a99d5d09d2a24b913208d2a12f0b04ca1cd43dc817e2a30802f94b4f1aeff0a48cba9f161af5b0232b46af0720a56121f
+  languageName: node
+  linkType: hard
+
+"auth0@npm:7.7.0":
+  version: 7.7.0
+  resolution: "auth0@npm:7.7.0"
+  dependencies:
+    auth0-legacy: "npm:auth0@^4.37.1"
+    jose: "npm:^5.0.0"
+    uuid: "npm:^11.1.1"
+  checksum: 10c0/c2f833078a85b06f1190494ea62c266a2781a9a3f123f3c59500056201de7650d3cf2ea4345a7500e84636efc93b529676086ffc656b835306cfc14fb20c5c62
+  languageName: node
+  linkType: hard
+
+"auth0@npm:^3.0.0":
   version: 3.7.2
   resolution: "auth0@npm:3.7.2"
   dependencies:
@@ -21954,23 +21970,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"istanbul-lib-coverage@npm:^3.0.0, istanbul-lib-coverage@npm:^3.2.0, istanbul-lib-coverage@npm:^3.2.2":
+"istanbul-lib-coverage@npm:^3.0.0, istanbul-lib-coverage@npm:^3.2.2":
   version: 3.2.2
   resolution: "istanbul-lib-coverage@npm:3.2.2"
   checksum: 10c0/6c7ff2106769e5f592ded1fb418f9f73b4411fd5a084387a5410538332b6567cd1763ff6b6cadca9b9eb2c443cce2f7ea7d7f1b8d315f9ce58539793b1e0922b
-  languageName: node
-  linkType: hard
-
-"istanbul-lib-instrument@npm:6.0.3":
-  version: 6.0.3
-  resolution: "istanbul-lib-instrument@npm:6.0.3"
-  dependencies:
-    "@babel/core": "npm:^7.23.9"
-    "@babel/parser": "npm:^7.23.9"
-    "@istanbuljs/schema": "npm:^0.1.3"
-    istanbul-lib-coverage: "npm:^3.2.0"
-    semver: "npm:^7.5.4"
-  checksum: 10c0/a1894e060dd2a3b9f046ffdc87b44c00a35516f5e6b7baf4910369acca79e506fc5323a816f811ae23d82334b38e3ddeb8b3b331bd2c860540793b59a8689128
   languageName: node
   linkType: hard
 
@@ -22101,7 +22104,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jose@npm:^4.14.6":
+"jose@npm:^4.13.2, jose@npm:^4.14.6":
   version: 4.15.9
   resolution: "jose@npm:4.15.9"
   checksum: 10c0/4ed4ddf4a029db04bd167f2215f65d7245e4dc5f36d7ac3c0126aab38d66309a9e692f52df88975d99429e357e5fd8bab340ff20baab544d17684dd1d940a0f4
@@ -31296,6 +31299,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"undici-types@npm:^6.15.0":
+  version: 6.29.1
+  resolution: "undici-types@npm:6.29.1"
+  checksum: 10c0/c68156c78dde34ffb314a68827193b290942fb3e411880c0e75ce7884ab84c23f4eff30d7b88a4c7a4789ca833195566e4670f8eef8fd2c0cb6b826c795d72b1
+  languageName: node
+  linkType: hard
+
 "undici-types@npm:~7.14.0":
   version: 7.14.0
   resolution: "undici-types@npm:7.14.0"
@@ -31794,7 +31804,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:11.1.1":
+"uuid@npm:11.1.1, uuid@npm:^11.1.1":
   version: 11.1.1
   resolution: "uuid@npm:11.1.1"
   bin:

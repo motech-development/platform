@@ -1,22 +1,3 @@
-rules:
-  - name: Force email verification
-    script: ./src/rules/force-email-verification.js
-    stage: login_success
-    enabled: true
-    order: 1
-  - name: Set name
-    script: ./src/rules/set-name.js
-    stage: login_success
-    enabled: true
-    order: 2
-rulesConfigs: []
-hooks:
-  - name: set-email-verification-sent-date
-    script: ./src/hooks/set-email-verification-sent-date.js
-    dependencies: {}
-    enabled: true
-    secrets: {}
-    triggerId: pre-user-registration
 pages:
   - name: login
     html: ../client/build/login/index.html
@@ -155,6 +136,12 @@ clients:
       expiration_type: non-expiring
     sso_disabled: false
     token_endpoint_auth_method: none
+  - name: Login Actions
+    app_type: non_interactive
+    grant_types:
+      - client_credentials
+    is_first_party: true
+    oidc_conformant: true
 databases:
   - name: Username-Password-Authentication
     strategy: auth0
@@ -210,7 +197,6 @@ tenant:
     disable_clickjack_protection_headers: false
   friendly_name: Motech Development
   picture_url: ''
-  sandbox_version: '16'
   support_email: info@motechdevelopment.co.uk
   support_url: https://motechdevelopment.co.uk/support
   universal_login:
@@ -259,6 +245,10 @@ clientGrants:
   - client_id: Accounts API (Test Application)
     audience: accounts-api
     scope: []
+  - client_id: Login Actions
+    audience: https://##AUTH0_DOMAIN##/api/v2/
+    scope:
+      - update:users
 guardianFactors:
   - name: duo
     enabled: false
@@ -295,7 +285,58 @@ prompts:
   customText: {}
   universal_login_experience: classic
 migrations: {}
-actions: []
-triggers: {}
+actions:
+  - name: Force email verification
+    code: ./src/actions/force-email-verification.js
+    runtime: node22
+    dependencies:
+      - name: auth0
+        version: 7.7.0
+    secrets:
+      - name: CLIENT_ID
+        value: '##AUTH0_ACTIONS_CLIENT_ID##'
+      - name: CLIENT_SECRET
+        value: '##AUTH0_ACTIONS_CLIENT_SECRET##'
+      - name: DOMAIN
+        value: '##AUTH0_DOMAIN##'
+    deployed: true
+    supported_triggers:
+      - id: post-login
+        version: v3
+  - name: Set name
+    code: ./src/actions/set-name.js
+    runtime: node22
+    dependencies:
+      - name: auth0
+        version: 7.7.0
+    secrets:
+      - name: CLIENT_ID
+        value: '##AUTH0_ACTIONS_CLIENT_ID##'
+      - name: CLIENT_SECRET
+        value: '##AUTH0_ACTIONS_CLIENT_SECRET##'
+      - name: DOMAIN
+        value: '##AUTH0_DOMAIN##'
+    deployed: true
+    supported_triggers:
+      - id: post-login
+        version: v3
+  - name: Set email verification sent date
+    code: ./src/actions/set-email-verification-sent-date.js
+    runtime: node22
+    dependencies: []
+    secrets: []
+    deployed: true
+    supported_triggers:
+      - id: pre-user-registration
+        version: v2
+triggers:
+  post-login:
+    - action_name: Force email verification
+      display_name: Force email verification
+    - action_name: Set name
+      display_name: Set name
+  pre-user-registration:
+    - action_name: Set email verification sent date
+      display_name: Set email verification sent date
 organizations: []
 themes: []
