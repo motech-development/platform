@@ -1,6 +1,7 @@
 import {
   CloudWatchClient,
   GetMetricDataCommand,
+  GetMetricDataOutput,
 } from '@aws-sdk/client-cloudwatch';
 import {
   BatchWriteItemCommand,
@@ -87,7 +88,14 @@ describe('data-restore', () => {
         cloudwatch.on(GetMetricDataCommand).resolves({
           MetricDataResults: [
             {
+              Id: 'consumer0',
+              StatusCode: 'Complete',
               Values: [0],
+            },
+            {
+              Id: 'consumer1',
+              StatusCode: 'Complete',
+              Values: [],
             },
           ],
         });
@@ -531,9 +539,13 @@ describe('data-restore', () => {
           cloudwatch.on(GetMetricDataCommand).resolves({
             MetricDataResults: [
               {
+                Id: 'consumer0',
+                StatusCode: 'Complete',
                 Values: [0],
               },
               {
+                Id: 'consumer1',
+                StatusCode: 'Complete',
                 Values: [2, 1],
               },
             ],
@@ -549,6 +561,67 @@ describe('data-restore', () => {
 
           expect(ddb).not.toHaveReceivedCommand(BatchWriteItemCommand);
         });
+
+        it.each([
+          [
+            'a result is incomplete',
+            {
+              MetricDataResults: [
+                {
+                  Id: 'consumer0',
+                  StatusCode: 'Complete',
+                  Values: [],
+                },
+                {
+                  Id: 'consumer1',
+                  StatusCode: 'PartialData',
+                  Values: [],
+                },
+              ],
+            },
+          ],
+          [
+            'a result is missing',
+            {
+              MetricDataResults: [
+                {
+                  Id: 'consumer0',
+                  StatusCode: 'Complete',
+                  Values: [],
+                },
+              ],
+            },
+          ],
+          [
+            'there are more results',
+            {
+              MetricDataResults: [
+                {
+                  Id: 'consumer0',
+                  StatusCode: 'Complete',
+                  Values: [],
+                },
+                {
+                  Id: 'consumer1',
+                  StatusCode: 'Complete',
+                  Values: [],
+                },
+              ],
+              NextToken: 'next-page',
+            },
+          ],
+        ] as [string, GetMetricDataOutput][])(
+          'should refuse to clear if %s',
+          async (_, output) => {
+            cloudwatch.on(GetMetricDataCommand).resolves(output);
+
+            await expect(
+              handler({ action: 'restore' }, context, callback),
+            ).rejects.toThrow('Unable to read every consumer invocation count');
+
+            expect(ddb).not.toHaveReceivedCommand(ScanCommand);
+          },
+        );
       });
 
       describe('when resuming', () => {

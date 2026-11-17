@@ -31,6 +31,10 @@ const lambda = new LambdaClient({});
 
 const maximumRecordAge = 60;
 
+// Disabled mappings kept delivering for 30 to 45 seconds in a rehearsal.
+const drainPeriod = 60;
+
+// Covers canary delivery, the longest consumer timeout and metric publication.
 const quietPeriod = 5 * 60;
 
 function chunkArray<T>(array: T[], chunkSize: number) {
@@ -254,6 +258,8 @@ async function consumers(target: string) {
 
     logger.info('Target table consumers paused');
 
+    await sleep(drainPeriod * 1000);
+
     // A Disabled mapping can still deliver records, so prove quiet with a canary.
     const start = new Date();
 
@@ -273,7 +279,7 @@ async function consumers(target: string) {
 
     await sleep(quietPeriod * 1000);
 
-    const { MetricDataResults = [] } = await cloudwatch.send(
+    const { MetricDataResults = [], NextToken } = await cloudwatch.send(
       new GetMetricDataCommand({
         EndTime: new Date(),
         MetricDataQueries: EventSourceMappings.map(
@@ -298,6 +304,19 @@ async function consumers(target: string) {
         StartTime: start,
       }),
     );
+
+    const complete = EventSourceMappings.every((_, index) =>
+      MetricDataResults.some(
+        ({ Id, StatusCode }) =>
+          Id === `consumer${index}` && StatusCode === 'Complete',
+      ),
+    );
+
+    if (NextToken || !complete) {
+      throw new Error(
+        'Unable to read every consumer invocation count. Run restore again',
+      );
+    }
 
     const invocations = MetricDataResults.flatMap(
       ({ Values = [] }) => Values,
