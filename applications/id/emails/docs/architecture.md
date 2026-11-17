@@ -29,4 +29,4 @@ No automated tests. Build and open the HTML in a browser.
 
 - Rebuild, then deploy `@id/tenant`, to publish a change. The tenant deploy also needs `@id/client` built and pre-rendered (see [its Making changes](../../client/docs/architecture.md#making-changes)).
 - Adding a template needs a matching `emailTemplates` entry in `tenant.yaml`.
-- Automated delivery for the ID workspaces is currently disabled and they are outside the Deployment Catalog.
+- `@id/tenant` depends on this workspace, so a release of it also redeploys the tenant through the `id-tenant` Deployment Unit.
