@@ -10,8 +10,8 @@
       "Content-Type": "application/json"
     },
     "body": {
-      "owner": "$owner",
-      "path": "$ctx.args.path"
+      "owner": $util.toJson($owner),
+      "path": $util.toJson($ctx.args.path)
     }
   }
 }
