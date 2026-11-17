@@ -19,8 +19,17 @@ const standardFontsDir = normalizePath(
 );
 
 export default defineConfig(({ command, mode }) => {
-  const { PORT = '3000', PUBLIC_URL = '/' } = loadEnv(mode, process.cwd(), '');
-  const env = loadEnv(mode, process.cwd(), ['NODE_ENV', 'REACT_APP_', 'STAGE']);
+  const {
+    PORT = '3000',
+    PUBLIC_URL = '/',
+    ...buildEnv
+  } = loadEnv(mode, process.cwd(), '');
+  const env = Object.fromEntries(
+    Object.entries(buildEnv).filter(
+      ([key]) =>
+        key.startsWith('REACT_APP_') || key === 'NODE_ENV' || key === 'STAGE',
+    ),
+  );
   const isBuild = command === 'build';
   const isProductionBuild = isBuild && mode === 'production';
 
