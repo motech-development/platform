@@ -11,7 +11,7 @@ How the applications and packages in this monorepo fit together. Each workspace'
 | `.github/`            | Quality gates, the Deployment Catalog, generated delivery workflows and Platform Delivery docs. |
 | `docs/`               | Repository-wide ADRs and agent guidance.                                                        |
 
-Everything is a Yarn 4 workspace (`applications/*/*` and `packages/*`). Applications depend on packages through `workspace:*` ranges, so a package must be built before a consumer can use it. `yarn package` builds every package in dependency order.
+Everything is a Yarn 4 workspace (`applications/*/*` and `packages/*`). Applications mostly depend on packages through `workspace:*` ranges, so a package must be built before a consumer can use it. The exception is `@motech-development/breeze-ui`: both clients pin the published `2.4.0` from npm, so local Breeze UI changes do not reach them. `yarn package` builds every package in dependency order.
 
 ## Technology
 
@@ -154,7 +154,7 @@ The `createReport` mutation starts the reports service's `generate-report` Step 
 
 ### Cross-stack wiring
 
-Stacks share resources through CloudFormation exports named `<stage>-<Name>` and consume them with `!ImportValue`. For example, `@accounts/data` exports the application table and stream ARNs, `@accounts/storage` exports its buckets and API endpoint, and `@core/anti-virus` exports its queues and attachment table. Because imports must exist at deploy time, stacks deploy in dependency order. That order is recorded in [`.github/delivery/catalog.json`](../.github/delivery/catalog.json):
+Stacks share resources through CloudFormation exports named `<stage>-<Name>` and consume them with `!ImportValue`. The exception is `@core/infrastructure`, whose `Certificate` and `HostedZoneId` exports have no stage prefix. For example, `@accounts/data` exports the application table and stream ARNs, `@accounts/storage` exports its buckets and API endpoint, and `@core/anti-virus` exports its queues and attachment table. Because imports must exist at deploy time, stacks deploy in dependency order. That order is recorded in [`.github/delivery/catalog.json`](../.github/delivery/catalog.json):
 
 ```mermaid
 flowchart LR
