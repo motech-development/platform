@@ -21,7 +21,7 @@
     "@motech-development/prettier-motech-config": "workspace:*",
     "@motech-development/semantic-release": "workspace:*",
     "@vitest/coverage-v8": "4.1.9",
-    "auth0-deploy-cli": "7.24.3",
+    "auth0-deploy-cli": "8.45.0",
     "eslint": "9.37.0",
     "prettier": "3.2.5",
     "typescript": "6.0.3",
