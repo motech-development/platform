@@ -1,4 +1,3 @@
 {
-  "AUTH0_ALLOW_DELETE": false,
-  "AUTH0_EXCLUDED_RULES": []
+  "AUTH0_ALLOW_DELETE": false
 }

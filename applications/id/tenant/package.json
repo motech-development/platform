@@ -12,17 +12,17 @@
     "test-ci": "vitest run --coverage --no-file-parallelism"
   },
   "dependencies": {
-    "auth0": "3.7.2",
-    "istanbul-lib-instrument": "6.0.3"
+    "auth0": "7.7.0"
   },
   "devDependencies": {
+    "@id/client": "workspace:*",
+    "@id/emails": "workspace:*",
     "@motech-development/eslint-config-motech-base": "workspace:*",
     "@motech-development/prettier-motech-config": "workspace:*",
     "@motech-development/semantic-release": "workspace:*",
     "@vitest/coverage-v8": "4.1.9",
     "auth0-deploy-cli": "7.24.3",
     "eslint": "9.37.0",
-    "istanbul-lib-instrument": "6.0.3",
     "prettier": "3.2.5",
     "typescript": "6.0.3",
     "vitest": "4.1.9"
