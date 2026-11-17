@@ -36,6 +36,8 @@ Each page shows a loader until its object exists.
 | `/login`    | `Login` | `LogIn`, `SignUp`, `ForgottenPassword` | `WebAuth.login`, `WebAuth.signup`, `WebAuth.changePassword` on the `Username-Password-Authentication` connection. |
 | `/lo/reset` | `Reset` | `ResetPassword`, `Success`             | `POST /lo/reset` (same origin, Auth0) with the form values via `@motech-development/axios-hooks`.                 |
 
+`SignUp` sends the name as root profile fields: `given_name`, `family_name`, and `name` as "given family". `@types/auth0-js` omits these sign-up fields, so `src/auth0-js.d.ts` adds them to `DbSignUpOptions`.
+
 `useAuth` creates the `WebAuth` client with `responseType: 'code'` and the injected domain, client ID and callback URL. Every view change is recorded as a Google Analytics page view.
 
 ### Errors
