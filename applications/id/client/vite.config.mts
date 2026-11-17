@@ -5,11 +5,8 @@ import eslint from 'vite-plugin-eslint';
 import react from '@vitejs/plugin-react-swc';
 
 export default defineConfig(({ command, mode }) => {
-  const {
-    PORT = '3000',
-    PUBLIC_URL = '/',
-    ...env
-  } = loadEnv(mode, process.cwd(), '');
+  const { PORT = '3000', PUBLIC_URL = '/' } = loadEnv(mode, process.cwd(), '');
+  const env = loadEnv(mode, process.cwd(), ['NODE_ENV', 'REACT_APP_', 'STAGE']);
   const isBuild = command === 'build';
 
   return {
