@@ -318,12 +318,8 @@ const validationSchema = object<FormSchema>()
   .shape({
     ...(name
       ? {
-          userMetadata: object()
-            .shape({
-              family_name: string().required(t('family-name.required')),
-              given_name: string().required(t('given-name.required')),
-            })
-            .required(),
+          family_name: string().required(t('family-name.required')),
+          given_name: string().required(t('given-name.required')),
         }
       : {}),
     password: string().required(t('password.required')),
