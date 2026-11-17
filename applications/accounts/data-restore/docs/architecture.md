@@ -10,7 +10,7 @@
 | ------------------------------------ | ------------------------------------------------------------------------- |
 | `bin/infrastructure.ts`              | CDK app entry. Reads `source` and `target` context and creates the stack. |
 | `lib/data-restore-stack.ts`          | `DataRestoreStack`: the Lambda and its permissions.                       |
-| `lib/__tests__/`                     | Snapshot test of the synthesised template.                                |
+| `lib/__tests__/`                     | Assertions on the synthesised template.                                   |
 | `src/data-restore.ts`                | The Lambda handler.                                                       |
 | `src/__tests__/data-restore.test.ts` | Handler tests.                                                            |
 | `cdk.json`                           | Runs the app with `ts-node`, plus CDK feature flags.                      |
@@ -66,7 +66,7 @@ Everything happens in one invocation, so the table must clear and copy within th
 
 ## Testing
 
-`src/__tests__/data-restore.test.ts` stubs the DynamoDB and Lambda clients with `aws-sdk-client-mock` and uses `aws-lambda-mock-context`. It covers pagination, chunking, unprocessed-item retries, the consumer checks and each action. `sleep` resolves immediately when `NODE_ENV` is `test`. `lib/__tests__/data-restore-stack.test.ts` compares the synthesised template with a snapshot; update the snapshot deliberately when the stack changes.
+`src/__tests__/data-restore.test.ts` stubs the DynamoDB and Lambda clients with `aws-sdk-client-mock` and uses `aws-lambda-mock-context`. It covers pagination, chunking, unprocessed-item retries, the consumer checks and each action. `sleep` resolves immediately when `NODE_ENV` is `test`. `lib/__tests__/data-restore-stack.test.ts` asserts the function configuration and IAM grants in the synthesised template. It avoids a full-template snapshot so bundle hashes and CDK defaults do not break it.
 
 Run one file from the repository root:
 
