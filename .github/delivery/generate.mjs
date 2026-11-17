@@ -1206,7 +1206,7 @@ function decoratePreviewJob(job, unit, dependencies) {
   });
 }
 
-function deploymentAuditSteps() {
+function deploymentCreationStep() {
   return `      - name: Create GitHub Deployment
         id: deployment
         env:
@@ -1228,12 +1228,14 @@ function deploymentAuditSteps() {
               | gh api --method POST "repos/\${GITHUB_REPOSITORY}/deployments" --input - --jq .id
           )"
           echo "id=$deployment_id" >> "$GITHUB_OUTPUT"
-
-${deploymentStatusStep({
-  name: 'Create in-progress Deployment status',
-  stateArgument: 'in_progress',
-})}
 `;
+}
+
+function deploymentInProgressStep() {
+  return deploymentStatusStep({
+    name: 'Create in-progress Deployment status',
+    stateArgument: 'in_progress',
+  });
 }
 
 function deploymentStatusStep({
@@ -1434,11 +1436,20 @@ export function decorateAuditedDeliveryJob(
   const successAfterClientConfiguration = unit.id === 'accounts-api';
   let audited = decorated.replace(
     deliveryAttempt,
-    `${deploymentAuditSteps().trimEnd()}\n\n${deliveryAttempt.trimEnd()}${
+    `${deploymentInProgressStep().trimEnd()}\n\n${deliveryAttempt.trimEnd()}${
       successAfterClientConfiguration
         ? '\n'
         : `\n\n${deploymentSuccessStep()}\n`
     }`,
+  );
+
+  // Record the attempt before install or build so an early failure is not hidden by an older success.
+  const checkoutStep = audited.match(
+    /^      - name: Checkout code\n[\s\S]*?(?=^      - name:|^      # \{\{fragment:)/m,
+  );
+  audited = audited.replace(
+    checkoutStep[0],
+    `${checkoutStep[0].trimEnd()}\n\n${deploymentCreationStep()}\n`,
   );
 
   if (successAfterClientConfiguration) {

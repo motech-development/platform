@@ -1151,7 +1151,7 @@ test('ID tenant delivery publishes client assets before the Auth0 page in one au
     );
     assert.match(
       steps,
-      /name: Build ID client\n[\s\S]*name: Create GitHub Deployment[\s\S]*name: Deploy ID client\n[\s\S]*name: Deploy Auth0 tenant\n[\s\S]*name: Record successful Deployment[\s\S]*name: Record failed Deployment/,
+      /name: Create GitHub Deployment[\s\S]*name: Build ID client\n[\s\S]*name: Create in-progress Deployment status[\s\S]*name: Deploy ID client\n[\s\S]*name: Deploy Auth0 tenant\n[\s\S]*name: Record successful Deployment[\s\S]*name: Record failed Deployment/,
       filename,
     );
     assert.doesNotMatch(jobSettings, /secrets\./, filename);
@@ -1229,6 +1229,40 @@ test('API delivery records success only after exporting client configuration', a
       /name: Deploy\n[\s\S]*name: Export client configuration[\s\S]*name: Record successful Deployment[\s\S]*name: Record failed Deployment/,
       filename,
     );
+  }
+});
+
+test('audited delivery records its Deployment before install or build can fail', async () => {
+  const [catalog, manifests, generated] = await Promise.all([
+    loadCatalog(),
+    loadWorkspaceManifests(),
+    generateWorkflows({ write: false }),
+  ]);
+
+  for (const [filename, target] of [
+    ['deploy-to-environment.yml', 'preview'],
+    ['deploy-to-develop.yml', 'develop'],
+    ['deploy-to-production.yml', 'production'],
+  ]) {
+    for (const { id } of createJobGraph(catalog, manifests, target)) {
+      const steps = [
+        ...workflowJob(generated[filename], id).matchAll(
+          /^ {6}- name: (.+)$/gm,
+        ),
+      ].map(([, name]) => name);
+
+      assert.deepEqual(
+        steps.slice(0, 2),
+        ['Checkout code', 'Create GitHub Deployment'],
+        `${filename}:${id}`,
+      );
+      assert.equal(
+        steps.indexOf('Create in-progress Deployment status') >
+          steps.indexOf('Install dependencies'),
+        true,
+        `${filename}:${id}`,
+      );
+    }
   }
 });
 
