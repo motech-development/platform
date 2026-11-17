@@ -1366,6 +1366,7 @@ function insertStandardJob(workflow, job, definition) {
 
 const deliveryCompletionStepNames = new Map([
   ['core-anti-virus', 'Update definitions'],
+  ['id-tenant', 'Deploy Auth0 tenant'],
 ]);
 
 function extendDeliveryAttempt(decorated, deliveryStep, completionStepName) {
