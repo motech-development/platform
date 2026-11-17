@@ -80,10 +80,7 @@ describe('set-name', () => {
         null,
       );
       expect(api.user.setUserMetadata).toHaveBeenCalledWith('given_name', null);
-      expect(api.user.setUserMetadata).not.toHaveBeenCalledWith(
-        'anotherRandomField',
-        expect.anything(),
-      );
+      expect(api.user.setUserMetadata).toHaveBeenCalledTimes(2);
     });
 
     it('should fail the login and keep the meta data if the user cannot be updated', async () => {
