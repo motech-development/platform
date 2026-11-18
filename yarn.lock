@@ -323,7 +323,7 @@ __metadata:
     aws4fetch: "npm:1.0.20"
     esbuild: "npm:0.28.1"
     eslint: "npm:9.37.0"
-    json-2-csv: "npm:4.1.0"
+    json-2-csv: "npm:5.5.11"
     luxon: "npm:3.5.0"
     osls: "npm:3.63.2"
     prettier: "npm:3.2.5"
@@ -16844,10 +16844,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"deeks@npm:3.0.1":
-  version: 3.0.1
-  resolution: "deeks@npm:3.0.1"
-  checksum: 10c0/3d54d355e70642d13f7e2f50e31530f674ce86431cf3c756c5bcbae0b66dc6ad8ecc1e8b0f62ada944c9d53b9019cdda7202167458f9f2e4ee593e16c070c637
+"deeks@npm:3.2.1":
+  version: 3.2.1
+  resolution: "deeks@npm:3.2.1"
+  checksum: 10c0/502e999e9ca3aa9b2e740d99bbb20b3654e8e1b5398c5cb61419700ee26ecf1a037de4dd89d40a93ef324442b303adce446cc3e584258d8abb271cd891943357
   languageName: node
   linkType: hard
 
@@ -17110,10 +17110,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"doc-path@npm:4.0.1":
-  version: 4.0.1
-  resolution: "doc-path@npm:4.0.1"
-  checksum: 10c0/4152f63579453a5525defeeb00b8543f588c11be50a7c42e1232225afaddc366fb0bce93044cad6fcd4f51805e6db7213c9bceac2dc3f8094642b65eff703dcf
+"doc-path@npm:4.1.4":
+  version: 4.1.4
+  resolution: "doc-path@npm:4.1.4"
+  checksum: 10c0/988b79b64b4857ab7c2fc59e6afd6624d055bce71e095316b6f021e08763db0c537c112b2459f942e7374b84978ab3c1c57625ab5776ba48518efb2bc8a9d32b
   languageName: node
   linkType: hard
 
@@ -21803,13 +21803,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"json-2-csv@npm:4.1.0":
-  version: 4.1.0
-  resolution: "json-2-csv@npm:4.1.0"
+"json-2-csv@npm:5.5.11":
+  version: 5.5.11
+  resolution: "json-2-csv@npm:5.5.11"
   dependencies:
-    deeks: "npm:3.0.1"
-    doc-path: "npm:4.0.1"
-  checksum: 10c0/354cabd5f1d5b3bd22747d469922b5e36c7a29ca7bb51a78ad7f34eb5c0dc4d54047822c23cdfcf299b997f560972ec629bdd10b3c879c02a6e997a54f41284a
+    deeks: "npm:3.2.1"
+    doc-path: "npm:4.1.4"
+  checksum: 10c0/d83a3494f791e5018778d3ce05f4bd20a190f40ea217ebf19e66e22be373fd56890b3100369549ac9814dee1bc9b431a0971f136434dc5468e2355d9fb324818
   languageName: node
   linkType: hard
 
