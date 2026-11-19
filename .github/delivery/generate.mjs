@@ -406,12 +406,10 @@ export function createPreviewPlan(catalog, workspaceManifests, input) {
 
   const existingStacks = new Set(input.existingStacks ?? []);
   const affectedByRef = new Map();
-  let unrelatedHistory = false;
   function historyFrom(stateRef) {
     const history = input.history?.[stateRef];
     if (
       history === undefined ||
-      typeof history.related !== 'boolean' ||
       typeof history.runtimeAffected !== 'boolean' ||
       !Array.isArray(history.changedWorkspaces)
     ) {
@@ -448,12 +446,7 @@ export function createPreviewPlan(catalog, workspaceManifests, input) {
     ),
   );
   // With nothing deployed, the head's own impact against the base is authoritative.
-  const validationProvesNonRuntime =
-    !input.runtimeAffected ||
-    validationRef === input.head ||
-    (validationHistory?.related === true &&
-      validationHistory.runtimeAffected === false);
-  if (!hasPreviewState && !hasPreviewStack && validationProvesNonRuntime) {
+  if (!hasPreviewState && !hasPreviewStack && !input.runtimeAffected) {
     return { target, units: [], validationRequired: false };
   }
 
@@ -475,11 +468,6 @@ export function createPreviewPlan(catalog, workspaceManifests, input) {
         return false;
       }
 
-      const history = historyFrom(stateRef);
-      if (!history.related) {
-        unrelatedHistory = true;
-        return true;
-      }
       if (!affectedByRef.has(stateRef)) {
         affectedByRef.set(
           stateRef,
@@ -488,7 +476,7 @@ export function createPreviewPlan(catalog, workspaceManifests, input) {
               catalog,
               workspaceManifests,
               target,
-              history.changedWorkspaces,
+              historyFrom(stateRef).changedWorkspaces,
             ),
             graph,
           ),
@@ -502,21 +490,15 @@ export function createPreviewPlan(catalog, workspaceManifests, input) {
   if (validationRef === input.head) {
     validationRequired = false;
   } else if (validationRef !== undefined) {
-    if (!validationHistory.related) {
-      unrelatedHistory = true;
-    } else {
-      validationRequired = validationHistory.runtimeAffected;
-    }
+    validationRequired = validationHistory.runtimeAffected;
   }
-  if (expanded.size > 0 || unrelatedHistory) {
+  if (expanded.size > 0) {
     validationRequired = true;
   }
 
   return {
     target,
-    units: unrelatedHistory
-      ? dependencyOrder(graph)
-      : dependencyOrder(graph, expanded),
+    units: dependencyOrder(graph, expanded),
     validationRequired,
   };
 }
@@ -1752,7 +1734,7 @@ async function main(arguments_) {
       loadCatalog(),
       loadWorkspaceManifests(),
       readFile(arguments_[1], 'utf8').then((contents) =>
-        contents.split('\n').filter(Boolean),
+        contents.split('\0').filter(Boolean),
       ),
     ]);
     console.log(

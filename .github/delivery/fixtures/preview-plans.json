@@ -32,7 +32,6 @@
         "validationRef": "preview-head-1",
         "history": {
           "preview-head-1": {
-            "related": true,
             "runtimeAffected": true,
             "changedWorkspaces": ["@accounts/notifications"]
           }
@@ -94,7 +93,6 @@
         "validationRef": "preview-head-1",
         "history": {
           "preview-head-1": {
-            "related": true,
             "runtimeAffected": true,
             "changedWorkspaces": ["@fixture/runtime"]
           }

@@ -11,6 +11,7 @@ import {
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
+import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
 
 import {
@@ -400,7 +401,6 @@ test('Preview Plan leaves current units unchanged after a documentation-only fol
       deployments,
       history: {
         [previousHead]: {
-          related: true,
           runtimeAffected: false,
           changedWorkspaces: [],
         },
@@ -437,7 +437,6 @@ test('documentation-only pull requests remain not applicable without Preview Sta
       ],
       history: {
         'preview-head-1': {
-          related: true,
           runtimeAffected: false,
           changedWorkspaces: [],
         },
@@ -488,7 +487,6 @@ test('documentation-only pull requests deploy nothing without Preview State or a
       ],
       history: {
         'rebased-head': {
-          related: false,
           runtimeAffected: true,
           changedWorkspaces: [],
         },
@@ -507,7 +505,6 @@ test('Preview Plan reconciles an independently stale unit and its delivery depen
         unitRefs: { 'accounts-notifications': 'preview-head-1' },
         history: {
           'preview-head-1': {
-            related: true,
             runtimeAffected: true,
             changedWorkspaces: ['@accounts/notifications'],
           },
@@ -531,7 +528,6 @@ test('Preview Validation State can require Playwright with zero deployments sele
         validationRef: 'preview-head-1',
         history: {
           'preview-head-1': {
-            related: true,
             runtimeAffected: true,
             changedWorkspaces: ['@accounts/client'],
           },
@@ -567,18 +563,47 @@ test('missing, malformed, and failed Preview State selects safe repair', () => {
   });
 });
 
-test('unrelated Preview State history selects the complete topology', () => {
+test('rebased Preview State with only unrelated main changes selects no units', () => {
   const plan = createPreviewPlan(
     planningCatalog,
     planningManifests,
     recordedPreviewState({
-      unitRefs: { 'accounts-api': 'unrelated-head' },
-      validationRef: 'unrelated-head',
+      unitRefs: Object.fromEntries(
+        previewFixtures.completeCreation.expected.units.map((id) => [
+          id,
+          'pre-rebase-head',
+        ]),
+      ),
+      validationRef: 'pre-rebase-head',
       history: {
-        'unrelated-head': {
-          related: false,
+        'pre-rebase-head': { runtimeAffected: false, changedWorkspaces: [] },
+      },
+    }),
+  );
+
+  assert.deepEqual(plan, {
+    target: 'preview',
+    units: [],
+    validationRequired: false,
+  });
+});
+
+test('rebased Preview State reconciles a main change to a preview unit and its dependants', () => {
+  const plan = createPreviewPlan(
+    planningCatalog,
+    planningManifests,
+    recordedPreviewState({
+      unitRefs: Object.fromEntries(
+        previewFixtures.completeCreation.expected.units.map((id) => [
+          id,
+          'pre-rebase-head',
+        ]),
+      ),
+      validationRef: 'pre-rebase-head',
+      history: {
+        'pre-rebase-head': {
           runtimeAffected: true,
-          changedWorkspaces: [],
+          changedWorkspaces: ['@accounts/notifications'],
         },
       },
     }),
@@ -586,7 +611,111 @@ test('unrelated Preview State history selects the complete topology', () => {
 
   assert.deepEqual(plan, {
     target: 'preview',
-    units: previewFixtures.completeCreation.expected.units,
+    units: ['accounts-notifications', 'accounts-reports', 'accounts-api'],
+    validationRequired: true,
+  });
+});
+
+async function previewPlanAfterForcePush(changeRuntimeFile) {
+  const generated = await generateWorkflows({ write: false });
+  const diffCommand = generated['deploy-to-environment.yml'].match(
+    /git diff --name-only[^\n]*"\$ref" "\$HEAD_SHA"/,
+  )[0];
+  const directory = await mkdtemp(join(tmpdir(), 'preview-state-diff-'));
+  const git = (...args) => execFileAsync('git', args, { cwd: directory });
+  try {
+    await git('init');
+    await git('config', 'user.email', 'test@example.com');
+    await git('config', 'user.name', 'Test');
+    await mkdir(join(directory, 'applications/accounts/data'), {
+      recursive: true,
+    });
+    await writeFile(
+      join(directory, 'applications/accounts/data/handler.ts'),
+      'export const handler = () => "unchanged runtime content";\n',
+    );
+    await git('add', '.');
+    await git('commit', '-m', 'test: deployed head');
+    const { stdout: ref } = await git('rev-parse', 'HEAD');
+    await changeRuntimeFile(directory, git);
+    await git('commit', '-m', 'test: force-pushed head');
+    const { stdout: head } = await git('rev-parse', 'HEAD');
+    const changedFiles = join(directory, '.git', 'changed-files');
+    await execFileAsync('bash', ['-c', `${diffCommand} > "$CHANGED_FILES"`], {
+      cwd: directory,
+      env: {
+        ...process.env,
+        CHANGED_FILES: changedFiles,
+        HEAD_SHA: head.trim(),
+        ref: ref.trim(),
+      },
+    });
+    const { stdout: impact } = await execFileAsync(process.execPath, [
+      fileURLToPath(new URL('./generate.mjs', import.meta.url)),
+      '--preview-impact',
+      changedFiles,
+    ]);
+
+    return createPreviewPlan(
+      planningCatalog,
+      planningManifests,
+      recordedPreviewState({
+        unitRefs: Object.fromEntries(
+          previewFixtures.completeCreation.expected.units.map((id) => [
+            id,
+            'pre-rebase-head',
+          ]),
+        ),
+        validationRef: 'pre-rebase-head',
+        history: { 'pre-rebase-head': JSON.parse(impact) },
+      }),
+    );
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+}
+
+test('a force-push that moves a runtime file to documentation reconciles its unit', async () => {
+  const plan = await previewPlanAfterForcePush(async (directory, git) => {
+    await mkdir(join(directory, 'docs'));
+    await git('mv', 'applications/accounts/data/handler.ts', 'docs/handler.ts');
+  });
+
+  assert.ok(plan.units.includes('accounts-data'));
+  assert.equal(plan.validationRequired, true);
+});
+
+test('a force-push that changes a non-ASCII runtime filename reconciles its unit', async () => {
+  const plan = await previewPlanAfterForcePush(async (directory, git) => {
+    await writeFile(
+      join(directory, 'applications/accounts/data/café.ts'),
+      'export const café = true;\n',
+    );
+    await git('add', '.');
+  });
+
+  assert.ok(plan.units.includes('accounts-data'));
+  assert.equal(plan.validationRequired, true);
+});
+
+test('a runtime head without a Preview Environment is created even when its tree matches a validated head', () => {
+  const units = previewFixtures.completeCreation.expected.units;
+  const plan = createPreviewPlan(planningCatalog, planningManifests, {
+    ...recordedPreviewState({
+      missingUnits: units,
+      validationRef: 'pre-rebase-head',
+      history: {
+        'pre-rebase-head': { runtimeAffected: false, changedWorkspaces: [] },
+      },
+    }),
+    runtimeAffected: true,
+    changedWorkspaces: ['@accounts/data'],
+    existingStacks: [],
+  });
+
+  assert.deepEqual(plan, {
+    target: 'preview',
+    units,
     validationRequired: true,
   });
 });
@@ -1409,7 +1538,6 @@ test('client-only Preview validation reuses API state while delivery plans inclu
       validationRef: 'preview-head-1',
       history: {
         'preview-head-1': {
-          related: true,
           runtimeAffected: true,
           changedWorkspaces: ['@accounts/client'],
         },
@@ -1880,7 +2008,7 @@ test('generated preview workflow plans per pull request and selectively deploys 
   );
   assert.match(
     setup,
-    /git diff --name-only '\$\{\{ github\.event\.pull_request\.base\.sha \}\}\.\.\.\$\{\{ github\.event\.pull_request\.head\.sha \}\}'/,
+    /git diff --name-only -z --no-renames '\$\{\{ github\.event\.pull_request\.base\.sha \}\}\.\.\.\$\{\{ github\.event\.pull_request\.head\.sha \}\}'/,
   );
   assert.match(setup, /aws cloudformation describe-stacks/);
   assert.match(setup, /^      deployments: read$/m);
@@ -1892,7 +2020,7 @@ test('generated preview workflow plans per pull request and selectively deploys 
   assert.match(setup, /validate:playwright/);
   assert.match(
     setup,
-    /Read changes from recorded Preview State[\s\S]*git merge-base --is-ancestor[\s\S]*--preview-impact/,
+    /Read changes from recorded Preview State[\s\S]*git diff --name-only -z --no-renames "\$ref" "\$HEAD_SHA"[\s\S]*--preview-impact/,
   );
   assert.match(setup, /node \.github\/delivery\/generate\.mjs --preview-plan/);
   assert.doesNotMatch(setup, /name: Install dependencies/);
@@ -1919,7 +2047,7 @@ test('generated preview workflow plans per pull request and selectively deploys 
   );
   assert.match(
     setup,
-    /git fetch --no-tags origin "\$ref"[\s\S]*git merge-base --is-ancestor "\$ref" "\$HEAD_SHA"/,
+    /git fetch --no-tags origin "\$ref"[\s\S]*not a readable commit[\s\S]*git diff --name-only -z --no-renames "\$ref" "\$HEAD_SHA"/,
   );
   assert.match(
     deployment,
