@@ -49,7 +49,7 @@ export const handler: Handler<IEvent> = wrapHandler(async (event) => {
     abortEarly: true,
     stripUnknown: true,
   });
-  const report = await json2csv(csv, {
+  const report = json2csv(csv, {
     checkSchemaDifferences: true,
   });
 
