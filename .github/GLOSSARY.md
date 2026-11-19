@@ -41,7 +41,7 @@ The latest pull-request commit whose changes were successfully validated against
 _Avoid_: Playwright cache, latest tested commit
 
 **Preview Plan**:
-The set of Deployment Units required to reconcile a Preview Environment with the pull request's current state. Creation includes the full preview topology for a Runtime-Affecting Change and nothing otherwise; later plans compare each unit with its Preview State and include affected, missing, and dependant units.
+The set of Deployment Units required to reconcile a Preview Environment with the pull request's current state. Creation includes the full preview topology for a Runtime-Affecting Change and nothing otherwise; later plans compare each unit's content with its Preview State, regardless of commit ancestry, and include affected, missing, and dependant units.
 _Avoid_: Release Plan, preview change set
 
 **Runtime-Affecting Change**:

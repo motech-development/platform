@@ -49,7 +49,7 @@ jobs:
         id: impact
         shell: bash
         run: |
-          git diff --name-only '${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }}' > "$RUNNER_TEMP/changed-files.txt"
+          git diff --name-only -z --no-renames '${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }}' > "$RUNNER_TEMP/changed-files.txt"
           impact="$(node .github/delivery/generate.mjs --preview-impact "$RUNNER_TEMP/changed-files.txt")"
           echo "runtime-affected=$(jq -r '.runtimeAffected' <<< "$impact")" >> "$GITHUB_OUTPUT"
           echo "changed-workspaces=$(jq -c '.changedWorkspaces' <<< "$impact")" >> "$GITHUB_OUTPUT"
@@ -124,28 +124,12 @@ jobs:
               exit 1
             fi
 
-            set +e
-            git merge-base --is-ancestor "$ref" "$HEAD_SHA"
-            relation_status=$?
-            set -e
-            case "$relation_status" in
-              0)
-                git diff --name-only "$ref..$HEAD_SHA" \
-                  > "$RUNNER_TEMP/changed-files-from-state.txt"
-                state_impact="$(
-                  node .github/delivery/generate.mjs \
-                    --preview-impact "$RUNNER_TEMP/changed-files-from-state.txt"
-                )"
-                state_history="$(jq -c '. + {related: true}' <<< "$state_impact")"
-                ;;
-              1)
-                state_history='{"related":false,"runtimeAffected":true,"changedWorkspaces":[]}'
-                ;;
-              *)
-                echo "Unable to compare Preview State ref '$ref' with '$HEAD_SHA'." >&2
-                exit 1
-                ;;
-            esac
+            git diff --name-only -z --no-renames "$ref" "$HEAD_SHA" \
+              > "$RUNNER_TEMP/changed-files-from-state.txt"
+            state_history="$(
+              node .github/delivery/generate.mjs \
+                --preview-impact "$RUNNER_TEMP/changed-files-from-state.txt"
+            )"
             history="$(
               jq -c \
                 --arg ref "$ref" \
