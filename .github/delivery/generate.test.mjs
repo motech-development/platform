@@ -647,6 +647,85 @@ test('tracked Yarn runtime changes affect every Preview workspace', () => {
   );
 });
 
+test('pull requests reaching no preview unit or preview client deploy nothing and skip Playwright', async () => {
+  const [catalog, manifests] = await Promise.all([
+    loadCatalog(),
+    loadWorkspaceManifests(),
+  ]);
+  const environment = 'pr-1720';
+  const previewUnits = catalog.units.filter(({ targets }) =>
+    targets.includes('preview'),
+  );
+  const planFor = (changedFiles, input = {}) =>
+    createPreviewPlan(catalog, manifests, {
+      lifecycle: 'opened',
+      head: 'preview-head-2',
+      deployments: [],
+      history: {},
+      existingStacks: [],
+      environment,
+      stage: environment,
+      ...createPreviewImpact(catalog, manifests, changedFiles),
+      ...input,
+    });
+  const notApplicable = {
+    target: 'preview',
+    units: [],
+    validationRequired: false,
+  };
+
+  assert.deepEqual(
+    planFor(['applications/id/tenant/package.json']),
+    notApplicable,
+  );
+  assert.deepEqual(
+    planFor(['applications/accounts/data-restore/package.json']),
+    notApplicable,
+  );
+  for (const changedFile of [
+    'applications/accounts/client/package.json',
+    'packages/auth/package.json',
+  ]) {
+    assert.deepEqual(planFor([changedFile]), {
+      target: 'preview',
+      units: createJobGraph(catalog, manifests, 'preview').map(({ id }) => id),
+      validationRequired: true,
+    });
+  }
+
+  const previousHead = 'preview-head-1';
+  const deployments = previewUnits.map(({ id }) => ({
+    environment,
+    task: `deploy:${id}`,
+    ref: previousHead,
+    statuses: [{ state: 'success' }, { state: 'in_progress' }],
+  }));
+  deployments.push({
+    environment,
+    task: 'validate:playwright',
+    ref: previousHead,
+    statuses: [{ state: 'success' }],
+  });
+  assert.deepEqual(
+    planFor(['applications/id/tenant/package.json'], {
+      lifecycle: 'synchronize',
+      deployments,
+      history: {
+        [previousHead]: {
+          related: true,
+          ...createPreviewImpact(catalog, manifests, [
+            'applications/id/tenant/package.json',
+          ]),
+        },
+      },
+      existingStacks: previewUnits.flatMap(({ expectedStacks }) =>
+        expectedStacks.map((stack) => stack.replaceAll('{stage}', environment)),
+      ),
+    }),
+    notApplicable,
+  );
+});
+
 test('a successful boundary without published Releases reuses reachable exact tags for reconciliation', () => {
   const input = structuredClone(releaseFixture.selectiveIndirect.input);
   input.releases = input.releases.map((release) =>

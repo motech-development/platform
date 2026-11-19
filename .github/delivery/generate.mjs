@@ -269,7 +269,28 @@ export function createPreviewImpact(catalog, workspaceManifests, changedFiles) {
     }
   }
 
-  if (!affectsEveryWorkspace && changedWorkspaces.size === 0) {
+  const manifestsByName = new Map(
+    workspaceManifests.map((manifest) => [manifest.name, manifest]),
+  );
+  const knownWorkspaces = new Set(manifestsByName.keys());
+  const previewExercisedWorkspaces = catalog.units
+    .filter(
+      (unit) =>
+        unit.targets.includes('preview') ||
+        // The preview control job with this id runs Playwright against the PR's client.
+        workflowControlTargetsByIdentifier.get(unit.id)?.has('preview'),
+    )
+    .map((unit) => unit.workspace);
+  const reachesPreview = previewExercisedWorkspaces.some((workspace) =>
+    workspaceDependsOn(
+      workspace,
+      changedWorkspaces,
+      manifestsByName,
+      knownWorkspaces,
+    ),
+  );
+
+  if (!affectsEveryWorkspace && !reachesPreview) {
     return { runtimeAffected: false, changedWorkspaces: [] };
   }
 
