@@ -1,25 +1,15 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { GetCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import logger from '@motech-development/node-logger';
-import type { Context, DynamoDBStreamEvent } from 'aws-lambda';
-import ctx from 'aws-lambda-mock-context';
+import type { DynamoDBStreamEvent } from 'aws-lambda';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
-import type { Mock } from 'vitest';
-import { handler } from '../typeahead';
+import { updateTypeahead } from '../typeahead';
 
 describe('typeahead', () => {
-  let callback: Mock;
-  let context: Context;
   let ddb: AwsClientStub<DynamoDBClient>;
   let event: DynamoDBStreamEvent;
 
   beforeEach(() => {
-    context = ctx();
-
-    context.done();
-
-    callback = vi.fn();
-
     ddb = mockClient(DynamoDBClient);
 
     ddb.on(GetCommand).resolves({});
@@ -260,9 +250,7 @@ describe('typeahead', () => {
       Records: [],
     };
 
-    await expect(handler(event, context, callback)).rejects.toThrow(
-      'No table set',
-    );
+    await expect(updateTypeahead(event)).rejects.toThrow('No table set');
   });
 
   describe('with table set', () => {
@@ -286,13 +274,13 @@ describe('typeahead', () => {
           Records: [],
         };
 
-        await handler(event, context, callback);
+        await updateTypeahead(event);
 
         expect(ddb).toReceiveCommandTimes(UpdateCommand, 0);
       });
 
       it('should update the correct number of records', async () => {
-        await handler(event, context, callback);
+        await updateTypeahead(event);
 
         expect(ddb).toReceiveCommandTimes(UpdateCommand, 1);
       });
@@ -308,7 +296,7 @@ describe('typeahead', () => {
       });
 
       it('should log and rethrow the error so the stream event is retried', async () => {
-        await expect(handler(event, context, callback)).rejects.toThrow(error);
+        await expect(updateTypeahead(event)).rejects.toThrow(error);
 
         expect(logger.error).toHaveBeenCalledWith('An error occurred', error);
       });

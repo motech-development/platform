@@ -7,19 +7,9 @@ import {
   UpdateScheduleCommand,
 } from '@aws-sdk/client-scheduler';
 import { NativeAttributeValue, unmarshall } from '@aws-sdk/util-dynamodb';
-import { init, wrapHandler } from '@sentry/aws-serverless';
-import { nodeProfilingIntegration } from '@sentry/profiling-node';
-import type { DynamoDBRecord, DynamoDBStreamHandler } from 'aws-lambda';
+import type { DynamoDBRecord, DynamoDBStreamEvent } from 'aws-lambda';
 import { serializePublicationCommand } from './shared/publication-command';
 import { ITransaction, TransactionStatus } from './shared/transaction';
-
-init({
-  dsn: process.env.SENTRY_DSN,
-  integrations: [nodeProfilingIntegration()],
-  profileLifecycle: 'trace',
-  profileSessionSampleRate: 1,
-  tracesSampleRate: 1,
-});
 
 const scheduler = new SchedulerClient({});
 
@@ -172,9 +162,11 @@ const reconcileRecord = async (record: DynamoDBRecord): Promise<void> => {
   }
 };
 
-export const handler: DynamoDBStreamHandler = wrapHandler(async (event) => {
+export const synchroniseSchedules = async (
+  event: DynamoDBStreamEvent,
+): Promise<void> => {
   await event.Records.reduce(
     (previous, record) => previous.then(() => reconcileRecord(record)),
     Promise.resolve(),
   );
-});
+};

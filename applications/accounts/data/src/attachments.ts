@@ -1,21 +1,13 @@
 import { SQSClient } from '@aws-sdk/client-sqs';
 import logger from '@motech-development/node-logger';
-import { init, wrapHandler } from '@sentry/aws-serverless';
-import { nodeProfilingIntegration } from '@sentry/profiling-node';
-import type { DynamoDBStreamHandler } from 'aws-lambda';
+import type { DynamoDBStreamEvent } from 'aws-lambda';
 import deleteAttachments from './handlers/delete-attachments';
-
-init({
-  dsn: process.env.SENTRY_DSN,
-  integrations: [nodeProfilingIntegration()],
-  profileLifecycle: 'trace',
-  profileSessionSampleRate: 1,
-  tracesSampleRate: 1,
-});
 
 const sqs = new SQSClient({});
 
-export const handler: DynamoDBStreamHandler = wrapHandler(async (event) => {
+export const clearDeletedAttachments = async (
+  event: DynamoDBStreamEvent,
+): Promise<void> => {
   const { ATTACHMENT_QUEUE } = process.env;
 
   if (!ATTACHMENT_QUEUE) {
@@ -33,4 +25,4 @@ export const handler: DynamoDBStreamHandler = wrapHandler(async (event) => {
 
     throw e;
   }
-});
+};

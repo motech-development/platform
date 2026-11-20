@@ -1,22 +1,14 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import logger from '@motech-development/node-logger';
-import { init, wrapHandler } from '@sentry/aws-serverless';
-import { nodeProfilingIntegration } from '@sentry/profiling-node';
-import type { DynamoDBStreamHandler } from 'aws-lambda';
+import type { DynamoDBStreamEvent } from 'aws-lambda';
 import insertTypeahead from './handlers/insert-typeahead';
 import extractStream from './shared/extract-stream';
 
-init({
-  dsn: process.env.SENTRY_DSN,
-  integrations: [nodeProfilingIntegration()],
-  profileLifecycle: 'trace',
-  profileSessionSampleRate: 1,
-  tracesSampleRate: 1,
-});
-
 const documentClient = new DynamoDBClient({});
 
-export const handler: DynamoDBStreamHandler = wrapHandler(async (event) => {
+export const updateTypeahead = async (
+  event: DynamoDBStreamEvent,
+): Promise<void> => {
   const { TABLE, inserts, updates } = extractStream(event);
 
   try {
@@ -28,4 +20,4 @@ export const handler: DynamoDBStreamHandler = wrapHandler(async (event) => {
 
     throw e;
   }
-});
+};

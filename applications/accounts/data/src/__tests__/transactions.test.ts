@@ -4,25 +4,15 @@ import {
   TransactWriteCommandInput,
 } from '@aws-sdk/lib-dynamodb';
 import logger from '@motech-development/node-logger';
-import type { Context, DynamoDBStreamEvent } from 'aws-lambda';
-import ctx from 'aws-lambda-mock-context';
+import type { DynamoDBStreamEvent } from 'aws-lambda';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
-import type { Mock } from 'vitest';
-import { handler } from '../transactions';
+import { updateBalances } from '../transactions';
 
 describe('transactions', () => {
-  let callback: Mock;
-  let context: Context;
   let ddb: AwsClientStub<DynamoDBClient>;
   let event: DynamoDBStreamEvent;
 
   beforeEach(() => {
-    context = ctx();
-
-    context.done();
-
-    callback = vi.fn();
-
     ddb = mockClient(DynamoDBClient);
 
     event = {
@@ -264,9 +254,7 @@ describe('transactions', () => {
       Records: [],
     };
 
-    await expect(handler(event, context, callback)).rejects.toThrow(
-      'No table set',
-    );
+    await expect(updateBalances(event)).rejects.toThrow('No table set');
   });
 
   describe('with table set', () => {
@@ -290,13 +278,13 @@ describe('transactions', () => {
           Records: [],
         };
 
-        await handler(event, context, callback);
+        await updateBalances(event);
 
         expect(ddb).toReceiveCommandTimes(TransactWriteCommand, 0);
       });
 
       it('should update the correct number of records', async () => {
-        await handler(event, context, callback);
+        await updateBalances(event);
 
         expect(ddb).toReceiveCommandTimes(TransactWriteCommand, 3);
 
@@ -330,13 +318,13 @@ describe('transactions', () => {
       });
 
       it('should log and throw the error', async () => {
-        await expect(handler(event, context, callback)).rejects.toThrow(error);
+        await expect(updateBalances(event)).rejects.toThrow(error);
 
         expect(logger.error).toHaveBeenCalledWith('An error occurred', error);
       });
 
       it('should not start the remaining updates', async () => {
-        await expect(handler(event, context, callback)).rejects.toThrow(error);
+        await expect(updateBalances(event)).rejects.toThrow(error);
 
         expect(ddb).toReceiveCommandTimes(TransactWriteCommand, 1);
       });

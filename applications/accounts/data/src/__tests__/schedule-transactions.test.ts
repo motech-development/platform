@@ -8,11 +8,9 @@ import {
   UpdateScheduleCommand,
 } from '@aws-sdk/client-scheduler';
 import { marshall } from '@aws-sdk/util-dynamodb';
-import type { Context, DynamoDBStreamEvent } from 'aws-lambda';
-import ctx from 'aws-lambda-mock-context';
+import type { DynamoDBStreamEvent } from 'aws-lambda';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
-import type { Mock } from 'vitest';
-import { handler } from '../schedule-transactions';
+import { synchroniseSchedules } from '../schedule-transactions';
 import { ITransaction, TransactionStatus } from '../shared/transaction';
 
 const transaction: ITransaction = {
@@ -69,15 +67,10 @@ const removeEvent = (record: ITransaction): DynamoDBStreamEvent => ({
 });
 
 describe('schedule-transactions', () => {
-  let callback: Mock;
-  let context: Context;
   let scheduler: AwsClientStub<SchedulerClient>;
   let originalEnvironment: NodeJS.ProcessEnv;
 
   beforeEach(() => {
-    callback = vi.fn();
-    context = ctx();
-    context.done();
     scheduler = mockClient(SchedulerClient);
     originalEnvironment = process.env;
     process.env = {
@@ -96,7 +89,7 @@ describe('schedule-transactions', () => {
   });
 
   it('creates a one-time schedule when a Pending Transaction is scheduled', async () => {
-    await handler(insertEvent(transaction), context, callback);
+    await synchroniseSchedules(insertEvent(transaction));
 
     expect(scheduler).toReceiveCommandWith(CreateScheduleCommand, {
       ActionAfterCompletion: 'DELETE',
@@ -132,10 +125,8 @@ describe('schedule-transactions', () => {
       date: '2020-06-08T00:00:00.000Z',
     };
 
-    await handler(
+    await synchroniseSchedules(
       modifyEvent(transaction, rescheduledTransaction),
-      context,
-      callback,
     );
 
     expect(scheduler).toReceiveCommandWith(UpdateScheduleCommand, {
@@ -152,7 +143,7 @@ describe('schedule-transactions', () => {
   });
 
   it('creates a schedule when scheduling is enabled', async () => {
-    await handler(
+    await synchroniseSchedules(
       modifyEvent(
         {
           ...transaction,
@@ -160,8 +151,6 @@ describe('schedule-transactions', () => {
         },
         transaction,
       ),
-      context,
-      callback,
     );
 
     expect(scheduler).toReceiveCommandWith(CreateScheduleCommand, {
@@ -179,13 +168,11 @@ describe('schedule-transactions', () => {
       }),
     );
 
-    await handler(
+    await synchroniseSchedules(
       modifyEvent(transaction, {
         ...transaction,
         date: '2020-06-08T00:00:00.000Z',
       }),
-      context,
-      callback,
     );
 
     expect(scheduler).toReceiveCommandWith(CreateScheduleCommand, {
@@ -195,13 +182,11 @@ describe('schedule-transactions', () => {
   });
 
   it('does not disturb the schedule for an unrelated edit', async () => {
-    await handler(
+    await synchroniseSchedules(
       modifyEvent(transaction, {
         ...transaction,
         description: 'Corrected description',
       }),
-      context,
-      callback,
     );
 
     expect(scheduler.calls()).toHaveLength(0);
@@ -224,7 +209,7 @@ describe('schedule-transactions', () => {
     ],
     ['the Transaction is deleted', removeEvent(transaction)],
   ])('deletes the schedule when %s', async (_description, event) => {
-    await handler(event, context, callback);
+    await synchroniseSchedules(event);
 
     expect(scheduler).toReceiveCommandWith(DeleteScheduleCommand, {
       GroupName: 'accounts-test-scheduled-transactions',
@@ -242,7 +227,7 @@ describe('schedule-transactions', () => {
     );
 
     await expect(
-      handler(removeEvent(transaction), context, callback),
+      synchroniseSchedules(removeEvent(transaction)),
     ).resolves.toBeUndefined();
   });
 
@@ -255,7 +240,7 @@ describe('schedule-transactions', () => {
       }),
     );
 
-    await handler(insertEvent(transaction), context, callback);
+    await synchroniseSchedules(insertEvent(transaction));
 
     expect(scheduler).toReceiveCommandTimes(CreateScheduleCommand, 1);
     expect(scheduler).toReceiveCommandWith(UpdateScheduleCommand, {
@@ -276,7 +261,7 @@ describe('schedule-transactions', () => {
       ],
     };
 
-    await handler(event, context, callback);
+    await synchroniseSchedules(event);
 
     expect(scheduler.calls().map(({ args }) => args[0].constructor)).toEqual([
       CreateScheduleCommand,
@@ -289,13 +274,11 @@ describe('schedule-transactions', () => {
     scheduler.on(UpdateScheduleCommand).rejects(error);
 
     await expect(
-      handler(
+      synchroniseSchedules(
         modifyEvent(transaction, {
           ...transaction,
           date: '2020-06-08T00:00:00.000Z',
         }),
-        context,
-        callback,
       ),
     ).rejects.toThrow(error);
   });
