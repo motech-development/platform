@@ -97,22 +97,18 @@ Users sign in with Auth0 through the client. AppSync trusts the Auth0 tenant as 
 
 `@accounts/data` owns one DynamoDB table, `accounts-<stage>-application`, keyed by `id` and `__typename`, with a `__typename-data-index` index for listing items of one type. Companies, clients, transactions, balances, settings, typeahead suggestions, reports and notifications all live in it. The table has point-in-time recovery and a stream of new and old images.
 
-Most API resolvers read and write this table directly through VTL templates. Derived data is not written by the API; stream consumers maintain it after each change:
+Most API resolvers read and write this table directly through VTL templates. Derived data is not written by the resolvers; stream consumers maintain it after each change:
 
-| Consumer (workspace)          | Reacts to                              | Does                                                                                           |
-| ----------------------------- | -------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| `Transactions` (data)         | Transaction inserts, updates, removals | Keeps company balances and VAT totals in step with transactions.                               |
-| `Typeahead` (data)            | Transaction inserts and updates        | Records suppliers and descriptions for form suggestions.                                       |
-| `Attachments` (data)          | Transaction removals                   | Queues the attachment's file for deletion in storage.                                          |
-| `ScheduleTransactions` (data) | Scheduled transaction changes          | Creates, updates or deletes the EventBridge Scheduler schedule for each scheduled transaction. |
-| `UpdateBalance` (api)         | Balance changes                        | Publishes the new balance to the `onTransaction` subscription.                                 |
-| `PublishNotifications` (api)  | Notification inserts                   | Publishes the notification to the `onNotification` subscription.                               |
+| Consumer (workspace)   | Reacts to                                    | Does                                                                                                                                                                                                    |
+| ---------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ProcessStream` (data) | Transaction changes                          | Keeps company balances and VAT totals in step, records suggestions for forms, queues a deleted transaction's attachment for deletion and maintains each scheduled transaction's schedule.               |
+| `PublishStream` (api)  | Transaction changes and notification inserts | Applies the balance change itself and publishes the balance to `onTransaction`, then publishes `onTransactionChange` and `onNotification`, so a saved transaction reaches clients after one stream hop. |
 
-Failed stream batches from `Attachments`, `Transactions` and `ScheduleTransactions` are retained in S3 and reported through dead-letter queues and alarms (see Accounts ADRs 0002 and 0003). `Typeahead`, `UpdateBalance` and `PublishNotifications` have no on-failure destination, so their failed batches are dropped after retries. `@accounts/data-restore` explains how these consumers are paused during a table restore.
+AWS recommends at most two readers per stream shard, so each stack has one consumer (see Accounts ADR 0004). Both apply balance changes for now, with idempotent markers, until `ProcessStream`'s balance step is removed. Failed stream batches from both consumers are retained in S3 and reported through a dead-letter queue and alarms (see Accounts ADRs 0002, 0003 and 0004). `@accounts/data-restore` explains how these consumers are paused during a table restore.
 
 ### Scheduled transactions
 
-A pending transaction can be scheduled to publish on its transaction date. `ScheduleTransactions` maintains one EventBridge Scheduler schedule per transaction. When it fires, the schedule sends a message to the data stack's publication queue, and `PublishTransactions` confirms the transaction. The confirmation then flows through the stream consumers like any other change. See Accounts ADR 0001.
+A pending transaction can be scheduled to publish on its transaction date. `ProcessStream` maintains one EventBridge Scheduler schedule per transaction. When it fires, the schedule sends a message to the data stack's publication queue, and `PublishTransactions` confirms the transaction. The confirmation then flows through the stream consumers like any other change. See Accounts ADR 0001.
 
 ### Attachments
 

@@ -5,7 +5,7 @@ import { AWSAppSyncClient } from 'aws-appsync';
 import type { Context, DynamoDBRecord, StreamRecord } from 'aws-lambda';
 import { mutation } from '../../shared/publish-transaction-change';
 import { mutation as balanceMutation } from '../../shared/update-balance';
-import { handler } from '../update-balance';
+import { handler } from '../publish-stream';
 
 vi.mock('@sentry/aws-serverless', async (importOriginal) => {
   const actual =
@@ -78,6 +78,7 @@ describe('transaction stream events', () => {
   beforeEach(() => {
     vi.stubEnv('AWS_REGION', 'eu-west-2');
     vi.stubEnv('ENDPOINT', 'https://my.api/graphql');
+    vi.stubEnv('TABLE', 'app-table');
     mutate.mockReset();
     mutate.mockResolvedValue({
       data: {},
@@ -101,32 +102,6 @@ describe('transaction stream events', () => {
     ],
     ['delete', record('REMOVE', transaction, undefined)],
     [
-      'confirmed edit',
-      record(
-        'MODIFY',
-        {
-          ...transaction,
-          status: 'confirmed',
-        },
-        {
-          ...transaction,
-          description: 'Edited',
-          status: 'confirmed',
-        },
-      ),
-    ],
-    [
-      'confirmed delete',
-      record(
-        'REMOVE',
-        {
-          ...transaction,
-          status: 'confirmed',
-        },
-        undefined,
-      ),
-    ],
-    [
       'attach',
       record('MODIFY', transaction, {
         ...transaction,
@@ -140,26 +115,8 @@ describe('transaction stream events', () => {
         attachment: '',
       }),
     ],
-    [
-      'publish',
-      record('MODIFY', transaction, {
-        ...transaction,
-        status: 'confirmed',
-      }),
-    ],
-    [
-      'unconfirm',
-      record(
-        'MODIFY',
-        {
-          ...transaction,
-          status: 'confirmed',
-        },
-        transaction,
-      ),
-    ],
   ])(
-    'publishes a scoped invalidation for a transaction %s without balance values',
+    'publishes a scoped invalidation for a pending transaction %s without balance values',
     async (_, change) => {
       await expect(invoke([change])).resolves.toEqual({
         batchItemFailures: [],
@@ -402,222 +359,36 @@ describe('transaction stream events', () => {
     expect(captureException).toHaveBeenCalledExactlyOnceWith(error);
   });
 
-  it('keeps the existing balance event payload', async () => {
-    const balance = {
-      __typename: 'Balance',
-      balance: 100,
-      id: 'company-id',
-      owner: 'owner-id',
-      vat: {
-        owed: 20,
-        paid: 0,
-      },
-    };
+  it('retries from a failed publication before processing later records', async () => {
+    const changes = [
+      record('INSERT', undefined, transaction, '100'),
+      record('MODIFY', transaction, transaction, '101'),
+      record('REMOVE', transaction, undefined, '102'),
+    ];
+    mutate
+      .mockResolvedValueOnce({
+        data: {},
+      })
+      .mockRejectedValueOnce(new Error('AppSync unavailable'));
 
-    await invoke([record('MODIFY', balance, balance)]);
-
-    expect(mutate).toHaveBeenCalledExactlyOnceWith({
-      mutation: balanceMutation,
-      variables: {
-        id: 'company-id',
-        input: {
-          balance: 100,
-          vat: {
-            owed: 20,
-            paid: 0,
-          },
+    await expect(invoke(changes)).resolves.toEqual({
+      batchItemFailures: [
+        {
+          itemIdentifier: '101',
         },
-        owner: 'owner-id',
-      },
+      ],
     });
-  });
 
-  it.each(['Transaction', 'Balance'])(
-    'retries from a failed %s publication before processing later records',
-    async (typename) => {
-      const item =
-        typename === 'Transaction'
-          ? transaction
-          : {
-              __typename: 'Balance',
-              balance: 100,
-              id: 'company-id',
-              owner: 'owner-id',
-              vat: {
-                owed: 20,
-                paid: 0,
-              },
-            };
+    expect(mutate).toHaveBeenCalledTimes(2);
 
-      const changes = [
-        record('INSERT', undefined, transaction, '100'),
-        record('MODIFY', item, item, '101'),
-        record('REMOVE', transaction, undefined, '102'),
-      ];
-      mutate
-        .mockResolvedValueOnce({
-          data: {},
-        })
-        .mockRejectedValueOnce(new Error('AppSync unavailable'));
-
-      await expect(invoke(changes)).resolves.toEqual({
-        batchItemFailures: [
-          {
-            itemIdentifier: '101',
-          },
-        ],
-      });
-
-      expect(mutate).toHaveBeenCalledTimes(2);
-
-      await expect(invoke(changes.slice(1))).resolves.toEqual({
-        batchItemFailures: [],
-      });
-
-      expect(mutate).toHaveBeenCalledTimes(4);
-
-      expect(mutate.mock.calls[1]).toEqual(mutate.mock.calls[2]);
-    },
-  );
-
-  it('publishes only supported VAT fields from a valid balance', async () => {
-    await expect(
-      invoke([
-        record('MODIFY', undefined, {
-          __typename: 'Balance',
-          balance: 100,
-          id: 'company-id',
-          owner: 'owner-id',
-          vat: {
-            legacy: true,
-            owed: 20,
-            paid: 0,
-          },
-        }),
-      ]),
-    ).resolves.toEqual({
+    await expect(invoke(changes.slice(1))).resolves.toEqual({
       batchItemFailures: [],
     });
 
-    expect(mutate).toHaveBeenCalledExactlyOnceWith({
-      mutation: balanceMutation,
-      variables: {
-        id: 'company-id',
-        input: {
-          balance: 100,
-          vat: {
-            owed: 20,
-            paid: 0,
-          },
-        },
-        owner: 'owner-id',
-      },
-    });
+    expect(mutate).toHaveBeenCalledTimes(4);
+
+    expect(mutate.mock.calls[1]).toEqual(mutate.mock.calls[2]);
   });
-
-  it.each([
-    ['missing id', 'id', undefined],
-    ['empty id', 'id', ''],
-    ['invalid id', 'id', 123],
-    ['missing owner', 'owner', undefined],
-    ['empty owner', 'owner', ''],
-    ['invalid owner', 'owner', 123],
-    ['missing balance', 'balance', undefined],
-    ['null balance', 'balance', null],
-    ['invalid balance', 'balance', '100'],
-    ['missing VAT', 'vat', undefined],
-    ['null VAT', 'vat', null],
-    ['invalid VAT', 'vat', '20'],
-    [
-      'missing VAT owed',
-      'vat',
-      {
-        paid: 0,
-      },
-    ],
-    [
-      'invalid VAT owed',
-      'vat',
-      {
-        owed: '20',
-        paid: 0,
-      },
-    ],
-    [
-      'missing VAT paid',
-      'vat',
-      {
-        owed: 20,
-      },
-    ],
-    [
-      'invalid VAT paid',
-      'vat',
-      {
-        owed: 20,
-        paid: null,
-      },
-    ],
-  ] as const)(
-    'skips a balance with %s and continues publishing later records',
-    async (_, field, value) => {
-      const balance = {
-        __typename: 'Balance',
-        balance: -25.5,
-        id: 'company-id',
-        owner: 'owner-id',
-        vat: {
-          owed: 0,
-          paid: 5.1,
-        },
-      };
-
-      const malformed = {
-        ...balance,
-        [field]: value,
-      };
-
-      if (value === undefined) Reflect.deleteProperty(malformed, field);
-
-      await expect(
-        invoke([
-          record('MODIFY', balance, malformed, '100'),
-          record('INSERT', undefined, transaction, '101'),
-          record('MODIFY', undefined, balance, '102'),
-        ]),
-      ).resolves.toEqual({
-        batchItemFailures: [],
-      });
-
-      expect(mutate).toHaveBeenCalledTimes(2);
-
-      expect(mutate).toHaveBeenNthCalledWith(1, {
-        mutation,
-        variables: {
-          id: 'company-id',
-          owner: 'owner-id',
-          transactionId: 'transaction-id',
-        },
-      });
-
-      expect(mutate).toHaveBeenNthCalledWith(2, {
-        mutation: balanceMutation,
-        variables: {
-          id: 'company-id',
-          input: {
-            balance: -25.5,
-            vat: {
-              owed: 0,
-              paid: 5.1,
-            },
-          },
-          owner: 'owner-id',
-        },
-      });
-
-      expect(logger.error).toHaveBeenCalledOnce();
-    },
-  );
 
   it.each([
     ['missing transaction id', 'id', undefined],
@@ -643,21 +414,6 @@ describe('transaction stream events', () => {
         invoke([
           record('INSERT', undefined, malformed, '100'),
           record('INSERT', undefined, transaction, '101'),
-          record(
-            'MODIFY',
-            undefined,
-            {
-              __typename: 'Balance',
-              balance: 100,
-              id: 'company-id',
-              owner: 'owner-id',
-              vat: {
-                owed: 20,
-                paid: 0,
-              },
-            },
-            '102',
-          ),
         ]),
       ).resolves.toEqual({
         batchItemFailures: [],
@@ -665,29 +421,12 @@ describe('transaction stream events', () => {
 
       expect(logger.error).toHaveBeenCalledOnce();
 
-      expect(mutate).toHaveBeenCalledTimes(2);
-
-      expect(mutate).toHaveBeenNthCalledWith(1, {
+      expect(mutate).toHaveBeenCalledExactlyOnceWith({
         mutation,
         variables: {
           id: 'company-id',
           owner: 'owner-id',
           transactionId: 'transaction-id',
-        },
-      });
-
-      expect(mutate).toHaveBeenNthCalledWith(2, {
-        mutation: balanceMutation,
-        variables: {
-          id: 'company-id',
-          input: {
-            balance: 100,
-            vat: {
-              owed: 20,
-              paid: 0,
-            },
-          },
-          owner: 'owner-id',
         },
       });
     },

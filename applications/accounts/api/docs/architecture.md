@@ -13,7 +13,7 @@
 | `mapping-templates/shared/`         | Pipeline functions reused across areas (validation, `getCompany`).                                                                                                                  |
 | `serverless.yml`                    | AppSync API, resolver wiring, data sources, Lambdas, IAM and alarms.                                                                                                                |
 | `src/handlers/`                     | Lambda entry points.                                                                                                                                                                |
-| `src/shared/`                       | AppSync IAM client, beacon mutations, transaction company helper, stream filter.                                                                                                    |
+| `src/shared/`                       | AppSync IAM client, beacon mutations, balance writes (copied from `@accounts/data` until ADR 0004's follow-up), transaction company helper, stream filter.                          |
 | `src/graphql/graphql.ts`            | Types generated from the schema and the `gql` operations in `src`.                                                                                                                  |
 | `codegen.ts`                        | GraphQL Code Generator config.                                                                                                                                                      |
 
@@ -118,13 +118,12 @@ The `mapping-templates/bank/` templates and `shared/bank`, `shared/bankSettings`
 
 ## Lambdas
 
-All use Sentry (`init` + `wrapHandler`) and receive `SENTRY_ENVIRONMENT` and `SENTRY_DSN`. The two stream functions sign AppSync calls with their IAM role (`aws-appsync` client) using `AWS_REGION` and `ENDPOINT` (the API URL).
+All use Sentry (`init` + `wrapHandler`) and receive `SENTRY_ENVIRONMENT` and `SENTRY_DSN`. The stream function signs AppSync calls with their IAM role (`aws-appsync` client) using `AWS_REGION` and `ENDPOINT` (the API URL).
 
-| Function               | Trigger                                                                      | Behaviour                                                                                                                                                                                                                                                                                                                                                                                  | Env vars   |
-| ---------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------- |
-| `GetTransactionState`  | `Query.getTransactionState`                                                  | Requires an identity with an `ownerId`, else returns `UnauthorizedException`. Consistent read of the `Transaction`; returns `null` unless owner = `ownerId` and the company (derived from `data`, falling back to `companyId`) equals the requested one. Configuration-class AWS errors are captured in Sentry and returned as `ConfigurationError`; others are thrown.                    | `TABLE`    |
-| `UpdateBalance`        | Table stream, batch 10, `LATEST`, 4 retries, `ReportBatchItemFailures`, 60 s | Processes records in order. `Balance` MODIFY: calls `transactionBeacon` with `balance` and `vat` (malformed balances are logged and skipped). `Transaction` INSERT/MODIFY/REMOVE: calls `transactionChangeBeacon`; on MODIFY that changed company, owner or id it also notifies the old scope. On the first failure it returns that record's sequence number so Lambda retries from there. | `ENDPOINT` |
-| `PublishNotifications` | Table stream, `LATEST`, 4 retries                                            | For inserted `Notification` items, calls `notificationBeacon` with `id` = owner and `read: false`. Any failure fails the whole batch.                                                                                                                                                                                                                                                      | `ENDPOINT` |
+| Function              | Trigger                                                                      | Behaviour                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Env vars            |
+| --------------------- | ---------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
+| `GetTransactionState` | `Query.getTransactionState`                                                  | Requires an identity with an `ownerId`, else returns `UnauthorizedException`. Consistent read of the `Transaction`; returns `null` unless owner = `ownerId` and the company (derived from `data`, falling back to `companyId`) equals the requested one. Configuration-class AWS errors are captured in Sentry and returned as `ConfigurationError`; others are thrown.                                                                                                                                                                                                                                                                                                     | `TABLE`             |
+| `PublishStream`       | Table stream, batch 10, `LATEST`, 4 retries, `ReportBatchItemFailures`, 60 s | Processes records in order. `Transaction` changes that move a confirmed amount are applied to the company `Balance` with the same idempotent `BalanceEvent` markers as `@accounts/data`; the `Balance` is then read back consistently and sent with `transactionBeacon` (malformed or missing balances are logged and skipped). `Transaction` INSERT/MODIFY/REMOVE: calls `transactionChangeBeacon`; on MODIFY that changed company, owner or id it also notifies the old scope. Inserted `Notification` items: calls `notificationBeacon` with `id` = owner and `read: false`. On the first failure it returns that record's sequence number so Lambda retries from there. | `ENDPOINT`, `TABLE` |
 
 ## Data
 
@@ -146,7 +145,7 @@ Messages sent: Accounts queue `Delete company <id>` with attributes `id`, `owner
 
 ## Infrastructure
 
-Resources: the AppSync API `accounts-<stage>` (X-Ray on, `ERROR` logging), the three Lambdas, AppSync service roles for DynamoDB, reports, storage, queue and logging, a Lambda role for `GetTransactionState`, a shared role for the two stream functions, and two iterator-age alarms. Bundled with `serverless-esbuild`. Uses the `accounts-api-deployment-bucket` deployment bucket.
+Resources: the AppSync API `accounts-<stage>` (X-Ray on, `ERROR` logging), the two Lambdas, AppSync service roles for DynamoDB, reports, storage, queue and logging, a Lambda role for `GetTransactionState`, a role and an explicit event source mapping for the stream function, and an iterator-age alarm. Bundled with `serverless-esbuild`. Uses the `accounts-api-deployment-bucket` deployment bucket.
 
 Output: `AccountsApiUrl` (not exported). On deploy `@motech-development/serverless-outputs-env` writes `REACT_APP_APPSYNC_URL` and `REACT_APP_AWS_REGION` to `../client/.env.production`.
 
@@ -154,7 +153,7 @@ Imports:
 
 | Export                                                                                                                            | From                |
 | --------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
-| `<stage>-AccountsApplicationTable`, `…TableArn`, `…TableStreamArn`                                                                | `@accounts/data`    |
+| `<stage>-AccountsApplicationTable`, `…TableArn`, `…TableStreamArn`, `<stage>-AccountsStreamProcessingFailureBucketArn`            | `@accounts/data`    |
 | `<stage>-AccountsReportsApiEndpoint`, `<stage>-AccountsReportsApiArn`                                                             | `@accounts/reports` |
 | `<stage>-StorageUploadApiEndpoint`, `<stage>-StorageUploadApiArn`, `<stage>-DeleteFileQueueUrlPath`, `<stage>-DeleteFileQueueArn` | `@accounts/storage` |
 | `<stage>-AccountsQueueUrl`, `<stage>-AccountsQueueArn`                                                                            | `@accounts/queue`   |
@@ -165,14 +164,13 @@ IAM in plain terms:
 
 - AppSync can get, put, update, delete, query and scan the application table and its index; invoke the reports and storage APIs; send to the Accounts queue and the storage delete queue; and write its own logs.
 - `GetTransactionState` can only get table items and write its own logs.
-- The stream functions can read the table stream, call only the three beacon mutations, and write logs.
+- `PublishStream` can read the table stream, get, put and update table items, call only the three beacon mutations, write to the stream failure bucket and write logs.
 
 ## Failure handling and observability
 
-- Sentry captures unhandled Lambda errors, `UpdateBalance` record failures and `GetTransactionState` configuration errors.
-- `UpdateBalance` checkpoints by sequence number, so successful records before a failure are not republished. After 4 retries the batch is dropped; there is no on-failure destination.
-- `PublishNotifications` retries the whole batch up to 4 times, then drops it.
-- Alarms `accounts-<stage>-update-balance-iterator-age` and `accounts-<stage>-publish-notifications-iterator-age` fire when stream lag reaches 15 minutes and invoke `accounts-data-<stage>-ReportSchedulingAlarm`, which reports to Sentry.
+- Sentry captures unhandled Lambda errors, `PublishStream` record failures and `GetTransactionState` configuration errors.
+- `PublishStream` checkpoints by sequence number, so successful records before a failure are not republished. After 4 retries the batch goes to `@accounts/data`'s stream failure bucket and stream-processing dead-letter queue (see ADRs [0002](../../docs/adr/0002-retain-exhausted-stream-batches-for-balance-and-attachment-processing.md) and [0004](../../docs/adr/0004-read-the-application-table-stream-with-two-consumers.md)).
+- Alarm `accounts-<stage>-publish-stream-iterator-age` fires when stream lag reaches 15 minutes and invokes `accounts-data-<stage>-ReportSchedulingAlarm`, which reports to Sentry.
 - AppSync logs errors only; Lambda log retention is 30 days.
 
 ## Testing
@@ -180,7 +178,7 @@ IAM in plain terms:
 Vitest; Lambda tests are in `src/handlers/__tests__/`. `src/setupTests.ts` mocks `@motech-development/node-logger` and replaces `AWSAppSyncClient.prototype.mutate` with a spy; DynamoDB is mocked with `aws-sdk-client-mock`. VTL templates have no automated tests. Files run serially.
 
 ```sh
-yarn workspace @accounts/api vitest run src/handlers/__tests__/update-balance.test.ts
+yarn workspace @accounts/api vitest run src/handlers/__tests__/publish-stream.test.ts
 ```
 
 To check the resolved Serverless configuration without deploying, use placeholder values:

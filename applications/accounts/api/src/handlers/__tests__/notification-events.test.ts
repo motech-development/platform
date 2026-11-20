@@ -3,9 +3,10 @@ import { AWSAppSyncClient } from 'aws-appsync';
 import type { Callback, Context, DynamoDBStreamEvent } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
 import type { Mock } from 'vitest';
-import { handler, mutation } from '../publish-notifications';
+import { mutation } from '../../shared/publish-notification';
+import { handler } from '../publish-stream';
 
-describe('publish-notifications', () => {
+describe('notification stream events', () => {
   let callback: Callback;
   let context: Context;
   let event: DynamoDBStreamEvent;
@@ -51,32 +52,6 @@ describe('publish-notifications', () => {
     };
   });
 
-  it('should throw an error if no region is set', async () => {
-    await expect(handler(event, context, callback)).rejects.toThrow(
-      'No region set',
-    );
-  });
-
-  describe('when region is set', () => {
-    beforeEach(() => {
-      env = {
-        ...process.env,
-      };
-
-      process.env.AWS_REGION = 'eu-west-2';
-    });
-
-    afterEach(() => {
-      process.env = env;
-    });
-
-    it('should throw an error if no endpoint is set', async () => {
-      await expect(handler(event, context, callback)).rejects.toThrow(
-        'No endpoint set',
-      );
-    });
-  });
-
   describe('when region, endpoint and credentials are set', () => {
     beforeEach(() => {
       env = {
@@ -85,6 +60,7 @@ describe('publish-notifications', () => {
 
       process.env.AWS_REGION = 'eu-west-2';
       process.env.ENDPOINT = 'https://my.api/graphql';
+      process.env.TABLE = 'app-table';
     });
 
     afterEach(() => {
@@ -174,7 +150,7 @@ describe('publish-notifications', () => {
       expect(AWSAppSyncClient.prototype.mutate).not.toHaveBeenCalled();
     });
 
-    it('should log and throw the error', async () => {
+    it('should log and throw the error when the record has no sequence number', async () => {
       (AWSAppSyncClient.prototype.mutate as Mock).mockRejectedValueOnce(
         new Error('Something has gone wrong'),
       );
@@ -183,7 +159,12 @@ describe('publish-notifications', () => {
         'Something has gone wrong',
       );
 
-      expect(logger.error).toHaveBeenCalledWith('Something has gone wrong');
+      expect(logger.error).toHaveBeenCalledWith(
+        'Failed to publish stream record',
+        {
+          error: new Error('Something has gone wrong'),
+        },
+      );
     });
   });
 });
