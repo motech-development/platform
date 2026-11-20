@@ -77,7 +77,7 @@ Invoked directly by CloudWatch alarms whose names start with `accounts-<stage>-`
 
 ## Data
 
-**Application table** `accounts-<stage>-application`: on-demand, partition key `id`, sort key `__typename`, GSI `__typename-data-index` (`__typename` + `data`, all attributes), stream `NEW_AND_OLD_IMAGES`, point-in-time recovery, TTL on `ttl`.
+**Application table** `accounts-<stage>-application`: on-demand, partition key `id`, sort key `__typename`, GSI `__typename-data-index` (`__typename` + `data`, all attributes), stream `NEW_AND_OLD_IMAGES`, point-in-time recovery, TTL on `ttl`. Develop and production retain the table if it is removed from the stack or replaced; previews delete it.
 
 Item types this workspace reads or writes:
 

@@ -29,6 +29,10 @@ custom:
   downloads: ${self:custom.prefix}-downloads
   uploads: ${self:custom.prefix}-uploads
   quarantineRetentionDays: 1
+  dataDeletionPolicy: ${self:custom.dataDeletionPolicies.${self:provider.stage}, 'Delete'}
+  dataDeletionPolicies:
+    develop: Retain
+    production: Retain
 
   prune:
     automatic: true
@@ -157,6 +161,8 @@ resources:
 
     DownloadBucket:
       Type: AWS::S3::Bucket
+      DeletionPolicy: ${self:custom.dataDeletionPolicy}
+      UpdateReplacePolicy: ${self:custom.dataDeletionPolicy}
       Properties:
         BucketName: ${self:custom.downloads}
         LifecycleConfiguration:

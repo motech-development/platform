@@ -22,6 +22,10 @@ plugins:
 
 custom:
   prefix: accounts-${self:provider.stage}
+  dataDeletionPolicy: ${self:custom.dataDeletionPolicies.${self:provider.stage}, 'Delete'}
+  dataDeletionPolicies:
+    develop: Retain
+    production: Retain
 
   prune:
     automatic: true
@@ -120,6 +124,8 @@ resources:
   Resources:
     ApplicationTable:
       Type: AWS::DynamoDB::Table
+      DeletionPolicy: ${self:custom.dataDeletionPolicy}
+      UpdateReplacePolicy: ${self:custom.dataDeletionPolicy}
       Properties:
         TableName: ${self:custom.prefix}-application
         AttributeDefinitions:
