@@ -105,7 +105,7 @@ describe('failure-notification', () => {
         await handler(event, context, callback);
 
         expect(sqs).toReceiveCommandWith(SendMessageCommand, {
-          DelaySeconds: 600,
+          DelaySeconds: 60,
           MessageAttributes: {
             key: {
               DataType: 'String',
@@ -198,7 +198,7 @@ describe('failure-notification', () => {
         await handler(event, context, callback);
 
         expect(sqs).toReceiveCommandWith(SendMessageCommand, {
-          DelaySeconds: 600,
+          DelaySeconds: 60,
           MessageAttributes: {
             key: {
               DataType: 'String',

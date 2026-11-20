@@ -69,7 +69,7 @@ Parses the publication command (throws on invalid shape), reads the transaction 
 
 ### `ClearAttachments`
 
-Processes each anti-virus failure message independently. Ignores messages whose `source` is not the storage upload bucket (`BUCKET`) or whose `key` or `metadata` attribute has no value; a message missing one of the three attributes entirely fails and is returned as a batch item failure. Splits the decoded key into `owner/companyId/file`, queries `__typename-data-index` for items of the metadata `typename` whose `data` begins with `<owner>:<companyId>` and whose `attachment` equals `<companyId>/<file>` (all pages), removes `attachment` from each match and writes a `VIRUS_SCAN_FAIL` notification for its owner. Failed messages are returned as batch item failures and captured in Sentry.
+Processes each anti-virus failure message independently. Ignores messages whose `source` is not the storage upload bucket (`BUCKET`) or whose `key` or `metadata` attribute has no value; a message missing one of the three attributes entirely fails and is returned as a batch item failure. Splits the decoded key into `owner/companyId/file`, queries `__typename-data-index` for items of the metadata `typename` whose `data` begins with `<owner>:<companyId>` and whose `attachment` equals `<companyId>/<file>` (all pages), removes `attachment` from each match and writes a `VIRUS_SCAN_FAIL` notification for its owner. When nothing matches and the message was sent less than 10 minutes ago, returns it as a batch item failure without reporting it, so the queue redelivers it once the transaction may have been saved. Failed messages are returned as batch item failures and captured in Sentry.
 
 ### `ReportSchedulingAlarm`
 
@@ -112,15 +112,15 @@ IAM in plain terms:
 
 See [ADR 0002](../../docs/adr/0002-retain-exhausted-stream-batches-for-balance-and-attachment-processing.md) and [ADR 0003](../../docs/adr/0003-report-dead-letter-and-stream-lag-alarms-through-one-reporter.md).
 
-| Boundary                      | Retry                            | After exhaustion                                           | Alarm (`accounts-<stage>-…`)                                                          |
-| ----------------------------- | -------------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| `Transactions` stream         | 4 retries                        | Stream failure bucket, then stream-processing DLQ          | `stream-processing-dlq-messages-visible`, `transactions-iterator-age`                 |
-| `Attachments` stream          | 4 retries                        | Stream failure bucket, then stream-processing DLQ          | same DLQ alarm, `attachments-iterator-age`                                            |
-| `Typeahead` stream            | 4 retries                        | Dropped (no on-failure destination)                        | `typeahead-iterator-age`                                                              |
-| `ScheduleTransactions` stream | 4 retries, batch size 1          | Schedule failure bucket, then schedule-synchronisation DLQ | `schedule-synchronisation-dlq-messages-visible`, `schedule-transactions-iterator-age` |
-| Scheduler delivery            | 185 attempts in 24 h             | Scheduler delivery DLQ                                     | `scheduler-delivery-dlq-messages-visible`                                             |
-| Publication queue             | 5 receives                       | Publication processing DLQ                                 | `publication-processing-dlq-messages-visible`                                         |
-| Anti-virus failure queue      | 5 receives (owned by anti-virus) | Anti-virus failure DLQ                                     | `anti-virus-failure-dlq-messages-visible`                                             |
+| Boundary                      | Retry                             | After exhaustion                                           | Alarm (`accounts-<stage>-…`)                                                          |
+| ----------------------------- | --------------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `Transactions` stream         | 4 retries                         | Stream failure bucket, then stream-processing DLQ          | `stream-processing-dlq-messages-visible`, `transactions-iterator-age`                 |
+| `Attachments` stream          | 4 retries                         | Stream failure bucket, then stream-processing DLQ          | same DLQ alarm, `attachments-iterator-age`                                            |
+| `Typeahead` stream            | 4 retries                         | Dropped (no on-failure destination)                        | `typeahead-iterator-age`                                                              |
+| `ScheduleTransactions` stream | 4 retries, batch size 1           | Schedule failure bucket, then schedule-synchronisation DLQ | `schedule-synchronisation-dlq-messages-visible`, `schedule-transactions-iterator-age` |
+| Scheduler delivery            | 185 attempts in 24 h              | Scheduler delivery DLQ                                     | `scheduler-delivery-dlq-messages-visible`                                             |
+| Publication queue             | 5 receives                        | Publication processing DLQ                                 | `publication-processing-dlq-messages-visible`                                         |
+| Anti-virus failure queue      | 15 receives (owned by anti-virus) | Anti-virus failure DLQ                                     | `anti-virus-failure-dlq-messages-visible`                                             |
 
 DLQ alarms fire on one visible message; iterator-age alarms fire at 15 minutes (900000 ms). All invoke `ReportSchedulingAlarm`. Balance writes are idempotent by stream event id, so retried batches do not double-count. Log retention is 30 days.
 

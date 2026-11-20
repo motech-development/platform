@@ -223,9 +223,10 @@ resources:
       Type: AWS::SQS::Queue
       Properties:
         QueueName: ${self:custom.prefix}-failure-queue
+        VisibilityTimeout: 60
         RedrivePolicy:
           deadLetterTargetArn: !GetAtt AntiVirusFailureDeadLetterQueue.Arn
-          maxReceiveCount: 5
+          maxReceiveCount: 15
 
     AntiVirusDeadLetterQueue:
       Type: AWS::SQS::Queue

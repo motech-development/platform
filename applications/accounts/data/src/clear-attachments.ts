@@ -15,6 +15,8 @@ init({
 
 const documentClient = new DynamoDBClient({});
 
+const retryWindow = 600000;
+
 export const handler: SQSHandler = wrapHandler(async (event) => {
   const { BUCKET, TABLE } = process.env;
 
@@ -34,6 +36,11 @@ export const handler: SQSHandler = wrapHandler(async (event) => {
         ]);
 
         await Promise.all(updates);
+
+        return (
+          updates.length === 0 &&
+          Date.now() - Number(record.attributes.SentTimestamp) < retryWindow
+        );
       } catch (e) {
         logger.error('An error occurred', e);
 
@@ -44,9 +51,8 @@ export const handler: SQSHandler = wrapHandler(async (event) => {
 
   return {
     batchItemFailures: results.flatMap((result, index) => {
-      if (result.status === 'fulfilled') return [];
-
-      captureException(result.reason);
+      if (result.status === 'rejected') captureException(result.reason);
+      else if (!result.value) return [];
 
       return [
         {
