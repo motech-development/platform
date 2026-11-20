@@ -2,7 +2,7 @@ import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, GetCommand } from '@aws-sdk/lib-dynamodb';
 import { captureException, init, wrapHandler } from '@sentry/aws-serverless';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
-import type { AppSyncResolverHandler } from 'aws-lambda';
+import type { AppSyncIdentity, AppSyncResolverHandler } from 'aws-lambda';
 import type { QueryGetTransactionStateArgs } from '../graphql/graphql';
 import transactionCompanyId from '../shared/transaction-company-id';
 
@@ -18,17 +18,29 @@ export type ITransactionStateArguments = QueryGetTransactionStateArgs;
 
 const documentClient = DynamoDBDocumentClient.from(new DynamoDBClient({}));
 
+const ownerIdClaim = 'https://motechdevelopment.co.uk/owner_id';
+
+const ownerIdOf = (identity: AppSyncIdentity) => {
+  if (!identity || !('sub' in identity)) {
+    return undefined;
+  }
+
+  const claims = identity.claims as Record<string, unknown> | undefined;
+  const claim = claims?.[ownerIdClaim];
+  const ownerId: unknown =
+    typeof claim === 'string' && claim ? claim : identity.sub;
+
+  return typeof ownerId === 'string' && ownerId ? ownerId : undefined;
+};
+
 export const handler: AppSyncResolverHandler<
   ITransactionStateArguments,
   Record<string, unknown> | null
 > = wrapHandler(
   async ({ arguments: { companyId, transactionId }, identity }) => {
-    if (
-      !identity ||
-      !('sub' in identity) ||
-      typeof identity.sub !== 'string' ||
-      !identity.sub
-    ) {
+    const ownerId = ownerIdOf(identity);
+
+    if (!ownerId) {
       return {
         errorMessage: 'Unauthorized',
         errorType: 'UnauthorizedException',
@@ -56,7 +68,7 @@ export const handler: AppSyncResolverHandler<
       const { Item } = await documentClient.send(command);
 
       // Deleted, moved and inaccessible transactions have the same nullable result.
-      if (Item?.owner !== identity.sub) {
+      if (Item?.owner !== ownerId) {
         return null;
       }
 

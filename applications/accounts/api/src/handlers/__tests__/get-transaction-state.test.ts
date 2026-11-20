@@ -98,6 +98,19 @@ describe('get-transaction-state', () => {
     });
   });
 
+  it('authorizes the owner ID claim in preference to sub', async () => {
+    const claims = (ownerId: string) => ({
+      claims: {
+        'https://motechdevelopment.co.uk/owner_id': ownerId,
+      },
+      sub: 'owner-id',
+    });
+
+    await expect(invoke(claims('owner-id'))).resolves.toEqual(transaction);
+
+    await expect(invoke(claims('another-owner'))).resolves.toBeNull();
+  });
+
   it('reads updated state again when a notification is replayed', async () => {
     ddb
       .on(GetCommand)

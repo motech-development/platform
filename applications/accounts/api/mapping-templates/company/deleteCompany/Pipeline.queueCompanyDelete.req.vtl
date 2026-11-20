@@ -1,6 +1,6 @@
 #set($endpoint = "${queue}")
 #set($id = $ctx.arguments.id)
-#set($owner = $ctx.identity.sub)
+#set($owner = ${ownerId})
 
 {
   "version": "2018-05-29",

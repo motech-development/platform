@@ -2,8 +2,9 @@
   $util.appendError($ctx.error.message, $ctx.error.type, null, $ctx.result.cancellationReasons)
 #end
 
-#if($ctx.identity.sub == $ctx.arguments.id)
-  #set($owner = $ctx.identity.sub)
+#set($owner = ${ownerId})
+
+#if($owner == $ctx.arguments.id)
   #set($ids = $ctx.args.input.ids)
   #set($items = [])
 

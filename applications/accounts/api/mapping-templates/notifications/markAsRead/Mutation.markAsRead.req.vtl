@@ -1,6 +1,6 @@
 #set($table = "${appTable}")
 #set($ttl = $util.time.nowEpochSeconds())
-#set($owner = $ctx.identity.sub)
+#set($owner = ${ownerId})
 #set($ids = $ctx.args.input.ids)
 #set($typename = "Notification")
 #set($transactItems = [])

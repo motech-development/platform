@@ -1,4 +1,6 @@
-#if($util.isNullOrEmpty($ctx.identity.sub) || $ctx.identity.sub != $ctx.arguments.owner)
+#set($owner = ${ownerId})
+
+#if($util.isNullOrEmpty($owner) || $owner != $ctx.arguments.owner)
   $util.unauthorized()
 #end
 

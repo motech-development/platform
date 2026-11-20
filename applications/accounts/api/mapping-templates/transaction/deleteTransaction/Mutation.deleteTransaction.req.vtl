@@ -1,6 +1,6 @@
 #set($id = $ctx.args.id)
 #set($typename = "Transaction")
-#set($owner = $ctx.identity.sub)
+#set($owner = ${ownerId})
 
 {
   "version": "2017-02-28",
