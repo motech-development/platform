@@ -77,7 +77,7 @@ Invoked directly by CloudWatch alarms whose names start with `accounts-<stage>-`
 
 ## Data
 
-**Application table** `accounts-<stage>-application`: on-demand, partition key `id`, sort key `__typename`, GSI `__typename-data-index` (`__typename` + `data`, all attributes), stream `NEW_AND_OLD_IMAGES`, point-in-time recovery, TTL on `ttl`. Develop and production retain the table if it is removed from the stack or replaced; previews delete it. A retained table keeps its name, so a removed develop or production stack can't be redeployed until the table is imported back into it with a CloudFormation import change set.
+**Application table** `accounts-<stage>-application`: on-demand, partition key `id`, sort key `__typename`, GSI `__typename-data-index` (`__typename` + `data`, all attributes), stream `NEW_AND_OLD_IMAGES`, point-in-time recovery, TTL on `ttl`. Develop and production retain the table if it is removed from the stack or replaced; previews delete it. A retained table keeps its name, so a removed develop or production stack can't be redeployed directly. First create `accounts-<stage>-data` with a CloudFormation import change set whose template contains only the table, then deploy normally to add the rest.
 
 Item types this workspace reads or writes:
 
