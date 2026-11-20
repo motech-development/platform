@@ -59,7 +59,7 @@ For each record with a `key` attribute it calls `deleteStagedFile(UPLOAD_BUCKET,
 
 ## Infrastructure
 
-Develop and production retain the download bucket if it is removed from the stack or replaced; previews delete it. A retained bucket keeps its name, so a removed develop or production stack can't be redeployed until the bucket is imported back into it with a CloudFormation import change set. The upload bucket's objects expire after a day, so it is not retained.
+Develop and production retain the download bucket if it is removed from the stack or replaced; previews delete it. A retained bucket keeps its name, so a removed develop or production stack can't be redeployed directly. First create `accounts-<stage>-storage` with a CloudFormation import change set whose template contains only the bucket, then deploy normally to add the rest. The upload bucket's objects expire after a day, so it is not retained.
 
 Resources: both buckets, the delete queue and its DLQ (after 5 receives, 14-day retention), a DLQ alarm, the REST API created by the HTTP events, and one Lambda role. Bundled with `serverless-esbuild` (Node 24, `@sentry/profiling-node` external). Uses the `accounts-storage-deployment-bucket` deployment bucket.
 
