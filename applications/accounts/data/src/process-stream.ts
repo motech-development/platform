@@ -15,8 +15,17 @@ init({
 });
 
 export const handler: DynamoDBStreamHandler = wrapHandler(async (event) => {
-  await updateBalances(event);
-  await synchroniseSchedules(event);
-  await updateTypeahead(event);
-  await clearDeletedAttachments(event);
+  const results = await Promise.allSettled([
+    updateBalances(event),
+    synchroniseSchedules(event),
+    updateTypeahead(event),
+    clearDeletedAttachments(event),
+  ]);
+  const failure = results.find(
+    (result): result is PromiseRejectedResult => result.status === 'rejected',
+  );
+
+  if (failure) {
+    throw failure.reason;
+  }
 });

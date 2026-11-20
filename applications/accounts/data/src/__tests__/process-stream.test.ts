@@ -127,4 +127,14 @@ describe('process-stream', () => {
 
     await expect(handler(event, context, vi.fn())).rejects.toThrow(error);
   });
+
+  it('clears deleted attachments when schedule synchronisation fails', async () => {
+    const error = new Error('Scheduler unavailable');
+
+    scheduler.on(DeleteScheduleCommand).rejects(error);
+
+    await expect(handler(event, context, vi.fn())).rejects.toThrow(error);
+
+    expect(sqs).toReceiveCommandTimes(SendMessageBatchCommand, 1);
+  });
 });
