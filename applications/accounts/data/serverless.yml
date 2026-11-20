@@ -597,7 +597,11 @@ resources:
               Statement:
                 - Effect: Allow
                   Action:
+                    - dynamodb:DescribeStream
                     - dynamodb:GetItem
+                    - dynamodb:GetRecords
+                    - dynamodb:GetShardIterator
+                    - dynamodb:ListStreams
                     - dynamodb:PutItem
                     - dynamodb:Query
                     - dynamodb:UpdateItem
@@ -606,7 +610,16 @@ resources:
                     - !Join
                       - ''
                       - - !GetAtt ApplicationTable.Arn
+                        - '/stream/*'
+                    - !Join
+                      - ''
+                      - - !GetAtt ApplicationTable.Arn
                         - '/index/__typename-data-index'
+                - Effect: Allow
+                  Action:
+                    - sqs:SendMessage
+                  Resource:
+                    - !ImportValue ${self:provider.stage}-DeleteFileQueueArn
                 - Effect: Allow
                   Action:
                     - sqs:DeleteMessage
@@ -614,6 +627,19 @@ resources:
                     - sqs:ReceiveMessage
                   Resource:
                     - !ImportValue ${self:provider.stage}-AntiVirusFailureQueueArn
+                - Effect: Allow
+                  Action:
+                    - s3:ListBucket
+                  Resource:
+                    - !GetAtt StreamProcessingFailureBucket.Arn
+                - Effect: Allow
+                  Action:
+                    - s3:PutObject
+                  Resource:
+                    - !Join
+                      - ''
+                      - - !GetAtt StreamProcessingFailureBucket.Arn
+                        - '/*'
                 - Effect: Allow
                   Action:
                     - logs:CreateLogGroup
