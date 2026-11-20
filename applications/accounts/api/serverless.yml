@@ -147,6 +147,11 @@ appSync:
       kind: UNIT
       request: mapping-templates/notifications/notificationBeacon/Mutation.notificationBeacon.req.vtl
       response: mapping-templates/notifications/notificationBeacon/Mutation.notificationBeacon.res.vtl
+    Subscription.onNotification:
+      dataSource: Resolver
+      kind: UNIT
+      request: mapping-templates/notifications/onNotification/Subscription.onNotification.req.vtl
+      response: mapping-templates/notifications/onNotification/Subscription.onNotification.res.vtl
     Mutation.createReport:
       kind: PIPELINE
       functions:
@@ -216,6 +221,11 @@ appSync:
       kind: UNIT
       request: mapping-templates/transaction/onTransactionChange/Subscription.onTransactionChange.req.vtl
       response: mapping-templates/transaction/onTransactionChange/Subscription.onTransactionChange.res.vtl
+    Subscription.onTransaction:
+      dataSource: Resolver
+      kind: UNIT
+      request: mapping-templates/transaction/onTransaction/Subscription.onTransaction.req.vtl
+      response: mapping-templates/transaction/onTransaction/Subscription.onTransaction.res.vtl
     Mutation.deleteFile:
       kind: PIPELINE
       functions:
