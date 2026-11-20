@@ -122,6 +122,24 @@ describe('publish-notification', () => {
       );
     });
 
+    it('should send a notification without a company', async () => {
+      delete event.payload.companyId;
+
+      await handler(event, context, callback);
+
+      expect(fetch).toHaveBeenCalledWith(
+        'https://api.com/production/api/v1/notifications',
+        expect.objectContaining({
+          body: JSON.stringify({
+            message: 'REPORT_READY_TO_DOWNLOAD',
+            owner: 'OWNER-ID',
+            payload:
+              'createdAt=2021-04-11T19%3A45%3A00.000Z&downloadUrl=https%3A%2F%2Fdownload.url%2Freport.zip&id=test-uuid&ttl=1618256700',
+          }),
+        }),
+      );
+    });
+
     it('should throw an error if no AWS credentials are set', async () => {
       delete process.env.AWS_ACCESS_KEY_ID;
 
