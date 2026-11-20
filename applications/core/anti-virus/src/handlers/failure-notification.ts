@@ -74,7 +74,7 @@ export const handler: Handler<IEvent> = wrapHandler(async (event) => {
     ...(Metadata && Metadata.id
       ? {}
       : {
-          DelaySeconds: 600,
+          DelaySeconds: 60,
         }),
     MessageAttributes: {
       ...(Metadata

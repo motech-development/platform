@@ -40,6 +40,9 @@ describe('clear-attachments', () => {
     event = {
       Records: [
         {
+          attributes: {
+            SentTimestamp: '0',
+          },
           messageAttributes: {
             key: {
               stringValue: 'path/to/file-1.pdf',
@@ -57,6 +60,9 @@ describe('clear-attachments', () => {
           messageId: 'message-1',
         },
         {
+          attributes: {
+            SentTimestamp: '0',
+          },
           messageAttributes: {
             key: {
               stringValue: 'path/to/file-2.pdf',
@@ -74,6 +80,9 @@ describe('clear-attachments', () => {
           messageId: 'message-2',
         },
         {
+          attributes: {
+            SentTimestamp: '0',
+          },
           messageAttributes: {
             key: {
               stringValue: 'path/to/file-3.pdf',
@@ -160,6 +169,39 @@ describe('clear-attachments', () => {
 
         expect(logger.error).toHaveBeenCalledWith('An error occurred', error);
         expect(captureException).toHaveBeenCalledWith(error);
+      });
+    });
+
+    describe('when no saved transaction references the attachment', () => {
+      beforeEach(() => {
+        vi.clearAllMocks();
+
+        ddb.on(QueryCommand).resolves({
+          Items: [],
+        });
+      });
+
+      it('should retry the record within ten minutes of it being sent', async () => {
+        event.Records[0].attributes.SentTimestamp = `${Date.now() - 60000}`;
+
+        await expect(handler(event, context, callback)).resolves.toEqual({
+          batchItemFailures: [
+            {
+              itemIdentifier: 'message-1',
+            },
+          ],
+        });
+
+        expect(ddb).toReceiveCommandTimes(UpdateCommand, 0);
+        expect(captureException).not.toHaveBeenCalled();
+      });
+
+      it('should stop retrying the record after ten minutes', async () => {
+        event.Records[0].attributes.SentTimestamp = `${Date.now() - 600000}`;
+
+        await expect(handler(event, context, callback)).resolves.toEqual({
+          batchItemFailures: [],
+        });
       });
     });
 
