@@ -17,6 +17,7 @@ init({
 const schema = object({
   owner: string().required(),
   payload: object({
+    companyId: string().required(),
     createdAt: string().required(),
     downloadUrl: string().required(),
     id: string().required(),

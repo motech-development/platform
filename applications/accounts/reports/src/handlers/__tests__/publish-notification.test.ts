@@ -23,6 +23,7 @@ describe('publish-notification', () => {
     event = {
       owner: 'OWNER-ID',
       payload: {
+        companyId: 'COMPANY-ID',
         createdAt: '2021-04-11T19:45:00.000Z',
         downloadUrl: 'https://download.url/report.zip',
         id: 'test-uuid',
@@ -111,7 +112,7 @@ describe('publish-notification', () => {
             message: 'REPORT_READY_TO_DOWNLOAD',
             owner: 'OWNER-ID',
             payload:
-              'createdAt=2021-04-11T19%3A45%3A00.000Z&downloadUrl=https%3A%2F%2Fdownload.url%2Freport.zip&id=test-uuid&ttl=1618256700',
+              'companyId=COMPANY-ID&createdAt=2021-04-11T19%3A45%3A00.000Z&downloadUrl=https%3A%2F%2Fdownload.url%2Freport.zip&id=test-uuid&ttl=1618256700',
           }),
           headers: {
             'Content-Type': 'application/json',

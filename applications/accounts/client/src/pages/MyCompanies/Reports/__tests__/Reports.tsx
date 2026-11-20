@@ -91,7 +91,7 @@ describe('Reports', () => {
                 message: 'Notification_2',
                 owner: 'user-id',
                 payload:
-                  'createdAt=2021-04-11T19%3A45%3A00.000Z&downloadUrl=https%3A%2F%2Fdownload.url%2Freport.zip&id=test-uuid&ttl=1618256700',
+                  'companyId=company-id&createdAt=2021-04-11T19%3A45%3A00.000Z&downloadUrl=https%3A%2F%2Fdownload.url%2Freport.zip&id=test-uuid&ttl=1618256700',
                 read: false,
               },
             },
@@ -244,7 +244,20 @@ describe('Reports', () => {
     });
   });
 
-  describe('when a duplicate report is sent', () => {
+  describe.each([
+    [
+      'a duplicate report',
+      'companyId=company-id&createdAt=2021-04-11T19%3A45%3A00.000Z&downloadUrl=https%3A%2F%2Fdownload.url%2Freport.zip&id=report-2&ttl=1618256700',
+    ],
+    [
+      "another company's report",
+      'companyId=other-company-id&createdAt=2021-04-11T19%3A45%3A00.000Z&downloadUrl=https%3A%2F%2Fdownload.url%2Freport.zip&id=report-3&ttl=1618256700',
+    ],
+    [
+      'a report without a company',
+      'createdAt=2021-04-11T19%3A45%3A00.000Z&downloadUrl=https%3A%2F%2Fdownload.url%2Freport.zip&id=report-3&ttl=1618256700',
+    ],
+  ])('when %s is sent', (_, payload) => {
     beforeEach(async () => {
       cache = new InMemoryCache({
         addTypename: true,
@@ -299,8 +312,7 @@ describe('Reports', () => {
                 id: 'notification-2',
                 message: 'Notification_2',
                 owner: 'user-id',
-                payload:
-                  'createdAt=2021-04-11T19%3A45%3A00.000Z&downloadUrl=https%3A%2F%2Fdownload.url%2Freport.zip&id=report-2&ttl=1618256700',
+                payload,
                 read: false,
               },
             },
