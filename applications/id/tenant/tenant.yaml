@@ -284,10 +284,21 @@ actions:
     supported_triggers:
       - id: pre-user-registration
         version: v2
+  - name: Set owner ID
+    code: ./src/actions/set-owner-id.js
+    runtime: node22
+    dependencies: []
+    secrets: []
+    deployed: true
+    supported_triggers:
+      - id: post-login
+        version: v3
 triggers:
   post-login:
     - action_name: Force email verification
       display_name: Force email verification
+    - action_name: Set owner ID
+      display_name: Set owner ID
   pre-user-registration:
     - action_name: Set email verification sent date
       display_name: Set email verification sent date

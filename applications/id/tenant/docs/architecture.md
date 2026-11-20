@@ -18,7 +18,7 @@
 
 | Section                                            | What it holds                                                                                                                  |
 | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| `actions`, `triggers`                              | The two Actions below and their bindings to `post-login` and `pre-user-registration`.                                          |
+| `actions`, `triggers`                              | The Actions below and their bindings to `post-login` and `pre-user-registration`.                                              |
 | `pages`                                            | Custom `login` and `password_reset` pages, read from `../client/build/`.                                                       |
 | `resourceServers`                                  | The Accounts API.                                                                                                              |
 | `clients`                                          | The Accounts app, the default app, the Deploy CLI extension and `Login Actions`.                                               |
@@ -32,12 +32,13 @@
 
 ## Actions
 
-Both Actions run on Node 22.
+All Actions run on Node 22.
 
 | Action                           | Trigger                 | Behaviour                                                                                                                                                                                                                                                                                                                                               |
 | -------------------------------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Force email verification         | `post-login` (first)    | If the email is verified, removes `user_metadata.emailVerificationSentDate` when present and continues. Otherwise it resends the verification email and records the time, unless one was sent in the last 24 hours, then denies the login with "Please verify your email before logging in." A failed resend is logged and does not change the outcome. |
 | Set email verification sent date | `pre-user-registration` | Sets `user_metadata.emailVerificationSentDate` to now, so the first login does not immediately resend the verification email Auth0 sends at sign-up.                                                                                                                                                                                                    |
+| Set owner ID                     | `post-login` (second)   | Sets the `https://motechdevelopment.co.uk/owner_id` claim on the access token to the user's Auth0 user ID. The Accounts API uses it as the Accounts Owner ID; it equals `sub` today, so the Owner ID can stay stable if the identity provider changes.                                                                                                  |
 
 Actions cannot send verification emails themselves, so Force email verification calls the Management API to resend one. It authenticates as the `Login Actions` application, whose credentials reach it as Action secrets from the `AUTH0_ACTIONS_CLIENT_ID` and `AUTH0_ACTIONS_CLIENT_SECRET` keywords. That application is granted only `update:users`.
 
