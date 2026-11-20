@@ -1,4 +1,4 @@
-#if($ctx.identity.sub == $ctx.arguments.input.id)
+#if(${ownerId} == $ctx.arguments.input.id)
   {
     "authorisationUrl": "$ctx.arguments.input.authorisationUrl",
     "status": "COMPLETE"

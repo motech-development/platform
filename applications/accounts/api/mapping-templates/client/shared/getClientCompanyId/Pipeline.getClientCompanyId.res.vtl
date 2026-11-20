@@ -2,7 +2,7 @@
   $utils.error($ctx.error.message, $ctx.error.type)
 #end
 
-#if($context.result.owner == $ctx.identity.sub)
+#if($context.result.owner == ${ownerId})
   $util.qr($ctx.stash.put("companyId", $context.result.id))
 
   $utils.toJson($context.prev.result)

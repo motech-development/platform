@@ -1,6 +1,6 @@
 #set($endpoint = "${deleteFileQueue}")
 #set($path = $ctx.arguments.path)
-#set($owner = $ctx.identity.sub)
+#set($owner = ${ownerId})
 #set($key = "$owner/$path")
 #set($encodedKey = $util.urlEncode($key))
 

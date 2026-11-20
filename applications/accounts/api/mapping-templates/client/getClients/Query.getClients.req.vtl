@@ -1,4 +1,4 @@
-#set($owner = $ctx.identity.sub)
+#set($owner = ${ownerId})
 #set($id = $ctx.args.id)
 #set($data = "$owner:$id")
 #set($typename = "Client")

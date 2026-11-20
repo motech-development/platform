@@ -1,7 +1,7 @@
 #set($id = $util.autoId())
 #set($table = "${appTable}")
 #set($createdAt = $util.time.nowISO8601())
-#set($owner = $ctx.identity.sub)
+#set($owner = ${ownerId})
 #set($defaultGroups = ["Admin"])
 #set($currency = "GBP")
 #set($items = {})

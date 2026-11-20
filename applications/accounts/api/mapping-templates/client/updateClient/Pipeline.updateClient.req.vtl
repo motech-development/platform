@@ -2,7 +2,7 @@
 #set($companyId = $ctx.stash.companyId)
 #set($name = $ctx.args.input.name)
 #set($typename = "Client")
-#set($owner = $ctx.identity.sub)
+#set($owner = ${ownerId})
 #set($data = "$owner:$companyId:$name")
 
 #set($input = $ctx.args.input.remove("id"))

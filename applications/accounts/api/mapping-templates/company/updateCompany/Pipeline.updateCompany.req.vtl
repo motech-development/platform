@@ -1,6 +1,6 @@
 #set($id = $ctx.args.input.id)
 #set($typename = "Company")
-#set($owner = $ctx.identity.sub)
+#set($owner = ${ownerId})
 #set($name = $ctx.args.input.name)
 #set($data = "$owner:$name")
 

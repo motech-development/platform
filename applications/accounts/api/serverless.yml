@@ -391,6 +391,7 @@ appSync:
   substitutions:
     appTable: !ImportValue ${self:provider.stage}-AccountsApplicationTable
     deleteFileQueue: !ImportValue ${self:provider.stage}-DeleteFileQueueUrlPath
+    ownerId: '$util.defaultIfNullOrEmpty($ctx.identity.claims.get("https://motechdevelopment.co.uk/owner_id"), $ctx.identity.sub)'
     queue: !ImportValue ${self:provider.stage}-AccountsQueueUrl
     stage: ${self:provider.stage}
 

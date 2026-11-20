@@ -3,7 +3,7 @@
 #set($date = $ctx.args.input.date)
 #set($status = $ctx.args.input.status)
 #set($typename = "Transaction")
-#set($owner = $ctx.identity.sub)
+#set($owner = ${ownerId})
 #set($data = "$owner:$companyId:$status:$date")
 
 #set($input = $ctx.args.input.remove("id"))

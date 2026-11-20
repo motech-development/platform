@@ -6,7 +6,7 @@
 #set($date = $ctx.args.input.date)
 #set($status = $ctx.args.input.status)
 #set($typename = "Transaction")
-#set($owner = $ctx.identity.sub)
+#set($owner = ${ownerId})
 #set($defaultGroups = ["Admin"])
 #set($data = "$owner:$companyId:$status:$date")
 

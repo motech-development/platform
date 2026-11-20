@@ -1,5 +1,5 @@
 #set($id = $ctx.args.id)
-#set($owner = $ctx.identity.sub)
+#set($owner = ${ownerId})
 
 #if($ctx.error)
   $utils.error($ctx.error.message, $ctx.error.type)
