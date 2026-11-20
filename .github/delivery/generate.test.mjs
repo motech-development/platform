@@ -2113,6 +2113,10 @@ test('generated preview workflow plans per pull request and selectively deploys 
     playwright,
     /run: yarn workspace @accounts\/client e2e-ci --shard=\$\{\{ matrix\.containers \}\}\/2/,
   );
+  assert.match(
+    playwright,
+    /- name: Upload test results\n        if: failure\(\)\n        uses: actions\/upload-artifact@[a-f0-9]{40} # v\d+\.\d+\.\d+\n        with:\n          name: playwright-test-results-\$\{\{ matrix\.containers \}\}\n          path: applications\/accounts\/client\/test-results\//,
+  );
   const cacheRestore = playwright.match(
     /- name: Restore cache\n[\s\S]*?background: true[\s\S]*?key: \$\{\{ runner\.os \}\}-cache-v4-\$\{\{ hashFiles\('\*\*\/yarn\.lock'\) \}\}/,
   );
