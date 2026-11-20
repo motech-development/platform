@@ -80,6 +80,7 @@ describe('add-report', () => {
       await expect(handler(event, context, callback)).resolves.toEqual({
         owner: 'OWNER-ID',
         payload: {
+          companyId: 'COMPANY-ID',
           createdAt: '2021-04-11T19:45:00.000Z',
           downloadUrl: 'https://download.url/report.zip',
           id: 'test-uuid',

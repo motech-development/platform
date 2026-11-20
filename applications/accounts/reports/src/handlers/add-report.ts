@@ -65,6 +65,7 @@ export const handler: Handler<IEvent> = wrapHandler(async (event) => {
   await client.send(command);
 
   const payload = {
+    companyId,
     createdAt,
     downloadUrl,
     id,

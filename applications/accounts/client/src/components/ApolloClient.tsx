@@ -19,6 +19,10 @@ import {
 import Container from './Container';
 import ErrorCard from './ErrorCard';
 
+type IReportNotification = Report & {
+  companyId?: string;
+};
+
 export interface IApolloClientProps {
   children: ReactNode;
 }
@@ -47,6 +51,7 @@ function parseNotificationPayload(payload: string | null): unknown {
 
     if (reportId && reportCreatedAt && downloadUrl) {
       return {
+        companyId: urlParams.get('companyId') ?? undefined,
         createdAt: reportCreatedAt,
         downloadUrl,
         id: reportId,
@@ -60,7 +65,7 @@ function parseNotificationPayload(payload: string | null): unknown {
 
 function updateReportsCache(
   cache: InMemoryCache,
-  reportData: Report,
+  reportData: IReportNotification,
   existingReports: unknown,
   readField: FieldFunctionOptions['readField'],
 ) {
@@ -73,7 +78,7 @@ function updateReportsCache(
     const reportsRef = existingReports as Reference;
     const reportsId = readField('id', reportsRef);
 
-    if (reportsId) {
+    if (reportsId && reportsId === reportData.companyId) {
       cache.modify({
         fields: {
           items: (existingItems, { readField: rf2 }) => {
@@ -281,7 +286,7 @@ export const typePolicies: StrictTypedTypePolicies = {
               'id' in parsedPayload &&
               'downloadUrl' in parsedPayload
             ) {
-              const reportData = parsedPayload as Report;
+              const reportData = parsedPayload as IReportNotification;
 
               // Write the report to the cache first
               cache.writeFragment({
