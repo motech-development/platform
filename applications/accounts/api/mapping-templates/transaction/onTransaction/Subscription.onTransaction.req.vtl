@@ -1,0 +1,8 @@
+#if($util.isNullOrEmpty($ctx.identity.sub) || $ctx.identity.sub != $ctx.arguments.owner)
+  $util.unauthorized()
+#end
+
+{
+  "version": "2018-05-29",
+  "payload": {}
+}

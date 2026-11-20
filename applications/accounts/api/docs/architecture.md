@@ -65,7 +65,7 @@ Data sources: **Data** (DynamoDB, application table), **Resolver** (`NONE`, loca
 | `Mutation.transactionBeacon`       | Unit, Resolver (IAM only) | Echoes `{ id, owner, balance, vat }` to `Subscription.onTransaction`.                                                                                                                                               |
 | `Mutation.transactionChangeBeacon` | Unit, Resolver (IAM only) | Echoes `{ id, owner, transactionId }` to `Subscription.onTransactionChange`.                                                                                                                                        |
 | `Subscription.onTransactionChange` | Unit, Resolver            | Rejects the subscription unless `sub == args.owner`.                                                                                                                                                                |
-| `Subscription.onTransaction`       | Subscription              | Receives `transactionBeacon` updates for a balance.                                                                                                                                                                 |
+| `Subscription.onTransaction`       | Unit, Resolver            | Rejects the subscription unless `sub == args.owner`.                                                                                                                                                                |
 
 ### Settings and typeahead
 
@@ -101,7 +101,7 @@ Non-200 HTTP responses become GraphQL errors carrying the response body and stat
 | `Query.getNotifications`      | Unit, Data                | Owner-scoped query, `data` begins `<sub>:Notification`, newest first; `id` in the result is the caller's `sub`.                                           |
 | `Mutation.markAsRead`         | Unit, Data                | `TransactWriteItems` setting `read = true` and `ttl` = now on each id, each conditioned on owner = `sub`; the response is `null` unless `args.id == sub`. |
 | `Mutation.notificationBeacon` | Unit, Resolver (IAM only) | Echoes the notification to `Subscription.onNotification`.                                                                                                 |
-| `Subscription.onNotification` | Subscription              | Receives `notificationBeacon` updates.                                                                                                                    |
+| `Subscription.onNotification` | Unit, Resolver            | Rejects the subscription unless `sub == args.owner`.                                                                                                      |
 
 ### Shared pipeline functions
 
