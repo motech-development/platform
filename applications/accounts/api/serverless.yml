@@ -403,34 +403,14 @@ functions:
       SENTRY_DSN: ${env:SENTRY_DSN}
       TABLE: !ImportValue ${self:provider.stage}-AccountsApplicationTable
 
-  PublishNotifications:
-    handler: src/handlers/publish-notifications.handler
-    role: PublishNotificationsRole
-    events:
-      - stream:
-          type: dynamodb
-          arn: !ImportValue ${self:provider.stage}-AccountsApplicationTableStreamArn
-          startingPosition: LATEST
-          maximumRetryAttempts: 4
-    environment:
-      SENTRY_DSN: ${env:SENTRY_DSN}
-      ENDPOINT: ${appsync:url}
-
-  UpdateBalance:
-    handler: src/handlers/update-balance.handler
-    role: PublishNotificationsRole
+  PublishStream:
+    handler: src/handlers/publish-stream.handler
+    role: PublishStreamRole
     timeout: 60
-    events:
-      - stream:
-          type: dynamodb
-          batchSize: 10
-          functionResponseType: ReportBatchItemFailures
-          arn: !ImportValue ${self:provider.stage}-AccountsApplicationTableStreamArn
-          startingPosition: LATEST
-          maximumRetryAttempts: 4
     environment:
       ENDPOINT: ${appsync:url}
       SENTRY_DSN: ${env:SENTRY_DSN}
+      TABLE: !ImportValue ${self:provider.stage}-AccountsApplicationTable
 
 resources:
   Resources:
@@ -592,7 +572,7 @@ resources:
                   Resource:
                     - !ImportValue ${self:provider.stage}-AccountsQueueArn
                     - !ImportValue ${self:provider.stage}-DeleteFileQueueArn
-    PublishNotificationsRole:
+    PublishStreamRole:
       Type: AWS::IAM::Role
       Properties:
         AssumeRolePolicyDocument:
@@ -605,7 +585,7 @@ resources:
               Action:
                 - sts:AssumeRole
         Policies:
-          - PolicyName: ${self:custom.prefix}-publish-notifications-role-policy
+          - PolicyName: ${self:custom.prefix}-publish-stream-role-policy
             PolicyDocument:
               Version: '2012-10-17'
               Statement:
@@ -621,6 +601,26 @@ resources:
                       - ''
                       - - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
                         - /stream/*
+                - Effect: Allow
+                  Action:
+                    - dynamodb:GetItem
+                    - dynamodb:PutItem
+                    - dynamodb:UpdateItem
+                  Resource:
+                    - !ImportValue ${self:provider.stage}-AccountsApplicationTableArn
+                - Effect: Allow
+                  Action:
+                    - s3:ListBucket
+                  Resource:
+                    - !ImportValue ${self:provider.stage}-AccountsStreamProcessingFailureBucketArn
+                - Effect: Allow
+                  Action:
+                    - s3:PutObject
+                  Resource:
+                    - !Join
+                      - ''
+                      - - !ImportValue ${self:provider.stage}-AccountsStreamProcessingFailureBucketArn
+                        - /*
                 - Effect: Allow
                   Action:
                     - appsync:GraphQL
@@ -645,7 +645,20 @@ resources:
                     - logs:DescribeLogStreams
                   Resource:
                     - arn:aws:logs:*:*:*
-    PublishNotificationsIteratorAgeAlarm:
+    PublishStreamEventSourceMapping:
+      Type: AWS::Lambda::EventSourceMapping
+      Properties:
+        BatchSize: 10
+        DestinationConfig:
+          OnFailure:
+            Destination: !ImportValue ${self:provider.stage}-AccountsStreamProcessingFailureBucketArn
+        EventSourceArn: !ImportValue ${self:provider.stage}-AccountsApplicationTableStreamArn
+        FunctionName: !GetAtt PublishStreamLambdaFunction.Arn
+        FunctionResponseTypes:
+          - ReportBatchItemFailures
+        MaximumRetryAttempts: 4
+        StartingPosition: LATEST
+    PublishStreamIteratorAgeAlarm:
       Type: AWS::CloudWatch::Alarm
       Properties:
         AlarmActions:
@@ -656,36 +669,12 @@ resources:
               - ':'
               - !Ref AWS::AccountId
               - ':function:accounts-data-${self:provider.stage}-ReportSchedulingAlarm'
-        AlarmName: ${self:custom.prefix}-publish-notifications-iterator-age
+        AlarmName: ${self:custom.prefix}-publish-stream-iterator-age
         ComparisonOperator: GreaterThanOrEqualToThreshold
         DatapointsToAlarm: 1
         Dimensions:
           - Name: FunctionName
-            Value: !Ref PublishNotificationsLambdaFunction
-        EvaluationPeriods: 1
-        MetricName: IteratorAge
-        Namespace: AWS/Lambda
-        Period: 60
-        Statistic: Maximum
-        Threshold: 900000
-        TreatMissingData: notBreaching
-    UpdateBalanceIteratorAgeAlarm:
-      Type: AWS::CloudWatch::Alarm
-      Properties:
-        AlarmActions:
-          - !Join
-            - ''
-            - - 'arn:aws:lambda:'
-              - !Ref AWS::Region
-              - ':'
-              - !Ref AWS::AccountId
-              - ':function:accounts-data-${self:provider.stage}-ReportSchedulingAlarm'
-        AlarmName: ${self:custom.prefix}-update-balance-iterator-age
-        ComparisonOperator: GreaterThanOrEqualToThreshold
-        DatapointsToAlarm: 1
-        Dimensions:
-          - Name: FunctionName
-            Value: !Ref UpdateBalanceLambdaFunction
+            Value: !Ref PublishStreamLambdaFunction
         EvaluationPeriods: 1
         MetricName: IteratorAge
         Namespace: AWS/Lambda

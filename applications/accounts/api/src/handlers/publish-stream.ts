@@ -1,4 +1,5 @@
-import { AttributeValue } from '@aws-sdk/client-dynamodb';
+import { AttributeValue, DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { GetCommand } from '@aws-sdk/lib-dynamodb';
 import { unmarshall } from '@aws-sdk/util-dynamodb';
 import logger from '@motech-development/node-logger';
 import { captureException, init, wrapHandler } from '@sentry/aws-serverless';
@@ -10,6 +11,10 @@ import type {
   StreamRecord,
 } from 'aws-lambda';
 import type { Balance, Transaction } from '../graphql/graphql';
+import applyBalance from '../shared/apply-balance';
+import publishNotification, {
+  isNotificationRecord,
+} from '../shared/publish-notification';
 import publishTransactionChange from '../shared/publish-transaction-change';
 import transactionCompanyId from '../shared/transaction-company-id';
 import updateBalance from '../shared/update-balance';
@@ -21,6 +26,8 @@ init({
   profileSessionSampleRate: 1,
   tracesSampleRate: 1,
 });
+
+const documentClient = new DynamoDBClient({});
 
 export type IBalance = Pick<Balance, 'balance' | 'id' | 'owner' | 'vat'> & {
   __typename: 'Balance';
@@ -57,10 +64,22 @@ const isBalanceRecord = (item: Record<string, unknown>): item is IBalance => {
 };
 
 const publishBalance = async (
-  item: Record<string, unknown>,
+  tableName: string,
+  companyId: string,
   dynamodb: DynamoDBRecord['dynamodb'],
 ) => {
-  if (!isBalanceRecord(item)) {
+  const { Item: item } = await documentClient.send(
+    new GetCommand({
+      ConsistentRead: true,
+      Key: {
+        __typename: 'Balance',
+        id: companyId,
+      },
+      TableName: tableName,
+    }),
+  );
+
+  if (!item || !isBalanceRecord(item)) {
     logger.error('Skipping balance without a valid ID, owner, balance or VAT', {
       keys: dynamodb?.Keys,
       sequenceNumber: dynamodb?.SequenceNumber,
@@ -117,7 +136,14 @@ const readImage = (image: StreamRecord['NewImage']) => {
   return item;
 };
 
-const publishRecord = async ({ eventName, dynamodb }: DynamoDBRecord) => {
+const publishRecord = async (tableName: string, record: DynamoDBRecord) => {
+  const { eventName, dynamodb } = record;
+  const companyId = await applyBalance(documentClient, tableName, record);
+
+  if (companyId) {
+    await publishBalance(tableName, companyId, dynamodb);
+  }
+
   const image =
     eventName === 'REMOVE' ? dynamodb?.OldImage : dynamodb?.NewImage;
 
@@ -146,8 +172,8 @@ const publishRecord = async ({ eventName, dynamodb }: DynamoDBRecord) => {
 
   const { __typename: typename } = item;
 
-  if (typename === 'Balance' && eventName === 'MODIFY') {
-    await publishBalance(item, dynamodb);
+  if (eventName === 'INSERT' && isNotificationRecord(item)) {
+    await publishNotification(item);
   }
 
   if (typename === 'Transaction') {
@@ -169,7 +195,7 @@ const publishRecord = async ({ eventName, dynamodb }: DynamoDBRecord) => {
 };
 
 export const handler: DynamoDBStreamHandler = wrapHandler(async (event) => {
-  const { AWS_REGION, ENDPOINT } = process.env;
+  const { AWS_REGION, ENDPOINT, TABLE } = process.env;
 
   if (!AWS_REGION) {
     throw new Error('No region set');
@@ -179,6 +205,10 @@ export const handler: DynamoDBStreamHandler = wrapHandler(async (event) => {
     throw new Error('No endpoint set');
   }
 
+  if (!TABLE) {
+    throw new Error('No table set');
+  }
+
   return event.Records.reduce<Promise<DynamoDBBatchResponse>>(
     async (previous, record) => {
       const result = await previous;
@@ -186,13 +216,13 @@ export const handler: DynamoDBStreamHandler = wrapHandler(async (event) => {
       if (result.batchItemFailures.length > 0) return result;
 
       try {
-        await publishRecord(record);
+        await publishRecord(TABLE, record);
 
         return {
           batchItemFailures: [],
         };
       } catch (error) {
-        logger.error('Failed to publish transaction stream record', {
+        logger.error('Failed to publish stream record', {
           error,
         });
 
