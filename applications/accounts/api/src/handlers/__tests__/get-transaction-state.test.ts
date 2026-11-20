@@ -99,16 +99,20 @@ describe('get-transaction-state', () => {
   });
 
   it('authorizes the owner ID claim in preference to sub', async () => {
-    const claims = (ownerId: string) => ({
+    const claims = (ownerId: string, sub: string) => ({
       claims: {
         'https://motechdevelopment.co.uk/owner_id': ownerId,
       },
-      sub: 'owner-id',
+      sub,
     });
 
-    await expect(invoke(claims('owner-id'))).resolves.toEqual(transaction);
+    await expect(invoke(claims('owner-id', 'provider-sub'))).resolves.toEqual(
+      transaction,
+    );
 
-    await expect(invoke(claims('another-owner'))).resolves.toBeNull();
+    await expect(
+      invoke(claims('another-owner', 'owner-id')),
+    ).resolves.toBeNull();
   });
 
   it('reads updated state again when a notification is replayed', async () => {
