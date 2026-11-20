@@ -41,19 +41,6 @@ custom:
     target: node24
 
 functions:
-  Attachments:
-    handler: src/attachments.handler
-    role: DataLambdaFunctionRole
-    events:
-      - stream:
-          type: dynamodb
-          arn: !GetAtt ApplicationTable.StreamArn
-          startingPosition: LATEST
-          maximumRetryAttempts: 4
-    environment:
-      ATTACHMENT_QUEUE: !ImportValue ${self:provider.stage}-DeleteFileQueueUrl
-      SENTRY_DSN: ${env:SENTRY_DSN}
-
   ClearAttachments:
     handler: src/clear-attachments.handler
     events:
@@ -78,47 +65,30 @@ functions:
       SENTRY_DSN: ${env:SENTRY_DSN}
       TABLE: !Ref ApplicationTable
 
-  ReportSchedulingAlarm:
-    handler: src/report-scheduling-alarm.handler
-    role: SchedulingAlarmLambdaFunctionRole
+  ProcessStream:
+    handler: src/process-stream.handler
+    role: ProcessStreamLambdaFunctionRole
+    events:
+      - stream:
+          type: dynamodb
+          arn: !GetAtt ApplicationTable.StreamArn
+          batchSize: 1
+          startingPosition: LATEST
+          maximumRetryAttempts: 4
     environment:
-      SENTRY_DSN: ${env:SENTRY_DSN}
-
-  ScheduleTransactions:
-    handler: src/schedule-transactions.handler
-    role: ScheduleTransactionsLambdaFunctionRole
-    environment:
+      ATTACHMENT_QUEUE: !ImportValue ${self:provider.stage}-DeleteFileQueueUrl
       PUBLICATION_QUEUE_ARN: !GetAtt PublicationQueue.Arn
       SCHEDULE_GROUP: !Ref ScheduledTransactionScheduleGroup
       SCHEDULER_DELIVERY_DLQ_ARN: !GetAtt SchedulerDeliveryDeadLetterQueue.Arn
       SCHEDULER_ROLE_ARN: !GetAtt SchedulerPublicationRole.Arn
       SENTRY_DSN: ${env:SENTRY_DSN}
-
-  Transactions:
-    handler: src/transactions.handler
-    role: DataLambdaFunctionRole
-    events:
-      - stream:
-          type: dynamodb
-          arn: !GetAtt ApplicationTable.StreamArn
-          startingPosition: LATEST
-          maximumRetryAttempts: 4
-    environment:
-      SENTRY_DSN: ${env:SENTRY_DSN}
       TABLE: !Ref ApplicationTable
 
-  Typeahead:
-    handler: src/typeahead.handler
-    role: DataLambdaFunctionRole
-    events:
-      - stream:
-          type: dynamodb
-          arn: !GetAtt ApplicationTable.StreamArn
-          startingPosition: LATEST
-          maximumRetryAttempts: 4
+  ReportSchedulingAlarm:
+    handler: src/report-scheduling-alarm.handler
+    role: SchedulingAlarmLambdaFunctionRole
     environment:
       SENTRY_DSN: ${env:SENTRY_DSN}
-      TABLE: !Ref ApplicationTable
 
 resources:
   Resources:
@@ -168,18 +138,6 @@ resources:
       Properties:
         MessageRetentionPeriod: 1209600
         QueueName: ${self:custom.prefix}-schedule-synchronisation-dlq
-
-    ScheduleTransactionsEventSourceMappingDynamodbApplicationTable:
-      Type: AWS::Lambda::EventSourceMapping
-      Properties:
-        BatchSize: 1
-        DestinationConfig:
-          OnFailure:
-            Destination: !GetAtt ScheduleSynchronisationFailureBucket.Arn
-        EventSourceArn: !GetAtt ApplicationTable.StreamArn
-        FunctionName: !GetAtt ScheduleTransactionsLambdaFunction.Arn
-        MaximumRetryAttempts: 4
-        StartingPosition: LATEST
 
     ScheduleSynchronisationFailureBucket:
       Type: AWS::S3::Bucket
@@ -332,7 +290,7 @@ resources:
           maxReceiveCount: 5
         VisibilityTimeout: 180
 
-    ScheduleTransactionsLambdaFunctionRole:
+    ProcessStreamLambdaFunctionRole:
       Type: AWS::IAM::Role
       Properties:
         AssumeRolePolicyDocument:
@@ -345,7 +303,7 @@ resources:
               Action:
                 - sts:AssumeRole
         Policies:
-          - PolicyName: ${self:custom.prefix}-schedule-transactions
+          - PolicyName: ${self:custom.prefix}-process-stream
             PolicyDocument:
               Version: '2012-10-17'
               Statement:
@@ -360,6 +318,18 @@ resources:
                       - ''
                       - - !GetAtt ApplicationTable.Arn
                         - '/stream/*'
+                - Effect: Allow
+                  Action:
+                    - dynamodb:GetItem
+                    - dynamodb:PutItem
+                    - dynamodb:UpdateItem
+                  Resource:
+                    - !GetAtt ApplicationTable.Arn
+                - Effect: Allow
+                  Action:
+                    - sqs:SendMessage
+                  Resource:
+                    - !ImportValue ${self:provider.stage}-DeleteFileQueueArn
                 - Effect: Allow
                   Action:
                     - scheduler:CreateSchedule
@@ -387,14 +357,14 @@ resources:
                   Action:
                     - s3:ListBucket
                   Resource:
-                    - !GetAtt ScheduleSynchronisationFailureBucket.Arn
+                    - !GetAtt StreamProcessingFailureBucket.Arn
                 - Effect: Allow
                   Action:
                     - s3:PutObject
                   Resource:
                     - !Join
                       - ''
-                      - - !GetAtt ScheduleSynchronisationFailureBucket.Arn
+                      - - !GetAtt StreamProcessingFailureBucket.Arn
                         - '/*'
                 - Effect: Allow
                   Action:
@@ -572,74 +542,17 @@ resources:
         Threshold: 1
         TreatMissingData: notBreaching
 
-    AttachmentsIteratorAgeAlarm:
+    ProcessStreamIteratorAgeAlarm:
       Type: AWS::CloudWatch::Alarm
       Properties:
         AlarmActions:
           - !GetAtt ReportSchedulingAlarmLambdaFunction.Arn
-        AlarmName: ${self:custom.prefix}-attachments-iterator-age
+        AlarmName: ${self:custom.prefix}-process-stream-iterator-age
         ComparisonOperator: GreaterThanOrEqualToThreshold
         DatapointsToAlarm: 1
         Dimensions:
           - Name: FunctionName
-            Value: !Ref AttachmentsLambdaFunction
-        EvaluationPeriods: 1
-        MetricName: IteratorAge
-        Namespace: AWS/Lambda
-        Period: 60
-        Statistic: Maximum
-        Threshold: 900000
-        TreatMissingData: notBreaching
-
-    ScheduleTransactionsIteratorAgeAlarm:
-      Type: AWS::CloudWatch::Alarm
-      Properties:
-        AlarmActions:
-          - !GetAtt ReportSchedulingAlarmLambdaFunction.Arn
-        AlarmName: ${self:custom.prefix}-schedule-transactions-iterator-age
-        ComparisonOperator: GreaterThanOrEqualToThreshold
-        DatapointsToAlarm: 1
-        Dimensions:
-          - Name: FunctionName
-            Value: !Ref ScheduleTransactionsLambdaFunction
-        EvaluationPeriods: 1
-        MetricName: IteratorAge
-        Namespace: AWS/Lambda
-        Period: 60
-        Statistic: Maximum
-        Threshold: 900000
-        TreatMissingData: notBreaching
-
-    TransactionsIteratorAgeAlarm:
-      Type: AWS::CloudWatch::Alarm
-      Properties:
-        AlarmActions:
-          - !GetAtt ReportSchedulingAlarmLambdaFunction.Arn
-        AlarmName: ${self:custom.prefix}-transactions-iterator-age
-        ComparisonOperator: GreaterThanOrEqualToThreshold
-        DatapointsToAlarm: 1
-        Dimensions:
-          - Name: FunctionName
-            Value: !Ref TransactionsLambdaFunction
-        EvaluationPeriods: 1
-        MetricName: IteratorAge
-        Namespace: AWS/Lambda
-        Period: 60
-        Statistic: Maximum
-        Threshold: 900000
-        TreatMissingData: notBreaching
-
-    TypeaheadIteratorAgeAlarm:
-      Type: AWS::CloudWatch::Alarm
-      Properties:
-        AlarmActions:
-          - !GetAtt ReportSchedulingAlarmLambdaFunction.Arn
-        AlarmName: ${self:custom.prefix}-typeahead-iterator-age
-        ComparisonOperator: GreaterThanOrEqualToThreshold
-        DatapointsToAlarm: 1
-        Dimensions:
-          - Name: FunctionName
-            Value: !Ref TypeaheadLambdaFunction
+            Value: !Ref ProcessStreamLambdaFunction
         EvaluationPeriods: 1
         MetricName: IteratorAge
         Namespace: AWS/Lambda
@@ -684,11 +597,7 @@ resources:
               Statement:
                 - Effect: Allow
                   Action:
-                    - dynamodb:DescribeStream
                     - dynamodb:GetItem
-                    - dynamodb:GetRecords
-                    - dynamodb:GetShardIterator
-                    - dynamodb:ListStreams
                     - dynamodb:PutItem
                     - dynamodb:Query
                     - dynamodb:UpdateItem
@@ -697,16 +606,7 @@ resources:
                     - !Join
                       - ''
                       - - !GetAtt ApplicationTable.Arn
-                        - '/stream/*'
-                    - !Join
-                      - ''
-                      - - !GetAtt ApplicationTable.Arn
                         - '/index/__typename-data-index'
-                - Effect: Allow
-                  Action:
-                    - sqs:SendMessage
-                  Resource:
-                    - !ImportValue ${self:provider.stage}-DeleteFileQueueArn
                 - Effect: Allow
                   Action:
                     - sqs:DeleteMessage
@@ -714,19 +614,6 @@ resources:
                     - sqs:ReceiveMessage
                   Resource:
                     - !ImportValue ${self:provider.stage}-AntiVirusFailureQueueArn
-                - Effect: Allow
-                  Action:
-                    - s3:ListBucket
-                  Resource:
-                    - !GetAtt StreamProcessingFailureBucket.Arn
-                - Effect: Allow
-                  Action:
-                    - s3:PutObject
-                  Resource:
-                    - !Join
-                      - ''
-                      - - !GetAtt StreamProcessingFailureBucket.Arn
-                        - '/*'
                 - Effect: Allow
                   Action:
                     - logs:CreateLogGroup
@@ -737,13 +624,7 @@ resources:
                     - 'arn:aws:logs:*:*:*'
 
   extensions:
-    AttachmentsEventSourceMappingDynamodbApplicationTable:
-      Properties:
-        DestinationConfig:
-          OnFailure:
-            Destination: !GetAtt StreamProcessingFailureBucket.Arn
-
-    TransactionsEventSourceMappingDynamodbApplicationTable:
+    ProcessStreamEventSourceMappingDynamodbApplicationTable:
       Properties:
         DestinationConfig:
           OnFailure:
@@ -767,3 +648,9 @@ resources:
       Value: !GetAtt ApplicationTable.StreamArn
       Export:
         Name: ${self:provider.stage}-AccountsApplicationTableStreamArn
+
+    AccountsStreamProcessingFailureBucketArn:
+      Description: Accounts stream processing failure bucket ARN
+      Value: !GetAtt StreamProcessingFailureBucket.Arn
+      Export:
+        Name: ${self:provider.stage}-AccountsStreamProcessingFailureBucketArn

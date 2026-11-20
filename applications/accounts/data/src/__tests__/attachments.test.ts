@@ -1,24 +1,14 @@
 import { SendMessageBatchCommand, SQSClient } from '@aws-sdk/client-sqs';
 import logger from '@motech-development/node-logger';
-import type { Context, DynamoDBStreamEvent } from 'aws-lambda';
-import ctx from 'aws-lambda-mock-context';
+import type { DynamoDBStreamEvent } from 'aws-lambda';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
-import type { Mock } from 'vitest';
-import { handler } from '../attachments';
+import { clearDeletedAttachments } from '../attachments';
 
 describe('attachments', () => {
-  let callback: Mock;
-  let context: Context;
   let event: DynamoDBStreamEvent;
   let sqs: AwsClientStub<SQSClient>;
 
   beforeEach(() => {
-    context = ctx();
-
-    context.done();
-
-    callback = vi.fn();
-
     sqs = mockClient(SQSClient);
 
     event = {
@@ -257,7 +247,7 @@ describe('attachments', () => {
       Records: [],
     };
 
-    await expect(handler(event, context, callback)).rejects.toThrow(
+    await expect(clearDeletedAttachments(event)).rejects.toThrow(
       'No attachment queue set',
     );
   });
@@ -287,13 +277,13 @@ describe('attachments', () => {
           Records: [],
         };
 
-        await handler(event, context, callback);
+        await clearDeletedAttachments(event);
 
         expect(sqs).toReceiveCommandTimes(SendMessageBatchCommand, 0);
       });
 
       it('should update the correct number of records', async () => {
-        await handler(event, context, callback);
+        await clearDeletedAttachments(event);
 
         expect(sqs).toReceiveCommandTimes(SendMessageBatchCommand, 1);
       });
@@ -309,7 +299,7 @@ describe('attachments', () => {
       });
 
       it('should log and throw the error', async () => {
-        await expect(handler(event, context, callback)).rejects.toThrow(error);
+        await expect(clearDeletedAttachments(event)).rejects.toThrow(error);
 
         expect(logger.error).toHaveBeenCalledWith('An error occurred', error);
       });
