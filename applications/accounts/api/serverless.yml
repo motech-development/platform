@@ -177,8 +177,10 @@ appSync:
       request: mapping-templates/settings/getSettings/Query.getSettings.req.vtl
       response: mapping-templates/settings/getSettings/Query.getSettings.res.vtl
     Mutation.addTransaction:
-      dataSource: Data
-      kind: UNIT
+      kind: PIPELINE
+      functions:
+        - getCompany
+        - addTransaction
       request: mapping-templates/transaction/addTransaction/Mutation.addTransaction.req.vtl
       response: mapping-templates/transaction/addTransaction/Mutation.addTransaction.res.vtl
     Mutation.deleteTransaction:
@@ -202,8 +204,10 @@ appSync:
       request: mapping-templates/transaction/getTransactions/Query.getTransactions.req.vtl
       response: mapping-templates/transaction/getTransactions/Query.getTransactions.res.vtl
     Mutation.updateTransaction:
-      dataSource: Data
-      kind: UNIT
+      kind: PIPELINE
+      functions:
+        - getCompany
+        - updateTransaction
       request: mapping-templates/transaction/updateTransaction/Mutation.updateTransaction.req.vtl
       response: mapping-templates/transaction/updateTransaction/Mutation.updateTransaction.res.vtl
     Mutation.transactionBeacon:
@@ -329,6 +333,14 @@ appSync:
       dataSource: Data
       request: mapping-templates/settings/updateSettings/Pipeline.updateSettings.req.vtl
       response: mapping-templates/settings/updateSettings/Pipeline.updateSettings.res.vtl
+    addTransaction:
+      dataSource: Data
+      request: mapping-templates/transaction/addTransaction/Pipeline.addTransaction.req.vtl
+      response: mapping-templates/transaction/addTransaction/Pipeline.addTransaction.res.vtl
+    updateTransaction:
+      dataSource: Data
+      request: mapping-templates/transaction/updateTransaction/Pipeline.updateTransaction.req.vtl
+      response: mapping-templates/transaction/updateTransaction/Pipeline.updateTransaction.res.vtl
     deleteFile:
       dataSource: Queue
       request: mapping-templates/storage/deleteFile/Pipeline.deleteFile.req.vtl
