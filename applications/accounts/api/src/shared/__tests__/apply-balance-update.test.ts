@@ -6,9 +6,9 @@ import {
 import { marshall } from '@aws-sdk/util-dynamodb';
 import type { AttributeValue, DynamoDBRecord } from 'aws-lambda';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
-import updateTransactions from '../update-transactions';
+import applyBalance from '../apply-balance';
 
-describe('update-transactions', () => {
+describe('apply-balance: modified transactions', () => {
   let ddb: AwsClientStub<DynamoDBClient>;
   let documentClient: DynamoDBClient;
   let tableName: string;
@@ -399,9 +399,7 @@ describe('update-transactions', () => {
 
   it('should return update with the correct params', async () => {
     await Promise.all(
-      updateTransactions(documentClient, tableName, records).map((write) =>
-        write(),
-      ),
+      records.map((record) => applyBalance(documentClient, tableName, record)),
     );
 
     expect(ddb).toReceiveCommandWith(TransactWriteCommand, {
@@ -616,7 +614,7 @@ describe('update-transactions', () => {
           };
 
           await Promise.all(
-            updateTransactions(documentClient, tableName, [
+            [
               {
                 dynamodb: {
                   NewImage: marshall(newRecord) as Record<
@@ -629,7 +627,7 @@ describe('update-transactions', () => {
                   >,
                 },
               },
-            ]).map((write) => write()),
+            ].map((record) => applyBalance(documentClient, tableName, record)),
           );
 
           expect(ddb).toReceiveCommandTimes(TransactWriteCommand, 1);
@@ -686,9 +684,7 @@ describe('update-transactions', () => {
 
   it('should call update the correct number of times', async () => {
     await Promise.all(
-      updateTransactions(documentClient, tableName, records).map((write) =>
-        write(),
-      ),
+      records.map((record) => applyBalance(documentClient, tableName, record)),
     );
 
     expect(ddb).toReceiveCommandTimes(TransactWriteCommand, 6);
@@ -696,9 +692,7 @@ describe('update-transactions', () => {
 
   it('should record the stream event with the balance update', async () => {
     await Promise.all(
-      updateTransactions(documentClient, tableName, records).map((write) =>
-        write(),
-      ),
+      records.map((record) => applyBalance(documentClient, tableName, record)),
     );
 
     expect(ddb).toReceiveCommandWith(TransactWriteCommand, {
@@ -715,6 +709,132 @@ describe('update-transactions', () => {
           },
         },
       ]) as TransactWriteCommandInput['TransactItems'],
+    });
+  });
+
+  describe('when the company is only in the indexed data', () => {
+    const base = {
+      __typename: 'Transaction',
+      amount: 100.25,
+      category: 'Sales',
+      date: '2019-12-15T00:00:00.000Z',
+      owner: 'owner',
+      vat: 1.2,
+    };
+    const image = (status: string, companyId: string) => ({
+      ...base,
+      data: `owner:${companyId}:${status}:2019-12-15T00:00:00.000Z`,
+      status,
+    });
+    const modify = (previous: object, current: object): DynamoDBRecord => ({
+      dynamodb: {
+        NewImage: marshall(current) as Record<string, AttributeValue>,
+        OldImage: marshall(previous) as Record<string, AttributeValue>,
+      },
+      eventID: 'event-1',
+    });
+
+    it('applies a transaction confirmed without a stored company to the company in its data', async () => {
+      await expect(
+        applyBalance(
+          documentClient,
+          tableName,
+          modify(image('pending', ''), image('confirmed', 'company-id')),
+        ),
+      ).resolves.toEqual(['company-id']);
+
+      expect(ddb).toReceiveCommandWith(TransactWriteCommand, {
+        TransactItems: expect.arrayContaining([
+          {
+            Update: expect.objectContaining({
+              Key: {
+                __typename: 'Balance',
+                id: 'company-id',
+              },
+              UpdateExpression:
+                'SET #updatedAt = :updatedAt ADD #balance :balance, #vat.#vatProperty :vat, #items.#itemProperty :balance',
+            }) as unknown,
+          },
+        ]) as TransactWriteCommandInput['TransactItems'],
+      });
+    });
+
+    it('skips a confirmed transaction with no company', async () => {
+      await expect(
+        applyBalance(
+          documentClient,
+          tableName,
+          modify(image('pending', ''), image('confirmed', '')),
+        ),
+      ).resolves.toEqual([]);
+
+      expect(ddb).toReceiveCommandTimes(TransactWriteCommand, 0);
+    });
+
+    it('moves the contribution when a confirmed transaction changes company', async () => {
+      await expect(
+        applyBalance(
+          documentClient,
+          tableName,
+          modify(
+            {
+              ...image('confirmed', 'old-company'),
+              companyId: 'old-company',
+            },
+            {
+              ...image('confirmed', 'new-company'),
+              companyId: 'old-company',
+            },
+          ),
+        ),
+      ).resolves.toEqual(['old-company', 'new-company']);
+
+      expect(ddb).toReceiveCommandTimes(TransactWriteCommand, 1);
+      expect(ddb).toReceiveCommandWith(TransactWriteCommand, {
+        TransactItems: [
+          {
+            Put: {
+              ConditionExpression: 'attribute_not_exists(id)',
+              Item: {
+                __typename: 'BalanceEvent',
+                id: 'event-1',
+                ttl: 1592077500,
+              },
+              TableName: 'test',
+            },
+          },
+          {
+            Update: expect.objectContaining({
+              ExpressionAttributeValues: {
+                ':balance': 100.25,
+                ':updatedAt': '2020-06-06T19:45:00.000Z',
+                ':vat': 1.2,
+              },
+              Key: {
+                __typename: 'Balance',
+                id: 'old-company',
+              },
+              UpdateExpression:
+                'SET #updatedAt = :updatedAt, #balance = #balance - :balance, #vat.#vatProperty = #vat.#vatProperty - :vat, #items.#itemProperty = #items.#itemProperty - :balance',
+            }) as unknown,
+          },
+          {
+            Update: expect.objectContaining({
+              ExpressionAttributeValues: {
+                ':balance': 100.25,
+                ':updatedAt': '2020-06-06T19:45:00.000Z',
+                ':vat': 1.2,
+              },
+              Key: {
+                __typename: 'Balance',
+                id: 'new-company',
+              },
+              UpdateExpression:
+                'SET #updatedAt = :updatedAt ADD #balance :balance, #vat.#vatProperty :vat, #items.#itemProperty :balance',
+            }) as unknown,
+          },
+        ] as TransactWriteCommandInput['TransactItems'],
+      });
     });
   });
 });

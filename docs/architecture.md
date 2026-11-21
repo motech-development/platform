@@ -99,12 +99,12 @@ Users sign in with Auth0 through the client. AppSync trusts the Auth0 tenant as 
 
 Most API resolvers read and write this table directly through VTL templates. Derived data is not written by the resolvers; stream consumers maintain it after each change:
 
-| Consumer (workspace)   | Reacts to                                    | Does                                                                                                                                                                                                    |
-| ---------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ProcessStream` (data) | Transaction changes                          | Keeps company balances and VAT totals in step, records suggestions for forms, queues a deleted transaction's attachment for deletion and maintains each scheduled transaction's schedule.               |
-| `PublishStream` (api)  | Transaction changes and notification inserts | Applies the balance change itself and publishes the balance to `onTransaction`, then publishes `onTransactionChange` and `onNotification`, so a saved transaction reaches clients after one stream hop. |
+| Consumer (workspace)   | Reacts to                                    | Does                                                                                                                                                                                                                |
+| ---------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ProcessStream` (data) | Transaction changes                          | Records suggestions for forms, queues a deleted transaction's attachment for deletion and maintains each scheduled transaction's schedule.                                                                          |
+| `PublishStream` (api)  | Transaction changes and notification inserts | Keeps company balances and VAT totals in step and publishes the balance to `onTransaction`, then publishes `onTransactionChange` and `onNotification`, so a saved transaction reaches clients after one stream hop. |
 
-AWS recommends at most two readers per stream shard, so each stack has one consumer (see Accounts ADR 0004). Both apply balance changes for now, with idempotent markers, until `ProcessStream`'s balance step is removed. Failed stream batches from both consumers are retained in S3 and reported through a dead-letter queue and alarms (see Accounts ADRs 0002, 0003 and 0004). `@accounts/data-restore` explains how these consumers are paused during a table restore.
+AWS recommends at most two readers per stream shard, so each stack has one consumer (see Accounts ADR 0004). Only `PublishStream` applies balance changes, and idempotent markers stop a retried record from being counted twice. Failed stream batches from both consumers are retained in S3 and reported through a dead-letter queue and alarms (see Accounts ADRs 0002, 0003 and 0004). `@accounts/data-restore` explains how these consumers are paused during a table restore.
 
 ### Scheduled transactions
 

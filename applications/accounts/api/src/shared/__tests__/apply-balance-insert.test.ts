@@ -1,13 +1,16 @@
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import {
+  DynamoDBClient,
+  TransactionCanceledException,
+} from '@aws-sdk/client-dynamodb';
 import {
   TransactWriteCommand,
   TransactWriteCommandInput,
 } from '@aws-sdk/lib-dynamodb';
 import type { DynamoDBRecord } from 'aws-lambda';
 import { AwsClientStub, mockClient } from 'aws-sdk-client-mock';
-import removeTransactions from '../remove-transactions';
+import applyBalance from '../apply-balance';
 
-describe('remove-transactions', () => {
+describe('apply-balance: inserted transactions', () => {
   let ddb: AwsClientStub<DynamoDBClient>;
   let documentClient: DynamoDBClient;
   let tableName: string;
@@ -51,29 +54,6 @@ describe('remove-transactions', () => {
               N: '1.2',
             },
           },
-          OldImage: {
-            __typename: {
-              S: 'Transaction',
-            },
-            amount: {
-              N: '200.5',
-            },
-            category: {
-              S: 'Expenses',
-            },
-            companyId: {
-              S: 'company-id',
-            },
-            date: {
-              S: '2019-12-15T00:00:00.000Z',
-            },
-            status: {
-              S: 'confirmed',
-            },
-            vat: {
-              N: '2.4',
-            },
-          },
         },
         eventID: 'event-1',
       },
@@ -101,29 +81,6 @@ describe('remove-transactions', () => {
             },
             vat: {
               N: '1.2',
-            },
-          },
-          OldImage: {
-            __typename: {
-              S: 'Transaction',
-            },
-            amount: {
-              N: '200.5',
-            },
-            category: {
-              S: 'Sales',
-            },
-            companyId: {
-              S: 'company-id',
-            },
-            date: {
-              S: '2019-12-15T00:00:00.000Z',
-            },
-            status: {
-              S: 'confirmed',
-            },
-            vat: {
-              N: '2.4',
             },
           },
         },
@@ -155,29 +112,6 @@ describe('remove-transactions', () => {
               N: '1.2',
             },
           },
-          OldImage: {
-            __typename: {
-              S: 'Transaction',
-            },
-            amount: {
-              N: '200.5',
-            },
-            category: {
-              S: 'Sales',
-            },
-            companyId: {
-              S: 'company-id',
-            },
-            date: {
-              S: '2019-12-15T00:00:00.000Z',
-            },
-            status: {
-              S: 'pending',
-            },
-            vat: {
-              N: '2.4',
-            },
-          },
         },
         eventID: 'event-3',
       },
@@ -207,29 +141,6 @@ describe('remove-transactions', () => {
               N: '0',
             },
           },
-          OldImage: {
-            __typename: {
-              S: 'Transaction',
-            },
-            amount: {
-              N: '200.5',
-            },
-            category: {
-              S: 'VAT payment',
-            },
-            companyId: {
-              S: 'company-id',
-            },
-            date: {
-              S: '2019-12-15T00:00:00.000Z',
-            },
-            status: {
-              S: 'confirmed',
-            },
-            vat: {
-              N: '0',
-            },
-          },
         },
         eventID: 'event-4',
       },
@@ -242,40 +153,8 @@ describe('remove-transactions', () => {
 
   it('should return update with the correct params', async () => {
     await Promise.all(
-      removeTransactions(documentClient, tableName, records).map((write) =>
-        write(),
-      ),
+      records.map((record) => applyBalance(documentClient, tableName, record)),
     );
-
-    expect(ddb).toReceiveCommandWith(TransactWriteCommand, {
-      TransactItems: expect.arrayContaining([
-        {
-          Update: {
-            ConditionExpression: 'attribute_exists(id)',
-            ExpressionAttributeNames: {
-              '#balance': 'balance',
-              '#itemProperty': '2019-12-15T00:00:00.000Z',
-              '#items': 'items',
-              '#updatedAt': 'updatedAt',
-              '#vat': 'vat',
-              '#vatProperty': 'owed',
-            },
-            ExpressionAttributeValues: {
-              ':balance': 200.5,
-              ':updatedAt': '2020-06-06T19:45:00.000Z',
-              ':vat': 2.4,
-            },
-            Key: {
-              __typename: 'Balance',
-              id: 'company-id',
-            },
-            TableName: 'test',
-            UpdateExpression:
-              'SET #updatedAt = :updatedAt, #balance = #balance - :balance, #vat.#vatProperty = #vat.#vatProperty - :vat, #items.#itemProperty = #items.#itemProperty - :balance',
-          },
-        },
-      ]) as TransactWriteCommandInput['TransactItems'],
-    });
 
     expect(ddb).toReceiveCommandWith(TransactWriteCommand, {
       TransactItems: expect.arrayContaining([
@@ -291,9 +170,9 @@ describe('remove-transactions', () => {
               '#vatProperty': 'paid',
             },
             ExpressionAttributeValues: {
-              ':balance': 200.5,
+              ':balance': 100.25,
               ':updatedAt': '2020-06-06T19:45:00.000Z',
-              ':vat': 2.4,
+              ':vat': 1.2,
             },
             Key: {
               __typename: 'Balance',
@@ -301,7 +180,7 @@ describe('remove-transactions', () => {
             },
             TableName: 'test',
             UpdateExpression:
-              'SET #updatedAt = :updatedAt, #balance = #balance - :balance, #vat.#vatProperty = #vat.#vatProperty - :vat, #items.#itemProperty = #items.#itemProperty - :balance',
+              'SET #updatedAt = :updatedAt ADD #balance :balance, #vat.#vatProperty :vat, #items.#itemProperty :balance',
           },
         },
       ]) as TransactWriteCommandInput['TransactItems'],
@@ -321,9 +200,9 @@ describe('remove-transactions', () => {
               '#vatProperty': 'owed',
             },
             ExpressionAttributeValues: {
-              ':balance': 200.5,
+              ':balance': 100.25,
               ':updatedAt': '2020-06-06T19:45:00.000Z',
-              ':vat': 200.5,
+              ':vat': 1.2,
             },
             Key: {
               __typename: 'Balance',
@@ -331,7 +210,37 @@ describe('remove-transactions', () => {
             },
             TableName: 'test',
             UpdateExpression:
-              'SET #updatedAt = :updatedAt, #balance = #balance - :balance, #vat.#vatProperty = #vat.#vatProperty - :vat, #items.#itemProperty = #items.#itemProperty - :balance',
+              'SET #updatedAt = :updatedAt ADD #balance :balance, #vat.#vatProperty :vat, #items.#itemProperty :balance',
+          },
+        },
+      ]) as TransactWriteCommandInput['TransactItems'],
+    });
+
+    expect(ddb).toReceiveCommandWith(TransactWriteCommand, {
+      TransactItems: expect.arrayContaining([
+        {
+          Update: {
+            ConditionExpression: 'attribute_exists(id)',
+            ExpressionAttributeNames: {
+              '#balance': 'balance',
+              '#itemProperty': '2019-12-15T00:00:00.000Z',
+              '#items': 'items',
+              '#updatedAt': 'updatedAt',
+              '#vat': 'vat',
+              '#vatProperty': 'owed',
+            },
+            ExpressionAttributeValues: {
+              ':balance': 100.25,
+              ':updatedAt': '2020-06-06T19:45:00.000Z',
+              ':vat': 100.25,
+            },
+            Key: {
+              __typename: 'Balance',
+              id: 'company-id',
+            },
+            TableName: 'test',
+            UpdateExpression:
+              'SET #updatedAt = :updatedAt ADD #balance :balance, #vat.#vatProperty :vat, #items.#itemProperty :balance',
           },
         },
       ]) as TransactWriteCommandInput['TransactItems'],
@@ -340,9 +249,7 @@ describe('remove-transactions', () => {
 
   it('should call update the correct number of times', async () => {
     await Promise.all(
-      removeTransactions(documentClient, tableName, records).map((write) =>
-        write(),
-      ),
+      records.map((record) => applyBalance(documentClient, tableName, record)),
     );
 
     expect(ddb).toReceiveCommandTimes(TransactWriteCommand, 3);
@@ -350,9 +257,7 @@ describe('remove-transactions', () => {
 
   it('should record the stream event with the balance update', async () => {
     await Promise.all(
-      removeTransactions(documentClient, tableName, records).map((write) =>
-        write(),
-      ),
+      records.map((record) => applyBalance(documentClient, tableName, record)),
     );
 
     expect(ddb).toReceiveCommandWith(TransactWriteCommand, {
@@ -370,5 +275,53 @@ describe('remove-transactions', () => {
         },
       ]) as TransactWriteCommandInput['TransactItems'],
     });
+  });
+
+  it.each([
+    ['the event was already applied', ['ConditionalCheckFailed', 'None']],
+    ['the balance no longer exists', ['None', 'ConditionalCheckFailed']],
+  ])('should skip the update when %s', async (_, codes) => {
+    ddb.on(TransactWriteCommand).rejects(
+      new TransactionCanceledException({
+        $metadata: {},
+        CancellationReasons: codes.map((Code) => ({
+          Code,
+        })),
+        message: 'Transaction cancelled',
+      }),
+    );
+
+    await expect(
+      Promise.all(
+        records.map((record) =>
+          applyBalance(documentClient, tableName, record),
+        ),
+      ),
+    ).resolves.toHaveLength(4);
+  });
+
+  it('should throw when the update fails for any other reason', async () => {
+    const error = new TransactionCanceledException({
+      $metadata: {},
+      CancellationReasons: [
+        {
+          Code: 'None',
+        },
+        {
+          Code: 'TransactionConflict',
+        },
+      ],
+      message: 'Transaction cancelled',
+    });
+
+    ddb.on(TransactWriteCommand).rejects(error);
+
+    await expect(
+      Promise.all(
+        records.map((record) =>
+          applyBalance(documentClient, tableName, record),
+        ),
+      ),
+    ).rejects.toThrow(error);
   });
 });

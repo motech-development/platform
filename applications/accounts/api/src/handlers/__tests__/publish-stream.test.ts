@@ -202,7 +202,7 @@ describe('publish-stream', () => {
     },
   );
 
-  it('pushes the balance when another consumer already applied the record', async () => {
+  it('pushes the balance when the record was already applied', async () => {
     ddb.on(TransactWriteCommand).rejects(
       new TransactionCanceledException({
         $metadata: {},
@@ -267,6 +267,38 @@ describe('publish-stream', () => {
         mutation,
       }),
     );
+  });
+
+  it('pushes both balances when a confirmed transaction changes company', async () => {
+    ddb
+      .on(GetCommand, {
+        Key: {
+          __typename: 'Balance',
+          id: 'other-company',
+        },
+      })
+      .resolves({
+        Item: {
+          ...balance,
+          id: 'other-company',
+        },
+      });
+
+    await invoke([
+      record('MODIFY', transaction, {
+        ...transaction,
+        data: `owner-id:other-company:confirmed:${transaction.date}`,
+      }),
+    ]);
+
+    expect(mutate).toHaveBeenCalledWith(balancePush);
+    expect(mutate).toHaveBeenCalledWith({
+      ...balancePush,
+      variables: {
+        ...balancePush.variables,
+        id: 'other-company',
+      },
+    });
   });
 
   it('does not push a balance that cannot be read back', async () => {
