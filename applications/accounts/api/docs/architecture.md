@@ -127,14 +127,13 @@ All use Sentry (`init` + `wrapHandler`) and receive `SENTRY_ENVIRONMENT` and `SE
 
 ### Balances (`src/shared/apply-balance.ts`)
 
-`PublishStream` is the only stream consumer that changes a `Balance` (see [ADR 0004](../../docs/adr/0004-read-the-application-table-stream-with-two-consumers.md)). Only a `confirmed` `Transaction` counts towards its company's `Balance`. The company is read from the transaction's `data`, falling back to `companyId`, because `updateTransaction` rewrites `data` but never `companyId`; a confirmed transaction without a company is skipped.
+`PublishStream` is the only stream consumer that changes a `Balance` (see [ADR 0004](../../docs/adr/0004-read-the-application-table-stream-with-two-consumers.md)). Only a `confirmed` `Transaction` counts towards a `Balance`: the one keyed by its stored `companyId`. A confirmed transaction without a `companyId` is skipped. `updateTransaction` rewrites `data` but never `companyId`, so changing a transaction's company leaves its amount in the original company's `Balance`.
 
 - A transaction that starts counting (inserted as `confirmed`, or changed to `confirmed`) adds its values.
 - A transaction that stops counting (removed, or changed to `pending`) subtracts its old values.
-- A confirmed transaction that stays in its company applies the difference, moving amounts between daily buckets and VAT properties when the date or category changes.
-- A confirmed transaction that changes company subtracts its old values from the old company's `Balance` and adds its new values to the new company's.
+- A transaction that stays confirmed applies the difference, moving amounts between daily buckets and VAT properties when the date or category changes.
 
-Each change is one DynamoDB transaction that puts a `BalanceEvent` keyed by the stream `eventID` (condition: not already present, 7-day `ttl`) and updates every affected `Balance` (condition: it exists). A conditional-check cancellation is treated as already applied, so a retried record is not counted twice. Differences use `decimal.js`. Daily buckets are keyed by the UTC midnight at or before the transaction date.
+Each change is one DynamoDB transaction that puts a `BalanceEvent` keyed by the stream `eventID` (condition: not already present, 7-day `ttl`) and updates the `Balance` (condition: it exists). A conditional-check cancellation is treated as already applied, so a retried record is not counted twice. Differences use `decimal.js`. Daily buckets are keyed by the transaction date's UTC midnight.
 
 VAT: category `VAT payment` uses `amount`, others use `vat`. `VAT payment` and `Sales` go to `vat.owed`, everything else to `vat.paid`.
 
