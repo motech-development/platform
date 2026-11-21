@@ -138,11 +138,13 @@ const readImage = (image: StreamRecord['NewImage']) => {
 
 const publishRecord = async (tableName: string, record: DynamoDBRecord) => {
   const { eventName, dynamodb } = record;
-  const companyId = await applyBalance(documentClient, tableName, record);
+  const companyIds = await applyBalance(documentClient, tableName, record);
 
-  if (companyId) {
-    await publishBalance(tableName, companyId, dynamodb);
-  }
+  await Promise.all(
+    companyIds.map((companyId) =>
+      publishBalance(tableName, companyId, dynamodb),
+    ),
+  );
 
   const image =
     eventName === 'REMOVE' ? dynamodb?.OldImage : dynamodb?.NewImage;
