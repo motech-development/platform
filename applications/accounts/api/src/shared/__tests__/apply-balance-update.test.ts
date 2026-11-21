@@ -712,6 +712,103 @@ describe('apply-balance: modified transactions', () => {
     });
   });
 
+  it('moves the contribution to the new company under one stream event', async () => {
+    const oldRecord = {
+      __typename: 'Transaction',
+      amount: 200.5,
+      category: 'Sales',
+      companyId: 'old-company-id',
+      date: '2019-12-14T00:00:00.000Z',
+      status: 'confirmed',
+      vat: 2.4,
+    };
+    const newRecord = {
+      ...oldRecord,
+      amount: 100.25,
+      category: 'Expenses',
+      companyId: 'new-company-id',
+      date: '2019-12-15T00:00:00.000Z',
+      vat: 1.2,
+    };
+
+    await expect(
+      applyBalance(documentClient, tableName, {
+        dynamodb: {
+          NewImage: marshall(newRecord) as Record<string, AttributeValue>,
+          OldImage: marshall(oldRecord) as Record<string, AttributeValue>,
+        },
+        eventID: 'event-1',
+      }),
+    ).resolves.toEqual(['old-company-id', 'new-company-id']);
+
+    expect(ddb).toReceiveCommandTimes(TransactWriteCommand, 1);
+    expect(ddb).toReceiveCommandWith(TransactWriteCommand, {
+      TransactItems: [
+        {
+          Put: {
+            ConditionExpression: 'attribute_not_exists(id)',
+            Item: {
+              __typename: 'BalanceEvent',
+              id: 'event-1',
+              ttl: 1592077500,
+            },
+            TableName: 'test',
+          },
+        },
+        {
+          Update: {
+            ConditionExpression: 'attribute_exists(id)',
+            ExpressionAttributeNames: {
+              '#balance': 'balance',
+              '#itemProperty': '2019-12-14T00:00:00.000Z',
+              '#items': 'items',
+              '#updatedAt': 'updatedAt',
+              '#vat': 'vat',
+              '#vatProperty': 'owed',
+            },
+            ExpressionAttributeValues: {
+              ':balance': 200.5,
+              ':updatedAt': '2020-06-06T19:45:00.000Z',
+              ':vat': 2.4,
+            },
+            Key: {
+              __typename: 'Balance',
+              id: 'old-company-id',
+            },
+            TableName: 'test',
+            UpdateExpression:
+              'SET #updatedAt = :updatedAt, #balance = #balance - :balance, #vat.#vatProperty = #vat.#vatProperty - :vat, #items.#itemProperty = #items.#itemProperty - :balance',
+          },
+        },
+        {
+          Update: {
+            ConditionExpression: 'attribute_exists(id)',
+            ExpressionAttributeNames: {
+              '#balance': 'balance',
+              '#itemProperty': '2019-12-15T00:00:00.000Z',
+              '#items': 'items',
+              '#updatedAt': 'updatedAt',
+              '#vat': 'vat',
+              '#vatProperty': 'paid',
+            },
+            ExpressionAttributeValues: {
+              ':balance': 100.25,
+              ':updatedAt': '2020-06-06T19:45:00.000Z',
+              ':vat': 1.2,
+            },
+            Key: {
+              __typename: 'Balance',
+              id: 'new-company-id',
+            },
+            TableName: 'test',
+            UpdateExpression:
+              'SET #updatedAt = :updatedAt ADD #balance :balance, #vat.#vatProperty :vat, #items.#itemProperty :balance',
+          },
+        },
+      ],
+    });
+  });
+
   it('skips a confirmed transaction without a stored company', async () => {
     const pending = {
       __typename: 'Transaction',
@@ -736,7 +833,7 @@ describe('apply-balance: modified transactions', () => {
         },
         eventID: 'event-1',
       }),
-    ).resolves.toBeUndefined();
+    ).resolves.toEqual([]);
 
     expect(ddb).toReceiveCommandTimes(TransactWriteCommand, 0);
   });

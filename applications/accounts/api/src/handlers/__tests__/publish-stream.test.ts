@@ -202,6 +202,71 @@ describe('publish-stream', () => {
     },
   );
 
+  it('moves a confirmed transaction to its new company and pushes both balances', async () => {
+    ddb
+      .on(GetCommand, {
+        Key: {
+          __typename: 'Balance',
+          id: 'new-company-id',
+        },
+      })
+      .resolves({
+        Item: {
+          ...balance,
+          balance: 50,
+          id: 'new-company-id',
+        },
+      });
+
+    await invoke([
+      record('MODIFY', transaction, {
+        ...transaction,
+        companyId: 'new-company-id',
+      }),
+    ]);
+
+    expect(ddb).toReceiveCommandTimes(TransactWriteCommand, 1);
+    expect(ddb).toReceiveCommandWith(TransactWriteCommand, {
+      TransactItems: [
+        expect.objectContaining({
+          Put: expect.objectContaining({
+            Item: expect.objectContaining({
+              id: 'event-id',
+            }) as unknown,
+          }) as unknown,
+        }),
+        expect.objectContaining({
+          Update: expect.objectContaining({
+            Key: {
+              __typename: 'Balance',
+              id: 'company-id',
+            },
+          }) as unknown,
+        }),
+        expect.objectContaining({
+          Update: expect.objectContaining({
+            Key: {
+              __typename: 'Balance',
+              id: 'new-company-id',
+            },
+          }) as unknown,
+        }),
+      ] as never,
+    });
+    expect(mutate).toHaveBeenCalledWith(balancePush);
+    expect(mutate).toHaveBeenCalledWith({
+      ...balancePush,
+      variables: {
+        ...balancePush.variables,
+        id: 'new-company-id',
+        input: {
+          ...balancePush.variables.input,
+          balance: 50,
+        },
+      },
+    });
+  });
+
   it('pushes the balance when the record was already applied', async () => {
     ddb.on(TransactWriteCommand).rejects(
       new TransactionCanceledException({
