@@ -22,7 +22,7 @@ interface IVatUtility {
 const applyOnce = async (
   documentClient: DynamoDBClient,
   eventId: string,
-  balanceUpdates: IBalanceUpdate[],
+  balanceUpdate: IBalanceUpdate,
 ): Promise<void> => {
   const command = new TransactWriteCommand({
     TransactItems: [
@@ -34,15 +34,15 @@ const applyOnce = async (
             id: eventId,
             ttl: Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60,
           },
-          TableName: balanceUpdates[0].TableName,
+          TableName: balanceUpdate.TableName,
         },
       },
-      ...balanceUpdates.map((balanceUpdate) => ({
+      {
         Update: {
           ...balanceUpdate,
           ConditionExpression: 'attribute_exists(id)',
         },
-      })),
+      },
     ],
   });
 
@@ -108,45 +108,35 @@ const commonUpdate = (tableName: string, record: ITransaction) => {
   };
 };
 
-const insertUpdate = (tableName: string, record: ITransaction) => ({
-  ...commonUpdate(tableName, record),
-  UpdateExpression:
-    'SET #updatedAt = :updatedAt ADD #balance :balance, #vat.#vatProperty :vat, #items.#itemProperty :balance',
-});
-
-const removeUpdate = (tableName: string, record: ITransaction) => ({
-  ...commonUpdate(tableName, record),
-  UpdateExpression:
-    'SET #updatedAt = :updatedAt, #balance = #balance - :balance, #vat.#vatProperty = #vat.#vatProperty - :vat, #items.#itemProperty = #items.#itemProperty - :balance',
-});
-
 export const insert = (
   documentClient: DynamoDBClient,
   tableName: string,
   record: ITransaction,
   eventId: string,
-): Promise<void> =>
-  applyOnce(documentClient, eventId, [insertUpdate(tableName, record)]);
+): Promise<void> => {
+  const balanceUpdate = {
+    ...commonUpdate(tableName, record),
+    UpdateExpression:
+      'SET #updatedAt = :updatedAt ADD #balance :balance, #vat.#vatProperty :vat, #items.#itemProperty :balance',
+  };
+
+  return applyOnce(documentClient, eventId, balanceUpdate);
+};
 
 export const remove = (
   documentClient: DynamoDBClient,
   tableName: string,
   record: ITransaction,
   eventId: string,
-): Promise<void> =>
-  applyOnce(documentClient, eventId, [removeUpdate(tableName, record)]);
+): Promise<void> => {
+  const balanceUpdate = {
+    ...commonUpdate(tableName, record),
+    UpdateExpression:
+      'SET #updatedAt = :updatedAt, #balance = #balance - :balance, #vat.#vatProperty = #vat.#vatProperty - :vat, #items.#itemProperty = #items.#itemProperty - :balance',
+  };
 
-export const move = (
-  documentClient: DynamoDBClient,
-  tableName: string,
-  oldRecord: ITransaction,
-  newRecord: ITransaction,
-  eventId: string,
-): Promise<void> =>
-  applyOnce(documentClient, eventId, [
-    removeUpdate(tableName, oldRecord),
-    insertUpdate(tableName, newRecord),
-  ]);
+  return applyOnce(documentClient, eventId, balanceUpdate);
+};
 
 export const update = (
   documentClient: DynamoDBClient,
@@ -237,5 +227,5 @@ export const update = (
     UpdateExpression: `SET ${setExpressions.join(', ')} ADD ${addExpressions.join(', ')}`,
   };
 
-  return applyOnce(documentClient, eventId, [balanceUpdate]);
+  return applyOnce(documentClient, eventId, balanceUpdate);
 };
