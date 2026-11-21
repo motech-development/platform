@@ -4,11 +4,7 @@ import {
   SchedulerClient,
 } from '@aws-sdk/client-scheduler';
 import { SendMessageBatchCommand, SQSClient } from '@aws-sdk/client-sqs';
-import {
-  GetCommand,
-  TransactWriteCommand,
-  UpdateCommand,
-} from '@aws-sdk/lib-dynamodb';
+import { GetCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import { marshall } from '@aws-sdk/util-dynamodb';
 import type { Context, DynamoDBStreamEvent } from 'aws-lambda';
 import ctx from 'aws-lambda-mock-context';
@@ -92,21 +88,9 @@ describe('process-stream', () => {
     process.env = originalEnvironment;
   });
 
-  it('applies the balance, typeahead, schedule and attachment work for a batch', async () => {
+  it('applies the typeahead, schedule and attachment work for a batch', async () => {
     await handler(event, context, vi.fn());
 
-    expect(ddb).toReceiveCommandWith(TransactWriteCommand, {
-      TransactItems: expect.arrayContaining([
-        expect.objectContaining({
-          Put: expect.objectContaining({
-            Item: expect.objectContaining({
-              __typename: 'BalanceEvent',
-              id: 'event-1',
-            }) as unknown,
-          }) as unknown,
-        }),
-      ]) as never,
-    });
     expect(ddb).toReceiveCommandWith(GetCommand, {
       Key: {
         __typename: 'Typeahead',

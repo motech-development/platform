@@ -3,7 +3,6 @@ import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import type { DynamoDBStreamHandler } from 'aws-lambda';
 import { clearDeletedAttachments } from './attachments';
 import { synchroniseSchedules } from './schedule-transactions';
-import { updateBalances } from './transactions';
 import { updateTypeahead } from './typeahead';
 
 init({
@@ -16,7 +15,6 @@ init({
 
 export const handler: DynamoDBStreamHandler = wrapHandler(async (event) => {
   const results = await Promise.allSettled([
-    updateBalances(event),
     synchroniseSchedules(event),
     updateTypeahead(event),
     clearDeletedAttachments(event),

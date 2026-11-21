@@ -2,22 +2,20 @@
 
 ## Purpose
 
-`@accounts/data` (stack `accounts-<stage>-data`) owns the DynamoDB application table that holds every Accounts record, and the Lambdas that keep derived data in step with it: balances and VAT totals, typeahead suggestions, attachment clean-up, scheduled-transaction publication and alarm reporting. Most other Accounts stacks import the table from here. See the [repository architecture](../../../../docs/architecture.md#the-application-table) for the data model and [scheduled transactions](../../../../docs/architecture.md#scheduled-transactions). Design decisions are recorded in the [Accounts ADRs](../../docs/adr/).
+`@accounts/data` (stack `accounts-<stage>-data`) owns the DynamoDB application table that holds every Accounts record, and the Lambdas that keep derived data in step with it: typeahead suggestions, attachment clean-up, scheduled-transaction publication and alarm reporting. Most other Accounts stacks import the table from here. See the [repository architecture](../../../../docs/architecture.md#the-application-table) for the data model and [scheduled transactions](../../../../docs/architecture.md#scheduled-transactions). Design decisions are recorded in the [Accounts ADRs](../../docs/adr/).
 
 ## Layout
 
-| Path                                 | Contents                                                                                                   |
-| ------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
-| `serverless.yml`                     | Table, functions, queues, failure buckets, alarms, schedule group, IAM.                                    |
-| `src/*.ts`                           | Lambda entry points, and the stream steps that `process-stream.ts` runs in turn.                           |
-| `src/handlers/`                      | Per-event-type logic used by the entry points (insert/update/remove transactions, typeahead, attachments). |
-| `src/shared/balance.ts`              | Idempotent balance writes.                                                                                 |
-| `src/shared/aggregated-day.ts`       | Rounds a date down to UTC midnight for daily balance buckets.                                              |
-| `src/shared/publication-command.ts`  | Shape of a scheduled publication message.                                                                  |
-| `src/shared/publish-notification.ts` | Writes a `Notification` item.                                                                              |
-| `src/shared/unmarshall-records.ts`   | Filters stream records by `__typename` and unmarshalls images.                                             |
-| `src/shared/extract-stream.ts`       | Splits stream records into inserts, updates and removals; requires `TABLE`.                                |
-| `src/shared/transaction.ts`          | `ITransaction` and `TransactionStatus` (`confirmed`, `pending`).                                           |
+| Path                                 | Contents                                                                         |
+| ------------------------------------ | -------------------------------------------------------------------------------- |
+| `serverless.yml`                     | Table, functions, queues, failure buckets, alarms, schedule group, IAM.          |
+| `src/*.ts`                           | Lambda entry points, and the stream steps that `process-stream.ts` runs in turn. |
+| `src/handlers/`                      | Per-event-type logic used by the entry points (typeahead, attachments).          |
+| `src/shared/publication-command.ts`  | Shape of a scheduled publication message.                                        |
+| `src/shared/publish-notification.ts` | Writes a `Notification` item.                                                    |
+| `src/shared/unmarshall-records.ts`   | Filters stream records by `__typename` and unmarshalls images.                   |
+| `src/shared/extract-stream.ts`       | Splits stream records into inserts, updates and removals; requires `TABLE`.      |
+| `src/shared/transaction.ts`          | `ITransaction` and `TransactionStatus` (`confirmed`, `pending`).                 |
 
 ## Components
 
@@ -32,21 +30,7 @@ All handlers use Sentry (`init` + `wrapHandler`); every function receives `SENTR
 
 ### `ProcessStream`
 
-The only stream consumer in this stack (see [ADR 0004](../../docs/adr/0004-read-the-application-table-stream-with-two-consumers.md)). It runs the four steps below over each batch in turn: balances, schedules, typeahead, then attachments. Any failure fails the batch, which is retried as a whole; every step is idempotent.
-
-### Balances (`transactions.ts`)
-
-`PublishStream` in `@accounts/api` applies the same changes with the same `BalanceEvent` markers, so whichever consumer applies a record first wins. This step is removed once that has reached production.
-
-Handles `Transaction` items only and applies writes one at a time, in order:
-
-- **Insert** of a `confirmed` transaction adds it to the company's `Balance`.
-- **Modify**: `pending` to `confirmed` adds; `confirmed` to `pending` subtracts the old values; `pending` to `pending` is ignored; otherwise applies the difference, moving amounts between daily buckets and VAT properties when the date or category changes.
-- **Remove** of a `confirmed` transaction subtracts it.
-
-Each write is a DynamoDB transaction that puts a `BalanceEvent` keyed by the stream `eventID` (condition: not already present, 7-day `ttl`) and updates the `Balance` (condition: it exists). A conditional-check cancellation is treated as already applied, so retries are idempotent. Amounts use `decimal.js` for differences.
-
-VAT: category `VAT payment` uses `amount`, others use `vat`. `VAT payment` and `Sales` go to `vat.owed`, everything else to `vat.paid`.
+The only stream consumer in this stack (see [ADR 0004](../../docs/adr/0004-read-the-application-table-stream-with-two-consumers.md)). It runs the three steps below over each batch: schedules, typeahead and attachments. It attempts every step before failing the batch if any step failed, so the batch is retried as a whole; every step is idempotent. Balances are applied by `PublishStream` in `@accounts/api`.
 
 ### Typeahead (`typeahead.ts`)
 
@@ -106,8 +90,8 @@ Imports: `<stage>-DeleteFileQueueUrl`, `<stage>-DeleteFileQueueArn`, `<stage>-St
 
 IAM in plain terms:
 
-- `ClearAttachments` can get, put, query and update the table and its index, consume the anti-virus failure queue and write logs.
-- `ProcessStream` can read the stream, get, put and update table items, send to the delete queue, create, update and delete `transaction-*` schedules in its group, pass the scheduler role to Scheduler only, write to the stream failure bucket and write logs.
+- `ClearAttachments` can query and update the table and its index, consume the anti-virus failure queue and write logs.
+- `ProcessStream` can read the stream, get and update table items, send to the delete queue, create, update and delete `transaction-*` schedules in its group, pass the scheduler role to Scheduler only, write to the stream failure bucket and write logs.
 - `PublishTransactions` can get, put and update table items, consume the publication queue and write logs.
 - `ReportSchedulingAlarm` can only write logs.
 
@@ -122,7 +106,7 @@ See [ADR 0002](../../docs/adr/0002-retain-exhausted-stream-batches-for-balance-a
 | Publication queue        | 5 receives                        | Publication processing DLQ                        | `publication-processing-dlq-messages-visible`                           |
 | Anti-virus failure queue | 15 receives (owned by anti-virus) | Anti-virus failure DLQ                            | `anti-virus-failure-dlq-messages-visible`                               |
 
-DLQ alarms fire on one visible message; iterator-age alarms fire at 15 minutes (900000 ms). All invoke `ReportSchedulingAlarm`. Balance writes are idempotent by stream event id, so retried batches do not double-count. Log retention is 30 days.
+DLQ alarms fire on one visible message; iterator-age alarms fire at 15 minutes (900000 ms). All invoke `ReportSchedulingAlarm`. Log retention is 30 days.
 
 ## Testing
 

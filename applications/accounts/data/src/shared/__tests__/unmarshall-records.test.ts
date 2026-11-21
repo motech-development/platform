@@ -1,6 +1,5 @@
 import type { DynamoDBRecord } from 'aws-lambda';
 import {
-  unmarshallAllRecords,
   unmarshallNewRecords,
   unmarshallOldRecords,
 } from '../unmarshall-records';
@@ -95,29 +94,6 @@ describe('unmarshall-records', () => {
         },
       },
     ];
-  });
-
-  describe('unmarshallAllRecords', () => {
-    it('should return the correct data', () => {
-      expect(unmarshallAllRecords(records, typename)).toEqual([
-        {
-          NewImage: {
-            __typename: 'Example',
-            amount: 100.25,
-            category: 'Expenses',
-            date: '2019-12-15T00:00:00.000Z',
-            vat: 1.2,
-          },
-          OldImage: {
-            __typename: 'Example',
-            amount: 200.5,
-            category: 'Expenses',
-            date: '2019-12-15T00:00:00.000Z',
-            vat: 2.4,
-          },
-        },
-      ]);
-    });
   });
 
   describe('unmarshallNewRecords', () => {
