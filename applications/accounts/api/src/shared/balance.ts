@@ -49,16 +49,22 @@ const applyOnce = async (
   try {
     await documentClient.send(command);
   } catch (e) {
-    if (
-      e instanceof TransactionCanceledException &&
-      e.CancellationReasons?.some(
-        ({ Code }) => Code === 'ConditionalCheckFailed',
-      )
-    ) {
-      return;
-    }
+    const failed =
+      e instanceof TransactionCanceledException
+        ? (e.CancellationReasons ?? []).map(
+            ({ Code }) => Code === 'ConditionalCheckFailed',
+          )
+        : [];
 
-    throw e;
+    if (!failed.includes(true)) throw e;
+
+    if (failed[0]) return;
+
+    const remaining = balanceUpdates.filter((_, index) => !failed[index + 1]);
+
+    if (remaining.length > 0) {
+      await applyOnce(documentClient, eventId, remaining);
+    }
   }
 };
 

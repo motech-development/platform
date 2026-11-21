@@ -1,4 +1,7 @@
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import {
+  DynamoDBClient,
+  TransactionCanceledException,
+} from '@aws-sdk/client-dynamodb';
 import {
   TransactWriteCommand,
   TransactWriteCommandInput,
@@ -806,6 +809,71 @@ describe('apply-balance: modified transactions', () => {
           },
         },
       ],
+    });
+  });
+
+  it('still credits the new company when the old Balance is missing', async () => {
+    ddb
+      .on(TransactWriteCommand)
+      .rejectsOnce(
+        new TransactionCanceledException({
+          $metadata: {},
+          CancellationReasons: [
+            {
+              Code: 'None',
+            },
+            {
+              Code: 'ConditionalCheckFailed',
+            },
+            {
+              Code: 'None',
+            },
+          ],
+          message: 'Transaction cancelled',
+        }),
+      )
+      .resolves({});
+
+    const oldRecord = {
+      __typename: 'Transaction',
+      amount: 100.25,
+      category: 'Sales',
+      companyId: 'old-company-id',
+      date: '2019-12-15T00:00:00.000Z',
+      status: 'confirmed',
+      vat: 1.2,
+    };
+
+    await applyBalance(documentClient, tableName, {
+      dynamodb: {
+        NewImage: marshall({
+          ...oldRecord,
+          companyId: 'new-company-id',
+        }) as Record<string, AttributeValue>,
+        OldImage: marshall(oldRecord) as Record<string, AttributeValue>,
+      },
+      eventID: 'event-1',
+    });
+
+    expect(ddb).toReceiveCommandTimes(TransactWriteCommand, 2);
+    expect(ddb).toReceiveNthCommandWith(TransactWriteCommand, 2, {
+      TransactItems: [
+        expect.objectContaining({
+          Put: expect.objectContaining({
+            Item: expect.objectContaining({
+              id: 'event-1',
+            }) as unknown,
+          }) as unknown,
+        }),
+        expect.objectContaining({
+          Update: expect.objectContaining({
+            Key: {
+              __typename: 'Balance',
+              id: 'new-company-id',
+            },
+          }) as unknown,
+        }),
+      ] as never,
     });
   });
 
