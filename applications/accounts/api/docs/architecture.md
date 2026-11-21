@@ -134,7 +134,7 @@ All use Sentry (`init` + `wrapHandler`) and receive `SENTRY_ENVIRONMENT` and `SE
 - A transaction that stays confirmed applies the difference, moving amounts between daily buckets and VAT properties when the date or category changes.
 - A transaction that stays confirmed but changes company subtracts its old values from the old company's `Balance` and adds its new values to the new company's.
 
-Each change is one DynamoDB transaction that puts a `BalanceEvent` keyed by the stream `eventID` (condition: not already present, 7-day `ttl`) and updates each affected `Balance` (condition: it exists). A conditional-check cancellation is treated as already applied, so a retried record is not counted twice. Differences use `decimal.js`. Daily buckets are keyed by the transaction date's UTC midnight.
+Each change is one DynamoDB transaction that puts a `BalanceEvent` keyed by the stream `eventID` (condition: not already present, 7-day `ttl`) and updates each affected `Balance` (condition: it exists). If the `BalanceEvent` already exists the record was already applied, so a retried record is not counted twice. A missing `Balance` is skipped; the transaction is retried without it, so a move still updates the other company's `Balance`. Differences use `decimal.js`. Daily buckets are keyed by the transaction date's UTC midnight.
 
 VAT: category `VAT payment` uses `amount`, others use `vat`. `VAT payment` and `Sales` go to `vat.owed`, everything else to `vat.paid`.
 
