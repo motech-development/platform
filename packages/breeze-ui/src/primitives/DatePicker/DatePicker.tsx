@@ -1,6 +1,6 @@
 import type { CalendarDate } from '@internationalized/date';
 import { getLocalTimeZone, today } from '@internationalized/date';
-import type { RefObject } from 'react';
+import type { FocusEvent, RefObject } from 'react';
 import {
   createElement,
   useEffect,
@@ -9,6 +9,11 @@ import {
   useRef,
   useState,
 } from 'react';
+import { mergeProps } from 'react-aria/mergeProps';
+import {
+  type FocusWithinResult,
+  useFocusWithin,
+} from 'react-aria/useFocusWithin';
 import { Button as AriaButton } from 'react-aria-components/Button';
 import { Dialog as AriaDialog } from 'react-aria-components/Dialog';
 import CollectionPopover from '../../collections/CollectionPopover';
@@ -61,6 +66,8 @@ interface DatePickerCommonProps {
   loading?: boolean;
   /** Submitted field name. */
   name?: string;
+  /** Reports that focus has left the trigger and calendar, without exposing a DOM event. */
+  onBlur?: () => void;
   /** Temporary text shown before a date is selected. */
   placeholder?: string;
   /** Prevents changing the date while retaining focus and form participation. */
@@ -263,7 +270,9 @@ function DatePickerFooter({
 function DatePickerPopover({
   calendarKey,
   dialogId,
+  dialogRef,
   disabled,
+  focusWithinProps,
   isOpen,
   label,
   onChange,
@@ -274,7 +283,9 @@ function DatePickerPopover({
 }: Readonly<{
   calendarKey: number;
   dialogId: string;
+  dialogRef: RefObject<HTMLElement | null>;
   disabled: boolean;
+  focusWithinProps: FocusWithinResult['focusWithinProps'];
   isOpen: boolean;
   label: string;
   onChange: (date: CalendarDate | null) => void;
@@ -283,8 +294,6 @@ function DatePickerPopover({
   triggerRef: RefObject<HTMLButtonElement | null>;
   value: IsoCalendarDate | null | undefined;
 }>) {
-  const dialogRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     if (!isOpen) return undefined;
 
@@ -331,7 +340,7 @@ function DatePickerPopover({
     if (focusRovingDate()) observer.disconnect();
 
     return () => observer.disconnect();
-  }, [isOpen, triggerRef]);
+  }, [dialogRef, isOpen, triggerRef]);
 
   return (
     <CollectionPopover
@@ -341,7 +350,14 @@ function DatePickerPopover({
       onOpenChange={onOpenChange}
       triggerRef={triggerRef}
     >
-      <AriaDialog aria-label={label} id={dialogId} ref={dialogRef}>
+      <AriaDialog
+        aria-label={label}
+        id={dialogId}
+        ref={dialogRef}
+        render={(dialogProps) =>
+          createElement('section', mergeProps(dialogProps, focusWithinProps))
+        }
+      >
         <CalendarSurface
           autoFocus={isOpen}
           key={calendarKey}
@@ -377,6 +393,7 @@ export function DatePicker(props: Readonly<DatePickerProps>) {
     label,
     loading = false,
     name,
+    onBlur,
     placeholder,
     readOnly = false,
     ...selection
@@ -401,7 +418,9 @@ export function DatePicker(props: Readonly<DatePickerProps>) {
   const errorId = visibleError ? `${fieldId}-error` : undefined;
   const requiredId = required ? `${fieldId}-required` : undefined;
   const triggerId = id ?? `${fieldId}-trigger`;
+  const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLElement>(null);
   const hasAutoFocused = useRef(false);
   const [uncontrolledValue, setUncontrolledValue] = useState<
     IsoCalendarDate | null | undefined
@@ -415,6 +434,22 @@ export function DatePicker(props: Readonly<DatePickerProps>) {
     [descriptionId, !loading ? errorId : undefined, requiredId]
       .filter(Boolean)
       .join(' ') || undefined;
+
+  // The calendar is portalled, so the trigger and calendar each track focus and ignore moves to the other.
+  const handleBlurWithin = ({ relatedTarget }: FocusEvent) => {
+    const staysInField =
+      relatedTarget instanceof Node &&
+      (rootRef.current?.contains(relatedTarget) ||
+        dialogRef.current?.contains(relatedTarget));
+
+    if (!staysInField) onBlur?.();
+  };
+  const { focusWithinProps: fieldFocusWithinProps } = useFocusWithin({
+    onBlurWithin: handleBlurWithin,
+  });
+  const { focusWithinProps: calendarFocusWithinProps } = useFocusWithin({
+    onBlurWithin: handleBlurWithin,
+  });
 
   useLayoutEffect(() => {
     const trigger = triggerRef.current;
@@ -571,6 +606,9 @@ export function DatePicker(props: Readonly<DatePickerProps>) {
     <div
       className={fieldVariants.base.root}
       data-required={required || undefined}
+      onBlur={fieldFocusWithinProps.onBlur}
+      onFocus={fieldFocusWithinProps.onFocus}
+      ref={rootRef}
     >
       <FieldLabel
         htmlFor={triggerId}
@@ -650,7 +688,9 @@ export function DatePicker(props: Readonly<DatePickerProps>) {
       <DatePickerPopover
         calendarKey={calendarKey}
         dialogId={dialogId}
+        dialogRef={dialogRef}
         disabled={effectiveDisabled}
+        focusWithinProps={calendarFocusWithinProps}
         isOpen={visibleOpen}
         label={label}
         onChange={handleDateChange}

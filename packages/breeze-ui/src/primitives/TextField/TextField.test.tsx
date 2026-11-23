@@ -41,6 +41,10 @@ expectTypeOf(uncontrolledTextField).toBeObject();
 expectTypeOf(compatibleTypeTextField).toBeObject();
 expectTypeOf(incompatibleTypeTextField).toBeObject();
 
+expectTypeOf<TextFieldProps['onBlur']>().toEqualTypeOf<
+  (() => void) | undefined
+>();
+
 describe('TextField', () => {
   it('associates its label and description and reports semantic strings', async () => {
     const user = userEvent.setup();
@@ -198,5 +202,25 @@ describe('TextField', () => {
     expect(onChange).not.toHaveBeenCalled();
 
     await waitFor(() => expect(loadingPlaceholder).toBeVisible());
+  });
+
+  it('reports blur without a DOM event once focus leaves the input', async () => {
+    const user = userEvent.setup();
+    const onBlur = vi.fn<() => void>();
+
+    renderBreeze(
+      <>
+        <TextField label="Name" onBlur={onBlur} />
+        <button type="button">Next</button>
+      </>,
+    );
+
+    await user.type(screen.getByRole('textbox', { name: 'Name' }), 'Ada');
+
+    expect(onBlur).not.toHaveBeenCalled();
+
+    await user.tab();
+
+    expect(onBlur).toHaveBeenCalledExactlyOnceWith();
   });
 });

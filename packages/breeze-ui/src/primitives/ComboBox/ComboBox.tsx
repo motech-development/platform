@@ -73,6 +73,8 @@ interface ComboBoxCommonProps<T> {
   items: T[];
   /** Sets the submitted name of the input. */
   name?: string;
+  /** Reports that focus has left the field, without exposing a DOM event. */
+  onBlur?: () => void;
   /** Temporary text shown while the input is empty. */
   placeholder?: string;
   /** Prevents editing while retaining focus and form participation. */
@@ -278,6 +280,7 @@ function ComboBoxBase<T>({ props }: Readonly<{ props: ComboBoxProps<T> }>) {
     label,
     loading = false,
     name,
+    onBlur,
     onChange,
     placeholder,
     readOnly = false,
@@ -414,6 +417,7 @@ function ComboBoxBase<T>({ props }: Readonly<{ props: ComboBoxProps<T> }>) {
       isRequired={required}
       menuTrigger="input"
       name={submittedName}
+      onBlur={() => onBlur?.()}
       onInputChange={handleInputChange}
       onChange={handleSelectionChange}
       value={selectedKey}

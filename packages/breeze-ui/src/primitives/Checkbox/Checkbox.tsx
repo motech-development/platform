@@ -38,6 +38,8 @@ interface CheckboxCommonProps {
   loading?: boolean;
   /** Sets the submitted name of the checkbox. */
   name?: string;
+  /** Reports that focus has left the field, without exposing a DOM event. */
+  onBlur?: () => void;
   /** Supporting guidance announced with the checkbox. */
   description?: string;
   /** Prevents editing while retaining focus and form participation. */
@@ -90,6 +92,7 @@ export function Checkbox({
   label,
   loading = false,
   name,
+  onBlur,
   onChange,
   readOnly = false,
   ref,
@@ -120,6 +123,7 @@ export function Checkbox({
       isRequired={required}
       isSelected={selected}
       name={name}
+      onBlur={() => onBlur?.()}
       onChange={onChange}
       value={value}
       validationBehavior="aria"

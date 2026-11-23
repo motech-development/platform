@@ -46,6 +46,10 @@ expectTypeOf<ComboBoxProps<Supplier>>().not.toHaveProperty('style');
 expectTypeOf<ComboBoxProps<Supplier>>().not.toHaveProperty('slot');
 expectTypeOf<ItemDescriptor>().not.toHaveProperty('children');
 
+expectTypeOf<ComboBoxProps<Supplier>['onBlur']>().toEqualTypeOf<
+  (() => void) | undefined
+>();
+
 describe('ComboBox', () => {
   it('renders an accessible input and trigger', () => {
     renderBreeze(
@@ -626,5 +630,36 @@ describe('ComboBox', () => {
     expect(overlay).toHaveAttribute('data-breeze-overlay', 'popover');
     expect(overlay).toHaveAttribute('data-breeze-topmost', 'true');
     expect(overlay?.closest('[data-breeze-portal]')).toBeInTheDocument();
+  });
+
+  it('reports blur once focus leaves the input, trigger and suggestions', async () => {
+    const user = userEvent.setup();
+    const onBlur = vi.fn<() => void>();
+
+    renderBreeze(
+      <>
+        <ComboBox
+          getItem={getItem}
+          items={suppliers}
+          label="Supplier"
+          onBlur={onBlur}
+        />
+        <button type="button">Next</button>
+      </>,
+    );
+
+    const input = screen.getByRole('combobox');
+    await user.click(screen.getByRole('button', { name: /Show suggestions/ }));
+    await user.click(screen.getByRole('option', { name: /Brass & Co/ }));
+    await user.clear(input);
+    await user.type(input, 'Ac');
+    await user.click(screen.getByRole('option', { name: /Acme Supplies/ }));
+
+    expect(input).toHaveFocus();
+    expect(onBlur).not.toHaveBeenCalled();
+
+    await user.tab();
+
+    expect(onBlur).toHaveBeenCalledExactlyOnceWith();
   });
 });

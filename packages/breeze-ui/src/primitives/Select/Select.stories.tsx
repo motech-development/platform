@@ -225,3 +225,25 @@ function ControlledExample() {
 export const Controlled: Story = {
   render: () => <ControlledExample />,
 };
+
+function BlurExample() {
+  const [blurCount, setBlurCount] = useState(0);
+
+  return (
+    <div className="breeze-story-action">
+      <Select
+        getItem={(item) => item}
+        items={choices}
+        label="Payment method"
+        onBlur={() => setBlurCount((count) => count + 1)}
+        placeholder="Select a payment method"
+      />
+      <output>Times left: {blurCount}</output>
+    </div>
+  );
+}
+
+/** `onBlur` reports each time focus leaves the field. */
+export const Blur: Story = {
+  render: () => <BlurExample />,
+};

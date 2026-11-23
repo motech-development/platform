@@ -85,6 +85,10 @@ expectTypeOf(controlledEmptyDatePicker).toBeObject();
 expectTypeOf(uncontrolledDatePicker).toBeObject();
 expectTypeOf(mixedDatePicker).toBeObject();
 
+expectTypeOf<DatePickerProps['onBlur']>().toEqualTypeOf<
+  (() => void) | undefined
+>();
+
 describe('DatePicker', () => {
   it('shows a locale-formatted long date and a calendar glyph at the trigger edge', () => {
     const { container } = renderBreeze(
@@ -1015,5 +1019,74 @@ describe('DatePicker', () => {
 
     expect(screen.getByRole('dialog', { name: 'Date' })).toBeVisible();
     expect(trigger).toHaveAttribute('aria-expanded', 'true');
+  });
+
+  it('reports blur once focus leaves the trigger and calendar', async () => {
+    const user = userEvent.setup();
+    const onBlur = vi.fn<() => void>();
+
+    renderBreeze(
+      <>
+        <DatePicker defaultValue="2026-09-03" label="Date" onBlur={onBlur} />
+        <button type="button">Continue</button>
+      </>,
+    );
+
+    const trigger = screen.getByRole('button', {
+      name: 'Date 3 September 2026',
+    });
+    await user.click(trigger);
+    await waitFor(() =>
+      expect(
+        screen.getByRole('button', {
+          name: /Thursday, 3 September 2026 selected/,
+        }),
+      ).toHaveFocus(),
+    );
+    await user.keyboard('{ArrowRight}');
+    await user.keyboard('{Enter}');
+
+    await waitFor(() =>
+      expect(
+        screen.queryByRole('dialog', { name: 'Date' }),
+      ).not.toBeInTheDocument(),
+    );
+    expect(onBlur).not.toHaveBeenCalled();
+
+    trigger.focus();
+    await user.tab();
+
+    expect(onBlur).toHaveBeenCalledExactlyOnceWith();
+  });
+
+  it('reports blur once when focus leaves an open calendar', async () => {
+    const user = userEvent.setup();
+    const onBlur = vi.fn<() => void>();
+
+    renderBreeze(
+      <>
+        <DatePicker defaultValue="2026-09-03" label="Date" onBlur={onBlur} />
+        <button type="button">Continue</button>
+      </>,
+    );
+
+    await user.click(
+      screen.getByRole('button', { name: 'Date 3 September 2026' }),
+    );
+    await waitFor(() =>
+      expect(
+        screen.getByRole('button', {
+          name: /Thursday, 3 September 2026 selected/,
+        }),
+      ).toHaveFocus(),
+    );
+    await user.click(screen.getByRole('button', { name: 'Continue' }));
+
+    await waitFor(() =>
+      expect(
+        screen.queryByRole('dialog', { name: 'Date' }),
+      ).not.toBeInTheDocument(),
+    );
+    expect(onBlur).toHaveBeenCalledOnce();
   });
 });
