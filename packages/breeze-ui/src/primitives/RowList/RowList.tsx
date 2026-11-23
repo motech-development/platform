@@ -37,6 +37,8 @@ const variants = {
     headingLabel: 'breeze:col-start-1 breeze:min-inline-0',
     headings:
       'breeze:box-border breeze:inline-full breeze:min-inline-0 breeze:grid breeze:items-center breeze:gap-breeze-3 breeze:border-breeze-line breeze:border-be breeze:px-breeze-4 breeze:py-breeze-3 breeze:font-breeze-sans breeze:text-breeze-2xs breeze:font-semibold breeze:uppercase breeze:tracking-breeze-wide breeze:text-breeze-ink-3',
+    initials:
+      'breeze:flex breeze:block-breeze-6 breeze:inline-breeze-6 breeze:shrink-0 breeze:items-center breeze:justify-center breeze:rounded-breeze-sm breeze:bg-breeze-brand-soft breeze:font-breeze-sans breeze:text-breeze-2xs breeze:font-bold breeze:text-breeze-brand-text',
     item: 'breeze:box-border breeze:inline-full breeze:min-inline-0 breeze:grid breeze:items-center breeze:gap-breeze-3 breeze:border-breeze-sunken breeze:border-be breeze:px-breeze-4 breeze:py-breeze-2 breeze:text-start breeze:outline-offset-[-2px] breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-50 breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[hovered]:bg-breeze-raised breeze:data-[pressed]:bg-breeze-raised breeze:any-pointer-coarse:min-block-breeze-tap',
     label: 'breeze:min-inline-0 breeze:truncate',
     leading:
@@ -160,10 +162,22 @@ export interface RowListSectionDescriptor {
   summary?: RowListSectionSummary;
 }
 
-/** The closed content contract for a row and its aligned regions. */
-export interface RowListItemDescriptor extends ItemDescriptor {
+interface RowListIconLeading {
   /** Colours the icon tile for money in or out; neutral when omitted. */
   direction?: 'in' | 'out';
+  /** Icon shown in a tile before the label. */
+  icon?: ItemDescriptor['icon'];
+  initials?: never;
+}
+
+interface RowListInitialsLeading {
+  direction?: never;
+  icon?: never;
+  /** Short initials shown in a brand tile in place of an icon. */
+  initials: string;
+}
+
+interface RowListItemContent extends Omit<ItemDescriptor, 'icon'> {
   /** Shows quiet placeholders for supplied metadata and value regions. */
   loading?: boolean;
   /** Optional middle region, formatted as text or a locale-aware calendar date. */
@@ -175,6 +189,10 @@ export interface RowListItemDescriptor extends ItemDescriptor {
   /** Optional trailing region, formatted as text or locale-aware currency. */
   value?: RowListValue;
 }
+
+/** The closed content contract for a row and its aligned regions. */
+export type RowListItemDescriptor = RowListItemContent &
+  (RowListIconLeading | RowListInitialsLeading);
 
 /** A static row's trailing action: a button, or a link that navigates or downloads. */
 export type RowListRowAction =
@@ -193,9 +211,8 @@ export type RowListRowAction =
       onAction?: never;
     };
 
-/** The content contract for a row that is not itself an action. */
-export interface RowListStaticItemDescriptor
-  extends Omit<RowListItemDescriptor, 'disabled' | 'value'> {
+interface RowListStaticItemContent
+  extends Omit<RowListItemContent, 'disabled' | 'value'> {
   /** Optional trailing action, in place of a value. */
   action?: RowListRowAction;
   /** Unavailable: a static row cannot be disabled. */
@@ -206,8 +223,12 @@ export interface RowListStaticItemDescriptor
   value?: never;
 }
 
+/** The content contract for a row that is not itself an action. */
+export type RowListStaticItemDescriptor = RowListStaticItemContent &
+  (RowListIconLeading | RowListInitialsLeading);
+
 type RowDescriptor = RowListItemDescriptor &
-  Pick<RowListStaticItemDescriptor, 'action' | 'unread'>;
+  Pick<RowListStaticItemContent, 'action' | 'unread'>;
 
 /** Visible column headings, each aligned to the row region it names. */
 export interface RowListHeadings {
@@ -508,6 +529,11 @@ function RowContent({
               variants.variant.readState[descriptor.unread ? 'unread' : 'read'],
             ].join(' ')}
           />
+        )}
+        {descriptor.initials !== undefined && (
+          <span aria-hidden="true" className={variants.base.initials}>
+            {descriptor.initials}
+          </span>
         )}
         {descriptor.icon && (
           <IconTile

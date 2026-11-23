@@ -23,6 +23,8 @@ Pass your data as `items` and a `getItem` function that returns a
 - `id` and `label` are required. Keep each `id` unique and stable, so the
   focused row stays in place when the data changes.
 - `description`, `icon`, `badge` and `disabled` are optional.
+- `initials` shows short initials, such as a client's or company's, in a brand
+  tile in place of `icon`. Set one or the other.
 - `metadata` takes text or an ISO calendar date.
 - `value` takes text or a currency amount, formatted in the provider's locale.
   A currency `value` is formatted by `Typography`, so a non-finite amount or a
@@ -33,6 +35,8 @@ Pass your data as `items` and a `getItem` function that returns a
 
 A metadata or value column takes up space only when at least one row in the
 list uses it; otherwise the label extends into that space.
+
+<Canvas of={Stories.Initials} />
 
 ## Sections
 

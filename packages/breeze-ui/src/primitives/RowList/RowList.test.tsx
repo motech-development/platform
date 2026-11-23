@@ -55,6 +55,12 @@ function getEntryDescriptor(entry: Entry): RowListItemDescriptor {
 expectTypeOf<
   NonNullable<RowListProps<Entry>['onAction']>
 >().parameters.toEqualTypeOf<[Entry]>();
+expectTypeOf<{
+  icon: 'document';
+  id: string;
+  initials: string;
+  label: string;
+}>().not.toExtend<RowListItemDescriptor>();
 expectTypeOf<RowListStaticItemDescriptor['value']>().toEqualTypeOf<undefined>();
 expectTypeOf<
   RowListStaticItemDescriptor['disabled']
@@ -516,6 +522,28 @@ describe('RowList', () => {
     expect(
       within(read).getByText('A transaction was published'),
     ).not.toHaveClass('breeze:font-semibold');
+  });
+
+  it('leads a row with initials in place of an icon', () => {
+    const companies = [
+      { id: 'bramble', initials: 'BS', label: 'Bramble Studio' },
+    ] satisfies RowListItemDescriptor[];
+
+    renderBreeze(
+      <RowList
+        aria-label="Companies"
+        getItem={(company) => company}
+        items={companies}
+        onAction={() => undefined}
+      />,
+    );
+
+    const row = screen.getByRole('row', { name: 'Bramble Studio' });
+
+    expect(within(row).getByText('BS')).toHaveClass(
+      'breeze:bg-breeze-brand-soft',
+    );
+    expect(within(row).getByText('BS')).toHaveAttribute('aria-hidden', 'true');
   });
 
   it('keeps an empty result as a named grid with a row and cell', () => {
