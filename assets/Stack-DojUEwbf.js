@@ -1,0 +1,13 @@
+import{n as e}from"./rolldown-runtime-DaJ6WEGw.js";import{t}from"./jsx-runtime-cM__dR4X.js";import{i as n}from"./react-XnqUzw--.js";import{c as r,n as i,r as a,s as o}from"./blocks-CPvx_gCG.js";import{t as s}from"./mdx-react-shim-y1jXGhTh.js";import{Centred as c,Default as l,n as u,t as d}from"./Stack.stories-DWwLNSPG.js";function f(e){let t={code:`code`,h1:`h1`,h2:`h2`,p:`p`,...n(),...e.components};return(0,m.jsxs)(m.Fragment,{children:[(0,m.jsx)(o,{of:d,summary:`Arranges children vertically on the Breeze spacing scale.`}),`
+`,(0,m.jsx)(t.h1,{id:`stack`,children:`Stack`}),`
+`,(0,m.jsxs)(t.p,{children:[(0,m.jsx)(t.code,{children:`Stack`}),` arranges related content in a column. Set `,(0,m.jsx)(t.code,{children:`gap`}),` to choose the spacing from the 4px Breeze spacing scale, and `,(0,m.jsx)(t.code,{children:`horizontalAlign`}),` to align the children horizontally.`]}),`
+`,(0,m.jsx)(a,{of:l}),`
+`,(0,m.jsx)(t.h2,{id:`alignment`,children:`Alignment`}),`
+`,(0,m.jsxs)(t.p,{children:[`By default, children stretch to the full width of the stack. Set `,(0,m.jsx)(t.code,{children:`horizontalAlign`}),` to `,(0,m.jsx)(t.code,{children:`start`}),`, `,(0,m.jsx)(t.code,{children:`center`}),` or `,(0,m.jsx)(t.code,{children:`end`}),` to keep each child at its natural width.`]}),`
+`,(0,m.jsx)(a,{of:c}),`
+`,(0,m.jsx)(t.h2,{id:`loading`,children:`Loading`}),`
+`,(0,m.jsxs)(t.p,{children:[(0,m.jsx)(t.code,{children:`Stack`}),` has no loading state of its own. Show loading inside each item, using components with a `,(0,m.jsx)(t.code,{children:`loading`}),` prop or a `,(0,m.jsx)(t.code,{children:`Skeleton`}),` sized like the final content, so the spacing stays the same when the content arrives.`]}),`
+`,(0,m.jsx)(t.h2,{id:`accessibility`,children:`Accessibility`}),`
+`,(0,m.jsxs)(t.p,{children:[(0,m.jsx)(t.code,{children:`Stack`}),` renders a `,(0,m.jsx)(t.code,{children:`div`}),` by default, which adds no meaning for assistive technology. Set `,(0,m.jsx)(t.code,{children:`element`}),` to `,(0,m.jsx)(t.code,{children:`main`}),`, `,(0,m.jsx)(t.code,{children:`nav`}),` or `,(0,m.jsx)(t.code,{children:`section`}),` only when the content has that meaning, and name landmarks or regions with `,(0,m.jsx)(t.code,{children:`aria-label`}),`.`]}),`
+`,(0,m.jsx)(t.h2,{id:`api`,children:`API`}),`
+`,(0,m.jsx)(i,{})]})}function p(e={}){let{wrapper:t}={...n(),...e.components};return t?(0,m.jsx)(t,{...e,children:(0,m.jsx)(f,{...e})}):f(e)}var m;e((()=>{m=t(),s(),r(),u()}))();export{p as default};

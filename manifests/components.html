@@ -588,13 +588,13 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">4/45 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">6/45 infos</a><span class="filter-pill ok" aria-disabled="true">214 stories ok</span><a class="filter-pill ok" data-k="docs" href="#filter-docs">47 docs ok</a></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">4/45 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">6/45 infos</a><span class="filter-pill ok" aria-disabled="true">216 stories ok</span><a class="filter-pill ok" data-k="docs" href="#filter-docs">47 docs ok</a></div>
   </div>
 </header>
 <main>
   <div class="wrap">
     <div class="note ok" style="margin-bottom: 16px;">
-              Using <code>react-docgen-typescript</code>. Generation took <strong>2.7s</strong>.
+              Using <code>react-docgen-typescript</code>. Generation took <strong>2.0s</strong>.
             </div>
     <h2 class="section-title">Components</h2>
     <div class="grid" role="list">
@@ -4354,7 +4354,7 @@ Override the provider&#39;s `selectDate`, `today`, `clearDate` and `required` me
       <div class="badges">
         <label for="c-13-overlays-dialog-props" class="badge ok as-toggle">7 prop types</label>
         
-        <label for="c-13-overlays-dialog-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-13-overlays-dialog-stories" class="badge ok as-toggle">2 stories</label>
         <label for="c-13-overlays-dialog-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
@@ -4407,9 +4407,10 @@ open?: boolean
 title: string
 
 /**
+ * Omit, and control `open`, to open the surface from your own control or route.
  * Label for the library-owned trigger button.
  */
-trigger: string</code></pre>
+trigger?: string</code></pre>
           </div>
         </div>
     
@@ -4433,6 +4434,15 @@ trigger: string</code></pre>
               
               <div class="hint">An open surface that can be closed and reopened from its trigger.</div>
               <pre><code>const Default = () =&gt; &lt;Dialog defaultOpen title=&quot;Delivery details&quot; trigger=&quot;View delivery details&quot;&gt;&lt;Typography&gt;Your delivery arrives on Monday.&lt;/Typography&gt;&lt;/Dialog&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Discard Changes</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A confirmation opened from state when a drawer is dismissed; the drawer stays open until the person discards.</div>
+              <pre><code>const DiscardChanges = () =&gt; &lt;DiscardChangesDrawer /&gt;;</code></pre>
             </div>
         </div>
     
@@ -4484,13 +4494,43 @@ To control the dialog from your application state, pass both `open` and `onOpenC
 &lt;/Dialog&gt;
 ```
 
+## Opening from your own control
+
+To open the dialog from application state, omit `trigger` and pass `open` and `onOpenChange`. The dialog then renders no button of its own. A dialog without a trigger must be controlled.
+
+Use this to confirm before a drawer closes. Keep the drawer&#39;s `open` state `true` when it reports `onOpenChange(false)`, open a dialog inside it instead, and close both only when the person confirms.
+
+```tsx
+&lt;Drawer
+  onOpenChange={(open) =&gt; setConfirming(!open)}
+  open={sheetOpen}
+  title=&quot;Northwind Supplies&quot;
+&gt;
+  &lt;TextField label=&quot;Description&quot; /&gt;
+  &lt;Dialog
+    onOpenChange={setConfirming}
+    open={confirming}
+    title=&quot;Discard changes?&quot;
+  &gt;
+    &lt;Button onAction={() =&gt; setConfirming(false)} variant=&quot;secondary&quot;&gt;
+      Keep editing
+    &lt;/Button&gt;
+    &lt;Button onAction={discard} variant=&quot;danger&quot;&gt;
+      Discard
+    &lt;/Button&gt;
+  &lt;/Dialog&gt;
+&lt;/Drawer&gt;
+```
+
+&lt;Canvas of={Stories.DiscardChanges} /&gt;
+
 ## Dismissal
 
 By default, pressing Escape or clicking outside the dialog closes it. Set `dismissible={false}` to keep it open in those cases; the close button still works.
 
 ## Accessibility
 
-- Focus moves into the dialog when it opens, stays inside it while open, and is restored when it closes.
+- Focus moves into the dialog when it opens, stays inside it while open, and returns to the control that opened it when it closes. If nothing was focused when it opened, or that control has since been removed, focus moves to the overlay it was opened in, if any, and otherwise to the page&#39;s `main` landmark if it can take focus, as the skip-link target in `ApplicationShell` can.
 - The close button&#39;s accessible name comes from the provider&#39;s messages.
 - The dialog keeps the provider&#39;s locale and text direction.
 - Opening and closing animations respect the reduced-motion preference.
@@ -4876,7 +4916,7 @@ For `mediaType=&quot;document&quot;`, the browser&#39;s own viewer displays the 
       <div class="badges">
         <label for="c-15-overlays-drawer-props" class="badge ok as-toggle">10 prop types</label>
         
-        <label for="c-15-overlays-drawer-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-15-overlays-drawer-stories" class="badge ok as-toggle">4 stories</label>
         <label for="c-15-overlays-drawer-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
@@ -4944,9 +4984,10 @@ open?: boolean
 title: string
 
 /**
+ * Omit, and control `open`, to open the surface from your own control or route.
  * Label for the library-owned trigger button.
  */
-trigger: string</code></pre>
+trigger?: string</code></pre>
           </div>
         </div>
     
@@ -4997,6 +5038,15 @@ trigger: string</code></pre>
     &lt;/&gt;)}
     footerStart={&lt;Button variant=&quot;danger&quot;&gt;Delete transaction&lt;/Button&gt;}
     footerSummary=&quot;Takes £139.00 off the balance now&quot;&gt;&lt;TextField defaultValue=&quot;Northwind Supplies&quot; label=&quot;Name&quot; /&gt;&lt;/Drawer&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">From Application State</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A drawer opened from the application&#39;s own control, with no trigger of its own, that returns focus to that control.</div>
+              <pre><code>const FromApplicationState = () =&gt; &lt;StateOpenedDrawer /&gt;;</code></pre>
             </div>
         </div>
     
@@ -5084,6 +5134,21 @@ To control the drawer from your own state, pass both `open` and `onOpenChange`. 
 &lt;/Drawer&gt;
 ```
 
+## Opening from your own control
+
+To open the drawer from a control it does not own, such as a list row, a page-header button or a route, omit `trigger` and pass `open` and `onOpenChange`. The drawer then renders no button of its own. A drawer without a trigger must be controlled.
+
+```tsx
+&lt;Button onAction={() =&gt; setOpen(true)}&gt;Northwind Supplies&lt;/Button&gt;
+&lt;Drawer onOpenChange={setOpen} open={open} title=&quot;Transaction&quot;&gt;
+  &lt;Typography&gt;Printer toner and paper, £139.00.&lt;/Typography&gt;
+&lt;/Drawer&gt;
+```
+
+&lt;Canvas of={Stories.FromApplicationState} /&gt;
+
+Escape, an outside press and the close button call `onOpenChange(false)`. The drawer stays open until you set `open` to `false`, so you can ask the person to confirm first, for example by opening a `Dialog` to discard unsaved changes.
+
 ## Dismissal
 
 By default, pressing Escape or clicking outside the drawer closes it. Set `dismissible={false}` to keep it open in those cases, for example while a form has unsaved changes. The close button still works.
@@ -5098,7 +5163,7 @@ See the `Foundations/Overlay stack` stories for more combinations.
 
 ## Accessibility
 
-Opening the drawer moves focus into it, and focus stays inside while it is open. Closing it returns focus to the trigger. The drawer&#39;s DOM is rendered in a portal, but it stays in your React tree and keeps the provider&#39;s locale and text direction.
+Opening the drawer moves focus into it, and focus stays inside while it is open. Closing it returns focus to the control that opened it. If nothing was focused when it opened, for example after a deep link, or that control has since been removed, focus moves to the overlay it was opened in, if any, and otherwise to the page&#39;s `main` landmark if it can take focus, as the skip-link target in `ApplicationShell` can. The drawer&#39;s DOM is rendered in a portal, but it stays in your React tree and keeps the provider&#39;s locale and text direction.
 
 The open and close animations respect the user&#39;s reduced-motion setting. As soon as a drawer starts to close, the content beneath it becomes interactive again, without waiting for the animation to finish.
 

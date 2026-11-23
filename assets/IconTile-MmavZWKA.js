@@ -1,0 +1,11 @@
+import{n as e}from"./rolldown-runtime-DaJ6WEGw.js";import{t}from"./jsx-runtime-cM__dR4X.js";import{i as n}from"./react-XnqUzw--.js";import{c as r,n as i,r as a,s as o}from"./blocks-CPvx_gCG.js";import{t as s}from"./mdx-react-shim-y1jXGhTh.js";import{Direction as c,Treatments as l,n as u,t as d}from"./IconTile.stories-Dee_0DMr.js";function f(e){let t={code:`code`,h1:`h1`,h2:`h2`,p:`p`,...n(),...e.components};return(0,m.jsxs)(m.Fragment,{children:[(0,m.jsx)(o,{of:d,summary:`Places curated artwork on a semantic colour wash.`}),`
+`,(0,m.jsx)(t.h1,{id:`icontile`,children:`IconTile`}),`
+`,(0,m.jsxs)(t.p,{children:[(0,m.jsx)(t.code,{children:`IconTile`}),` shows an icon on a soft coloured background. Use it to illustrate empty states, list rows and similar content. Set `,(0,m.jsx)(t.code,{children:`name`}),` to choose the icon and `,(0,m.jsx)(t.code,{children:`tone`}),` to choose the colour; `,(0,m.jsx)(t.code,{children:`tone`}),` defaults to `,(0,m.jsx)(t.code,{children:`brand`}),`.`]}),`
+`,(0,m.jsx)(a,{of:l}),`
+`,(0,m.jsx)(t.h2,{id:`direction-markers`,children:`Direction markers`}),`
+`,(0,m.jsxs)(t.p,{children:[`For a money-in or money-out marker, use the small circular tile with `,(0,m.jsx)(t.code,{children:`shape="circle"`}),` and `,(0,m.jsx)(t.code,{children:`size="sm"`}),`. Use `,(0,m.jsx)(t.code,{children:`tone="positive"`}),` for money in and `,(0,m.jsx)(t.code,{children:`tone="strong"`}),` for money out. `,(0,m.jsx)(t.code,{children:`strong`}),` has the same background as `,(0,m.jsx)(t.code,{children:`neutral`}),`, with a darker icon.`]}),`
+`,(0,m.jsx)(a,{of:c}),`
+`,(0,m.jsx)(t.h2,{id:`accessibility`,children:`Accessibility`}),`
+`,(0,m.jsxs)(t.p,{children:[`The icon is decorative by default and hidden from assistive technology. Pass `,(0,m.jsx)(t.code,{children:`label`}),` only when no nearby text describes what it means. Do not rely on the tile colour alone to convey meaning.`]}),`
+`,(0,m.jsx)(t.h2,{id:`api`,children:`API`}),`
+`,(0,m.jsx)(i,{})]})}function p(e={}){let{wrapper:t}={...n(),...e.components};return t?(0,m.jsx)(t,{...e,children:(0,m.jsx)(f,{...e})}):f(e)}var m;e((()=>{m=t(),s(),r(),u()}))();export{p as default};
