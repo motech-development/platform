@@ -70,6 +70,8 @@ interface SelectCommonProps<T> {
   items: T[];
   /** Sets the submitted name of the control. */
   name?: string;
+  /** Reports that focus has left the field, without exposing a DOM event. */
+  onBlur?: () => void;
   /** Temporary text shown when no choice is selected. */
   placeholder?: string;
   /** Prevents changing the choice while retaining focus and form participation. */
@@ -214,6 +216,7 @@ export function Select<T>({
   label,
   loading = false,
   name,
+  onBlur,
   onChange,
   placeholder,
   readOnly = false,
@@ -262,6 +265,7 @@ export function Select<T>({
       isInvalid={isInvalid}
       isRequired={required}
       name={name}
+      onBlur={() => onBlur?.()}
       onChange={(key) => {
         if (readOnly) return;
 

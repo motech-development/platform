@@ -35,6 +35,10 @@ expectTypeOf(controlledNumberField).toBeObject();
 expectTypeOf(mixedNumberField).toBeObject();
 expectTypeOf(uncontrolledNumberField).toBeObject();
 
+expectTypeOf<NumberFieldProps['onBlur']>().toEqualTypeOf<
+  (() => void) | undefined
+>();
+
 describe('NumberField', () => {
   it('steps with the arrow keys, renders no stepper buttons and retains tabular figures', async () => {
     const user = userEvent.setup();
@@ -282,5 +286,30 @@ describe('NumberField', () => {
     await user.type(input, '{ArrowUp}3');
 
     expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it('reports blur after committing the entered number', async () => {
+    const user = userEvent.setup();
+    const onBlur = vi.fn<() => void>();
+    const onChange = vi.fn<(value: number) => void>();
+
+    renderBreeze(
+      <>
+        <NumberField label="Quantity" onBlur={onBlur} onChange={onChange} />
+        <button type="button">Next</button>
+      </>,
+    );
+
+    await user.type(screen.getByRole('textbox', { name: 'Quantity' }), '12');
+
+    expect(onBlur).not.toHaveBeenCalled();
+
+    await user.tab();
+
+    expect(onBlur).toHaveBeenCalledExactlyOnceWith();
+    expect(onChange).toHaveBeenLastCalledWith(12);
+    expect(onChange.mock.invocationCallOrder.at(-1)).toBeLessThan(
+      onBlur.mock.invocationCallOrder[0],
+    );
   });
 });

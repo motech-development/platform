@@ -50,6 +50,8 @@ interface NumberFieldCommonProps {
   minValue?: number;
   /** Sets the submitted name of the field's hidden native input. */
   name?: string;
+  /** Reports that focus has left the field, without exposing a DOM event. */
+  onBlur?: () => void;
   /** Temporary text shown while the input is empty. */
   placeholder?: string;
   /** Prevents editing while retaining focus and form participation. */
@@ -107,6 +109,7 @@ export function NumberField({
   maxValue,
   minValue,
   name,
+  onBlur,
   onChange,
   placeholder,
   readOnly = false,
@@ -139,6 +142,7 @@ export function NumberField({
       maxValue={maxValue}
       minValue={minValue}
       name={name}
+      onBlur={() => onBlur?.()}
       onChange={onChange}
       step={step}
       validationBehavior="aria"

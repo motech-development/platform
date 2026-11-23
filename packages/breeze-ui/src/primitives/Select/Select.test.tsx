@@ -41,6 +41,10 @@ expectTypeOf<SelectProps<(typeof choices)[number]>>().not.toHaveProperty(
 );
 expectTypeOf<ItemDescriptor>().not.toHaveProperty('children');
 
+expectTypeOf<SelectProps<(typeof choices)[number]>['onBlur']>().toEqualTypeOf<
+  (() => void) | undefined
+>();
+
 describe('Select', () => {
   it('renders an accessible popover trigger and hidden native form select', async () => {
     const user = userEvent.setup();
@@ -570,5 +574,69 @@ describe('Select', () => {
     expect(overlay).toHaveAttribute('data-breeze-overlay', 'popover');
     expect(overlay).toHaveAttribute('data-breeze-topmost', 'true');
     expect(overlay?.closest('[data-breeze-portal]')).toBeInTheDocument();
+  });
+
+  it('reports blur once focus leaves the trigger and listbox', async () => {
+    const user = userEvent.setup();
+    const onBlur = vi.fn<() => void>();
+
+    renderBreeze(
+      <>
+        <Select
+          getItem={getEnabledItem}
+          items={enabledChoices}
+          label="Payment method"
+          onBlur={onBlur}
+        />
+        <button type="button">Next</button>
+      </>,
+    );
+
+    const trigger = screen.getByRole('button', { name: 'Payment method' });
+    await user.click(trigger);
+    await waitFor(() =>
+      expect(
+        screen.getByRole('option', { name: /Bank account/ }),
+      ).toHaveFocus(),
+    );
+    await user.keyboard('{ArrowDown}');
+    await user.click(screen.getByRole('option', { name: /Cash/ }));
+
+    await waitFor(() => expect(trigger).toHaveFocus());
+    expect(onBlur).not.toHaveBeenCalled();
+
+    await user.tab();
+
+    expect(onBlur).toHaveBeenCalledExactlyOnceWith();
+  });
+
+  it('reports blur once when focus leaves an open listbox', async () => {
+    const user = userEvent.setup();
+    const onBlur = vi.fn<() => void>();
+
+    renderBreeze(
+      <>
+        <Select
+          getItem={getEnabledItem}
+          items={enabledChoices}
+          label="Payment method"
+          onBlur={onBlur}
+        />
+        <button type="button">Next</button>
+      </>,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Payment method' }));
+    await waitFor(() =>
+      expect(
+        screen.getByRole('option', { name: /Bank account/ }),
+      ).toHaveFocus(),
+    );
+    await user.click(screen.getByRole('button', { name: 'Next' }));
+
+    await waitFor(() =>
+      expect(screen.queryByRole('listbox')).not.toBeInTheDocument(),
+    );
+    expect(onBlur).toHaveBeenCalledOnce();
   });
 });

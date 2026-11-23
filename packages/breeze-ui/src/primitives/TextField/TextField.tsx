@@ -32,6 +32,8 @@ interface TextFieldCommonProps {
   loading?: boolean;
   /** Sets the submitted name of the input. */
   name?: string;
+  /** Reports that focus has left the field, without exposing a DOM event. */
+  onBlur?: () => void;
   /** Temporary text shown while the input is empty. */
   placeholder?: string;
   /** Prevents editing while retaining focus and form participation. */
@@ -84,6 +86,7 @@ export function TextField({
   label,
   loading = false,
   name,
+  onBlur,
   onChange,
   placeholder,
   readOnly = false,
@@ -108,6 +111,7 @@ export function TextField({
       isReadOnly={readOnly}
       isRequired={required}
       name={name}
+      onBlur={() => onBlur?.()}
       onChange={onChange}
       type={type}
       validationBehavior="aria"

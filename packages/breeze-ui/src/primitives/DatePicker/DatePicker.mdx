@@ -62,6 +62,15 @@ For an uncontrolled field, use `defaultValue` with an optional `onChange`. Contr
 
 <Canvas of={Stories.Controlled} />
 
+## Blur
+
+`onBlur` reports that focus has left the field, for example to show a
+validation error only once the user has moved on. Like `onChange`, it receives
+no DOM event. It reports once when focus leaves the whole field: moving into
+the calendar and choosing a date do not count.
+
+<Canvas of={Stories.Blur} />
+
 ## Forms
 
 Set `name` to include the date in form submission as an ISO string; an empty field submits an empty string. There is no `autoComplete` prop, as browser autofill does not apply to the date button.

@@ -33,6 +33,10 @@ expectTypeOf(controlledCheckbox).toBeObject();
 expectTypeOf(mixedCheckbox).toBeObject();
 expectTypeOf(uncontrolledCheckbox).toBeObject();
 
+expectTypeOf<CheckboxProps['onBlur']>().toEqualTypeOf<
+  (() => void) | undefined
+>();
+
 describe('Checkbox', () => {
   it('reports semantic checked state through pointer and keyboard activation', async () => {
     const user = userEvent.setup();
@@ -229,5 +233,25 @@ describe('Checkbox', () => {
 
     expect(onChange).toHaveBeenCalledWith(true);
     expect(checkbox).not.toBeChecked();
+  });
+
+  it('reports blur without a DOM event once focus leaves the checkbox', async () => {
+    const user = userEvent.setup();
+    const onBlur = vi.fn<() => void>();
+
+    renderBreeze(
+      <>
+        <Checkbox label="Accept terms" onBlur={onBlur} />
+        <button type="button">Next</button>
+      </>,
+    );
+
+    await user.click(screen.getByRole('checkbox', { name: 'Accept terms' }));
+
+    expect(onBlur).not.toHaveBeenCalled();
+
+    await user.tab();
+
+    expect(onBlur).toHaveBeenCalledExactlyOnceWith();
   });
 });

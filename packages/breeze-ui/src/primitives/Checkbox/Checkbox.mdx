@@ -52,6 +52,14 @@ For an uncontrolled checkbox, use `defaultSelected` with an optional `onChange`.
 
 <Canvas of={Stories.Controlled} />
 
+## Blur
+
+`onBlur` reports that focus has left the checkbox, for example to show a
+validation error only once the user has moved on. Like `onChange`, it receives
+no DOM event.
+
+<Canvas of={Stories.Blur} />
+
 ## Accessibility
 
 - The checkbox is a native input named by its `label`. Clicking the description also toggles it, but the description is not part of the name.
