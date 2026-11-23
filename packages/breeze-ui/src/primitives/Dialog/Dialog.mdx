@@ -36,13 +36,43 @@ To control the dialog from your application state, pass both `open` and `onOpenC
 </Dialog>
 ```
 
+## Opening from your own control
+
+To open the dialog from application state, omit `trigger` and pass `open` and `onOpenChange`. The dialog then renders no button of its own. A dialog without a trigger must be controlled.
+
+Use this to confirm before a drawer closes. Keep the drawer's `open` state `true` when it reports `onOpenChange(false)`, open a dialog inside it instead, and close both only when the person confirms.
+
+```tsx
+<Drawer
+  onOpenChange={(open) => setConfirming(!open)}
+  open={sheetOpen}
+  title="Northwind Supplies"
+>
+  <TextField label="Description" />
+  <Dialog
+    onOpenChange={setConfirming}
+    open={confirming}
+    title="Discard changes?"
+  >
+    <Button onAction={() => setConfirming(false)} variant="secondary">
+      Keep editing
+    </Button>
+    <Button onAction={discard} variant="danger">
+      Discard
+    </Button>
+  </Dialog>
+</Drawer>
+```
+
+<Canvas of={Stories.DiscardChanges} />
+
 ## Dismissal
 
 By default, pressing Escape or clicking outside the dialog closes it. Set `dismissible={false}` to keep it open in those cases; the close button still works.
 
 ## Accessibility
 
-- Focus moves into the dialog when it opens, stays inside it while open, and is restored when it closes.
+- Focus moves into the dialog when it opens, stays inside it while open, and returns to the control that opened it when it closes. If nothing was focused when it opened, or that control has since been removed, focus moves to the page's `main` landmark.
 - The close button's accessible name comes from the provider's messages.
 - The dialog keeps the provider's locale and text direction.
 - Opening and closing animations respect the reduced-motion preference.
