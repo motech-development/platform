@@ -142,7 +142,10 @@ example also shows a busy Load more button.
 ### Loading more rows
 
 Pass `loadMore` with a `label`, `onAction` and optional `loading` when another
-page of data is available. The button keeps its label while busy, and screen
+page of data is available. Add a `status` to say what is loaded beside the
+button, such as “Showing 11 transactions”, as the first example on this page
+does. When your data has no total, count what is loaded rather than writing
+“N of M”. The button keeps its label while busy, and screen
 readers hear the same loading announcement as the list, without the existing
 rows being read again.
 

@@ -52,6 +52,7 @@ const meta = {
     loadMore: {
       label: 'Load more activity',
       onAction: fn(),
+      status: 'Showing 3 entries',
     },
     loading: false,
     onAction: fn(),
@@ -148,6 +149,21 @@ async function verifyResponsiveGeometry(canvasElement: HTMLElement) {
     ).toBeLessThan(1);
     await expect(coffeeMetadataRect.width).toBe(120);
     await expect(coffeeValueRegionRect.width).toBe(104);
+
+    const status = canvas
+      .getByText('Showing 3 entries')
+      .getBoundingClientRect();
+    const loadMore = canvas
+      .getByRole('button', { name: 'Load more activity' })
+      .getBoundingClientRect();
+
+    await expect(status.left).toBe(coffeeRow.getBoundingClientRect().left + 16);
+    await expect(status.right).toBeLessThan(loadMore.left);
+    await expect(
+      Math.abs(
+        status.top + status.height / 2 - (loadMore.top + loadMore.height / 2),
+      ),
+    ).toBeLessThan(1);
 
     await browserContext.page.viewport(375, 812);
     await expect(view.innerWidth).toBe(375);

@@ -43,6 +43,8 @@ const variants = {
       'breeze:col-start-1 breeze:flex breeze:min-inline-0 breeze:items-center breeze:gap-breeze-3',
     loadMore:
       'breeze:flex breeze:min-inline-0 breeze:items-center breeze:justify-end breeze:gap-[10px] breeze:border-breeze-line breeze:border-bs breeze:px-breeze-4 breeze:py-breeze-3',
+    loadMoreStatus:
+      'breeze:min-inline-0 breeze:grow breeze:truncate breeze:text-breeze-xs breeze:text-breeze-ink-3',
     loadingLeading:
       'breeze:flex breeze:min-inline-0 breeze:flex-col breeze:gap-breeze-2',
     loadingMoneyPlaceholder:
@@ -229,6 +231,8 @@ export interface RowListLoadMoreProps {
   loading?: boolean;
   /** Called when the load-more button is activated. */
   onAction: () => void;
+  /** Short text beside the button about what is loaded, such as “Showing 11 transactions”. */
+  status?: string;
 }
 
 interface RowListCommonProps<T> {
@@ -760,6 +764,11 @@ export function RowList<T>({
       </output>
       {loadMore && (
         <div className={variants.base.loadMore}>
+          {loadMore.status && (
+            <span className={variants.base.loadMoreStatus}>
+              {loadMore.status}
+            </span>
+          )}
           <Button
             loading={loadMoreLoading}
             onAction={loadMore.onAction}

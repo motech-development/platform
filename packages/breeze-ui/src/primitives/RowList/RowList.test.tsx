@@ -683,6 +683,29 @@ describe('RowList', () => {
     expect(grid.closest('[aria-live]')).toBeNull();
   });
 
+  it('shows what is loaded beside the load-more action', () => {
+    renderBreeze(
+      <RowList
+        aria-label="Entries"
+        getItem={getEntryDescriptor}
+        items={entries}
+        loadMore={{
+          label: 'Load more',
+          onAction: () => undefined,
+          status: 'Showing 2 entries',
+        }}
+        onAction={() => undefined}
+      />,
+    );
+
+    const status = screen.getByText('Showing 2 entries');
+
+    expect(screen.getByRole('grid')).not.toContainElement(status);
+    expect(status.parentElement).toContainElement(
+      screen.getByRole('button', { name: 'Load more' }),
+    );
+  });
+
   it('reports the load-more action when it is ready', async () => {
     const user = userEvent.setup();
     const onAction = vi.fn();
