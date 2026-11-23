@@ -74,6 +74,7 @@ It renders a `[data-breeze-root]` element that scopes all painting, resolves `au
 | `Menu`              | Compact menu for secondary actions                                                                      |
 | `NumberField`       | Numeric entry                                                                                           |
 | `Popover`           | Labelled popover with a trigger and close action                                                        |
+| `ProgressBar`       | Labelled determinate progress towards a known total                                                     |
 | `RowList`           | Data-backed collection with sections and explicit pagination                                            |
 | `Select`            | Fixed-choice selection                                                                                  |
 | `Separator`         | Semantic divider                                                                                        |
@@ -100,7 +101,7 @@ It renders a `[data-breeze-root]` element that scopes all painting, resolves `au
 | `FormSection`       | Field group with an accessible title and optional description    |
 | `PageHeader`        | Responsive page title and action row                             |
 | `StatePanel`        | Empty or error state with an optional recovery action            |
-| `StatStrip`         | Labelled strip of currency figures with an owned loading shape   |
+| `StatStrip`         | Labelled strip of headline figures with an owned loading shape   |
 
 ### Motion
 

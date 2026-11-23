@@ -126,6 +126,8 @@ export type { NumberFieldProps } from './primitives/NumberField/NumberField';
 export { NumberField } from './primitives/NumberField/NumberField';
 export type { PopoverProps } from './primitives/Popover/Popover';
 export { Popover } from './primitives/Popover/Popover';
+export type { ProgressBarProps } from './primitives/ProgressBar/ProgressBar';
+export { ProgressBar } from './primitives/ProgressBar/ProgressBar';
 export type {
   RowListColumnWidth,
   RowListCurrencyValue,
