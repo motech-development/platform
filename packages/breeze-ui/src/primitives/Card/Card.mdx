@@ -24,6 +24,11 @@ Set `title` to add a header with a second-level heading. Add `count` to show a n
 
 <Canvas of={Stories.TitledWithCount} />
 
+Add `description` for a short muted line under the title, such as what a form
+panel is for. Screen readers announce it as the card's description.
+
+<Canvas of={Stories.TitledWithDescription} />
+
 Use `action` for one control at the end of the header, such as a link to the full list. With a title, `padding` applies only to the content below it, so set `padding={0}` for rows that run edge to edge.
 
 <Canvas of={Stories.TitledWithAction} />

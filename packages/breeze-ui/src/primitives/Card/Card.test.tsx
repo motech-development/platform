@@ -85,6 +85,22 @@ describe('Card', () => {
     ).toBeInTheDocument();
   });
 
+  it('describes the card with a description under the title', () => {
+    renderBreeze(
+      <Card
+        description="Used to match transactions"
+        element="section"
+        title="Bank account"
+      >
+        Content
+      </Card>,
+    );
+
+    expect(
+      screen.getByRole('region', { name: 'Bank account' }),
+    ).toHaveAccessibleDescription('Used to match transactions');
+  });
+
   it('renders a trailing action in the header', () => {
     renderBreeze(
       <Card

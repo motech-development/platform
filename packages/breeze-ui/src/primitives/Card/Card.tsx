@@ -8,8 +8,11 @@ import { Badge } from '../Badge/Badge';
 const variants = {
   base: {
     card: 'breeze:min-inline-0 breeze:rounded-breeze-panel breeze:border breeze:border-solid breeze:border-breeze-line breeze:shadow-breeze-panel',
+    description:
+      'breeze:m-0 breeze:text-breeze-xs breeze:font-normal breeze:text-breeze-ink-3',
     header:
       'breeze:flex breeze:items-center breeze:gap-breeze-2 breeze:border-be breeze:border-breeze-line breeze:px-breeze-4 breeze:py-breeze-3 breeze:max-breeze-md:flex-wrap',
+    heading: 'breeze:flex breeze:min-inline-0 breeze:flex-col',
     spacer: 'breeze:grow',
     title:
       'breeze:m-0 breeze:text-breeze-sm breeze:font-semibold breeze:text-breeze-ink',
@@ -58,6 +61,8 @@ interface TitledCardProps extends CardBaseProps {
   action?: ReactNode;
   /** Count displayed beside the title. */
   count?: number;
+  /** Short muted text under the title, which also describes the card. */
+  description?: string;
   /** Heading displayed in the card header, which also names the card. */
   title: string;
 }
@@ -69,6 +74,8 @@ interface UntitledCardProps extends CardBaseProps {
   action?: never;
   /** Unavailable without a `title`. */
   count?: never;
+  /** Unavailable without a `title`. */
+  description?: never;
   /** Omit to render the content without a header. */
   title?: never;
 }
@@ -86,6 +93,7 @@ export function Card({
   children,
   clipped = true,
   count,
+  description,
   element = 'div',
   padding = 4,
   title,
@@ -94,6 +102,7 @@ export function Card({
   useBreezeContext();
 
   const titleId = useId();
+  const descriptionId = useId();
   const { accessibleLabel, role } = getLayoutAccessibility(
     ariaLabel ?? title,
     element,
@@ -103,6 +112,7 @@ export function Card({
   return createElement(
     element,
     {
+      'aria-describedby': description === undefined ? undefined : descriptionId,
       'aria-label': titled ? undefined : accessibleLabel,
       'aria-labelledby': titled ? titleId : undefined,
       className: [
@@ -118,9 +128,20 @@ export function Card({
     titled ? (
       <>
         <div className={variants.base.header}>
-          <h2 className={variants.base.title} id={titleId}>
-            {title}
-          </h2>
+          {description === undefined ? (
+            <h2 className={variants.base.title} id={titleId}>
+              {title}
+            </h2>
+          ) : (
+            <div className={variants.base.heading}>
+              <h2 className={variants.base.title} id={titleId}>
+                {title}
+              </h2>
+              <p className={variants.base.description} id={descriptionId}>
+                {description}
+              </p>
+            </div>
+          )}
           {count === undefined ? null : <Badge>{count}</Badge>}
           {action === undefined ? null : (
             <>

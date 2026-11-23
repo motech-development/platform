@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { fn } from 'storybook/test';
+import { expect, fn, within } from 'storybook/test';
 import { Link } from '../Link/Link';
 import { RowList, type RowListItemDescriptor } from '../RowList/RowList';
 import { Stack } from '../Stack/Stack';
@@ -66,6 +66,35 @@ export const TitledWithCount: Story = {
     count: 2,
     element: 'section',
     title: 'Needs you',
+  },
+};
+
+/** A form panel whose header describes it under the title, with a trailing action. */
+export const TitledWithDescription: Story = {
+  args: {
+    action: <Link href="#categories">Add category</Link>,
+    children: (
+      <Typography tone="secondary" variant="body">
+        Vehicle, Office, Travel
+      </Typography>
+    ),
+    description:
+      'Each one carries the VAT rate used when you record a purchase.',
+    element: 'section',
+    title: 'Expense categories',
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const title = canvas
+      .getByRole('heading', { name: 'Expense categories' })
+      .getBoundingClientRect();
+    const description = canvas.getByText(/^Each one carries/);
+
+    await expect(getComputedStyle(description).fontSize).toBe('12px');
+    await expect(
+      description.getBoundingClientRect().top,
+    ).toBeGreaterThanOrEqual(title.bottom);
+    await expect(description.getBoundingClientRect().left).toBe(title.left);
   },
 };
 
