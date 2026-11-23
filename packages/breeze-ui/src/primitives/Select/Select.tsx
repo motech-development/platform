@@ -7,7 +7,10 @@ import {
   useMemo,
   useRef,
 } from 'react';
-import { useFocusWithin } from 'react-aria/useFocusWithin';
+import {
+  type FocusWithinResult,
+  useFocusWithin,
+} from 'react-aria/useFocusWithin';
 import { Button as AriaButton } from 'react-aria-components/Button';
 import {
   ListBox as AriaListBox,
@@ -116,22 +119,9 @@ interface SelectItem<T> {
   item: T;
 }
 
-function SelectListBox<T>({
-  items,
-  listBoxRef,
-  onBlur,
-}: Readonly<{
-  items: SelectItem<T>[];
-  listBoxRef: RefObject<HTMLDivElement | null>;
-  onBlur: (event: FocusEvent) => void;
-}>) {
+function SelectListBox<T>({ items }: Readonly<{ items: SelectItem<T>[] }>) {
   return (
-    <AriaListBox
-      className={collectionVariants.base.listBox}
-      items={items}
-      onBlur={onBlur}
-      ref={listBoxRef}
-    >
+    <AriaListBox className={collectionVariants.base.listBox} items={items}>
       {(item: SelectItem<T>) => (
         <AriaListBoxItem
           className={collectionVariants.base.item}
@@ -179,16 +169,16 @@ function SelectReadOnlyFormValue({
 
 function SelectPopover<T>({
   disabled,
+  focusWithinProps,
   items,
-  listBoxRef,
-  onBlur,
+  popoverRef,
   readOnly,
   triggerRef,
 }: Readonly<{
   disabled: boolean;
+  focusWithinProps: FocusWithinResult['focusWithinProps'];
   items: SelectItem<T>[];
-  listBoxRef: RefObject<HTMLDivElement | null>;
-  onBlur: (event: FocusEvent) => void;
+  popoverRef: RefObject<HTMLElement | null>;
   readOnly: boolean;
   triggerRef: RefObject<HTMLButtonElement | null>;
 }>) {
@@ -205,12 +195,14 @@ function SelectPopover<T>({
   return (
     <CollectionPopover
       className={collectionVariants.base.popover}
+      focusWithinProps={focusWithinProps}
       isOpen={isOpen}
       maxHeight={listBoxMaxHeight}
       onOpenChange={(open) => state?.setOpen(open)}
+      surfaceRef={popoverRef}
       triggerRef={triggerRef}
     >
-      <SelectListBox items={items} listBoxRef={listBoxRef} onBlur={onBlur} />
+      <SelectListBox items={items} />
     </CollectionPopover>
   );
 }
@@ -250,7 +242,7 @@ export function Select<T>({
   const controlId = id ?? `${fieldId}-control`;
   const controlRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
-  const listBoxRef = useRef<HTMLDivElement>(null);
+  const popoverRef = useRef<HTMLElement>(null);
   const decoratedItems = useMemo<SelectItem<T>[]>(
     () =>
       items.map((item) => ({
@@ -272,16 +264,19 @@ export function Select<T>({
       ? null
       : getItem(defaultValue).id;
 
-  // The listbox is portalled, so the trigger and listbox each track focus and ignore moves to the other.
+  // The popover is portalled, so the trigger and popover each track focus and ignore moves to the other.
   const handleBlurWithin = ({ relatedTarget }: FocusEvent) => {
     const staysInField =
       relatedTarget instanceof Node &&
       (controlRef.current?.contains(relatedTarget) ||
-        listBoxRef.current?.contains(relatedTarget));
+        popoverRef.current?.contains(relatedTarget));
 
     if (!staysInField) onBlur?.();
   };
-  const { focusWithinProps } = useFocusWithin({
+  const { focusWithinProps: controlFocusWithinProps } = useFocusWithin({
+    onBlurWithin: handleBlurWithin,
+  });
+  const { focusWithinProps: popoverFocusWithinProps } = useFocusWithin({
     onBlurWithin: handleBlurWithin,
   });
 
@@ -321,8 +316,8 @@ export function Select<T>({
       />
       <div
         className={fieldVariants.base.control}
-        onBlur={focusWithinProps.onBlur}
-        onFocus={focusWithinProps.onFocus}
+        onBlur={controlFocusWithinProps.onBlur}
+        onFocus={controlFocusWithinProps.onFocus}
         ref={controlRef}
       >
         <AriaButton
@@ -378,9 +373,9 @@ export function Select<T>({
       </div>
       <SelectPopover
         disabled={interactionDisabled}
+        focusWithinProps={popoverFocusWithinProps}
         items={decoratedItems}
-        listBoxRef={listBoxRef}
-        onBlur={handleBlurWithin}
+        popoverRef={popoverRef}
         readOnly={readOnly}
         triggerRef={triggerRef}
       />

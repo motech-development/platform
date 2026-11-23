@@ -1059,6 +1059,36 @@ describe('DatePicker', () => {
     expect(onBlur).toHaveBeenCalledExactlyOnceWith();
   });
 
+  it('does not report blur when focus moves to the popover dismiss button', async () => {
+    const user = userEvent.setup();
+    const onBlur = vi.fn<() => void>();
+
+    renderBreeze(
+      <>
+        <DatePicker defaultValue="2026-09-03" label="Date" onBlur={onBlur} />
+        <button type="button">Continue</button>
+      </>,
+    );
+
+    await user.click(
+      screen.getByRole('button', { name: 'Date 3 September 2026' }),
+    );
+    await waitFor(() =>
+      expect(
+        screen.getByRole('button', {
+          name: /Thursday, 3 September 2026 selected/,
+        }),
+      ).toHaveFocus(),
+    );
+    act(() => screen.getByRole('button', { name: 'Dismiss' }).focus());
+
+    expect(onBlur).not.toHaveBeenCalled();
+
+    act(() => screen.getByRole('button', { name: 'Continue' }).focus());
+
+    expect(onBlur).toHaveBeenCalledExactlyOnceWith();
+  });
+
   it('reports blur once when focus leaves an open calendar', async () => {
     const user = userEvent.setup();
     const onBlur = vi.fn<() => void>();

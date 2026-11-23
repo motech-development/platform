@@ -9,7 +9,6 @@ import {
   useRef,
   useState,
 } from 'react';
-import { mergeProps } from 'react-aria/mergeProps';
 import {
   type FocusWithinResult,
   useFocusWithin,
@@ -270,7 +269,6 @@ function DatePickerFooter({
 function DatePickerPopover({
   calendarKey,
   dialogId,
-  dialogRef,
   disabled,
   focusWithinProps,
   isOpen,
@@ -278,12 +276,12 @@ function DatePickerPopover({
   onChange,
   onClear,
   onOpenChange,
+  popoverRef,
   triggerRef,
   value,
 }: Readonly<{
   calendarKey: number;
   dialogId: string;
-  dialogRef: RefObject<HTMLElement | null>;
   disabled: boolean;
   focusWithinProps: FocusWithinResult['focusWithinProps'];
   isOpen: boolean;
@@ -291,9 +289,12 @@ function DatePickerPopover({
   onChange: (date: CalendarDate | null) => void;
   onClear?: () => void;
   onOpenChange: (open: boolean) => void;
+  popoverRef: RefObject<HTMLElement | null>;
   triggerRef: RefObject<HTMLButtonElement | null>;
   value: IsoCalendarDate | null | undefined;
 }>) {
+  const dialogRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (!isOpen) return undefined;
 
@@ -340,24 +341,19 @@ function DatePickerPopover({
     if (focusRovingDate()) observer.disconnect();
 
     return () => observer.disconnect();
-  }, [dialogRef, isOpen, triggerRef]);
+  }, [isOpen, triggerRef]);
 
   return (
     <CollectionPopover
       className={datePickerVariants.base.popover}
       containerPadding={4}
+      focusWithinProps={focusWithinProps}
       isOpen={isOpen}
       onOpenChange={onOpenChange}
+      surfaceRef={popoverRef}
       triggerRef={triggerRef}
     >
-      <AriaDialog
-        aria-label={label}
-        id={dialogId}
-        ref={dialogRef}
-        render={(dialogProps) =>
-          createElement('section', mergeProps(dialogProps, focusWithinProps))
-        }
-      >
+      <AriaDialog aria-label={label} id={dialogId} ref={dialogRef}>
         <CalendarSurface
           autoFocus={isOpen}
           key={calendarKey}
@@ -420,7 +416,7 @@ export function DatePicker(props: Readonly<DatePickerProps>) {
   const triggerId = id ?? `${fieldId}-trigger`;
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
-  const dialogRef = useRef<HTMLElement>(null);
+  const popoverRef = useRef<HTMLElement>(null);
   const hasAutoFocused = useRef(false);
   const [uncontrolledValue, setUncontrolledValue] = useState<
     IsoCalendarDate | null | undefined
@@ -435,19 +431,19 @@ export function DatePicker(props: Readonly<DatePickerProps>) {
       .filter(Boolean)
       .join(' ') || undefined;
 
-  // The calendar is portalled, so the trigger and calendar each track focus and ignore moves to the other.
+  // The calendar popover is portalled, so the trigger and popover each track focus and ignore moves to the other.
   const handleBlurWithin = ({ relatedTarget }: FocusEvent) => {
     const staysInField =
       relatedTarget instanceof Node &&
       (rootRef.current?.contains(relatedTarget) ||
-        dialogRef.current?.contains(relatedTarget));
+        popoverRef.current?.contains(relatedTarget));
 
     if (!staysInField) onBlur?.();
   };
   const { focusWithinProps: fieldFocusWithinProps } = useFocusWithin({
     onBlurWithin: handleBlurWithin,
   });
-  const { focusWithinProps: calendarFocusWithinProps } = useFocusWithin({
+  const { focusWithinProps: popoverFocusWithinProps } = useFocusWithin({
     onBlurWithin: handleBlurWithin,
   });
 
@@ -688,14 +684,14 @@ export function DatePicker(props: Readonly<DatePickerProps>) {
       <DatePickerPopover
         calendarKey={calendarKey}
         dialogId={dialogId}
-        dialogRef={dialogRef}
         disabled={effectiveDisabled}
-        focusWithinProps={calendarFocusWithinProps}
+        focusWithinProps={popoverFocusWithinProps}
         isOpen={visibleOpen}
         label={label}
         onChange={handleDateChange}
         onClear={required ? undefined : handleClear}
         onOpenChange={handleOpenChange}
+        popoverRef={popoverRef}
         triggerRef={triggerRef}
         value={selectedValue}
       />
