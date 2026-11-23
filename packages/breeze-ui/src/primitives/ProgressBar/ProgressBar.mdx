@@ -1,0 +1,31 @@
+import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as Stories from './ProgressBar.stories';
+
+<Meta
+  of={Stories}
+  summary="Shows how far a task has progressed towards a known total."
+/>
+
+# ProgressBar
+
+`ProgressBar` shows progress towards a known total, such as the items done in a queue or the current step of a form. For content that is still loading, use `Skeleton` instead.
+
+<Canvas of={Stories.Default} />
+
+## Value
+
+Set `value` to the progress so far and `maxValue` to the total, which defaults to `100`. The bar fills in proportion.
+
+## Value text
+
+`valueLabel` is required. It is shown above the bar, such as “3 of 7 done” or “Step 2 of 3 — Opening position”, and screen readers announce it instead of a percentage.
+
+<Canvas of={Stories.Steps} />
+
+## Accessibility
+
+Give the bar an `aria-label` that names the task, such as “Paperwork”. Screen readers announce it as a progress bar with that name and the value text.
+
+## API
+
+<ArgTypes />
