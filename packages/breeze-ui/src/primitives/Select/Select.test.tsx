@@ -1,4 +1,4 @@
-import { fireEvent, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
@@ -639,6 +639,37 @@ describe('Select', () => {
     expect(onBlur).not.toHaveBeenCalled();
 
     await user.click(screen.getByRole('button', { name: 'Next' }));
+
+    expect(onBlur).toHaveBeenCalledExactlyOnceWith();
+  });
+
+  it('does not report blur when focus moves to the popover dismiss button', async () => {
+    const user = userEvent.setup();
+    const onBlur = vi.fn<() => void>();
+
+    renderBreeze(
+      <>
+        <Select
+          getItem={getEnabledItem}
+          items={enabledChoices}
+          label="Payment method"
+          onBlur={onBlur}
+        />
+        <button type="button">Next</button>
+      </>,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Payment method' }));
+    await waitFor(() =>
+      expect(
+        screen.getByRole('option', { name: /Bank account/ }),
+      ).toHaveFocus(),
+    );
+    act(() => screen.getByRole('button', { name: 'Dismiss' }).focus());
+
+    expect(onBlur).not.toHaveBeenCalled();
+
+    act(() => screen.getByRole('button', { name: 'Next' }).focus());
 
     expect(onBlur).toHaveBeenCalledExactlyOnceWith();
   });

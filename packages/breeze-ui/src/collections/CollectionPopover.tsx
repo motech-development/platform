@@ -1,12 +1,17 @@
 import type { ReactNode, RefObject } from 'react';
 import {
+  createElement,
   useCallback,
   useContext,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
+import { mergeProps } from 'react-aria/mergeProps';
+import { mergeRefs } from 'react-aria/mergeRefs';
+import type { FocusWithinResult } from 'react-aria/useFocusWithin';
 import { Popover as AriaPopover } from 'react-aria-components/Popover';
 import { useOverlayPortal } from '../overlays/OverlayProvider';
 import {
@@ -34,11 +39,15 @@ interface CollectionPopoverProps {
   className: string;
   /** Minimum viewport edge margin used while positioning the surface. */
   containerPadding?: number;
+  /** Tracks focus within the whole surface, including React Aria's hidden dismiss button. */
+  focusWithinProps?: FocusWithinResult['focusWithinProps'];
   isOpen: boolean;
   /** Caps the surface's block size below the available viewport space. */
   maxHeight?: number;
   onOpenChange: (open: boolean) => void;
   placement?: 'bottom end' | 'bottom start';
+  /** Receives the surface element. */
+  surfaceRef?: RefObject<HTMLElement | null>;
   triggerRef: RefObject<Element | null>;
 }
 
@@ -50,10 +59,12 @@ export default function CollectionPopover({
   children,
   className,
   containerPadding,
+  focusWithinProps,
   isOpen: requestedOpen,
   maxHeight,
   onOpenChange,
   placement = 'bottom start',
+  surfaceRef: externalSurfaceRef,
   triggerRef,
 }: Readonly<CollectionPopoverProps>) {
   const host = useOverlayPortal();
@@ -77,6 +88,10 @@ export default function CollectionPopover({
     surfaceRef.current = element;
     setSurfaceMounted(element !== null);
   }, []);
+  const mergedSurfaceRef = useMemo(
+    () => mergeRefs<HTMLElement>(handleSurfaceRef, externalSurfaceRef),
+    [externalSurfaceRef, handleSurfaceRef],
+  );
 
   useLayoutEffect(() => {
     if (
@@ -214,6 +229,11 @@ export default function CollectionPopover({
       offset={6}
       onOpenChange={onOpenChange}
       placement={placement}
+      render={
+        focusWithinProps &&
+        ((surfaceProps) =>
+          createElement('div', mergeProps(surfaceProps, focusWithinProps)))
+      }
       // Defer pointer dismissal to Breeze's provider-document policy, while
       // retaining React Aria's keyboard/focus dismissal behavior.
       shouldCloseOnInteractOutside={(element) =>
@@ -223,7 +243,7 @@ export default function CollectionPopover({
       }
       style={{ zIndex: layer.zIndex }}
       triggerRef={triggerRef}
-      ref={handleSurfaceRef}
+      ref={mergedSurfaceRef}
     >
       {children}
     </AriaPopover>
