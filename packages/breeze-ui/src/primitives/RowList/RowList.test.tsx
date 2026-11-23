@@ -380,6 +380,65 @@ describe('RowList', () => {
     );
   });
 
+  it('aligns column headings to the columns the rows use', () => {
+    const descriptor = {
+      id: 'garage',
+      label: 'Fen Lane Garage',
+      metadataAmount: { currency: 'GBP', format: 'currency', value: 23.17 },
+      value: { currency: 'GBP', format: 'currency', value: -139 },
+    } satisfies RowListItemDescriptor;
+
+    renderBreeze(
+      <RowList
+        aria-label="Transactions"
+        getItem={() => descriptor}
+        headings={{
+          label: 'Transaction',
+          metadata: 'Category',
+          metadataAmount: 'VAT',
+          value: 'Amount',
+        }}
+        items={[descriptor]}
+        onAction={() => undefined}
+      />,
+    );
+
+    const grid = screen.getByRole('grid', { name: 'Transactions' });
+    const headings = screen.getByText('Transaction').parentElement;
+    const rowColumns = 'breeze:grid-cols-[minmax(0,1fr)_80px_104px]';
+
+    expect(grid).not.toContainElement(headings);
+    expect(headings).toHaveClass(rowColumns);
+    expect(screen.getByRole('row', { name: 'Fen Lane Garage' })).toHaveClass(
+      rowColumns,
+    );
+    expect(screen.queryByText('Category')).not.toBeInTheDocument();
+    expect(screen.getByText('VAT')).toHaveClass(
+      'breeze:-col-end-2',
+      'breeze:max-breeze-md:hidden',
+      'breeze:text-end',
+    );
+    expect(screen.getByText('Amount')).toHaveClass(
+      'breeze:-col-end-1',
+      'breeze:text-end',
+    );
+  });
+
+  it('omits column headings while there are no rows', () => {
+    renderBreeze(
+      <RowList
+        aria-label="Entries"
+        getItem={getEntryDescriptor}
+        headings={{ label: 'Entry' }}
+        items={[]}
+        loading
+        onAction={() => undefined}
+      />,
+    );
+
+    expect(screen.queryByText('Entry')).not.toBeInTheDocument();
+  });
+
   it('keeps an empty result as a named grid with a row and cell', () => {
     renderBreeze(
       <RowList

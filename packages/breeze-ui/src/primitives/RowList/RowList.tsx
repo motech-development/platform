@@ -30,6 +30,10 @@ const variants = {
       'breeze:box-border breeze:inline-full breeze:min-inline-0 breeze:flex breeze:items-center breeze:gap-[10px] breeze:border-breeze-line breeze:border-be breeze:bg-breeze-raised breeze:px-breeze-4 breeze:py-breeze-2 breeze:text-breeze-xs breeze:font-semibold breeze:text-breeze-ink-2',
     headerLabel: 'breeze:min-inline-0 breeze:break-words',
     headerSpacer: 'breeze:grow',
+    headingEnd: 'breeze:text-end',
+    headingLabel: 'breeze:col-start-1 breeze:min-inline-0',
+    headings:
+      'breeze:box-border breeze:inline-full breeze:min-inline-0 breeze:grid breeze:items-center breeze:gap-breeze-3 breeze:border-breeze-line breeze:border-be breeze:px-breeze-4 breeze:py-breeze-3 breeze:font-breeze-sans breeze:text-breeze-2xs breeze:font-semibold breeze:uppercase breeze:tracking-breeze-wide breeze:text-breeze-ink-3',
     item: 'breeze:box-border breeze:inline-full breeze:min-inline-0 breeze:grid breeze:items-center breeze:gap-breeze-3 breeze:border-breeze-sunken breeze:border-be breeze:px-breeze-4 breeze:py-breeze-2 breeze:text-start breeze:outline-offset-[-2px] breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-50 breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[hovered]:bg-breeze-raised breeze:data-[pressed]:bg-breeze-raised breeze:any-pointer-coarse:min-block-breeze-tap',
     label: 'breeze:min-inline-0 breeze:truncate',
     leading:
@@ -146,6 +150,18 @@ export interface RowListItemDescriptor extends ItemDescriptor {
   value?: RowListValue;
 }
 
+/** Visible column headings, each aligned to the row region it names. */
+export interface RowListHeadings {
+  /** Heads the leading label column. */
+  label: string;
+  /** Heads the metadata column when a row uses it. */
+  metadata?: string;
+  /** Heads the muted currency column when a row uses it. */
+  metadataAmount?: string;
+  /** Heads the value column when a row uses it. */
+  value?: string;
+}
+
 /** The explicit action that retrieves more rows. */
 export interface RowListLoadMoreProps {
   /** Visible and accessible name for the load-more button. */
@@ -162,6 +178,8 @@ export interface RowListProps<T> {
   'aria-label': string;
   /** Returns the closed display descriptor for an application value. */
   getItem: (item: T) => RowListItemDescriptor;
+  /** Optional column headings shown above the rows. */
+  headings?: RowListHeadings;
   /** Application values displayed as rows. */
   items: T[];
   /** Announces initial or retained-row loading without replacing existing rows. */
@@ -456,6 +474,39 @@ function getColumns(descriptors: RowListItemDescriptor[]): Columns {
   return { layout, regions: 'leading' };
 }
 
+function ColumnHeadings({
+  columns: { layout, regions },
+  headings,
+}: Readonly<{ columns: Columns; headings: RowListHeadings }>) {
+  return (
+    <div
+      className={[
+        variants.base.headings,
+        variants.variant.columns[layout][regions],
+      ].join(' ')}
+    >
+      <span className={variants.base.headingLabel}>{headings.label}</span>
+      {(regions === 'metadata' || regions === 'metadataAndAmount') && (
+        <span className={variants.base.metadata}>{headings.metadata}</span>
+      )}
+      {(regions === 'metadataAmount' || regions === 'metadataAndAmount') && (
+        <span
+          className={[
+            variants.base.metadataAmount,
+            variants.variant.metadataAmountColumn[layout],
+            variants.base.headingEnd,
+          ].join(' ')}
+        >
+          {headings.metadataAmount}
+        </span>
+      )}
+      {layout === 'valued' && (
+        <span className={variants.base.value}>{headings.value}</span>
+      )}
+    </div>
+  );
+}
+
 function renderRow<T>(
   { descriptor, item }: Row<T>,
   onAction: RowListProps<T>['onAction'],
@@ -486,6 +537,7 @@ function renderRow<T>(
 export function RowList<T>({
   'aria-label': ariaLabel,
   getItem,
+  headings,
   items,
   loading = false,
   loadMore,
@@ -507,6 +559,9 @@ export function RowList<T>({
 
   return (
     <div className={variants.base.container}>
+      {headings && rows.length > 0 && (
+        <ColumnHeadings columns={columns} headings={headings} />
+      )}
       <AriaGridList
         aria-busy={loading || undefined}
         aria-label={ariaLabel}
