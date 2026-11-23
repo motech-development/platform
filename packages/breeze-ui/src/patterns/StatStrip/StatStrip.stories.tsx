@@ -97,6 +97,37 @@ const phoneViewport = {
   },
 };
 
+const yearEnd = [
+  {
+    format: 'date',
+    id: 'year-end',
+    label: 'Accounting year ends',
+    value: '2027-04-05',
+  },
+  { format: 'number', id: 'days', label: 'Days remaining', value: 132 },
+  { format: 'text', id: 'scheme', label: 'VAT scheme', value: 'Flat rate' },
+] satisfies StatStripItemDescriptor[];
+
+/** A date, a count and a scheme name in the same divided strip, as on the year end page. */
+export const OtherFigures: Story = {
+  args: {
+    'aria-label': 'Year end',
+    items: yearEnd,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    const sizes = ['5 April 2027', '132', 'Flat rate'].map(
+      (text) => getComputedStyle(canvas.getByText(text)).fontSize,
+    );
+
+    await expect(sizes).toEqual(['22px', '22px', '22px']);
+    await expect(
+      getComputedStyle(canvas.getByText('132')).fontVariantNumeric,
+    ).toBe('tabular-nums');
+  },
+};
+
 /** Below Breeze's medium breakpoint the figures stack with dividers between them. */
 export const Phone: Story = {
   globals: { viewport: { value: 'statStripPhone' } },

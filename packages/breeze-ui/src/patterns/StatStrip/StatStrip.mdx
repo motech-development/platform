@@ -3,12 +3,12 @@ import * as Stories from './StatStrip.stories';
 
 <Meta
   of={Stories}
-  summary="Presents a few headline currency figures side by side in one panel."
+  summary="Presents a few headline figures side by side in one panel."
 />
 
 # StatStrip
 
-`StatStrip` shows a few headline currency figures, such as a balance and the VAT owed, as labelled cells in one panel.
+`StatStrip` shows a few headline figures, such as a balance and the VAT owed, as labelled cells in one panel.
 
 <Canvas of={Stories.Overview} />
 
@@ -22,6 +22,18 @@ Pass your data as `items`, and use `getItem` to return a `StatStripItemDescripto
 - `badge` (optional): a badge after the label showing the figure's scope, such as the VAT scheme. It accepts `children`, `variant` and `aria-label`.
 
 Amounts are formatted as currency for the provider locale, with a minus sign for negative amounts. A non-finite `value` or a malformed currency code, one that is not three letters, throws a `RangeError`. Codes are not checked against ISO 4217, so an unknown well-formed code is displayed as written. If you need to limit the currencies shown, validate the codes before passing them in.
+
+## Other figures
+
+Set `format` to show a figure that is not currency, without a `currency`:
+
+- `date`: an ISO calendar date, formatted as a long date for the provider locale;
+- `number`: a number formatted for the provider locale, such as a count of days;
+- `text`: short text, such as a VAT scheme name.
+
+These figures use a smaller size than currency amounts. You can mix them with currency figures in one strip.
+
+<Canvas of={Stories.OtherFigures} />
 
 ## Loading
 
@@ -37,7 +49,7 @@ Below 901px, the cells stack in a single column with a divider between them.
 
 ## Accessibility
 
-The panel is a group named by the required `aria-label`. Its figures form a description list, so screen readers announce each label with its amount.
+The panel is a group named by the required `aria-label`. Its figures form a description list, so screen readers announce each label with its figure.
 
 ## API
 

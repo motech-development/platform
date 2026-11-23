@@ -2,7 +2,10 @@ import type { ItemDescriptorBadge } from '../../collections/item.types';
 import { Badge } from '../../primitives/Badge/Badge';
 import { Card } from '../../primitives/Card/Card';
 import { Skeleton } from '../../primitives/Skeleton/Skeleton';
-import { Typography } from '../../primitives/Typography/Typography';
+import {
+  type IsoCalendarDate,
+  Typography,
+} from '../../primitives/Typography/Typography';
 import { useBreezeContext } from '../../provider/BreezeContext';
 
 const variants = {
@@ -46,19 +49,53 @@ const loadingCells = [
   },
 ] as const;
 
-/** The closed content contract for one labelled currency figure. */
-export interface StatStripItemDescriptor {
+interface StatStripItemBase {
   /** Optional compact badge after the label, such as the scope of the figure. */
   badge?: ItemDescriptorBadge;
-  /** ISO 4217 currency code used for locale-aware formatting. */
-  currency: string;
   /** Stable identity for the figure. */
   id: string;
   /** Visible term naming the figure. */
   label: string;
+}
+
+interface StatStripCurrencyFigure {
+  /** ISO 4217 currency code used for locale-aware formatting. */
+  currency: string;
+  /** Formats `value` as currency, the default. */
+  format?: 'currency';
   /** Amount formatted as locale-aware currency; negatives are signed. */
   value: number;
 }
+
+interface StatStripDateFigure {
+  currency?: never;
+  /** Formats `value` as a long locale-aware calendar date. */
+  format: 'date';
+  value: IsoCalendarDate;
+}
+
+interface StatStripNumberFigure {
+  currency?: never;
+  /** Formats `value` as a locale-aware number, such as a count of days. */
+  format: 'number';
+  value: number;
+}
+
+interface StatStripTextFigure {
+  currency?: never;
+  /** Shows `value` as short text, such as a scheme name. */
+  format: 'text';
+  value: string;
+}
+
+/** The closed content contract for one labelled figure. */
+export type StatStripItemDescriptor = StatStripItemBase &
+  (
+    | StatStripCurrencyFigure
+    | StatStripDateFigure
+    | StatStripNumberFigure
+    | StatStripTextFigure
+  );
 
 interface StatStripBaseProps {
   /** Names the group of figures for assistive technology. */
@@ -108,13 +145,55 @@ function LoadingState({ loadingLabel }: Readonly<{ loadingLabel: string }>) {
   );
 }
 
+function Figure({
+  descriptor,
+  locale,
+}: Readonly<{ descriptor: StatStripItemDescriptor; locale: string }>) {
+  if (descriptor.format === 'date') {
+    return (
+      <Typography
+        element="span"
+        format="date"
+        value={descriptor.value}
+        variant="heading"
+      />
+    );
+  }
+
+  if (descriptor.format === 'number') {
+    return (
+      <Typography element="span" numeric variant="heading">
+        {new Intl.NumberFormat(locale).format(descriptor.value)}
+      </Typography>
+    );
+  }
+
+  if (descriptor.format === 'text') {
+    return (
+      <Typography element="span" variant="heading">
+        {descriptor.value}
+      </Typography>
+    );
+  }
+
+  return (
+    <Typography
+      align="start"
+      currency={descriptor.currency}
+      format="currency"
+      value={descriptor.value}
+      variant="money"
+    />
+  );
+}
+
 /**
- * Presents a few headline currency figures side by side in one panel.
+ * Presents a few headline figures side by side in one panel.
  *
- * @summary A labelled strip of currency figures with an owned loading shape.
+ * @summary A labelled strip of currency, date, number or text figures with an owned loading shape.
  */
 export function StatStrip<T>(props: Readonly<StatStripProps<T>>) {
-  const { messages } = useBreezeContext();
+  const { locale, messages } = useBreezeContext();
   const { 'aria-label': ariaLabel, getItem, items, loading } = props;
 
   return (
@@ -150,13 +229,7 @@ export function StatStrip<T>(props: Readonly<StatStripProps<T>>) {
                   )}
                 </dt>
                 <dd className={variants.base.figure}>
-                  <Typography
-                    align="start"
-                    currency={descriptor.currency}
-                    format="currency"
-                    value={descriptor.value}
-                    variant="money"
-                  />
+                  <Figure descriptor={descriptor} locale={locale} />
                 </dd>
               </div>
             ))}

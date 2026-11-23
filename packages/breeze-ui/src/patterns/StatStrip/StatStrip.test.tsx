@@ -120,6 +120,31 @@ describe('StatStrip', () => {
     expect(screen.getByRole('definition')).toHaveTextContent('24.180,50 £');
   });
 
+  it('shows date, number and text figures', () => {
+    const yearEnd = [
+      {
+        format: 'date',
+        id: 'year-end',
+        label: 'Accounting year ends',
+        value: '2027-04-05',
+      },
+      { format: 'number', id: 'days', label: 'Days remaining', value: 1234 },
+      { format: 'text', id: 'scheme', label: 'VAT scheme', value: 'Standard' },
+    ] satisfies StatStripItemDescriptor[];
+
+    renderBreeze(
+      <StatStrip
+        aria-label="Year end"
+        getItem={(figure) => figure}
+        items={yearEnd}
+      />,
+    );
+
+    expect(
+      screen.getAllByRole('definition').map(({ textContent }) => textContent),
+    ).toEqual(['5 April 2027', '1,234', 'Standard']);
+  });
+
   it('replaces the figures with a busy, announced placeholder while loading', () => {
     renderBreeze(<StatStrip aria-label="Balance" loading />);
 
