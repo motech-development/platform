@@ -6,6 +6,7 @@ import { Skeleton } from '../primitives/Skeleton/Skeleton';
 import { fieldVariants } from './field.styles';
 
 interface FieldLabelProps {
+  hidden?: boolean;
   htmlFor?: string;
   id?: string;
   label: string;
@@ -14,6 +15,7 @@ interface FieldLabelProps {
 }
 
 export function FieldLabel({
+  hidden = false,
   htmlFor,
   id,
   label,
@@ -22,7 +24,9 @@ export function FieldLabel({
 }: Readonly<FieldLabelProps>) {
   return (
     <AriaLabel
-      className={fieldVariants.base.label}
+      className={
+        hidden ? fieldVariants.state.hiddenLabel : fieldVariants.base.label
+      }
       htmlFor={htmlFor}
       id={id}
       onClick={onClick}

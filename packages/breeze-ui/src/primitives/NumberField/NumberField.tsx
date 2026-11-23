@@ -42,6 +42,8 @@ interface NumberFieldCommonProps {
   id?: string;
   /** Accessible field label, shown as text outside loading state. */
   label: string;
+  /** Hides the label visually but keeps it as the accessible name, for repeated rows under column headings. */
+  labelHidden?: boolean;
   /** Replaces the input with a shape-preserving loading presentation. */
   loading?: boolean;
   /** Largest permitted value. */
@@ -105,6 +107,7 @@ export function NumberField({
   formatOptions,
   id,
   label,
+  labelHidden = false,
   loading = false,
   maxValue,
   minValue,
@@ -148,7 +151,7 @@ export function NumberField({
       validationBehavior="aria"
       value={value}
     >
-      <FieldLabel label={label} loading={loading} />
+      <FieldLabel hidden={labelHidden} label={label} loading={loading} />
       <span className={fieldVariants.base.control}>
         <AriaInput
           aria-busy={loading || undefined}

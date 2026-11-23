@@ -74,6 +74,15 @@ reports.
 
 <Canvas of={Stories.Blur} />
 
+## Hidden label
+
+Set `labelHidden` when a column heading already labels a repeated row of
+fields, such as a list of categories with their VAT rates. The label is hidden
+visually but stays the field's accessible name, so make it specific to the row,
+such as “VAT rate for Vehicle”. Descriptions and errors stay visible.
+
+<Canvas of={Stories.HiddenLabel} />
+
 ## Accessibility
 
 The visible label names the input, and screen readers announce the description

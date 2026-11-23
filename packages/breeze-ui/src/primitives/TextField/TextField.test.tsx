@@ -75,6 +75,21 @@ describe('TextField', () => {
     expect(onChange).toHaveBeenLastCalledWith('Ada');
   });
 
+  it('hides its label visually while keeping it as the accessible name', () => {
+    renderBreeze(
+      <TextField
+        error="Enter a category name."
+        label="Category name"
+        labelHidden
+      />,
+    );
+
+    const input = screen.getByRole('textbox', { name: 'Category name' });
+
+    expect(screen.getByText('Category name')).toHaveClass('breeze:sr-only');
+    expect(input).toHaveAccessibleDescription('Enter a category name.');
+  });
+
   it('derives invalid semantics from a visible error and required state', () => {
     const { rerender } = renderBreeze(
       <TextField
