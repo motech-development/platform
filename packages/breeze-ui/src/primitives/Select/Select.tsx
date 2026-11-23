@@ -265,7 +265,17 @@ export function Select<T>({
       isInvalid={isInvalid}
       isRequired={required}
       name={name}
-      onBlur={() => onBlur?.()}
+      onBlur={({ relatedTarget }) => {
+        // React Aria reports the listbox blur when a press on the trigger takes focus back.
+        if (
+          relatedTarget instanceof Node &&
+          triggerRef.current?.contains(relatedTarget)
+        ) {
+          return;
+        }
+
+        onBlur?.();
+      }}
       onChange={(key) => {
         if (readOnly) return;
 
