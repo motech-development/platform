@@ -52,6 +52,15 @@ function getEntryDescriptor(entry: Entry): RowListItemDescriptor {
   };
 }
 
+function columnsOf(grid: string) {
+  const { style } = screen.getByRole('grid', { name: grid }).parentElement!;
+
+  return [
+    style.getPropertyValue('--breeze-row-columns'),
+    style.getPropertyValue('--breeze-row-columns-narrow'),
+  ];
+}
+
 expectTypeOf<
   NonNullable<RowListProps<Entry>['onAction']>
 >().parameters.toEqualTypeOf<[Entry]>();
@@ -290,23 +299,22 @@ describe('RowList', () => {
       </>,
     );
 
-    const rowIn = (grid: string) =>
-      within(screen.getByRole('grid', { name: grid })).getByRole('row', {
-        name: 'Invoice paid',
-      });
-
-    expect(rowIn('Overview')).toHaveClass(
-      'breeze:grid-cols-[minmax(0,1fr)_104px]',
-    );
-    expect(rowIn('Money')).toHaveClass(
-      'breeze:grid-cols-[minmax(0,1fr)_120px_104px]',
-    );
-    expect(rowIn('VAT')).toHaveClass(
-      'breeze:grid-cols-[minmax(0,1fr)_80px_104px]',
-    );
-    expect(rowIn('Both')).toHaveClass(
-      'breeze:grid-cols-[minmax(0,1fr)_120px_80px_104px]',
-    );
+    expect(columnsOf('Overview')).toEqual([
+      'minmax(0,1fr) 104px',
+      'minmax(0,1fr) 104px',
+    ]);
+    expect(columnsOf('Money')).toEqual([
+      'minmax(0,1fr) 120px 104px',
+      'minmax(0,1fr) 104px',
+    ]);
+    expect(columnsOf('VAT')).toEqual([
+      'minmax(0,1fr) 80px 104px',
+      'minmax(0,1fr) 104px',
+    ]);
+    expect(columnsOf('Both')).toEqual([
+      'minmax(0,1fr) 120px 80px 104px',
+      'minmax(0,1fr) 104px',
+    ]);
   });
 
   it('reserves the value column only when a row uses it', () => {
@@ -340,24 +348,18 @@ describe('RowList', () => {
       </>,
     );
 
-    const rowIn = (grid: string, name: string) =>
-      within(screen.getByRole('grid', { name: grid })).getByRole('row', {
-        name,
-      });
+    const fuel = within(
+      screen.getByRole('grid', { name: 'Categories' }),
+    ).getByRole('row', { name: 'Fuel' });
 
-    expect(rowIn('Labels', 'Invoice paid')).toHaveClass(
-      'breeze:grid-cols-[minmax(0,1fr)]',
-    );
-    expect(rowIn('Labels', 'Invoice paid')).not.toHaveClass(
-      'breeze:max-breeze-md:grid-cols-[minmax(0,1fr)_104px]',
-    );
-    expect(rowIn('Categories', 'Invoice paid')).toHaveClass(
-      'breeze:grid-cols-[minmax(0,1fr)_120px_80px]',
-      'breeze:max-breeze-md:grid-cols-[minmax(0,1fr)]',
-    );
+    expect(columnsOf('Labels')).toEqual(['minmax(0,1fr)', 'minmax(0,1fr)']);
+    expect(columnsOf('Categories')).toEqual([
+      'minmax(0,1fr) 120px 80px',
+      'minmax(0,1fr)',
+    ]);
     expect(
-      within(rowIn('Categories', 'Fuel')).getByText('£9.50').parentElement,
-    ).toHaveClass('breeze:-col-end-1');
+      within(fuel).getByRole('gridcell').lastElementChild,
+    ).toHaveTextContent('£9.50');
   });
 
   it('shows muted metadata text and a metadata amount', () => {
@@ -416,23 +418,20 @@ describe('RowList', () => {
 
     const grid = screen.getByRole('grid', { name: 'Transactions' });
     const headings = screen.getByText('Transaction').parentElement;
-    const rowColumns = 'breeze:grid-cols-[minmax(0,1fr)_80px_104px]';
+    const row = screen.getByRole('row', { name: 'Fen Lane Garage' });
+    const rowColumns = 'breeze:grid-cols-(--breeze-row-columns)';
 
     expect(grid).not.toContainElement(headings);
     expect(headings).toHaveClass(rowColumns);
-    expect(screen.getByRole('row', { name: 'Fen Lane Garage' })).toHaveClass(
-      rowColumns,
-    );
+    expect(row).toHaveClass(rowColumns);
+    expect(columnsOf('Transactions')[0]).toBe('minmax(0,1fr) 80px 104px');
+    expect(headings?.children).toHaveLength(3);
     expect(screen.queryByText('Category')).not.toBeInTheDocument();
     expect(screen.getByText('VAT')).toHaveClass(
-      'breeze:-col-end-2',
       'breeze:max-breeze-md:hidden',
       'breeze:text-end',
     );
-    expect(screen.getByText('Amount')).toHaveClass(
-      'breeze:-col-end-1',
-      'breeze:text-end',
-    );
+    expect(screen.getByText('Amount')).toHaveClass('breeze:text-end');
   });
 
   it('omits column headings while there are no rows', () => {
@@ -482,12 +481,15 @@ describe('RowList', () => {
     const reportRow = screen.getByRole('row', { name: /^3 October 2026/ });
     const download = within(reportRow).getByRole('link', { name: 'Download' });
 
-    expect(reportRow).toHaveClass(
-      'breeze:grid-cols-[minmax(0,1fr)_120px_120px]',
-    );
+    expect(columnsOf('Reports')).toEqual([
+      'minmax(0,1fr) 120px 120px',
+      'minmax(0,1fr) 120px',
+    ]);
     expect(download).toHaveAttribute('href', '/reports/report.zip');
     expect(download).toHaveAttribute('download', 'report.zip');
-    expect(screen.getByText('Actions')).toHaveClass('breeze:-col-end-1');
+    expect(screen.getByText('Actions').parentElement?.lastElementChild).toBe(
+      screen.getByText('Actions'),
+    );
 
     await userEvent.click(screen.getByRole('button', { name: 'Remove' }));
 
@@ -544,6 +546,53 @@ describe('RowList', () => {
       'breeze:bg-breeze-brand-soft',
     );
     expect(within(row).getByText('BS')).toHaveAttribute('aria-hidden', 'true');
+  });
+
+  it('reserves each metadata column at the widest width a row gives it', () => {
+    const clients = [
+      {
+        description: 'Retainer client',
+        id: 'bramble',
+        label: 'Bramble Studio',
+        metadata: [
+          { format: 'text', value: 'accounts@bramble.studio' },
+          { format: 'text', value: 'Bristol' },
+        ],
+        narrowDescription: 'accounts@bramble.studio · Bristol',
+      },
+      {
+        id: 'fen-lane',
+        label: 'Fen Lane Garage',
+        metadata: { format: 'text', value: 'hello@fenlane.co.uk', width: 'lg' },
+      },
+    ] satisfies RowListItemDescriptor[];
+
+    renderBreeze(
+      <RowList
+        aria-label="Clients"
+        getItem={(client) => client}
+        headings={{ label: 'Client', metadata: ['Email', 'Town or city'] }}
+        items={clients}
+        onAction={() => undefined}
+      />,
+    );
+
+    const fenLane = screen.getByRole('row', { name: 'Fen Lane Garage' });
+
+    expect(columnsOf('Clients')).toEqual([
+      'minmax(0,1fr) 240px 120px',
+      'minmax(0,1fr)',
+    ]);
+    expect(screen.getByText('Town or city')).toHaveClass(
+      'breeze:max-breeze-md:hidden',
+    );
+    expect(within(fenLane).getByRole('gridcell').children).toHaveLength(3);
+    expect(screen.getByText('Retainer client')).toHaveClass(
+      'breeze:max-breeze-md:hidden',
+    );
+    expect(screen.getByText('accounts@bramble.studio · Bristol')).toHaveClass(
+      'breeze:breeze-md:hidden',
+    );
   });
 
   it('keeps an empty result as a named grid with a row and cell', () => {

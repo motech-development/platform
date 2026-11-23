@@ -25,7 +25,12 @@ Pass your data as `items` and a `getItem` function that returns a
 - `description`, `icon`, `badge` and `disabled` are optional.
 - `initials` shows short initials, such as a client's or company's, in a brand
   tile in place of `icon`. Set one or the other.
-- `metadata` takes text or an ISO calendar date.
+- `metadata` takes text or an ISO calendar date, or a list of them for several
+  columns. Each column is 120px wide; set an entry's `width` to `md` (176px)
+  or `lg` (240px) for longer text such as an email address. A column takes the
+  widest `width` any row gives it.
+- `narrowDescription` replaces `description` below the `md` breakpoint, where
+  the metadata columns are hidden, so you can keep their content on phones.
 - `value` takes text or a currency amount, formatted in the provider's locale.
   A currency `value` is formatted by `Typography`, so a non-finite amount or a
   malformed currency code throws a `RangeError` when the row is displayed.
@@ -59,7 +64,8 @@ The summary is read from the first row in each section:
 
 Pass `headings` to show a row of column headings above the list, as the
 example above does. Give the leading column a `label`, and add `metadata`,
-`metadataAmount` or `value` for the columns you want to name. Each heading uses
+`metadataAmount`, `value` or `action` for the columns you want to name, with a
+list for `metadata` when there are several metadata columns. Each heading uses
 the same column as the rows, so it stays aligned at every width and hides below
 the `md` breakpoint wherever its column does.
 
@@ -86,9 +92,13 @@ icon also show the direction.
 Below the `md` breakpoint, the value stays at the end of the row, the metadata
 columns are hidden, and a row's badge moves under its description so the label
 keeps the full width. Keep anything essential in the label, description or
-value.
+value, or repeat the hidden metadata in a `narrowDescription`.
 
 <Canvas of={Stories.Phone} />
+
+<Canvas of={Stories.TextColumns} />
+
+<Canvas of={Stories.TextColumnsPhone} />
 
 ## Row actions
 

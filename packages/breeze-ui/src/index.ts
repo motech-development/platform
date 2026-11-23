@@ -127,6 +127,7 @@ export { NumberField } from './primitives/NumberField/NumberField';
 export type { PopoverProps } from './primitives/Popover/Popover';
 export { Popover } from './primitives/Popover/Popover';
 export type {
+  RowListColumnWidth,
   RowListCurrencyValue,
   RowListHeadings,
   RowListItemDescriptor,
