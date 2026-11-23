@@ -645,6 +645,52 @@ export const Unread: Story = {
   },
 };
 
+const companies = [
+  {
+    action: { href: '/companies/bramble', label: 'Details' },
+    badge: { children: 'Selected', variant: 'brand' },
+    id: 'bramble',
+    initials: 'BS',
+    label: 'Bramble Studio Ltd',
+    metadata: { format: 'text', value: '09876543' },
+  },
+  {
+    action: { href: '/companies/northgate', label: 'Details' },
+    id: 'northgate',
+    initials: 'NC',
+    label: 'Northgate Consulting Ltd',
+    metadata: { format: 'text', value: '12345678' },
+  },
+] satisfies RowListStaticItemDescriptor[];
+
+/** Rows that lead with initials in a brand tile in place of an icon. */
+export const Initials: Story = {
+  args: {
+    'aria-label': 'Companies',
+    headings: {
+      action: 'Action',
+      label: 'Company',
+      metadata: 'Company number',
+    },
+    items: companies,
+    loadMore: undefined,
+    onAction: undefined,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const initials = canvas.getByText('BS');
+    const tile = initials.getBoundingClientRect();
+    const label = canvas
+      .getByText('Bramble Studio Ltd')
+      .getBoundingClientRect();
+
+    await expect(tile.width).toBe(24);
+    await expect(tile.height).toBe(24);
+    await expect(getComputedStyle(initials).fontSize).toBe('11px');
+    await expect(label.left).toBe(tile.right + 12);
+  },
+};
+
 /** An empty result remains a named grid with a structural row and cell. */
 export const Empty: Story = {
   args: {
