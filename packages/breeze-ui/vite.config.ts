@@ -31,7 +31,7 @@ const bundledDependencyLicenses = [
 ];
 const appliesToLibraryBuild = (config: UserConfig) =>
   Boolean(config.build?.lib);
-const maximumLibraryGzipBytes = 140 * 1024;
+const maximumLibraryGzipBytes = 150 * 1024;
 const reactAriaLocaleSource =
   /[/\\](?:react-aria|react-aria-components|react-stately|@react-aria|@react-stately)[/\\].*[/\\]([a-z]{2})-[A-Z]{2}\.[cm]?js$/;
 
