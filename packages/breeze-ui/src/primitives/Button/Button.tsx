@@ -11,7 +11,6 @@ import { Icon, type IconName, type IconSize } from '../Icon/Icon';
 
 const variants = {
   base: {
-    box: 'breeze:border breeze:border-solid breeze:rounded-breeze-ctl breeze:font-semibold breeze:any-pointer-coarse:min-inline-breeze-tap',
     button:
       'breeze:relative breeze:inline-grid breeze:items-center breeze:justify-center breeze:gap-breeze-2 breeze:font-breeze-sans breeze:cursor-pointer breeze:select-none breeze:[text-align:center] breeze:outline-offset-2 breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:any-pointer-coarse:min-block-breeze-tap',
     label: 'breeze:[grid-area:1/1]',
@@ -19,20 +18,9 @@ const variants = {
     skeleton:
       'breeze:[grid-area:1/1] breeze:inline-full breeze:block-breeze-3 breeze:rounded-breeze-xs',
   },
-  // Treatments, states and loading fills are shared with IconButton.
-  compound: {
-    // The design pads the filled primary wider than the other md treatments.
-    md: {
-      danger: 'breeze:ps-breeze-3 breeze:pe-breeze-3',
-      primary: 'breeze:ps-[14px] breeze:pe-[14px]',
-      secondary: 'breeze:ps-breeze-3 breeze:pe-breeze-3',
-    },
-  },
-  size: {
-    lg: 'breeze:min-block-breeze-lg breeze:ps-breeze-5 breeze:pe-breeze-5 breeze:py-breeze-3 breeze:text-breeze-sm',
-    md: 'breeze:min-block-breeze-9 breeze:text-breeze-sm',
-    sm: 'breeze:min-block-breeze-8 breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:text-breeze-xs',
-  },
+  // Treatments, states and loading fills are shared with IconButton; the box and sizes with Link.
+  compound: {},
+  size: {},
   state: {},
   variant: {
     // The design's text action has no control box, hover fill or size scale, and keeps the body's line height.
@@ -138,10 +126,10 @@ export function Button({
   const boxed = variant !== 'quiet';
   const className = [
     variants.base.button,
-    boxed ? variants.base.box : variants.variant.quiet,
+    boxed ? buttonVariants.base.box : variants.variant.quiet,
     boxed && buttonVariants.variant[variant],
-    boxed && variants.size[size],
-    boxed && size === 'md' && variants.compound.md[variant],
+    boxed && buttonVariants.size[size],
+    boxed && size === 'md' && buttonVariants.compound.md[variant],
     disabled && buttonVariants.state.disabled,
     loading && buttonVariants.state.loading,
   ]

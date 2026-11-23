@@ -8,7 +8,9 @@ import { Link, type LinkProps, type LinkVariant } from './Link';
 expectTypeOf<LinkProps>().not.toHaveProperty('className');
 expectTypeOf<LinkProps>().not.toHaveProperty('style');
 expectTypeOf<LinkProps>().not.toHaveProperty('loading');
-expectTypeOf<LinkVariant>().toEqualTypeOf<'default' | 'subtle'>();
+expectTypeOf<LinkVariant>().toEqualTypeOf<
+  'default' | 'primary' | 'secondary' | 'subtle'
+>();
 
 function renderLink(
   router: ComponentProps<typeof BreezeProvider>['router'] = undefined,
@@ -47,6 +49,60 @@ describe('Link', () => {
     expect(link).toHaveAttribute('target', '_blank');
     expect(link).toHaveAttribute('title', 'Download ledger');
     expect(link).toHaveClass('breeze:no-underline');
+  });
+
+  it('gives a navigation or download link a button treatment and size', async () => {
+    const navigate = vi.fn();
+    renderLink(
+      { navigate },
+      <>
+        <Link href="/overview" variant="primary">
+          Back to overview
+        </Link>
+        <Link download href="/reports/2026.csv" size="sm" variant="secondary">
+          Download
+        </Link>
+      </>,
+    );
+
+    const overview = screen.getByRole('link', { name: 'Back to overview' });
+    const download = screen.getByRole('link', { name: 'Download' });
+
+    expect(overview).toHaveClass(
+      'breeze:bg-breeze-brand',
+      'breeze:min-block-breeze-9',
+      'breeze:ps-[14px]',
+    );
+    expect(download).toHaveClass(
+      'breeze:border-breeze-line-strong',
+      'breeze:min-block-breeze-8',
+      'breeze:text-breeze-xs',
+    );
+    expect(download).toHaveAttribute('download', '');
+
+    await userEvent.hover(download);
+
+    expect(download).toHaveAttribute('data-hovered', 'true');
+
+    await userEvent.click(overview);
+
+    expect(navigate).toHaveBeenCalledWith('/overview', {
+      transitionTypes: [],
+    });
+  });
+
+  it('accepts a size only with a button treatment', () => {
+    renderLink(
+      undefined,
+      // @ts-expect-error A text link has one size.
+      <Link href="/accounts" size="sm">
+        Accounts
+      </Link>,
+    );
+
+    expect(screen.getByRole('link', { name: 'Accounts' })).toHaveClass(
+      'breeze:text-breeze-brand-text',
+    );
   });
 
   it('delegates opted-in same-origin navigation and its transition types', async () => {
