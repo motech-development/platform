@@ -726,16 +726,15 @@ function renderRow<T>(
 ) {
   return (
     <AriaGridListItem
+      aria-label={
+        descriptor.unread ? `${unreadMessage} ${descriptor.label}` : undefined
+      }
       className={variants.base.item}
       id={`row:${descriptor.id}`}
       isDisabled={descriptor.disabled}
       key={`row:${descriptor.id}`}
       onAction={onAction && (() => onAction(item))}
-      textValue={
-        descriptor.unread
-          ? `${unreadMessage} ${descriptor.label}`
-          : descriptor.label
-      }
+      textValue={descriptor.label}
     >
       <RowContent
         actionable={onAction !== undefined}

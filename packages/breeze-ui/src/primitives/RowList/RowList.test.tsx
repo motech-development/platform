@@ -496,7 +496,7 @@ describe('RowList', () => {
     expect(remove).toHaveBeenCalledOnce();
   });
 
-  it('marks unread rows without relying on colour', () => {
+  it('marks unread rows without relying on colour', async () => {
     const notifications = [
       { id: 'ready', label: 'Your report is ready', unread: true },
       { id: 'published', label: 'A transaction was published', unread: false },
@@ -518,6 +518,11 @@ describe('RowList', () => {
     });
 
     expect(unread).toHaveTextContent('Unread Your report is ready');
+
+    read.focus();
+    await userEvent.keyboard('y');
+
+    expect(unread).toHaveFocus();
     expect(read).toHaveTextContent(/^A transaction was published$/);
     expect(within(unread).getByText('Unread')).toHaveAttribute('lang', 'en-GB');
     expect(within(unread).getByText('Your report is ready')).toHaveClass(
