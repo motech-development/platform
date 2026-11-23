@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import {
   GridList as AriaGridList,
   GridListHeader as AriaGridListHeader,
@@ -16,8 +17,7 @@ import { VisuallyHidden } from '../VisuallyHidden/VisuallyHidden';
 
 const variants = {
   base: {
-    action:
-      'breeze:-col-end-1 breeze:flex breeze:min-inline-0 breeze:justify-end',
+    action: 'breeze:flex breeze:min-inline-0 breeze:justify-end',
     // Phones move the badge below the description so the label keeps the full width.
     badge:
       'breeze:flex breeze:max-inline-full breeze:min-inline-0 breeze:shrink-0 breeze:overflow-hidden breeze:whitespace-nowrap breeze:max-breeze-md:order-1 breeze:max-breeze-md:mbs-breeze-1 breeze:max-breeze-md:self-start breeze:[&>span]:max-inline-full breeze:[&>span]:min-inline-0 breeze:[&>span]:overflow-hidden breeze:[&>span>span:first-child]:min-inline-0 breeze:[&>span>span:first-child]:overflow-hidden breeze:[&>span>span:first-child]:text-ellipsis',
@@ -26,6 +26,7 @@ const variants = {
       'breeze:flex breeze:min-inline-0 breeze:flex-1 breeze:flex-col breeze:gap-breeze-px',
     description:
       'breeze:truncate breeze:text-breeze-xs breeze:font-normal breeze:text-breeze-ink-3',
+    descriptionWide: 'breeze:max-breeze-md:hidden',
     emptyMessage:
       'breeze:box-border breeze:inline-full breeze:min-inline-0 breeze:px-breeze-4 breeze:py-breeze-3 breeze:text-breeze-sm breeze:text-breeze-ink-2',
     grid: 'breeze:inline-full breeze:min-inline-0 breeze:flex breeze:flex-col breeze:gap-0',
@@ -34,15 +35,15 @@ const variants = {
     headerLabel: 'breeze:min-inline-0 breeze:break-words',
     headerSpacer: 'breeze:grow',
     headingEnd: 'breeze:text-end',
-    headingLabel: 'breeze:col-start-1 breeze:min-inline-0',
+    headingLabel: 'breeze:min-inline-0',
     headings:
-      'breeze:box-border breeze:inline-full breeze:min-inline-0 breeze:grid breeze:items-center breeze:gap-breeze-3 breeze:border-breeze-line breeze:border-be breeze:px-breeze-4 breeze:py-breeze-3 breeze:font-breeze-sans breeze:text-breeze-2xs breeze:font-semibold breeze:uppercase breeze:tracking-breeze-wide breeze:text-breeze-ink-3',
+      'breeze:box-border breeze:inline-full breeze:min-inline-0 breeze:grid breeze:grid-cols-(--breeze-row-columns) breeze:items-center breeze:max-breeze-md:grid-cols-(--breeze-row-columns-narrow) breeze:gap-breeze-3 breeze:border-breeze-line breeze:border-be breeze:px-breeze-4 breeze:py-breeze-3 breeze:font-breeze-sans breeze:text-breeze-2xs breeze:font-semibold breeze:uppercase breeze:tracking-breeze-wide breeze:text-breeze-ink-3',
     initials:
       'breeze:flex breeze:block-breeze-6 breeze:inline-breeze-6 breeze:shrink-0 breeze:items-center breeze:justify-center breeze:rounded-breeze-sm breeze:bg-breeze-brand-soft breeze:font-breeze-sans breeze:text-breeze-2xs breeze:font-bold breeze:text-breeze-brand-text',
-    item: 'breeze:box-border breeze:inline-full breeze:min-inline-0 breeze:grid breeze:items-center breeze:gap-breeze-3 breeze:border-breeze-sunken breeze:border-be breeze:px-breeze-4 breeze:py-breeze-2 breeze:text-start breeze:outline-offset-[-2px] breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-50 breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[hovered]:bg-breeze-raised breeze:data-[pressed]:bg-breeze-raised breeze:any-pointer-coarse:min-block-breeze-tap',
+    item: 'breeze:box-border breeze:inline-full breeze:min-inline-0 breeze:grid breeze:grid-cols-(--breeze-row-columns) breeze:items-center breeze:max-breeze-md:grid-cols-(--breeze-row-columns-narrow) breeze:gap-breeze-3 breeze:border-breeze-sunken breeze:border-be breeze:px-breeze-4 breeze:py-breeze-2 breeze:text-start breeze:outline-offset-[-2px] breeze:data-[disabled]:cursor-not-allowed breeze:data-[disabled]:opacity-50 breeze:data-[focus-visible]:outline-2 breeze:data-[focus-visible]:outline-solid breeze:data-[focus-visible]:outline-breeze-brand breeze:data-[hovered]:bg-breeze-raised breeze:data-[pressed]:bg-breeze-raised breeze:any-pointer-coarse:min-block-breeze-tap',
     label: 'breeze:min-inline-0 breeze:truncate',
     leading:
-      'breeze:col-start-1 breeze:flex breeze:min-inline-0 breeze:items-center breeze:gap-breeze-3',
+      'breeze:flex breeze:min-inline-0 breeze:items-center breeze:gap-breeze-3',
     loadMore:
       'breeze:flex breeze:min-inline-0 breeze:items-center breeze:justify-end breeze:gap-[10px] breeze:border-breeze-line breeze:border-bs breeze:px-breeze-4 breeze:py-breeze-3',
     loadMoreStatus:
@@ -57,9 +58,11 @@ const variants = {
     loadingStatus: 'breeze:sr-only',
     // Metadata cells are muted 12px single lines, matching the prototype's category and VAT text.
     metadata:
-      'breeze:col-start-2 breeze:min-inline-0 breeze:max-breeze-md:hidden breeze:[&>span]:font-normal',
+      'breeze:min-inline-0 breeze:max-breeze-md:hidden breeze:[&>span]:font-normal',
     metadataAmount:
       'breeze:min-inline-0 breeze:max-breeze-md:hidden breeze:[&>span]:text-breeze-xs breeze:[&>span]:font-normal',
+    narrowDescription:
+      'breeze:truncate breeze:text-breeze-xs breeze:font-normal breeze:text-breeze-ink-3 breeze:breeze-md:hidden',
     section: 'breeze:flex breeze:min-inline-0 breeze:flex-col',
     skeletonRows: 'breeze:flex breeze:min-inline-0 breeze:flex-col',
     // A static row's label wraps, so a message such as a notification is never cut off.
@@ -72,8 +75,7 @@ const variants = {
     unreadDot:
       'breeze:mbs-[5px] breeze:block-breeze-2 breeze:inline-breeze-2 breeze:shrink-0 breeze:self-start breeze:rounded-breeze-full',
     unreadStatus: 'breeze:sr-only',
-    value:
-      'breeze:-col-end-1 breeze:min-inline-0 breeze:break-words breeze:text-end',
+    value: 'breeze:min-inline-0 breeze:break-words breeze:text-end',
   },
   compound: {},
   size: {},
@@ -81,44 +83,9 @@ const variants = {
     unread: 'breeze:font-semibold',
   },
   variant: {
-    // Phones hide the metadata columns, so they keep only the leading and any value or action column.
-    columns: {
-      actioned: {
-        leading: 'breeze:grid-cols-[minmax(0,1fr)_120px]',
-        metadata:
-          'breeze:grid-cols-[minmax(0,1fr)_120px_120px] breeze:max-breeze-md:grid-cols-[minmax(0,1fr)_120px]',
-        metadataAmount:
-          'breeze:grid-cols-[minmax(0,1fr)_80px_120px] breeze:max-breeze-md:grid-cols-[minmax(0,1fr)_120px]',
-        metadataAndAmount:
-          'breeze:grid-cols-[minmax(0,1fr)_120px_80px_120px] breeze:max-breeze-md:grid-cols-[minmax(0,1fr)_120px]',
-      },
-      unvalued: {
-        leading: 'breeze:grid-cols-[minmax(0,1fr)]',
-        metadata:
-          'breeze:grid-cols-[minmax(0,1fr)_120px] breeze:max-breeze-md:grid-cols-[minmax(0,1fr)]',
-        metadataAmount:
-          'breeze:grid-cols-[minmax(0,1fr)_80px] breeze:max-breeze-md:grid-cols-[minmax(0,1fr)]',
-        metadataAndAmount:
-          'breeze:grid-cols-[minmax(0,1fr)_120px_80px] breeze:max-breeze-md:grid-cols-[minmax(0,1fr)]',
-      },
-      valued: {
-        leading: 'breeze:grid-cols-[minmax(0,1fr)_104px]',
-        metadata:
-          'breeze:grid-cols-[minmax(0,1fr)_120px_104px] breeze:max-breeze-md:grid-cols-[minmax(0,1fr)_104px]',
-        metadataAmount:
-          'breeze:grid-cols-[minmax(0,1fr)_80px_104px] breeze:max-breeze-md:grid-cols-[minmax(0,1fr)_104px]',
-        metadataAndAmount:
-          'breeze:grid-cols-[minmax(0,1fr)_120px_80px_104px] breeze:max-breeze-md:grid-cols-[minmax(0,1fr)_104px]',
-      },
-    },
     direction: {
       in: 'positive',
       out: 'strong',
-    },
-    metadataAmountColumn: {
-      actioned: 'breeze:-col-end-2',
-      unvalued: 'breeze:-col-end-1',
-      valued: 'breeze:-col-end-2',
     },
     readState: {
       read: 'breeze:bg-transparent',
@@ -127,9 +94,17 @@ const variants = {
   },
 } as const;
 
-export type RowListMetadata =
+/** Fixed metadata column widths: `sm` 120px, `md` 176px and `lg` 240px. */
+export type RowListColumnWidth = 'lg' | 'md' | 'sm';
+
+/** A metadata column entry, formatted as text or a locale-aware calendar date. */
+export type RowListMetadata = (
   | { format: 'date'; value: IsoCalendarDate }
-  | { format: 'text'; value: string };
+  | { format: 'text'; value: string }
+) & {
+  /** Sets the column width; the widest any row gives a column applies. Defaults to `sm`. */
+  width?: RowListColumnWidth;
+};
 
 /** A currency amount formatted with the provider locale. */
 export interface RowListCurrencyValue {
@@ -180,8 +155,10 @@ interface RowListInitialsLeading {
 interface RowListItemContent extends Omit<ItemDescriptor, 'icon'> {
   /** Shows quiet placeholders for supplied metadata and value regions. */
   loading?: boolean;
-  /** Optional middle region, formatted as text or a locale-aware calendar date. */
-  metadata?: RowListMetadata;
+  /** Optional middle column, or several columns in order, each hidden below `md`. */
+  metadata?: RowListMetadata | RowListMetadata[];
+  /** Replaces `description` below `md`, for example to keep hidden metadata visible on phones. */
+  narrowDescription?: string;
   /** Optional muted currency figure, such as VAT, between the metadata and value regions. */
   metadataAmount?: Omit<RowListCurrencyValue, 'tone'>;
   /** Groups this row under a structural section header. */
@@ -236,8 +213,8 @@ export interface RowListHeadings {
   action?: string;
   /** Heads the leading label column. */
   label: string;
-  /** Heads the metadata column when a row uses it. */
-  metadata?: string;
+  /** Heads the metadata column, or each metadata column in order, when a row uses it. */
+  metadata?: string | string[];
   /** Heads the muted currency column when a row uses it. */
   metadataAmount?: string;
   /** Heads the value column when a row uses it. */
@@ -363,12 +340,11 @@ function InitialLoadingState() {
 }
 
 function MetadataContent({
-  descriptor,
-}: Readonly<{ descriptor: RowDescriptor }>) {
-  const { metadata } = descriptor;
-
+  loading,
+  metadata,
+}: Readonly<{ loading?: boolean; metadata?: RowListMetadata }>) {
   if (!metadata) return null;
-  if (descriptor.loading) return <LoadingPlaceholder />;
+  if (loading) return <LoadingPlaceholder />;
 
   if (metadata.format === 'date') {
     return (
@@ -484,7 +460,74 @@ function SectionSummary({
   );
 }
 
-type ColumnLayout = keyof typeof variants.variant.columns;
+interface Columns {
+  amount: boolean;
+  metadata: RowListColumnWidth[];
+  trailing?: 'action' | 'value';
+}
+
+const columnWidths = {
+  action: '120px',
+  amount: '80px',
+  lg: '240px',
+  md: '176px',
+  sm: '120px',
+  value: '104px',
+} as const;
+
+const widthOrder: RowListColumnWidth[] = ['sm', 'md', 'lg'];
+
+function toList<V>(value: V | V[] | undefined): V[] {
+  if (value === undefined) return [];
+
+  return Array.isArray(value) ? value : [value];
+}
+
+function widest(widths: RowListColumnWidth[]): RowListColumnWidth {
+  return widths.reduce(
+    (current, width) =>
+      widthOrder.indexOf(width) > widthOrder.indexOf(current) ? width : current,
+    'sm',
+  );
+}
+
+// Only columns that some row uses are reserved.
+function getColumns(descriptors: RowDescriptor[]): Columns {
+  const metadata = descriptors.map(({ metadata: entries }) => toList(entries));
+  const metadataCount = Math.max(0, ...metadata.map(({ length }) => length));
+  let trailing: Columns['trailing'];
+
+  if (descriptors.some(({ value }) => value)) {
+    trailing = 'value';
+  } else if (descriptors.some(({ action }) => action)) {
+    trailing = 'action';
+  }
+
+  return {
+    amount: descriptors.some(({ metadataAmount }) => metadataAmount),
+    metadata: Array.from({ length: metadataCount }, (_, index) =>
+      widest(metadata.flatMap((entries) => entries[index]?.width ?? [])),
+    ),
+    trailing,
+  };
+}
+
+// Phones hide the metadata columns, so they keep only the leading and any trailing column.
+function getColumnTemplates({ amount, metadata, trailing }: Columns) {
+  const trailingColumn = trailing ? [columnWidths[trailing]] : [];
+
+  return {
+    '--breeze-row-columns': [
+      'minmax(0,1fr)',
+      ...metadata.map((width) => columnWidths[width]),
+      ...(amount ? [columnWidths.amount] : []),
+      ...trailingColumn,
+    ].join(' '),
+    '--breeze-row-columns-narrow': ['minmax(0,1fr)', ...trailingColumn].join(
+      ' ',
+    ),
+  } as CSSProperties;
+}
 
 function RowAction({ action }: Readonly<{ action: RowListRowAction }>) {
   if (action.href !== undefined) {
@@ -509,14 +552,15 @@ function RowAction({ action }: Readonly<{ action: RowListRowAction }>) {
 
 function RowContent({
   actionable,
+  columns,
   descriptor,
-  layout,
 }: Readonly<{
   actionable: boolean;
+  columns: Columns;
   descriptor: RowDescriptor;
-  layout: ColumnLayout;
 }>) {
   const { getMessageLocale, messages } = useBreezeContext();
+  const metadata = toList(descriptor.metadata);
 
   return (
     <>
@@ -579,95 +623,81 @@ function RowContent({
             )}
           </span>
           {descriptor.description && (
-            <span className={variants.base.description}>
+            <span
+              className={[
+                variants.base.description,
+                descriptor.narrowDescription !== undefined &&
+                  variants.base.descriptionWide,
+              ]
+                .filter(Boolean)
+                .join(' ')}
+            >
               {descriptor.description}
+            </span>
+          )}
+          {descriptor.narrowDescription !== undefined && (
+            <span className={variants.base.narrowDescription}>
+              {descriptor.narrowDescription}
             </span>
           )}
         </span>
       </div>
-      {descriptor.metadata && (
-        <div className={variants.base.metadata}>
-          <MetadataContent descriptor={descriptor} />
+      {columns.metadata.map((_, index) => (
+        // eslint-disable-next-line react/no-array-index-key -- Metadata columns are positional.
+        <div className={variants.base.metadata} key={index}>
+          <MetadataContent
+            loading={descriptor.loading}
+            metadata={metadata[index]}
+          />
         </div>
-      )}
-      {descriptor.metadataAmount && (
-        <div
-          className={[
-            variants.base.metadataAmount,
-            variants.variant.metadataAmountColumn[layout],
-          ].join(' ')}
-        >
+      ))}
+      {columns.amount && (
+        <div className={variants.base.metadataAmount}>
           <MetadataAmountContent descriptor={descriptor} />
         </div>
       )}
-      {descriptor.value && (
+      {columns.trailing === 'value' && (
         <div className={variants.base.value}>
           <ValueContent descriptor={descriptor} />
         </div>
       )}
-      {descriptor.action && (
+      {columns.trailing === 'action' && (
         <div className={variants.base.action}>
-          <RowAction action={descriptor.action} />
+          {descriptor.action && <RowAction action={descriptor.action} />}
         </div>
       )}
     </>
   );
 }
 
-interface Columns {
-  layout: ColumnLayout;
-  regions: keyof (typeof variants.variant.columns)[ColumnLayout];
-}
-
-function getColumnLayout(descriptors: RowDescriptor[]): ColumnLayout {
-  if (descriptors.some(({ value }) => value)) return 'valued';
-  if (descriptors.some(({ action }) => action)) return 'actioned';
-
-  return 'unvalued';
-}
-
-// Only columns that some row uses are reserved.
-function getColumns(descriptors: RowDescriptor[]): Columns {
-  const hasMetadata = descriptors.some(({ metadata }) => metadata);
-  const hasAmount = descriptors.some(({ metadataAmount }) => metadataAmount);
-  const layout = getColumnLayout(descriptors);
-
-  if (hasMetadata && hasAmount) return { layout, regions: 'metadataAndAmount' };
-  if (hasMetadata) return { layout, regions: 'metadata' };
-  if (hasAmount) return { layout, regions: 'metadataAmount' };
-
-  return { layout, regions: 'leading' };
-}
-
 function ColumnHeadings({
-  columns: { layout, regions },
+  columns,
   headings,
 }: Readonly<{ columns: Columns; headings: RowListHeadings }>) {
+  const metadata = toList(headings.metadata);
+
   return (
-    <div
-      className={[
-        variants.base.headings,
-        variants.variant.columns[layout][regions],
-      ].join(' ')}
-    >
+    <div className={variants.base.headings}>
       <span className={variants.base.headingLabel}>{headings.label}</span>
-      {(regions === 'metadata' || regions === 'metadataAndAmount') && (
-        <span className={variants.base.metadata}>{headings.metadata}</span>
-      )}
-      {(regions === 'metadataAmount' || regions === 'metadataAndAmount') && (
+      {columns.metadata.map((_, index) => (
+        // eslint-disable-next-line react/no-array-index-key -- Metadata columns are positional.
+        <span className={variants.base.metadata} key={index}>
+          {metadata[index]}
+        </span>
+      ))}
+      {columns.amount && (
         <span
           className={[
             variants.base.metadataAmount,
-            variants.variant.metadataAmountColumn[layout],
             variants.base.headingEnd,
           ].join(' ')}
         >
           {headings.metadataAmount}
         </span>
       )}
-      {layout !== 'unvalued' && (
+      {columns.trailing && (
         <span className={variants.base.value}>
-          {layout === 'valued' ? headings.value : headings.action}
+          {columns.trailing === 'value' ? headings.value : headings.action}
         </span>
       )}
     </div>
@@ -677,14 +707,11 @@ function ColumnHeadings({
 function renderRow<T>(
   { descriptor, item }: Row<T>,
   onAction: RowListProps<T>['onAction'],
-  { layout, regions }: Columns,
+  columns: Columns,
 ) {
   return (
     <AriaGridListItem
-      className={[
-        variants.base.item,
-        variants.variant.columns[layout][regions],
-      ].join(' ')}
+      className={variants.base.item}
       id={`row:${descriptor.id}`}
       isDisabled={descriptor.disabled}
       key={`row:${descriptor.id}`}
@@ -693,8 +720,8 @@ function renderRow<T>(
     >
       <RowContent
         actionable={onAction !== undefined}
+        columns={columns}
         descriptor={descriptor}
-        layout={layout}
       />
     </AriaGridListItem>
   );
@@ -732,7 +759,10 @@ export function RowList<T>({
   }
 
   return (
-    <div className={variants.base.container}>
+    <div
+      className={variants.base.container}
+      style={getColumnTemplates(columns)}
+    >
       {headings && rows.length > 0 && (
         <ColumnHeadings columns={columns} headings={headings} />
       )}

@@ -64,6 +64,15 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+/** Returns a row's column region by position; negative positions count from the end. */
+function regionOf(row: HTMLElement, position: number) {
+  const regions = Array.from(
+    row.querySelector('[role="gridcell"]')?.children ?? [],
+  );
+
+  return regions.at(position) as HTMLElement | undefined;
+}
+
 async function verifyResponsiveGeometry(canvasElement: HTMLElement) {
   if (!('__vitest_browser__' in globalThis)) return;
 
@@ -93,18 +102,10 @@ async function verifyResponsiveGeometry(canvasElement: HTMLElement) {
     const coffeeValueRect = coffeeValue.getBoundingClientRect();
     const marketDateRect = marketDate.getBoundingClientRect();
     const marketValueRect = marketValue.getBoundingClientRect();
-    const coffeeMetadataRegion = coffeeRow.querySelector<HTMLElement>(
-      '[class~="breeze:col-start-2"]',
-    );
-    const marketMetadataRegion = marketRow.querySelector<HTMLElement>(
-      '[class~="breeze:col-start-2"]',
-    );
-    const coffeeValueRegion = coffeeRow.querySelector<HTMLElement>(
-      '[class~="breeze:-col-end-1"]',
-    );
-    const marketValueRegion = marketRow.querySelector<HTMLElement>(
-      '[class~="breeze:-col-end-1"]',
-    );
+    const coffeeMetadataRegion = regionOf(coffeeRow, 1);
+    const marketMetadataRegion = regionOf(marketRow, 1);
+    const coffeeValueRegion = regionOf(coffeeRow, -1);
+    const marketValueRegion = regionOf(marketRow, -1);
 
     if (
       !coffeeMetadataRegion ||
@@ -272,18 +273,13 @@ export const Activity: Story = {
     const canvas = within(canvasElement);
     const moneyIn = canvas.getByText('+£2,100.00');
     const moneyOut = canvas.getByText('−£184.60');
-    const valueRegion = moneyIn.closest<HTMLElement>(
-      '[class~="breeze:-col-end-1"]',
-    );
     const row = canvas.getByRole('row', { name: 'Bramble Studio' });
+    const valueRegion = regionOf(row, -1);
 
     if (!valueRegion) throw new Error('Missing the RowList value region.');
 
     const rowRect = row.getBoundingClientRect();
-    const leadingRect = within(row)
-      .getByText('Bramble Studio')
-      .closest('[class~="breeze:col-start-1"]')
-      ?.getBoundingClientRect();
+    const leadingRect = regionOf(row, 0)?.getBoundingClientRect();
 
     await expect(getComputedStyle(moneyIn).fontSize).toBe('13px');
     await expect(getComputedStyle(moneyIn).fontWeight).toBe('600');
@@ -688,6 +684,83 @@ export const Initials: Story = {
     await expect(tile.height).toBe(24);
     await expect(getComputedStyle(initials).fontSize).toBe('11px');
     await expect(label.left).toBe(tile.right + 12);
+  },
+};
+
+const people = [
+  {
+    id: 'bramble',
+    initials: 'BS',
+    label: 'Bramble Studio',
+    metadata: [
+      { format: 'text', value: 'accounts@bramble.studio', width: 'lg' },
+      { format: 'text', value: 'Bristol' },
+    ],
+    narrowDescription: 'accounts@bramble.studio · Bristol',
+  },
+  {
+    id: 'fen-lane',
+    initials: 'FL',
+    label: 'Fen Lane Garage',
+    metadata: [
+      { format: 'text', value: 'hello@fenlane.co.uk', width: 'lg' },
+      { format: 'text', value: 'Cambridge' },
+    ],
+    narrowDescription: 'hello@fenlane.co.uk · Cambridge',
+  },
+] satisfies RowListItemDescriptor[];
+
+const peopleArgs = {
+  'aria-label': 'Clients',
+  headings: { label: 'Client', metadata: ['Email', 'Town or city'] },
+  items: people,
+  loadMore: undefined,
+};
+
+/** Several text columns of different widths; on phones a narrow description keeps their content. */
+export const TextColumns: Story = {
+  args: peopleArgs,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const row = canvas.getByRole('row', { name: 'Bramble Studio' });
+    const email = regionOf(row, 1)?.getBoundingClientRect();
+    const town = regionOf(row, 2)?.getBoundingClientRect();
+
+    await expect(email?.width).toBe(240);
+    await expect(town?.width).toBe(120);
+    await expect(town?.right).toBe(row.getBoundingClientRect().right - 16);
+    await expect(canvas.getByText('Email').getBoundingClientRect().left).toBe(
+      email?.left,
+    );
+    await expect(
+      canvas.getByText('Town or city').getBoundingClientRect().left,
+    ).toBe(town?.left);
+    await expect(
+      within(row).getByText('accounts@bramble.studio · Bristol'),
+    ).not.toBeVisible();
+  },
+};
+
+/** At phone width the text columns hide and the narrow description takes the detail line. */
+export const TextColumnsPhone: Story = {
+  args: peopleArgs,
+  globals: { viewport: { value: 'rowListPhone' } },
+  parameters: {
+    chromatic: {
+      viewports: [375],
+    },
+    viewport: phoneViewport,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const row = canvas.getByRole('row', { name: 'Bramble Studio' });
+
+    await expect(canvasElement.ownerDocument.defaultView?.innerWidth).toBe(375);
+    await expect(within(row).getByText('Bristol')).not.toBeVisible();
+    await expect(canvas.getByText('Email')).not.toBeVisible();
+    await expect(
+      within(row).getByText('accounts@bramble.studio · Bristol'),
+    ).toBeVisible();
   },
 };
 

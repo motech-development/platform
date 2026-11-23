@@ -207,8 +207,10 @@ describe('shipped styles.css', () => {
       ...Array.from(css.matchAll(/(--breeze-[\w-]+)\s*:/g), ([, name]) => name),
       ...shippedSources.flatMap(({ text }) =>
         Array.from(
-          text.matchAll(/setProperty\(\s*['"](--breeze-[\w-]+)['"]/g),
-          ([, name]) => name,
+          text.matchAll(
+            /(?:setProperty\(\s*['"](--breeze-[\w-]+)['"]|['"](--breeze-[\w-]+)['"]\s*:)/g,
+          ),
+          ([, property, styleKey]) => property ?? styleKey,
         ),
       ),
     ]);
