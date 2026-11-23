@@ -40,6 +40,17 @@ expectTypeOf<NumberFieldProps['onBlur']>().toEqualTypeOf<
 >();
 
 describe('NumberField', () => {
+  it('hides its label visually while keeping it as the accessible name', () => {
+    renderBreeze(<NumberField label="VAT rate for Vehicle" labelHidden />);
+
+    expect(
+      screen.getByRole('textbox', { name: 'VAT rate for Vehicle' }),
+    ).toBeInTheDocument();
+    expect(screen.getByText('VAT rate for Vehicle')).toHaveClass(
+      'breeze:sr-only',
+    );
+  });
+
   it('steps with the arrow keys, renders no stepper buttons and retains tabular figures', async () => {
     const user = userEvent.setup();
     const onChange = vi.fn<(value: number) => void>();

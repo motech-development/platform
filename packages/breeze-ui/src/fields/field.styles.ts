@@ -22,6 +22,7 @@ export const fieldVariants = {
     md: 'breeze:min-block-breeze-md breeze:any-pointer-coarse:min-block-breeze-tap breeze:text-breeze-sm',
   },
   state: {
+    hiddenLabel: 'breeze:sr-only',
     loadingInput: 'breeze:!opacity-0',
   },
   variant: {},

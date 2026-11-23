@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useState } from 'react';
+import { expect, within } from 'storybook/test';
 import { NumberField } from './NumberField';
 
 const meta = {
@@ -17,6 +18,26 @@ type Story = StoryObj<typeof meta>;
 
 /** Locale-aware numeric entry; the arrow keys step the value. */
 export const Default: Story = {};
+
+/** A visually hidden label for a repeated row under a column heading. */
+export const HiddenLabel: Story = {
+  args: {
+    defaultValue: 0.2,
+    formatOptions: { style: 'percent' },
+    label: 'VAT rate for Vehicle',
+    labelHidden: true,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await expect(
+      canvas.getByRole('textbox', { name: 'VAT rate for Vehicle' }),
+    ).toBeVisible();
+    await expect(
+      canvas.getByText('VAT rate for Vehicle').getBoundingClientRect().height,
+    ).toBeLessThanOrEqual(1);
+  },
+};
 
 /** Supporting guidance is announced with the spinbutton. */
 export const Description: Story = {

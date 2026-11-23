@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useState } from 'react';
+import { expect, within } from 'storybook/test';
 import { TextField } from './TextField';
 
 const meta = {
@@ -27,6 +28,28 @@ export const Description: Story = {
 export const Error: Story = {
   args: {
     error: 'Enter a display name.',
+  },
+};
+
+/** A visually hidden label for a repeated row under a column heading; the error stays visible. */
+export const HiddenLabel: Story = {
+  args: {
+    error: 'Enter a category name.',
+    label: 'Category name',
+    labelHidden: true,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByRole('textbox', { name: 'Category name' });
+
+    await expect(
+      canvas.getByText('Category name').getBoundingClientRect().height,
+    ).toBeLessThanOrEqual(1);
+    await expect(canvas.getByText('Enter a category name.')).toBeVisible();
+    await expect(input).toHaveAccessibleDescription('Enter a category name.');
+    await expect(input.closest('div')?.getBoundingClientRect().top).toBe(
+      input.getBoundingClientRect().top,
+    );
   },
 };
 
