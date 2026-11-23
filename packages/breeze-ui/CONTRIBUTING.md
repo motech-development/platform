@@ -75,9 +75,9 @@ The one-time comparison used Vite 8.1.5, React Aria 3.50.0, React Aria Component
 
 The previous externalized library output was 175,660 B raw and 39,986 B gzip-9 for `index.js`; it left React Aria external and is not comparable to the bundled measurements above. The locale optimization saves 25,961 B gzip-9 (16.1%) from the comparable bundle, which justifies shipping the English-only built-in interaction labels.
 
-The library build enforces both results through the `breeze-library-output-guard` plugin in `vite.config.ts`, so the locale step cannot regress silently. `yarn build` fails when the emitted library JavaScript exceeds 140 KiB (143,360 B) gzip-9, when a source map lists a non-English React Aria locale module, or when it lists no English locale module, which means the audit pattern no longer matches React Aria's layout. To ship additional built-in translations, change the optimizer's `locales: ['en']` option and the guard's English-only check together.
+The library build enforces both results through the `breeze-library-output-guard` plugin in `vite.config.ts`, so the locale step cannot regress silently. `yarn build` fails when the emitted library JavaScript exceeds 150 KiB (153,600 B) gzip-9, when a source map lists a non-English React Aria locale module, or when it lists no English locale module, which means the audit pattern no longer matches React Aria's layout. To ship additional built-in translations, change the optimizer's `locales: ['en']` option and the guard's English-only check together.
 
-As measured on 2026-10-02, the publishing build emitted 537,199 B raw and 136,753 B (133.55 KiB) gzip-9 of library JavaScript, measured with React Aria 3.50.0 and React Aria Components 1.19.0 bundled.
+As measured on 2026-11-23, the publishing build emitted 574,529 B raw and 146,796 B (143.36 KiB) gzip-9 of library JavaScript, measured with React Aria 3.50.0 and React Aria Components 1.19.0 bundled. The budget rose from 140 KiB to 150 KiB when the components Accounts needed, including the React Aria tooltip, took the build past 140 KiB.
 
 The optional PDF peer remains dynamically loaded only when an open PDF is rendered and is not included in the library JavaScript measurements. With `pdfjs-dist` 6.3.289, its installed production files measure:
 
@@ -87,7 +87,7 @@ The optional PDF peer remains dynamically loaded only when an open PDF is render
 | `build/pdf.worker.mjs` (the URL-loaded worker) | 2,228,489 B | 473,507 B |
 | Engine total                                   | 3,088,873 B | 649,830 B |
 
-The library and the PDF.js engine are separate payloads: 133.55 KiB gzip-9 of library JavaScript and 634.60 KiB gzip-9 for the engine (both measured on 2026-10-02, and they will drift — the build guard enforces the library budget, so re-measure rather than trusting these figures), loaded only when a PDF is opened.
+The library and the PDF.js engine are separate payloads: 143.36 KiB gzip-9 of library JavaScript (measured on 2026-11-23) and 634.60 KiB gzip-9 for the engine (measured on 2026-10-02). Both will drift — the build guard enforces the library budget, so re-measure rather than trusting these figures. The engine is loaded only when a PDF is opened.
 
 ## Tests and coverage
 
