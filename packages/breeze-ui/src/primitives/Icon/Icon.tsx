@@ -26,6 +26,8 @@ import {
   Users,
   X,
 } from 'lucide-react';
+import { Focusable as AriaFocusable } from 'react-aria-components/Focusable';
+import OverlayTooltip from '../../overlays/OverlayTooltip';
 import { useBreezeContext } from '../../provider/BreezeContext';
 
 const artwork = {
@@ -59,6 +61,8 @@ const artwork = {
 const variants = {
   base: {
     icon: 'breeze:block breeze:shrink-0',
+    tooltipTarget:
+      'breeze:inline-flex breeze:shrink-0 breeze:rounded-breeze-chip breeze:outline-offset-2 breeze:focus-visible:outline-2 breeze:focus-visible:outline-solid breeze:focus-visible:outline-breeze-brand',
   },
   compound: {},
   size: {
@@ -83,37 +87,80 @@ const logicalDirectionIcons = new Set<IconName>(['back', 'forward']);
 export type IconName = keyof typeof artwork;
 export type IconSize = keyof typeof variants.size;
 
-export interface IconProps {
-  /** Names meaningful artwork; omit for an icon already described by nearby text. */
-  label?: string;
+interface IconCommonProps {
   /** Selects artwork from the curated Breeze icon set. */
   name: IconName;
   /** Selects dimensions from `2xs` (14px) to `4xl` (26px). Defaults to `sm` (16px). */
   size?: IconSize;
 }
 
+interface PlainIconProps {
+  /** Names meaningful artwork; omit for an icon already described by nearby text. */
+  label?: string;
+  /** Requires a `label`. */
+  tooltip?: never;
+}
+
+interface ExplainedIconProps {
+  /** Names the artwork. */
+  label: string;
+  /** Short explanation shown on hover and keyboard focus; makes the icon focusable. */
+  tooltip: string;
+}
+
+export type IconProps = IconCommonProps & (ExplainedIconProps | PlainIconProps);
+
 /**
  * Renders one curated Lucide glyph under Breeze's semantic artwork names.
  *
  * @summary The single dependency boundary for Breeze icon artwork.
  */
-export function Icon({ label, name, size = 'sm' }: Readonly<IconProps>) {
+export function Icon({
+  label,
+  name,
+  size = 'sm',
+  tooltip,
+}: Readonly<IconProps>) {
   useBreezeContext();
 
   const Artwork = artwork[name];
   const accessibleLabel = label?.trim() || undefined;
+  const className = [
+    variants.base.icon,
+    variants.size[size],
+    logicalDirectionIcons.has(name) && variants.state.logicalDirection,
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  if (tooltip !== undefined) {
+    return (
+      <OverlayTooltip tooltip={tooltip}>
+        <AriaFocusable>
+          <span
+            aria-label={accessibleLabel}
+            className={variants.base.tooltipTarget}
+            role="img"
+            // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- Keyboard users need focus to reach the explanation.
+            tabIndex={0}
+          >
+            <Artwork
+              aria-hidden
+              className={className}
+              focusable="false"
+              strokeWidth={1.75}
+            />
+          </span>
+        </AriaFocusable>
+      </OverlayTooltip>
+    );
+  }
 
   return (
     <Artwork
       aria-hidden={accessibleLabel === undefined ? true : undefined}
       aria-label={accessibleLabel}
-      className={[
-        variants.base.icon,
-        variants.size[size],
-        logicalDirectionIcons.has(name) && variants.state.logicalDirection,
-      ]
-        .filter(Boolean)
-        .join(' ')}
+      className={className}
       focusable="false"
       role={accessibleLabel === undefined ? undefined : 'img'}
       strokeWidth={1.75}

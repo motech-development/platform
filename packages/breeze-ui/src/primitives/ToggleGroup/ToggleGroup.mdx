@@ -22,6 +22,11 @@ Return a unique `id` and a visible `label`, and optionally a `description`,
 
 <Canvas of={Stories.DisabledOption} />
 
+Add a `tooltip` to explain an option on hover and keyboard focus, such as the
+state it sets. Screen readers announce it as the option's description.
+
+<Canvas of={Stories.Tooltips} />
+
 ## Controlled
 
 For an uncontrolled group, pass `defaultSelected` and optionally `onChange`. To

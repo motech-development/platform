@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect } from 'storybook/test';
+import { expect, userEvent, within } from 'storybook/test';
 import { Inline } from '../Inline/Inline';
 import { Stack } from '../Stack/Stack';
 import { Typography } from '../Typography/Typography';
@@ -47,6 +47,23 @@ export const Decorative: Story = {};
 export const Named: Story = {
   args: {
     label: 'Choose a date',
+  },
+};
+
+/** A focusable icon explained on hover and keyboard focus. */
+export const Explained: Story = {
+  args: {
+    label: 'Locked',
+    name: 'lock',
+    tooltip: 'This category is fixed and cannot be changed or removed',
+  },
+  play: async ({ canvasElement }) => {
+    const page = within(canvasElement.ownerDocument.body);
+
+    await userEvent.tab();
+
+    await expect(page.getByRole('img', { name: 'Locked' })).toHaveFocus();
+    await expect(await page.findByRole('tooltip')).toBeVisible();
   },
 };
 

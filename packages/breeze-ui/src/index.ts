@@ -165,7 +165,10 @@ export type { ToastEnqueue, ToastProps } from './primitives/Toast/Toast';
 export { Toast, useToast } from './primitives/Toast/Toast';
 export type { ToggleProps } from './primitives/Toggle/Toggle';
 export { Toggle } from './primitives/Toggle/Toggle';
-export type { ToggleGroupProps } from './primitives/ToggleGroup/ToggleGroup';
+export type {
+  ToggleGroupItemDescriptor,
+  ToggleGroupProps,
+} from './primitives/ToggleGroup/ToggleGroup';
 export { ToggleGroup } from './primitives/ToggleGroup/ToggleGroup';
 export type {
   IsoCalendarDate,
