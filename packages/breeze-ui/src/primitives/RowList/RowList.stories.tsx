@@ -317,7 +317,10 @@ const money = [
     },
   },
   {
-    badge: { children: 'Publishes 8 Sep', variant: 'brand' },
+    badge: [
+      { children: 'No receipt', variant: 'warning' },
+      { children: 'Publishes 8 Sep', variant: 'brand' },
+    ],
     description: 'Standing order, workshop rent',
     direction: 'out',
     icon: 'outgoing',
@@ -416,7 +419,7 @@ const money = [
   },
 ] satisfies RowListItemDescriptor[];
 
-/** Column headings over category and VAT columns, with section headers ending in a daily total or a muted note. */
+/** Column headings over category and VAT columns, a row with two badges, and section headers ending in a daily total or a muted note. */
 export const Money: Story = {
   args: {
     'aria-label': 'Transactions',
@@ -485,6 +488,21 @@ export const Money: Story = {
     await expect(headingRect('Category').left).toBe(categoryRect.left);
     await expect(headingRect('VAT').right).toBe(vatRect.right);
     await expect(headingRect('Amount').right).toBe(amountRect.right);
+
+    const rent = canvas.getByRole('row', { name: 'Northgate Supplies' });
+    const rentLabel = within(rent)
+      .getByText('Northgate Supplies')
+      .getBoundingClientRect();
+    const noReceipt = within(rent)
+      .getByText('No receipt')
+      .getBoundingClientRect();
+    const publishes = within(rent)
+      .getByText('Publishes 8 Sep')
+      .getBoundingClientRect();
+
+    await expect(noReceipt.left).toBeGreaterThan(rentLabel.right);
+    await expect(publishes.left).toBeGreaterThan(noReceipt.right);
+    await expect(publishes.top).toBe(noReceipt.top);
   },
 };
 
@@ -526,6 +544,24 @@ export const Phone: Story = {
       amount.right,
     );
     await expect(badge.top).toBeGreaterThanOrEqual(description.bottom + 4);
+
+    const rent = canvas.getByRole('row', { name: 'Northgate Supplies' });
+    const rentDescription = within(rent)
+      .getByText('Standing order, workshop rent')
+      .getBoundingClientRect();
+    const noReceipt = within(rent)
+      .getByText('No receipt')
+      .getBoundingClientRect();
+    const publishes = within(rent)
+      .getByText('Publishes 8 Sep')
+      .getBoundingClientRect();
+
+    await expect(noReceipt.top).toBeGreaterThanOrEqual(
+      rentDescription.bottom + 4,
+    );
+    await expect(publishes.top).toBe(noReceipt.top);
+    // 6px between the badges, measured inside each badge's 6px inline padding.
+    await expect(publishes.left - noReceipt.right).toBe(6 + 6 + 6);
     await expect(Math.abs(amount.right - (rowRect.right - 16))).toBeLessThan(1);
     await expect(
       Math.abs(
