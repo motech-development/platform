@@ -52,6 +52,7 @@ const enGB = {
   popoverTriggerUnread: 'Unread items',
   primaryNavigation: 'Primary navigation',
   required: 'Required',
+  rowListUnread: 'Unread',
   selectDate: 'Select a date',
   skipToMain: 'Skip to main content',
   today: 'Today',

@@ -9,12 +9,15 @@ import { useBreezeContext } from '../../provider/BreezeContext';
 import { Badge } from '../Badge/Badge';
 import { Button } from '../Button/Button';
 import { IconTile } from '../IconTile/IconTile';
+import { Link } from '../Link/Link';
 import { Skeleton } from '../Skeleton/Skeleton';
 import { type IsoCalendarDate, Typography } from '../Typography/Typography';
 import { VisuallyHidden } from '../VisuallyHidden/VisuallyHidden';
 
 const variants = {
   base: {
+    action:
+      'breeze:-col-end-1 breeze:flex breeze:min-inline-0 breeze:justify-end',
     // Phones move the badge below the description so the label keeps the full width.
     badge:
       'breeze:flex breeze:max-inline-full breeze:min-inline-0 breeze:shrink-0 breeze:overflow-hidden breeze:whitespace-nowrap breeze:max-breeze-md:order-1 breeze:max-breeze-md:mbs-breeze-1 breeze:max-breeze-md:self-start breeze:[&>span]:max-inline-full breeze:[&>span]:min-inline-0 breeze:[&>span]:overflow-hidden breeze:[&>span>span:first-child]:min-inline-0 breeze:[&>span>span:first-child]:overflow-hidden breeze:[&>span>span:first-child]:text-ellipsis',
@@ -55,20 +58,36 @@ const variants = {
       'breeze:min-inline-0 breeze:max-breeze-md:hidden breeze:[&>span]:text-breeze-xs breeze:[&>span]:font-normal',
     section: 'breeze:flex breeze:min-inline-0 breeze:flex-col',
     skeletonRows: 'breeze:flex breeze:min-inline-0 breeze:flex-col',
+    // A static row's label wraps, so a message such as a notification is never cut off.
+    staticLabel: 'breeze:min-inline-0 breeze:break-words',
     summaryText: 'breeze:min-inline-0 breeze:truncate breeze:text-breeze-ink-3',
     // The total keeps the amount role's weight at the header's 12px size.
     summaryTotal: 'breeze:shrink-0 breeze:[&>span:last-child]:text-breeze-xs',
     title:
       'breeze:flex breeze:min-inline-0 breeze:items-center breeze:gap-breeze-2 breeze:text-breeze-sm breeze:font-medium breeze:max-breeze-md:contents',
+    unreadDot:
+      'breeze:mbs-[5px] breeze:block-breeze-2 breeze:inline-breeze-2 breeze:shrink-0 breeze:self-start breeze:rounded-breeze-full',
+    unreadStatus: 'breeze:sr-only',
     value:
       'breeze:-col-end-1 breeze:min-inline-0 breeze:break-words breeze:text-end',
   },
   compound: {},
   size: {},
-  state: {},
+  state: {
+    unread: 'breeze:font-semibold',
+  },
   variant: {
-    // Phones hide the metadata columns, so they keep only the leading and any value column.
+    // Phones hide the metadata columns, so they keep only the leading and any value or action column.
     columns: {
+      actioned: {
+        leading: 'breeze:grid-cols-[minmax(0,1fr)_120px]',
+        metadata:
+          'breeze:grid-cols-[minmax(0,1fr)_120px_120px] breeze:max-breeze-md:grid-cols-[minmax(0,1fr)_120px]',
+        metadataAmount:
+          'breeze:grid-cols-[minmax(0,1fr)_80px_120px] breeze:max-breeze-md:grid-cols-[minmax(0,1fr)_120px]',
+        metadataAndAmount:
+          'breeze:grid-cols-[minmax(0,1fr)_120px_80px_120px] breeze:max-breeze-md:grid-cols-[minmax(0,1fr)_120px]',
+      },
       unvalued: {
         leading: 'breeze:grid-cols-[minmax(0,1fr)]',
         metadata:
@@ -93,8 +112,13 @@ const variants = {
       out: 'strong',
     },
     metadataAmountColumn: {
+      actioned: 'breeze:-col-end-2',
       unvalued: 'breeze:-col-end-1',
       valued: 'breeze:-col-end-2',
+    },
+    readState: {
+      read: 'breeze:bg-transparent',
+      unread: 'breeze:bg-breeze-brand',
     },
   },
 } as const;
@@ -150,8 +174,43 @@ export interface RowListItemDescriptor extends ItemDescriptor {
   value?: RowListValue;
 }
 
+/** A static row's trailing action: a button, or a link that navigates or downloads. */
+export type RowListRowAction =
+  | {
+      download?: never;
+      href?: never;
+      label: string;
+      /** Called when the button is activated. */
+      onAction: () => void;
+    }
+  | {
+      /** Downloads the destination instead of navigating when the browser allows it. */
+      download?: boolean | string;
+      href: string;
+      label: string;
+      onAction?: never;
+    };
+
+/** The content contract for a row that is not itself an action. */
+export interface RowListStaticItemDescriptor
+  extends Omit<RowListItemDescriptor, 'disabled' | 'value'> {
+  /** Optional trailing action, in place of a value. */
+  action?: RowListRowAction;
+  /** Unavailable: a static row cannot be disabled. */
+  disabled?: never;
+  /** Shows a read or unread marker; omit for rows without a read state. */
+  unread?: boolean;
+  /** Unavailable: a static row ends with its action instead. */
+  value?: never;
+}
+
+type RowDescriptor = RowListItemDescriptor &
+  Pick<RowListStaticItemDescriptor, 'action' | 'unread'>;
+
 /** Visible column headings, each aligned to the row region it names. */
 export interface RowListHeadings {
+  /** Heads the action column when a row uses it. */
+  action?: string;
   /** Heads the leading label column. */
   label: string;
   /** Heads the metadata column when a row uses it. */
@@ -172,12 +231,9 @@ export interface RowListLoadMoreProps {
   onAction: () => void;
 }
 
-/** Props for a data-backed, individually actionable row list. */
-export interface RowListProps<T> {
+interface RowListCommonProps<T> {
   /** Names the grid list for assistive technology. */
   'aria-label': string;
-  /** Returns the closed display descriptor for an application value. */
-  getItem: (item: T) => RowListItemDescriptor;
   /** Optional column headings shown above the rows. */
   headings?: RowListHeadings;
   /** Application values displayed as rows. */
@@ -186,12 +242,27 @@ export interface RowListProps<T> {
   loading?: boolean;
   /** Optional explicit action for retrieving more rows. */
   loadMore?: RowListLoadMoreProps;
+}
+
+interface ActionRowListProps<T> extends RowListCommonProps<T> {
+  /** Returns the closed display descriptor for an application value. */
+  getItem: (item: T) => RowListItemDescriptor;
   /** Called with the activated row's application item. */
   onAction: (item: T) => void;
 }
 
+interface StaticRowListProps<T> extends RowListCommonProps<T> {
+  /** Returns the closed display descriptor for an application value. */
+  getItem: (item: T) => RowListStaticItemDescriptor;
+  /** Omit to make the rows static, each with an optional trailing action. */
+  onAction?: never;
+}
+
+/** Props for a row list whose rows are each an action, or static rows with their own actions. */
+export type RowListProps<T> = ActionRowListProps<T> | StaticRowListProps<T>;
+
 interface Row<T> {
-  descriptor: RowListItemDescriptor;
+  descriptor: RowDescriptor;
   item: T;
 }
 
@@ -268,7 +339,7 @@ function InitialLoadingState() {
 
 function MetadataContent({
   descriptor,
-}: Readonly<{ descriptor: RowListItemDescriptor }>) {
+}: Readonly<{ descriptor: RowDescriptor }>) {
   const { metadata } = descriptor;
 
   if (!metadata) return null;
@@ -297,7 +368,7 @@ function MetadataContent({
 
 function MetadataAmountContent({
   descriptor,
-}: Readonly<{ descriptor: RowListItemDescriptor }>) {
+}: Readonly<{ descriptor: RowDescriptor }>) {
   const { metadataAmount } = descriptor;
 
   if (!metadataAmount) return null;
@@ -323,9 +394,7 @@ function MetadataAmountContent({
   );
 }
 
-function ValueContent({
-  descriptor,
-}: Readonly<{ descriptor: RowListItemDescriptor }>) {
+function ValueContent({ descriptor }: Readonly<{ descriptor: RowDescriptor }>) {
   const { value } = descriptor;
 
   if (!value) return null;
@@ -392,13 +461,50 @@ function SectionSummary({
 
 type ColumnLayout = keyof typeof variants.variant.columns;
 
+function RowAction({ action }: Readonly<{ action: RowListRowAction }>) {
+  if (action.href !== undefined) {
+    return (
+      <Link
+        download={action.download}
+        href={action.href}
+        size="sm"
+        variant="secondary"
+      >
+        {action.label}
+      </Link>
+    );
+  }
+
+  return (
+    <Button onAction={action.onAction} size="sm" variant="secondary">
+      {action.label}
+    </Button>
+  );
+}
+
 function RowContent({
+  actionable,
   descriptor,
   layout,
-}: Readonly<{ descriptor: RowListItemDescriptor; layout: ColumnLayout }>) {
+}: Readonly<{
+  actionable: boolean;
+  descriptor: RowDescriptor;
+  layout: ColumnLayout;
+}>) {
+  const { getMessageLocale, messages } = useBreezeContext();
+
   return (
     <>
       <div className={variants.base.leading}>
+        {descriptor.unread !== undefined && (
+          <span
+            aria-hidden="true"
+            className={[
+              variants.base.unreadDot,
+              variants.variant.readState[descriptor.unread ? 'unread' : 'read'],
+            ].join(' ')}
+          />
+        )}
         {descriptor.icon && (
           <IconTile
             name={descriptor.icon}
@@ -413,7 +519,24 @@ function RowContent({
         )}
         <span className={variants.base.content}>
           <span className={variants.base.title}>
-            <span className={variants.base.label}>{descriptor.label}</span>
+            <span
+              className={[
+                actionable ? variants.base.label : variants.base.staticLabel,
+                descriptor.unread && variants.state.unread,
+              ]
+                .filter(Boolean)
+                .join(' ')}
+            >
+              {descriptor.unread && (
+                <span
+                  className={variants.base.unreadStatus}
+                  lang={getMessageLocale('rowListUnread')}
+                >
+                  {`${messages.rowListUnread} `}
+                </span>
+              )}
+              {descriptor.label}
+            </span>
             {descriptor.badge && (
               <span className={variants.base.badge}>
                 <Badge
@@ -452,6 +575,11 @@ function RowContent({
           <ValueContent descriptor={descriptor} />
         </div>
       )}
+      {descriptor.action && (
+        <div className={variants.base.action}>
+          <RowAction action={descriptor.action} />
+        </div>
+      )}
     </>
   );
 }
@@ -461,11 +589,18 @@ interface Columns {
   regions: keyof (typeof variants.variant.columns)[ColumnLayout];
 }
 
+function getColumnLayout(descriptors: RowDescriptor[]): ColumnLayout {
+  if (descriptors.some(({ value }) => value)) return 'valued';
+  if (descriptors.some(({ action }) => action)) return 'actioned';
+
+  return 'unvalued';
+}
+
 // Only columns that some row uses are reserved.
-function getColumns(descriptors: RowListItemDescriptor[]): Columns {
+function getColumns(descriptors: RowDescriptor[]): Columns {
   const hasMetadata = descriptors.some(({ metadata }) => metadata);
   const hasAmount = descriptors.some(({ metadataAmount }) => metadataAmount);
-  const layout = descriptors.some(({ value }) => value) ? 'valued' : 'unvalued';
+  const layout = getColumnLayout(descriptors);
 
   if (hasMetadata && hasAmount) return { layout, regions: 'metadataAndAmount' };
   if (hasMetadata) return { layout, regions: 'metadata' };
@@ -500,8 +635,10 @@ function ColumnHeadings({
           {headings.metadataAmount}
         </span>
       )}
-      {layout === 'valued' && (
-        <span className={variants.base.value}>{headings.value}</span>
+      {layout !== 'unvalued' && (
+        <span className={variants.base.value}>
+          {layout === 'valued' ? headings.value : headings.action}
+        </span>
       )}
     </div>
   );
@@ -521,16 +658,20 @@ function renderRow<T>(
       id={`row:${descriptor.id}`}
       isDisabled={descriptor.disabled}
       key={`row:${descriptor.id}`}
-      onAction={() => onAction(item)}
+      onAction={onAction && (() => onAction(item))}
       textValue={descriptor.label}
     >
-      <RowContent descriptor={descriptor} layout={layout} />
+      <RowContent
+        actionable={onAction !== undefined}
+        descriptor={descriptor}
+        layout={layout}
+      />
     </AriaGridListItem>
   );
 }
 
 /**
- * Displays actionable rows with aligned metadata and value regions.
+ * Displays actionable or static rows with aligned metadata, value and action regions.
  *
  * @summary A data-backed collection with sections and explicit pagination.
  */
@@ -544,7 +685,10 @@ export function RowList<T>({
   onAction,
 }: Readonly<RowListProps<T>>) {
   const { getMessageLocale, messages } = useBreezeContext();
-  const rows = items.map((item) => ({ descriptor: getItem(item), item }));
+  const rows: Row<T>[] = items.map((item) => ({
+    descriptor: getItem(item),
+    item,
+  }));
   const entries = groupRows(rows);
   const columns = getColumns(rows.map(({ descriptor }) => descriptor));
   const loadMoreLoading = loadMore?.loading ?? false;

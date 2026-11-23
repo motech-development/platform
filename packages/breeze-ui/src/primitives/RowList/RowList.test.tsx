@@ -7,6 +7,7 @@ import {
   RowList,
   type RowListItemDescriptor,
   type RowListProps,
+  type RowListStaticItemDescriptor,
 } from './RowList';
 
 interface Entry {
@@ -51,9 +52,13 @@ function getEntryDescriptor(entry: Entry): RowListItemDescriptor {
   };
 }
 
-expectTypeOf<RowListProps<Entry>['onAction']>().parameters.toEqualTypeOf<
-  [Entry]
->();
+expectTypeOf<
+  NonNullable<RowListProps<Entry>['onAction']>
+>().parameters.toEqualTypeOf<[Entry]>();
+expectTypeOf<RowListStaticItemDescriptor['value']>().toEqualTypeOf<undefined>();
+expectTypeOf<
+  RowListStaticItemDescriptor['disabled']
+>().toEqualTypeOf<undefined>();
 expectTypeOf<RowListProps<Entry>>().not.toHaveProperty('children');
 expectTypeOf<RowListProps<Entry>>().not.toHaveProperty('className');
 expectTypeOf<RowListProps<Entry>>().not.toHaveProperty('onClick');
@@ -437,6 +442,80 @@ describe('RowList', () => {
     );
 
     expect(screen.queryByText('Entry')).not.toBeInTheDocument();
+  });
+
+  it('renders static rows that end in their own button or link', async () => {
+    const remove = vi.fn();
+    const reports = [
+      {
+        action: {
+          download: 'report.zip',
+          href: '/reports/report.zip',
+          label: 'Download',
+        },
+        id: 'report',
+        label: '3 October 2026',
+        metadata: { format: 'text', value: '4 October 2026' },
+      },
+      {
+        action: { label: 'Remove', onAction: remove },
+        id: 'draft',
+        label: '2 October 2026',
+      },
+    ] satisfies RowListStaticItemDescriptor[];
+
+    renderBreeze(
+      <RowList
+        aria-label="Reports"
+        getItem={(report) => report}
+        headings={{ action: 'Actions', label: 'Requested' }}
+        items={reports}
+      />,
+    );
+
+    const reportRow = screen.getByRole('row', { name: /^3 October 2026/ });
+    const download = within(reportRow).getByRole('link', { name: 'Download' });
+
+    expect(reportRow).toHaveClass(
+      'breeze:grid-cols-[minmax(0,1fr)_120px_120px]',
+    );
+    expect(download).toHaveAttribute('href', '/reports/report.zip');
+    expect(download).toHaveAttribute('download', 'report.zip');
+    expect(screen.getByText('Actions')).toHaveClass('breeze:-col-end-1');
+
+    await userEvent.click(screen.getByRole('button', { name: 'Remove' }));
+
+    expect(remove).toHaveBeenCalledOnce();
+  });
+
+  it('marks unread rows without relying on colour', () => {
+    const notifications = [
+      { id: 'ready', label: 'Your report is ready', unread: true },
+      { id: 'published', label: 'A transaction was published', unread: false },
+    ] satisfies RowListStaticItemDescriptor[];
+
+    renderBreeze(
+      <RowList
+        aria-label="Notifications"
+        getItem={(notification) => notification}
+        items={notifications}
+      />,
+    );
+
+    const unread = screen.getByRole('row', { name: 'Your report is ready' });
+    const read = screen.getByRole('row', {
+      name: 'A transaction was published',
+    });
+
+    expect(unread).toHaveTextContent('Unread Your report is ready');
+    expect(read).toHaveTextContent(/^A transaction was published$/);
+    expect(within(unread).getByText('Unread')).toHaveAttribute('lang', 'en-GB');
+    expect(within(unread).getByText('Your report is ready')).toHaveClass(
+      'breeze:font-semibold',
+    );
+    expect(
+      within(read).getByText('A transaction was published'),
+    ).not.toHaveClass('breeze:font-semibold');
   });
 
   it('keeps an empty result as a named grid with a row and cell', () => {
