@@ -3,13 +3,14 @@ import * as Stories from './RowList.stories';
 
 <Meta
   of={Stories}
-  summary="A keyboard-accessible list of aligned, actionable rows."
+  summary="A keyboard-accessible list of aligned rows that are actions or hold their own action."
 />
 
 # RowList
 
-`RowList` displays data as a list of rows that people can act on, such as
-transactions or documents. Each row has a leading label, optional metadata and
+`RowList` displays data as a list of rows, such as transactions or reports.
+Each row is either an action itself or a static row with its own trailing
+action. Each row has a leading label, optional metadata and
 a trailing value, aligned in columns across the list.
 
 <Canvas of={Stories.Default} />
@@ -87,10 +88,36 @@ value.
 
 ## Row actions
 
-Each row is an action, not a selection: the list keeps no selection state.
-Activating a row calls `onAction` with that row's item from `items`.
+With `onAction`, each row is an action, not a selection: the list keeps no
+selection state. Activating a row calls `onAction` with that row's item from
+`items`.
 
 <Canvas of={Stories.Merging} />
+
+## Static rows
+
+Omit `onAction` when the rows are not actions themselves, such as a list of
+reports. `getItem` then returns a `RowListStaticItemDescriptor`, which has no
+`value` or `disabled`, and can end in its own `action`:
+
+- `{ label, onAction }` renders a button.
+- `{ label, href, download }` renders a link, which can download a file. It
+  navigates through the provider's router like `Link`.
+
+Both use the small secondary button treatment, in a 120px column at the end
+of the row. Name the column with `headings.action`. A static row's label wraps
+instead of truncating.
+
+<Canvas of={Stories.StaticRows} />
+
+### Unread rows
+
+Set `unread` on rows that have a read state, such as notifications. An unread
+row shows a brand dot and a heavier label, and screen readers hear the
+provider's “Unread” message before the label. A read row keeps the dot's
+space, so labels stay aligned. Omit `unread` for rows without a read state.
+
+<Canvas of={Stories.Unread} />
 
 ## Loading
 
@@ -129,8 +156,9 @@ display.” message, and screen readers announce it.
 ## Accessibility
 
 Give the list an `aria-label`, which is required. The list is a single Tab
-stop: use the arrow keys to move between rows, and Enter to activate the
-focused row. Screen readers announce loading and empty states once,
+stop: use the up and down arrow keys to move between rows, and Enter to
+activate the focused row. In a static row, the right arrow key moves to the
+row's action. Screen readers announce loading and empty states once,
 through a single status message.
 
 ## API

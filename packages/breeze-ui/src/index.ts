@@ -133,8 +133,10 @@ export type {
   RowListLoadMoreProps,
   RowListMetadata,
   RowListProps,
+  RowListRowAction,
   RowListSectionDescriptor,
   RowListSectionSummary,
+  RowListStaticItemDescriptor,
   RowListValue,
 } from './primitives/RowList/RowList';
 export { RowList } from './primitives/RowList/RowList';

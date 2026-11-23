@@ -282,6 +282,7 @@ export function BreezeProvider({
         primaryNavigation:
           messages?.primaryNavigation ?? enGB.primaryNavigation,
         required: messages?.required ?? enGB.required,
+        rowListUnread: messages?.rowListUnread ?? enGB.rowListUnread,
         selectDate: messages?.selectDate ?? enGB.selectDate,
         skipToMain: messages?.skipToMain ?? enGB.skipToMain,
         today: messages?.today ?? enGB.today,

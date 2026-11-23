@@ -2,7 +2,11 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import type { ComponentType } from 'react';
 import { useState } from 'react';
 import { expect, fn, userEvent, within } from 'storybook/test';
-import type { RowListItemDescriptor, RowListProps } from './RowList';
+import type {
+  RowListItemDescriptor,
+  RowListProps,
+  RowListStaticItemDescriptor,
+} from './RowList';
 import { RowList } from './RowList';
 
 const entries = [
@@ -516,6 +520,112 @@ export const Phone: Story = {
         amount.top + amount.height / 2 - (rowRect.top + rowRect.height / 2),
       ),
     ).toBeLessThan(1);
+  },
+};
+
+const reports = [
+  {
+    action: {
+      download: true,
+      href: '/reports/2026-10-03.zip',
+      label: 'Download',
+    },
+    icon: 'document',
+    id: 'report-october',
+    label: '3 Oct 2026, 09:12',
+    metadata: { format: 'text', value: '4 Oct 2026, 09:12' },
+  },
+  {
+    action: {
+      download: true,
+      href: '/reports/2026-10-02.zip',
+      label: 'Download',
+    },
+    icon: 'document',
+    id: 'report-september',
+    label: '2 Oct 2026, 17:40',
+    metadata: { format: 'text', value: '3 Oct 2026, 17:40' },
+  },
+] satisfies RowListStaticItemDescriptor[];
+
+/** Static rows that are not actions themselves, each ending in its own Download link. */
+export const StaticRows: Story = {
+  args: {
+    'aria-label': 'Reports',
+    headings: { action: 'Actions', label: 'Requested', metadata: 'Expires' },
+    items: reports,
+    loadMore: undefined,
+    onAction: undefined,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const grid = canvas.getByRole('grid', { name: 'Reports' });
+    const row = within(grid).getByRole('row', { name: '3 Oct 2026, 09:12' });
+    const download = within(row).getByRole('link', { name: 'Download' });
+    const rowRect = row.getBoundingClientRect();
+    const downloadRect = download.getBoundingClientRect();
+
+    await expect(download).toHaveAttribute('download', '');
+    await expect(
+      Math.abs(downloadRect.right - (rowRect.right - 16)),
+    ).toBeLessThan(1);
+    await expect(
+      canvas.getByText('Actions').getBoundingClientRect().right,
+    ).toBe(downloadRect.right);
+
+    grid.focus();
+    await expect(row).toHaveFocus();
+    await userEvent.keyboard('{ArrowRight}');
+    await expect(download).toHaveFocus();
+  },
+};
+
+const notifications = [
+  {
+    action: {
+      download: true,
+      href: '/reports/2026-10-03.zip',
+      label: 'Download',
+    },
+    description: 'Today, 14:32',
+    id: 'report-ready',
+    label: 'Your report is ready to download',
+    unread: true,
+  },
+  {
+    description: 'Yesterday, 06:00',
+    id: 'published',
+    label: 'A scheduled transaction has been published',
+    unread: true,
+  },
+  {
+    description: '30 July 2026',
+    id: 'virus',
+    label:
+      'A file you have uploaded is infected with a virus and it has been removed',
+    unread: false,
+  },
+] satisfies RowListStaticItemDescriptor[];
+
+/** Unread rows carry a dot, a heavier label and hidden “Unread” text; only one row has an action. */
+export const Unread: Story = {
+  args: {
+    'aria-label': 'Notifications',
+    items: notifications,
+    loadMore: undefined,
+    onAction: undefined,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const unread = canvas.getByText('Your report is ready to download');
+    const read = canvas.getByText(/^A file you have uploaded/);
+
+    await expect(getComputedStyle(unread).fontWeight).toBe('600');
+    await expect(getComputedStyle(read).fontWeight).not.toBe('600');
+    await expect(canvas.getAllByText('Unread')).toHaveLength(2);
+    await expect(
+      unread.getBoundingClientRect().left - read.getBoundingClientRect().left,
+    ).toBe(0);
   },
 };
 
