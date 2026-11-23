@@ -588,7 +588,7 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">4/45 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">6/45 infos</a><span class="filter-pill ok" aria-disabled="true">208 stories ok</span><a class="filter-pill ok" data-k="docs" href="#filter-docs">47 docs ok</a></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">4/45 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">6/45 infos</a><span class="filter-pill ok" aria-disabled="true">214 stories ok</span><a class="filter-pill ok" data-k="docs" href="#filter-docs">47 docs ok</a></div>
   </div>
 </header>
 <main>
@@ -694,17 +694,23 @@ import * as Stories from &#39;./AppearanceControl.stories&#39;;
 
 # AppearanceControl
 
-`AppearanceControl` lets a person choose Light, Auto or Dark. It reads and updates the nearest `BreezeProvider`, which resolves Auto against the operating system preference.
+`AppearanceControl` lets people choose a Light, Auto or Dark colour scheme for your application. Place it anywhere inside `BreezeProvider`; it reads and updates the provider&#39;s appearance, and Auto follows the operating system preference.
 
 &lt;Canvas of={Stories.Default} /&gt;
 
-The application owns persistence. Save the value reported by `BreezeProvider` and pass it back as `appearance` on the next visit; `AppearanceControl` does not read or write browser storage.
+## Remembering the choice
 
-## Theme-reactive shadows
+The control does not save the choice in browser storage. To restore it on the next visit, store the value reported by the provider&#39;s `onAppearanceChange` and pass it back as `appearance`.
 
-Shadows use CSS variables so they change with the resolved appearance alongside colours and native controls.
+## Shadows
+
+Shadows change with the selected appearance, along with colours and native controls.
 
 &lt;Canvas of={Stories.ThemeReactiveShadow} /&gt;
+
+## Accessibility
+
+The three options form a single-selection group named by the provider&#39;s `appearance` message, so screen readers announce which option is selected.
 
 ## API
 
@@ -1251,7 +1257,7 @@ import * as Stories from &#39;./ApplicationShell.stories&#39;;
 
 # ApplicationShell
 
-`ApplicationShell` provides the shared frame around an application&#39;s page content: a top bar, section navigation, a skip link and the main landmark. It accepts application-owned values and slot content without depending on an account or product domain.
+`ApplicationShell` is the frame around an application&#39;s pages. It renders a top bar, section navigation, a skip link and the main landmark, and adapts its navigation between desktop and mobile layouts.
 
 &lt;Canvas
   layout=&quot;fullscreen&quot;
@@ -1259,11 +1265,16 @@ import * as Stories from &#39;./ApplicationShell.stories&#39;;
   story={{ height: &#39;844px&#39;, inline: false }}
 /&gt;
 
-## Supply navigation values
+## Navigation items
 
-Pass application values through `items` and map each value to the supported navigation fields with `getItem`. Every item needs a stable `id`, destination `href` and visible `label`; `icon` may use a curated Breeze `IconName`. Set `currentItem` to the ID of the current destination. The matching link receives `aria-current=&quot;page&quot;`; in the top navigation it also carries the animated navigation marker, and in the bottom navigation its icon and label take the brand colour.
+Pass your navigation data as `items`, and use `getItem` to map each item to the fields the shell needs:
 
-For example, an application can adapt its own route model while keeping the shell generic:
+- `id`: a stable identifier;
+- `href`: the destination;
+- `label`: the visible text;
+- `icon` (optional): a Breeze `IconName`.
+
+Set `currentItem` to the `id` of the current destination. That link is marked with `aria-current=&quot;page&quot;`. In the top navigation it shows the navigation marker; in the bottom navigation its icon and label use the brand colour.
 
 ```tsx
 &lt;ApplicationShell
@@ -1284,17 +1295,27 @@ For example, an application can adapt its own route model while keeping the shel
 &lt;/ApplicationShell&gt;
 ```
 
-The anchors keep native link behavior. When a same-document router is configured on `BreezeProvider`, section navigation sends `transitionTypes: [&#39;nav&#39;]` to that router.
+Navigation items are regular links. When a router is configured on `BreezeProvider`, they navigate through it with `transitionTypes: [&#39;nav&#39;]`.
 
-## Provide the application slots
+## Slots
 
-`brand`, `context`, `notifications` and `account` accept `ReactNode`. Their content and semantics belong to the application: label interactive controls, keep keyboard behavior usable and provide accessible names for icon-only controls. `children` is rendered inside the shell&#39;s main landmark, stacked with a 16px gap. From Breeze&#39;s private `md` breakpoint (901px), a divider separates `brand` from `context`.
+`brand`, `context`, `notifications` and `account` accept any React content. Give interactive content accessible names, especially icon-only controls. From the 901px breakpoint, a divider separates `brand` from `context`.
 
-`action` is required. It renders as a circular, icon-only `IconButton`: `icon` selects curated Breeze artwork, `label` is its accessible name, and `onAction` performs the application-owned operation. Keyboard focus reaches it between the two halves of the bottom navigation.
+`children` is rendered inside the main landmark, stacked with a 16px gap.
 
-## Responsive behavior and motion
+## Primary action
 
-From Breeze&#39;s private `md` breakpoint (901px), navigation is horizontal beneath the top bar and scrolls horizontally when its links do not fit; a focused link scrolls into view. Below that breakpoint, the navigation is a 72px bar fixed to the bottom edge, and the required action is raised over the bar&#39;s top edge in a fixed centre slot between the two halves of the items. The centre slot keeps its position as the current page changes. The main content includes clearance for the bar, the raised action and the device safe area.
+`action` is required and renders as a circular, icon-only button:
+
+- `icon` selects a Breeze icon;
+- `label` is its accessible name;
+- `onAction` is called when it is activated.
+
+## Responsive layout
+
+At 901px and wider, navigation sits horizontally beneath the top bar. When the links do not fit, the row scrolls horizontally and a focused link scrolls into view.
+
+Below 901px, navigation becomes a 72px bar fixed to the bottom of the screen. The primary action is raised over the bar&#39;s top edge in a centre slot between the two halves of the items, and stays in place as the current page changes. The main content leaves room for the bar, the raised action and the device safe area.
 
 &lt;Canvas
   layout=&quot;fullscreen&quot;
@@ -1302,7 +1323,15 @@ From Breeze&#39;s private `md` breakpoint (901px), navigation is horizontal bene
   story={{ height: &#39;844px&#39;, inline: false }}
 /&gt;
 
-The shell renders one skip link before its chrome and gives its main landmark a generated unique ID and `tabIndex={-1}`. Its top bar, top navigation, bottom navigation and current marker participate in view transitions through Breeze&#39;s built-in singleton names. Mount one visible shell at a time so those names stay unique in the document.
+## View transitions
+
+The top bar, top navigation, bottom navigation and current-location marker take part in view transitions using Breeze UI&#39;s reserved shell roles. Render only one visible `ApplicationShell` at a time.
+
+## Accessibility
+
+- A skip link before the shell&#39;s chrome moves focus to the main landmark.
+- The current destination is announced as the current page.
+- On mobile, keyboard focus reaches the primary action between the two halves of the bottom navigation.
 
 ## API
 
@@ -1515,55 +1544,47 @@ import * as Stories from &#39;./AttachmentRow.stories&#39;;
 
 # AttachmentRow
 
-`AttachmentRow` presents one attached file in a compact row. The caller provides
-the file name, whether it is a document or photograph, its size in bytes, and a
-visible status such as `Uploaded` or `Upload failed`. Size formatting follows
-the required Breeze provider locale.
+`AttachmentRow` shows one attached file in a compact row, with its name, type, size, status and actions. Use it to list the files attached to a record.
 
-## Document and photo thumbnails
+Pass `filename`, `fileType` (`document` or `photo`), `sizeBytes` and a visible `status` such as `Uploaded` or `Upload failed`. The size is formatted for the `BreezeProvider` locale.
 
-Documents use a page preview and photographs use the supplied image thumbnail
-or a camera placeholder. The file type is also written as visible text, so the
-thumbnail is not the only way to tell them apart. Only a photograph accepts a
-`thumbnailUrl`.
+## Documents and photos
+
+Documents show a page preview. Photos show the image passed as `thumbnailUrl`, or a camera placeholder without one; only photos accept `thumbnailUrl`. The file type is also written as text, so the thumbnail is not the only way to tell them apart.
 
 &lt;Canvas of={Stories.Document} /&gt;
 
 &lt;Canvas of={Stories.Photo} /&gt;
 
-## Open and menu actions
+## Actions
 
-Pass `onOpen` to show a direct Open button. Pass action descriptors and an
-`onAction` callback together to show the overflow menu; `onAction` receives the
-selected action from `actions`. Each action has a visible label; icons only
-decorate those labels. The Open button keeps its short visible label, and the
-overflow menu opens from an icon-only More actions button. Both include the
-file name in their accessible names.
+Pass `onOpen` to show an **Open** button. To open the file in a `DocumentViewer` with a transition between the two, give both the same `transitionName`.
 
-The menu opens aligned to the end edge of its button. Give a destructive action, such as
-Remove, `tone: &#39;danger&#39;` and its own `section` so it shows in the danger
-colour below a divider.
+To add an overflow menu, pass an `actions` array together with `onAction`. Each action has an `id` and a visible `label`, plus an optional `icon`, `description` and `disabled` flag. `onAction` receives the selected action. The menu opens from a **More actions** button, aligned to its end edge.
+
+For a destructive action such as Remove, set `tone: &#39;danger&#39;` and give it its own `section` so it appears in the danger colour below a divider.
 
 &lt;Canvas of={Stories.Document} /&gt;
 
 ## Narrow containers
 
-When there is not enough horizontal room, the row wraps its actions below the
-file details so the file information remains readable.
+When horizontal space is limited, the actions wrap below the file details so the file information stays readable.
 
 &lt;Canvas of={Stories.NarrowContainer} /&gt;
 
-## Visible state and loading
+## Status and loading
 
-The `status` text stays visible and updates are announced politely regardless
-of the file type or thumbnail. While the file details are unavailable, set
-`loading` to show the row-shaped loading placeholder and labelled progress bar.
-The placeholder row sits on the surface fill rather than the raised fill, so its
-skeletons stay visible in the dark appearance.
+The `status` text is always visible. Set `loading` while the file details are unavailable to show a row-shaped placeholder with a labelled progress bar.
 
 &lt;Canvas of={Stories.UploadFailed} /&gt;
 
 &lt;Canvas of={Stories.Loading} /&gt;
+
+## Accessibility
+
+- The **Open** and **More actions** buttons include the file name in their accessible names.
+- Changes to `status` are announced politely to screen readers.
+- Action icons are decorative; each action is named by its label.
 
 ## API
 
@@ -1707,19 +1728,23 @@ import * as Stories from &#39;./Badge.stories&#39;;
 
 # Badge
 
-`Badge` is compact, non-interactive status content. Its `neutral`, `brand`, `positive`, `warning` and `danger` variants are Badge treatments—not shared control variants.
+`Badge` shows a short, non-interactive status or count, such as &quot;Paid&quot; or &quot;3&quot;.
+
+## Variants
+
+`variant` accepts `neutral`, `brand`, `positive`, `warning` and `danger`.
 
 &lt;Canvas of={Stories.Treatments} /&gt;
 
-## Accessibility
-
-Keep wording meaningful without colour. Do not put controls inside a badge, and do not use it for long prose.
-
 ## Loading
 
-Set `loading` to preserve the badge shape while its status text is unavailable.
+Set `loading` to keep the badge&#39;s shape while its text is unavailable.
 
 &lt;Canvas of={Stories.Loading} /&gt;
+
+## Accessibility
+
+Make the text meaningful on its own, without relying on colour. Keep it short, and do not put controls inside a badge.
 
 ## API
 
@@ -1883,7 +1908,7 @@ import * as Stories from &#39;./BreezeProvider.stories&#39;;
 
 # BreezeProvider
 
-`BreezeProvider` provides the locale, appearance and styles that Breeze UI components require. Render it once, above every Breeze UI component. Components rendered without a provider throw an error.
+`BreezeProvider` supplies the locale, appearance and messages that Breeze UI components need. Render it once, at the root of your application, above every Breeze UI component. A component rendered outside a provider throws an error.
 
 ```tsx
 &lt;BreezeProvider locale=&quot;en-GB&quot;&gt;
@@ -1895,11 +1920,24 @@ import * as Stories from &#39;./BreezeProvider.stories&#39;;
 
 ## Locale
 
-`locale` takes a BCP 47 language tag. It sets the `lang` attribute and the text direction of the provider&#39;s root element.
+`locale` takes a BCP 47 language tag, such as `en-GB` or `fr-FR`. It sets the language and text direction of everything inside the provider, and the locale used to format numbers, amounts and dates.
 
-Only English (`en-GB`) messages are bundled. Supply partial `messages` to translate Breeze&#39;s loading and required announcements, the DatePicker placeholder and Today action, the ComboBox no-match message, appearance control, overlay close button, Popover unread indicator, FileDropZone instructions and feedback, and attachment labels and actions into the provider locale. Without an override, Breeze&#39;s own text uses English and is marked `lang=&quot;en-GB&quot;`, independently of the surrounding content&#39;s language.
+### Translating messages
 
-Built-in interaction labels are available in English only. `locale` still sets the provider language and direction and formats locale-aware values; use `messages` for the Breeze-owned strings listed above.
+Breeze includes English (`en-GB`) text only. To translate it, pass a partial `messages` object; any key you leave out stays in English and is marked as English for screen readers, whatever the page language. Messages cover:
+
+- loading and required-field announcements
+- the `DatePicker` placeholder, Today and clear actions
+- the `ComboBox` no-match message and the `RowList` empty message
+- `AppearanceControl`
+- the close button on overlays
+- the `Popover` unread indicator
+- `FileDropZone` instructions and feedback
+- `DocumentViewer` controls and messages
+- attachment labels and actions
+- the `SkipLink` text and the `ApplicationShell` navigation label
+
+Other built-in interaction labels are available in English only.
 
 ```tsx
 &lt;BreezeProvider
@@ -1913,13 +1951,13 @@ Built-in interaction labels are available in English only. `locale` still sets t
 
 &lt;Canvas of={Stories.Locale} /&gt;
 
-Keep `{query}` in `comboBoxNoMatches`; it is replaced with the filter text.
+Some messages contain placeholders that are replaced with values. Keep them in your translations:
 
-FileDropZone message strings use flat keys. Keep their placeholders when
-providing translations: `{types}` for accepted types, `{size}` for the size
-limit, `{count}` for multiple added files, `{current}` and `{max}` for the
-attachment count, `{fileName}` for a rejected file, and `{fileNames}` for files
-rejected by the total count limit. For example:
+- `{query}` in `comboBoxNoMatches` is the text the person typed.
+- In the `FileDropZone` messages, `{types}` is the accepted file types, `{size}` the size limit, `{count}` the number of files added, `{current}` and `{max}` the attachment count and limit, `{fileName}` a rejected file, and `{fileNames}` the files rejected for exceeding the total limit.
+- In the `DocumentViewer` messages, `{current}` and `{total}` in `documentViewerPage` are the current page and the page count, and `{zoom}` in `documentViewerZoom` is the zoom level as a percentage.
+
+For example:
 
 ```tsx
 &lt;BreezeProvider
@@ -1941,7 +1979,9 @@ rejected by the total count limit. For example:
 
 ## Time zone
 
-`timeZone` takes an IANA time-zone name, such as `Europe/London`, reserved for formatting times of day. **No component formats a time of day yet, so today it has no visible effect**; it is validated and provided now so the API does not change when one does. Without it, times of day will use the runtime&#39;s time zone. The provider throws a `RangeError` for a name the runtime does not recognise.
+`timeZone` takes an IANA time-zone name, such as `Europe/London`, used to format times of day. Without it, the browser&#39;s time zone is used. The provider throws a `RangeError` for a name the browser does not recognise.
+
+**No component formats a time of day yet, so `timeZone` currently has no visible effect.**
 
 ```tsx
 &lt;BreezeProvider locale=&quot;en-GB&quot; timeZone=&quot;Europe/London&quot;&gt;
@@ -1949,13 +1989,13 @@ rejected by the total count limit. For example:
 &lt;/BreezeProvider&gt;
 ```
 
-`timeZone` is intentionally not applied to calendar dates. A calendar date, such as `Typography`&#39;s `format=&quot;date&quot;`, names a day rather than an instant, so Breeze formats it in UTC and the displayed day never shifts. Applying a western zone to a UTC-midnight date would display the previous day.
+`timeZone` does not affect calendar dates, such as `Typography` with `format=&quot;date&quot;`. A calendar date names a day rather than a moment in time, so it always displays the day you pass.
 
 ## Appearance
 
-Appearance defaults to `automatic`, which follows the operating system and keeps following it when the preference changes. The provider resolves the choice to `light` or `dark`, then applies that value and the matching `color-scheme` to the document element.
+Appearance can be `light`, `dark` or `automatic`. The default, `automatic`, follows the operating system&#39;s colour scheme, including when it changes while the page is open.
 
-Use `defaultAppearance` when Breeze should hold the current choice in memory:
+To let the provider manage the current choice, set `defaultAppearance`. Use `onAppearanceChange` to save the choice, for example when someone changes it with `AppearanceControl`:
 
 ```tsx
 &lt;BreezeProvider
@@ -1967,7 +2007,7 @@ Use `defaultAppearance` when Breeze should hold the current choice in memory:
 &lt;/BreezeProvider&gt;
 ```
 
-Use `appearance` with `onAppearanceChange` when application state controls it. `appearance` and `defaultAppearance` are mutually exclusive.
+To control appearance from your own state, pass both `appearance` and `onAppearanceChange`. `appearance` and `defaultAppearance` cannot be combined.
 
 ```tsx
 &lt;BreezeProvider
@@ -1979,11 +2019,13 @@ Use `appearance` with `onAppearanceChange` when application state controls it. `
 &lt;/BreezeProvider&gt;
 ```
 
-The provider never reads or writes durable browser storage. The application decides whether and where to persist the reported choice. If a persisted explicit choice must apply before the application starts, stamp its resolved value on the document element before loading the stylesheet; the stylesheet&#39;s media-query default already handles automatic dark mode before script runs.
+The provider does not save the choice. Store it wherever suits your application, such as local storage or a user profile, and pass it back on the next visit.
+
+To apply a saved `light` or `dark` choice before your application&#39;s JavaScript runs, and so avoid a flash of the wrong colour scheme, set `data-theme=&quot;light&quot;` or `data-theme=&quot;dark&quot;` on the `&lt;html&gt;` element before the stylesheet loads. You do not need to do this for `automatic`: the stylesheet already follows the operating system before any script runs.
 
 ## Overlay portal
 
-`Dialog`, `Drawer` and `Popover` render into a dedicated portal host owned by the provider. By default, the host is appended to `document.body`. Set `portalContainer` to an existing light DOM `HTMLElement` in the current runtime document when overlays need to render in another container, such as an embedded application or a test fixture.
+`Dialog`, `Drawer` and `Popover` stay in your React tree, so context, error boundaries and events work as usual. Only their DOM is rendered in a portal, outside the provider&#39;s DOM, in a container the provider adds to `document.body`. To render them somewhere else, such as inside an embedded application, set `portalContainer` to an existing `HTMLElement`.
 
 ```tsx
 &lt;BreezeProvider locale=&quot;en-GB&quot; portalContainer={overlayContainer}&gt;
@@ -1991,13 +2033,13 @@ The provider never reads or writes durable browser storage. The application deci
 &lt;/BreezeProvider&gt;
 ```
 
-The provider creates and removes its own host inside that container. The host carries the Breeze root marker, locale and text direction so overlays retain scoped styling and language outside the provider&#39;s normal content tree.
+The provider adds its own element inside that container and removes it when it unmounts. Overlays keep the provider&#39;s styles, locale and text direction wherever they render.
 
-`portalContainer` and every overlay trigger must belong to the current runtime `Document` and its light DOM. Cross-document and shadow-root portals are unsupported.
+`portalContainer` and every overlay trigger must be in the current document. Containers in another document, such as an iframe, or inside a shadow root are not supported.
 
 ## Client-side navigation
 
-Set `router` when the application has a same-document router. `Link` sends qualifying same-origin link activations to `router.navigate`, together with the link&#39;s `transitionTypes`. The router owns the route update and can opt into browser view transitions; see &lt;a href=&quot;./?path=/docs/guides-04-motion--docs&quot; target=&quot;_top&quot;&gt;Motion&lt;/a&gt;.
+Set `router` when your application uses a client-side router. A `Link` to a same-origin page then calls `router.navigate` with the destination and the link&#39;s `transitionTypes`, instead of loading a new page. Your router performs the navigation and can use browser view transitions; see &lt;a href=&quot;./?path=/docs/guides-04-motion--docs&quot; target=&quot;_top&quot;&gt;Motion&lt;/a&gt;.
 
 ```tsx
 &lt;BreezeProvider locale=&quot;en-GB&quot; router={router}&gt;
@@ -2005,11 +2047,11 @@ Set `router` when the application has a same-document router. `Link` sends quali
 &lt;/BreezeProvider&gt;
 ```
 
-The `transitionTypes` option defaults to an empty list. A `navigate` function that accepts only `href` can ignore the second argument. External destinations, downloads, alternate targets, modified clicks and fragment links retain native anchor behavior.
+`transitionTypes` defaults to an empty list, so a `navigate` function that takes only the destination works unchanged. External links, downloads, links with another `target`, clicks with a modifier key and links containing a `#` fragment use normal browser navigation. See `Link` for details.
 
 ## Confirmations
 
-Use `useToast` below the provider to announce a completed action. The provider owns the status region, displays up to three messages at once and queues additional messages in FIFO order. Each message remains visible for 2.6 seconds after it becomes visible.
+Call `useToast` in a component below the provider to confirm a completed action. Up to three messages are shown at once; further messages wait and appear in the order they were sent. Each message stays on screen for 2.6 seconds.
 
 ```tsx
 import { useToast } from &#39;@motech-development/breeze-ui&#39;;
@@ -2021,7 +2063,7 @@ function SaveAction() {
 }
 ```
 
-Set `toastLimit` when the application needs a different number of visible confirmations. Provider-enqueued confirmations stay 288px wide at every supported viewport, have no action or dismissal control, and expire after 2.6 seconds once visible.
+Set `toastLimit` to change how many messages are shown at once. Toasts are 288px wide at every screen size and have no action or dismiss button. See `Toast` for details.
 
 ## API
 
@@ -2368,11 +2410,11 @@ import * as Stories from &#39;./Button.stories&#39;;
 
 # Button
 
-Buttons let users perform an action, such as saving a record or submitting a form.
+Buttons let people perform an action, such as saving a record or submitting a form.
 
 ## Basic button
 
-`Button` comes with four variants: `primary` (default), `secondary`, `quiet` and `danger`. The `children` prop sets the visible label.
+`Button` has four variants: `primary` (default), `secondary`, `quiet` and `danger`. `children` sets the visible label.
 
 &lt;Canvas of={Stories.Primary} /&gt;
 
@@ -2384,7 +2426,7 @@ Secondary buttons are neutral alternatives to the primary action, such as cancel
 
 ## Quiet button
 
-Quiet buttons are 13px text actions with no border, fill or control height, for actions that sit alongside content, such as Mark all as read in a panel header or Download on a row. They have one size and do not accept `size`. Use a `Link` when the action navigates.
+Quiet buttons are text-only actions with no border or fill, for actions that sit alongside content, such as **Mark all as read** in a panel header or **Download** on a row. They come in one size and do not accept `size`. Use a `Link` instead when the action navigates.
 
 &lt;Canvas of={Stories.Quiet} /&gt;
 
@@ -2398,7 +2440,7 @@ Danger buttons are destructive actions. Use a label that states what will be rem
 
 ## Sizes
 
-`size` accepts `sm`, `md` (default) and `lg`, with minimum heights of 32, 36 and 52px. Small labels are 12px and the others 13px, all semibold. Sizes apply to the `primary`, `secondary` and `danger` treatments.
+`size` accepts `sm`, `md` (default) and `lg`, with minimum heights of 32, 36 and 52px. Small labels are 12px and the others 13px, all semibold. Sizes apply to the `primary`, `secondary` and `danger` variants.
 
 &lt;Canvas of={Stories.TreatmentsAndSizes} /&gt;
 
@@ -2408,13 +2450,13 @@ Labels wrap and increase the height of the button:
 
 ## Icon
 
-`icon` places a Breeze icon 8px before the label, in every variant and size: 15px at `size=&quot;sm&quot;`, and 16px at `md` and `lg`. The icon is decorative, so the label remains the accessible name. While loading, the icon is hidden with the label.
+Set `icon` to show a Breeze icon before the label. It works with every variant and size, and is 15px at `size=&quot;sm&quot;` and 16px at `md` and `lg`. While loading, the icon is hidden along with the label.
 
 &lt;Canvas of={Stories.WithIcon} /&gt;
 
 ## Loading
 
-Set `loading` while the action is in progress. The label is replaced by a skeleton, and the button cannot be activated again.
+Set `loading` while the action is in progress. A placeholder replaces the label, and the button cannot be activated again until loading ends.
 
 &lt;Canvas of={Stories.Loading} /&gt;
 
@@ -2426,17 +2468,19 @@ Set `loading` while the action is in progress. The label is replaced by a skelet
 
 ## Handling actions
 
-`onAction` is called when the button is activated, and takes no arguments.
+`onAction` is called with no arguments when the button is activated by pointer, touch or keyboard.
 
 &lt;Canvas of={Stories.Activation} /&gt;
 
 ## Form submission
 
-Use `type=&quot;submit&quot;` to submit the containing form, and handle submission on the form. The default is `type=&quot;button&quot;`. The `form`, `name` and `value` props are available for form association.
+Buttons default to `type=&quot;button&quot;`. Set `type=&quot;submit&quot;` to submit the surrounding form, and handle submission on the form. `form`, `name` and `value` are also supported.
 
 ## Accessibility
 
-The label provides the accessible name and is retained while the button is loading. Buttons receive a 44px minimum target on touch devices. Quiet buttons receive a 44px minimum height instead, on touch devices and below the `md` breakpoint. `aria-label`, `aria-labelledby`, `aria-describedby`, `aria-controls`, `aria-expanded` and `aria-haspopup` are supported.
+- The label is the button&#39;s accessible name, including while it is loading. Icons are decorative.
+- On touch devices, buttons have a minimum 44px target. Quiet buttons have a minimum 44px height on touch devices and below 901px.
+- `aria-label`, `aria-labelledby`, `aria-describedby`, `aria-controls`, `aria-expanded` and `aria-haspopup` are supported.
 
 ## API
 
@@ -2596,34 +2640,30 @@ import * as Stories from &#39;./Calendar.stories&#39;;
 
 # Calendar
 
-`Calendar` renders a locale-aware calendar grid. The month heading sits at the
-start of the header with the previous and next month controls together at the
-end. Weeks begin on Monday, weekday columns use the provider locale&#39;s narrow
-names, and each month uses six rows. Leading and trailing dates remain visible
-in muted text. Selected dates use a brand fill; today uses a brand outline unless
-it is selected.
+`Calendar` shows a month grid for picking a single date. To pick a date from a form field, use `DatePicker`.
 
 &lt;Canvas of={Stories.Default} /&gt;
 
-## States
+The header shows the month with previous and next month buttons. Weeks start on Monday, and each month shows six rows, with dates from the neighbouring months in muted text. Weekday names use the provider locale. The selected date has a brand fill, and today has a brand outline unless it is selected.
 
-Use `disabled` to prevent date changes.
+## Disabled
+
+Set `disabled` to prevent the date from being changed.
 
 &lt;Canvas of={Stories.Disabled} /&gt;
 
 ## Controlled values
 
-Provide `value` and `onChange` for controlled usage. The callback receives an
-ISO `YYYY-MM-DD` string, never a DOM event. Use `defaultValue` and an optional
-`onChange` for uncontrolled usage; the two forms cannot be mixed.
+Pass `value` and `onChange` to control the selected date. `onChange` receives an ISO `YYYY-MM-DD` string.
+
+For an uncontrolled calendar, use `defaultValue` with an optional `onChange`. Controlled and uncontrolled props cannot be combined.
 
 ## Accessibility
 
-The `label` names the calendar. React Aria provides keyboard navigation,
-selection semantics and localized weekday and date names. Each date&#39;s accessible
-name includes its full weekday, so the narrow column headings are not its only
-cue. The selection fill keeps at least 3:1 contrast with the background in both
-appearances, so the selected date needs no additional outline.
+- `label` names the calendar.
+- Use the arrow keys to move between dates and Enter or Space to select one.
+- Each date is announced with its full weekday and date name in the provider locale.
+- The selected date&#39;s fill has at least 3:1 contrast with the background in both light and dark appearances.
 
 ## API
 
@@ -2820,31 +2860,35 @@ import * as Stories from &#39;./Card.stories&#39;;
 
 # Card
 
-`Card` groups related non-interactive content on a surface with panel elevation. Padding is selected from the Breeze spacing scale.
+`Card` groups related content on a bordered panel. Set `padding` to a value from the Breeze spacing scale; it defaults to `4`.
 
 &lt;Canvas of={Stories.Surface} /&gt;
 
 ## Raised cards
 
-Use `raised` for a group nested inside another surface, not to create stronger elevation.
+Use `variant=&quot;raised&quot;` for a group nested inside another surface. It does not add stronger elevation.
 
 &lt;Canvas of={Stories.Raised} /&gt;
 
 ## Titles
 
-Set `title` to add a header with a second-level heading that also names the card. Add `count` to show a neutral count beside the title.
+Set `title` to add a header with a second-level heading. Add `count` to show a neutral count beside the title.
 
 &lt;Canvas of={Stories.TitledWithCount} /&gt;
 
-Use `action` for one trailing header control, such as a link to the full list. Below a title, `padding` applies to the content only, so set it to `0` for rows that run edge to edge.
+Use `action` for one control at the end of the header, such as a link to the full list. With a title, `padding` applies only to the content below it, so set `padding={0}` for rows that run edge to edge.
 
 &lt;Canvas of={Stories.TitledWithAction} /&gt;
 
+## Loading
+
+Cards have no loading state of their own. Use loading-capable children or `Skeleton` elements inside the card so the placeholders match the final content.
+
 ## Accessibility
 
-Cards do not become interactive. Use `article`, `aside` or `section` only when that semantic grouping is meaningful, and provide a label or `title` where the element creates a region. A titled card is named by its heading and does not accept `aria-label`.
-
-Loading belongs to the content inside the card. Compose loading-capable children or explicit `Skeleton` elements so placeholders match the final content structure.
+- The card itself is not interactive and cannot be made clickable as a whole.
+- Set `element` to `article`, `aside` or `section` only when that grouping is meaningful, and give a region a name with `title` or `aria-label`.
+- A titled card is named by its heading, so `aria-label` is not accepted alongside `title`.
 
 ## API
 
@@ -2867,9 +2911,9 @@ Loading belongs to the content inside the card. Compose loading-capable children
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Checkbox</h2>
       <div class="badges">
-        <label for="c-8-forms-checkbox-props" class="badge ok as-toggle">15 prop types</label>
+        <label for="c-8-forms-checkbox-props" class="badge ok as-toggle">16 prop types</label>
         
-        <label for="c-8-forms-checkbox-stories" class="badge ok as-toggle">8 stories</label>
+        <label for="c-8-forms-checkbox-stories" class="badge ok as-toggle">9 stories</label>
         <label for="c-8-forms-checkbox-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
@@ -2896,7 +2940,7 @@ Loading belongs to the content inside the card. Compose loading-capable children
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
-              <span class="badge ok">15 prop types</span>
+              <span class="badge ok">16 prop types</span>
             </div>
             <pre><code>Component: src/primitives/Checkbox/Checkbox.tsx::Checkbox</code></pre>
             <pre><code>Props:</code></pre>
@@ -2945,6 +2989,11 @@ loading?: boolean = false
  * Sets the submitted name of the checkbox.
  */
 name?: string
+
+/**
+ * Reports that focus has left the field, without exposing a DOM event.
+ */
+onBlur?: (() =&gt; void)
 
 /**
  * Reports the next selected state without exposing a DOM event.
@@ -3065,6 +3114,15 @@ value?: string</code></pre>
               <div class="hint">The application owns the selection and receives semantic boolean changes.</div>
               <pre><code>const Controlled = () =&gt; &lt;ControlledExample /&gt;;</code></pre>
             </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Blur</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">`onBlur` reports each time focus leaves the field.</div>
+              <pre><code>const Blur = () =&gt; &lt;BlurExample /&gt;;</code></pre>
+            </div>
         </div>
     
         <div class="panel panel-docs">
@@ -3087,51 +3145,63 @@ import * as Stories from &#39;./Checkbox.stories&#39;;
 
 # Checkbox
 
-`Checkbox` is a closed, labelled boolean control. Its label, optional
-description and optional error are flat props, so applications do not need to
-compose checkbox parts or provide an escape hatch.
+`Checkbox` lets people turn a single option on or off. Pass the visible text as `label`.
 
 &lt;Canvas of={Stories.Default} /&gt;
 
-## Supporting text and errors
+## Description and errors
 
-Use `description` for guidance. It sits under the label, beside the box. A
-non-empty `error` marks the checkbox invalid, appears in the same place and is
-associated with the native input. There is no separate invalid prop.
+Use `description` for guidance shown under the label. Set `error` to a non-empty message to show it in the same place and mark the checkbox invalid.
 
 &lt;Canvas of={Stories.Description} /&gt;
 
 &lt;Canvas of={Stories.Error} /&gt;
 
-## States
+## Required
 
-`required`, `disabled` and `readOnly` map to the corresponding accessible input
-semantics. A disabled checkbox greys its box and keeps its label legible.
-`loading` keeps the checkbox&#39;s shape, announces the provider loading message and
-prevents selection until it is removed.
+Set `required` to mark the checkbox as required.
 
 &lt;Canvas of={Stories.Required} /&gt;
 
+## Disabled
+
+Set `disabled` to prevent selection and focus. The box is greyed out and the label stays legible.
+
 &lt;Canvas of={Stories.Disabled} /&gt;
 
+## Read only
+
+Set `readOnly` to prevent changes while keeping the checkbox focusable and included in form submission.
+
 &lt;Canvas of={Stories.ReadOnly} /&gt;
+
+## Loading
+
+Set `loading` while the value is unavailable. The checkbox keeps its shape, announces the provider&#39;s loading message and cannot be selected until loading ends.
 
 &lt;Canvas of={Stories.Loading} /&gt;
 
 ## Controlled values
 
-Provide both `selected` and `onChange` for controlled usage. The callback
-receives the next boolean, never a DOM event. Use `defaultSelected` and an
-optional `onChange` for uncontrolled usage; the two forms cannot be mixed.
+Pass `selected` and `onChange` to control the checkbox. `onChange` receives the new `boolean` value.
+
+For an uncontrolled checkbox, use `defaultSelected` with an optional `onChange`. Controlled and uncontrolled props cannot be combined.
 
 &lt;Canvas of={Stories.Controlled} /&gt;
 
+## Blur
+
+`onBlur` reports that focus has left the checkbox, for example to show a
+validation error only once the user has moved on. Like `onChange`, it receives
+no DOM event.
+
+&lt;Canvas of={Stories.Blur} /&gt;
+
 ## Accessibility
 
-The visible label alone names the native checkbox, even though its supporting
-text shares the clickable label. Descriptions and errors are announced through
-React Aria&#39;s field relationships, and the field exposes its native input through
-`ref`.
+- The checkbox is a native input named by its `label`. Clicking the description also toggles it, but the description is not part of the name.
+- The description and error are announced with the checkbox.
+- `ref` gives access to the native input.
 
 ## API
 
@@ -3322,16 +3392,13 @@ import * as Stories from &#39;./Chip.stories&#39;;
 
 # Chip
 
-`Chip` is a compact pill-shaped filter. It stays independently selectable when
-shown beside other chips, and exposes its state as `aria-pressed`.
+`Chip` is a compact, pill-shaped toggle for filtering content. Each chip is turned on and off independently, even in a row with other chips.
 
 &lt;Canvas of={Stories.Default} /&gt;
 
 ## Pressed state
 
-Use `defaultPressed` for an uncontrolled chip, or `pressed` and `onChange` when
-the application owns the state. The callback receives the next pressed value.
-Choose one of these state approaches for each chip.
+Use `defaultPressed` for an uncontrolled chip, or `pressed` and `onChange` to control it. `onChange` receives the new pressed value. Use only one of these approaches for each chip.
 
 &lt;Canvas of={Stories.Pressed} /&gt;
 
@@ -3339,23 +3406,21 @@ Choose one of these state approaches for each chip.
 
 ## Loading
 
-Set `loading` while saving a choice. A skeleton replaces the visible label while
-the chip keeps its name and width. Activation resumes when loading clears.
+Set `loading` while a choice is being saved. A placeholder replaces the visible label, and the chip keeps its name and width. It can be activated again once loading ends.
 
 &lt;Canvas of={Stories.Loading} /&gt;
 
-## Disabled and touch targets
+## Disabled
 
-Set `disabled` to prevent activation. Chips have a 34px minimum height and
-expand to a 44px minimum touch target.
+Set `disabled` to prevent activation.
 
 &lt;Canvas of={Stories.Disabled} /&gt;
 
 ## Accessibility
 
-The visible label names the button. `aria-label`, `aria-labelledby` and
-`aria-describedby` support alternate and supplemental names. The button exposes
-its pressed state and supports keyboard activation.
+- The chip is a button named by its visible label. Use `aria-label` or `aria-labelledby` to give it an alternative name, and `aria-describedby` to add a description.
+- Its state is announced as pressed or not pressed, and it can be toggled with the keyboard.
+- Chips are at least 34px tall and have a minimum 44px touch target.
 
 ## API
 
@@ -3378,9 +3443,9 @@ its pressed state and supports keyboard activation.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> ComboBox</h2>
       <div class="badges">
-        <label for="c-10-forms-combobox-props" class="badge ok as-toggle">19 prop types</label>
+        <label for="c-10-forms-combobox-props" class="badge ok as-toggle">20 prop types</label>
         <label for="c-10-forms-combobox-info" class="badge info as-toggle">1 info</label>
-        <label for="c-10-forms-combobox-stories" class="badge ok as-toggle">8 stories</label>
+        <label for="c-10-forms-combobox-stories" class="badge ok as-toggle">9 stories</label>
         <label for="c-10-forms-combobox-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
@@ -3414,7 +3479,7 @@ its pressed state and supports keyboard activation.
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
-              <span class="badge ok">19 prop types</span>
+              <span class="badge ok">20 prop types</span>
             </div>
             <pre><code>Component: src/primitives/ComboBox/ComboBox.tsx::ComboBox</code></pre>
             <pre><code>Props:</code></pre>
@@ -3489,6 +3554,11 @@ loading?: boolean
  * Sets the submitted name of the input.
  */
 name?: string
+
+/**
+ * Reports that focus has left the field, without exposing a DOM event.
+ */
+onBlur?: (() =&gt; void)
 
 /**
  * Reports the next selected item or free-text value without exposing a DOM event.
@@ -3647,6 +3717,15 @@ value?: ComboBoxValue&lt;NoInfer&lt;T&gt;&gt;</code></pre>
               <div class="hint">The application owns the selected item or free-text value.</div>
               <pre><code>const Controlled = () =&gt; &lt;ControlledExample /&gt;;</code></pre>
             </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Blur</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">`onBlur` reports each time focus leaves the field.</div>
+              <pre><code>const Blur = () =&gt; &lt;BlurExample /&gt;;</code></pre>
+            </div>
         </div>
     
         <div class="panel panel-docs">
@@ -3669,60 +3748,65 @@ import * as Stories from &#39;./ComboBox.stories&#39;;
 
 # ComboBox
 
-`ComboBox` combines text entry with a popover listbox. Suggestions filter while
-the user types, and the same closed descriptor contract is used for every item.
+`ComboBox` is a text field with a list of suggestions that filters as people type. Use it when there are too many options to scan in a select, or when people may enter their own value.
 
 &lt;Canvas of={Stories.Default} /&gt;
 
-## Descriptor content
+## Items
 
-Pass `items` and a `getItem` mapping function. The mapping returns only
-`ItemDescriptor` data: `id`, `label`, optional `description`, `icon`, `badge` and
-`disabled`. It cannot return JSX, classes, styles or slot props. A content gap is
-a deliberate Breeze library change, not an application markup escape hatch.
+Pass your data as `items`, and use `getItem` to return an `ItemDescriptor` for each one. It has an `id` and a `label`, plus an optional `description`, `icon`, `badge` and `disabled` flag. Items are rendered from these fields only.
 
 &lt;Canvas of={Stories.Description} /&gt;
 
 ## Filtering and free text
 
-Typing filters suggestions by their descriptor labels. Set `allowsCustomValue`
-when the field should also accept text that is not one of the suggestions; the
-semantic callback then receives either an item, the entered string or `null`.
+Typing filters the suggestions by their labels. Set `allowsCustomValue` to also accept text that does not match a suggestion; `onChange` then receives the selected item, the entered text or `null`.
 
-When a filter matches no suggestion, or `items` is empty, the listbox stays
-open with a localized message that repeats the filter text. Free-text fields
-close the suggestions instead, because the entered text is already a valid
-value.
+When nothing matches, or `items` is empty, the list stays open with a message that repeats the entered text. With `allowsCustomValue`, the list closes instead, because the entered text is already a valid value.
 
 &lt;Canvas of={Stories.NoMatches} /&gt;
 
 &lt;Canvas of={Stories.FreeText} /&gt;
 
-## States
+## Validation
 
-`required`, `disabled` and `readOnly` map to the field&#39;s accessible semantics. A
-non-empty `error` marks the field invalid; there is no separate `invalid` prop.
-`loading` preserves the input shape and prevents interaction until the value is
-available.
+Set `error` to a non-empty message to show it and mark the field invalid. Set `required` to mark the field as required.
 
 &lt;Canvas of={Stories.Error} /&gt;
 
+## Read only and disabled
+
+Set `readOnly` to show a value that cannot be changed, or `disabled` to prevent interaction.
+
 &lt;Canvas of={Stories.ReadOnly} /&gt;
+
+## Loading
+
+Set `loading` while the value is unavailable. The field keeps its shape and cannot be used until loading ends.
 
 &lt;Canvas of={Stories.Loading} /&gt;
 
 ## Controlled values
 
-Provide both `value` and `onChange` for controlled usage. The callback receives a
-selected item, custom text or `null`, never a DOM event. Use `defaultValue` and
-an optional `onChange` for uncontrolled usage; the two forms cannot be mixed.
+Pass `value` and `onChange` to control the field. `onChange` receives the selected item, custom text or `null`.
+
+For an uncontrolled field, use `defaultValue` with an optional `onChange`. Controlled and uncontrolled props cannot be combined.
 
 &lt;Canvas of={Stories.Controlled} /&gt;
 
+## Blur
+
+`onBlur` reports that focus has left the field, for example to show a
+validation error only once the user has moved on. Like `onChange`, it receives
+no DOM event. It reports once when focus leaves the whole field: using the
+suggestions button and choosing a suggestion do not count.
+
+&lt;Canvas of={Stories.Blur} /&gt;
+
 ## Accessibility
 
-The visible label names the input, while descriptions and errors are announced
-with the field. Keyboard navigation and focus management are built in.
+- The visible label names the input, and its description and error are announced with it.
+- Use the arrow keys to move through the suggestions, Enter to choose one and Escape to close the list.
 
 ## API
 
@@ -3858,21 +3942,24 @@ import * as Stories from &#39;./Container.stories&#39;;
 
 # Container
 
-`Container` caps and centres page or reading content. The page width includes 16px inline padding below `md` and 28px at and above it.
+`Container` centres page or reading content and limits its width. By default it uses the `page` width and adds inline padding of 16px below 901px and 28px from 901px; set `padded={false}` to remove it.
 
 &lt;Canvas of={Stories.Page} /&gt;
 
 ## Reading widths
 
-Use `read` for longer explanatory text and `prose` for compact supporting copy.
+Set `width=&quot;read&quot;` for longer explanatory text, or `width=&quot;prose&quot;` for short supporting copy.
 
 &lt;Canvas of={Stories.Reading} /&gt;
 
+## Loading
+
+Containers have no loading state of their own. Use loading-capable children or `Skeleton` elements inside the container so the placeholders match the final page layout.
+
 ## Accessibility
 
-Use `element=&quot;main&quot;` only once per page. Label multiple navigation or region containers so they can be distinguished.
-
-Loading belongs to the content inside the container. Compose loading-capable children or explicit `Skeleton` elements so placeholders match the final page structure.
+- Use `element=&quot;main&quot;` only once per page.
+- When a page has several `nav` or `section` containers, give each one an `aria-label` so they can be told apart.
 
 ## API
 
@@ -3895,9 +3982,9 @@ Loading belongs to the content inside the container. Compose loading-capable chi
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> DatePicker</h2>
       <div class="badges">
-        <label for="c-12-forms-datepicker-props" class="badge ok as-toggle">15 prop types</label>
+        <label for="c-12-forms-datepicker-props" class="badge ok as-toggle">16 prop types</label>
         
-        <label for="c-12-forms-datepicker-stories" class="badge ok as-toggle">10 stories</label>
+        <label for="c-12-forms-datepicker-stories" class="badge ok as-toggle">11 stories</label>
         <label for="c-12-forms-datepicker-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
@@ -3924,7 +4011,7 @@ Loading belongs to the content inside the container. Compose loading-capable chi
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
-              <span class="badge ok">15 prop types</span>
+              <span class="badge ok">16 prop types</span>
             </div>
             <pre><code>Component: src/primitives/DatePicker/DatePicker.tsx::DatePicker</code></pre>
             <pre><code>Props:</code></pre>
@@ -3979,6 +4066,11 @@ loading?: boolean
  * Submitted field name.
  */
 name?: string
+
+/**
+ * Reports that focus has left the trigger and calendar, without exposing a DOM event.
+ */
+onBlur?: (() =&gt; void)
 
 /**
  * Reports the selected ISO calendar date, or `null` when cleared.
@@ -4115,6 +4207,15 @@ value?: `${number}-${number}-${number}` | null</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
+                <span class="ex-name">Blur</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">`onBlur` reports each time focus leaves the field.</div>
+              <pre><code>const Blur = () =&gt; &lt;BlurExample /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
                 <span class="ex-name">Coarse Pointer Geometry</span>
                 <span class="badge ok">story ok</span>
               </div>
@@ -4153,77 +4254,82 @@ import * as Stories from &#39;./DatePicker.stories&#39;;
 
 # DatePicker
 
-`DatePicker` opens a calendar from a button showing the selected date in the
-provider locale&#39;s long form. The calendar glyph stays at the far edge of the
-trigger. The value and callback use ISO `YYYY-MM-DD` strings.
-
-When the field is empty, `placeholder` overrides the provider&#39;s `selectDate`
-message. Without either override, the English fallback is marked `en-GB` for
-assistive technology. `loading` replaces the label, trigger and supporting text
-with shape-preserving skeletons, announces the provider loading message, and
-disables interaction and form submission until loading clears. The selected
-value is retained.
+`DatePicker` is a form field for choosing a date from a calendar. The field shows the selected date in the provider locale&#39;s long format, and opens the calendar when activated. Values are ISO `YYYY-MM-DD` strings.
 
 &lt;Canvas of={Stories.Default} /&gt;
 
+When no date is selected, the field shows `placeholder`, or the provider&#39;s `selectDate` message if you omit it.
+
 ## Today
 
-The calendar footer offers a Today action, labelled by the provider&#39;s `today`
-message. It selects the current date, reports it and closes the calendar.
+The calendar has a **Today** button that selects the current date, reports it through `onChange` and closes the calendar.
 
 &lt;Canvas of={Stories.TodayAction} /&gt;
 
-## States
+## Validation
 
-Use `error` to display validation feedback and `disabled` to prevent interaction.
-`readOnly` keeps the trigger focusable and the date in form submission, but the
-calendar cannot be opened, so the date cannot change; use it to show a recorded
-date in view mode. A disabled date is omitted from form submission. Use
-`loading` while the field&#39;s date is unavailable; errors are hidden and an open
-calendar closes while loading.
-
-Unlike the other fields, whose `required` defaults to `false`, `DatePicker`
-defaults to `required`. This is a deliberate exception: the dates Breeze
-applications record are non-null, so an empty date is not a state worth
-offering. A required date does not provide a clear control.
-
-Set `required={false}` for an optional date. Its calendar then shows a clear
-control beside the Today action, labelled by the provider&#39;s `clearDate` message, which empties the
-field, closes the calendar and reports `null`. The control is unavailable while
-the field is empty. An optional `onChange` must accept `null`, and an optional
-uncontrolled field may start from a `null` `defaultValue`; TypeScript rejects
-either on a required date.
-
-There is no `autoComplete` prop. The trigger is a button, not a text input, so
-browser autofill has nothing to fill.
+Set `error` to a non-empty message to show it and mark the field invalid.
 
 &lt;Canvas of={Stories.Error} /&gt;
 
+## Disabled
+
+Set `disabled` to prevent interaction. A disabled date is not included in form submission.
+
 &lt;Canvas of={Stories.Disabled} /&gt;
+
+## Read only
+
+Set `readOnly` to show a recorded date that cannot be changed, for example in a view mode. The field stays focusable and the date is included in form submission, but the calendar does not open.
 
 &lt;Canvas of={Stories.ReadOnly} /&gt;
 
+## Optional dates
+
+Unlike other fields, `DatePicker` is required by default, and a required date cannot be cleared.
+
+Set `required={false}` to make the date optional. The calendar then shows a clear button beside **Today**, which empties the field, closes the calendar and reports `null`. The clear button is unavailable while the field is empty.
+
+With an optional date, `onChange` must accept `null`, and an uncontrolled field can start from `defaultValue={null}`. On a required date, `onChange` only ever receives a date string, and TypeScript rejects `defaultValue={null}`. A controlled required field can still pass `value={null}` until a date is chosen.
+
 &lt;Canvas of={Stories.Optional} /&gt;
+
+## Loading
+
+Set `loading` while the date is unavailable. The label, field and supporting text are replaced by placeholders, the provider&#39;s loading message is announced, and the field cannot be used or submitted until loading ends. Errors are hidden and an open calendar closes; the selected value is kept.
 
 &lt;Canvas of={Stories.Loading} /&gt;
 
 ## Controlled values
 
-Provide both `value` and `onChange` for controlled usage. Set `value` to `null`
-for an empty controlled selection. Use `defaultValue` and an optional `onChange`
-for uncontrolled usage; the two forms cannot be mixed, whether the date is
-required or optional. An uncontrolled date returns to `defaultValue` when its
-owning form resets. With a `name`, the selected ISO date is included in form
-submission; an empty value submits an empty string. Override the provider&#39;s `required`, `clearDate` and `today` messages to
-localize the required announcement, the clear control and the Today action.
+Pass `value` and `onChange` to control the field. Set `value` to `null` for an empty field.
+
+For an uncontrolled field, use `defaultValue` with an optional `onChange`. Controlled and uncontrolled props cannot be combined. An uncontrolled field returns to `defaultValue` when its form is reset.
 
 &lt;Canvas of={Stories.Controlled} /&gt;
 
+## Blur
+
+`onBlur` reports that focus has left the field, for example to show a
+validation error only once the user has moved on. Like `onChange`, it receives
+no DOM event. It reports once when focus leaves the whole field: moving into
+the calendar and choosing a date do not count.
+
+&lt;Canvas of={Stories.Blur} /&gt;
+
+## Forms
+
+Set `name` to include the date in form submission as an ISO string; an empty field submits an empty string. There is no `autoComplete` prop, as browser autofill does not apply to the date button.
+
+## Localisation
+
+Override the provider&#39;s `selectDate`, `today`, `clearDate` and `required` messages to translate the placeholder, the **Today** and clear buttons, and the required announcement. Untranslated messages are in English and marked as `en-GB` for screen readers.
+
 ## Accessibility
 
-The visible label names the trigger, which exposes required and invalid state.
-The calendar supports keyboard navigation and localized date names. Coarse-pointer
-targets have a minimum 44px width and height.
+- The visible label names the field, which announces whether it is required or invalid.
+- The calendar supports keyboard navigation and announces dates in the provider locale.
+- On touch devices, controls have a minimum 44px target.
 
 ## API
 
@@ -4347,11 +4453,11 @@ import * as Stories from &#39;./Dialog.stories&#39;;
 
 # Dialog
 
-Use `Dialog` for a focused task that needs a centred modal surface and temporarily takes priority over the surrounding page. It remains part of Breeze&#39;s public component inventory. Render it inside `BreezeProvider`.
+`Dialog` opens a centred modal window for a focused task that takes priority over the rest of the page. Render it inside `BreezeProvider`.
 
-## Basic usage
+## Basic dialog
 
-`trigger` supplies the label for the button Breeze renders. `title` supplies the surface&#39;s visible heading and accessible name; `children` supplies its content. Breeze also renders an icon close button whose accessible name comes from the provider&#39;s messages.
+`trigger` sets the label of the button that opens the dialog. `title` sets the dialog&#39;s visible heading and accessible name, and `children` its content. The dialog also includes a close button.
 
 ```tsx
 &lt;Dialog title=&quot;Delivery details&quot; trigger=&quot;View delivery details&quot;&gt;
@@ -4361,11 +4467,11 @@ Use `Dialog` for a focused task that needs a centred modal surface and temporari
 
 &lt;Canvas of={Stories.Default} /&gt;
 
-## Open state
+## Controlled
 
-By default, the component manages its own open state. Set `defaultOpen` to start open, and optionally use `onOpenChange` to observe changes.
+By default, the dialog manages its own open state. Set `defaultOpen` to start it open, and use `onOpenChange` to respond to changes.
 
-To control the surface from application state, supply both `open` and `onOpenChange`. `open` and `defaultOpen` are mutually exclusive.
+To control the dialog from your application state, pass both `open` and `onOpenChange`. `open` and `defaultOpen` cannot be combined.
 
 ```tsx
 &lt;Dialog
@@ -4380,13 +4486,14 @@ To control the surface from application state, supply both `open` and `onOpenCha
 
 ## Dismissal
 
-`dismissible` defaults to `true`, allowing Escape and interaction outside the surface to dismiss it. Set it to `false` when those interactions should leave the surface open. The close button remains available.
+By default, pressing Escape or clicking outside the dialog closes it. Set `dismissible={false}` to keep it open in those cases; the close button still works.
 
-## Accessibility and motion
+## Accessibility
 
-Breeze manages focus on opening and restores it on closing. Modal surfaces contain keyboard focus while open. The provider&#39;s portal host keeps the surface&#39;s locale, direction and scoped styles intact.
-
-Enter and exit motion respects reduced-motion preferences. A closing surface immediately leaves the active stack while its exit animation completes.
+- Focus moves into the dialog when it opens, stays inside it while open, and is restored when it closes.
+- The close button&#39;s accessible name comes from the provider&#39;s messages.
+- The dialog keeps the provider&#39;s locale and text direction.
+- Opening and closing animations respect the reduced-motion preference.
 
 ## API
 
@@ -4651,50 +4758,60 @@ import * as Stories from &#39;./DocumentViewer.stories&#39;;
 
 # DocumentViewer
 
-`DocumentViewer` presents one attachment in a full-screen reading surface with
-zoom, rotation, download, and optional app-owned Replace and Remove actions.
-The toolbar displays the current zoom percentage beside the zoom controls.
-Use it with `AttachmentRow` by passing the same unique `transitionName` to both
-components. The viewer owns its dialog and toolbar; the surrounding record owns
-attachment meaning, storage, replacement, and removal.
-The viewer is controlled: pass both `open` and `onOpenChange`, and let the
-owning screen provide the trigger and state.
+`DocumentViewer` opens an attached image, PDF or other document in a full-screen preview with zoom, rotation and download controls. Use it to let people read an attachment without leaving the record it belongs to.
 
-The viewer is non-modal. Opened from a record sheet, it covers the viewport
-without making the sheet inert, and the sheet keeps its scrim; the viewer adds
-none. Escape and Close return focus into the sheet, and closing the sheet first
-also closes the viewer.
+## Basic viewer
 
-Although the covered content stays in the accessibility tree, keyboard focus is
-contained while the viewer is open: Tab and Shift+Tab wrap inside it, and focus
-moved into the covered content is returned to it. Page scrolling is locked for
-as long as it is open, whether it was opened from a sheet or from a plain page.
-ADR 0002 records why the viewer is non-modal and what that trades away.
+The viewer is controlled: pass `open` and `onOpenChange`, and render your own trigger, such as the Open button of an `AttachmentRow`. Set `src` to the file URL, `title` to the visible title, and `mediaType` to `image`, `pdf` or `document`.
 
-## Images and PDFs
+Each example below starts closed; use its Open button to view the attachment.
 
-Images render directly and do not load the PDF engine. PDFs use the optional
-`pdfjs-dist` peer dependency to paint each page to a canvas and provide a
-selectable text layer. PDF.js and its worker load only after an open PDF is
-requested. Install a compatible `pdfjs-dist` version (`^6.2.108`) in the
-application to enable this renderer. If PDF.js cannot load or render a file,
-the viewer falls back to the browser&#39;s PDF frame.
+&lt;Canvas of={Stories.ImageDocs} /&gt;
 
-An absent peer is handled at build time by the application&#39;s bundler, not by
-Breeze UI. Vite replaces the unresolved optional import with a module that
-throws when it is loaded, so the viewer reaches its browser-frame fallback.
-Other bundlers may instead fail the application build; install `pdfjs-dist`
-or mark it as an ignored optional module in that bundler&#39;s configuration.
+&lt;Canvas of={Stories.PdfWorkerDocs} /&gt;
 
-PDF.js downloads each PDF in a single request rather than in byte ranges.
-Attachment URLs are presigned for 30 seconds, and a range request made after
-that window would fail with a 403 that permanently breaks the open document.
+## Toolbar
 
-PDFs that use predefined Adobe character maps or PDF.js standard font files
-also need those matching directories served by the application. Copy the
-`cmaps/` and `standard_fonts/` directories from the installed `pdfjs-dist`
-version to public asset paths, then pass their directory URLs to the PDF
-viewer:
+The toolbar shows the file name, the current zoom percentage and these actions:
+
+- **Zoom** and **Rotate**, for images, PDF pages and embedded documents.
+- **Download**, always available. `downloadName` sets the saved file name.
+- **Full screen**, shown only when the browser supports the Fullscreen API.
+- **Replace** and **Remove**, shown only when you pass `onReplace` or `onRemove`. Handle any confirmation in your application.
+
+Multi-page PDFs add page navigation in a separate row beneath the toolbar. When you zoom a PDF, the current page stays visible and keeps its scroll position until the sharper version replaces it.
+
+Downloads from another origin need the file host to allow CORS from your application, so the file name can be kept. If a download fails, for example because a presigned URL has expired, the viewer shows an error and stays open; it never navigates away to the file URL.
+
+## PDFs
+
+Images and other documents need no setup. PDFs are rendered page by page with selectable text using the optional `pdfjs-dist` peer dependency. Install a compatible version in your application:
+
+```sh
+yarn add pdfjs-dist@^6.2.108
+```
+
+PDF.js and its worker are loaded only when a PDF is opened, so they add nothing to your initial bundle. Together they are roughly 635 KiB gzipped.
+
+The viewer fetches each PDF in a single request and makes no later byte-range requests, so a presigned URL only needs to be valid when the document is opened.
+
+### Worker
+
+By default, the viewer locates the PDF.js worker with `new URL(&#39;pdfjs-dist/build/pdf.worker.mjs&#39;, import.meta.url)`. Vite resolves this in production builds and emits the worker as an asset. For Vite&#39;s development server, exclude Breeze UI from dependency pre-bundling:
+
+```ts
+export default defineConfig({
+  optimizeDeps: {
+    exclude: [&#39;@motech-development/breeze-ui&#39;],
+  },
+});
+```
+
+With another bundler, or if you prefer not to change `optimizeDeps`, host the worker for your installed `pdfjs-dist` version and pass its URL as `pdfAssets.workerSrc`.
+
+### Fonts and character maps
+
+Some PDFs use predefined Adobe character maps or PDF.js standard fonts. To support them, copy the `cmaps/` and `standard_fonts/` directories from your installed `pdfjs-dist` version to public asset paths, and pass their URLs through `pdfAssets`:
 
 ```tsx
 &lt;DocumentViewer
@@ -4710,94 +4827,31 @@ viewer:
 /&gt;
 ```
 
-These URLs must serve the matching files from the same `pdfjs-dist` version.
-The viewer adds a trailing slash to each directory URL. The auxiliary assets
-are optional when a document does not reference them.
-By default the viewer locates the worker with
-`new URL(&#39;pdfjs-dist/build/pdf.worker.mjs&#39;, import.meta.url)`, which Vite 8.1.5
-resolves in production builds and emits as an asset. Vite&#39;s development server
-resolves this default only when Breeze UI is excluded from dependency
-pre-bundling:
+The files must come from the same `pdfjs-dist` version. A trailing slash is added to each URL. Documents that do not use these assets work without them.
 
-```ts
-export default defineConfig({
-  optimizeDeps: {
-    exclude: [&#39;@motech-development/breeze-ui&#39;],
-  },
-});
-```
+### Without PDF.js
 
-Otherwise, or when the application uses a bundler that does not support this
-pattern, provide `pdfAssets.workerSrc` with the URL emitted or copied for the
-installed `pdfjs-dist` version.
+If PDF.js is not installed or cannot render a file, the viewer shows the PDF in the browser&#39;s built-in PDF viewer instead. It fetches the file first, so the source must be same-origin or allow CORS. If the fetch fails, the viewer reports that the preview is unavailable and Download remains available.
 
-When PDF.js is unavailable or cannot render a file, the viewer fetches the PDF
-and passes its bytes to the browser&#39;s native PDF viewer as a PDF-typed Blob.
-The source must be readable by the application: same-origin files work directly,
-and cross-origin hosts must allow CORS. If the fetch fails, the preview reports
-that it is unavailable and the Download action remains available.
+When `pdfjs-dist` is not installed, Vite builds still succeed and use this fallback. Other bundlers may fail the build; install `pdfjs-dist`, or configure the bundler to ignore the missing optional module.
 
-The reader supports page navigation for multi-page PDFs. Zoom and rotation
-apply to images, rendered PDF pages, and browser-owned frames. Each PDF zoom
-step re-renders the page at the new density; the previous rendering stays
-visible, and the scroll position is kept, until the sharper page replaces it.
-Each preview starts closed inside its own frame; use its Open button to view the
-attachment. The PDF example loads PDF.js only after you open it.
+## Opening from an AttachmentRow
 
-&lt;Canvas of={Stories.ImageDocs} /&gt;
-
-&lt;Canvas of={Stories.PdfWorkerDocs} /&gt;
-
-The compact toolbar keeps the filename and document actions in one raised strip.
-For multi-page PDFs, page navigation sits in a separate neutral row beneath it.
-
-## AttachmentRow transition
-
-Give the row and viewer the same stable `transitionName` to morph between the
-attachment row and the reader in both directions. Close and Escape return to the
-row while preserving the surrounding overlay. The loaded image or PDF remains
-covered until the opening morph finishes, then its rendered content is revealed.
-Unsupported View Transition APIs and reduced-motion preferences use the same
-flow without animation.
+Give the `AttachmentRow` and the viewer the same unique `transitionName` to animate between the row and the viewer in both directions. The file is revealed once the opening animation finishes. Closing returns to the row, and any sheet or dialog around it stays open. Browsers without view transition support, and people who prefer reduced motion, see the same flow without animation.
 
 &lt;Canvas of={Stories.FromAttachmentRowDocs} /&gt;
 
-## Accessibility and fallback limits
+## Accessibility
 
-Rendered PDF canvases do not expose their page content to assistive technology.
-PDF text is selectable visually, but document tags, reading order, and scanned
-image OCR are not interpreted. The notice in the viewer therefore states that
-the attachment&#39;s meaning comes from its surrounding record and offers the
-original download.
+- `title` names the viewer.
+- The viewer is non-modal. The page or sheet beneath it stays open and interactive, and remains available to assistive technology.
+- While the viewer is open, Tab and Shift+Tab keep focus within its controls, and page scrolling is locked.
+- Escape and the Close button close the viewer.
+- Opened from a sheet, the viewer covers the screen while the sheet stays open behind it. Closing the viewer returns focus to the sheet, and closing the sheet also closes the viewer.
 
-The fallback iframe is browser-owned. Its controls, keyboard behavior, and
-accessibility vary by browser and document type; Breeze cannot inspect or
-improve the embedded viewer&#39;s content. Use `mediaType=&quot;document&quot;` for other
-browser-renderable formats when embedding is appropriate. These document frames
-are sandboxed so embedded HTML or SVG cannot run scripts in the application.
+Rendered PDF pages are drawn as images, so screen readers cannot read their content. PDF text can be selected, but document tags, reading order and text in scanned images are not available. The viewer shows a notice to this effect and offers the original file for download, so make sure the surrounding record describes the attachment.
 
-## Bundle measurement
-
-With Breeze UI&#39;s development pin `pdfjs-dist@6.3.289`, the measurements on
-2026-10-02 show the package and PDF.js engine as separate gzip payloads. The
-PDF.js figure sums the independently compressed main-thread and worker files.
-
-| Payload                                                                     |  Gzip size |
-| --------------------------------------------------------------------------- | ---------: |
-| Breeze UI library JavaScript (package output, including bundled React Aria) | 133.55 KiB |
-| PDF.js engine JavaScript (main + worker, independently compressed)          | 634.60 KiB |
-
-## Actions
-
-The Download link is always available. Cross-origin sources are fetched as a
-blob so the requested filename is preserved; the file host must allow CORS from
-the application. If that request fails — blocked by CORS, or refused because a
-presigned URL has expired — the viewer reports that the file could not be
-downloaded and stays open. It never navigates the application&#39;s tab to the
-source. Replace and Remove buttons appear only when
-their corresponding callbacks are provided, leaving mutation and confirmation
-flows in the application. Full screen appears only when the browser reports
-support for the native Fullscreen API.
+For `mediaType=&quot;document&quot;`, the browser&#39;s own viewer displays the file, and its controls, keyboard support and accessibility vary by browser and file type. These frames are sandboxed, so embedded HTML or SVG cannot run scripts in your application.
 
 ## API
 
@@ -4963,11 +5017,11 @@ import * as Stories from &#39;./Drawer.stories&#39;;
 
 # Drawer
 
-Use `Drawer` for a task or supporting content that needs a modal surface at the edge of the page. Render it inside `BreezeProvider`.
+A drawer is a modal panel that slides in from the edge of the page. Use it for a focused task, such as recording a transaction, or for supporting content that should not replace the current page.
 
-## Basic usage
+## Basic drawer
 
-`trigger` supplies the label for the button Breeze renders. `title` supplies the surface&#39;s visible heading and accessible name; `children` supplies its content. Breeze also renders an icon close button whose accessible name comes from the provider&#39;s messages.
+Pass `trigger` as the label of the button that opens the drawer, `title` as its heading and `children` as its content. The drawer includes a close button, labelled with the provider&#39;s messages.
 
 ```tsx
 &lt;Drawer title=&quot;Delivery details&quot; trigger=&quot;View delivery details&quot;&gt;
@@ -4979,7 +5033,7 @@ Use `Drawer` for a task or supporting content that needs a modal surface at the 
 
 ## Content and footer
 
-The content scrolls on its own between the heading bar and the footer. Three props fill a footer pinned below it, which renders only when at least one is given:
+The content scrolls independently between the heading and the footer. The footer stays pinned to the bottom and appears only when you pass at least one of these props:
 
 - `footerStart` places an action at the start, such as Delete on an edit form.
 - `footerSummary` shows a short muted line that takes the free width and truncates.
@@ -5007,17 +5061,17 @@ The content scrolls on its own between the heading bar and the footer. Three pro
 
 &lt;Canvas of={Stories.RecordTransaction} /&gt;
 
-When the footer runs out of room, its actions wrap onto their own line and stay at the end. Below 768px the summary keeps its full text and moves the actions to the next line, truncating only when it is wider than the footer.
+When the footer runs out of room, the actions wrap onto their own line and stay at the end. Below 768px, the summary keeps its full text and the actions move to the next line; the summary truncates only when it is wider than the footer.
 
 &lt;Canvas of={Stories.EditTransaction} /&gt;
 
-Below the medium breakpoint the drawer fills the screen and rises from the bottom.
+Below the `md` breakpoint, the drawer fills the screen and slides up from the bottom.
 
 ## Open state
 
-By default, the component manages its own open state. Set `defaultOpen` to start open, and optionally use `onOpenChange` to observe changes.
+By default, the drawer manages its own open state. Set `defaultOpen` to start open, and use `onOpenChange` to respond to changes.
 
-To control the surface from application state, supply both `open` and `onOpenChange`. `open` and `defaultOpen` are mutually exclusive.
+To control the drawer from your own state, pass both `open` and `onOpenChange`. `open` and `defaultOpen` cannot be combined.
 
 ```tsx
 &lt;Drawer
@@ -5032,21 +5086,21 @@ To control the surface from application state, supply both `open` and `onOpenCha
 
 ## Dismissal
 
-`dismissible` defaults to `true`, allowing Escape and interaction outside the surface to dismiss it. Set it to `false` when those interactions should leave the surface open. The close button remains available.
+By default, pressing Escape or clicking outside the drawer closes it. Set `dismissible={false}` to keep it open in those cases, for example while a form has unsaved changes. The close button still works.
 
-## Surfaces above a sheet
+## Opening other overlays from a drawer
 
-A `Popover` can open above the drawer without blocking interaction with the sheet or hiding its content from assistive technology. The drawer keeps its scrim, and Escape dismisses the popover before the sheet.
+A `Popover` opened inside a drawer appears above it. The drawer stays interactive and keeps its dimmed backdrop, and Escape closes the popover before the drawer.
 
-`DocumentViewer` opens a non-modal full-screen surface above the drawer. It covers the sheet while keeping it mounted and preserving its scrim. Because the surface is not modal, the covered sheet stays available to assistive technology, while Tab and Shift+Tab stay inside the full-screen surface. Escape closes the full-screen surface before the sheet and restores focus to its opener in the sheet.
+A `DocumentViewer` opened inside a drawer covers it with a full-screen view. The drawer stays open underneath, keeping its state, and remains available to screen readers. Tab and Shift+Tab stay inside the full-screen view, and Escape closes it before the drawer, returning focus to the button that opened it.
 
-The `Foundations/Overlay stack` stories cover sheet/popover and sheet/full-screen compositions, including closing the outer sheet first and starting with nested surfaces open.
+See the `Foundations/Overlay stack` stories for more combinations.
 
-## Accessibility and motion
+## Accessibility
 
-Breeze manages focus on opening and restores it on closing. Modal surfaces contain keyboard focus while open. The provider&#39;s portal host keeps the surface&#39;s locale, direction and scoped styles intact.
+Opening the drawer moves focus into it, and focus stays inside while it is open. Closing it returns focus to the trigger. The drawer&#39;s DOM is rendered in a portal, but it stays in your React tree and keeps the provider&#39;s locale and text direction.
 
-Enter and exit motion respects reduced-motion preferences. A closing surface immediately leaves the active stack while its exit animation completes.
+The open and close animations respect the user&#39;s reduced-motion setting. As soon as a drawer starts to close, the content beneath it becomes interactive again, without waiting for the animation to finish.
 
 ## API
 
@@ -5280,37 +5334,26 @@ import * as Stories from &#39;./FileDropZone.stories&#39;;
 
 # FileDropZone
 
-`FileDropZone` accepts files through drag and drop or the **Choose files**
-button. The button opens a native file picker, so keyboard users can browse for
-files without dragging. `label` is shown as a field label above the drop area
-and names it.
+`FileDropZone` lets people add files by dragging them onto the drop area or by using the **Choose files** button. `label` is shown above the drop area and names it.
 
 &lt;Canvas of={Stories.Default} /&gt;
 
 ## Compact
 
-Set `compact` to lay the drop area out as one row at the height of an
-`AttachmentRow`, so a single attachment keeps its position whether or not a file
-is attached. Its secondary line stays on one line and truncates with an
-ellipsis.
+Set `compact` to show the drop area as a single row, the same height as an `AttachmentRow`. A single attachment then keeps its position whether or not a file is attached. The secondary text stays on one line and is truncated with an ellipsis.
 
 &lt;Canvas of={Stories.Compact} /&gt;
 
 ## Take photo
 
-Set `camera` to offer **Take photo** before **Choose files**. It opens a native
-file input with `accept=&quot;image/*&quot;` and `capture=&quot;environment&quot;`, so phones open
-the rear camera and other devices fall back to an image picker. Cameras deliver
-JPEG photos, so the action appears only when `accept` is omitted or allows JPEG
-through `image/*`, `image/jpeg`, `.jpg`, `.jpeg` or `*/*`. Captured photos pass
-the same type, size and count checks as chosen files and reach `onFilesAdded`
-the same way. For JPEG files, `.jpg` and `.jpeg` accept either extension, and
-an untyped file named `.jpg` or `.jpeg` counts as `image/jpeg`.
+Set `camera` to add a **Take photo** button before **Choose files**. On phones it requests the rear camera, although the browser or device may use its own default; on other devices it opens an image picker.
 
-On coarse pointers and below Breeze&#39;s `md` breakpoint, Take photo is filled in
-the brand colour. Below `md` it also fills the stacked layout&#39;s action row, the
-stacked layout hides its drag-and-drop line, and the compact layout reduces both
-actions to icons that keep their accessible names.
+Cameras produce JPEG photos, so **Take photo** appears only when `accept` is omitted or allows JPEG through `image/*`, `image/jpeg`, `.jpg`, `.jpeg` or `*/*`. Photos go through the same type, size and count checks as chosen files and are passed to `onFilesAdded` in the same way.
+
+On touch devices and narrow screens (below 901px), **Take photo** is filled in the brand colour. On narrow screens:
+
+- in the default layout, **Take photo** fills the action row and the drag-and-drop instruction is hidden;
+- in `compact` mode, both buttons show only their icons and keep their accessible names.
 
 &lt;Canvas of={Stories.TakePhoto} /&gt;
 
@@ -5320,24 +5363,24 @@ actions to icons that keep their accessible names.
 
 ## File limits
 
-Pass `accept` as a comma-separated list of file extensions and MIME types, such
-as `.pdf,image/*`. Dropped files are checked against the same rules. Set
-`maxSize` in bytes and `maxFiles` for the total attachment limit. When existing
-files are already attached, provide their number as `currentFileCount`.
+- `accept` takes a comma-separated list of file extensions and MIME types, such as `.pdf,image/*`. Dropped files are checked against the same list. `.jpg` and `.jpeg` each accept either extension, and an untyped file named `.jpg` or `.jpeg` is treated as `image/jpeg`.
+- `maxSize` sets the largest file size, in bytes.
+- `maxFiles` sets the total number of attachments allowed. When files are already attached, pass their number as `currentFileCount`.
 
-The component shows each rejection reason in visible text and announces the
-same message through a polite live region. Supported files are passed to
-`onFilesAdded` as a readonly array. The application owns the attachment state,
-upload, and storage work.
-
-Picker text, instructions, and feedback use the BreezeProvider `messages`
-override boundary. Translations retain the placeholders documented in the
-BreezeProvider locale section, and each message announces with its matching
-language.
+Accepted files are passed to `onFilesAdded` as a read-only array. Uploading and storing them is up to your application. Rejected files show their reason as visible text.
 
 &lt;Canvas of={Stories.WithExistingFiles} /&gt;
 
 &lt;Canvas of={Stories.ChooseAFile} /&gt;
+
+## Localisation
+
+The button text, instructions and feedback can be translated through the `messages` prop of `BreezeProvider`. Keep the placeholders listed in the BreezeProvider locale section. Each message is announced in its own language.
+
+## Accessibility
+
+- **Choose files** opens the native file picker, so keyboard users can add files without dragging.
+- Each rejection reason is also announced through a polite live region.
 
 ## API
 
@@ -5457,23 +5500,21 @@ import * as Stories from &#39;./FormActions.stories&#39;;
 
 # FormActions
 
-`FormActions` arranges application-owned action controls with consistent spacing
-and wrapping. It does not handle submission or change child control behavior.
+`FormActions` lays out a form&#39;s buttons in a row with consistent spacing, wrapping them when space runs out. It only handles layout; submission and button behaviour stay with the buttons and form you provide.
 
-## Action placement
+## Basic actions
 
-Actions align to the end by default. Set `align` to `start` when the surrounding
-form calls for a leading action row.
+Actions align to the end of the row by default. Use `Stack` to space the fields and the action row; this example uses `Stack gap={4}`.
 
-Compose vertical spacing between fields and actions with `Stack`; this example
-uses `Stack gap={4}` around the field and action row.
+The example uses a secondary **Cancel** button and a **Save** button that submits the form.
 
 &lt;Canvas of={Stories.Default} /&gt;
 
-&lt;Canvas of={Stories.StartAligned} /&gt;
+## Start alignment
 
-The example keeps Cancel as a secondary button and Save as the form&#39;s native
-submit button. Both actions report visible feedback.
+Set `align=&quot;start&quot;` to place the actions at the start of the row.
+
+&lt;Canvas of={Stories.StartAligned} /&gt;
 
 ## API
 
@@ -5617,22 +5658,23 @@ import * as Stories from &#39;./FormSection.stories&#39;;
 
 # FormSection
 
-`FormSection` groups related fields under a native fieldset legend. It requires
-the Breeze provider and accepts only app-owned copy and child content.
+`FormSection` groups related form fields under a title. Render it inside `BreezeProvider`.
 
 ## Title and description
 
-The required `title` becomes the fieldset legend. An optional `description` is
-associated with the group for assistive technology.
+`title` is required and labels the group. Add an optional `description` to explain the fields; it is announced with the group.
 
 &lt;Canvas of={Stories.Default} /&gt;
 
-## Multiple groups
+## Multiple sections
 
-Use separate sections to label independent groups of fields. Each description
-receives a unique id so its association stays local to its fieldset.
+Use a separate section for each independent group of fields. Each description is announced only with its own group.
 
 &lt;Canvas of={Stories.MultipleSections} /&gt;
+
+## Accessibility
+
+`FormSection` renders a native `fieldset`, with `title` as its `legend`, so screen readers announce the title when focus enters the group.
 
 ## API
 
@@ -5797,29 +5839,33 @@ import * as Stories from &#39;./Grid.stories&#39;;
 
 # Grid
 
-`Grid` provides one, two or three equal columns, or a main column beside an aside, on the Breeze spacing scale. Multi-column grids collapse to one column below `md` by default.
+`Grid` arranges content in one, two or three equal columns, or in a main column beside an aside. Set `columns` to choose the layout (it defaults to `2`) and `gap` to choose the spacing from the Breeze spacing scale.
+
+By default, a multi-column grid collapses to a single column below the `md` breakpoint. Use `collapseBelow` to change the breakpoint.
 
 &lt;Canvas of={Stories.Responsive} /&gt;
 
 ## Fixed columns
 
-Set `collapseBelow=&quot;none&quot;` only for content that remains understandable at narrow widths.
+Set `collapseBelow=&quot;none&quot;` to keep the columns at every width. Use this only for content that still reads well on narrow screens.
 
 &lt;Canvas of={Stories.Fixed} /&gt;
 
 ## Main and aside
 
-Set `columns=&quot;mainAside&quot;` for a page with a primary column and a supporting aside, such as the Overview page. Pass exactly two children: the main content first, then the aside. The main column grows to fill the available space beside a 300px aside. Each column keeps its own height, so a short aside does not stretch to match the main column.
+Set `columns=&quot;mainAside&quot;` for a page with a primary column and a supporting aside, such as a dashboard overview. Pass exactly two children: the main content first, then the aside.
 
-Below `md`, the aside stacks under the main content. `collapseBelow` applies as it does to equal columns.
+The aside is 300px wide and the main column fills the remaining space. Each column keeps its own height, so a short aside does not stretch to match the main column. Below `md`, the aside stacks under the main content; `collapseBelow` changes this breakpoint as it does for equal columns.
 
 &lt;Canvas of={Stories.MainAside} /&gt;
 
+## Loading
+
+`Grid` has no loading state of its own. Show loading inside each item, using components with a `loading` prop or a `Skeleton` sized like the final content.
+
 ## Accessibility
 
-Grid changes visual arrangement, not reading order. Author children in the order they should be read.
-
-Loading belongs to the items inside the grid. Compose loading-capable children or explicit `Skeleton` elements so each placeholder matches its final item.
+`Grid` changes the visual layout, not the reading order. Write children in the order they should be read.
 
 ## API
 
@@ -5982,13 +6028,13 @@ import * as Stories from &#39;./Icon.stories&#39;;
 
 # Icon
 
-`Icon` exposes curated artwork under names that describe its meaning in a Breeze interface.
+`Icon` displays an icon from the Breeze icon set. Set `name` to choose the icon; names describe what the icon means, such as `incoming` or `document`, rather than what it looks like.
 
 &lt;Canvas of={Stories.Gallery} /&gt;
 
 ## Sizes
 
-`size` selects a square from a closed scale that follows the design&#39;s icon sizes. It defaults to `sm`.
+Set `size` to choose one of the following square sizes. It defaults to `sm`.
 
 | Size  | Pixels | Typical use                                                 |
 | ----- | ------ | ----------------------------------------------------------- |
@@ -6006,7 +6052,7 @@ import * as Stories from &#39;./Icon.stories&#39;;
 
 ## Accessible names
 
-Icons are decorative by default. Supply `label` only when the icon conveys meaning without adjacent text.
+Icons are decorative by default and hidden from assistive technology. Pass `label` only when the icon carries meaning that no nearby text provides; screen readers then announce the label.
 
 &lt;Canvas of={Stories.Named} /&gt;
 
@@ -6267,49 +6313,51 @@ import * as Stories from &#39;./IconButton.stories&#39;;
 
 # IconButton
 
-Icon buttons perform an action, such as closing a panel or opening more actions, where an icon alone is clear enough.
+An icon button performs an action using an icon alone, such as closing a panel or opening more actions. Use it when the icon is clear enough without visible text.
 
 ## Basic icon button
 
-`name` selects the artwork from the curated Breeze icon set, and `label` gives the action its accessible name. `label` is required, because the button has no visible text.
+Set `name` to choose an icon from the Breeze icon set, and `label` to name the action for screen readers. `label` is required because the button has no visible text.
 
 &lt;Canvas of={Stories.Default} /&gt;
 
-## Treatments and sizes
+## Variants and sizes
 
-`variant` accepts the same treatments as `Button`: `secondary` (default), `primary`, `quiet` and `danger`. The default is `secondary`, because most icon-only actions, such as Close and More actions, sit beside content rather than leading it.
+`variant` accepts the same values as `Button`: `secondary` (default), `primary`, `quiet` and `danger`. `secondary` suits most icon-only actions, such as Close and More actions, which sit beside content rather than leading it.
 
-`size` accepts `sm`, `md` (default) and `lg`. The button is square at 32, 36 or 52px, and its icon is 16, 20 or 24px.
+`size` accepts `sm`, `md` (default) and `lg`. The button is a 32, 36 or 52px square, with a 16, 20 or 24px icon.
 
 &lt;Canvas of={Stories.TreatmentsAndSizes} /&gt;
 
 ## Shapes
 
-`shape` accepts `square` (default), with the control&#39;s rounded corners, and `circle`, for a standalone action such as the application shell&#39;s centre action.
+`shape` accepts `square` (default), with rounded corners, and `circle`, for a standalone action such as the centre action in `ApplicationShell`.
 
 &lt;Canvas of={Stories.Shapes} /&gt;
 
 ## Loading
 
-Set `loading` while the action is in progress. The icon is replaced by a skeleton, and the button cannot be activated again.
+Set `loading` while the action is in progress. The icon is replaced by a placeholder, and the button cannot be activated again until loading ends.
 
 &lt;Canvas of={Stories.Loading} /&gt;
 
 ## Disabled
 
-`disabled` prevents activation and removes the button from the tab order.
+Set `disabled` to prevent activation. A disabled button is also removed from the tab order.
 
 &lt;Canvas of={Stories.Disabled} /&gt;
 
 ## Handling actions
 
-`onAction` is called when the button is activated, and takes no arguments.
+Pass `onAction` to respond when the button is activated by click, tap or keyboard. It is called with no arguments.
 
 &lt;Canvas of={Stories.Activation} /&gt;
 
 ## Accessibility
 
-The `label` is the accessible name and is retained while the button is loading. The icon is hidden from assistive technology. Icon buttons receive a 44px minimum target on touch devices, and `aria-describedby`, `aria-controls`, `aria-expanded` and `aria-haspopup` are supported.
+Screen readers announce the `label` as the button&#39;s name, including while it is loading; the icon itself is hidden. On touch devices the button has a target of at least 44px.
+
+The button also accepts `aria-describedby`, `aria-controls`, `aria-expanded` and `aria-haspopup` when it opens or controls other content.
 
 ## API
 
@@ -6464,19 +6512,19 @@ import * as Stories from &#39;./IconTile.stories&#39;;
 
 # IconTile
 
-`IconTile` decorates state panels, rows and other content with a fixed-size icon wash.
+`IconTile` shows an icon on a soft coloured background. Use it to illustrate empty states, list rows and similar content. Set `name` to choose the icon and `tone` to choose the colour; `tone` defaults to `brand`.
 
 &lt;Canvas of={Stories.Treatments} /&gt;
 
 ## Direction markers
 
-Use the compact circular form for direction markers: `positive` for money in and `strong` for money out. `strong` shares the `neutral` wash with full-strength ink.
+For a money-in or money-out marker, use the small circular tile with `shape=&quot;circle&quot;` and `size=&quot;sm&quot;`. Use `tone=&quot;positive&quot;` for money in and `tone=&quot;strong&quot;` for money out. `strong` has the same background as `neutral`, with a darker icon.
 
 &lt;Canvas of={Stories.Direction} /&gt;
 
 ## Accessibility
 
-Artwork is decorative by default. Supply `label` only when no adjacent text names its meaning; never rely on the tile colour alone.
+The icon is decorative by default and hidden from assistive technology. Pass `label` only when no nearby text describes what it means. Do not rely on the tile colour alone to convey meaning.
 
 ## API
 
@@ -6629,21 +6677,23 @@ import * as Stories from &#39;./Inline.stories&#39;;
 
 # Inline
 
-`Inline` lays related items out horizontally. Its gap, alignment and distribution choices are closed to the arrangements used by Breeze.
+`Inline` arranges related items in a row, such as a group of buttons or badges. Set `gap` to choose the spacing from the Breeze spacing scale, `verticalAlign` to align items (centred by default) and `justify` to distribute them along the row.
 
 &lt;Canvas of={Stories.Default} /&gt;
 
 ## Wrapping
 
-Enable `wrap` for collections of labels or actions that may not fit on one line.
+Set `wrap` when the items may not fit on one line, such as a list of labels or actions. Items that do not fit move onto the next row.
 
 &lt;Canvas of={Stories.Wrapped} /&gt;
 
+## Loading
+
+`Inline` has no loading state of its own. Show loading inside each item, using components with a `loading` prop or a `Skeleton` sized like the final content.
+
 ## Accessibility
 
-Choose a semantic element only when the content forms a landmark or labelled region. Visual order and document order remain the same.
-
-Loading belongs to the items inside the row. Compose loading-capable children or explicit `Skeleton` elements so placeholders retain the intended item sizes.
+`Inline` renders a `div` by default, which adds no meaning for assistive technology. Use `element` to choose a landmark or region only when the content is one, and name it with `aria-label`. Items are read in the same order they appear.
 
 ## API
 
@@ -6870,20 +6920,20 @@ variant?: &quot;default&quot; | &quot;subtle&quot; = default</code></pre>
                 <span class="badge ok">doc ok</span>
               </div>
               <div class="hint">./src/primitives/Link/Link.mdx</div>
-              <div>Navigates to a resource with native anchor behavior and optional router support.</div>
+              <div>Navigates to a resource with native anchor behaviour and optional router support.</div>
               <div class="mdx-content"><pre><code>import { ArgTypes, Canvas, Meta } from &#39;@storybook/addon-docs/blocks&#39;;
 import * as Stories from &#39;./Link.stories&#39;;
 
 &lt;Meta
   of={Stories}
-  summary=&quot;Navigates to a resource with native anchor behavior and optional router support.&quot;
+  summary=&quot;Navigates to a resource with native anchor behaviour and optional router support.&quot;
 /&gt;
 
 # Link
 
-`Link` renders a native anchor as a standalone 13px text action without an underline, such as View all money in a panel header. Its `href` remains the destination, so browser navigation, keyboard access and open-in-new-tab behavior continue to work. Use a quiet `Button` for an action that does not navigate.
+`Link` is a standalone text link without an underline, such as a View all link in a panel header. It renders a native anchor, so `href` works as usual: keyboard access, opening in a new tab and copying the address all behave as people expect. For an action that does not navigate, use a quiet `Button` instead.
 
-Without a configured router, activating the link uses the browser&#39;s native navigation. With a router, Breeze intercepts only qualifying same-document navigations.
+Without a router, the link uses the browser&#39;s normal navigation. With a router configured on `BreezeProvider`, same-origin links navigate through the router instead.
 
 &lt;Canvas of={Stories.Default} /&gt;
 
@@ -6891,7 +6941,7 @@ Without a configured router, activating the link uses the browser&#39;s native n
 
 ## Router navigation
 
-Pass a same-document router to `BreezeProvider` when links should update application state without loading another document. `Link` sends the destination and its optional `transitionTypes` to the router. The router decides whether and when to use a browser view transition; see &lt;a href=&quot;./?path=/docs/guides-04-motion--docs&quot; target=&quot;_top&quot;&gt;Motion&lt;/a&gt;.
+Pass a `router` to `BreezeProvider` when links should change the page without a full reload. `Link` sends the destination and its optional `transitionTypes` to the router, which decides whether to use a browser view transition; see &lt;a href=&quot;./?path=/docs/guides-04-motion--docs&quot; target=&quot;_top&quot;&gt;Motion&lt;/a&gt;.
 
 ```tsx
 &lt;BreezeProvider locale=&quot;en-GB&quot; router={router}&gt;
@@ -6903,21 +6953,25 @@ Pass a same-document router to `BreezeProvider` when links should update applica
 
 &lt;Canvas of={Stories.RouterNavigation} /&gt;
 
-`transitionTypes` defaults to an empty list. Breeze passes the option to `router.navigate(href, { transitionTypes })`; an existing one-argument `navigate(href)` adapter can ignore the extra argument.
+The link calls `router.navigate(path, { transitionTypes })`. `transitionTypes` defaults to an empty list, so an existing `navigate(href)` function that takes one argument works unchanged.
 
-The router receives the destination the browser would navigate to, as a root-relative path with its query string, rather than the raw `href`. A relative `href` such as `accounts`, `../reports` or `?page=2` is resolved against the current document first, so `/accounts/transactions/` with `href=&quot;?page=2&quot;` routes to `/accounts/transactions/?page=2`.
+The router receives the path the browser would navigate to, not the raw `href`: a root-relative path including any query string. Relative values such as `accounts`, `../reports` or `?page=2` are resolved against the current page first, so on `/accounts/transactions/`, `href=&quot;?page=2&quot;` navigates to `/accounts/transactions/?page=2`.
 
-Because the path is root-relative, it already includes any base path the application is served under. **An adapter for a router that prepends its own `basename` must strip that base before navigating**, or the base will appear twice.
+The path already includes any base path your application is served under. **If your router adds its own `basename`, remove the base from the path before navigating**, or it will appear twice.
 
-## Native anchor behavior
+### When the browser navigates instead
 
-The router handles only an unmodified primary click on a same-origin HTTP or HTTPS link with no fragment, download, or alternate browsing target. External links, downloads, alternate targets, modified clicks and fragment links keep the browser&#39;s native behavior.
+The router handles only a plain primary click on a same-origin HTTP or HTTPS link. The browser navigates as normal for external links, downloads, links with a `target` other than `_self`, links containing a `#` fragment, and clicks with a modifier key, such as Ctrl or Cmd to open a new tab.
 
-Use `variant=&quot;subtle&quot;` for a lower-emphasis link. The default variant uses the Breeze brand text colour.
+## Variants
+
+The default link uses the brand text colour. Set `variant=&quot;subtle&quot;` for a lower-emphasis link.
 
 ## Accessibility
 
-Links are distinguished by colour alone, so place them apart from running text rather than inside a sentence. They receive a 44px minimum height on touch devices and below the `md` breakpoint. The link&#39;s visible content is its accessible name by default. Use `aria-label` or `aria-labelledby` when that content does not describe the destination, and `aria-current` when the link represents the current page or location.
+A `Link` is distinguished from text by colour alone, so place it on its own rather than inside a sentence. On touch devices and below the `md` breakpoint, it has a minimum height of 44px.
+
+Screen readers announce the link&#39;s text as its name. Use `aria-label` or `aria-labelledby` when the text does not describe the destination, and `aria-current` when the link points to the current page.
 
 ## API
 
@@ -7173,114 +7227,126 @@ import * as Stories from &#39;./Menu.stories&#39;;
 
 # Menu
 
-`Menu` keeps related actions together under a labelled button. Use it for
-secondary actions, such as account settings, that should stay out of the main
-page until needed.
+A menu shows a list of actions when someone presses its button. Use it for
+secondary actions, such as account settings, that should stay out of the way
+until needed.
 
-When the visible trigger label is shared by several controls, set
-`triggerAriaLabel` to give each button a distinct accessible name while keeping
-the visible label concise.
+## Basic menu
+
+Pass `trigger` as the button&#39;s visible label, your data as `items`, and a
+`getItem` function that describes each item. `onAction` is called with the
+selected item from `items`, as it is in `Select`, `ComboBox` and `ToggleGroup`.
 
 &lt;Canvas of={Stories.Default} /&gt;
 
+When several buttons on a page share the same visible label, set
+`triggerAriaLabel` to give each one a distinct name for screen readers while
+keeping the visible label short.
+
+## Item content
+
+`getItem` returns a `MenuItemDescriptor` for each item:
+
+- `id` and `label` are required. Each `id` must be unique within the menu.
+- `description`, `icon` or `initials`, `badge`, `disabled`, `section` and
+  `tone` are optional.
+
+Keep labels concise. Use a description for a short explanation, and icons when
+they help people scan the choices.
+
+When any item has an icon or initials, every label lines up: items without
+either keep the space empty, and in a menu with initials, icons are centred in
+the tile&#39;s width. In a menu with neither, labels start at the edge.
+
 ## Icon-only trigger
 
-Omit `trigger` and set `triggerIcon` and `triggerAriaLabel` together for a
-compact icon-only trigger, such as a More actions button. `triggerAriaLabel`
-is then required, because it is the trigger&#39;s only name.
+For a compact button such as More actions, omit `trigger` and set `triggerIcon`
+and `triggerAriaLabel`. `triggerAriaLabel` is required here, because it is the
+button&#39;s only name.
 
 &lt;Canvas of={Stories.IconOnlyTrigger} /&gt;
 
-## Loading the menu
+## Sections
 
-Use `loading` when the trigger should wait before opening. It shows a loading
-bar while keeping its size and accessible label; an icon-only trigger replaces
-its icon with a skeleton, as `IconButton` does. Actions in an already-open menu
-remain available.
+Give items a `section` to group them. Items that share a section `id` appear
+together, where the first of them appears in `items`, with dividers between
+sections. A section `label` is shown as a header and names the group for screen
+readers. Without a label, the items are separated by dividers only.
 
-&lt;Canvas of={Stories.Loading} /&gt;
+Set `initials` instead of `icon` to show a short code, such as a company&#39;s
+initials, in a tile before the label. The tile is decorative, so the label must
+still identify the item.
 
-## Define actions
-
-Pass your application values in `items`. Use `getItem` to provide each value&#39;s
-`MenuItemDescriptor`: `id` and `label` are required, while `description`,
-`icon` or `initials`, `badge`, `disabled`, `section` and `tone` are optional. Give each item a unique `id` within the
-menu. Keep labels concise; use descriptions for a short explanation and icons
-when they help people scan the choices. When any item has an icon or initials,
-every label lines up: items without either keep that space, and in a menu with
-initials, icons centre in the tile&#39;s width. A menu without either starts its
-labels at the edge.
+&lt;Canvas of={Stories.Sections} /&gt;
 
 ## Destructive actions
 
 Set `tone: &#39;danger&#39;` on an action that removes or discards something, such as
 Remove, to show it in the danger colour. Place it last, in its own `section`,
-so a divider separates it from the other actions. The action runs when
-selected; confirm its result in the page, as with any other action.
+so a divider separates it from the other actions.
+
+The action runs as soon as it is selected, like any other. If it needs
+confirming, or its result needs showing, do that in the page or a dialog.
 
 &lt;Canvas of={Stories.DestructiveAction} /&gt;
 
-## Group actions into sections
+## Width
 
-Give items a `section` to group them. Items sharing a section `id` are shown
-together where the first of them appears, and dividers separate each section
-from its neighbours. A section `label` shows as a header and names the group
-for assistive technology; omit it to separate the items with dividers alone,
-without a header or a group.
+The open menu fits its items and is never narrower than its button. `width`
+sets its minimum width:
 
-Set `initials` instead of `icon` to show a short code, such as a company&#39;s
-initials, in a brand tile before the label. The tile is decorative, so the label
-must still identify the item.
-
-&lt;Canvas of={Stories.Sections} /&gt;
-
-## Menu width
-
-The open menu fits its items and is never narrower than its trigger. `width`
-sets its minimum width: `md`, the default, is 256px and suits a list of names
-such as a company switcher; `sm` is 208px and suits a short list of actions,
-such as the file actions in `AttachmentRow`.
+- `md` (default) is 256px and suits a list of names, such as a company switcher.
+- `sm` is 208px and suits a short list of actions, such as the file actions in
+  `AttachmentRow`.
 
 &lt;Canvas of={Stories.NarrowWidth} /&gt;
 
 ## Placement
 
-The menu opens below its trigger with their start edges aligned. Set
-`placement` to `bottom end` to align their end edges instead, for a trigger at
-the end of a row. Start and end follow the provider&#39;s text direction, and the
-menu can adjust its position to fit the available space.
+The menu opens below its button with their start edges aligned. Set
+`placement=&quot;bottom end&quot;` to align their end edges instead, for a button at the
+end of a row. Start and end follow the provider&#39;s text direction, and the menu
+moves if needed to fit on screen.
 
-## Panels that are not menus
+## Loading
 
-A menu contains only actions, optionally grouped into labelled sections. Do not
-use `Menu` for a panel that also shows information people read but cannot act
-on, places controls inside a row or header, or offers a toggle group. Assistive
-technology presents a menu as its menu items alone, so plain-text rows are
-skipped, and the menu&#39;s arrow keys cannot reach a button placed inside an item
-or a section header.
+Set `loading` while the menu is not ready to open. The button shows a loading
+bar and keeps its size and accessible name; an icon-only button replaces its
+icon with a placeholder, as `IconButton` does. Actions in a menu that is
+already open remain available.
 
-An account panel that lists notifications, gives one of them a Download action,
-offers Mark all as read and an `AppearanceControl`, and then links to settings
-is such a panel. Build it as a `Popover` with application content instead.
+&lt;Canvas of={Stories.Loading} /&gt;
 
-## Respond to a selection
+## Controlled open state
 
-`onAction` receives the selected application item from `items`, as
-`Select`, `ComboBox` and `ToggleGroup` do. The menu closes when an action is
-selected. Show that action&#39;s progress, confirmation or errors in
-the page or dialog that follows.
+The menu closes when an action is selected. Show the action&#39;s progress,
+confirmation or errors in the page or dialog that follows.
 
-Use `defaultOpen` when the menu manages its own visibility. To control
-visibility, provide `open` and `onOpenChange` together.
+By default, the menu manages whether it is open; set `defaultOpen` to start
+open. To control it from your own state, pass both `open` and `onOpenChange`.
 
 &lt;Canvas of={Stories.Controlled} /&gt;
 
-## Keyboard use
+## When to use a popover instead
 
-Open the menu with the trigger button, Enter, Space or ArrowDown. Use the arrow
-keys to move through enabled actions; type a label to jump to a matching action.
-Enter or Space selects the focused action. Escape closes the menu and returns
-focus to its trigger.
+A menu can contain only actions, optionally grouped into sections. Use a
+`Popover` instead for a panel that also shows information, places controls
+inside a row or header, or includes a toggle group. Screen readers present a
+menu as its actions alone, so plain text is skipped, and the arrow keys cannot
+reach a button placed inside an item or header.
+
+For example, an account panel that lists notifications with a Download action,
+offers Mark all as read and an `AppearanceControl`, and links to settings
+should be a `Popover`.
+
+## Accessibility
+
+- Open the menu by pressing its button, or with Enter, Space or ArrowDown when
+  the button has focus.
+- Use the arrow keys to move between enabled actions, or type the start of a
+  label to jump to it.
+- Enter or Space selects the focused action.
+- Escape closes the menu and returns focus to its button.
 
 ## API
 
@@ -7303,9 +7369,9 @@ focus to its trigger.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> NumberField</h2>
       <div class="badges">
-        <label for="c-26-forms-numberfield-props" class="badge ok as-toggle">22 prop types</label>
+        <label for="c-26-forms-numberfield-props" class="badge ok as-toggle">23 prop types</label>
         
-        <label for="c-26-forms-numberfield-stories" class="badge ok as-toggle">10 stories</label>
+        <label for="c-26-forms-numberfield-stories" class="badge ok as-toggle">11 stories</label>
         <label for="c-26-forms-numberfield-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
@@ -7332,7 +7398,7 @@ focus to its trigger.
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
-              <span class="badge ok">22 prop types</span>
+              <span class="badge ok">23 prop types</span>
             </div>
             <pre><code>Component: src/primitives/NumberField/NumberField.tsx::NumberField</code></pre>
             <pre><code>Props:</code></pre>
@@ -7406,6 +7472,11 @@ minValue?: number
  * Sets the submitted name of the field&#39;s hidden native input.
  */
 name?: string
+
+/**
+ * Reports that focus has left the field, without exposing a DOM event.
+ */
+onBlur?: (() =&gt; void)
 
 /**
  * Reports the next number without exposing a DOM event.
@@ -7577,6 +7648,15 @@ value?: number</code></pre>
               <div class="hint">The application owns the value and receives semantic number changes.</div>
               <pre><code>const Controlled = () =&gt; &lt;ControlledExample /&gt;;</code></pre>
             </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Blur</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">`onBlur` reports each time focus leaves the field.</div>
+              <pre><code>const Blur = () =&gt; &lt;BlurExample /&gt;;</code></pre>
+            </div>
         </div>
     
         <div class="panel panel-docs">
@@ -7599,25 +7679,29 @@ import * as Stories from &#39;./NumberField.stories&#39;;
 
 # NumberField
 
-`NumberField` is a flat labelled numeric input backed by React Aria. It uses
-the Breeze locale and displays figures with tabular numerals. There are no
-stepper buttons: the Up and Down arrow keys change the value by `step`. Values
-remain unformatted except for React Aria&#39;s locale-aware input behaviour.
+`NumberField` is a labelled input for entering numbers, such as an amount.
+It reads and displays numbers using the provider&#39;s locale, and shows figures
+with tabular numerals so digits line up.
+
+There are no stepper buttons. Up and Down arrow keys change the value by
+`step`, which defaults to `1`. Beyond the locale&#39;s number conventions, values
+are not formatted unless you pass `formatOptions`.
 
 &lt;Canvas of={Stories.Default} /&gt;
 
 ## Sizes
 
-`size` defaults to `md`, the standard 38px control with 13px figures. Use `lg`
-for a form&#39;s primary amount: a 52px control with 20px semibold figures. Fields
-that share a row should share a size.
+`size` defaults to `md`, a 38px control with 13px figures. Use `lg` for a
+form&#39;s main amount: a 52px control with 20px semibold figures. Fields in the
+same row should use the same size.
 
 &lt;Canvas of={Stories.Large} /&gt;
 
-## Supporting text and errors
+## Description and errors
 
-Use `description` for guidance. A non-empty `error` marks the field invalid and
-associates the message with the native input. There is no separate invalid prop.
+Use `description` for guidance about what to enter. Pass a non-empty `error`
+to mark the field invalid and show the message; there is no separate `invalid`
+prop.
 
 &lt;Canvas of={Stories.Description} /&gt;
 
@@ -7625,9 +7709,11 @@ associates the message with the native input. There is no separate invalid prop.
 
 ## States
 
-`required`, `disabled` and `readOnly` map to the corresponding accessible input
-semantics. `loading` keeps the field&#39;s shape, announces the provider loading
-message and prevents typing or stepping until it is removed.
+`required`, `disabled` and `readOnly` behave as they do on a native input.
+
+Set `loading` while the value is not yet available. The field keeps its shape,
+screen readers announce the provider&#39;s loading message, and the value cannot be
+typed or stepped until loading ends.
 
 &lt;Canvas of={Stories.Required} /&gt;
 
@@ -7639,21 +7725,31 @@ message and prevents typing or stepping until it is removed.
 
 &lt;Canvas of={Stories.LargeLoading} /&gt;
 
-## Controlled values
+## Controlled
 
-Provide both `value` and `onChange` for controlled usage. The callback receives
-the next number, never a DOM event. React Aria reports `NaN` while the input is
-empty, which lets applications distinguish an empty value from zero. Use
-`defaultValue` and an optional `onChange` for uncontrolled usage; the two forms
-cannot be mixed.
+To control the value, pass both `value` and `onChange`. `onChange` receives the
+new number, not a DOM event. While the input is empty, the value is `NaN`, so
+you can tell an empty field from zero.
+
+For an uncontrolled field, pass `defaultValue` and optionally `onChange`.
+Controlled and uncontrolled props cannot be combined.
 
 &lt;Canvas of={Stories.Controlled} /&gt;
 
+## Blur
+
+`onBlur` reports that focus has left the field, for example to show a
+validation error only once the user has moved on. Like `onChange`, it receives
+no DOM event. The typed number is committed through `onChange` before `onBlur`
+reports.
+
+&lt;Canvas of={Stories.Blur} /&gt;
+
 ## Accessibility
 
-The visible label names the native input. Descriptions and errors are announced
-through React Aria&#39;s field relationships, and the field exposes its native
-input through `ref`.
+The visible label names the input, and screen readers announce the description
+and any error with it. Use `ref` to reach the native input, for example to
+focus it.
 
 ## API
 
@@ -8019,15 +8115,19 @@ import * as Stories from &#39;./PageHeader.stories&#39;;
 
 # PageHeader
 
-`PageHeader` presents the page&#39;s level-one heading, optional description and optional action content. Use one page header for the main heading of a page.
+`PageHeader` shows a page&#39;s main heading with an optional description and actions. Use one per page.
 
 &lt;Canvas of={Stories.Default} /&gt;
 
 ## Page actions
 
-Pass application-owned controls through `actions`. Their labels, focus behavior and accessible names remain the application&#39;s responsibility.
+Pass buttons or links through `actions` to show them alongside the heading.
 
 &lt;Canvas of={Stories.WithActions} /&gt;
+
+## Accessibility
+
+The title is rendered as the page&#39;s level-one heading. Give each control in `actions` a clear accessible name.
 
 ## API
 
@@ -8181,13 +8281,13 @@ import * as Stories from &#39;./Popover.stories&#39;;
 
 # Popover
 
-Use `Popover` for non-modal contextual content anchored to a trigger. The surrounding surface remains interactive and available to assistive technology; the popover has no dimmed scrim. Render it inside `BreezeProvider`.
+A popover shows contextual content next to the button that opens it. It is not modal: the rest of the page stays usable, and the page is not dimmed behind it.
 
-Choose `Popover` rather than `Menu` when the content mixes information with controls, such as a list of notifications with their own actions beside an `AppearanceControl`. A `Menu` holds only a list of actions.
+Use `Popover` rather than `Menu` when the content mixes information with controls, such as a list of notifications with their own actions beside an `AppearanceControl`. A `Menu` holds only a list of actions.
 
-## Basic usage
+## Basic popover
 
-`trigger` supplies the label for the button Breeze renders. `title` supplies the surface&#39;s visible heading and accessible name; `children` supplies its content. Breeze also renders a close button with a label from the provider&#39;s messages.
+Pass `trigger` as the label of the button that opens the popover, `title` as its heading and `children` as its content. The popover includes a close button, labelled with the provider&#39;s messages.
 
 ```tsx
 &lt;Popover title=&quot;Delivery details&quot; trigger=&quot;View delivery details&quot;&gt;
@@ -8199,9 +8299,9 @@ Choose `Popover` rather than `Menu` when the content mixes information with cont
 
 ## Open state
 
-By default, the component manages its own open state. Set `defaultOpen` to start open, and optionally use `onOpenChange` to observe changes.
+By default, the popover manages its own open state. Set `defaultOpen` to start open, and use `onOpenChange` to respond to changes.
 
-To control the surface from application state, supply both `open` and `onOpenChange`. `open` and `defaultOpen` are mutually exclusive.
+To control the popover from your own state, pass both `open` and `onOpenChange`. `open` and `defaultOpen` cannot be combined.
 
 ```tsx
 &lt;Popover
@@ -8216,17 +8316,23 @@ To control the surface from application state, supply both `open` and `onOpenCha
 
 ## Dismissal
 
-`dismissible` defaults to `true`, allowing Escape and interaction outside the surface to dismiss it. Set it to `false` when those interactions should leave the surface open. The close button remains available, so a `panel` cannot set it to `false`.
+By default, pressing Escape or clicking outside the popover closes it. Set `dismissible={false}` to keep it open in those cases; the close button still works. A popover with `variant=&quot;panel&quot;` has no close button, so it is always dismissible.
 
 ## Placement
 
-`placement` accepts `top`, `bottom` (default), `start`, `end` or `bottom end`. `bottom end` opens below the trigger with their end edges aligned, for a trigger at the end of a bar. Start and end follow the provider&#39;s text direction. The surface can adjust its position to fit the available space.
+`placement` accepts `top`, `bottom` (default), `start`, `end` or `bottom end`. Use `bottom end` to open below the button with their end edges aligned, for a button at the end of a bar. Start and end follow the provider&#39;s text direction, and the popover moves if needed to fit on screen.
 
 ## Panels
 
-Set `variant` to `panel` for content that names its own purpose, such as an account panel of notifications and settings. A panel shows no title or close button; `title` still names it for assistive technology. Its content runs edge to edge with no padding, and it fits that content from a minimum of 336px, or spans the viewport less 12px on each side on narrow screens. A panel closes with Escape or a press outside it, so it cannot set `dismissible` to `false`.
+Set `variant=&quot;panel&quot;` for content that makes its own purpose clear, such as an account panel of notifications and settings. A panel has no visible title or close button, but `title` still names it for screen readers.
 
-Set `triggerInitials` to open the popover from a circular button showing a person&#39;s initials. `trigger` then supplies only the button&#39;s accessible name, so describe what it opens. Set `triggerIndicator` to add an attention dot, such as for unread notifications. Breeze describes the dot to assistive technology with the provider&#39;s unread-items message; the dot itself is decorative. Applications that know the count can include it in `trigger`, for example &quot;Account and notifications, 2 unread&quot;.
+A panel&#39;s content runs edge to edge with no padding. The panel is at least 336px wide and grows to fit its content; on narrow screens it spans the viewport, less 12px on each side. It closes with Escape or a click outside it.
+
+### Initials and unread indicator
+
+Set `triggerInitials` to open the popover from a circular button showing a person&#39;s initials. `trigger` then becomes the button&#39;s accessible name only, so describe what it opens.
+
+Set `triggerIndicator` to add a dot to the button, for example for unread notifications. Screen readers announce the provider&#39;s unread-items message rather than the dot itself. If you know the count, include it in `trigger`, for example &quot;Account and notifications, 2 unread&quot;.
 
 ```tsx
 &lt;Popover
@@ -8243,13 +8349,15 @@ Set `triggerInitials` to open the popover from a circular button showing a perso
 
 &lt;Canvas of={Stories.AccountPanel} /&gt;
 
-## Accessibility and motion
+## Inside a drawer
 
-Breeze manages focus on opening and restores it on closing without trapping focus inside the popover. The provider&#39;s portal host keeps the surface&#39;s locale, direction and scoped styles intact.
+A popover opened inside a `Drawer` appears above it, and the drawer stays interactive and keeps its dimmed backdrop. Escape closes the popover first and returns focus to its button; pressing Escape again closes the drawer. See the `Foundations/Overlay stack` stories for examples.
 
-Inside a drawer, a popover appears above the sheet while its content remains interactive and accessible. The sheet keeps its scrim. Escape closes the popover first and restores focus to its trigger; a subsequent Escape closes the sheet. The `Foundations/Overlay stack` stories exercise this composition.
+## Accessibility
 
-Enter and exit motion respects reduced-motion preferences. A closing surface immediately leaves the active stack while its exit animation completes.
+Opening the popover moves focus into it, and closing it returns focus to the button. Focus is not trapped, so people can Tab out of the popover to the rest of the page. The popover&#39;s DOM is rendered in a portal, but it stays in your React tree and keeps the provider&#39;s locale and text direction.
+
+The open and close animations respect the user&#39;s reduced-motion setting. As soon as a popover starts to close, the content beneath it becomes interactive again, without waiting for the animation to finish.
 
 ## API
 
@@ -9124,98 +9232,119 @@ import * as Stories from &#39;./RowList.stories&#39;;
 
 # RowList
 
-`RowList` displays data as actionable rows with aligned leading, metadata and
-trailing regions. It uses grid-list semantics and has no column headers.
+`RowList` displays data as a list of rows that people can act on, such as
+transactions or documents. Each row has a leading label, optional metadata and
+a trailing value, aligned in columns across the list. The list has no column
+headers.
 
 &lt;Canvas of={Stories.Default} /&gt;
 
-## Describe each row
+## Row content
 
-Pass application values through `items` and return a closed
-`RowListItemDescriptor` from `getItem`. Each descriptor has a stable `id` and a
-visible `label`. It may also include a `description`, `icon`, `badge`, or
-`disabled` state. `metadata` accepts text or an ISO calendar date. `value`
-accepts text or a currency amount, formatted with the provider locale. A
-currency `value` is passed to `Typography`, so a non-finite amount or a
-malformed currency code throws a `RangeError` when the row displays its value.
+Pass your data as `items` and a `getItem` function that returns a
+`RowListItemDescriptor` for each item:
 
-Use the optional `section` object to group rows under structural section
-headers. Keep each section ID stable when rows are appended or merged. Keep row
-IDs unique and stable so the focused row remains mounted as data changes.
+- `id` and `label` are required. Keep each `id` unique and stable, so the
+  focused row stays in place when the data changes.
+- `description`, `icon`, `badge` and `disabled` are optional.
+- `metadata` takes text or an ISO calendar date.
+- `value` takes text or a currency amount, formatted in the provider&#39;s locale.
+  A currency `value` is formatted by `Typography`, so a non-finite amount or a
+  malformed currency code throws a `RangeError` when the row is displayed.
+- `metadataAmount` adds a second, muted currency column, such as VAT, between
+  the metadata and the value. It is formatted like a currency `value`, without
+  `tone`.
 
-`metadataAmount` adds a second, muted currency cell, such as VAT, between the
-metadata and the value. It formats like a currency `value` without a tone.
-Each metadata column and the value column is reserved only when at least one
-row in the list uses it; otherwise the leading region extends into that space.
+A metadata or value column takes up space only when at least one row in the
+list uses it; otherwise the label extends into that space.
 
-## Summarise a section
+## Sections
 
-Set the section&#39;s optional `summary` to end its header with trailing content,
-read from the first row in each section. A currency summary takes the same
-fields as a currency `value`, shown at the header&#39;s 12px size, plus a `label`
-that is visually hidden and read before the amount, such as “Confirmed daily
-total”. Breeze does not add the amounts up; pass the total with its `tone` and
-`sign`. A text summary shows a muted note instead, such as “Not in the balance
-yet” for a section that has no total.
+Give rows a `section` object to group them under section headers. Keep each
+section `id` stable when rows are added or merged.
+
+Set the section&#39;s optional `summary` to show content at the end of its header.
+The summary is read from the first row in each section:
+
+- A currency summary takes the same fields as a currency `value`, shown at the
+  header&#39;s 12px size, plus a `label` that screen readers announce before the
+  amount, such as “Confirmed daily total”. The list does not add up the amounts
+  for you; pass the total with its `tone` and `sign`.
+- A text summary shows a muted note instead, such as “Not in the balance yet”
+  for a section without a total.
 
 &lt;Canvas of={Stories.Money} /&gt;
 
-## Phone layout
+## Money in and out
 
-Below Breeze&#39;s medium breakpoint the value stays at the end of the row, the
-metadata columns are hidden, and a row&#39;s badge moves under its description so
-the label keeps the full width. Keep anything essential in the label,
-description or value.
+Currency values use the compact `amount` role from `Typography`, in the
+default text colour. For money in, set `tone: &#39;positive&#39;` and `sign: &#39;always&#39;`
+to show an explicit `+`; negative amounts use a true minus sign. `sign` works as
+it does in `Typography`.
 
-&lt;Canvas of={Stories.Phone} /&gt;
-
-## Show money in and out
-
-Currency values use the compact `amount` role in the default ink tone. Set
-`tone: &#39;positive&#39;` on money in and `sign: &#39;always&#39;` to show an explicit `+` or
-true minus; `sign` follows `Typography`. Set the row&#39;s `direction` to `in` or
-`out` to give its icon tile the positive or strong wash, and pair it with the
-`incoming` or `outgoing` icon. Without `direction` the tile is neutral. Colour
-is never the only signal: the sign and icon also carry the direction.
+Set a row&#39;s `direction` to `in` or `out` to colour its icon tile for money in
+or out, and pair it with the `incoming` or `outgoing` icon. Without
+`direction`, the tile is neutral. Colour is never the only signal: the sign and
+icon also show the direction.
 
 &lt;Canvas of={Stories.Activity} /&gt;
 
-## Activate rows
+## Phone layout
 
-`onAction` receives the activated row&#39;s application item from `items`, as
-`Select`, `ComboBox` and `ToggleGroup` do. React Aria supplies the
-grid-list keyboard interaction; use the arrow keys to move between rows and
-Enter or Space to activate the focused row.
+Below the `md` breakpoint, the value stays at the end of the row, the metadata
+columns are hidden, and a row&#39;s badge moves under its description so the label
+keeps the full width. Keep anything essential in the label, description or
+value.
+
+&lt;Canvas of={Stories.Phone} /&gt;
+
+## Row actions
+
+Each row is an action, not a selection: the list keeps no selection state.
+Activating a row calls `onAction` with that row&#39;s item from `items`.
 
 &lt;Canvas of={Stories.Merging} /&gt;
 
-## Loading and empty results
+## Loading
 
-Set the top-level `loading` flag while fetching initial data or refreshing. An
-empty grid shows three quiet skeleton rows and one loading announcement. A
-populated grid keeps its rows and focus while loading, with the announcement
-outside the grid.
+Set `loading` while fetching the first page of data or refreshing it:
+
+- An empty list shows three placeholder rows, and screen readers hear a single
+  loading announcement.
+- A list that already has rows keeps them, along with the focused row, while
+  loading.
 
 &lt;Canvas of={Stories.InitialLoading} /&gt;
 
 &lt;Canvas of={Stories.RetainedLoading} /&gt;
 
-Completed empty results display the provider-localized “No items to display.”
-message inside the structural grid row and cell. The single persistent polite
-status announces the same message.
-
-&lt;Canvas of={Stories.Empty} /&gt;
-
-`RowListItemDescriptor.loading` only replaces a row&#39;s optional metadata and
-value with quiet placeholders; its label, description, icon, badge, and action
-remain. The Loading example shows this state alongside a separately busy named
-pagination button.
+To show that a single row is still loading, set `loading` in its
+`RowListItemDescriptor`. Its metadata and value are replaced with placeholders,
+while its label, description, icon, badge and action stay available. This
+example also shows a busy Load more button.
 
 &lt;Canvas of={Stories.Loading} /&gt;
 
-Pass a named `loadMore` action when another page is available. Its button keeps
-its label while busy, and its status shares the single live loading message
-without re-announcing existing rows.
+### Loading more rows
+
+Pass `loadMore` with a `label`, `onAction` and optional `loading` when another
+page of data is available. The button keeps its label while busy, and screen
+readers hear the same loading announcement as the list, without the existing
+rows being read again.
+
+## Empty list
+
+When loading finishes with no rows, the list shows the provider&#39;s “No items to
+display.” message, and screen readers announce it.
+
+&lt;Canvas of={Stories.Empty} /&gt;
+
+## Accessibility
+
+Give the list an `aria-label`, which is required. The list is a single Tab
+stop: use the arrow keys to move between rows, and Enter to activate the
+focused row. Screen readers announce loading and empty states once,
+through a single status message.
 
 ## API
 
@@ -9238,9 +9367,9 @@ without re-announcing existing rows.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Select</h2>
       <div class="badges">
-        <label for="c-31-forms-select-props" class="badge ok as-toggle">18 prop types</label>
+        <label for="c-31-forms-select-props" class="badge ok as-toggle">19 prop types</label>
         
-        <label for="c-31-forms-select-stories" class="badge ok as-toggle">9 stories</label>
+        <label for="c-31-forms-select-stories" class="badge ok as-toggle">10 stories</label>
         <label for="c-31-forms-select-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
@@ -9267,7 +9396,7 @@ without re-announcing existing rows.
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
-              <span class="badge ok">18 prop types</span>
+              <span class="badge ok">19 prop types</span>
             </div>
             <pre><code>Component: src/primitives/Select/Select.tsx::Select</code></pre>
             <pre><code>Props:</code></pre>
@@ -9336,6 +9465,11 @@ loading?: boolean = false
  * Sets the submitted name of the control.
  */
 name?: string
+
+/**
+ * Reports that focus has left the field, without exposing a DOM event.
+ */
+onBlur?: (() =&gt; void)
 
 /**
  * Reports the next selected item without exposing a DOM event.
@@ -9510,6 +9644,15 @@ value?: T | null</code></pre>
               <div class="hint">The application owns the selected item and receives semantic changes.</div>
               <pre><code>const Controlled = () =&gt; &lt;ControlledExample /&gt;;</code></pre>
             </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Blur</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">`onBlur` reports each time focus leaves the field.</div>
+              <pre><code>const Blur = () =&gt; &lt;BlurExample /&gt;;</code></pre>
+            </div>
         </div>
     
         <div class="panel panel-docs">
@@ -9529,33 +9672,40 @@ import * as Stories from &#39;./Select.stories&#39;;
 
 # Select
 
-`Select` is a fixed-choice field. Its visible control opens a popover listbox
-and participates in browser forms and autofill.
+`Select` lets people choose one option from a fixed list, shown in a popover
+when they press the field. It works with browser forms and autofill.
 
 &lt;Canvas of={Stories.Default} /&gt;
 
-## Descriptor content
+## Options
 
-Pass `items` and a `getItem` mapping function. The mapping returns the closed
-`ItemDescriptor` data contract: `id`, `label`, optional `description`, `icon`,
-`badge` and `disabled`. It cannot return JSX, classes, styles or slot props.
-If an item needs content outside that contract, extend Breeze deliberately rather
-than reopening a markup escape hatch.
+Pass your data as `items` and a `getItem` function that describes each item.
+`getItem` returns an `ItemDescriptor`:
+
+- `id` and `label` are required.
+- `description`, `icon`, `badge` and `disabled` are optional.
+
+Options show only this content; you cannot pass custom JSX, class names or
+styles.
 
 &lt;Canvas of={Stories.Description} /&gt;
 
-The trigger shows the selected item&#39;s label and, when the descriptor has one,
-its badge at the end of the control. The badge is part of the announced value,
-as it is for the option.
+## Selected badge
+
+When the selected item has a badge, the field shows it after the label. Screen
+readers announce the badge as part of the value, as they do for the option.
 
 &lt;Canvas of={Stories.SelectedBadge} /&gt;
 
 ## States
 
-`required`, `disabled` and `readOnly` map to the field&#39;s accessible semantics. A
-non-empty `error` marks the field invalid; there is no separate `invalid` prop.
-`loading` preserves the control shape and prevents interaction until the value
-is available.
+`required` and `disabled` behave as they do on a native form control. Set
+`readOnly` to prevent the choice from changing; the field stays focusable and
+its value is still submitted with the form. Pass a non-empty `error` to mark
+the field invalid and show the message; there is no separate `invalid` prop.
+
+Set `loading` while the value is not yet available. The field keeps its shape
+and cannot be changed until loading ends.
 
 &lt;Canvas of={Stories.Error} /&gt;
 
@@ -9565,18 +9715,30 @@ is available.
 
 &lt;Canvas of={Stories.Loading} /&gt;
 
-## Controlled values
+## Controlled
 
-Provide both `value` and `onChange` for controlled usage. The callback receives
-the selected item or `null`, never a DOM event. Use `defaultValue` and an
-optional `onChange` for uncontrolled usage; the two forms cannot be mixed.
+To control the value, pass both `value` and `onChange`. `onChange` receives the
+selected item from `items`, or `null`, not a DOM event. For an uncontrolled
+field, pass `defaultValue` and optionally `onChange`. Controlled and
+uncontrolled props cannot be combined.
 
 &lt;Canvas of={Stories.Controlled} /&gt;
 
+## Blur
+
+`onBlur` reports that focus has left the field, for example to show a
+validation error only once the user has moved on. Like `onChange`, it receives
+no DOM event. It reports once when focus leaves the whole field: opening the
+listbox and choosing an option do not count.
+
+&lt;Canvas of={Stories.Blur} /&gt;
+
 ## Accessibility
 
-The visible label names the control, while descriptions and errors are announced
-with the field. Keyboard navigation and focus management are built in.
+The visible label names the field, and screen readers announce the description
+and any error with it. The list can be opened and an option chosen entirely
+with the keyboard, and focus moves between the field and the list
+automatically.
 
 ## API
 
@@ -9702,19 +9864,21 @@ import * as Stories from &#39;./Separator.stories&#39;;
 
 # Separator
 
-`Separator` draws the one-token line used between related regions.
+`Separator` draws a thin line between related regions, such as sections of a panel. It is horizontal by default.
 
 &lt;Canvas of={Stories.Horizontal} /&gt;
 
 ## Vertical separators
 
-A vertical separator stretches to the height of its row. Place it directly inside an `Inline`, or as a `Grid` item, between the regions it divides; it overrides the row&#39;s alignment, so the default centred `Inline` still produces a full-height divider. Outside a flex or grid row it has no height.
+Set `orientation=&quot;vertical&quot;` to divide items in a row. Place the separator directly inside an `Inline`, or as a `Grid` item, between the regions it divides. It stretches to the full height of the row, even when the `Inline` centres its other items.
+
+A vertical separator needs a row to take its height from, so it is not visible outside an `Inline` or `Grid`.
 
 &lt;Canvas of={Stories.Vertical} /&gt;
 
 ## Accessibility
 
-The component exposes `role=&quot;separator&quot;` and the selected orientation.
+Screen readers recognise the line as a separator and are told its orientation.
 
 ## API
 
@@ -9852,17 +10016,17 @@ import * as Stories from &#39;./Skeleton.stories&#39;;
 
 # Skeleton
 
-`Skeleton` represents content while it loads. Unlike layout primitives, its block and inline dimensions deliberately accept arbitrary CSS lengths so it can match the content it replaces.
+`Skeleton` is a placeholder shown in place of content while it loads. Set `shape` to `text` (default), `rectangle` or `circle`, and `inlineSize` (width) and `blockSize` (height) to match the content it replaces. Both accept any CSS length, such as `120` or `&#39;60%&#39;`.
 
 &lt;Canvas of={Stories.Shapes} /&gt;
 
 ## Backgrounds
 
-Skeletons use the sunken fill, as the design does. Place them on surface or canvas backgrounds: in the dark appearance the sunken and raised fills are the same colour, so a skeleton on a raised background disappears.
+Place skeletons on the page background or a standard surface. Avoid raised surfaces: in dark mode, a skeleton has the same colour as a raised surface and is not visible on it.
 
 ## Accessibility
 
-Supply `label` when the skeleton owns the loading announcement. Omit it when a parent component already announces loading; the skeleton is then hidden from assistive technology.
+Pass `label` when the skeleton is the only indication that content is loading; screen readers announce it. Omit `label` when a parent component already announces loading, so the announcement is not repeated. The skeleton is then hidden from assistive technology.
 
 ## API
 
@@ -9976,15 +10140,15 @@ import * as Stories from &#39;./SkipLink.stories&#39;;
 
 # SkipLink
 
-`SkipLink` is visually hidden until it receives keyboard focus. It uses the nearest `BreezeProvider` message for its accessible name and language.
+`SkipLink` lets keyboard users jump past repeated content, such as navigation, straight to the main content. It is hidden until it receives keyboard focus, so render it first on the page, where it is the first Tab stop. Its text, “Skip to main content”, comes from the provider&#39;s `skipToMain` message.
 
 &lt;Canvas of={Stories.KeyboardNavigation} /&gt;
 
-## Choose a focusable target
+## Target
 
-Set `targetId` to the `id` of the page&#39;s main content landmark. Give that target `tabIndex={-1}` so it can receive programmatic focus without adding it to the ordinary Tab order. The target ID must be unique in the document.
+Set `targetId` to the `id` of the page&#39;s main content element. The `id` must be unique in the document. Give the target `tabIndex={-1}`, so the link can move focus to it without adding it to the normal Tab order.
 
-`ApplicationShell` renders this link first and generates a unique, focusable main target for its children.
+If you use `ApplicationShell`, you do not need to add a `SkipLink`: the shell includes one and a focusable main content target.
 
 ## API
 
@@ -10127,21 +10291,23 @@ import * as Stories from &#39;./Stack.stories&#39;;
 
 # Stack
 
-`Stack` arranges related content vertically. Choose `gap` from the 4px Breeze spacing scale and use `horizontalAlign` to align the children across the row axis.
+`Stack` arranges related content in a column. Set `gap` to choose the spacing from the 4px Breeze spacing scale, and `horizontalAlign` to align the children horizontally.
 
 &lt;Canvas of={Stories.Default} /&gt;
 
 ## Alignment
 
-The default stretches children. Use `start`, `center` or `end` when their intrinsic width should be retained.
+By default, children stretch to the full width of the stack. Set `horizontalAlign` to `start`, `center` or `end` to keep each child at its natural width.
 
 &lt;Canvas of={Stories.Centred} /&gt;
 
+## Loading
+
+`Stack` has no loading state of its own. Show loading inside each item, using components with a `loading` prop or a `Skeleton` sized like the final content, so the spacing stays the same when the content arrives.
+
 ## Accessibility
 
-The default `div` adds no semantics. Select `main`, `nav` or `section` only when the content has that meaning, and label landmarks or regions with `aria-label`.
-
-Loading belongs to the items inside the stack. Compose loading-capable children or explicit `Skeleton` elements so placeholders match the final vertical rhythm.
+`Stack` renders a `div` by default, which adds no meaning for assistive technology. Set `element` to `main`, `nav` or `section` only when the content has that meaning, and name landmarks or regions with `aria-label`.
 
 ## API
 
@@ -10313,28 +10479,21 @@ import * as Stories from &#39;./StatePanel.stories&#39;;
 
 # StatePanel
 
-`StatePanel` presents application-owned copy for an empty or failed content
-state as a labelled section.
-
-The section is not a live region. Applications own any dynamic announcements
-needed when content changes.
-
-When `StatePanel` owns the page&#39;s primary action, omit that action from the page
-header so the page does not show duplicate calls to action.
+`StatePanel` explains why there is no content to show, either because there is nothing yet or because loading it failed. Pass a `title`, a `description` and a `variant` of `empty` or `error`, with an optional action.
 
 ## Empty states
 
-Provide the title and explanation your application owns. An empty state may omit
-an action or offer one primary action.
+Use `variant=&quot;empty&quot;` when there is no content yet. Add an `action`, such as creating the first item, when there is an obvious next step.
 
 &lt;Canvas of={Stories.Empty} /&gt;
 
 &lt;Canvas of={Stories.EmptyWithAction} /&gt;
 
+If the panel shows the page&#39;s primary action, leave that action out of the page header so it does not appear twice.
+
 ## Error states
 
-An error recovery action is optional. When supplied, its label and callback are
-required together, and activating it must perform the recovery work.
+Use `variant=&quot;error&quot;` when content could not be loaded. To let people retry, pass an `action` whose `onAction` performs the recovery.
 
 &lt;Canvas of={Stories.Error} /&gt;
 
@@ -10342,11 +10501,13 @@ required together, and activating it must perform the recovery work.
 
 ## Icon
 
-The panel selects a brand document icon for empty states and a danger warning
-icon for errors. Set `icon` to another curated Breeze icon when that better
-describes the content.
+Empty states show a document icon in the brand colour, and error states a warning icon in the danger colour. Set `icon` to another Breeze icon when it better describes the content.
 
 &lt;Canvas of={Stories.CustomIcon} /&gt;
+
+## Accessibility
+
+The panel is a section labelled by its title. It is not a live region, so when it replaces content dynamically, announce the change yourself if people need to hear it.
 
 ## API
 
@@ -10602,39 +10763,36 @@ import * as Stories from &#39;./StatStrip.stories&#39;;
 
 # StatStrip
 
-`StatStrip` presents headline currency figures, such as a balance and the VAT
-owed, as labelled cells in one panel. It reads as a named group containing a
-description list, so each label is announced with its figure.
+`StatStrip` shows a few headline currency figures, such as a balance and the VAT owed, as labelled cells in one panel.
 
 &lt;Canvas of={Stories.Overview} /&gt;
 
-## Describe each figure
+## Figures
 
-Pass application values through `items` and return a closed
-`StatStripItemDescriptor` from `getItem`. Each descriptor has a stable `id`, a
-visible `label`, and a `value` with its `currency`. The value is formatted by
-`Typography`&#39;s `money` role for the provider locale, with a minus sign for
-negative amounts; a non-finite value or a malformed currency code throws a
-`RangeError`.
+Pass your data as `items`, and use `getItem` to return a `StatStripItemDescriptor` for each one:
 
-An optional `badge` follows the label to show the figure&#39;s scope, such as the
-VAT scheme. It takes the same `children`, `variant` and `aria-label` fields as a
-collection item&#39;s badge.
+- `id`: a stable identifier;
+- `label`: the visible name of the figure;
+- `value` and `currency`: the amount and its ISO 4217 currency code;
+- `badge` (optional): a badge after the label showing the figure&#39;s scope, such as the VAT scheme. It accepts `children`, `variant` and `aria-label`.
+
+Amounts are formatted as currency for the provider locale, with a minus sign for negative amounts. A non-finite `value` or a malformed currency code, one that is not three letters, throws a `RangeError`. Codes are not checked against ISO 4217, so an unknown well-formed code is displayed as written. If you need to limit the currencies shown, validate the codes before passing them in.
 
 ## Loading
 
-Set `loading` to replace the figures with three skeleton cells shaped like the
-labels and figures they stand in for. `items` and `getItem` are optional while
-loading.
+Set `loading` to show three placeholder cells shaped like labels and figures. `items` and `getItem` are optional while loading.
 
 &lt;Canvas of={Stories.Loading} /&gt;
 
 ## Phone layout
 
-Below Breeze&#39;s medium breakpoint the cells stack in one column, with a divider
-above each cell after the first.
+Below 901px, the cells stack in a single column with a divider between them.
 
 &lt;Canvas of={Stories.Phone} /&gt;
+
+## Accessibility
+
+The panel is a group named by the required `aria-label`. Its figures form a description list, so screen readers announce each label with its amount.
 
 ## API
 
@@ -10657,9 +10815,9 @@ above each cell after the first.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> TextField</h2>
       <div class="badges">
-        <label for="c-38-forms-textfield-props" class="badge ok as-toggle">18 prop types</label>
+        <label for="c-38-forms-textfield-props" class="badge ok as-toggle">19 prop types</label>
         
-        <label for="c-38-forms-textfield-stories" class="badge ok as-toggle">8 stories</label>
+        <label for="c-38-forms-textfield-stories" class="badge ok as-toggle">9 stories</label>
         <label for="c-38-forms-textfield-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
@@ -10686,7 +10844,7 @@ above each cell after the first.
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
-              <span class="badge ok">18 prop types</span>
+              <span class="badge ok">19 prop types</span>
             </div>
             <pre><code>Component: src/primitives/TextField/TextField.tsx::TextField</code></pre>
             <pre><code>Props:</code></pre>
@@ -10745,6 +10903,11 @@ loading?: boolean = false
  * Sets the submitted name of the input.
  */
 name?: string
+
+/**
+ * Reports that focus has left the field, without exposing a DOM event.
+ */
+onBlur?: (() =&gt; void)
 
 /**
  * Reports the next text value without exposing a DOM event.
@@ -10870,6 +11033,15 @@ value?: string</code></pre>
               <div class="hint">The application owns the value and receives semantic string changes.</div>
               <pre><code>const Controlled = () =&gt; &lt;ControlledExample /&gt;;</code></pre>
             </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Blur</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">`onBlur` reports each time focus leaves the field.</div>
+              <pre><code>const Blur = () =&gt; &lt;BlurExample /&gt;;</code></pre>
+            </div>
         </div>
     
         <div class="panel panel-docs">
@@ -10892,16 +11064,17 @@ import * as Stories from &#39;./TextField.stories&#39;;
 
 # TextField
 
-`TextField` is a closed, single-line text input. Its `label`, optional
-`description` and optional `error` are flat props, so applications do not need
-to compose field parts or provide an escape hatch.
+`TextField` is a single-line text input with a label. Pass `label`, and
+optionally `description` and `error`, as props; there are no separate field
+parts to assemble.
 
 &lt;Canvas of={Stories.Default} /&gt;
 
-## Supporting text and errors
+## Description and errors
 
-Use `description` for guidance. A non-empty `error` marks the field invalid and
-associates the message with the native input. There is no separate invalid prop.
+Use `description` for guidance about what to enter. Pass a non-empty `error`
+to mark the field invalid and show the message; there is no separate `invalid`
+prop.
 
 &lt;Canvas of={Stories.Description} /&gt;
 
@@ -10909,9 +11082,11 @@ associates the message with the native input. There is no separate invalid prop.
 
 ## States
 
-`required`, `disabled` and `readOnly` map to the corresponding accessible input
-semantics. `loading` keeps the field&#39;s shape, announces the provider loading
-message and prevents interaction until it is removed.
+`required`, `disabled` and `readOnly` behave as they do on a native input.
+
+Set `loading` while the value is not yet available. The field keeps its shape,
+screen readers announce the provider&#39;s loading message, and the field cannot be
+edited until loading ends.
 
 &lt;Canvas of={Stories.Required} /&gt;
 
@@ -10921,19 +11096,27 @@ message and prevents interaction until it is removed.
 
 &lt;Canvas of={Stories.Loading} /&gt;
 
-## Controlled values
+## Controlled
 
-Provide both `value` and `onChange` for controlled usage. The callback receives
-the next string value, never a DOM event. Use `defaultValue` and an optional
-`onChange` for uncontrolled usage; the two forms cannot be mixed.
+To control the value, pass both `value` and `onChange`. `onChange` receives the
+new string, not a DOM event. For an uncontrolled field, pass `defaultValue` and
+optionally `onChange`. Controlled and uncontrolled props cannot be combined.
 
 &lt;Canvas of={Stories.Controlled} /&gt;
 
+## Blur
+
+`onBlur` reports that focus has left the field, for example to show a
+validation error only once the user has moved on. Like `onChange`, it receives
+no DOM event.
+
+&lt;Canvas of={Stories.Blur} /&gt;
+
 ## Accessibility
 
-The visible label names the native input. Descriptions and errors are announced
-through React Aria&#39;s field relationships, and the field exposes its native
-input through `ref`.
+The visible label names the input, and screen readers announce the description
+and any error with it. Use `ref` to reach the native input, for example to
+focus it.
 
 ## API
 
@@ -11099,11 +11282,15 @@ import * as Stories from &#39;./Toast.stories&#39;;
 
 # Toast
 
-`Toast` is a presentational positive confirmation card. It announces a completed action with `role=&quot;status&quot;` and never moves focus. A `Toast` rendered directly stays mounted until its owner removes it; `useToast` supplies the provider-owned queue that expires each visible confirmation after 2.6 seconds.
+A toast is a short confirmation that an action has completed, such as “Changes saved”. Screen readers announce it, and it never moves focus.
+
+In most cases, show toasts with the `useToast` hook, which displays each message for 2.6 seconds. A `Toast` you render yourself stays on screen until you remove it.
 
 &lt;Canvas of={Stories.Default} /&gt;
 
-Use `useToast` below `BreezeProvider` to enqueue a translated message:
+## Showing a toast
+
+Call `useToast` in a component below `BreezeProvider`. It returns a function that shows a message; pass text already translated into the user&#39;s language.
 
 ```tsx
 import { Button, useToast } from &#39;@motech-development/breeze-ui&#39;;
@@ -11117,17 +11304,19 @@ function SaveAction() {
 }
 ```
 
-The provider renders up to three confirmations at once and queues additional messages in FIFO order. Set `toastLimit` on `BreezeProvider` when the application needs a different visible limit.
+Up to three toasts are shown at once. Further messages wait and appear in the order they were sent, as earlier ones expire. Set `toastLimit` on `BreezeProvider` to change how many are shown at once.
 
 &lt;Canvas of={Stories.Enqueued} /&gt;
 
-The card stays 288px wide on desktop and mobile, aligned to the content gutter below the top bar. Provider-enqueued confirmations have no action, dismiss or undo control.
+## Layout
+
+A toast is 288px wide on both desktop and mobile, and appears below the top bar, aligned with the page content. Toasts shown with `useToast` have no action, dismiss or undo button.
 
 &lt;Canvas of={Stories.Mobile} /&gt;
 
 ## Accessibility
 
-`Toast` is a non-interactive status. It has no tab stop and handles no keyboard events: Tab and Shift+Tab continue normal document movement while skipping the card, Escape does not dismiss it, and provider-enqueued confirmations do not move focus.
+Screen readers announce each toast as a status message without interrupting the user. A toast cannot be focused or dismissed: Tab and Shift+Tab skip it, Escape does not close it, and focus stays where it was.
 
 ## API
 
@@ -11343,16 +11532,17 @@ import * as Stories from &#39;./Toggle.stories&#39;;
 
 # Toggle
 
-`Toggle` represents an on/off choice as a button. Its pressed state is exposed
-with `aria-pressed`. Use a `Checkbox` when the choice belongs in a form.
+`Toggle` is a button that switches something on or off, such as a filter.
+Use a `Checkbox` instead when the choice belongs in a form.
 
 &lt;Canvas of={Stories.Default} /&gt;
 
 ## Pressed state
 
-Use `defaultPressed` for an uncontrolled toggle, or `pressed` and `onChange` when
-the application owns the state. The callback receives the next pressed value.
-Choose one of these state approaches for each toggle.
+For an uncontrolled toggle, set `defaultPressed` to choose its starting state.
+To control it from your own state, pass both `pressed` and `onChange`.
+`onChange` receives the new pressed value. Controlled and uncontrolled props
+cannot be combined.
 
 &lt;Canvas of={Stories.Pressed} /&gt;
 
@@ -11360,26 +11550,30 @@ Choose one of these state approaches for each toggle.
 
 ## Loading
 
-Set `loading` while saving a choice. A skeleton replaces the visible label while
-the button keeps its name and width. Activation resumes when loading clears.
+Set `loading` while saving a choice. A placeholder replaces the visible label,
+and the button keeps its name and width. It cannot be pressed until loading
+ends.
 
 &lt;Canvas of={Stories.Loading} /&gt;
 
-## Sizes and disabled state
+## Sizes
 
 `size` accepts `sm`, `md` (default) or `lg`, with minimum heights of 34, 38 and
-52px. Touch targets are at least 44px. Disabled toggles cannot be
-activated.
+52px. On touch devices, every size has a target of at least 44px.
 
 &lt;Canvas of={Stories.Sizes} /&gt;
+
+## Disabled
+
+Set `disabled` to prevent the toggle from being pressed.
 
 &lt;Canvas of={Stories.Disabled} /&gt;
 
 ## Accessibility
 
-The visible label names the button. `aria-label`, `aria-labelledby` and
-`aria-describedby` support alternate and supplemental names. The button exposes
-its pressed state and supports keyboard activation.
+The visible label names the button, and screen readers announce whether it is
+pressed. Use `aria-label` or `aria-labelledby` to give it a different name, and
+`aria-describedby` to add a description. Press Space or Enter to switch it.
 
 ## API
 
@@ -11614,53 +11808,58 @@ import * as Stories from &#39;./ToggleGroup.stories&#39;;
 
 # ToggleGroup
 
-`ToggleGroup` presents a single choice as connected segments. Each option is a
-button with an accessible pressed state. Press the selected option again to
-clear the selection.
+`ToggleGroup` is a segmented control: a row of connected buttons from which
+people choose one option, such as a time period. Pressing the selected option
+again clears the selection.
 
 &lt;Canvas of={Stories.Default} /&gt;
 
 ## Options
 
-Provide `items` and a `getItem` function that describes each option. Return a
-unique `id` and visible `label`. You can also provide a `description`, `icon`,
-`badge` or `disabled` flag. Disabled options cannot be selected.
+Pass your data as `items` and a `getItem` function that describes each option.
+Return a unique `id` and a visible `label`, and optionally a `description`,
+`icon`, `badge` or `disabled` flag. Disabled options cannot be selected.
 
 &lt;Canvas of={Stories.DisabledOption} /&gt;
 
-## Controlled selection
+## Controlled
 
-Use `defaultSelected` with an optional `onChange` for uncontrolled use. Provide
-`selected` and `onChange` when the application owns state. The callback receives
-the selected item, or `null` when the choice is cleared. Choose one of these
-state approaches for each group.
+For an uncontrolled group, pass `defaultSelected` and optionally `onChange`. To
+control the selection from your own state, pass both `selected` and
+`onChange`. `onChange` receives the selected item from `items`, or `null` when
+the choice is cleared. Controlled and uncontrolled props cannot be combined.
 
 &lt;Canvas of={Stories.Controlled} /&gt;
 
 ## Loading
 
 Set `loading` while saving a selection. A slim loading bar replaces each
-option&#39;s content while its size and selected appearance stay in place. Changes
-resume when loading clears.
+option&#39;s content, while the options keep their size and the selected option
+stays highlighted. The selection cannot be changed until loading ends.
 
 &lt;Canvas of={Stories.Loading} /&gt;
 
 ## Full width
 
-Set `fullWidth` to stretch the group across its container and share the width
-equally between options, for example when the choice sits in a form.
+Set `fullWidth` to stretch the group across its container, sharing the width
+equally between options, for example in a form.
 
 &lt;Canvas of={Stories.FullWidth} /&gt;
 
-## Sizes and accessibility
+## Sizes
 
 `size` accepts `sm` (default), `md` or `lg`, giving the group a minimum height
-of 34, 38 or 52px to align with other controls of the same size. On coarse
-pointers every option is at least 44px tall to meet the touch-target minimum, so
-the `sm` and `md` groups grow to 50px. Give each group an `aria-label`; each
-option exposes whether it is pressed and supports keyboard interaction.
+of 34, 38 or 52px to line up with other controls of the same size. On touch
+devices, every option is at least 44px tall, so `sm` and `md` groups grow to
+50px.
 
 &lt;Canvas of={Stories.Sizes} /&gt;
+
+## Accessibility
+
+Give each group an `aria-label` that describes the choice. Screen readers
+announce whether each option is pressed, and options can be chosen with the
+keyboard.
 
 ## API
 
@@ -12328,29 +12527,42 @@ import * as Stories from &#39;./Typography.stories&#39;;
 
 # Typography
 
-`Typography` provides the money, amount, heading, title, body, caption, label and micro roles. Money uses negative tracking and tabular numerals. Set `numeric` on other figure text; interface text retains normal tracking.
+`Typography` displays text in one of the Breeze text styles, called roles: `money`, `amount`, `heading`, `title`, `body`, `caption`, `label` and `micro`. It also formats currency amounts and dates for the provider&#39;s locale.
 
 &lt;Canvas of={Stories.Roles} /&gt;
 
 ## Numeric figures
 
-Set `numeric` on figures outside the money role. They gain tabular numerals, negative tracking and logical end alignment without tightening interface headings.
+The `money` role is designed for figures: digits line up in columns and are spaced slightly tighter. Set `numeric` to give figures in any other role the same treatment; they are also aligned to the end of the line. Text without `numeric` keeps its normal spacing.
 
 &lt;Canvas of={Stories.FiguresAndInterfaceText} /&gt;
 
 ## Money and dates
 
-Pass semantic values with `format=&quot;currency&quot;` or `format=&quot;date&quot;`. Currency uses the `money` role for stat figures or the `amount` role, a semibold body-size figure, for row amounts. Dates use the exported `IsoCalendarDate` string contract. Formatting uses the nearest `BreezeProvider` locale. Currency signs retain that locale&#39;s placement and use a true minus character.
+Set `format=&quot;currency&quot;` or `format=&quot;date&quot;` and pass the raw value; it is formatted for the nearest `BreezeProvider` locale.
+
+- Currency uses the `money` role for headline figures, or the `amount` role, a semibold body-size figure, for amounts in rows. The sign follows the locale&#39;s placement and uses a true minus character.
+- Dates take an ISO calendar date string, typed as `IsoCalendarDate`, such as `2026-03-14`.
 
 &lt;Canvas of={Stories.Formatting} /&gt;
 
-By default, `sign=&quot;auto&quot;` signs negative amounts only. `sign=&quot;always&quot;` also signs positive amounts, and `sign=&quot;never&quot;` omits the sign for content that conveys direction another way. Zero is never signed, including negative zero and amounts that round to zero, so `-0.004` displays as `£0.00`.
+### Signs
 
-Calendar dates are formatted in UTC, so the displayed day never shifts. The provider&#39;s `timeZone` governs times of day and is not applied to calendar dates.
+`sign` controls the sign of a currency amount:
+
+- `auto` (default) shows a sign on negative amounts only.
+- `always` also shows `+` on positive amounts.
+- `never` hides the sign, for content that shows direction another way.
+
+Zero is never signed, including negative zero and amounts that round to zero, so `-0.004` displays as `£0.00`.
+
+### Dates and time zones
+
+Calendar dates always display the day you pass, whatever the user&#39;s time zone. The provider&#39;s `timeZone` is not applied to them.
 
 ### Invalid values
 
-An invalid money value is a programming error, so `Typography` throws a `RangeError` that names it instead of displaying a misleading figure:
+An invalid currency value throws a `RangeError` naming the problem, rather than displaying a misleading figure:
 
 - `currency` must be a well-formed three-letter code, such as `GBP`. Codes are
   not checked against ISO 4217, so an unknown well-formed code is displayed as
@@ -12358,19 +12570,17 @@ An invalid money value is a programming error, so `Typography` throws a `RangeEr
 - `value` must be a finite number. `NaN` and `Infinity` are rejected.
 - An invalid `locale` is rejected by `BreezeProvider` before any value is formatted, so it is never reported as a currency error.
 
-Validate or convert untrusted amounts before rendering them. A calendar-invalid date, such as `2026-02-30`, is displayed unchanged.
-
-No separate formatting components are exported.
-
-## Accessibility
-
-Choose the `element` for document semantics; the visual role does not force a heading level. Do not use colour alone to communicate direction or status.
+Validate or convert untrusted amounts before rendering them. A date that does not exist, such as `2026-02-30`, is displayed as written.
 
 ## Loading
 
-Set `loading` to preserve the text&#39;s place while its value is unavailable.
+Set `loading` while the value is not yet available. A placeholder keeps the text&#39;s place.
 
 &lt;Canvas of={Stories.Loading} /&gt;
+
+## Accessibility
+
+Each role renders a default element: `heading` renders an `h2`, `title` an `h3`, `body` a `p` and the other roles a `span`. Set `element` to match your page structure, for example `element=&quot;h1&quot;` for the page heading. Do not use colour alone to show direction or status.
 
 ## API
 
@@ -12479,11 +12689,13 @@ import * as Stories from &#39;./VisuallyHidden.stories&#39;;
 
 # VisuallyHidden
 
-Use `VisuallyHidden` when essential wording would duplicate an adjacent visual cue, such as the name of an icon-only control.
+`VisuallyHidden` hides its content visually while keeping it available to screen readers. Use it for text that sighted users get from a visual cue instead, such as the name of an icon-only control.
 
 &lt;Canvas of={Stories.IconLabel} /&gt;
 
-Do not use it to hide focusable content or information sighted users also need.
+## Accessibility
+
+Do not use it to hide focusable content, such as links or buttons, or information that sighted users also need.
 
 ## API
 
@@ -13040,7 +13252,7 @@ import * as Stories from &#39;./ApplicationShell.stories&#39;;
 
 # ApplicationShell
 
-`ApplicationShell` provides the shared frame around an application&#39;s page content: a top bar, section navigation, a skip link and the main landmark. It accepts application-owned values and slot content without depending on an account or product domain.
+`ApplicationShell` is the frame around an application&#39;s pages. It renders a top bar, section navigation, a skip link and the main landmark, and adapts its navigation between desktop and mobile layouts.
 
 &lt;Canvas
   layout=&quot;fullscreen&quot;
@@ -13048,11 +13260,16 @@ import * as Stories from &#39;./ApplicationShell.stories&#39;;
   story={{ height: &#39;844px&#39;, inline: false }}
 /&gt;
 
-## Supply navigation values
+## Navigation items
 
-Pass application values through `items` and map each value to the supported navigation fields with `getItem`. Every item needs a stable `id`, destination `href` and visible `label`; `icon` may use a curated Breeze `IconName`. Set `currentItem` to the ID of the current destination. The matching link receives `aria-current=&quot;page&quot;`; in the top navigation it also carries the animated navigation marker, and in the bottom navigation its icon and label take the brand colour.
+Pass your navigation data as `items`, and use `getItem` to map each item to the fields the shell needs:
 
-For example, an application can adapt its own route model while keeping the shell generic:
+- `id`: a stable identifier;
+- `href`: the destination;
+- `label`: the visible text;
+- `icon` (optional): a Breeze `IconName`.
+
+Set `currentItem` to the `id` of the current destination. That link is marked with `aria-current=&quot;page&quot;`. In the top navigation it shows the navigation marker; in the bottom navigation its icon and label use the brand colour.
 
 ```tsx
 &lt;ApplicationShell
@@ -13073,17 +13290,27 @@ For example, an application can adapt its own route model while keeping the shel
 &lt;/ApplicationShell&gt;
 ```
 
-The anchors keep native link behavior. When a same-document router is configured on `BreezeProvider`, section navigation sends `transitionTypes: [&#39;nav&#39;]` to that router.
+Navigation items are regular links. When a router is configured on `BreezeProvider`, they navigate through it with `transitionTypes: [&#39;nav&#39;]`.
 
-## Provide the application slots
+## Slots
 
-`brand`, `context`, `notifications` and `account` accept `ReactNode`. Their content and semantics belong to the application: label interactive controls, keep keyboard behavior usable and provide accessible names for icon-only controls. `children` is rendered inside the shell&#39;s main landmark, stacked with a 16px gap. From Breeze&#39;s private `md` breakpoint (901px), a divider separates `brand` from `context`.
+`brand`, `context`, `notifications` and `account` accept any React content. Give interactive content accessible names, especially icon-only controls. From the 901px breakpoint, a divider separates `brand` from `context`.
 
-`action` is required. It renders as a circular, icon-only `IconButton`: `icon` selects curated Breeze artwork, `label` is its accessible name, and `onAction` performs the application-owned operation. Keyboard focus reaches it between the two halves of the bottom navigation.
+`children` is rendered inside the main landmark, stacked with a 16px gap.
 
-## Responsive behavior and motion
+## Primary action
 
-From Breeze&#39;s private `md` breakpoint (901px), navigation is horizontal beneath the top bar and scrolls horizontally when its links do not fit; a focused link scrolls into view. Below that breakpoint, the navigation is a 72px bar fixed to the bottom edge, and the required action is raised over the bar&#39;s top edge in a fixed centre slot between the two halves of the items. The centre slot keeps its position as the current page changes. The main content includes clearance for the bar, the raised action and the device safe area.
+`action` is required and renders as a circular, icon-only button:
+
+- `icon` selects a Breeze icon;
+- `label` is its accessible name;
+- `onAction` is called when it is activated.
+
+## Responsive layout
+
+At 901px and wider, navigation sits horizontally beneath the top bar. When the links do not fit, the row scrolls horizontally and a focused link scrolls into view.
+
+Below 901px, navigation becomes a 72px bar fixed to the bottom of the screen. The primary action is raised over the bar&#39;s top edge in a centre slot between the two halves of the items, and stays in place as the current page changes. The main content leaves room for the bar, the raised action and the device safe area.
 
 &lt;Canvas
   layout=&quot;fullscreen&quot;
@@ -13091,7 +13318,15 @@ From Breeze&#39;s private `md` breakpoint (901px), navigation is horizontal bene
   story={{ height: &#39;844px&#39;, inline: false }}
 /&gt;
 
-The shell renders one skip link before its chrome and gives its main landmark a generated unique ID and `tabIndex={-1}`. Its top bar, top navigation, bottom navigation and current marker participate in view transitions through Breeze&#39;s built-in singleton names. Mount one visible shell at a time so those names stay unique in the document.
+## View transitions
+
+The top bar, top navigation, bottom navigation and current-location marker take part in view transitions using Breeze UI&#39;s reserved shell roles. Render only one visible `ApplicationShell` at a time.
+
+## Accessibility
+
+- A skip link before the shell&#39;s chrome moves focus to the main landmark.
+- The current destination is announced as the current page.
+- On mobile, keyboard focus reaches the primary action between the two halves of the bottom navigation.
 
 ## API
 
@@ -13966,98 +14201,119 @@ import * as Stories from &#39;./RowList.stories&#39;;
 
 # RowList
 
-`RowList` displays data as actionable rows with aligned leading, metadata and
-trailing regions. It uses grid-list semantics and has no column headers.
+`RowList` displays data as a list of rows that people can act on, such as
+transactions or documents. Each row has a leading label, optional metadata and
+a trailing value, aligned in columns across the list. The list has no column
+headers.
 
 &lt;Canvas of={Stories.Default} /&gt;
 
-## Describe each row
+## Row content
 
-Pass application values through `items` and return a closed
-`RowListItemDescriptor` from `getItem`. Each descriptor has a stable `id` and a
-visible `label`. It may also include a `description`, `icon`, `badge`, or
-`disabled` state. `metadata` accepts text or an ISO calendar date. `value`
-accepts text or a currency amount, formatted with the provider locale. A
-currency `value` is passed to `Typography`, so a non-finite amount or a
-malformed currency code throws a `RangeError` when the row displays its value.
+Pass your data as `items` and a `getItem` function that returns a
+`RowListItemDescriptor` for each item:
 
-Use the optional `section` object to group rows under structural section
-headers. Keep each section ID stable when rows are appended or merged. Keep row
-IDs unique and stable so the focused row remains mounted as data changes.
+- `id` and `label` are required. Keep each `id` unique and stable, so the
+  focused row stays in place when the data changes.
+- `description`, `icon`, `badge` and `disabled` are optional.
+- `metadata` takes text or an ISO calendar date.
+- `value` takes text or a currency amount, formatted in the provider&#39;s locale.
+  A currency `value` is formatted by `Typography`, so a non-finite amount or a
+  malformed currency code throws a `RangeError` when the row is displayed.
+- `metadataAmount` adds a second, muted currency column, such as VAT, between
+  the metadata and the value. It is formatted like a currency `value`, without
+  `tone`.
 
-`metadataAmount` adds a second, muted currency cell, such as VAT, between the
-metadata and the value. It formats like a currency `value` without a tone.
-Each metadata column and the value column is reserved only when at least one
-row in the list uses it; otherwise the leading region extends into that space.
+A metadata or value column takes up space only when at least one row in the
+list uses it; otherwise the label extends into that space.
 
-## Summarise a section
+## Sections
 
-Set the section&#39;s optional `summary` to end its header with trailing content,
-read from the first row in each section. A currency summary takes the same
-fields as a currency `value`, shown at the header&#39;s 12px size, plus a `label`
-that is visually hidden and read before the amount, such as “Confirmed daily
-total”. Breeze does not add the amounts up; pass the total with its `tone` and
-`sign`. A text summary shows a muted note instead, such as “Not in the balance
-yet” for a section that has no total.
+Give rows a `section` object to group them under section headers. Keep each
+section `id` stable when rows are added or merged.
+
+Set the section&#39;s optional `summary` to show content at the end of its header.
+The summary is read from the first row in each section:
+
+- A currency summary takes the same fields as a currency `value`, shown at the
+  header&#39;s 12px size, plus a `label` that screen readers announce before the
+  amount, such as “Confirmed daily total”. The list does not add up the amounts
+  for you; pass the total with its `tone` and `sign`.
+- A text summary shows a muted note instead, such as “Not in the balance yet”
+  for a section without a total.
 
 &lt;Canvas of={Stories.Money} /&gt;
 
-## Phone layout
+## Money in and out
 
-Below Breeze&#39;s medium breakpoint the value stays at the end of the row, the
-metadata columns are hidden, and a row&#39;s badge moves under its description so
-the label keeps the full width. Keep anything essential in the label,
-description or value.
+Currency values use the compact `amount` role from `Typography`, in the
+default text colour. For money in, set `tone: &#39;positive&#39;` and `sign: &#39;always&#39;`
+to show an explicit `+`; negative amounts use a true minus sign. `sign` works as
+it does in `Typography`.
 
-&lt;Canvas of={Stories.Phone} /&gt;
-
-## Show money in and out
-
-Currency values use the compact `amount` role in the default ink tone. Set
-`tone: &#39;positive&#39;` on money in and `sign: &#39;always&#39;` to show an explicit `+` or
-true minus; `sign` follows `Typography`. Set the row&#39;s `direction` to `in` or
-`out` to give its icon tile the positive or strong wash, and pair it with the
-`incoming` or `outgoing` icon. Without `direction` the tile is neutral. Colour
-is never the only signal: the sign and icon also carry the direction.
+Set a row&#39;s `direction` to `in` or `out` to colour its icon tile for money in
+or out, and pair it with the `incoming` or `outgoing` icon. Without
+`direction`, the tile is neutral. Colour is never the only signal: the sign and
+icon also show the direction.
 
 &lt;Canvas of={Stories.Activity} /&gt;
 
-## Activate rows
+## Phone layout
 
-`onAction` receives the activated row&#39;s application item from `items`, as
-`Select`, `ComboBox` and `ToggleGroup` do. React Aria supplies the
-grid-list keyboard interaction; use the arrow keys to move between rows and
-Enter or Space to activate the focused row.
+Below the `md` breakpoint, the value stays at the end of the row, the metadata
+columns are hidden, and a row&#39;s badge moves under its description so the label
+keeps the full width. Keep anything essential in the label, description or
+value.
+
+&lt;Canvas of={Stories.Phone} /&gt;
+
+## Row actions
+
+Each row is an action, not a selection: the list keeps no selection state.
+Activating a row calls `onAction` with that row&#39;s item from `items`.
 
 &lt;Canvas of={Stories.Merging} /&gt;
 
-## Loading and empty results
+## Loading
 
-Set the top-level `loading` flag while fetching initial data or refreshing. An
-empty grid shows three quiet skeleton rows and one loading announcement. A
-populated grid keeps its rows and focus while loading, with the announcement
-outside the grid.
+Set `loading` while fetching the first page of data or refreshing it:
+
+- An empty list shows three placeholder rows, and screen readers hear a single
+  loading announcement.
+- A list that already has rows keeps them, along with the focused row, while
+  loading.
 
 &lt;Canvas of={Stories.InitialLoading} /&gt;
 
 &lt;Canvas of={Stories.RetainedLoading} /&gt;
 
-Completed empty results display the provider-localized “No items to display.”
-message inside the structural grid row and cell. The single persistent polite
-status announces the same message.
-
-&lt;Canvas of={Stories.Empty} /&gt;
-
-`RowListItemDescriptor.loading` only replaces a row&#39;s optional metadata and
-value with quiet placeholders; its label, description, icon, badge, and action
-remain. The Loading example shows this state alongside a separately busy named
-pagination button.
+To show that a single row is still loading, set `loading` in its
+`RowListItemDescriptor`. Its metadata and value are replaced with placeholders,
+while its label, description, icon, badge and action stay available. This
+example also shows a busy Load more button.
 
 &lt;Canvas of={Stories.Loading} /&gt;
 
-Pass a named `loadMore` action when another page is available. Its button keeps
-its label while busy, and its status shares the single live loading message
-without re-announcing existing rows.
+### Loading more rows
+
+Pass `loadMore` with a `label`, `onAction` and optional `loading` when another
+page of data is available. The button keeps its label while busy, and screen
+readers hear the same loading announcement as the list, without the existing
+rows being read again.
+
+## Empty list
+
+When loading finishes with no rows, the list shows the provider&#39;s “No items to
+display.” message, and screen readers announce it.
+
+&lt;Canvas of={Stories.Empty} /&gt;
+
+## Accessibility
+
+Give the list an `aria-label`, which is required. The list is a single Tab
+stop: use the arrow keys to move between rows, and Enter to activate the
+focused row. Screen readers announce loading and empty states once,
+through a single status message.
 
 ## API
 
@@ -14313,39 +14569,36 @@ import * as Stories from &#39;./StatStrip.stories&#39;;
 
 # StatStrip
 
-`StatStrip` presents headline currency figures, such as a balance and the VAT
-owed, as labelled cells in one panel. It reads as a named group containing a
-description list, so each label is announced with its figure.
+`StatStrip` shows a few headline currency figures, such as a balance and the VAT owed, as labelled cells in one panel.
 
 &lt;Canvas of={Stories.Overview} /&gt;
 
-## Describe each figure
+## Figures
 
-Pass application values through `items` and return a closed
-`StatStripItemDescriptor` from `getItem`. Each descriptor has a stable `id`, a
-visible `label`, and a `value` with its `currency`. The value is formatted by
-`Typography`&#39;s `money` role for the provider locale, with a minus sign for
-negative amounts; a non-finite value or a malformed currency code throws a
-`RangeError`.
+Pass your data as `items`, and use `getItem` to return a `StatStripItemDescriptor` for each one:
 
-An optional `badge` follows the label to show the figure&#39;s scope, such as the
-VAT scheme. It takes the same `children`, `variant` and `aria-label` fields as a
-collection item&#39;s badge.
+- `id`: a stable identifier;
+- `label`: the visible name of the figure;
+- `value` and `currency`: the amount and its ISO 4217 currency code;
+- `badge` (optional): a badge after the label showing the figure&#39;s scope, such as the VAT scheme. It accepts `children`, `variant` and `aria-label`.
+
+Amounts are formatted as currency for the provider locale, with a minus sign for negative amounts. A non-finite `value` or a malformed currency code, one that is not three letters, throws a `RangeError`. Codes are not checked against ISO 4217, so an unknown well-formed code is displayed as written. If you need to limit the currencies shown, validate the codes before passing them in.
 
 ## Loading
 
-Set `loading` to replace the figures with three skeleton cells shaped like the
-labels and figures they stand in for. `items` and `getItem` are optional while
-loading.
+Set `loading` to show three placeholder cells shaped like labels and figures. `items` and `getItem` are optional while loading.
 
 &lt;Canvas of={Stories.Loading} /&gt;
 
 ## Phone layout
 
-Below Breeze&#39;s medium breakpoint the cells stack in one column, with a divider
-above each cell after the first.
+Below 901px, the cells stack in a single column with a divider between them.
 
 &lt;Canvas of={Stories.Phone} /&gt;
+
+## Accessibility
+
+The panel is a group named by the required `aria-label`. Its figures form a description list, so screen readers announce each label with its amount.
 
 ## API
 
@@ -14950,7 +15203,7 @@ export function SaveAction() {
 
 ## Appearance
 
-Components follow the operating system colour scheme by default. Add `AppearanceControl` anywhere below the provider to let a person choose Light, Auto or Dark:
+Components follow the operating system colour scheme by default. Add `AppearanceControl` anywhere below the provider to let people choose Light, Auto or Dark:
 
 ```tsx
 import {
@@ -14976,11 +15229,11 @@ export function Root() {
 }
 ```
 
-The application owns persistence. Breeze reports changes and accepts an initial or controlled value, but never reads or writes browser storage.
+Breeze UI does not save the choice in browser storage. To remember it between visits, store the value passed to `onAppearanceChange` and pass it back as `appearance` (or `defaultAppearance`).
 
 ## Customisation
 
-Component appearance is set through the props documented on each component page. `className`, `style` and theme overrides are not supported.
+Change a component&#39;s appearance through the props documented on its page. `className`, `style` and theme overrides are not supported.
 </code></pre>
           </div>
         </div>
@@ -15020,13 +15273,13 @@ Component appearance is set through the props documented on each component page.
 
 # Motion
 
-Breeze provides a small opt-in adapter for the browser&#39;s same-document View Transition API. Use it when a transition explains a relationship between two states. A link does not start an animation by itself: the application router owns the route update and may opt into a transition with `startViewTransition`.
+Breeze UI provides an opt-in helper for the browser&#39;s same-document View Transition API. Use a transition when it helps people follow how one state relates to the next.
 
-These examples use stable React 19 and React DOM APIs. Breeze adds no runtime dependency for view transitions.
+Links do not animate on their own. Your router performs the route update and can wrap it in `startViewTransition` to animate it. The examples use stable React 19 and React DOM APIs, and no extra dependency is needed.
 
 ## Transition types
 
-Use the type that describes the change. Breeze accepts these five values:
+Choose the type that describes the change:
 
 | Type     | Use it for                                                   |
 | -------- | ------------------------------------------------------------ |
@@ -15036,13 +15289,16 @@ Use the type that describes the change. Breeze accepts these five values:
 | `item`   | Changing one item while the surrounding page stays in place. |
 | `expand` | Expanding one item into a larger view of that same item.     |
 
-These types let the stylesheet choose which parts can move. `nav` and `mode` may transition the page root; `list`, `item` and `expand` keep the root live and animate only named participants. Breeze does not prescribe an animation for every use of a type.
+The type decides which parts of the page can move. `nav` and `mode` may transition the whole page; `list`, `item` and `expand` leave the page in place and animate only the named participants.
 
-Keep appearance changes, segmented-control state, typing and in-place recalculation immediate; transitions add no useful relationship to those updates, and immediate input keeps the caret stable. Keep form steps inside a sheet immediate too: the sheet frame stays in place, a nested transition would separate its contents from the frame, and the step indicator already shows progress.
+Some updates should stay immediate:
+
+- appearance changes, segmented-control state, typing and in-place recalculation, so input and the caret stay stable;
+- form steps inside a sheet, where the sheet stays in place and the step indicator already shows progress.
 
 ## Declare a participant
 
-Call `useViewTransitionParticipant` below `BreezeProvider` and attach its ref to the element that represents the same thing before and after the update. Breeze grants its view-transition name only while one of the declared types is active.
+Call `useViewTransitionParticipant` below `BreezeProvider` and attach its ref to the element that represents the same thing before and after the update. The element takes part only while one of its `types` is active.
 
 ```tsx
 import { useViewTransitionParticipant } from &#39;@motech-development/breeze-ui&#39;;
@@ -15057,9 +15313,15 @@ function TransactionRow({ transaction }) {
 }
 ```
 
-Each participant name must be a valid CSS custom identifier and unique among visible participants in both snapshots. In development, Breeze reports duplicate eligible names. Names stay disabled for page participants while a visual overlay is on top; if an application-owned participant is inside an overlay, only the topmost visual overlay can enable it. A menu or popover stops counting as soon as it starts closing, even while its exit animation runs, so a navigation started from a menu item keeps the shell chrome and navigation marker in its transition. A closing dialog or drawer still withholds names until its exit finishes.
+Each `name` must start with a letter (A–Z or a–z) or an underscore, followed by letters, digits, underscores or hyphens. These names are reserved, in any letter case: `auto`, `default`, `inherit`, `initial`, `none`, `revert`, `revert-layer`, `unset`, `root`, `match-element`, `breeze-botnav`, `breeze-navmark`, `breeze-topbar` and `breeze-topnav`. An invalid or reserved name throws a `TypeError`.
 
-The application shell can use Breeze&#39;s reserved roles for its chrome and current-location marker. The `topbar`, `topnav` and `botnav` roles stay pinned during page transitions:
+Each `name` must also be unique among the visible participants before and after the update. In development, Breeze UI logs a console error for duplicate names.
+
+While a dialog, drawer, menu or popover is open on top of the page, participants beneath it do not animate. A participant inside an overlay animates only when that overlay is the topmost one. A menu or popover stops counting as soon as it starts closing, so a navigation started from a menu item still animates the page; a closing dialog or drawer blocks transitions until its exit animation finishes.
+
+### Application shell roles
+
+Instead of a `name`, pass one of the reserved roles for your application&#39;s chrome:
 
 ```tsx
 import { useViewTransitionParticipant } from &#39;@motech-development/breeze-ui&#39;;
@@ -15071,11 +15333,18 @@ function TopBar() {
 }
 ```
 
-The fixed roles are `topbar`, `topnav`, `botnav` and `navmark`. The first three are enabled for `nav` and `mode`; `navmark` marks the current location and moves during `nav` only. These roles reserve Breeze&#39;s singleton names, so use each role on at most one visible element in a snapshot.
+| Role      | Behaviour                                                      |
+| --------- | -------------------------------------------------------------- |
+| `topbar`  | Stays pinned during `nav` and `mode` transitions.              |
+| `topnav`  | Stays pinned during `nav` and `mode` transitions.              |
+| `botnav`  | Stays pinned during `nav` and `mode` transitions.              |
+| `navmark` | Marks the current location and moves during `nav` transitions. |
+
+Use each role on at most one visible element at a time. `ApplicationShell` already uses all four.
 
 ## Start a router transition
 
-`Link` passes its `transitionTypes` to the configured `router.navigate` callback. The router can wrap its real route update with `startViewTransition`:
+`Link` passes its `transitionTypes` to the `router.navigate` callback configured on `BreezeProvider`. Wrap the router&#39;s route update in `startViewTransition`:
 
 ```tsx
 import { useState } from &#39;react&#39;;
@@ -15121,13 +15390,17 @@ function TransactionsPage() {
 }
 ```
 
-The router must make the update callback cover the actual DOM commit. For a synchronous React state update, `flushSync` commits it before the callback returns. For asynchronous routing, await the router&#39;s commit-ready signal and resolve only after the intended DOM has committed; data-fetch completion or scheduling a state update is not enough. If the destination suspends, coordinate with the router so the callback does not settle while the UI is still showing a fallback instead of the intended route.
+The update callback must not settle until the new page is in the DOM:
 
-An empty type list, an unsupported typed View Transition API, or a reduced-motion preference skips the animation and still runs the update. The helper returns a promise for update completion and propagates failures from the update. If a transition is already active, Breeze skips it before starting the next one.
+- For a synchronous React state update, wrap it in `flushSync`, as above.
+- For asynchronous routing, wait for the router to signal that the new route has rendered. Finishing a data fetch or scheduling a state update is not enough.
+- If the destination suspends, make sure the callback does not settle while a fallback is still showing.
 
-## Overlay lifecycle
+`startViewTransition` returns a promise that resolves when the update completes and rejects if the update fails. The update still runs, without animation, when the type list is empty, the browser does not support typed view transitions, or the person prefers reduced motion. If a transition is already running, it is skipped before the next one starts.
 
-Dialogs, drawers, menus and popovers keep their React Aria Components lifecycle and existing overlay motion. Toast confirmations keep their own lifecycle and existing motion. Do not use `startViewTransition` for an overlay or confirmation opening or closing.
+## Overlays and toasts
+
+Dialogs, drawers, menus, popovers and toasts have their own open and close animations. Do not wrap their opening or closing in `startViewTransition`.
 
 ## Browser reference
 
