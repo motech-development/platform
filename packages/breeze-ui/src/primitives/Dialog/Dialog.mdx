@@ -72,7 +72,7 @@ By default, pressing Escape or clicking outside the dialog closes it. Set `dismi
 
 ## Accessibility
 
-- Focus moves into the dialog when it opens, stays inside it while open, and returns to the control that opened it when it closes. If nothing was focused when it opened, or that control has since been removed, focus moves to the page's `main` landmark if it can take focus, as the skip-link target in `ApplicationShell` can.
+- Focus moves into the dialog when it opens, stays inside it while open, and returns to the control that opened it when it closes. If nothing was focused when it opened, or that control has since been removed, focus moves to the overlay it was opened in, if any, and otherwise to the page's `main` landmark if it can take focus, as the skip-link target in `ApplicationShell` can.
 - The close button's accessible name comes from the provider's messages.
 - The dialog keeps the provider's locale and text direction.
 - Opening and closing animations respect the reduced-motion preference.
