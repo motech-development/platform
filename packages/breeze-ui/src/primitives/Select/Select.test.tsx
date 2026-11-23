@@ -610,17 +610,20 @@ describe('Select', () => {
     expect(onBlur).toHaveBeenCalledExactlyOnceWith();
   });
 
-  it('does not report blur when the trigger is pressed from an open listbox', async () => {
+  it('reports blur once after the trigger is pressed from an open listbox', async () => {
     const user = userEvent.setup();
     const onBlur = vi.fn<() => void>();
 
     renderBreeze(
-      <Select
-        getItem={getEnabledItem}
-        items={enabledChoices}
-        label="Payment method"
-        onBlur={onBlur}
-      />,
+      <>
+        <Select
+          getItem={getEnabledItem}
+          items={enabledChoices}
+          label="Payment method"
+          onBlur={onBlur}
+        />
+        <button type="button">Next</button>
+      </>,
     );
 
     const trigger = screen.getByRole('button', { name: 'Payment method' });
@@ -634,6 +637,10 @@ describe('Select', () => {
 
     await waitFor(() => expect(trigger).toHaveFocus());
     expect(onBlur).not.toHaveBeenCalled();
+
+    await user.click(screen.getByRole('button', { name: 'Next' }));
+
+    expect(onBlur).toHaveBeenCalledExactlyOnceWith();
   });
 
   it('reports blur once when focus leaves an open listbox', async () => {
