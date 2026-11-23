@@ -3,12 +3,27 @@ import { useMemo, useState } from 'react';
 import { expect, userEvent, within } from 'storybook/test';
 import type { RouterNavigationOptions } from '../../provider/BreezeContext';
 import { BreezeProvider } from '../../provider/BreezeProvider';
+import { Button } from '../Button/Button';
 import { Card } from '../Card/Card';
 import { Inline } from '../Inline/Inline';
 import { Typography } from '../Typography/Typography';
 import { Link, type LinkVariant } from './Link';
 
 const variants = ['default', 'subtle'] satisfies LinkVariant[];
+
+const buttonStyle = (element: HTMLElement) => {
+  const style = getComputedStyle(element);
+
+  return {
+    backgroundColor: style.backgroundColor,
+    borderColor: style.borderTopColor,
+    fontSize: style.fontSize,
+    fontWeight: style.fontWeight,
+    height: element.getBoundingClientRect().height,
+    paddingInline: style.paddingInlineStart,
+    textDecoration: style.textDecorationLine,
+  };
+};
 
 const meta = {
   args: {
@@ -76,6 +91,47 @@ export const Treatments: Story = {
         </Link>
       ))}
     </Inline>
+  ),
+};
+
+/** Navigation and download links that look like primary and secondary buttons. */
+export const ButtonTreatments: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await expect(
+      buttonStyle(canvas.getByRole('link', { name: 'Back to overview' })),
+    ).toEqual(
+      buttonStyle(canvas.getByRole('button', { name: 'Create report' })),
+    );
+    await expect(
+      buttonStyle(canvas.getByRole('link', { name: 'Open year end' })),
+    ).toEqual(buttonStyle(canvas.getByRole('button', { name: 'Cancel' })));
+    await expect(
+      buttonStyle(canvas.getByRole('link', { name: 'Download' })),
+    ).toEqual(buttonStyle(canvas.getByRole('button', { name: 'Remove' })));
+  },
+  render: () => (
+    <div className="breeze-story-stack">
+      <Inline gap={2}>
+        <Link href="/overview" variant="primary">
+          Back to overview
+        </Link>
+        <Link href="/year-end" variant="secondary">
+          Open year end
+        </Link>
+        <Link download href="/reports/2026.csv" size="sm" variant="secondary">
+          Download
+        </Link>
+      </Inline>
+      <Inline gap={2}>
+        <Button>Create report</Button>
+        <Button variant="secondary">Cancel</Button>
+        <Button size="sm" variant="secondary">
+          Remove
+        </Button>
+      </Inline>
+    </div>
   ),
 };
 

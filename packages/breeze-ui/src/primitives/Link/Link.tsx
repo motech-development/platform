@@ -1,12 +1,16 @@
 import type { AnchorHTMLAttributes, ReactNode, Ref } from 'react';
+import { useHover } from 'react-aria/useHover';
+import { buttonVariants } from '../../buttons/button.styles';
 import type { ViewTransitionType } from '../../motion/view-transitions';
 import { useBreezeContext } from '../../provider/BreezeContext';
 import routeAnchorClick from './link-routing';
 
 const variants = {
   base: {
+    button: 'breeze:justify-center breeze:whitespace-nowrap',
+    link: 'breeze:inline-flex breeze:items-center breeze:font-breeze-sans breeze:no-underline breeze:outline-offset-2 breeze:focus-visible:outline-2 breeze:focus-visible:outline-solid breeze:focus-visible:outline-breeze-brand breeze:any-pointer-coarse:min-block-breeze-tap',
     // The design's text action: a 13px standalone label at the body's line height, without an underline.
-    link: 'breeze:inline-flex breeze:items-center breeze:rounded-breeze-chip breeze:px-breeze-1 breeze:font-breeze-sans breeze:text-breeze-sm breeze:font-normal breeze:leading-breeze-snug breeze:no-underline breeze:outline-offset-2 breeze:focus-visible:outline-2 breeze:focus-visible:outline-solid breeze:focus-visible:outline-breeze-brand breeze:any-pointer-coarse:min-block-breeze-tap breeze:max-breeze-md:min-block-breeze-tap',
+    text: 'breeze:rounded-breeze-chip breeze:px-breeze-1 breeze:text-breeze-sm breeze:font-normal breeze:leading-breeze-snug breeze:max-breeze-md:min-block-breeze-tap',
   },
   compound: {},
   size: {},
@@ -17,9 +21,29 @@ const variants = {
   },
 } as const;
 
-export type LinkVariant = keyof typeof variants.variant;
+type TextLinkVariant = keyof typeof variants.variant;
+type ButtonLinkVariant = 'primary' | 'secondary';
 
-export interface LinkProps {
+export type LinkVariant = ButtonLinkVariant | TextLinkVariant;
+
+/** Button sizes available to a link with a button treatment. */
+export type LinkSize = 'md' | 'sm';
+
+interface TextLinkProps {
+  /** Text links have one size. */
+  size?: never;
+  /** Selects the text treatment. Defaults to `default`. */
+  variant?: TextLinkVariant;
+}
+
+interface ButtonLinkProps {
+  /** Selects the button size. Defaults to `md`. */
+  size?: LinkSize;
+  /** Gives the link a primary or secondary button treatment. */
+  variant: ButtonLinkVariant;
+}
+
+interface LinkCommonProps {
   /** Identifies additional elements that describe the link. */
   'aria-describedby'?: AnchorHTMLAttributes<HTMLAnchorElement>['aria-describedby'];
   /** Provides an accessible name when it differs from the visible content. */
@@ -52,9 +76,10 @@ export interface LinkProps {
   type?: AnchorHTMLAttributes<HTMLAnchorElement>['type'];
   /** Transition types offered to the configured router for this navigation. */
   transitionTypes?: readonly ViewTransitionType[];
-  /** Selects the link's visual treatment. Defaults to `default`. */
-  variant?: LinkVariant;
 }
+
+/** Props for a text link, or a link with a button treatment and size. */
+export type LinkProps = LinkCommonProps & (ButtonLinkProps | TextLinkProps);
 
 /** Navigates to a resource while preserving native anchor behavior. */
 export function Link({
@@ -70,6 +95,7 @@ export function Link({
   lang,
   ref,
   rel,
+  size = 'md',
   target,
   title,
   type,
@@ -77,6 +103,21 @@ export function Link({
   variant = 'default',
 }: Readonly<LinkProps>) {
   const { router } = useBreezeContext();
+  const {
+    hoverProps: { onPointerEnter, onPointerLeave },
+    isHovered,
+  } = useHover({});
+  const className =
+    variant === 'primary' || variant === 'secondary'
+      ? [
+          variants.base.link,
+          variants.base.button,
+          buttonVariants.base.box,
+          buttonVariants.variant[variant],
+          buttonVariants.size[size],
+          size === 'md' && buttonVariants.compound.md[variant],
+        ]
+      : [variants.base.link, variants.base.text, variants.variant[variant]];
 
   return (
     <a
@@ -84,7 +125,8 @@ export function Link({
       aria-describedby={ariaDescribedBy}
       aria-label={ariaLabel}
       aria-labelledby={ariaLabelledBy}
-      className={[variants.base.link, variants.variant[variant]].join(' ')}
+      className={className.filter(Boolean).join(' ')}
+      data-hovered={isHovered || undefined}
       download={download}
       href={href}
       hrefLang={hrefLang}
@@ -93,6 +135,8 @@ export function Link({
       onClick={(event) =>
         routeAnchorClick(event, router, transitionTypes, download)
       }
+      onPointerEnter={onPointerEnter}
+      onPointerLeave={onPointerLeave}
       ref={ref}
       rel={rel}
       target={target}

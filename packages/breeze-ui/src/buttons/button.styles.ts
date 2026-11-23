@@ -1,5 +1,7 @@
 export const buttonVariants = {
-  base: {},
+  base: {
+    box: 'breeze:border breeze:border-solid breeze:rounded-breeze-ctl breeze:font-semibold breeze:any-pointer-coarse:min-inline-breeze-tap',
+  },
   compound: {
     loading: {
       danger: 'breeze:bg-breeze-on-danger/35',
@@ -7,8 +9,19 @@ export const buttonVariants = {
       quiet: 'breeze:bg-breeze-line-strong',
       secondary: 'breeze:bg-breeze-line-strong',
     },
+    // The design pads the filled primary wider than the other md treatments.
+    md: {
+      danger: 'breeze:ps-breeze-3 breeze:pe-breeze-3',
+      primary: 'breeze:ps-[14px] breeze:pe-[14px]',
+      secondary: 'breeze:ps-breeze-3 breeze:pe-breeze-3',
+    },
   },
-  size: {},
+  // Sizes of a boxed, labelled button; IconButton has its own square sizes.
+  size: {
+    lg: 'breeze:min-block-breeze-lg breeze:ps-breeze-5 breeze:pe-breeze-5 breeze:py-breeze-3 breeze:text-breeze-sm',
+    md: 'breeze:min-block-breeze-9 breeze:text-breeze-sm',
+    sm: 'breeze:min-block-breeze-8 breeze:ps-breeze-3 breeze:pe-breeze-3 breeze:text-breeze-xs',
+  },
   state: {
     disabled: 'breeze:cursor-not-allowed breeze:opacity-50',
     loading: 'breeze:cursor-wait',

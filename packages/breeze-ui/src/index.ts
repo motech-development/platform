@@ -113,7 +113,7 @@ export type {
 export { IconTile } from './primitives/IconTile/IconTile';
 export type { InlineJustify, InlineProps } from './primitives/Inline/Inline';
 export { Inline } from './primitives/Inline/Inline';
-export type { LinkProps, LinkVariant } from './primitives/Link/Link';
+export type { LinkProps, LinkSize, LinkVariant } from './primitives/Link/Link';
 export { Link } from './primitives/Link/Link';
 export type {
   MenuItemDescriptor,

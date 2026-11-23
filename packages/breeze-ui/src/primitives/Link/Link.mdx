@@ -44,9 +44,17 @@ The router handles only a plain primary click on a same-origin HTTP or HTTPS lin
 
 The default link uses the brand text colour. Set `variant="subtle"` for a lower-emphasis link.
 
+## Button treatments
+
+Set `variant` to `primary` or `secondary` when a link should look like a button, such as an Open year end action or a Download for a report. It keeps the link's native behaviour: it is announced as a link, can be opened in a new tab or downloaded, and navigates through the router. Use a `Button` instead for an action that does not navigate or download.
+
+A link with a button treatment takes the button's `md` or `sm` `size`, and defaults to `md`. Text links have one size.
+
+<Canvas of={Stories.ButtonTreatments} />
+
 ## Accessibility
 
-A `Link` is distinguished from text by colour alone, so place it on its own rather than inside a sentence. On touch devices and below the `md` breakpoint, it has a minimum height of 44px.
+A text `Link` is distinguished from text by colour alone, so place it on its own rather than inside a sentence. On touch devices and below the `md` breakpoint, it has a minimum height of 44px.
 
 Screen readers announce the link's text as its name. Use `aria-label` or `aria-labelledby` when the text does not describe the destination, and `aria-current` when the link points to the current page.
 
