@@ -5,6 +5,7 @@ import type { ItemDescriptor } from '../../collections/item.types';
 import type { ControlSize } from '../Button/Button';
 import { Button } from '../Button/Button';
 import { Toggle } from '../Toggle/Toggle';
+import type { ToggleGroupItemDescriptor } from './ToggleGroup';
 import { ToggleGroup } from './ToggleGroup';
 
 const options = [
@@ -64,6 +65,33 @@ type Story = StoryObj<typeof meta>;
 
 /** A set of connected options with one current selection. */
 export const Default: Story = {};
+
+const whenOptions = [
+  { id: 'now', label: 'Now', tooltip: 'Confirmed' },
+  { id: 'scheduled', label: 'On its date', tooltip: 'Pending, scheduled' },
+  { id: 'hold', label: 'Hold as pending', tooltip: 'Pending' },
+] satisfies ToggleGroupItemDescriptor[];
+
+/** Options explained on hover and keyboard focus. */
+export const Tooltips: Story = {
+  args: {
+    'aria-label': 'When it counts',
+    defaultSelected: whenOptions[0],
+    items: whenOptions,
+  },
+  play: async ({ canvasElement }) => {
+    const page = within(canvasElement.ownerDocument.body);
+
+    await userEvent.tab();
+
+    await expect(await page.findByRole('tooltip')).toHaveTextContent(
+      'Confirmed',
+    );
+    await expect(
+      page.getByRole('button', { name: 'Now' }),
+    ).toHaveAccessibleDescription('Confirmed');
+  },
+};
 
 function LoadingExample() {
   const [loading, setLoading] = useState(true);

@@ -46,6 +46,23 @@ const mixedToggleGroup = (
 expectTypeOf(mixedToggleGroup).toBeObject();
 
 describe('ToggleGroup', () => {
+  it('explains an option on keyboard focus', async () => {
+    renderBreeze(
+      <ToggleGroup
+        aria-label="When it counts"
+        getItem={(option) => option}
+        items={[{ id: 'now', label: 'Now', tooltip: 'Confirmed' }]}
+      />,
+    );
+
+    await userEvent.tab();
+
+    expect(screen.getByRole('tooltip')).toHaveTextContent('Confirmed');
+    expect(
+      screen.getByRole('button', { name: 'Now' }),
+    ).toHaveAccessibleDescription('Confirmed');
+  });
+
   it('renders a named segmented group and reports item or cleared selection', async () => {
     const user = userEvent.setup();
     const onChange = vi.fn<(selected: Option | null) => void>();

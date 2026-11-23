@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { describe, expect, expectTypeOf, it } from 'vitest';
 import renderBreeze from '../../../test/render';
 import { Icon, type IconProps } from './Icon';
@@ -20,6 +21,29 @@ describe('Icon', () => {
     expect(
       screen.getByRole('img', { name: 'Choose a date' }),
     ).toBeInTheDocument();
+  });
+
+  it('explains a labelled icon when it receives keyboard focus', async () => {
+    renderBreeze(
+      <Icon
+        label="Locked"
+        name="lock"
+        tooltip="This category is fixed and cannot be changed or removed"
+      />,
+    );
+
+    await userEvent.tab();
+
+    const icon = screen.getByRole('img', { name: 'Locked' });
+    const tooltip = screen.getByRole('tooltip');
+
+    expect(icon).toHaveFocus();
+    expect(tooltip).toHaveTextContent(
+      'This category is fixed and cannot be changed or removed',
+    );
+    expect(icon).toHaveAccessibleDescription(
+      'This category is fixed and cannot be changed or removed',
+    );
   });
 
   it('is hidden from assistive technology when it is decorative', () => {

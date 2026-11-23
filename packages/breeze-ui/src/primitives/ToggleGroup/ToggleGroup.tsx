@@ -1,6 +1,6 @@
-import type { HTMLAttributes } from 'react';
-import { useState } from 'react';
+import { type HTMLAttributes, type ReactNode, useState } from 'react';
 import type { ItemDescriptor } from '../../collections/item.types';
+import OverlayTooltip from '../../overlays/OverlayTooltip';
 import { useBreezeContext } from '../../provider/BreezeContext';
 import SelectionControl from '../../selection-controls/SelectionControl';
 import { Badge } from '../Badge/Badge';
@@ -36,6 +36,12 @@ const variants = {
   variant: {},
 } as const;
 
+/** The content contract for a toggle group option. */
+export interface ToggleGroupItemDescriptor extends ItemDescriptor {
+  /** Short explanation shown on hover and keyboard focus, such as the state the option sets. */
+  tooltip?: string;
+}
+
 interface ToggleGroupCommonProps<T> {
   /** Names the group when it has no visible heading. */
   'aria-label': HTMLAttributes<HTMLFieldSetElement>['aria-label'];
@@ -46,7 +52,7 @@ interface ToggleGroupCommonProps<T> {
   /** Stretches the group to its container and shares the width between options. Defaults to `false`. */
   fullWidth?: boolean;
   /** Supplies the display details for an option. */
-  getItem: (item: T) => ItemDescriptor;
+  getItem: (item: T) => ToggleGroupItemDescriptor;
   /** Sets the rendered group's HTML `id`. */
   id?: HTMLAttributes<HTMLFieldSetElement>['id'];
   /** The available options. */
@@ -80,8 +86,17 @@ export type ToggleGroupProps<T> = ToggleGroupCommonProps<T> &
   (ControlledToggleGroupProps<T> | UncontrolledToggleGroupProps<T>);
 
 interface DecoratedItem<T> {
-  descriptor: ItemDescriptor;
+  descriptor: ToggleGroupItemDescriptor;
   item: T;
+}
+
+function WithTooltip({
+  children,
+  tooltip,
+}: Readonly<{ children: ReactNode; tooltip?: string }>) {
+  if (tooltip === undefined) return children;
+
+  return <OverlayTooltip tooltip={tooltip}>{children}</OverlayTooltip>;
 }
 
 /**
@@ -137,48 +152,49 @@ export function ToggleGroup<T>({
       >
         <legend className="breeze:sr-only">{ariaLabel}</legend>
         {decoratedItems.map(({ descriptor, item }) => (
-          <SelectionControl
-            key={descriptor.id}
-            announceLoading={false}
-            className={[
-              variants.base.item,
-              variants.size[size],
-              variants.state.selected,
-              fullWidth && variants.state.fullWidth.item,
-            ]
-              .filter(Boolean)
-              .join(' ')}
-            disabled={disabled || descriptor.disabled === true}
-            loading={loading}
-            onChange={(pressed) => {
-              if (selected === undefined) {
-                setUncontrolledSelectedKey(pressed ? descriptor.id : null);
-              }
+          <WithTooltip key={descriptor.id} tooltip={descriptor.tooltip}>
+            <SelectionControl
+              announceLoading={false}
+              className={[
+                variants.base.item,
+                variants.size[size],
+                variants.state.selected,
+                fullWidth && variants.state.fullWidth.item,
+              ]
+                .filter(Boolean)
+                .join(' ')}
+              disabled={disabled || descriptor.disabled === true}
+              loading={loading}
+              onChange={(pressed) => {
+                if (selected === undefined) {
+                  setUncontrolledSelectedKey(pressed ? descriptor.id : null);
+                }
 
-              onChange?.(pressed ? item : null);
-            }}
-            pressed={selectedKey === descriptor.id}
-          >
-            <span className={variants.base.optionDetails}>
-              {descriptor.icon && <Icon name={descriptor.icon} size="xs" />}
-              <span className={variants.base.optionContent}>
-                <span>{descriptor.label}</span>
-                {descriptor.description && (
-                  <span className={variants.base.description}>
-                    {descriptor.description}
-                  </span>
+                onChange?.(pressed ? item : null);
+              }}
+              pressed={selectedKey === descriptor.id}
+            >
+              <span className={variants.base.optionDetails}>
+                {descriptor.icon && <Icon name={descriptor.icon} size="xs" />}
+                <span className={variants.base.optionContent}>
+                  <span>{descriptor.label}</span>
+                  {descriptor.description && (
+                    <span className={variants.base.description}>
+                      {descriptor.description}
+                    </span>
+                  )}
+                </span>
+                {descriptor.badge && (
+                  <Badge
+                    aria-label={descriptor.badge['aria-label']}
+                    variant={descriptor.badge.variant}
+                  >
+                    {descriptor.badge.children}
+                  </Badge>
                 )}
               </span>
-              {descriptor.badge && (
-                <Badge
-                  aria-label={descriptor.badge['aria-label']}
-                  variant={descriptor.badge.variant}
-                >
-                  {descriptor.badge.children}
-                </Badge>
-              )}
-            </span>
-          </SelectionControl>
+            </SelectionControl>
+          </WithTooltip>
         ))}
       </fieldset>
       {loading && (
