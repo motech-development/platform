@@ -400,10 +400,16 @@ const money = [
   },
 ] satisfies RowListItemDescriptor[];
 
-/** Category and VAT columns, with section headers ending in a daily total or a muted note. */
+/** Column headings over category and VAT columns, with section headers ending in a daily total or a muted note. */
 export const Money: Story = {
   args: {
     'aria-label': 'Transactions',
+    headings: {
+      label: 'Transaction',
+      metadata: 'Category',
+      metadataAmount: 'VAT',
+      value: 'Amount',
+    },
     items: money,
     loadMore: undefined,
   },
@@ -455,6 +461,14 @@ export const Money: Story = {
     await expect(vatRect.right).toBe(amountRect.right - 104 - 12);
     await expect(vatRect.width).toBe(80);
     await expect(categoryRect.left).toBe(vatRect.left - 12 - 120);
+
+    const headingRect = (text: string) =>
+      canvas.getByText(text).getBoundingClientRect();
+
+    await expect(headingRect('Transaction').left).toBe(rowRect.left + 16);
+    await expect(headingRect('Category').left).toBe(categoryRect.left);
+    await expect(headingRect('VAT').right).toBe(vatRect.right);
+    await expect(headingRect('Amount').right).toBe(amountRect.right);
   },
 };
 
@@ -490,6 +504,11 @@ export const Phone: Story = {
 
     await expect(canvasElement.ownerDocument.defaultView?.innerWidth).toBe(375);
     await expect(within(row).getByText('Vehicle')).not.toBeVisible();
+    await expect(canvas.getByText('Category')).not.toBeVisible();
+    await expect(canvas.getByText('VAT')).not.toBeVisible();
+    await expect(canvas.getByText('Amount').getBoundingClientRect().right).toBe(
+      amount.right,
+    );
     await expect(badge.top).toBeGreaterThanOrEqual(description.bottom + 4);
     await expect(Math.abs(amount.right - (rowRect.right - 16))).toBeLessThan(1);
     await expect(

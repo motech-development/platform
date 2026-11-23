@@ -128,6 +128,7 @@ export type { PopoverProps } from './primitives/Popover/Popover';
 export { Popover } from './primitives/Popover/Popover';
 export type {
   RowListCurrencyValue,
+  RowListHeadings,
   RowListItemDescriptor,
   RowListLoadMoreProps,
   RowListMetadata,

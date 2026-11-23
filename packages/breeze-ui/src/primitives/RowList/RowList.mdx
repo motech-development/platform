@@ -10,8 +10,7 @@ import * as Stories from './RowList.stories';
 
 `RowList` displays data as a list of rows that people can act on, such as
 transactions or documents. Each row has a leading label, optional metadata and
-a trailing value, aligned in columns across the list. The list has no column
-headers.
+a trailing value, aligned in columns across the list.
 
 <Canvas of={Stories.Default} />
 
@@ -50,6 +49,18 @@ The summary is read from the first row in each section:
   for a section without a total.
 
 <Canvas of={Stories.Money} />
+
+## Column headings
+
+Pass `headings` to show a row of column headings above the list, as the
+example above does. Give the leading column a `label`, and add `metadata`,
+`metadataAmount` or `value` for the columns you want to name. Each heading uses
+the same column as the rows, so it stays aligned at every width and hides below
+the `md` breakpoint wherever its column does.
+
+A heading appears only above a column that at least one row uses. The
+headings are hidden while the list has no rows. They are plain text, not table
+headers.
 
 ## Money in and out
 
