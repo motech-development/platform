@@ -12,6 +12,7 @@ import type {
 import { useBreezeContext } from '../../provider/BreezeContext';
 import { Badge } from '../Badge/Badge';
 import { Button } from '../Button/Button';
+import type { IconName } from '../Icon/Icon';
 import { IconTile } from '../IconTile/IconTile';
 import { Link } from '../Link/Link';
 import { Skeleton } from '../Skeleton/Skeleton';
@@ -146,7 +147,7 @@ interface RowListIconLeading {
   /** Colours the icon tile for money in or out; neutral when omitted. */
   direction?: 'in' | 'out';
   /** Icon shown in a tile before the label. */
-  icon?: ItemDescriptor['icon'];
+  icon?: IconName;
   initials?: never;
 }
 
@@ -721,6 +722,7 @@ function renderRow<T>(
   { descriptor, item }: Row<T>,
   onAction: RowListProps<T>['onAction'],
   columns: Columns,
+  unreadMessage: string,
 ) {
   return (
     <AriaGridListItem
@@ -729,7 +731,11 @@ function renderRow<T>(
       isDisabled={descriptor.disabled}
       key={`row:${descriptor.id}`}
       onAction={onAction && (() => onAction(item))}
-      textValue={descriptor.label}
+      textValue={
+        descriptor.unread
+          ? `${unreadMessage} ${descriptor.label}`
+          : descriptor.label
+      }
     >
       <RowContent
         actionable={onAction !== undefined}
@@ -799,7 +805,12 @@ export function RowList<T>({
       >
         {entries.map((entry) => {
           if (entry.kind === 'row') {
-            return renderRow(entry.row, onAction, columns);
+            return renderRow(
+              entry.row,
+              onAction,
+              columns,
+              messages.rowListUnread,
+            );
           }
 
           return (
@@ -819,7 +830,9 @@ export function RowList<T>({
                   </>
                 )}
               </AriaGridListHeader>
-              {entry.group.rows.map((row) => renderRow(row, onAction, columns))}
+              {entry.group.rows.map((row) =>
+                renderRow(row, onAction, columns, messages.rowListUnread),
+              )}
             </AriaGridListSection>
           );
         })}

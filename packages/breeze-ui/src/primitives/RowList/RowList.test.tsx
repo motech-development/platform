@@ -510,7 +510,9 @@ describe('RowList', () => {
       />,
     );
 
-    const unread = screen.getByRole('row', { name: 'Your report is ready' });
+    const unread = screen.getByRole('row', {
+      name: 'Unread Your report is ready',
+    });
     const read = screen.getByRole('row', {
       name: 'A transaction was published',
     });

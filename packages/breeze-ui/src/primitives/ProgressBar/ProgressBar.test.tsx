@@ -37,4 +37,20 @@ describe('ProgressBar', () => {
     expect(progress).toHaveAttribute('aria-valuetext', '3 of 7 done');
     expect(progress).toHaveTextContent('3 of 7 done');
   });
+
+  it('leaves the bar empty when the total is zero', () => {
+    renderBreeze(
+      <ProgressBar
+        aria-label="Paperwork"
+        maxValue={0}
+        value={0}
+        valueLabel="Nothing to do"
+      />,
+    );
+
+    const fill = screen.getByRole('progressbar').lastElementChild
+      ?.firstElementChild as HTMLElement;
+
+    expect(fill.style.inlineSize).toBe('0%');
+  });
 });

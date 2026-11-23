@@ -55,7 +55,9 @@ export function ProgressBar({
           <span aria-hidden="true" className={variants.base.track}>
             <span
               className={variants.base.fill}
-              style={{ inlineSize: `${percentage ?? 0}%` }}
+              style={{
+                inlineSize: `${Number.isFinite(percentage) ? percentage : 0}%`,
+              }}
             />
           </span>
         </>
