@@ -588,13 +588,13 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">4/45 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">6/45 infos</a><span class="filter-pill ok" aria-disabled="true">216 stories ok</span><a class="filter-pill ok" data-k="docs" href="#filter-docs">47 docs ok</a></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">4/46 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">6/46 infos</a><span class="filter-pill ok" aria-disabled="true">230 stories ok</span><a class="filter-pill ok" data-k="docs" href="#filter-docs">48 docs ok</a></div>
   </div>
 </header>
 <main>
   <div class="wrap">
     <div class="note ok" style="margin-bottom: 16px;">
-              Using <code>react-docgen-typescript</code>. Generation took <strong>2.0s</strong>.
+              Using <code>react-docgen-typescript</code>. Generation took <strong>2.2s</strong>.
             </div>
     <h2 class="section-title">Components</h2>
     <div class="grid" role="list">
@@ -1825,7 +1825,7 @@ locale: string
 /**
  * Accessible messages translated into the provider locale; defaults to English.
  */
-messages?: Partial&lt;{ appearance: string; appearanceAutomatic: string; appearanceDark: string; appearanceLight: string; attachmentDocument: string; attachmentMoreActions: string; attachmentOpen: string; attachmentPhoto: string; clearDate: string; close: string; comboBoxNoMatches: string; documentViewerAccessibility: string; documentViewerDownload: string; documentViewerDownloadFailed: string; documentViewerExitFullScreen: string; documentViewerFallback: string; documentViewerFullScreen: string; documentViewerImageUnavailable: string; documentViewerLoading: string; documentViewerNextPage: string; documentViewerPage: string; documentViewerPreviousPage: string; documentViewerRemove: string; documentViewerReplace: string; documentViewerRotate: string; documentViewerRotateLabel: string; documentViewerZoom: string; documentViewerZoomIn: string; documentViewerZoomOut: string; fileDropZoneAcceptedTypes: string; fileDropZoneAddedMany: string; fileDropZoneAddedOne: string; fileDropZoneAttachedCount: string; fileDropZoneChooseFiles: string; fileDropZoneCountRejectedMany: string; fileDropZoneCountRejectedOne: string; fileDropZoneDropInstructions: string; fileDropZoneMaximumFileSize: string; fileDropZoneNoFilesAdded: string; fileDropZoneReleaseInstructions: string; fileDropZoneSizeRejected: string; fileDropZoneTakePhoto: string; fileDropZoneTypeRejected: string; loading: string; noItemsToDisplay: string; popoverTriggerUnread: string; primaryNavigation: string; required: string; selectDate: string; skipToMain: string; today: string; }&gt;
+messages?: Partial&lt;{ appearance: string; appearanceAutomatic: string; appearanceDark: string; appearanceLight: string; attachmentDocument: string; attachmentMoreActions: string; attachmentOpen: string; attachmentPhoto: string; clearDate: string; close: string; comboBoxNoMatches: string; documentViewerAccessibility: string; documentViewerDownload: string; documentViewerDownloadFailed: string; documentViewerExitFullScreen: string; documentViewerFallback: string; documentViewerFullScreen: string; documentViewerImageUnavailable: string; documentViewerLoading: string; documentViewerNextPage: string; documentViewerPage: string; documentViewerPreviousPage: string; documentViewerRemove: string; documentViewerReplace: string; documentViewerRotate: string; documentViewerRotateLabel: string; documentViewerZoom: string; documentViewerZoomIn: string; documentViewerZoomOut: string; fileDropZoneAcceptedTypes: string; fileDropZoneAddedMany: string; fileDropZoneAddedOne: string; fileDropZoneAttachedCount: string; fileDropZoneChooseFiles: string; fileDropZoneCountRejectedMany: string; fileDropZoneCountRejectedOne: string; fileDropZoneDropInstructions: string; fileDropZoneMaximumFileSize: string; fileDropZoneNoFilesAdded: string; fileDropZoneReleaseInstructions: string; fileDropZoneSizeRejected: string; fileDropZoneTakePhoto: string; fileDropZoneTypeRejected: string; loading: string; noItemsToDisplay: string; popoverTriggerUnread: string; primaryNavigation: string; required: string; rowListUnread: string; selectDate: string; skipToMain: string; today: string; }&gt;
 
 /**
  * Reports a semantic appearance choice so the application can persist it.
@@ -1928,7 +1928,7 @@ Breeze includes English (`en-GB`) text only. To translate it, pass a partial `me
 
 - loading and required-field announcements
 - the `DatePicker` placeholder, Today and clear actions
-- the `ComboBox` no-match message and the `RowList` empty message
+- the `ComboBox` no-match message and the `RowList` empty message and unread marker
 - `AppearanceControl`
 - the close button on overlays
 - the `Popover` unread indicator
@@ -2686,9 +2686,9 @@ For an uncontrolled calendar, use `defaultValue` with an optional `onChange`. Co
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Card</h2>
       <div class="badges">
-        <label for="c-7-content-card-props" class="badge ok as-toggle">9 prop types</label>
+        <label for="c-7-content-card-props" class="badge ok as-toggle">10 prop types</label>
         
-        <label for="c-7-content-card-stories" class="badge ok as-toggle">4 stories</label>
+        <label for="c-7-content-card-stories" class="badge ok as-toggle">5 stories</label>
         <label for="c-7-content-card-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
@@ -2715,7 +2715,7 @@ For an uncontrolled calendar, use `defaultValue` with an optional `onChange`. Co
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
-              <span class="badge ok">9 prop types</span>
+              <span class="badge ok">10 prop types</span>
             </div>
             <pre><code>Component: src/primitives/Card/Card.tsx::Card</code></pre>
             <pre><code>Props:</code></pre>
@@ -2746,6 +2746,12 @@ clipped?: boolean = true
  * Unavailable without a `title`.
  */
 count?: number
+
+/**
+ * Short muted text under the title, which also describes the card.
+ * Unavailable without a `title`.
+ */
+description?: string
 
 /**
  * Selects the semantic HTML element. Defaults to `div`.
@@ -2822,6 +2828,20 @@ variant?: &quot;raised&quot; | &quot;surface&quot; = surface</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
+                <span class="ex-name">Titled With Description</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A form panel whose header describes it under the title, with a trailing action.</div>
+              <pre><code>const TitledWithDescription = () =&gt; &lt;Card
+    action={&lt;Link href=&quot;#categories&quot;&gt;Add category&lt;/Link&gt;}
+    description=&quot;Each one carries the VAT rate used when you record a purchase.&quot;
+    element=&quot;section&quot;
+    title=&quot;Expense categories&quot;&gt;(&lt;Typography tone=&quot;secondary&quot; variant=&quot;body&quot;&gt;Vehicle, Office, Travel
+            &lt;/Typography&gt;)&lt;/Card&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
                 <span class="ex-name">Titled With Action</span>
                 <span class="badge ok">story ok</span>
               </div>
@@ -2875,6 +2895,11 @@ Use `variant=&quot;raised&quot;` for a group nested inside another surface. It d
 Set `title` to add a header with a second-level heading. Add `count` to show a neutral count beside the title.
 
 &lt;Canvas of={Stories.TitledWithCount} /&gt;
+
+Add `description` for a short muted line under the title, such as what a form
+panel is for. Screen readers announce it as the card&#39;s description.
+
+&lt;Canvas of={Stories.TitledWithDescription} /&gt;
 
 Use `action` for one control at the end of the header, such as a link to the full list. With a title, `padding` applies only to the content below it, so set `padding={0}` for rows that run edge to edge.
 
@@ -5953,9 +5978,9 @@ The aside is 300px wide and the main column fills the remaining space. Each colu
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Icon</h2>
       <div class="badges">
-        <label for="c-20-content-icon-props" class="badge ok as-toggle">3 prop types</label>
+        <label for="c-20-content-icon-props" class="badge ok as-toggle">4 prop types</label>
         
-        <label for="c-20-content-icon-stories" class="badge ok as-toggle">4 stories</label>
+        <label for="c-20-content-icon-stories" class="badge ok as-toggle">5 stories</label>
         <label for="c-20-content-icon-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
@@ -5982,11 +6007,12 @@ The aside is 300px wide and the main column fills the remaining space. Each colu
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
-              <span class="badge ok">3 prop types</span>
+              <span class="badge ok">4 prop types</span>
             </div>
             <pre><code>Component: src/primitives/Icon/Icon.tsx::Icon</code></pre>
             <pre><code>Props:</code></pre>
             <pre><code>/**
+ * Names the artwork.
  * Names meaningful artwork; omit for an icon already described by nearby text.
  */
 label?: string
@@ -5999,7 +6025,13 @@ name: &quot;add&quot; | &quot;back&quot; | &quot;building&quot; | &quot;calendar
 /**
  * Selects dimensions from `2xs` (14px) to `4xl` (26px). Defaults to `sm` (16px).
  */
-size?: &quot;2xl&quot; | &quot;2xs&quot; | &quot;3xl&quot; | &quot;4xl&quot; | &quot;lg&quot; | &quot;md&quot; | &quot;sm&quot; | &quot;xl&quot; | &quot;xs&quot; = sm</code></pre>
+size?: &quot;2xl&quot; | &quot;2xs&quot; | &quot;3xl&quot; | &quot;4xl&quot; | &quot;lg&quot; | &quot;md&quot; | &quot;sm&quot; | &quot;xl&quot; | &quot;xs&quot; = sm
+
+/**
+ * Short explanation shown on hover and keyboard focus; makes the icon focusable.
+ * Requires a `label`.
+ */
+tooltip?: string</code></pre>
           </div>
         </div>
     
@@ -6032,6 +6064,18 @@ size?: &quot;2xl&quot; | &quot;2xs&quot; | &quot;3xl&quot; | &quot;4xl&quot; | &
               
               <div class="hint">A named icon used without an accompanying text label.</div>
               <pre><code>const Named = () =&gt; &lt;Icon name=&quot;calendar&quot; label=&quot;Choose a date&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Explained</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A focusable icon explained on hover and keyboard focus.</div>
+              <pre><code>const Explained = () =&gt; &lt;Icon
+    name=&quot;lock&quot;
+    label=&quot;Locked&quot;
+    tooltip=&quot;This category is fixed and cannot be changed or removed&quot; /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -6120,6 +6164,12 @@ Set `size` to choose one of the following square sizes. It defaults to `sm`.
 Icons are decorative by default and hidden from assistive technology. Pass `label` only when the icon carries meaning that no nearby text provides; screen readers then announce the label.
 
 &lt;Canvas of={Stories.Named} /&gt;
+
+## Explanations
+
+Pass a short `tooltip` with a `label` to explain an icon, such as a lock on a row that cannot be changed. The explanation appears on hover and when the icon receives keyboard focus, so the icon joins the tab order. Screen readers announce it as the icon&#39;s description. Keep essential information in visible text; a tooltip only explains.
+
+&lt;Canvas of={Stories.Explained} /&gt;
 
 ## API
 
@@ -6781,9 +6831,9 @@ Set `wrap` when the items may not fit on one line, such as a list of labels or a
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Link</h2>
       <div class="badges">
-        <label for="c-24-navigation-link-props" class="badge ok as-toggle">17 prop types</label>
+        <label for="c-24-navigation-link-props" class="badge ok as-toggle">18 prop types</label>
         
-        <label for="c-24-navigation-link-stories" class="badge ok as-toggle">5 stories</label>
+        <label for="c-24-navigation-link-stories" class="badge ok as-toggle">6 stories</label>
         <label for="c-24-navigation-link-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
@@ -6810,7 +6860,7 @@ Set `wrap` when the items may not fit on one line, such as a list of labels or a
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
-              <span class="badge ok">17 prop types</span>
+              <span class="badge ok">18 prop types</span>
             </div>
             <pre><code>Component: src/primitives/Link/Link.tsx::Link</code></pre>
             <pre><code>Props:</code></pre>
@@ -6875,6 +6925,12 @@ ref?: Ref&lt;HTMLAnchorElement&gt;
 rel?: string
 
 /**
+ * Selects the button size. Defaults to `md`.
+ * Text links have one size.
+ */
+size?: LinkSize = md
+
+/**
  * Names the browsing context for the destination.
  */
 target?: HTMLAttributeAnchorTarget
@@ -6895,9 +6951,10 @@ transitionTypes?: readonly ViewTransitionType[] = []
 type?: string
 
 /**
- * Selects the link&#39;s visual treatment. Defaults to `default`.
+ * Gives the link a primary or secondary button treatment.
+ * Selects the text treatment. Defaults to `default`.
  */
-variant?: &quot;default&quot; | &quot;subtle&quot; = default</code></pre>
+variant?: &quot;default&quot; | &quot;subtle&quot; | ButtonLinkVariant = default</code></pre>
           </div>
         </div>
     
@@ -6967,6 +7024,36 @@ variant?: &quot;default&quot; | &quot;subtle&quot; = default</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
+                <span class="ex-name">Button Treatments</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Navigation and download links that look like primary and secondary buttons.</div>
+              <pre><code>const ButtonTreatments = () =&gt; (
+  &lt;div className=&quot;breeze-story-stack&quot;&gt;
+    &lt;Inline gap={2}&gt;
+      &lt;Link href=&quot;/overview&quot; variant=&quot;primary&quot;&gt;
+        Back to overview
+      &lt;/Link&gt;
+      &lt;Link href=&quot;/year-end&quot; variant=&quot;secondary&quot;&gt;
+        Open year end
+      &lt;/Link&gt;
+      &lt;Link download href=&quot;/reports/2026.csv&quot; size=&quot;sm&quot; variant=&quot;secondary&quot;&gt;
+        Download
+      &lt;/Link&gt;
+    &lt;/Inline&gt;
+    &lt;Inline gap={2}&gt;
+      &lt;Button&gt;Create report&lt;/Button&gt;
+      &lt;Button variant=&quot;secondary&quot;&gt;Cancel&lt;/Button&gt;
+      &lt;Button size=&quot;sm&quot; variant=&quot;secondary&quot;&gt;
+        Remove
+      &lt;/Button&gt;
+    &lt;/Inline&gt;
+  &lt;/div&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
                 <span class="ex-name">Router Navigation</span>
                 <span class="badge ok">story ok</span>
               </div>
@@ -7032,9 +7119,17 @@ The router handles only a plain primary click on a same-origin HTTP or HTTPS lin
 
 The default link uses the brand text colour. Set `variant=&quot;subtle&quot;` for a lower-emphasis link.
 
+## Button treatments
+
+Set `variant` to `primary` or `secondary` when a link should look like a button, such as an Open year end action or a Download for a report. It keeps the link&#39;s native behaviour: it is announced as a link, can be opened in a new tab or downloaded, and navigates through the router. Use a `Button` instead for an action that does not navigate or download.
+
+A link with a button treatment takes the button&#39;s `md` or `sm` `size`, and defaults to `md`. Text links have one size.
+
+&lt;Canvas of={Stories.ButtonTreatments} /&gt;
+
 ## Accessibility
 
-A `Link` is distinguished from text by colour alone, so place it on its own rather than inside a sentence. On touch devices and below the `md` breakpoint, it has a minimum height of 44px.
+A text `Link` is distinguished from text by colour alone, so place it on its own rather than inside a sentence. On touch devices and below the `md` breakpoint, it has a minimum height of 44px.
 
 Screen readers announce the link&#39;s text as its name. Use `aria-label` or `aria-labelledby` when the text does not describe the destination, and `aria-current` when the link points to the current page.
 
@@ -7434,9 +7529,9 @@ should be a `Popover`.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> NumberField</h2>
       <div class="badges">
-        <label for="c-26-forms-numberfield-props" class="badge ok as-toggle">23 prop types</label>
+        <label for="c-26-forms-numberfield-props" class="badge ok as-toggle">24 prop types</label>
         
-        <label for="c-26-forms-numberfield-stories" class="badge ok as-toggle">11 stories</label>
+        <label for="c-26-forms-numberfield-stories" class="badge ok as-toggle">12 stories</label>
         <label for="c-26-forms-numberfield-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
@@ -7463,7 +7558,7 @@ should be a `Popover`.
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
-              <span class="badge ok">23 prop types</span>
+              <span class="badge ok">24 prop types</span>
             </div>
             <pre><code>Component: src/primitives/NumberField/NumberField.tsx::NumberField</code></pre>
             <pre><code>Props:</code></pre>
@@ -7517,6 +7612,11 @@ id?: string
  * Accessible field label, shown as text outside loading state.
  */
 label: string
+
+/**
+ * Hides the label visually but keeps it as the accessible name, for repeated rows under column headings.
+ */
+labelHidden?: boolean = false
 
 /**
  * Replaces the input with a shape-preserving loading presentation.
@@ -7606,6 +7706,20 @@ value?: number</code></pre>
               
               <div class="hint">Locale-aware numeric entry; the arrow keys step the value.</div>
               <pre><code>const Default = () =&gt; &lt;NumberField defaultValue={2} label=&quot;Quantity&quot; step={1} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Hidden Label</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A visually hidden label for a repeated row under a column heading.</div>
+              <pre><code>const HiddenLabel = () =&gt; &lt;NumberField
+    defaultValue={0.2}
+    label=&quot;VAT rate for Vehicle&quot;
+    step={1}
+    formatOptions={{ style: &#39;percent&#39; }}
+    labelHidden /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -7809,6 +7923,15 @@ no DOM event. The typed number is committed through `onChange` before `onBlur`
 reports.
 
 &lt;Canvas of={Stories.Blur} /&gt;
+
+## Hidden label
+
+Set `labelHidden` when a column heading already labels a repeated row of
+fields, such as a list of categories with their VAT rates. The label is hidden
+visually but stays the field&#39;s accessible name, so make it specific to the row,
+such as “VAT rate for Vehicle”. Descriptions and errors stay visible.
+
+&lt;Canvas of={Stories.HiddenLabel} /&gt;
 
 ## Accessibility
 
@@ -8435,6 +8558,156 @@ The open and close animations respect the user&#39;s reduced-motion setting. As 
 </article>
 <article
   class="card 
+  no-error 
+  no-info 
+  no-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="ProgressBar">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> ProgressBar</h2>
+      <div class="badges">
+        <label for="c-30-feedback-progressbar-props" class="badge ok as-toggle">4 prop types</label>
+        
+        <label for="c-30-feedback-progressbar-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-30-feedback-progressbar-docs" class="badge ok as-toggle">1 doc</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/primitives/ProgressBar/ProgressBar.stories.tsx">feedback-progressbar · ./src/primitives/ProgressBar/ProgressBar.stories.tsx</div>
+    
+    <div class="hint">Shows how far a task has progressed towards a known total.</div>
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-30-feedback-progressbar-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-30-feedback-progressbar-docs" class="tg tg-docs" type="checkbox" hidden />
+  
+  <input id="c-30-feedback-progressbar-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
+              <span class="badge ok">4 prop types</span>
+            </div>
+            <pre><code>Component: src/primitives/ProgressBar/ProgressBar.tsx::ProgressBar</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>/**
+ * Names the progress for assistive technology.
+ */
+aria-label: string
+
+/**
+ * The total that `value` counts towards. Defaults to `100`.
+ */
+maxValue?: number = 100
+
+/**
+ * The amount of progress, from `0` to `maxValue`.
+ */
+value: number
+
+/**
+ * Visible text describing the progress, also announced in place of a percentage.
+ */
+valueLabel: string</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { ProgressBar } from "@motech-development/breeze-ui";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Progress through a queue, counting only what is done.</div>
+              <pre><code>const Default = () =&gt; &lt;ProgressBar aria-label=&quot;Paperwork&quot; maxValue={7} value={3} valueLabel=&quot;3 of 7 done&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Steps</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Steps of a multi-step form, with the step&#39;s name in the value text.</div>
+              <pre><code>const Steps = () =&gt; &lt;ProgressBar
+    aria-label=&quot;Add a company&quot;
+    maxValue={3}
+    value={2}
+    valueLabel=&quot;Step 2 of 3 — Opening position&quot; /&gt;;</code></pre>
+            </div>
+        </div>
+    
+        <div class="panel panel-docs">
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Docs</span>
+                <span class="badge ok">doc ok</span>
+              </div>
+              <div class="hint">./src/primitives/ProgressBar/ProgressBar.mdx</div>
+              <div>Shows how far a task has progressed towards a known total.</div>
+              <div class="mdx-content"><pre><code>import { ArgTypes, Canvas, Meta } from &#39;@storybook/addon-docs/blocks&#39;;
+import * as Stories from &#39;./ProgressBar.stories&#39;;
+
+&lt;Meta
+  of={Stories}
+  summary=&quot;Shows how far a task has progressed towards a known total.&quot;
+/&gt;
+
+# ProgressBar
+
+`ProgressBar` shows progress towards a known total, such as the items done in a queue or the current step of a form. For content that is still loading, use `Skeleton` instead.
+
+&lt;Canvas of={Stories.Default} /&gt;
+
+## Value
+
+Set `value` to the progress so far and `maxValue` to the total, which defaults to `100`. The bar fills in proportion.
+
+## Value text
+
+`valueLabel` is required. It is shown above the bar, such as “3 of 7 done” or “Step 2 of 3 — Opening position”, and screen readers announce it instead of a percentage.
+
+&lt;Canvas of={Stories.Steps} /&gt;
+
+## Accessibility
+
+Give the bar an `aria-label` that names the task, such as “Paperwork”. Screen readers announce it as a progress bar with that name and the value text.
+
+## API
+
+&lt;ArgTypes /&gt;
+</code></pre></div>
+            </div>
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
   has-error 
   has-info 
   no-story-error
@@ -8445,10 +8718,10 @@ The open and close animations respect the user&#39;s reduced-motion setting. As 
     <div class="title">
       <h2><span class="status-dot dot-err"></span> RowList as ComponentType&lt;RowListProps&lt;unknown&gt;&gt;</h2>
       <div class="badges">
-        <label for="c-30-collections-rowlist-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-30-collections-rowlist-info" class="badge info as-toggle">1 info</label>
-        <label for="c-30-collections-rowlist-stories" class="badge ok as-toggle">9 stories</label>
-        <label for="c-30-collections-rowlist-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-31-collections-rowlist-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-31-collections-rowlist-info" class="badge info as-toggle">1 info</label>
+        <label for="c-31-collections-rowlist-stories" class="badge ok as-toggle">14 stories</label>
+        <label for="c-31-collections-rowlist-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -8459,10 +8732,10 @@ The open and close animations respect the user&#39;s reduced-motion setting. As 
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-30-collections-rowlist-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-30-collections-rowlist-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-30-collections-rowlist-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-30-collections-rowlist-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-31-collections-rowlist-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-31-collections-rowlist-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-31-collections-rowlist-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-31-collections-rowlist-docs" class="tg tg-docs" type="checkbox" hidden />
   
   
 
@@ -8473,20 +8746,24 @@ The open and close animations respect the user&#39;s reduced-motion setting. As 
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;RowList as ComponentType&lt;RowListProps&lt;unknown&gt;&gt;&quot; component.
-  41 | }
-  42 |
-&gt; 43 | const meta = {
+  45 | }
+  46 |
+&gt; 47 | const meta = {
      | ^
-  44 |   args: {
-  45 |     &#39;aria-label&#39;: &#39;Activity&#39;,
-  46 |     getItem: getDescriptor,
+  48 |   args: {
+  49 |     &#39;aria-label&#39;: &#39;Activity&#39;,
+  50 |     getItem: getDescriptor,
 
 ./src/primitives/RowList/RowList.stories.tsx:
 import type { Meta, StoryObj } from &#39;@storybook/react-vite&#39;;
 import type { ComponentType } from &#39;react&#39;;
 import { useState } from &#39;react&#39;;
 import { expect, fn, userEvent, within } from &#39;storybook/test&#39;;
-import type { RowListItemDescriptor, RowListProps } from &#39;./RowList&#39;;
+import type {
+  RowListItemDescriptor,
+  RowListProps,
+  RowListStaticItemDescriptor,
+} from &#39;./RowList&#39;;
 import { RowList } from &#39;./RowList&#39;;
 
 const entries = [
@@ -8532,6 +8809,7 @@ const meta = {
     loadMore: {
       label: &#39;Load more activity&#39;,
       onAction: fn(),
+      status: &#39;Showing 3 entries&#39;,
     },
     loading: false,
     onAction: fn(),
@@ -8542,6 +8820,15 @@ const meta = {
 
 export default meta;
 type Story = StoryObj&lt;typeof meta&gt;;
+
+/** Returns a row&#39;s column region by position; negative positions count from the end. */
+function regionOf(row: HTMLElement, position: number) {
+  const regions = Array.from(
+    row.querySelector(&#39;[role=&quot;gridcell&quot;]&#39;)?.children ?? [],
+  );
+
+  return regions.at(position) as HTMLElement | undefined;
+}
 
 async function verifyResponsiveGeometry(canvasElement: HTMLElement) {
   if (!(&#39;__vitest_browser__&#39; in globalThis)) return;
@@ -8572,18 +8859,10 @@ async function verifyResponsiveGeometry(canvasElement: HTMLElement) {
     const coffeeValueRect = coffeeValue.getBoundingClientRect();
     const marketDateRect = marketDate.getBoundingClientRect();
     const marketValueRect = marketValue.getBoundingClientRect();
-    const coffeeMetadataRegion = coffeeRow.querySelector&lt;HTMLElement&gt;(
-      &#39;[class~=&quot;breeze:col-start-2&quot;]&#39;,
-    );
-    const marketMetadataRegion = marketRow.querySelector&lt;HTMLElement&gt;(
-      &#39;[class~=&quot;breeze:col-start-2&quot;]&#39;,
-    );
-    const coffeeValueRegion = coffeeRow.querySelector&lt;HTMLElement&gt;(
-      &#39;[class~=&quot;breeze:-col-end-1&quot;]&#39;,
-    );
-    const marketValueRegion = marketRow.querySelector&lt;HTMLElement&gt;(
-      &#39;[class~=&quot;breeze:-col-end-1&quot;]&#39;,
-    );
+    const coffeeMetadataRegion = regionOf(coffeeRow, 1);
+    const marketMetadataRegion = regionOf(marketRow, 1);
+    const coffeeValueRegion = regionOf(coffeeRow, -1);
+    const marketValueRegion = regionOf(marketRow, -1);
 
     if (
       !coffeeMetadataRegion ||
@@ -8628,6 +8907,21 @@ async function verifyResponsiveGeometry(canvasElement: HTMLElement) {
     ).toBeLessThan(1);
     await expect(coffeeMetadataRect.width).toBe(120);
     await expect(coffeeValueRegionRect.width).toBe(104);
+
+    const status = canvas
+      .getByText(&#39;Showing 3 entries&#39;)
+      .getBoundingClientRect();
+    const loadMore = canvas
+      .getByRole(&#39;button&#39;, { name: &#39;Load more activity&#39; })
+      .getBoundingClientRect();
+
+    await expect(status.left).toBe(coffeeRow.getBoundingClientRect().left + 16);
+    await expect(status.right).toBeLessThan(loadMore.left);
+    await expect(
+      Math.abs(
+        status.top + status.height / 2 - (loadMore.top + loadMore.height / 2),
+      ),
+    ).toBeLessThan(1);
 
     await browserContext.page.viewport(375, 812);
     await expect(view.innerWidth).toBe(375);
@@ -8736,18 +9030,13 @@ export const Activity: Story = {
     const canvas = within(canvasElement);
     const moneyIn = canvas.getByText(&#39;+£2,100.00&#39;);
     const moneyOut = canvas.getByText(&#39;−£184.60&#39;);
-    const valueRegion = moneyIn.closest&lt;HTMLElement&gt;(
-      &#39;[class~=&quot;breeze:-col-end-1&quot;]&#39;,
-    );
     const row = canvas.getByRole(&#39;row&#39;, { name: &#39;Bramble Studio&#39; });
+    const valueRegion = regionOf(row, -1);
 
     if (!valueRegion) throw new Error(&#39;Missing the RowList value region.&#39;);
 
     const rowRect = row.getBoundingClientRect();
-    const leadingRect = within(row)
-      .getByText(&#39;Bramble Studio&#39;)
-      .closest(&#39;[class~=&quot;breeze:col-start-1&quot;]&#39;)
-      ?.getBoundingClientRect();
+    const leadingRect = regionOf(row, 0)?.getBoundingClientRect();
 
     await expect(getComputedStyle(moneyIn).fontSize).toBe(&#39;13px&#39;);
     await expect(getComputedStyle(moneyIn).fontWeight).toBe(&#39;600&#39;);
@@ -8785,7 +9074,10 @@ const money = [
     },
   },
   {
-    badge: { children: &#39;Publishes 8 Sep&#39;, variant: &#39;brand&#39; },
+    badge: [
+      { children: &#39;No receipt&#39;, variant: &#39;warning&#39; },
+      { children: &#39;Publishes 8 Sep&#39;, variant: &#39;brand&#39; },
+    ],
     description: &#39;Standing order, workshop rent&#39;,
     direction: &#39;out&#39;,
     icon: &#39;outgoing&#39;,
@@ -8884,10 +9176,16 @@ const money = [
   },
 ] satisfies RowListItemDescriptor[];
 
-/** Category and VAT columns, with section headers ending in a daily total or a muted note. */
+/** Column headings over category and VAT columns, a row with two badges, and section headers ending in a daily total or a muted note. */
 export const Money: Story = {
   args: {
     &#39;aria-label&#39;: &#39;Transactions&#39;,
+    headings: {
+      label: &#39;Transaction&#39;,
+      metadata: &#39;Category&#39;,
+      metadataAmount: &#39;VAT&#39;,
+      value: &#39;Amount&#39;,
+    },
     items: money,
     loadMore: undefined,
   },
@@ -8939,6 +9237,29 @@ export const Money: Story = {
     await expect(vatRect.right).toBe(amountRect.right - 104 - 12);
     await expect(vatRect.width).toBe(80);
     await expect(categoryRect.left).toBe(vatRect.left - 12 - 120);
+
+    const headingRect = (text: string) =&gt;
+      canvas.getByText(text).getBoundingClientRect();
+
+    await expect(headingRect(&#39;Transaction&#39;).left).toBe(rowRect.left + 16);
+    await expect(headingRect(&#39;Category&#39;).left).toBe(categoryRect.left);
+    await expect(headingRect(&#39;VAT&#39;).right).toBe(vatRect.right);
+    await expect(headingRect(&#39;Amount&#39;).right).toBe(amountRect.right);
+
+    const rent = canvas.getByRole(&#39;row&#39;, { name: &#39;Northgate Supplies&#39; });
+    const rentLabel = within(rent)
+      .getByText(&#39;Northgate Supplies&#39;)
+      .getBoundingClientRect();
+    const noReceipt = within(rent)
+      .getByText(&#39;No receipt&#39;)
+      .getBoundingClientRect();
+    const publishes = within(rent)
+      .getByText(&#39;Publishes 8 Sep&#39;)
+      .getBoundingClientRect();
+
+    await expect(noReceipt.left).toBeGreaterThan(rentLabel.right);
+    await expect(publishes.left).toBeGreaterThan(noReceipt.right);
+    await expect(publishes.top).toBe(noReceipt.top);
   },
 };
 
@@ -8974,13 +9295,265 @@ export const Phone: Story = {
 
     await expect(canvasElement.ownerDocument.defaultView?.innerWidth).toBe(375);
     await expect(within(row).getByText(&#39;Vehicle&#39;)).not.toBeVisible();
+    await expect(canvas.getByText(&#39;Category&#39;)).not.toBeVisible();
+    await expect(canvas.getByText(&#39;VAT&#39;)).not.toBeVisible();
+    await expect(canvas.getByText(&#39;Amount&#39;).getBoundingClientRect().right).toBe(
+      amount.right,
+    );
     await expect(badge.top).toBeGreaterThanOrEqual(description.bottom + 4);
+
+    const rent = canvas.getByRole(&#39;row&#39;, { name: &#39;Northgate Supplies&#39; });
+    const rentDescription = within(rent)
+      .getByText(&#39;Standing order, workshop rent&#39;)
+      .getBoundingClientRect();
+    const noReceipt = within(rent)
+      .getByText(&#39;No receipt&#39;)
+      .getBoundingClientRect();
+    const publishes = within(rent)
+      .getByText(&#39;Publishes 8 Sep&#39;)
+      .getBoundingClientRect();
+
+    await expect(noReceipt.top).toBeGreaterThanOrEqual(
+      rentDescription.bottom + 4,
+    );
+    await expect(publishes.top).toBe(noReceipt.top);
+    // 6px between the badges, measured inside each badge&#39;s 6px inline padding.
+    await expect(publishes.left - noReceipt.right).toBe(6 + 6 + 6);
     await expect(Math.abs(amount.right - (rowRect.right - 16))).toBeLessThan(1);
     await expect(
       Math.abs(
         amount.top + amount.height / 2 - (rowRect.top + rowRect.height / 2),
       ),
     ).toBeLessThan(1);
+  },
+};
+
+const reports = [
+  {
+    action: {
+      download: true,
+      href: &#39;/reports/2026-10-03.zip&#39;,
+      label: &#39;Download&#39;,
+    },
+    icon: &#39;document&#39;,
+    id: &#39;report-october&#39;,
+    label: &#39;3 Oct 2026, 09:12&#39;,
+    metadata: { format: &#39;text&#39;, value: &#39;4 Oct 2026, 09:12&#39; },
+  },
+  {
+    action: {
+      download: true,
+      href: &#39;/reports/2026-10-02.zip&#39;,
+      label: &#39;Download&#39;,
+    },
+    icon: &#39;document&#39;,
+    id: &#39;report-september&#39;,
+    label: &#39;2 Oct 2026, 17:40&#39;,
+    metadata: { format: &#39;text&#39;, value: &#39;3 Oct 2026, 17:40&#39; },
+  },
+] satisfies RowListStaticItemDescriptor[];
+
+/** Static rows that are not actions themselves, each ending in its own Download link. */
+export const StaticRows: Story = {
+  args: {
+    &#39;aria-label&#39;: &#39;Reports&#39;,
+    headings: { action: &#39;Actions&#39;, label: &#39;Requested&#39;, metadata: &#39;Expires&#39; },
+    items: reports,
+    loadMore: undefined,
+    onAction: undefined,
+  },
+  play: async ({ canvasElement }) =&gt; {
+    const canvas = within(canvasElement);
+    const grid = canvas.getByRole(&#39;grid&#39;, { name: &#39;Reports&#39; });
+    const row = within(grid).getByRole(&#39;row&#39;, { name: &#39;3 Oct 2026, 09:12&#39; });
+    const download = within(row).getByRole(&#39;link&#39;, { name: &#39;Download&#39; });
+    const rowRect = row.getBoundingClientRect();
+    const downloadRect = download.getBoundingClientRect();
+
+    await expect(download).toHaveAttribute(&#39;download&#39;, &#39;&#39;);
+    await expect(
+      Math.abs(downloadRect.right - (rowRect.right - 16)),
+    ).toBeLessThan(1);
+    await expect(
+      canvas.getByText(&#39;Actions&#39;).getBoundingClientRect().right,
+    ).toBe(downloadRect.right);
+
+    grid.focus();
+    await expect(row).toHaveFocus();
+    await userEvent.keyboard(&#39;{ArrowRight}&#39;);
+    await expect(download).toHaveFocus();
+  },
+};
+
+const notifications = [
+  {
+    action: {
+      download: true,
+      href: &#39;/reports/2026-10-03.zip&#39;,
+      label: &#39;Download&#39;,
+    },
+    description: &#39;Today, 14:32&#39;,
+    id: &#39;report-ready&#39;,
+    label: &#39;Your report is ready to download&#39;,
+    unread: true,
+  },
+  {
+    description: &#39;Yesterday, 06:00&#39;,
+    id: &#39;published&#39;,
+    label: &#39;A scheduled transaction has been published&#39;,
+    unread: true,
+  },
+  {
+    description: &#39;30 July 2026&#39;,
+    id: &#39;virus&#39;,
+    label:
+      &#39;A file you have uploaded is infected with a virus and it has been removed&#39;,
+    unread: false,
+  },
+] satisfies RowListStaticItemDescriptor[];
+
+/** Unread rows carry a dot, a heavier label and hidden “Unread” text; only one row has an action. */
+export const Unread: Story = {
+  args: {
+    &#39;aria-label&#39;: &#39;Notifications&#39;,
+    items: notifications,
+    loadMore: undefined,
+    onAction: undefined,
+  },
+  play: async ({ canvasElement }) =&gt; {
+    const canvas = within(canvasElement);
+    const unread = canvas.getByText(&#39;Your report is ready to download&#39;);
+    const read = canvas.getByText(/^A file you have uploaded/);
+
+    await expect(getComputedStyle(unread).fontWeight).toBe(&#39;600&#39;);
+    await expect(getComputedStyle(read).fontWeight).not.toBe(&#39;600&#39;);
+    await expect(canvas.getAllByText(&#39;Unread&#39;)).toHaveLength(2);
+    await expect(
+      unread.getBoundingClientRect().left - read.getBoundingClientRect().left,
+    ).toBe(0);
+  },
+};
+
+const companies = [
+  {
+    action: { href: &#39;/companies/bramble&#39;, label: &#39;Details&#39; },
+    badge: { children: &#39;Selected&#39;, variant: &#39;brand&#39; },
+    id: &#39;bramble&#39;,
+    initials: &#39;BS&#39;,
+    label: &#39;Bramble Studio Ltd&#39;,
+    metadata: { format: &#39;text&#39;, value: &#39;09876543&#39; },
+  },
+  {
+    action: { href: &#39;/companies/northgate&#39;, label: &#39;Details&#39; },
+    id: &#39;northgate&#39;,
+    initials: &#39;NC&#39;,
+    label: &#39;Northgate Consulting Ltd&#39;,
+    metadata: { format: &#39;text&#39;, value: &#39;12345678&#39; },
+  },
+] satisfies RowListStaticItemDescriptor[];
+
+/** Rows that lead with initials in a brand tile in place of an icon. */
+export const Initials: Story = {
+  args: {
+    &#39;aria-label&#39;: &#39;Companies&#39;,
+    headings: {
+      action: &#39;Action&#39;,
+      label: &#39;Company&#39;,
+      metadata: &#39;Company number&#39;,
+    },
+    items: companies,
+    loadMore: undefined,
+    onAction: undefined,
+  },
+  play: async ({ canvasElement }) =&gt; {
+    const canvas = within(canvasElement);
+    const initials = canvas.getByText(&#39;BS&#39;);
+    const tile = initials.getBoundingClientRect();
+    const label = canvas
+      .getByText(&#39;Bramble Studio Ltd&#39;)
+      .getBoundingClientRect();
+
+    await expect(tile.width).toBe(24);
+    await expect(tile.height).toBe(24);
+    await expect(getComputedStyle(initials).fontSize).toBe(&#39;11px&#39;);
+    await expect(label.left).toBe(tile.right + 12);
+  },
+};
+
+const people = [
+  {
+    id: &#39;bramble&#39;,
+    initials: &#39;BS&#39;,
+    label: &#39;Bramble Studio&#39;,
+    metadata: [
+      { format: &#39;text&#39;, value: &#39;accounts@bramble.studio&#39;, width: &#39;lg&#39; },
+      { format: &#39;text&#39;, value: &#39;Bristol&#39; },
+    ],
+    narrowDescription: &#39;accounts@bramble.studio · Bristol&#39;,
+  },
+  {
+    id: &#39;fen-lane&#39;,
+    initials: &#39;FL&#39;,
+    label: &#39;Fen Lane Garage&#39;,
+    metadata: [
+      { format: &#39;text&#39;, value: &#39;hello@fenlane.co.uk&#39;, width: &#39;lg&#39; },
+      { format: &#39;text&#39;, value: &#39;Cambridge&#39; },
+    ],
+    narrowDescription: &#39;hello@fenlane.co.uk · Cambridge&#39;,
+  },
+] satisfies RowListItemDescriptor[];
+
+const peopleArgs = {
+  &#39;aria-label&#39;: &#39;Clients&#39;,
+  headings: { label: &#39;Client&#39;, metadata: [&#39;Email&#39;, &#39;Town or city&#39;] },
+  items: people,
+  loadMore: undefined,
+};
+
+/** Several text columns of different widths; on phones a narrow description keeps their content. */
+export const TextColumns: Story = {
+  args: peopleArgs,
+  play: async ({ canvasElement }) =&gt; {
+    const canvas = within(canvasElement);
+    const row = canvas.getByRole(&#39;row&#39;, { name: &#39;Bramble Studio&#39; });
+    const email = regionOf(row, 1)?.getBoundingClientRect();
+    const town = regionOf(row, 2)?.getBoundingClientRect();
+
+    await expect(email?.width).toBe(240);
+    await expect(town?.width).toBe(120);
+    await expect(town?.right).toBe(row.getBoundingClientRect().right - 16);
+    await expect(canvas.getByText(&#39;Email&#39;).getBoundingClientRect().left).toBe(
+      email?.left,
+    );
+    await expect(
+      canvas.getByText(&#39;Town or city&#39;).getBoundingClientRect().left,
+    ).toBe(town?.left);
+    await expect(
+      within(row).getByText(&#39;accounts@bramble.studio · Bristol&#39;),
+    ).not.toBeVisible();
+  },
+};
+
+/** At phone width the text columns hide and the narrow description takes the detail line. */
+export const TextColumnsPhone: Story = {
+  args: peopleArgs,
+  globals: { viewport: { value: &#39;rowListPhone&#39; } },
+  parameters: {
+    chromatic: {
+      viewports: [375],
+    },
+    viewport: phoneViewport,
+  },
+  play: async ({ canvasElement }) =&gt; {
+    const canvas = within(canvasElement);
+    const row = canvas.getByRole(&#39;row&#39;, { name: &#39;Bramble Studio&#39; });
+
+    await expect(canvasElement.ownerDocument.defaultView?.innerWidth).toBe(375);
+    await expect(within(row).getByText(&#39;Bristol&#39;)).not.toBeVisible();
+    await expect(canvas.getByText(&#39;Email&#39;)).not.toBeVisible();
+    await expect(
+      within(row).getByText(&#39;accounts@bramble.studio · Bristol&#39;),
+    ).toBeVisible();
   },
 };
 
@@ -9150,6 +9723,7 @@ export const Merging: Story = {
     loadMore={{
       label: &#39;Load more activity&#39;,
       onAction: fn(),
+      status: &#39;Showing 3 entries&#39;,
     }}
     loading={false}
     onAction={fn()} /&gt;;</code></pre>
@@ -9175,14 +9749,20 @@ export const Merging: Story = {
                 <span class="badge ok">story ok</span>
               </div>
               
-              <div class="hint">Category and VAT columns, with section headers ending in a daily total or a muted note.</div>
+              <div class="hint">Column headings over category and VAT columns, a row with two badges, and section headers ending in a daily total or a muted note.</div>
               <pre><code>const Money = () =&gt; &lt;RowList as ComponentType&lt;RowListProps&lt;unknown&gt;&gt;
     aria-label=&quot;Transactions&quot;
     getItem={getDescriptor}
     items={money}
     loadMore={undefined}
     loading={false}
-    onAction={fn()} /&gt;;</code></pre>
+    onAction={fn()}
+    headings={{
+      label: &#39;Transaction&#39;,
+      metadata: &#39;Category&#39;,
+      metadataAmount: &#39;VAT&#39;,
+      value: &#39;Amount&#39;,
+    }} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -9198,6 +9778,96 @@ export const Merging: Story = {
     loadMore={{
       label: &#39;Load more activity&#39;,
       onAction: fn(),
+      status: &#39;Showing 3 entries&#39;,
+    }}
+    loading={false}
+    onAction={fn()} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Static Rows</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Static rows that are not actions themselves, each ending in its own Download link.</div>
+              <pre><code>const StaticRows = () =&gt; &lt;RowList as ComponentType&lt;RowListProps&lt;unknown&gt;&gt;
+    aria-label=&quot;Reports&quot;
+    getItem={getDescriptor}
+    items={reports}
+    loadMore={undefined}
+    loading={false}
+    onAction={undefined}
+    headings={{ action: &#39;Actions&#39;, label: &#39;Requested&#39;, metadata: &#39;Expires&#39; }} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Unread</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Unread rows carry a dot, a heavier label and hidden “Unread” text; only one row has an action.</div>
+              <pre><code>const Unread = () =&gt; &lt;RowList as ComponentType&lt;RowListProps&lt;unknown&gt;&gt;
+    aria-label=&quot;Notifications&quot;
+    getItem={getDescriptor}
+    items={notifications}
+    loadMore={undefined}
+    loading={false}
+    onAction={undefined} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Initials</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Rows that lead with initials in a brand tile in place of an icon.</div>
+              <pre><code>const Initials = () =&gt; &lt;RowList as ComponentType&lt;RowListProps&lt;unknown&gt;&gt;
+    aria-label=&quot;Companies&quot;
+    getItem={getDescriptor}
+    items={companies}
+    loadMore={undefined}
+    loading={false}
+    onAction={undefined}
+    headings={{
+      action: &#39;Action&#39;,
+      label: &#39;Company&#39;,
+      metadata: &#39;Company number&#39;,
+    }} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Text Columns</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Several text columns of different widths; on phones a narrow description keeps their content.</div>
+              <pre><code>const TextColumns = () =&gt; &lt;RowList as ComponentType&lt;RowListProps&lt;unknown&gt;&gt;
+    aria-label=&quot;Activity&quot;
+    getItem={getDescriptor}
+    items={entries}
+    loadMore={{
+      label: &#39;Load more activity&#39;,
+      onAction: fn(),
+      status: &#39;Showing 3 entries&#39;,
+    }}
+    loading={false}
+    onAction={fn()} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Text Columns Phone</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">At phone width the text columns hide and the narrow description takes the detail line.</div>
+              <pre><code>const TextColumnsPhone = () =&gt; &lt;RowList as ComponentType&lt;RowListProps&lt;unknown&gt;&gt;
+    aria-label=&quot;Activity&quot;
+    getItem={getDescriptor}
+    items={entries}
+    loadMore={{
+      label: &#39;Load more activity&#39;,
+      onAction: fn(),
+      status: &#39;Showing 3 entries&#39;,
     }}
     loading={false}
     onAction={fn()} /&gt;;</code></pre>
@@ -9286,21 +9956,21 @@ export const Merging: Story = {
                 <span class="badge ok">doc ok</span>
               </div>
               <div class="hint">./src/primitives/RowList/RowList.mdx</div>
-              <div>A keyboard-accessible list of aligned, actionable rows.</div>
+              <div>A keyboard-accessible list of aligned rows that are actions or hold their own action.</div>
               <div class="mdx-content"><pre><code>import { ArgTypes, Canvas, Meta } from &#39;@storybook/addon-docs/blocks&#39;;
 import * as Stories from &#39;./RowList.stories&#39;;
 
 &lt;Meta
   of={Stories}
-  summary=&quot;A keyboard-accessible list of aligned, actionable rows.&quot;
+  summary=&quot;A keyboard-accessible list of aligned rows that are actions or hold their own action.&quot;
 /&gt;
 
 # RowList
 
-`RowList` displays data as a list of rows that people can act on, such as
-transactions or documents. Each row has a leading label, optional metadata and
-a trailing value, aligned in columns across the list. The list has no column
-headers.
+`RowList` displays data as a list of rows, such as transactions or reports.
+Each row is either an action itself or a static row with its own trailing
+action. Each row has a leading label, optional metadata and
+a trailing value, aligned in columns across the list.
 
 &lt;Canvas of={Stories.Default} /&gt;
 
@@ -9311,8 +9981,17 @@ Pass your data as `items` and a `getItem` function that returns a
 
 - `id` and `label` are required. Keep each `id` unique and stable, so the
   focused row stays in place when the data changes.
-- `description`, `icon`, `badge` and `disabled` are optional.
-- `metadata` takes text or an ISO calendar date.
+- `description`, `icon`, `badge` and `disabled` are optional. `badge` takes a
+  list to show several badges in order, such as “No receipt” and a scheduled
+  date. Badges never wrap or shrink; the label truncates instead.
+- `initials` shows short initials, such as a client&#39;s or company&#39;s, in a brand
+  tile in place of `icon`. Set one or the other.
+- `metadata` takes text or an ISO calendar date, or a list of them for several
+  columns. Each column is 120px wide; set an entry&#39;s `width` to `md` (176px)
+  or `lg` (240px) for longer text such as an email address. A column takes the
+  widest `width` any row gives it.
+- `narrowDescription` replaces `description` below the `md` breakpoint, where
+  the metadata columns are hidden, so you can keep their content on phones.
 - `value` takes text or a currency amount, formatted in the provider&#39;s locale.
   A currency `value` is formatted by `Typography`, so a non-finite amount or a
   malformed currency code throws a `RangeError` when the row is displayed.
@@ -9322,6 +10001,8 @@ Pass your data as `items` and a `getItem` function that returns a
 
 A metadata or value column takes up space only when at least one row in the
 list uses it; otherwise the label extends into that space.
+
+&lt;Canvas of={Stories.Initials} /&gt;
 
 ## Sections
 
@@ -9340,6 +10021,19 @@ The summary is read from the first row in each section:
 
 &lt;Canvas of={Stories.Money} /&gt;
 
+## Column headings
+
+Pass `headings` to show a row of column headings above the list, as the
+example above does. Give the leading column a `label`, and add `metadata`,
+`metadataAmount`, `value` or `action` for the columns you want to name, with a
+list for `metadata` when there are several metadata columns. Each heading uses
+the same column as the rows, so it stays aligned at every width and hides below
+the `md` breakpoint wherever its column does.
+
+A heading appears only above a column that at least one row uses. The
+headings are hidden while the list has no rows. They are plain text, not table
+headers.
+
 ## Money in and out
 
 Currency values use the compact `amount` role from `Typography`, in the
@@ -9357,18 +10051,48 @@ icon also show the direction.
 ## Phone layout
 
 Below the `md` breakpoint, the value stays at the end of the row, the metadata
-columns are hidden, and a row&#39;s badge moves under its description so the label
+columns are hidden, and a row&#39;s badges move under its description so the label
 keeps the full width. Keep anything essential in the label, description or
-value.
+value, or repeat the hidden metadata in a `narrowDescription`.
 
 &lt;Canvas of={Stories.Phone} /&gt;
 
+&lt;Canvas of={Stories.TextColumns} /&gt;
+
+&lt;Canvas of={Stories.TextColumnsPhone} /&gt;
+
 ## Row actions
 
-Each row is an action, not a selection: the list keeps no selection state.
-Activating a row calls `onAction` with that row&#39;s item from `items`.
+With `onAction`, each row is an action, not a selection: the list keeps no
+selection state. Activating a row calls `onAction` with that row&#39;s item from
+`items`.
 
 &lt;Canvas of={Stories.Merging} /&gt;
+
+## Static rows
+
+Omit `onAction` when the rows are not actions themselves, such as a list of
+reports. `getItem` then returns a `RowListStaticItemDescriptor`, which has no
+`value` or `disabled`, and can end in its own `action`:
+
+- `{ label, onAction }` renders a button.
+- `{ label, href, download }` renders a link, which can download a file. It
+  navigates through the provider&#39;s router like `Link`.
+
+Both use the small secondary button treatment, in a 120px column at the end
+of the row. Name the column with `headings.action`. A static row&#39;s label wraps
+instead of truncating.
+
+&lt;Canvas of={Stories.StaticRows} /&gt;
+
+### Unread rows
+
+Set `unread` on rows that have a read state, such as notifications. An unread
+row shows a brand dot and a heavier label, and screen readers hear the
+provider&#39;s “Unread” message before the label. A read row keeps the dot&#39;s
+space, so labels stay aligned. Omit `unread` for rows without a read state.
+
+&lt;Canvas of={Stories.Unread} /&gt;
 
 ## Loading
 
@@ -9393,7 +10117,10 @@ example also shows a busy Load more button.
 ### Loading more rows
 
 Pass `loadMore` with a `label`, `onAction` and optional `loading` when another
-page of data is available. The button keeps its label while busy, and screen
+page of data is available. Add a `status` to say what is loaded beside the
+button, such as “Showing 11 transactions”, as the first example on this page
+does. When your data has no total, count what is loaded rather than writing
+“N of M”. The button keeps its label while busy, and screen
 readers hear the same loading announcement as the list, without the existing
 rows being read again.
 
@@ -9407,8 +10134,9 @@ display.” message, and screen readers announce it.
 ## Accessibility
 
 Give the list an `aria-label`, which is required. The list is a single Tab
-stop: use the arrow keys to move between rows, and Enter to activate the
-focused row. Screen readers announce loading and empty states once,
+stop: use the up and down arrow keys to move between rows, and Enter to
+activate the focused row. In a static row, the right arrow key moves to the
+row&#39;s action. Screen readers announce loading and empty states once,
 through a single status message.
 
 ## API
@@ -9432,10 +10160,10 @@ through a single status message.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Select</h2>
       <div class="badges">
-        <label for="c-31-forms-select-props" class="badge ok as-toggle">19 prop types</label>
+        <label for="c-32-forms-select-props" class="badge ok as-toggle">19 prop types</label>
         
-        <label for="c-31-forms-select-stories" class="badge ok as-toggle">10 stories</label>
-        <label for="c-31-forms-select-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-32-forms-select-stories" class="badge ok as-toggle">10 stories</label>
+        <label for="c-32-forms-select-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -9448,10 +10176,10 @@ through a single status message.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-31-forms-select-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-31-forms-select-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-32-forms-select-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-32-forms-select-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-31-forms-select-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-32-forms-select-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -9826,10 +10554,10 @@ automatically.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Separator</h2>
       <div class="badges">
-        <label for="c-32-content-separator-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-33-content-separator-props" class="badge ok as-toggle">1 prop type</label>
         
-        <label for="c-32-content-separator-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-32-content-separator-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-33-content-separator-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-33-content-separator-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -9842,10 +10570,10 @@ automatically.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-32-content-separator-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-32-content-separator-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-33-content-separator-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-33-content-separator-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-32-content-separator-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-33-content-separator-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -9966,10 +10694,10 @@ Screen readers recognise the line as a separator and are told its orientation.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Skeleton</h2>
       <div class="badges">
-        <label for="c-33-content-skeleton-props" class="badge ok as-toggle">4 prop types</label>
+        <label for="c-34-content-skeleton-props" class="badge ok as-toggle">4 prop types</label>
         
-        <label for="c-33-content-skeleton-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-33-content-skeleton-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-34-content-skeleton-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-34-content-skeleton-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -9982,10 +10710,10 @@ Screen readers recognise the line as a separator and are told its orientation.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-33-content-skeleton-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-33-content-skeleton-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-34-content-skeleton-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-34-content-skeleton-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-33-content-skeleton-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-34-content-skeleton-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -10114,10 +10842,10 @@ Pass `label` when the skeleton is the only indication that content is loading; s
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> SkipLink</h2>
       <div class="badges">
-        <label for="c-34-accessibility-skiplink-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-35-accessibility-skiplink-props" class="badge ok as-toggle">1 prop type</label>
         
-        <label for="c-34-accessibility-skiplink-stories" class="badge ok as-toggle">1 story</label>
-        <label for="c-34-accessibility-skiplink-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-35-accessibility-skiplink-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-35-accessibility-skiplink-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -10130,10 +10858,10 @@ Pass `label` when the skeleton is the only indication that content is loading; s
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-34-accessibility-skiplink-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-34-accessibility-skiplink-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-35-accessibility-skiplink-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-35-accessibility-skiplink-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-34-accessibility-skiplink-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-35-accessibility-skiplink-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -10236,10 +10964,10 @@ If you use `ApplicationShell`, you do not need to add a `SkipLink`: the shell in
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Stack</h2>
       <div class="badges">
-        <label for="c-35-layout-stack-props" class="badge ok as-toggle">5 prop types</label>
+        <label for="c-36-layout-stack-props" class="badge ok as-toggle">5 prop types</label>
         
-        <label for="c-35-layout-stack-stories" class="badge ok as-toggle">2 stories</label>
-        <label for="c-35-layout-stack-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-36-layout-stack-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-36-layout-stack-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -10252,10 +10980,10 @@ If you use `ApplicationShell`, you do not need to add a `SkipLink`: the shell in
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-35-layout-stack-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-35-layout-stack-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-36-layout-stack-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-36-layout-stack-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-35-layout-stack-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-36-layout-stack-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -10395,10 +11123,10 @@ By default, children stretch to the full width of the stack. Set `horizontalAlig
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> StatePanel</h2>
       <div class="badges">
-        <label for="c-36-states-statepanel-props" class="badge ok as-toggle">5 prop types</label>
+        <label for="c-37-states-statepanel-props" class="badge ok as-toggle">5 prop types</label>
         
-        <label for="c-36-states-statepanel-stories" class="badge ok as-toggle">5 stories</label>
-        <label for="c-36-states-statepanel-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-37-states-statepanel-stories" class="badge ok as-toggle">5 stories</label>
+        <label for="c-37-states-statepanel-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -10411,10 +11139,10 @@ By default, children stretch to the full width of the stack. Set `horizontalAlig
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-36-states-statepanel-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-36-states-statepanel-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-37-states-statepanel-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-37-states-statepanel-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-36-states-statepanel-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-37-states-statepanel-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -10595,10 +11323,10 @@ The panel is a section labelled by its title. It is not a live region, so when i
     <div class="title">
       <h2><span class="status-dot dot-err"></span> StatStrip as ComponentType&lt;StatStripProps&lt;unknown&gt;&gt;</h2>
       <div class="badges">
-        <label for="c-37-patterns-statstrip-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-37-patterns-statstrip-info" class="badge info as-toggle">1 info</label>
-        <label for="c-37-patterns-statstrip-stories" class="badge ok as-toggle">3 stories</label>
-        <label for="c-37-patterns-statstrip-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-38-patterns-statstrip-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-38-patterns-statstrip-info" class="badge info as-toggle">1 info</label>
+        <label for="c-38-patterns-statstrip-stories" class="badge ok as-toggle">4 stories</label>
+        <label for="c-38-patterns-statstrip-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -10609,10 +11337,10 @@ The panel is a section labelled by its title. It is not a live region, so when i
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-37-patterns-statstrip-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-37-patterns-statstrip-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-37-patterns-statstrip-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-37-patterns-statstrip-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-38-patterns-statstrip-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-38-patterns-statstrip-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-38-patterns-statstrip-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-38-patterns-statstrip-docs" class="tg tg-docs" type="checkbox" hidden />
   
   
 
@@ -10731,6 +11459,37 @@ const phoneViewport = {
   },
 };
 
+const yearEnd = [
+  {
+    format: &#39;date&#39;,
+    id: &#39;year-end&#39;,
+    label: &#39;Accounting year ends&#39;,
+    value: &#39;2027-04-05&#39;,
+  },
+  { format: &#39;number&#39;, id: &#39;days&#39;, label: &#39;Days remaining&#39;, value: 132 },
+  { format: &#39;text&#39;, id: &#39;scheme&#39;, label: &#39;VAT scheme&#39;, value: &#39;Flat rate&#39; },
+] satisfies StatStripItemDescriptor[];
+
+/** A date, a count and a scheme name in the same divided strip, as on the year end page. */
+export const OtherFigures: Story = {
+  args: {
+    &#39;aria-label&#39;: &#39;Year end&#39;,
+    items: yearEnd,
+  },
+  play: async ({ canvasElement }) =&gt; {
+    const canvas = within(canvasElement);
+
+    const sizes = [&#39;5 April 2027&#39;, &#39;132&#39;, &#39;Flat rate&#39;].map(
+      (text) =&gt; getComputedStyle(canvas.getByText(text)).fontSize,
+    );
+
+    await expect(sizes).toEqual([&#39;22px&#39;, &#39;22px&#39;, &#39;22px&#39;]);
+    await expect(
+      getComputedStyle(canvas.getByText(&#39;132&#39;)).fontVariantNumeric,
+    ).toBe(&#39;tabular-nums&#39;);
+  },
+};
+
 /** Below Breeze&#39;s medium breakpoint the figures stack with dividers between them. */
 export const Phone: Story = {
   globals: { viewport: { value: &#39;statStripPhone&#39; } },
@@ -10799,6 +11558,15 @@ export const Phone: Story = {
             </div>
             <div class="note ok">
               <div class="row">
+                <span class="ex-name">Other Figures</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A date, a count and a scheme name in the same divided strip, as on the year end page.</div>
+              <pre><code>const OtherFigures = () =&gt; &lt;StatStrip as ComponentType&lt;StatStripProps&lt;unknown&gt;&gt; aria-label=&quot;Year end&quot; getItem={getDescriptor} items={yearEnd} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
                 <span class="ex-name">Phone</span>
                 <span class="badge ok">story ok</span>
               </div>
@@ -10817,18 +11585,18 @@ export const Phone: Story = {
                 <span class="badge ok">doc ok</span>
               </div>
               <div class="hint">./src/patterns/StatStrip/StatStrip.mdx</div>
-              <div>Presents a few headline currency figures side by side in one panel.</div>
+              <div>Presents a few headline figures side by side in one panel.</div>
               <div class="mdx-content"><pre><code>import { ArgTypes, Canvas, Meta } from &#39;@storybook/addon-docs/blocks&#39;;
 import * as Stories from &#39;./StatStrip.stories&#39;;
 
 &lt;Meta
   of={Stories}
-  summary=&quot;Presents a few headline currency figures side by side in one panel.&quot;
+  summary=&quot;Presents a few headline figures side by side in one panel.&quot;
 /&gt;
 
 # StatStrip
 
-`StatStrip` shows a few headline currency figures, such as a balance and the VAT owed, as labelled cells in one panel.
+`StatStrip` shows a few headline figures, such as a balance and the VAT owed, as labelled cells in one panel.
 
 &lt;Canvas of={Stories.Overview} /&gt;
 
@@ -10842,6 +11610,18 @@ Pass your data as `items`, and use `getItem` to return a `StatStripItemDescripto
 - `badge` (optional): a badge after the label showing the figure&#39;s scope, such as the VAT scheme. It accepts `children`, `variant` and `aria-label`.
 
 Amounts are formatted as currency for the provider locale, with a minus sign for negative amounts. A non-finite `value` or a malformed currency code, one that is not three letters, throws a `RangeError`. Codes are not checked against ISO 4217, so an unknown well-formed code is displayed as written. If you need to limit the currencies shown, validate the codes before passing them in.
+
+## Other figures
+
+Set `format` to show a figure that is not currency, without a `currency`:
+
+- `date`: an ISO calendar date, formatted as a long date for the provider locale;
+- `number`: a number formatted for the provider locale, such as a count of days;
+- `text`: short text, such as a VAT scheme name.
+
+These figures use a smaller size than currency amounts. You can mix them with currency figures in one strip.
+
+&lt;Canvas of={Stories.OtherFigures} /&gt;
 
 ## Loading
 
@@ -10857,7 +11637,7 @@ Below 901px, the cells stack in a single column with a divider between them.
 
 ## Accessibility
 
-The panel is a group named by the required `aria-label`. Its figures form a description list, so screen readers announce each label with its amount.
+The panel is a group named by the required `aria-label`. Its figures form a description list, so screen readers announce each label with its figure.
 
 ## API
 
@@ -10880,10 +11660,10 @@ The panel is a group named by the required `aria-label`. Its figures form a desc
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> TextField</h2>
       <div class="badges">
-        <label for="c-38-forms-textfield-props" class="badge ok as-toggle">19 prop types</label>
+        <label for="c-39-forms-textfield-props" class="badge ok as-toggle">20 prop types</label>
         
-        <label for="c-38-forms-textfield-stories" class="badge ok as-toggle">9 stories</label>
-        <label for="c-38-forms-textfield-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-39-forms-textfield-stories" class="badge ok as-toggle">10 stories</label>
+        <label for="c-39-forms-textfield-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -10896,10 +11676,10 @@ The panel is a group named by the required `aria-label`. Its figures form a desc
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-38-forms-textfield-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-38-forms-textfield-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-39-forms-textfield-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-39-forms-textfield-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-38-forms-textfield-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-39-forms-textfield-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -10909,7 +11689,7 @@ The panel is a group named by the required `aria-label`. Its figures form a desc
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types <small>(react-docgen-typescript)</small></span>
-              <span class="badge ok">19 prop types</span>
+              <span class="badge ok">20 prop types</span>
             </div>
             <pre><code>Component: src/primitives/TextField/TextField.tsx::TextField</code></pre>
             <pre><code>Props:</code></pre>
@@ -10958,6 +11738,11 @@ id?: string
  * Accessible field label, shown as text outside loading state.
  */
 label: string
+
+/**
+ * Hides the label visually but keeps it as the accessible name, for repeated rows under column headings.
+ */
+labelHidden?: boolean = false
 
 /**
  * Replaces the input with a shape-preserving loading presentation.
@@ -11052,6 +11837,15 @@ value?: string</code></pre>
               
               <div class="hint">A visible error marks the field invalid and is announced with the input.</div>
               <pre><code>const Error = () =&gt; &lt;TextField label=&quot;Display name&quot; error=&quot;Enter a display name.&quot; /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Hidden Label</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A visually hidden label for a repeated row under a column heading; the error stays visible.</div>
+              <pre><code>const HiddenLabel = () =&gt; &lt;TextField label=&quot;Category name&quot; error=&quot;Enter a category name.&quot; labelHidden /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -11177,6 +11971,15 @@ no DOM event.
 
 &lt;Canvas of={Stories.Blur} /&gt;
 
+## Hidden label
+
+Set `labelHidden` when a column heading already labels a repeated row of
+fields, such as a list of categories with their VAT rates. The label is hidden
+visually but stays the field&#39;s accessible name, so make it specific to the row,
+such as “VAT rate for Vehicle”. Descriptions and errors stay visible.
+
+&lt;Canvas of={Stories.HiddenLabel} /&gt;
+
 ## Accessibility
 
 The visible label names the input, and screen readers announce the description
@@ -11204,10 +12007,10 @@ focus it.
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Toast</h2>
       <div class="badges">
-        <label for="c-39-feedback-toast-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-40-feedback-toast-props" class="badge ok as-toggle">1 prop type</label>
         
-        <label for="c-39-feedback-toast-stories" class="badge ok as-toggle">8 stories</label>
-        <label for="c-39-feedback-toast-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-40-feedback-toast-stories" class="badge ok as-toggle">8 stories</label>
+        <label for="c-40-feedback-toast-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -11220,10 +12023,10 @@ focus it.
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-39-feedback-toast-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-39-feedback-toast-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-40-feedback-toast-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-40-feedback-toast-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-39-feedback-toast-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-40-feedback-toast-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -11404,10 +12207,10 @@ Screen readers announce each toast as a status message without interrupting the 
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Toggle</h2>
       <div class="badges">
-        <label for="c-40-actions-toggle-props" class="badge ok as-toggle">12 prop types</label>
+        <label for="c-41-actions-toggle-props" class="badge ok as-toggle">12 prop types</label>
         
-        <label for="c-40-actions-toggle-stories" class="badge ok as-toggle">6 stories</label>
-        <label for="c-40-actions-toggle-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-41-actions-toggle-stories" class="badge ok as-toggle">6 stories</label>
+        <label for="c-41-actions-toggle-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -11420,10 +12223,10 @@ Screen readers announce each toast as a status message without interrupting the 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-40-actions-toggle-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-40-actions-toggle-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-41-actions-toggle-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-41-actions-toggle-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-40-actions-toggle-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-41-actions-toggle-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -11661,10 +12464,10 @@ pressed. Use `aria-label` or `aria-labelledby` to give it a different name, and
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> ToggleGroup</h2>
       <div class="badges">
-        <label for="c-41-actions-togglegroup-props" class="badge ok as-toggle">12 prop types</label>
+        <label for="c-42-actions-togglegroup-props" class="badge ok as-toggle">12 prop types</label>
         
-        <label for="c-41-actions-togglegroup-stories" class="badge ok as-toggle">6 stories</label>
-        <label for="c-41-actions-togglegroup-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-42-actions-togglegroup-stories" class="badge ok as-toggle">7 stories</label>
+        <label for="c-42-actions-togglegroup-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -11677,10 +12480,10 @@ pressed. Use `aria-label` or `aria-labelledby` to give it a different name, and
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-41-actions-togglegroup-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-41-actions-togglegroup-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-42-actions-togglegroup-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-42-actions-togglegroup-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-41-actions-togglegroup-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-42-actions-togglegroup-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -11723,7 +12526,7 @@ fullWidth?: boolean = false
 /**
  * Supplies the display details for an option.
  */
-getItem: (item: T) =&gt; ItemDescriptor
+getItem: (item: T) =&gt; ToggleGroupItemDescriptor
 
 /**
  * Sets the rendered group&#39;s HTML `id`.
@@ -11782,6 +12585,19 @@ size?: ControlSize = sm</code></pre>
     defaultSelected={options[0]}
     getItem={(item) =&gt; item}
     items={options} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Tooltips</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Options explained on hover and keyboard focus.</div>
+              <pre><code>const Tooltips = () =&gt; &lt;ToggleGroup
+    aria-label=&quot;When it counts&quot;
+    defaultSelected={whenOptions[0]}
+    getItem={(item) =&gt; item}
+    items={whenOptions} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -11887,6 +12703,11 @@ Return a unique `id` and a visible `label`, and optionally a `description`,
 
 &lt;Canvas of={Stories.DisabledOption} /&gt;
 
+Add a `tooltip` to explain an option on hover and keyboard focus, such as the
+state it sets. Screen readers announce it as the option&#39;s description.
+
+&lt;Canvas of={Stories.Tooltips} /&gt;
+
 ## Controlled
 
 For an uncontrolled group, pass `defaultSelected` and optionally `onChange`. To
@@ -11947,9 +12768,9 @@ keyboard.
     <div class="title">
       <h2><span class="status-dot dot-err"></span> TransitionExample</h2>
       <div class="badges">
-        <label for="c-42-foundations-view-transitions-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-42-foundations-view-transitions-info" class="badge info as-toggle">1 info</label>
-        <label for="c-42-foundations-view-transitions-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-43-foundations-view-transitions-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-43-foundations-view-transitions-info" class="badge info as-toggle">1 info</label>
+        <label for="c-43-foundations-view-transitions-stories" class="badge ok as-toggle">1 story</label>
         
         
       </div>
@@ -11961,9 +12782,9 @@ keyboard.
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-42-foundations-view-transitions-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-42-foundations-view-transitions-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-42-foundations-view-transitions-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-43-foundations-view-transitions-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-43-foundations-view-transitions-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-43-foundations-view-transitions-stories" class="tg tg-stories" type="checkbox" hidden />
   
   
   
@@ -12352,10 +13173,10 @@ export const TypedParticipants: Story = {
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Typography</h2>
       <div class="badges">
-        <label for="c-43-content-typography-props" class="badge ok as-toggle">15 prop types</label>
+        <label for="c-44-content-typography-props" class="badge ok as-toggle">15 prop types</label>
         
-        <label for="c-43-content-typography-stories" class="badge ok as-toggle">4 stories</label>
-        <label for="c-43-content-typography-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-44-content-typography-stories" class="badge ok as-toggle">4 stories</label>
+        <label for="c-44-content-typography-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -12368,10 +13189,10 @@ export const TypedParticipants: Story = {
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-43-content-typography-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-43-content-typography-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-44-content-typography-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-44-content-typography-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-43-content-typography-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-44-content-typography-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -12668,10 +13489,10 @@ Each role renders a default element: `heading` renders an `h2`, `title` an `h3`,
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> VisuallyHidden</h2>
       <div class="badges">
-        <label for="c-44-content-visuallyhidden-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-45-content-visuallyhidden-props" class="badge ok as-toggle">1 prop type</label>
         
-        <label for="c-44-content-visuallyhidden-stories" class="badge ok as-toggle">1 story</label>
-        <label for="c-44-content-visuallyhidden-docs" class="badge ok as-toggle">1 doc</label>
+        <label for="c-45-content-visuallyhidden-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-45-content-visuallyhidden-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
     </div>
@@ -12684,10 +13505,10 @@ Each role renders a default element: `heading` renders an `h2`, `title` an `h3`,
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-44-content-visuallyhidden-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-44-content-visuallyhidden-docs" class="tg tg-docs" type="checkbox" hidden />
+  <input id="c-45-content-visuallyhidden-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-45-content-visuallyhidden-docs" class="tg tg-docs" type="checkbox" hidden />
   
-  <input id="c-44-content-visuallyhidden-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-45-content-visuallyhidden-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -13416,7 +14237,7 @@ The top bar, top navigation, bottom navigation and current-location marker take 
       <div class="badges">
         <label for="c-error-1-collections-rowlist-err" class="badge err as-toggle">prop type error</label>
         <label for="c-error-1-collections-rowlist-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-1-collections-rowlist-stories" class="badge ok as-toggle">9 stories</label>
+        <label for="c-error-1-collections-rowlist-stories" class="badge ok as-toggle">14 stories</label>
         <label for="c-error-1-collections-rowlist-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
@@ -13442,20 +14263,24 @@ The top bar, top navigation, bottom navigation and current-location marker take 
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;RowList as ComponentType&lt;RowListProps&lt;unknown&gt;&gt;&quot; component.
-  41 | }
-  42 |
-&gt; 43 | const meta = {
+  45 | }
+  46 |
+&gt; 47 | const meta = {
      | ^
-  44 |   args: {
-  45 |     &#39;aria-label&#39;: &#39;Activity&#39;,
-  46 |     getItem: getDescriptor,
+  48 |   args: {
+  49 |     &#39;aria-label&#39;: &#39;Activity&#39;,
+  50 |     getItem: getDescriptor,
 
 ./src/primitives/RowList/RowList.stories.tsx:
 import type { Meta, StoryObj } from &#39;@storybook/react-vite&#39;;
 import type { ComponentType } from &#39;react&#39;;
 import { useState } from &#39;react&#39;;
 import { expect, fn, userEvent, within } from &#39;storybook/test&#39;;
-import type { RowListItemDescriptor, RowListProps } from &#39;./RowList&#39;;
+import type {
+  RowListItemDescriptor,
+  RowListProps,
+  RowListStaticItemDescriptor,
+} from &#39;./RowList&#39;;
 import { RowList } from &#39;./RowList&#39;;
 
 const entries = [
@@ -13501,6 +14326,7 @@ const meta = {
     loadMore: {
       label: &#39;Load more activity&#39;,
       onAction: fn(),
+      status: &#39;Showing 3 entries&#39;,
     },
     loading: false,
     onAction: fn(),
@@ -13511,6 +14337,15 @@ const meta = {
 
 export default meta;
 type Story = StoryObj&lt;typeof meta&gt;;
+
+/** Returns a row&#39;s column region by position; negative positions count from the end. */
+function regionOf(row: HTMLElement, position: number) {
+  const regions = Array.from(
+    row.querySelector(&#39;[role=&quot;gridcell&quot;]&#39;)?.children ?? [],
+  );
+
+  return regions.at(position) as HTMLElement | undefined;
+}
 
 async function verifyResponsiveGeometry(canvasElement: HTMLElement) {
   if (!(&#39;__vitest_browser__&#39; in globalThis)) return;
@@ -13541,18 +14376,10 @@ async function verifyResponsiveGeometry(canvasElement: HTMLElement) {
     const coffeeValueRect = coffeeValue.getBoundingClientRect();
     const marketDateRect = marketDate.getBoundingClientRect();
     const marketValueRect = marketValue.getBoundingClientRect();
-    const coffeeMetadataRegion = coffeeRow.querySelector&lt;HTMLElement&gt;(
-      &#39;[class~=&quot;breeze:col-start-2&quot;]&#39;,
-    );
-    const marketMetadataRegion = marketRow.querySelector&lt;HTMLElement&gt;(
-      &#39;[class~=&quot;breeze:col-start-2&quot;]&#39;,
-    );
-    const coffeeValueRegion = coffeeRow.querySelector&lt;HTMLElement&gt;(
-      &#39;[class~=&quot;breeze:-col-end-1&quot;]&#39;,
-    );
-    const marketValueRegion = marketRow.querySelector&lt;HTMLElement&gt;(
-      &#39;[class~=&quot;breeze:-col-end-1&quot;]&#39;,
-    );
+    const coffeeMetadataRegion = regionOf(coffeeRow, 1);
+    const marketMetadataRegion = regionOf(marketRow, 1);
+    const coffeeValueRegion = regionOf(coffeeRow, -1);
+    const marketValueRegion = regionOf(marketRow, -1);
 
     if (
       !coffeeMetadataRegion ||
@@ -13597,6 +14424,21 @@ async function verifyResponsiveGeometry(canvasElement: HTMLElement) {
     ).toBeLessThan(1);
     await expect(coffeeMetadataRect.width).toBe(120);
     await expect(coffeeValueRegionRect.width).toBe(104);
+
+    const status = canvas
+      .getByText(&#39;Showing 3 entries&#39;)
+      .getBoundingClientRect();
+    const loadMore = canvas
+      .getByRole(&#39;button&#39;, { name: &#39;Load more activity&#39; })
+      .getBoundingClientRect();
+
+    await expect(status.left).toBe(coffeeRow.getBoundingClientRect().left + 16);
+    await expect(status.right).toBeLessThan(loadMore.left);
+    await expect(
+      Math.abs(
+        status.top + status.height / 2 - (loadMore.top + loadMore.height / 2),
+      ),
+    ).toBeLessThan(1);
 
     await browserContext.page.viewport(375, 812);
     await expect(view.innerWidth).toBe(375);
@@ -13705,18 +14547,13 @@ export const Activity: Story = {
     const canvas = within(canvasElement);
     const moneyIn = canvas.getByText(&#39;+£2,100.00&#39;);
     const moneyOut = canvas.getByText(&#39;−£184.60&#39;);
-    const valueRegion = moneyIn.closest&lt;HTMLElement&gt;(
-      &#39;[class~=&quot;breeze:-col-end-1&quot;]&#39;,
-    );
     const row = canvas.getByRole(&#39;row&#39;, { name: &#39;Bramble Studio&#39; });
+    const valueRegion = regionOf(row, -1);
 
     if (!valueRegion) throw new Error(&#39;Missing the RowList value region.&#39;);
 
     const rowRect = row.getBoundingClientRect();
-    const leadingRect = within(row)
-      .getByText(&#39;Bramble Studio&#39;)
-      .closest(&#39;[class~=&quot;breeze:col-start-1&quot;]&#39;)
-      ?.getBoundingClientRect();
+    const leadingRect = regionOf(row, 0)?.getBoundingClientRect();
 
     await expect(getComputedStyle(moneyIn).fontSize).toBe(&#39;13px&#39;);
     await expect(getComputedStyle(moneyIn).fontWeight).toBe(&#39;600&#39;);
@@ -13754,7 +14591,10 @@ const money = [
     },
   },
   {
-    badge: { children: &#39;Publishes 8 Sep&#39;, variant: &#39;brand&#39; },
+    badge: [
+      { children: &#39;No receipt&#39;, variant: &#39;warning&#39; },
+      { children: &#39;Publishes 8 Sep&#39;, variant: &#39;brand&#39; },
+    ],
     description: &#39;Standing order, workshop rent&#39;,
     direction: &#39;out&#39;,
     icon: &#39;outgoing&#39;,
@@ -13853,10 +14693,16 @@ const money = [
   },
 ] satisfies RowListItemDescriptor[];
 
-/** Category and VAT columns, with section headers ending in a daily total or a muted note. */
+/** Column headings over category and VAT columns, a row with two badges, and section headers ending in a daily total or a muted note. */
 export const Money: Story = {
   args: {
     &#39;aria-label&#39;: &#39;Transactions&#39;,
+    headings: {
+      label: &#39;Transaction&#39;,
+      metadata: &#39;Category&#39;,
+      metadataAmount: &#39;VAT&#39;,
+      value: &#39;Amount&#39;,
+    },
     items: money,
     loadMore: undefined,
   },
@@ -13908,6 +14754,29 @@ export const Money: Story = {
     await expect(vatRect.right).toBe(amountRect.right - 104 - 12);
     await expect(vatRect.width).toBe(80);
     await expect(categoryRect.left).toBe(vatRect.left - 12 - 120);
+
+    const headingRect = (text: string) =&gt;
+      canvas.getByText(text).getBoundingClientRect();
+
+    await expect(headingRect(&#39;Transaction&#39;).left).toBe(rowRect.left + 16);
+    await expect(headingRect(&#39;Category&#39;).left).toBe(categoryRect.left);
+    await expect(headingRect(&#39;VAT&#39;).right).toBe(vatRect.right);
+    await expect(headingRect(&#39;Amount&#39;).right).toBe(amountRect.right);
+
+    const rent = canvas.getByRole(&#39;row&#39;, { name: &#39;Northgate Supplies&#39; });
+    const rentLabel = within(rent)
+      .getByText(&#39;Northgate Supplies&#39;)
+      .getBoundingClientRect();
+    const noReceipt = within(rent)
+      .getByText(&#39;No receipt&#39;)
+      .getBoundingClientRect();
+    const publishes = within(rent)
+      .getByText(&#39;Publishes 8 Sep&#39;)
+      .getBoundingClientRect();
+
+    await expect(noReceipt.left).toBeGreaterThan(rentLabel.right);
+    await expect(publishes.left).toBeGreaterThan(noReceipt.right);
+    await expect(publishes.top).toBe(noReceipt.top);
   },
 };
 
@@ -13943,13 +14812,265 @@ export const Phone: Story = {
 
     await expect(canvasElement.ownerDocument.defaultView?.innerWidth).toBe(375);
     await expect(within(row).getByText(&#39;Vehicle&#39;)).not.toBeVisible();
+    await expect(canvas.getByText(&#39;Category&#39;)).not.toBeVisible();
+    await expect(canvas.getByText(&#39;VAT&#39;)).not.toBeVisible();
+    await expect(canvas.getByText(&#39;Amount&#39;).getBoundingClientRect().right).toBe(
+      amount.right,
+    );
     await expect(badge.top).toBeGreaterThanOrEqual(description.bottom + 4);
+
+    const rent = canvas.getByRole(&#39;row&#39;, { name: &#39;Northgate Supplies&#39; });
+    const rentDescription = within(rent)
+      .getByText(&#39;Standing order, workshop rent&#39;)
+      .getBoundingClientRect();
+    const noReceipt = within(rent)
+      .getByText(&#39;No receipt&#39;)
+      .getBoundingClientRect();
+    const publishes = within(rent)
+      .getByText(&#39;Publishes 8 Sep&#39;)
+      .getBoundingClientRect();
+
+    await expect(noReceipt.top).toBeGreaterThanOrEqual(
+      rentDescription.bottom + 4,
+    );
+    await expect(publishes.top).toBe(noReceipt.top);
+    // 6px between the badges, measured inside each badge&#39;s 6px inline padding.
+    await expect(publishes.left - noReceipt.right).toBe(6 + 6 + 6);
     await expect(Math.abs(amount.right - (rowRect.right - 16))).toBeLessThan(1);
     await expect(
       Math.abs(
         amount.top + amount.height / 2 - (rowRect.top + rowRect.height / 2),
       ),
     ).toBeLessThan(1);
+  },
+};
+
+const reports = [
+  {
+    action: {
+      download: true,
+      href: &#39;/reports/2026-10-03.zip&#39;,
+      label: &#39;Download&#39;,
+    },
+    icon: &#39;document&#39;,
+    id: &#39;report-october&#39;,
+    label: &#39;3 Oct 2026, 09:12&#39;,
+    metadata: { format: &#39;text&#39;, value: &#39;4 Oct 2026, 09:12&#39; },
+  },
+  {
+    action: {
+      download: true,
+      href: &#39;/reports/2026-10-02.zip&#39;,
+      label: &#39;Download&#39;,
+    },
+    icon: &#39;document&#39;,
+    id: &#39;report-september&#39;,
+    label: &#39;2 Oct 2026, 17:40&#39;,
+    metadata: { format: &#39;text&#39;, value: &#39;3 Oct 2026, 17:40&#39; },
+  },
+] satisfies RowListStaticItemDescriptor[];
+
+/** Static rows that are not actions themselves, each ending in its own Download link. */
+export const StaticRows: Story = {
+  args: {
+    &#39;aria-label&#39;: &#39;Reports&#39;,
+    headings: { action: &#39;Actions&#39;, label: &#39;Requested&#39;, metadata: &#39;Expires&#39; },
+    items: reports,
+    loadMore: undefined,
+    onAction: undefined,
+  },
+  play: async ({ canvasElement }) =&gt; {
+    const canvas = within(canvasElement);
+    const grid = canvas.getByRole(&#39;grid&#39;, { name: &#39;Reports&#39; });
+    const row = within(grid).getByRole(&#39;row&#39;, { name: &#39;3 Oct 2026, 09:12&#39; });
+    const download = within(row).getByRole(&#39;link&#39;, { name: &#39;Download&#39; });
+    const rowRect = row.getBoundingClientRect();
+    const downloadRect = download.getBoundingClientRect();
+
+    await expect(download).toHaveAttribute(&#39;download&#39;, &#39;&#39;);
+    await expect(
+      Math.abs(downloadRect.right - (rowRect.right - 16)),
+    ).toBeLessThan(1);
+    await expect(
+      canvas.getByText(&#39;Actions&#39;).getBoundingClientRect().right,
+    ).toBe(downloadRect.right);
+
+    grid.focus();
+    await expect(row).toHaveFocus();
+    await userEvent.keyboard(&#39;{ArrowRight}&#39;);
+    await expect(download).toHaveFocus();
+  },
+};
+
+const notifications = [
+  {
+    action: {
+      download: true,
+      href: &#39;/reports/2026-10-03.zip&#39;,
+      label: &#39;Download&#39;,
+    },
+    description: &#39;Today, 14:32&#39;,
+    id: &#39;report-ready&#39;,
+    label: &#39;Your report is ready to download&#39;,
+    unread: true,
+  },
+  {
+    description: &#39;Yesterday, 06:00&#39;,
+    id: &#39;published&#39;,
+    label: &#39;A scheduled transaction has been published&#39;,
+    unread: true,
+  },
+  {
+    description: &#39;30 July 2026&#39;,
+    id: &#39;virus&#39;,
+    label:
+      &#39;A file you have uploaded is infected with a virus and it has been removed&#39;,
+    unread: false,
+  },
+] satisfies RowListStaticItemDescriptor[];
+
+/** Unread rows carry a dot, a heavier label and hidden “Unread” text; only one row has an action. */
+export const Unread: Story = {
+  args: {
+    &#39;aria-label&#39;: &#39;Notifications&#39;,
+    items: notifications,
+    loadMore: undefined,
+    onAction: undefined,
+  },
+  play: async ({ canvasElement }) =&gt; {
+    const canvas = within(canvasElement);
+    const unread = canvas.getByText(&#39;Your report is ready to download&#39;);
+    const read = canvas.getByText(/^A file you have uploaded/);
+
+    await expect(getComputedStyle(unread).fontWeight).toBe(&#39;600&#39;);
+    await expect(getComputedStyle(read).fontWeight).not.toBe(&#39;600&#39;);
+    await expect(canvas.getAllByText(&#39;Unread&#39;)).toHaveLength(2);
+    await expect(
+      unread.getBoundingClientRect().left - read.getBoundingClientRect().left,
+    ).toBe(0);
+  },
+};
+
+const companies = [
+  {
+    action: { href: &#39;/companies/bramble&#39;, label: &#39;Details&#39; },
+    badge: { children: &#39;Selected&#39;, variant: &#39;brand&#39; },
+    id: &#39;bramble&#39;,
+    initials: &#39;BS&#39;,
+    label: &#39;Bramble Studio Ltd&#39;,
+    metadata: { format: &#39;text&#39;, value: &#39;09876543&#39; },
+  },
+  {
+    action: { href: &#39;/companies/northgate&#39;, label: &#39;Details&#39; },
+    id: &#39;northgate&#39;,
+    initials: &#39;NC&#39;,
+    label: &#39;Northgate Consulting Ltd&#39;,
+    metadata: { format: &#39;text&#39;, value: &#39;12345678&#39; },
+  },
+] satisfies RowListStaticItemDescriptor[];
+
+/** Rows that lead with initials in a brand tile in place of an icon. */
+export const Initials: Story = {
+  args: {
+    &#39;aria-label&#39;: &#39;Companies&#39;,
+    headings: {
+      action: &#39;Action&#39;,
+      label: &#39;Company&#39;,
+      metadata: &#39;Company number&#39;,
+    },
+    items: companies,
+    loadMore: undefined,
+    onAction: undefined,
+  },
+  play: async ({ canvasElement }) =&gt; {
+    const canvas = within(canvasElement);
+    const initials = canvas.getByText(&#39;BS&#39;);
+    const tile = initials.getBoundingClientRect();
+    const label = canvas
+      .getByText(&#39;Bramble Studio Ltd&#39;)
+      .getBoundingClientRect();
+
+    await expect(tile.width).toBe(24);
+    await expect(tile.height).toBe(24);
+    await expect(getComputedStyle(initials).fontSize).toBe(&#39;11px&#39;);
+    await expect(label.left).toBe(tile.right + 12);
+  },
+};
+
+const people = [
+  {
+    id: &#39;bramble&#39;,
+    initials: &#39;BS&#39;,
+    label: &#39;Bramble Studio&#39;,
+    metadata: [
+      { format: &#39;text&#39;, value: &#39;accounts@bramble.studio&#39;, width: &#39;lg&#39; },
+      { format: &#39;text&#39;, value: &#39;Bristol&#39; },
+    ],
+    narrowDescription: &#39;accounts@bramble.studio · Bristol&#39;,
+  },
+  {
+    id: &#39;fen-lane&#39;,
+    initials: &#39;FL&#39;,
+    label: &#39;Fen Lane Garage&#39;,
+    metadata: [
+      { format: &#39;text&#39;, value: &#39;hello@fenlane.co.uk&#39;, width: &#39;lg&#39; },
+      { format: &#39;text&#39;, value: &#39;Cambridge&#39; },
+    ],
+    narrowDescription: &#39;hello@fenlane.co.uk · Cambridge&#39;,
+  },
+] satisfies RowListItemDescriptor[];
+
+const peopleArgs = {
+  &#39;aria-label&#39;: &#39;Clients&#39;,
+  headings: { label: &#39;Client&#39;, metadata: [&#39;Email&#39;, &#39;Town or city&#39;] },
+  items: people,
+  loadMore: undefined,
+};
+
+/** Several text columns of different widths; on phones a narrow description keeps their content. */
+export const TextColumns: Story = {
+  args: peopleArgs,
+  play: async ({ canvasElement }) =&gt; {
+    const canvas = within(canvasElement);
+    const row = canvas.getByRole(&#39;row&#39;, { name: &#39;Bramble Studio&#39; });
+    const email = regionOf(row, 1)?.getBoundingClientRect();
+    const town = regionOf(row, 2)?.getBoundingClientRect();
+
+    await expect(email?.width).toBe(240);
+    await expect(town?.width).toBe(120);
+    await expect(town?.right).toBe(row.getBoundingClientRect().right - 16);
+    await expect(canvas.getByText(&#39;Email&#39;).getBoundingClientRect().left).toBe(
+      email?.left,
+    );
+    await expect(
+      canvas.getByText(&#39;Town or city&#39;).getBoundingClientRect().left,
+    ).toBe(town?.left);
+    await expect(
+      within(row).getByText(&#39;accounts@bramble.studio · Bristol&#39;),
+    ).not.toBeVisible();
+  },
+};
+
+/** At phone width the text columns hide and the narrow description takes the detail line. */
+export const TextColumnsPhone: Story = {
+  args: peopleArgs,
+  globals: { viewport: { value: &#39;rowListPhone&#39; } },
+  parameters: {
+    chromatic: {
+      viewports: [375],
+    },
+    viewport: phoneViewport,
+  },
+  play: async ({ canvasElement }) =&gt; {
+    const canvas = within(canvasElement);
+    const row = canvas.getByRole(&#39;row&#39;, { name: &#39;Bramble Studio&#39; });
+
+    await expect(canvasElement.ownerDocument.defaultView?.innerWidth).toBe(375);
+    await expect(within(row).getByText(&#39;Bristol&#39;)).not.toBeVisible();
+    await expect(canvas.getByText(&#39;Email&#39;)).not.toBeVisible();
+    await expect(
+      within(row).getByText(&#39;accounts@bramble.studio · Bristol&#39;),
+    ).toBeVisible();
   },
 };
 
@@ -14119,6 +15240,7 @@ export const Merging: Story = {
     loadMore={{
       label: &#39;Load more activity&#39;,
       onAction: fn(),
+      status: &#39;Showing 3 entries&#39;,
     }}
     loading={false}
     onAction={fn()} /&gt;;</code></pre>
@@ -14144,14 +15266,20 @@ export const Merging: Story = {
                 <span class="badge ok">story ok</span>
               </div>
               
-              <div class="hint">Category and VAT columns, with section headers ending in a daily total or a muted note.</div>
+              <div class="hint">Column headings over category and VAT columns, a row with two badges, and section headers ending in a daily total or a muted note.</div>
               <pre><code>const Money = () =&gt; &lt;RowList as ComponentType&lt;RowListProps&lt;unknown&gt;&gt;
     aria-label=&quot;Transactions&quot;
     getItem={getDescriptor}
     items={money}
     loadMore={undefined}
     loading={false}
-    onAction={fn()} /&gt;;</code></pre>
+    onAction={fn()}
+    headings={{
+      label: &#39;Transaction&#39;,
+      metadata: &#39;Category&#39;,
+      metadataAmount: &#39;VAT&#39;,
+      value: &#39;Amount&#39;,
+    }} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -14167,6 +15295,96 @@ export const Merging: Story = {
     loadMore={{
       label: &#39;Load more activity&#39;,
       onAction: fn(),
+      status: &#39;Showing 3 entries&#39;,
+    }}
+    loading={false}
+    onAction={fn()} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Static Rows</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Static rows that are not actions themselves, each ending in its own Download link.</div>
+              <pre><code>const StaticRows = () =&gt; &lt;RowList as ComponentType&lt;RowListProps&lt;unknown&gt;&gt;
+    aria-label=&quot;Reports&quot;
+    getItem={getDescriptor}
+    items={reports}
+    loadMore={undefined}
+    loading={false}
+    onAction={undefined}
+    headings={{ action: &#39;Actions&#39;, label: &#39;Requested&#39;, metadata: &#39;Expires&#39; }} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Unread</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Unread rows carry a dot, a heavier label and hidden “Unread” text; only one row has an action.</div>
+              <pre><code>const Unread = () =&gt; &lt;RowList as ComponentType&lt;RowListProps&lt;unknown&gt;&gt;
+    aria-label=&quot;Notifications&quot;
+    getItem={getDescriptor}
+    items={notifications}
+    loadMore={undefined}
+    loading={false}
+    onAction={undefined} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Initials</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Rows that lead with initials in a brand tile in place of an icon.</div>
+              <pre><code>const Initials = () =&gt; &lt;RowList as ComponentType&lt;RowListProps&lt;unknown&gt;&gt;
+    aria-label=&quot;Companies&quot;
+    getItem={getDescriptor}
+    items={companies}
+    loadMore={undefined}
+    loading={false}
+    onAction={undefined}
+    headings={{
+      action: &#39;Action&#39;,
+      label: &#39;Company&#39;,
+      metadata: &#39;Company number&#39;,
+    }} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Text Columns</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Several text columns of different widths; on phones a narrow description keeps their content.</div>
+              <pre><code>const TextColumns = () =&gt; &lt;RowList as ComponentType&lt;RowListProps&lt;unknown&gt;&gt;
+    aria-label=&quot;Activity&quot;
+    getItem={getDescriptor}
+    items={entries}
+    loadMore={{
+      label: &#39;Load more activity&#39;,
+      onAction: fn(),
+      status: &#39;Showing 3 entries&#39;,
+    }}
+    loading={false}
+    onAction={fn()} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Text Columns Phone</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">At phone width the text columns hide and the narrow description takes the detail line.</div>
+              <pre><code>const TextColumnsPhone = () =&gt; &lt;RowList as ComponentType&lt;RowListProps&lt;unknown&gt;&gt;
+    aria-label=&quot;Activity&quot;
+    getItem={getDescriptor}
+    items={entries}
+    loadMore={{
+      label: &#39;Load more activity&#39;,
+      onAction: fn(),
+      status: &#39;Showing 3 entries&#39;,
     }}
     loading={false}
     onAction={fn()} /&gt;;</code></pre>
@@ -14255,21 +15473,21 @@ export const Merging: Story = {
                 <span class="badge ok">doc ok</span>
               </div>
               <div class="hint">./src/primitives/RowList/RowList.mdx</div>
-              <div>A keyboard-accessible list of aligned, actionable rows.</div>
+              <div>A keyboard-accessible list of aligned rows that are actions or hold their own action.</div>
               <div class="mdx-content"><pre><code>import { ArgTypes, Canvas, Meta } from &#39;@storybook/addon-docs/blocks&#39;;
 import * as Stories from &#39;./RowList.stories&#39;;
 
 &lt;Meta
   of={Stories}
-  summary=&quot;A keyboard-accessible list of aligned, actionable rows.&quot;
+  summary=&quot;A keyboard-accessible list of aligned rows that are actions or hold their own action.&quot;
 /&gt;
 
 # RowList
 
-`RowList` displays data as a list of rows that people can act on, such as
-transactions or documents. Each row has a leading label, optional metadata and
-a trailing value, aligned in columns across the list. The list has no column
-headers.
+`RowList` displays data as a list of rows, such as transactions or reports.
+Each row is either an action itself or a static row with its own trailing
+action. Each row has a leading label, optional metadata and
+a trailing value, aligned in columns across the list.
 
 &lt;Canvas of={Stories.Default} /&gt;
 
@@ -14280,8 +15498,17 @@ Pass your data as `items` and a `getItem` function that returns a
 
 - `id` and `label` are required. Keep each `id` unique and stable, so the
   focused row stays in place when the data changes.
-- `description`, `icon`, `badge` and `disabled` are optional.
-- `metadata` takes text or an ISO calendar date.
+- `description`, `icon`, `badge` and `disabled` are optional. `badge` takes a
+  list to show several badges in order, such as “No receipt” and a scheduled
+  date. Badges never wrap or shrink; the label truncates instead.
+- `initials` shows short initials, such as a client&#39;s or company&#39;s, in a brand
+  tile in place of `icon`. Set one or the other.
+- `metadata` takes text or an ISO calendar date, or a list of them for several
+  columns. Each column is 120px wide; set an entry&#39;s `width` to `md` (176px)
+  or `lg` (240px) for longer text such as an email address. A column takes the
+  widest `width` any row gives it.
+- `narrowDescription` replaces `description` below the `md` breakpoint, where
+  the metadata columns are hidden, so you can keep their content on phones.
 - `value` takes text or a currency amount, formatted in the provider&#39;s locale.
   A currency `value` is formatted by `Typography`, so a non-finite amount or a
   malformed currency code throws a `RangeError` when the row is displayed.
@@ -14291,6 +15518,8 @@ Pass your data as `items` and a `getItem` function that returns a
 
 A metadata or value column takes up space only when at least one row in the
 list uses it; otherwise the label extends into that space.
+
+&lt;Canvas of={Stories.Initials} /&gt;
 
 ## Sections
 
@@ -14309,6 +15538,19 @@ The summary is read from the first row in each section:
 
 &lt;Canvas of={Stories.Money} /&gt;
 
+## Column headings
+
+Pass `headings` to show a row of column headings above the list, as the
+example above does. Give the leading column a `label`, and add `metadata`,
+`metadataAmount`, `value` or `action` for the columns you want to name, with a
+list for `metadata` when there are several metadata columns. Each heading uses
+the same column as the rows, so it stays aligned at every width and hides below
+the `md` breakpoint wherever its column does.
+
+A heading appears only above a column that at least one row uses. The
+headings are hidden while the list has no rows. They are plain text, not table
+headers.
+
 ## Money in and out
 
 Currency values use the compact `amount` role from `Typography`, in the
@@ -14326,18 +15568,48 @@ icon also show the direction.
 ## Phone layout
 
 Below the `md` breakpoint, the value stays at the end of the row, the metadata
-columns are hidden, and a row&#39;s badge moves under its description so the label
+columns are hidden, and a row&#39;s badges move under its description so the label
 keeps the full width. Keep anything essential in the label, description or
-value.
+value, or repeat the hidden metadata in a `narrowDescription`.
 
 &lt;Canvas of={Stories.Phone} /&gt;
 
+&lt;Canvas of={Stories.TextColumns} /&gt;
+
+&lt;Canvas of={Stories.TextColumnsPhone} /&gt;
+
 ## Row actions
 
-Each row is an action, not a selection: the list keeps no selection state.
-Activating a row calls `onAction` with that row&#39;s item from `items`.
+With `onAction`, each row is an action, not a selection: the list keeps no
+selection state. Activating a row calls `onAction` with that row&#39;s item from
+`items`.
 
 &lt;Canvas of={Stories.Merging} /&gt;
+
+## Static rows
+
+Omit `onAction` when the rows are not actions themselves, such as a list of
+reports. `getItem` then returns a `RowListStaticItemDescriptor`, which has no
+`value` or `disabled`, and can end in its own `action`:
+
+- `{ label, onAction }` renders a button.
+- `{ label, href, download }` renders a link, which can download a file. It
+  navigates through the provider&#39;s router like `Link`.
+
+Both use the small secondary button treatment, in a 120px column at the end
+of the row. Name the column with `headings.action`. A static row&#39;s label wraps
+instead of truncating.
+
+&lt;Canvas of={Stories.StaticRows} /&gt;
+
+### Unread rows
+
+Set `unread` on rows that have a read state, such as notifications. An unread
+row shows a brand dot and a heavier label, and screen readers hear the
+provider&#39;s “Unread” message before the label. A read row keeps the dot&#39;s
+space, so labels stay aligned. Omit `unread` for rows without a read state.
+
+&lt;Canvas of={Stories.Unread} /&gt;
 
 ## Loading
 
@@ -14362,7 +15634,10 @@ example also shows a busy Load more button.
 ### Loading more rows
 
 Pass `loadMore` with a `label`, `onAction` and optional `loading` when another
-page of data is available. The button keeps its label while busy, and screen
+page of data is available. Add a `status` to say what is loaded beside the
+button, such as “Showing 11 transactions”, as the first example on this page
+does. When your data has no total, count what is loaded rather than writing
+“N of M”. The button keeps its label while busy, and screen
 readers hear the same loading announcement as the list, without the existing
 rows being read again.
 
@@ -14376,8 +15651,9 @@ display.” message, and screen readers announce it.
 ## Accessibility
 
 Give the list an `aria-label`, which is required. The list is a single Tab
-stop: use the arrow keys to move between rows, and Enter to activate the
-focused row. Screen readers announce loading and empty states once,
+stop: use the up and down arrow keys to move between rows, and Enter to
+activate the focused row. In a static row, the right arrow key moves to the
+row&#39;s action. Screen readers announce loading and empty states once,
 through a single status message.
 
 ## API
@@ -14403,7 +15679,7 @@ through a single status message.
       <div class="badges">
         <label for="c-error-2-patterns-statstrip-err" class="badge err as-toggle">prop type error</label>
         <label for="c-error-2-patterns-statstrip-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-2-patterns-statstrip-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-error-2-patterns-statstrip-stories" class="badge ok as-toggle">4 stories</label>
         <label for="c-error-2-patterns-statstrip-docs" class="badge ok as-toggle">1 doc</label>
         
       </div>
@@ -14537,6 +15813,37 @@ const phoneViewport = {
   },
 };
 
+const yearEnd = [
+  {
+    format: &#39;date&#39;,
+    id: &#39;year-end&#39;,
+    label: &#39;Accounting year ends&#39;,
+    value: &#39;2027-04-05&#39;,
+  },
+  { format: &#39;number&#39;, id: &#39;days&#39;, label: &#39;Days remaining&#39;, value: 132 },
+  { format: &#39;text&#39;, id: &#39;scheme&#39;, label: &#39;VAT scheme&#39;, value: &#39;Flat rate&#39; },
+] satisfies StatStripItemDescriptor[];
+
+/** A date, a count and a scheme name in the same divided strip, as on the year end page. */
+export const OtherFigures: Story = {
+  args: {
+    &#39;aria-label&#39;: &#39;Year end&#39;,
+    items: yearEnd,
+  },
+  play: async ({ canvasElement }) =&gt; {
+    const canvas = within(canvasElement);
+
+    const sizes = [&#39;5 April 2027&#39;, &#39;132&#39;, &#39;Flat rate&#39;].map(
+      (text) =&gt; getComputedStyle(canvas.getByText(text)).fontSize,
+    );
+
+    await expect(sizes).toEqual([&#39;22px&#39;, &#39;22px&#39;, &#39;22px&#39;]);
+    await expect(
+      getComputedStyle(canvas.getByText(&#39;132&#39;)).fontVariantNumeric,
+    ).toBe(&#39;tabular-nums&#39;);
+  },
+};
+
 /** Below Breeze&#39;s medium breakpoint the figures stack with dividers between them. */
 export const Phone: Story = {
   globals: { viewport: { value: &#39;statStripPhone&#39; } },
@@ -14605,6 +15912,15 @@ export const Phone: Story = {
             </div>
             <div class="note ok">
               <div class="row">
+                <span class="ex-name">Other Figures</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">A date, a count and a scheme name in the same divided strip, as on the year end page.</div>
+              <pre><code>const OtherFigures = () =&gt; &lt;StatStrip as ComponentType&lt;StatStripProps&lt;unknown&gt;&gt; aria-label=&quot;Year end&quot; getItem={getDescriptor} items={yearEnd} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
                 <span class="ex-name">Phone</span>
                 <span class="badge ok">story ok</span>
               </div>
@@ -14623,18 +15939,18 @@ export const Phone: Story = {
                 <span class="badge ok">doc ok</span>
               </div>
               <div class="hint">./src/patterns/StatStrip/StatStrip.mdx</div>
-              <div>Presents a few headline currency figures side by side in one panel.</div>
+              <div>Presents a few headline figures side by side in one panel.</div>
               <div class="mdx-content"><pre><code>import { ArgTypes, Canvas, Meta } from &#39;@storybook/addon-docs/blocks&#39;;
 import * as Stories from &#39;./StatStrip.stories&#39;;
 
 &lt;Meta
   of={Stories}
-  summary=&quot;Presents a few headline currency figures side by side in one panel.&quot;
+  summary=&quot;Presents a few headline figures side by side in one panel.&quot;
 /&gt;
 
 # StatStrip
 
-`StatStrip` shows a few headline currency figures, such as a balance and the VAT owed, as labelled cells in one panel.
+`StatStrip` shows a few headline figures, such as a balance and the VAT owed, as labelled cells in one panel.
 
 &lt;Canvas of={Stories.Overview} /&gt;
 
@@ -14648,6 +15964,18 @@ Pass your data as `items`, and use `getItem` to return a `StatStripItemDescripto
 - `badge` (optional): a badge after the label showing the figure&#39;s scope, such as the VAT scheme. It accepts `children`, `variant` and `aria-label`.
 
 Amounts are formatted as currency for the provider locale, with a minus sign for negative amounts. A non-finite `value` or a malformed currency code, one that is not three letters, throws a `RangeError`. Codes are not checked against ISO 4217, so an unknown well-formed code is displayed as written. If you need to limit the currencies shown, validate the codes before passing them in.
+
+## Other figures
+
+Set `format` to show a figure that is not currency, without a `currency`:
+
+- `date`: an ISO calendar date, formatted as a long date for the provider locale;
+- `number`: a number formatted for the provider locale, such as a count of days;
+- `text`: short text, such as a VAT scheme name.
+
+These figures use a smaller size than currency amounts. You can mix them with currency figures in one strip.
+
+&lt;Canvas of={Stories.OtherFigures} /&gt;
 
 ## Loading
 
@@ -14663,7 +15991,7 @@ Below 901px, the cells stack in a single column with a divider between them.
 
 ## Accessibility
 
-The panel is a group named by the required `aria-label`. Its figures form a description list, so screen readers announce each label with its amount.
+The panel is a group named by the required `aria-label`. Its figures form a description list, so screen readers announce each label with its figure.
 
 ## API
 
