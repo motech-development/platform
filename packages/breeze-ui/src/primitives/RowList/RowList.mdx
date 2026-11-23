@@ -22,7 +22,9 @@ Pass your data as `items` and a `getItem` function that returns a
 
 - `id` and `label` are required. Keep each `id` unique and stable, so the
   focused row stays in place when the data changes.
-- `description`, `icon`, `badge` and `disabled` are optional.
+- `description`, `icon`, `badge` and `disabled` are optional. `badge` takes a
+  list to show several badges in order, such as “No receipt” and a scheduled
+  date. Badges never wrap or shrink; the label truncates instead.
 - `initials` shows short initials, such as a client's or company's, in a brand
   tile in place of `icon`. Set one or the other.
 - `metadata` takes text or an ISO calendar date, or a list of them for several
@@ -90,7 +92,7 @@ icon also show the direction.
 ## Phone layout
 
 Below the `md` breakpoint, the value stays at the end of the row, the metadata
-columns are hidden, and a row's badge moves under its description so the label
+columns are hidden, and a row's badges move under its description so the label
 keeps the full width. Keep anything essential in the label, description or
 value, or repeat the hidden metadata in a `narrowDescription`.
 

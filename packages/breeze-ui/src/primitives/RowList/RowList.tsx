@@ -5,7 +5,10 @@ import {
   GridListItem as AriaGridListItem,
   GridListSection as AriaGridListSection,
 } from 'react-aria-components/GridList';
-import type { ItemDescriptor } from '../../collections/item.types';
+import type {
+  ItemDescriptor,
+  ItemDescriptorBadge,
+} from '../../collections/item.types';
 import { useBreezeContext } from '../../provider/BreezeContext';
 import { Badge } from '../Badge/Badge';
 import { Button } from '../Button/Button';
@@ -18,9 +21,11 @@ import { VisuallyHidden } from '../VisuallyHidden/VisuallyHidden';
 const variants = {
   base: {
     action: 'breeze:flex breeze:min-inline-0 breeze:justify-end',
-    // Phones move the badge below the description so the label keeps the full width.
     badge:
-      'breeze:flex breeze:max-inline-full breeze:min-inline-0 breeze:shrink-0 breeze:overflow-hidden breeze:whitespace-nowrap breeze:max-breeze-md:order-1 breeze:max-breeze-md:mbs-breeze-1 breeze:max-breeze-md:self-start breeze:[&>span]:max-inline-full breeze:[&>span]:min-inline-0 breeze:[&>span]:overflow-hidden breeze:[&>span>span:first-child]:min-inline-0 breeze:[&>span>span:first-child]:overflow-hidden breeze:[&>span>span:first-child]:text-ellipsis',
+      'breeze:flex breeze:min-inline-0 breeze:overflow-hidden breeze:whitespace-nowrap breeze:[&>span]:max-inline-full breeze:[&>span]:min-inline-0 breeze:[&>span]:overflow-hidden breeze:[&>span>span:first-child]:min-inline-0 breeze:[&>span>span:first-child]:overflow-hidden breeze:[&>span>span:first-child]:text-ellipsis',
+    // Phones move the badges below the description so the label keeps the full width.
+    badges:
+      'breeze:flex breeze:max-inline-full breeze:min-inline-0 breeze:shrink-0 breeze:gap-breeze-2 breeze:max-breeze-md:order-1 breeze:max-breeze-md:mbs-breeze-1 breeze:max-breeze-md:flex-wrap breeze:max-breeze-md:gap-[6px] breeze:max-breeze-md:self-start',
     container: 'breeze:min-inline-0 breeze:inline-full',
     content:
       'breeze:flex breeze:min-inline-0 breeze:flex-1 breeze:flex-col breeze:gap-breeze-px',
@@ -152,7 +157,9 @@ interface RowListInitialsLeading {
   initials: string;
 }
 
-interface RowListItemContent extends Omit<ItemDescriptor, 'icon'> {
+interface RowListItemContent extends Omit<ItemDescriptor, 'badge' | 'icon'> {
+  /** A compact status badge, or several in order. */
+  badge?: ItemDescriptorBadge | ItemDescriptorBadge[];
   /** Shows quiet placeholders for supplied metadata and value regions. */
   loading?: boolean;
   /** Optional middle column, or several columns in order, each hidden below `md`. */
@@ -560,6 +567,7 @@ function RowContent({
   descriptor: RowDescriptor;
 }>) {
   const { getMessageLocale, messages } = useBreezeContext();
+  const badges = toList(descriptor.badge);
   const metadata = toList(descriptor.metadata);
 
   return (
@@ -611,14 +619,19 @@ function RowContent({
               )}
               {descriptor.label}
             </span>
-            {descriptor.badge && (
-              <span className={variants.base.badge}>
-                <Badge
-                  aria-label={descriptor.badge['aria-label']}
-                  variant={descriptor.badge.variant}
-                >
-                  {descriptor.badge.children}
-                </Badge>
+            {badges.length > 0 && (
+              <span className={variants.base.badges}>
+                {badges.map((badge, index) => (
+                  // eslint-disable-next-line react/no-array-index-key -- Badges have no identity beyond their order.
+                  <span className={variants.base.badge} key={index}>
+                    <Badge
+                      aria-label={badge['aria-label']}
+                      variant={badge.variant}
+                    >
+                      {badge.children}
+                    </Badge>
+                  </span>
+                ))}
               </span>
             )}
           </span>

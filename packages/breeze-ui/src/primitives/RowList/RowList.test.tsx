@@ -595,6 +595,30 @@ describe('RowList', () => {
     );
   });
 
+  it('shows several badges in order', () => {
+    const descriptor = {
+      badge: [
+        { children: 'No receipt', variant: 'warning' },
+        { children: 'Publishes 5 Oct', variant: 'brand' },
+      ],
+      id: 'rent',
+      label: 'Workshop rent',
+    } satisfies RowListItemDescriptor;
+
+    renderBreeze(
+      <RowList
+        aria-label="Transactions"
+        getItem={() => descriptor}
+        items={[descriptor]}
+        onAction={() => undefined}
+      />,
+    );
+
+    expect(
+      screen.getByRole('row', { name: 'Workshop rent' }),
+    ).toHaveTextContent('Workshop rentNo receiptPublishes 5 Oct');
+  });
+
   it('keeps an empty result as a named grid with a row and cell', () => {
     renderBreeze(
       <RowList
