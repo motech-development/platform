@@ -7,6 +7,9 @@ interface OverlayBaseProps {
   dismissible?: boolean;
   /** Visible and accessible surface title. */
   title: string;
+}
+
+interface OverlayTriggerProps {
   /** Label for the library-owned trigger button. */
   trigger: string;
 }
@@ -23,6 +26,15 @@ interface UncontrolledOverlayProps {
   open?: never;
 }
 
-export type OverlayProps = OverlayBaseProps &
+interface TriggerlessOverlayProps extends ControlledOverlayProps {
+  /** Omit, and control `open`, to open the surface from your own control or route. */
+  trigger?: never;
+}
+
+type TriggeredOverlayProps = OverlayTriggerProps &
   (ControlledOverlayProps | UncontrolledOverlayProps);
+
+export type OverlayProps = OverlayBaseProps & TriggeredOverlayProps;
+export type ModalOverlayProps = OverlayBaseProps &
+  (TriggeredOverlayProps | TriggerlessOverlayProps);
 export type OverlayKind = 'dialog' | 'drawer' | 'fullscreen' | 'popover';

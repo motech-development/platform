@@ -1,12 +1,60 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { useState } from 'react';
 import { describe, expect, expectTypeOf, it } from 'vitest';
 import renderBreeze from '../../../test/render';
 import { BreezeProvider } from '../../provider/BreezeProvider';
+import { Button } from '../Button/Button';
+import { Drawer } from '../Drawer/Drawer';
 import { Skeleton } from '../Skeleton/Skeleton';
+import { TextField } from '../TextField/TextField';
 import { Dialog, type DialogProps } from './Dialog';
 
 expectTypeOf<DialogProps>().not.toHaveProperty('loading');
+expectTypeOf<{
+  children: string;
+  title: string;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}>().toExtend<DialogProps>();
+expectTypeOf<{
+  children: string;
+  title: string;
+  defaultOpen: boolean;
+}>().not.toExtend<DialogProps>();
+
+function DiscardChangesSheet() {
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [confirming, setConfirming] = useState(false);
+
+  return (
+    <>
+      <Button onAction={() => setSheetOpen(true)}>Northwind Supplies</Button>
+      <Drawer
+        onOpenChange={(open) => setConfirming(!open)}
+        open={sheetOpen}
+        title="Edit transaction"
+      >
+        <TextField label="Name" />
+        <Dialog
+          onOpenChange={setConfirming}
+          open={confirming}
+          title="Discard changes?"
+        >
+          <Button onAction={() => setConfirming(false)}>Keep editing</Button>
+          <Button
+            onAction={() => {
+              setConfirming(false);
+              setSheetOpen(false);
+            }}
+          >
+            Discard
+          </Button>
+        </Dialog>
+      </Drawer>
+    </>
+  );
+}
 
 describe('Dialog', () => {
   it('uses and cleans up a dedicated host inside a custom container', async () => {
@@ -51,6 +99,44 @@ describe('Dialog', () => {
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument(),
     );
     await waitFor(() => expect(trigger).toHaveFocus());
+  });
+
+  it('confirms discarding a sheet the application keeps open', async () => {
+    renderBreeze(<DiscardChangesSheet />);
+    const opener = screen.getByRole('button', { name: 'Northwind Supplies' });
+    await userEvent.click(opener);
+    const name = await screen.findByRole('textbox', { name: 'Name' });
+    await userEvent.type(name, 'Northwind');
+
+    await userEvent.keyboard('{Escape}');
+
+    const confirmation = await screen.findByRole('dialog', {
+      name: 'Discard changes?',
+    });
+    expect(
+      screen.getByRole('dialog', { hidden: true, name: 'Edit transaction' }),
+    ).toBeInTheDocument();
+
+    await userEvent.click(
+      within(confirmation).getByRole('button', { name: 'Keep editing' }),
+    );
+
+    await waitFor(() =>
+      expect(
+        screen.queryByRole('dialog', { name: 'Discard changes?' }),
+      ).not.toBeInTheDocument(),
+    );
+    await waitFor(() => expect(name).toHaveFocus());
+
+    await userEvent.keyboard('{Escape}');
+    await userEvent.click(
+      await screen.findByRole('button', { name: 'Discard' }),
+    );
+
+    await waitFor(() =>
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument(),
+    );
+    await waitFor(() => expect(opener).toHaveFocus());
   });
 
   it('renders loading content supplied by the caller', () => {

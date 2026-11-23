@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
-import type { OverlayProps } from '../../overlays/overlay.types';
+import type { ModalOverlayProps } from '../../overlays/overlay.types';
 import OverlaySurface from '../../overlays/OverlaySurface';
 
-export type DrawerProps = OverlayProps & {
+export type DrawerProps = ModalOverlayProps & {
   /** End-aligned actions pinned below the scrolling content, such as Cancel and Save. */
   footerActions?: ReactNode;
   /** Leading footer action placed before the summary, such as Delete. */
@@ -13,7 +13,7 @@ export type DrawerProps = OverlayProps & {
 
 /**
  * Opens a labelled drawer with library-owned nesting and motion.
- * @summary A labelled drawer surface with a trigger and close action.
+ * @summary A labelled drawer surface opened from its trigger or application state.
  */
 export function Drawer({
   children,

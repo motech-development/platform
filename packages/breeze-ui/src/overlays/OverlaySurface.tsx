@@ -481,7 +481,13 @@ function OverlaySurface({
       parentSurface.focus({ preventScroll: true });
       return;
     }
-    restoreParentFocus?.();
+    if (restoreParentFocus) {
+      restoreParentFocus();
+      return;
+    }
+    // Nothing was focused on open, or the opener has gone: land where the skip link does.
+    const main = document.querySelector('main');
+    if (main && canFocus(main)) main.focus({ preventScroll: true });
   }, [host, parentId, restoreParentFocus]);
 
   const clearRefocusTimer = useCallback(() => {

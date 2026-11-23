@@ -187,3 +187,44 @@ export const EditTransaction: Story = {
     ).toBeCloseTo(footerBox.right - parseFloat(footerStyle.paddingInlineEnd));
   },
 };
+
+function StateOpenedDrawer() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <Button onAction={() => setOpen(true)}>Northwind Supplies</Button>
+      <Drawer onOpenChange={setOpen} open={open} title="Transaction">
+        <Typography>Printer toner and paper, £139.00.</Typography>
+      </Drawer>
+    </>
+  );
+}
+
+/** A drawer opened from the application's own control, with no trigger of its own, that returns focus to that control. */
+export const FromApplicationState: Story = {
+  play: async ({ canvasElement }) => {
+    const page = within(canvasElement.ownerDocument.body);
+    const canvas = within(canvasElement);
+    const opener = canvas.getByRole('button', { name: 'Northwind Supplies' });
+
+    await expect(canvas.getAllByRole('button')).toEqual([opener]);
+    await userEvent.click(opener);
+    const surface = await page.findByRole('dialog', { name: 'Transaction' });
+    await waitFor(async () => {
+      await expect(
+        surface.contains(canvasElement.ownerDocument.activeElement),
+      ).toBe(true);
+    });
+    await userEvent.keyboard('{Escape}');
+    await waitFor(async () => {
+      await expect(
+        page.queryByRole('dialog', { name: 'Transaction' }),
+      ).not.toBeInTheDocument();
+    });
+    await waitFor(async () => {
+      await expect(opener).toHaveFocus();
+    });
+  },
+  render: () => <StateOpenedDrawer />,
+};

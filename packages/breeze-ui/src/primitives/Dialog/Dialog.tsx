@@ -1,11 +1,11 @@
-import type { OverlayProps } from '../../overlays/overlay.types';
+import type { ModalOverlayProps } from '../../overlays/overlay.types';
 import OverlaySurface from '../../overlays/OverlaySurface';
 
-export type DialogProps = OverlayProps;
+export type DialogProps = ModalOverlayProps;
 
 /**
  * Opens a labelled dialog with library-owned nesting and motion.
- * @summary A labelled dialog surface with a trigger and close action.
+ * @summary A labelled dialog surface opened from its trigger or application state.
  */
 export function Dialog({
   children,
